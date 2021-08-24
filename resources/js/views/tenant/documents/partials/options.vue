@@ -74,7 +74,7 @@
                 <el-input v-model="form.customer_telephone">
                     <template slot="prepend">+51</template>
                         <el-button slot="append" @click="clickSendWhatsapp" >Enviar
-                            <el-tooltip class="item" effect="dark"  content="Es necesario tener aperturado Whatsapp web" placement="top-start">
+                            <el-tooltip class="item" effect="dark"  content="Se recomienta tener abierta la sesión de Whatsapp web" placement="top-start">
                                 <i class="fab fa-whatsapp" ></i>
                             </el-tooltip>
                         </el-button>
@@ -102,6 +102,8 @@
 </template>
 
 <script>
+    import {mapState,mapActions} from "vuex/dist/vuex.mjs";
+
     export default {
         props: ['showDialog', 'recordId', 'showClose','isContingency','generatDispatch','dispatchId', 'isUpdate','configuration'],
         data() {
@@ -112,25 +114,38 @@
                 errors: {},
                 form: {},
                 company: {},
-                locked_emission:{}
+                locked_emission:{},
+                // config:{}
             }
         },
-        async created() {
+        created() {
+            this.loadConfiguration(this.$store)
+            this.$store.commit('setConfiguration',this.configuration)
+
+        },
+        mounted(){
             this.initForm()
         },
         computed: {
+            ...mapState([
+                'config',
+            ]),
             Ticket58: function(){
-
+                if(this.config === undefined) return false;
+                if(this.config == null) return false;
+                if(this.config.ticket_58 === undefined) return false;
+                if(this.config.ticket_58 == null) return false;
                 if(
-                    this.configuration.ticket_58 !== undefined &&
-                    this.configuration.ticket_58){
-                    return this.configuration.ticket_58;
+                    this.config.ticket_58 !== undefined &&
+                    this.config.ticket_58 !== null){
+                    return this.config.ticket_58;
                 }
 
                 return false;
             }
         },
         methods: {
+            ...mapActions(['loadConfiguration']),
             clickSendWhatsapp() {
 
                 if(!this.form.customer_telephone){

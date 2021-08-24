@@ -30,7 +30,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- <div class="row">
+                                <div class="row">
                                     <div class="col-md-6 mt-4" v-if="typeUser != 'integrator'">
                                         <label class="control-label">Envío de comprobantes a servidor alterno de SUNAT</label>
                                         <div class="form-group" :class="{'has-danger': errors.sunat_alternate_server}">
@@ -38,7 +38,7 @@
                                             <small class="form-control-feedback" v-if="errors.sunat_alternate_server" v-text="errors.sunat_alternate_server[0]"></small>
                                         </div>
                                     </div>
-                                </div> -->
+                                </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3" name="second">
                                 <span slot="label"><h3>Contable</h3></span>
@@ -90,6 +90,56 @@
                                         <div class="form-group" :class="{'has-danger': errors.destination_sale}">
                                             <el-switch v-model="form.destination_sale" active-text="Si" inactive-text="No" @change="submit"></el-switch>
                                             <small class="form-control-feedback" v-if="errors.destination_sale" v-text="errors.destination_sale[0]"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mt-4">
+                                        <a href="#" @click.prevent="showDialogAllowanceCharge = true" class="text-center font-weight-bold text-info">[+ Aplicar cargos]</a>
+                                        <el-tooltip
+                                            class="item"
+                                            effect="dark"
+                                            content="Disponible en Ventas - Comprobante electrónico"
+                                            placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </div>
+
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Modificar Tipo de afectación (Gravado - Bonificación)
+                                            <el-tooltip
+                                                class="item"
+                                                effect="dark"
+                                                        content="Disponible Nuevo CPE"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div class="form-group" :class="{'has-danger': errors.change_free_affectation_igv}">
+                                            <el-switch v-model="form.change_free_affectation_igv" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                            <small class="form-control-feedback" v-if="errors.change_free_affectation_igv" v-text="errors.change_free_affectation_igv[0]"></small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Moneda predeterminada
+                                            <el-tooltip
+                                                class="item"
+                                                effect="dark"
+                                                content="Solo en Nota de venta y CPE"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
+                                            <el-select v-model="form.currency_type_id"   filterable>
+                                                <el-option v-for="option in config.currency_types"
+                                                           :key="option.id"
+                                                           :value="option.id"
+                                                           :label="option.symbol+' - '+option.description"></el-option>
+                                            </el-select>
+                                            <small
+                                                class="form-control-feedback"
+                                                v-if="errors.currency_type_id"
+                                                v-text="errors.currency_type_id[0]"></small>
                                         </div>
                                     </div>
                                 </div>
@@ -221,6 +271,90 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Aplicar precios por almacén
+                                            <el-tooltip
+                                                class="item"
+                                                effect="dark"
+                                                        content="Disponible POS"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div class="form-group" :class="{'has-danger': errors.active_warehouse_prices}">
+                                            <el-switch v-model="form.active_warehouse_prices" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                            <small class="form-control-feedback" v-if="errors.active_warehouse_prices" v-text="errors.active_warehouse_prices[0]"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Buscar producto por serie
+                                            <el-tooltip
+                                                class="item"
+                                                effect="dark"
+                                                        content="Disponible Nuevo CPE"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div class="form-group" :class="{'has-danger': errors.search_item_by_series}">
+                                            <el-switch v-model="form.search_item_by_series" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                            <small class="form-control-feedback" v-if="errors.search_item_by_series" v-text="errors.search_item_by_series[0]"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Seleccionar precio disponible - Lista de precios
+                                            <el-tooltip
+                                                class="item"
+                                                effect="dark"
+                                                        content="Disponible POS"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div class="form-group" :class="{'has-danger': errors.select_available_price_list}">
+                                            <el-switch v-model="form.select_available_price_list" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                            <small class="form-control-feedback" v-if="errors.select_available_price_list" v-text="errors.select_available_price_list[0]"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">
+                                            Muestra campos opcionales para los Items a modo informativo
+                                            <el-tooltip
+                                                class="item"
+                                                effect="dark"
+                                                        content="Disponible en CPE"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div class="form-group" :class="{'has-danger': errors.show_extra_info_to_item}">
+                                            <el-switch v-model="form.show_extra_info_to_item" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                            <small class="form-control-feedback" v-if="errors.show_extra_info_to_item" v-text="errors.show_extra_info_to_item[0]"></small>
+                                        </div>
+                                    </div>
+
+                                    
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Agrupar productos y cantidades - Generar CPE
+
+                                            <el-tooltip
+                                                class="item"
+                                                effect="dark"
+                                                        content="Agrupar/Sumar productos y cantidades al generar cpe desde múltiples notas de venta"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div class="form-group" :class="{'has-danger': errors.group_items_generate_document}">
+                                            <el-switch v-model="form.group_items_generate_document" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                            <small class="form-control-feedback" v-if="errors.group_items_generate_document" v-text="errors.group_items_generate_document[0]"></small>
+                                        </div>
+                                    </div>
+                                    
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3" name="fourth">
@@ -354,6 +488,10 @@
                         <terms-condition-sale :showDialog.sync="showDialogTermsConditionSales"
                             :form="form"
                             :showClose="false"></terms-condition-sale>
+
+                        <allowance-charge :showDialog.sync="showDialogAllowanceCharge"
+                            :form="form"
+                            :showClose="false"></allowance-charge>
                     </form>
                 </template>
             </div>
@@ -365,16 +503,23 @@
 
     import TermsCondition from '@views/quotations/partials/terms_condition.vue'
     import TermsConditionSale from '@views/documents/partials/terms_condition.vue'
+    import AllowanceCharge from './partials/allowance_charge.vue'
+    import {mapActions, mapState} from "vuex";
 
     export default {
         props:['typeUser'],
-        components: {TermsCondition, TermsConditionSale},
-
+        components: {TermsCondition, TermsConditionSale, AllowanceCharge},
+        computed: {
+            ...mapState([
+                'config',
+            ]),
+        },
         data() {
             return {
                 headers: headers_token,
                 showDialogTermsCondition: false,
                 showDialogTermsConditionSales: false,
+                showDialogAllowanceCharge: false,
                 loading_submit: false,
                 resource: 'configurations',
                 errors: {},
@@ -387,20 +532,29 @@
                 activeName: 'first'
             }
         },
-        async created() {
-            await this.loadTables()
-            await this.initForm();
-
-            await this.$http.get(`/${this.resource}/record`) .then(response => {
+        created() {
+            this.loadConfiguration()
+            this.form = this.config;
+        },
+        mounted() {
+             this.loadTables()
+             this.initForm();
+             this.$http.get(`/${this.resource}/record`) .then(response => {
                 if (response.data !== ''){
                     this.form = response.data.data;
+                    this.$store.commit('setConfiguration', this.form)
+
                 }
                 // console.log(this.placeholder)
             });
 
-            await this.events()
+             this.events()
         },
         methods: {
+
+            ...mapActions([
+                'loadConfiguration',
+            ]),
             events(){
 
                 this.$eventHub.$on('submitFormConfigurations', (form) => {
@@ -463,6 +617,11 @@
                     update_document_on_dispaches: false,
                     auto_send_dispatchs_to_sunat: true,
                     is_pharmacy: false,
+                    active_warehouse_prices: false,
+                    search_item_by_series: false,
+                    change_free_affectation_igv: false,
+                    select_available_price_list: false,
+                    group_items_generate_document: false
                 };
             },
             submit() {

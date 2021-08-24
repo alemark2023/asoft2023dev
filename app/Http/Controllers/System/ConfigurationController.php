@@ -141,6 +141,7 @@ class ConfigurationController extends Controller
             'upload_max_filesize' =>ini_get('upload_max_filesize'),
             'request_terminate_timeout' =>ini_get('request_terminate_timeout'),
             'date_timezone' =>ini_get('date.timezone'),
+            'version_laravel' => app()->version(),
         ];
 
         return view('system.configuration.info', compact(

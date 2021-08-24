@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Tenant;
 
+use App\Exports\DigemidItemExport;
 use App\Exports\ItemExport;
 use App\Exports\ItemExportWp;
 use App\Http\Controllers\Controller;
@@ -11,10 +12,19 @@ use App\Imports\CatalogImport;
 use App\Imports\ItemsImport;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\CatColorsItem;
+use App\Models\Tenant\Catalogs\CatItemMoldCavity;
+use App\Models\Tenant\Catalogs\CatItemMoldProperty;
+use App\Models\Tenant\Catalogs\CatItemPackageMeasurement;
+use App\Models\Tenant\Catalogs\CatItemProductFamily;
+use App\Models\Tenant\Catalogs\CatItemStatus;
+use App\Models\Tenant\Catalogs\CatItemUnitBusiness;
+use App\Models\Tenant\Catalogs\CatItemUnitsPerPackage;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\Tag;
 use App\Models\Tenant\Catalogs\UnitType;
+use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Item;
@@ -26,10 +36,12 @@ use App\Models\Tenant\Warehouse;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Excel;
 use Modules\Account\Models\Account;
+use Modules\Digemid\Models\CatDigemid;
 use Modules\Finance\Helpers\UploadFileHelper;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Item\Models\Brand;
@@ -107,6 +119,7 @@ class ItemController extends Controller
                 break;
 
             default:
+                if($request->has('column'))
                 $records->where($request->column, 'like', "%{$request->value}%");
                 break;
         }
@@ -118,7 +131,8 @@ class ItemController extends Controller
             $isPharmacy = ($request->isPharmacy==='true')?true:false;
         }
         if($isPharmacy == true){
-            $records->Pharmacy();
+            $records->Pharmacy()
+                ->with(['cat_digemid']);
         }
         return $records->orderBy('description');
 
@@ -141,13 +155,53 @@ class ItemController extends Controller
         $tags = Tag::all();
         $categories = Category::all();
         $brands = Brand::all();
+        $configuration= Configuration::first();
+        /** Informacion adicional */
+        $colors = collect([]);
+        $CatItemStatus=$colors;
+        $CatItemUnitBusiness = $colors;
+        $CatItemMoldCavity = $colors;
+        $CatItemPackageMeasurement =$colors;
+        $CatItemUnitsPerPackage = $colors;
+        $CatItemMoldProperty = $colors;
+        $CatItemProductFamily= $colors;
+        if($configuration->isShowExtraInfoToItem()){
+            $colors = CatColorsItem::all();
+            $CatItemStatus= CatItemStatus::all();
+            $CatItemUnitBusiness = CatItemUnitBusiness::all();
+            $CatItemMoldCavity = CatItemMoldCavity::all();
+            $CatItemPackageMeasurement = CatItemPackageMeasurement::all();
+            $CatItemUnitsPerPackage = CatItemUnitsPerPackage::all();
+            $CatItemMoldProperty = CatItemMoldProperty::all();
+            $CatItemProductFamily= CatItemProductFamily::all();
+        }
+        /** Informacion adicional */
         $configuration = Configuration::select(
             'affectation_igv_type_id',
-            'is_pharmacy'
+            'is_pharmacy',
+            'show_extra_info_to_item'
         )->firstOrFail();
-
-        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types',
-                        'affectation_igv_types','warehouses', 'accounts', 'tags', 'categories', 'brands', 'configuration');
+        return compact(
+            'unit_types',
+            'currency_types',
+            'attribute_types',
+            'system_isc_types',
+            'affectation_igv_types',
+            'warehouses',
+            'accounts',
+            'tags',
+            'categories',
+            'brands',
+            'configuration',
+            'colors',
+            'CatItemMoldCavity',
+            'CatItemMoldProperty',
+            'CatItemUnitBusiness',
+            'CatItemStatus',
+            'CatItemPackageMeasurement',
+            'CatItemProductFamily',
+            'CatItemUnitsPerPackage'
+        );
     }
 
     public function record($id)
@@ -158,6 +212,7 @@ class ItemController extends Controller
     }
 
     public function store(ItemRequest $request) {
+
         $id = $request->input('id');
         if (!$request->barcode) {
             if ($request->internal_id) {
@@ -242,6 +297,37 @@ class ItemController extends Controller
             $item_unit_type->save();
 
         }
+        $configuration = Configuration::first();
+        if($configuration->isShowExtraInfoToItem()){
+            // Extra data
+            if($request->has('colors')){
+                $item->setItemColor($request->colors);
+            }
+            if($request->has('CatItemUnitsPerPackage')){
+                $item->setItemUnitsPerPackage($request->CatItemUnitsPerPackage);
+            }
+            if($request->has('CatItemMoldCavity')){
+                $item->setItemMoldCavity($request->CatItemMoldCavity);
+            }
+            if($request->has('CatItemMoldProperty')){
+                $item->setItemMoldProperty($request->CatItemMoldProperty);
+            }
+            if($request->has('CatItemUnitBusiness')){
+                $item->setItemUnitBusiness($request->CatItemUnitBusiness);
+            }
+            if($request->has('CatItemStatus')){
+                $item->setItemStatus($request->CatItemStatus);
+            }
+            if($request->has('CatItemPackageMeasurement')){
+                $item->setItemPackageMeasurement($request->CatItemPackageMeasurement);
+            }
+            if($request->has('CatItemProductFamily')){
+                $item->setItemProductFamily($request->CatItemProductFamily);
+            }
+            // Extra data
+        }
+
+
 
         if ($request->tags_id) {
             ItemTag::destroy(   ItemTag::where('item_id', $item->id)->pluck('id'));
@@ -408,25 +494,28 @@ class ItemController extends Controller
         /********************************* SECCION PARA PRECIO POR ALMACENES ******************************************/
 
         // Precios por almacenes
-        $warehouses = $request->warehouses;
-        if ($warehouses) {
-            /** @var ItemWarehousePrice $price */
+        // $warehouses = $request->warehouses;
 
-            foreach ($warehouses as $warehouse) {
-                $price = ItemWarehousePrice::where([
-                    'item_id' => $item->id,
-                    'warehouse_id' => $warehouse['id'],
-                ])->first();
-                if(empty($price)){
-                    $price = new ItemWarehousePrice([
-                        'item_id' => $item->id,
-                        'warehouse_id' => $warehouse['id'],
-                    ]) ;
-                }
-                $price
-                    ->setPrice($warehouse['price'])
-                    ->push();
-            }
+        $this->createItemWarehousePrices($request, $item);
+
+        // if ($warehouses) {
+            // /** @var ItemWarehousePrice $price */
+
+            // foreach ($warehouses as $warehouse) {
+            //     $price = ItemWarehousePrice::where([
+            //         'item_id' => $item->id,
+            //         'warehouse_id' => $warehouse['id'],
+            //     ])->first();
+            //     if(empty($price)){
+            //         $price = new ItemWarehousePrice([
+            //             'item_id' => $item->id,
+            //             'warehouse_id' => $warehouse['id'],
+            //         ]) ;
+            //     }
+            //     $price
+            //         ->setPrice($warehouse['price'])
+            //         ->push();
+            // }
 
             /*
             ItemWarehousePrice::where('item_id', $item->id)
@@ -447,7 +536,7 @@ class ItemController extends Controller
                 }
             }
             */
-        }
+        // }
 
         return [
             'success' => true,
@@ -455,6 +544,33 @@ class ItemController extends Controller
             'id' => $item->id
         ];
     }
+
+
+    /**
+     * @param ItemRequest|null $request
+     * @param null $item
+     * @throws Exception
+     */
+    private function createItemWarehousePrices(ItemRequest $request = null, Item $item = null)
+    {
+        if ($request !== null && $request->has('item_warehouse_prices') && $item !== null) {
+            foreach ($request->item_warehouse_prices as $item_warehouse_price) {
+                if ($item_warehouse_price['price'] && $item_warehouse_price['price'] != '') {
+                    ItemWarehousePrice::updateOrCreate([
+                        'item_id' => $item->id,
+                        'warehouse_id' => $item_warehouse_price['warehouse_id'],
+                    ], [
+                        'price' => $item_warehouse_price['price'],
+                    ]);
+                } else {
+                    if ($item_warehouse_price['id']) {
+                        ItemWarehousePrice::findOrFail($item_warehouse_price['id'])->delete();
+                    }
+                }
+            }
+        }
+    }
+
 
     public function destroy($id)
     {
@@ -525,17 +641,14 @@ class ItemController extends Controller
         ]);
         if ($request->hasFile('file')) {
             try {
+                $old_digemid = CatDigemid::setInactiveMassive();
                 $import = new CatalogImport();
                 $import->import($request->file('file'), null, Excel::XLSX);
-                $items = $import->getItems();
-                $new = $import->getNews();
                 $updated  = $import->getUpdated();
                 return [
                     'success' => true,
                     'message' =>  __('app.actions.upload.success'),
-                    'data' => count($items),
-                    'new' => count($new),
-                    'updated' => count($updated),
+                    'data' => count($updated),
                 ];
             } catch (Exception $e) {
                 return [
@@ -628,10 +741,17 @@ class ItemController extends Controller
 
     public function duplicate(Request $request)
     {
-       // return $request->id;
-       $obj = Item::find($request->id);
-       $new = $obj->setDescription($obj->getDescription().' (Duplicado)')->replicate();
-       $new->save();
+        // return $request->id;
+        $obj = Item::find($request->id);
+
+        if($obj->lots_enabled){
+            $obj->date_of_due = null;
+            $obj->lot_code = null;
+            $obj->stock = 0;
+        }
+
+        $new = $obj->setDescription($obj->getDescription().' (Duplicado)')->replicate();
+        $new->save();
 
         return [
             'success' => true,
@@ -774,7 +894,8 @@ class ItemController extends Controller
 
         $records = Item::whereBetween('created_at', [$start_date, $end_date]);
         $extradata = [];
-        if ($request->has('isPharmacy') && $request->isPharmacy == true) {
+        $isPharmacy = $request->isPharmacy == 'true' ? true : false;
+        if ($request->has('isPharmacy') && $isPharmacy == true) {
             $extradata[] = 'sanitary';
             $extradata[] = 'cod_digemid';
             $records->Pharmacy();
@@ -830,6 +951,27 @@ class ItemController extends Controller
 
         $pdf->output('etiquetas_'.now()->format('Y_m_d').'.pdf', 'I');
 
+    }
+
+    /**
+     * Exporta items al formato de DIGEMID
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function exportDigemid(Request $request)
+    {
+        ini_set('max_execution_time', 0);
+        $company = Company::first();
+        $company_cod_digemid = $company->cod_digemid;
+        $records = CatDigemid::where('active',1);
+        $max_prices = $records->max('max_prices');
+            $records = $records->get();
+        $export = new DigemidItemExport();
+        $export->setRecords($records)->setCompanyCodDigemid($company_cod_digemid)->setMaxPrice($max_prices);
+
+        return $export->download('Reporte_Items_Digemid_'.Carbon::now().'.xlsx');
     }
 
     public function printBarCode(Request $request)
@@ -893,5 +1035,18 @@ class ItemController extends Controller
         return response()->json([
             'warehouses' => $warehouses->get(),
         ], 200);
+    }
+
+    /**
+     * Obtiene una lista de items del sistema
+     *
+     * @param \Illuminate\Http\Request $r
+     *
+     * @return \App\Http\Resources\Tenant\ItemCollection
+     */
+    public function getAllItems(Request $r){
+        $records = $this->getRecords($r);
+        return new ItemCollection($records->paginate(5000));
+
     }
 }

@@ -147,7 +147,7 @@
                             ></small>
                         </div>
                     </div>
-                    <div v-show="form.id" class="col-md-12">
+                    <div v-show="form.id" class="col-md-9">
                         <div :class="{ 'has-danger': errors.api_token }" class="form-group">
                             <label class="control-label">Api Token</label>
                             <el-input
@@ -160,6 +160,14 @@
                                 v-text="errors.api_token[0]"
                             ></small>
                         </div>
+                    </div>
+                    <div v-show="form.id" class="col-md-3 text-center">
+                        <label class="control-label full">&nbsp;</label>
+                        <el-button
+                            @click.prevent="updateToken()">
+                            Generar Token
+                        </el-button>
+
                     </div>
                 </div>
                     </el-tab-pane>
@@ -272,6 +280,30 @@ export default {
                         this.series = response.data.data;
                     });
             }
+        },
+        updateToken(){
+            this.loading_submit = true;
+            this.$http
+                .post(`/${this.resource}/token/${this.form.id}`, {})
+                .then((response) => {
+                    if (response.data.success) {
+                        this.form.api_token = response.data.api_token;
+                    } else {
+                        this.$message.error(response.data.message);
+                    }
+                })
+                .catch((error) => {
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data;
+                    } else {
+                        this.$message.error(error.response.data.message);
+                    }
+                    this.loading_submit = false;
+
+                })
+                .then(() => {
+                    this.loading_submit = false;
+                });
         },
         FixChildren(currentObj, treeStatus) {
             if (currentObj !== undefined) {

@@ -9,7 +9,8 @@ use App\Models\Tenant\Catalogs\TransportModeType;
 use App\Models\Tenant\Catalogs\UnitType;
 use Illuminate\Support\Facades\DB;
 use Modules\Order\Models\OrderForm;
-
+use Modules\Inventory\Models\InventoryKardex;
+use Modules\Order\Models\OrderNote;
 
 /**
  * Class Dispatch
@@ -70,6 +71,7 @@ class Dispatch extends ModelTenant
         'secondary_license_plates',
         'reference_sale_note_id',
         'soap_shipping_response',
+        'data_affected_document',
     ];
 
     protected $casts = [
@@ -238,6 +240,14 @@ class Dispatch extends ModelTenant
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function generate_document()
+    {
+        return $this->hasOne(Document::class);
+    }
+
+    /**
      * @return string
      */
     public function getNumberFullAttribute()
@@ -285,6 +295,14 @@ class Dispatch extends ModelTenant
         return $this->belongsTo(OrderForm::class, 'reference_order_form_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function inventory_kardex()
+    {
+        return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
+    }
+
     public function getSecondaryLicensePlatesAttribute($value)
     {
         return (is_null($value))?null:(object) json_decode($value);
@@ -315,17 +333,33 @@ class Dispatch extends ModelTenant
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function order_note()
+    {
+        return $this->belongsTo(OrderNote::class, 'reference_order_note_id');
+    }
+
+
+    /**
      * Retorna un standar de nomenclatura para el modelo
      *
      * @return array
      */
     public function  getCollectionData() {
+
         $has_cdr = false;
 
         if (in_array($this->state_type_id, ['05', '07'])) {
             $has_cdr = true;
         }
 
+        $documents = [];
+
+        if($this->generate_document) $documents [] = ['description' => $this->generate_document->number_full];
+        if($this->reference_document) $documents [] = ['description' => $this->reference_document->number_full];
+        
+        // 
         return [
             'id'                     => $this->id,
             'external_id'            => $this->external_id,
@@ -352,7 +386,10 @@ class Dispatch extends ModelTenant
             'created_at'             => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at'             => $this->updated_at->format('Y-m-d H:i:s'),
             'soap_shipping_response' => $this->soap_shipping_response,
+            'btn_generate_document' => $this->generate_document || $this->reference_document_id ? false : true,
+            'documents' => $documents
         ];
+        
     }
 
 
@@ -380,6 +417,16 @@ class Dispatch extends ModelTenant
             return false;
         }
         return $temp->sent;
+    }
+
+    public function getDataAffectedDocumentAttribute($value)
+    {
+        return (is_null($value))?null:(object) json_decode($value);
+    }
+
+    public function setDataAffectedDocumentAttribute($value)
+    {
+        $this->attributes['data_affected_document'] = (is_null($value))?null:json_encode($value);
     }
 
 }

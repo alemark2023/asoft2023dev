@@ -58,6 +58,15 @@ class ClientController extends Controller
         $plans = Plan::all();
         $types = [['type' => 'admin', 'description'=>'Administrador'], ['type' => 'integrator', 'description'=>'Listar Documentos']];
         $modules = Module::with('levels')
+            ->where('sort', '<', 14)
+            ->orderBy('sort')
+            ->get()
+            ->each(function ($module) {
+                return $this->prepareModules($module);
+            });
+
+        $apps = Module::with('levels')
+            ->where('sort', '>', 13)
             ->orderBy('sort')
             ->get()
             ->each(function ($module) {
@@ -70,20 +79,27 @@ class ClientController extends Controller
         $soap_username =  $config->soap_username;
         $soap_password =  $config->soap_password;
 
-        return compact('url_base','plans','types', 'modules', 'certificate_admin', 'soap_username', 'soap_password');
+        return compact('url_base','plans','types', 'modules', 'apps', 'certificate_admin', 'soap_username', 'soap_password');
     }
+
 
     public function records()
     {
 
         $records = Client::latest()->get();
+
         foreach ($records as &$row) {
+
             $tenancy = app(Environment::class);
             $tenancy->tenant($row->hostname->website);
             // $row->count_doc = DB::connection('tenant')->table('documents')->count();
             $row->count_doc = DB::connection('tenant')->table('configurations')->first()->quantity_documents;
             $row->soap_type = DB::connection('tenant')->table('companies')->first()->soap_type_id;
             $row->count_user = DB::connection('tenant')->table('users')->count();
+
+            $quantity_pending_documents = $this->getQuantityPendingDocuments();
+            $row->document_regularize_shipping = $quantity_pending_documents['document_regularize_shipping'];
+            $row->document_not_sent = $quantity_pending_documents['document_not_sent'];
 
             if($row->start_billing_cycle)
             {
@@ -111,13 +127,28 @@ class ClientController extends Controller
         return new ClientCollection($records);
     }
 
+    
+    private function getQuantityPendingDocuments(){
+        
+        return [
+            'document_regularize_shipping' => DB::connection('tenant')->table('documents')->where('state_type_id', '01')->where('regularize_shipping', true)->count(),
+            'document_not_sent' => DB::connection('tenant')->table('documents')->whereIn('state_type_id', ['01','03'])->where('date_of_issue','<=',date('Y-m-d'))->count(),
+        ];
+        
+    }
+
+
     public function record($id)
     {
         $client = Client::findOrFail($id);
         $tenancy = app(Environment::class);
         $tenancy->tenant($client->hostname->website);
 
-        $client->modules = DB::connection('tenant')->table('module_user')->where('user_id', 1)->get()->pluck('module_id')->toArray();
+        $modules = DB::connection('tenant')->table('modules')->where('order_menu', '<', 14)->select('id');
+        $apps = DB::connection('tenant')->table('modules')->where('order_menu', '>', 13)->select('id');
+
+        $client->modules = DB::connection('tenant')->table('module_user')->where('user_id', 1)->whereIn('module_id', $modules)->get()->pluck('module_id')->toArray();
+        $client->apps = DB::connection('tenant')->table('module_user')->where('user_id', 1)->whereIn('module_id', $apps)->get()->pluck('module_id')->toArray();
         $client->levels = DB::connection('tenant')->table('module_level_user')->where('user_id', 1)->get()->pluck('module_level_id')->toArray();
 
         $config =  DB::connection('tenant')->table('configurations')->first();

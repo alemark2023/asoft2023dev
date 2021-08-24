@@ -98,6 +98,24 @@
                                         <th class="text-right">Stock actual</th>
                                         <th class="text-right">Precio de venta</th>
                                         <th class="text-right">Costo</th>
+                                        <th>Ganancia <el-tooltip
+                                            class="item"
+                                            effect="dark"
+                                            content="Precio de venta - Costo"
+                                            placement="top-start"
+                                        >
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                        </th>
+                                        <th>Ganancia Total<el-tooltip
+                                            class="item"
+                                            effect="dark"
+                                            content="Precio de venta - Costo * Cantidad"
+                                            placement="top-start"
+                                        >
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                        </th>
                                         <th>Marca</th>
                                         <th class="text-center">F. vencimiento</th>
                                         <th>Almacén</th>
@@ -112,11 +130,20 @@
                                         <td class="text-right">{{ row.stock }}</td>
                                         <td class="text-right">{{ row.sale_unit_price }}</td>
                                         <td class="text-right">{{ row.purchase_unit_price }}</td>
+                                        <td class="text-right">{{ row.profit }}</td>
+                                        <td class="text-right">{{ Math.abs(row.profit * row.stock).toFixed(2) }}</td>
                                         <td>{{ row.brand_name }}</td>
                                         <td class="text-center">{{ row.date_of_due }}</td>
                                         <td>{{ row.warehouse_name }}</td>
                                     </tr>
                                     </tbody>
+                                    <tfoot>
+                                    <tr>
+                                        <td colspan="7" class="celda"></td>
+                                        <td class="celda">S/ {{total_profit}}</td>
+                                        <td class="celda">S/ {{total_all_profit}}</td>
+                                    </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>
@@ -148,6 +175,8 @@ export default {
             // showDialogLots: false,
             // showDialogLotsOutput: false,
             // titleDialog: null,
+            total_profit: 0,
+            total_all_profit: 0,
             loading: false,
             loadingPdf: false,
             loadingXlsx: false,
@@ -158,7 +187,7 @@ export default {
             categories: [],
             brands: [],
             filters: [],
-            records: []
+            records: [],
         }
     },
     created() {
@@ -184,6 +213,19 @@ export default {
                 'brand_id': null,
             }
         },
+        calculeTotalProfit(){
+            this.total_profit = 0;
+            this.total_all_profit = 0;
+            if(this.records.length > 0) {
+                let el = this;
+                this.records.forEach(function (a, b) {
+                    el.total_profit +=  Math.abs(a.profit);
+                    el.total_all_profit += Math.abs(a.profit * a.stock);
+                })
+            }
+            this.total_profit = this.total_profit.toFixed(2)
+            this.total_all_profit = this.total_all_profit.toFixed(2)
+        },
         initTables() {
             this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -199,10 +241,14 @@ export default {
             }
             this.loading = true;
             this.records = [];
+            this.total_profit = 0;
+            this.total_all_profit = 0;
             await this.$http.post(`/${this.resource}/records`, this.form)
                 .then(response => {
+
                     this.records = response.data;
-                });
+                    this.calculeTotalProfit()
+                })
             this.loading = false;
         },
         changeWarehouse() {

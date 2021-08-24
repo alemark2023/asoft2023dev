@@ -245,6 +245,7 @@ class ConfigurationController extends Controller
     public function record()
     {
         $configuration = Configuration::first();
+        return ['data'=>$configuration->getCollectionData()];
         $record = new ConfigurationResource($configuration);
 
         return  $record;
@@ -389,7 +390,8 @@ class ConfigurationController extends Controller
     {
         $configuration = Configuration::first();
         $visual = $configuration->visual;
-        $visual->bg = $visual->bg === 'dark' ? 'light' : 'dark';
+        $visual->sidebar_theme = $visual->bg === 'dark' ? 'white' : 'dark';
+        $visual->bg = $visual->bg === 'dark' ? 'white' : 'dark';
         $configuration->visual = $visual;
         $configuration->save();
 

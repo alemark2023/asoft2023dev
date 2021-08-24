@@ -82,6 +82,22 @@ class ReportGeneralItemController extends Controller
     }
 
 
+    /**
+     * @param $date_start
+     * @param $date_end
+     * @param $document_type_id
+     * @param $data_type
+     * @param $person_id
+     * @param $type_person
+     * @param $item_id
+     * @param $web_platform_id
+     * @param $brand_id
+     * @param $category_id
+     * @param $user_id
+     * @param $user_type
+     *
+     * @return \App\Models\Tenant\SaleNoteItem|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
+     */
     private function dataItems($date_start, $date_end, $document_type_id, $data_type, $person_id, $type_person, $item_id, $web_platform_id, $brand_id, $category_id, $user_id, $user_type)
     {
         /* columna state_type_id */
@@ -184,7 +200,8 @@ class ReportGeneralItemController extends Controller
 
 
     public function pdf(Request $request) {
-
+        ini_set('memory_limit', '4026M');
+        ini_set("pcre.backtrack_limit", "5000000");
         $records = $this->getRecordsItems($request->all())->latest('id')->get();
         $type_name = ($request->type == 'sale') ? 'Ventas_':'Compras_';
         $type = $request->type;
@@ -192,24 +209,24 @@ class ReportGeneralItemController extends Controller
 
         $pdf = PDF::loadView('report::general_items.report_pdf', compact("records", "type", "document_type_id"))->setPaper('a4', 'landscape');
 
-        $filename = 'Reporte_General_Productos_'.$type_name.Carbon::now().'.xlsx';
+        $filename = 'Reporte_General_Productos_'.$type_name.Carbon::now();
 
         return $pdf->download($filename.'.pdf');
     }
 
 
     public function excel(Request $request) {
-
+        ini_set('memory_limit', '4026M');
         ini_set("pcre.backtrack_limit", "5000000");
         $records = $this->getRecordsItems($request->all())->latest('id')->get();
         $type = ($request->type == 'sale') ? 'Ventas_':'Compras_';
         $document_type_id = $request['document_type_id'];
-
-        return (new GeneralItemExport)
-                ->records($records)
-                ->type($request->type)
-                ->document_type_id($document_type_id)
-                ->download('Reporte_General_Productos_'.$type.Carbon::now().'.xlsx');
+        $generalItemExport= new GeneralItemExport();
+        $generalItemExport
+            ->records($records)
+            ->type($request->type)
+            ->document_type_id($document_type_id);
+        return $generalItemExport->download('Reporte_General_Productos_'.$type.Carbon::now().'.xlsx');
 
     }
 }

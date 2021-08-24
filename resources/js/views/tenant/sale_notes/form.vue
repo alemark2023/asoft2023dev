@@ -153,6 +153,14 @@
                                     <small class="form-control-feedback" v-if="errors.observation" v-text="errors.observation[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-4">
+                                    <div class="form-group">
+                                        <label>Vendedor</label>
+                                        <el-select v-model="form.seller_id" clearable>
+                                            <el-option v-for="sel in sellers" :key="sel.id" :value="sel.id" :label="sel.name">{{ sel.name }}</el-option>
+                                        </el-select>
+                                </div>
+                            </div>
                             <!-- Pagos -->
                             <div class="col-12 pt-3">
                                 <table>
@@ -259,8 +267,11 @@
                                                 <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
                                                 <td class="text-right">
 
-                                                    <template v-if="row.id">
+                                                    <!-- <template v-if="row.id">
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteSNItem(row.id, index)">x</button>
+                                                    </template> -->
+                                                    <template v-if="row.record_id">
+                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteSNItem(row.record_id, index)">x</button>
                                                     </template>
                                                     <template v-else>
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
@@ -319,7 +330,7 @@
         <sale-notes-options :showDialog.sync="showDialogOptions"
                           :recordId="saleNotesNewId"
                           :showClose="false"
-                          :configuration="configuration"></sale-notes-options>
+                          :configuration="config"></sale-notes-options>
 
     </div>
 </template>
@@ -331,12 +342,20 @@
     import {functions, exchangeRate} from '../../../mixins/functions'
     import {calculateRowItem} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
+    import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
     export default {
-        props: ['id', 'typeUser'],
+        props: [
+            'id',
+            'typeUser',
+            'configuration',
+        ],
         components: {SaleNotesFormItem, PersonForm, SaleNotesOptions, Logo},
         mixins: [functions, exchangeRate],
         computed:{
+            ...mapState([
+                'config',
+            ]),
             sms_periodo : function(){
                 let text = '';
                 let type = this.form.type_period;
@@ -364,6 +383,7 @@
                         return date.getTime() < (now.getTime());
                     },
                 },
+                sellers: [],
                 resource: 'sale-notes',
                 showDialogAddItem: false,
                 showDialogNewPerson: false,
@@ -392,11 +412,12 @@
                 is_contingency: false,
                 enabled_payments: true,
                 payment_destinations:  [],
-                configuration: {},
 
             }
         },
         async created() {
+            this.loadConfiguration()
+            this.$store.commit('setConfiguration', this.configuration)
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -407,12 +428,15 @@
                     this.charges_types = response.data.charges_types
                     this.payment_method_types = response.data.payment_method_types
                     this.company = response.data.company
-                    this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
+                    if(this.config.currency_type_id === undefined) {
+                        this.form.currency_type_id = (this.currency_types.length > 0) ? this.currency_types[0].id : null
+                    }
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                     this.type_periods = [{id:'month',description:'Mensual'}, {id:'year',description:'Anual'}]
                     this.all_series = response.data.series
                     this.payment_destinations = response.data.payment_destinations
-                    this.configuration = response.data.configuration
+                    // this.configuration = response.data.configuration
+                    this.sellers = response.data.sellers;
                     this.changeEstablishment()
                     this.changeDateOfIssue()
                     this.changeCurrencyType()
@@ -424,8 +448,12 @@
                 this.reloadDataCustomers(customer_id)
             })
             this.isUpdate()
+            this.changeCurrencyType()
         },
         methods: {
+            ...mapActions([
+                'loadConfiguration',
+            ]),
             changePaymentMethodType(index){
 
                 let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payments[index].payment_method_type_id})
@@ -449,7 +477,7 @@
             },
             selectDestinationSale() {
 
-                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                if(this.config.destination_sale && this.payment_destinations.length > 0) {
                     let cash = _.find(this.payment_destinations, {id : 'cash'})
                     this.form.payments[0].payment_destination_id = (cash) ? cash.id : this.payment_destinations[0].id
                 }
@@ -457,7 +485,7 @@
             },
             getPaymentDestinationId() {
 
-                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                if(this.config.destination_sale && this.payment_destinations.length > 0) {
 
                     let cash = _.find(this.payment_destinations, {id : 'cash'})
 
@@ -538,6 +566,7 @@
                             this.form = response.data.data;
     //                        this.filterProvinces();
     //                        this.filterDistricts();
+                            this.changeCurrencyType()
                         })
                 }
 
@@ -587,7 +616,7 @@
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     time_of_issue: moment().format('HH:mm:ss'),
                     customer_id: null,
-                    currency_type_id: null,
+                    currency_type_id:  this.config.currency_type_id,
                     purchase_order: null,
                     exchange_rate_sale: 0,
                     total_prepayment: 0,
@@ -635,7 +664,10 @@
             resetForm() {
                 this.activePanel = 0
                 this.initForm()
-                this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
+                //this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
+                if(this.config.currency_type_id === undefined) {
+                    this.form.currency_type_id = (this.currency_types.length > 0) ? this.currency_types[0].id : null
+                }
                 this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                 this.changeEstablishment()
                 this.changeDateOfIssue()
@@ -699,19 +731,36 @@
                     if (row.affectation_igv_type_id === '10') {
                         total_taxed += parseFloat(row.total_value)
                     }
-                    if (row.affectation_igv_type_id === '20') {
+                    if (row.affectation_igv_type_id === '20'  // 20,Exonerado - Operación Onerosa
+                        || row.affectation_igv_type_id === '21' // 21,Exonerado – Transferencia Gratuita
+                    ) {
                         total_exonerated += parseFloat(row.total_value)
                     }
-                    if (row.affectation_igv_type_id === '30') {
+                    if (
+                        row.affectation_igv_type_id === '30'  // 30,Inafecto - Operación Onerosa
+                        || row.affectation_igv_type_id === '31'  // 31,Inafecto – Retiro por Bonificación
+                        || row.affectation_igv_type_id === '32'  // 32,Inafecto – Retiro
+                        || row.affectation_igv_type_id === '33'  // 33,Inafecto – Retiro por Muestras Médicas
+                        || row.affectation_igv_type_id === '34'  // 34,Inafecto - Retiro por Convenio Colectivo
+                        || row.affectation_igv_type_id === '35'  // 35,Inafecto – Retiro por premio
+                        || row.affectation_igv_type_id === '36' // 36,Inafecto - Retiro por publicidad
+                        || row.affectation_igv_type_id === '37'  // 37,Inafecto - Transferencia gratuita
+                    ) {
                         total_unaffected += parseFloat(row.total_value)
                     }
                     if (row.affectation_igv_type_id === '40') {
                         total_exportation += parseFloat(row.total_value)
                     }
-                    if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
+                    if (['10',
+                        '20', '21',
+                        '30', '31', '32', '33', '34', '35', '36',
+                        '40'].indexOf(row.affectation_igv_type_id) < 0) {
                         total_free += parseFloat(row.total_value)
                     }
-                    if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
+                    if (['10',
+                        '20', '21',
+                        '30', '31', '32', '33', '34', '35', '36',
+                        '40'].indexOf(row.affectation_igv_type_id) > -1) {
                         total_igv += parseFloat(row.total_igv)
                         total += parseFloat(row.total)
                     }
@@ -799,7 +848,8 @@
                 }
 
                 this.loading_submit = true
-                this.$http.post(`/${this.resource}`, this.form).then(response => {
+                this.$http.post(`/${this.resource}`, this.form)
+                    .then(response => {
                     if (response.data.success) {
 
                         this.form_payment.sale_note_id = response.data.data.id;
@@ -824,7 +874,8 @@
                         this.$message.error(error.response.data.message);
                     }
                 }).then(() => {
-                    this.loading_submit = false;
+                        this.form.currency_type_id =  this.config.currency_type_id;
+                        this.loading_submit = false;
                 });
             },
             validate_payments(){

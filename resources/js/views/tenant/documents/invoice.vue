@@ -7,13 +7,13 @@
                         <div class="col-xl-2 col-md-2 col-12">
                             <logo url="/" :path_logo="(company.logo != null) ? `/storage/uploads/logos/${company.logo}` : ''" :position_class="'text-left'"></logo>
                         </div>
-                        <div class="col-xl-6 col-md-6 col-12 pl-2">
-                            <address class="mb-0 mt-2" >
+                        <div class="col-xl-6 col-md-6 col-12 pl-2 align-self-center">
+                            <address class="mb-0" style="line-height: initial;">
                                 <span class="font-weight-bold">{{company.name}}</span>
                                 <br>
-                                <div v-if="establishment.address != '-'">{{ establishment.address }} </div>
+                                <span v-if="establishment.address != '-'">{{ establishment.address }} </span>
                                 <br>
-                                {{establishment.email}} - <span v-if="establishment.telephone != '-'">{{establishment.telephone}}</span>
+                                <span v-if="establishment.email != '-'">{{establishment.email}} </span><span v-if="establishment.telephone != '-'">- {{establishment.telephone}}</span>
                             </address>
                         </div>
                         <div class="col-xl-4 col-md-4 col-12 align-self-end">
@@ -96,7 +96,8 @@
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
                                     </label>
-                                    <el-input :disabled="isUpdate" v-model="form.exchange_rate_sale"></el-input>
+                                    <el-input v-model="form.exchange_rate_sale"></el-input>
+                                    <!-- <el-input :disabled="isUpdate" v-model="form.exchange_rate_sale"></el-input> -->
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
@@ -162,6 +163,12 @@
                                         <td class="text-right">{{currency_type.symbol}} {{row.total_value}}</td>
                                         <td class="text-right">{{currency_type.symbol}} {{row.total}}</td>
                                         <td class="text-right">
+                                            <template v-if="configuration.change_free_affectation_igv">
+                                                <el-tooltip class="item" effect="dark" content="Modificar afectación Gravado – Bonificaciones" placement="top-start">
+                                                    <el-checkbox v-model="row.item.change_free_affectation_igv" @change="changeRowFreeAffectationIgv(row, index)"></el-checkbox>
+                                                </el-tooltip>
+                                            </template>
+
                                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)"><i class="fas fa-trash"></i></button>
                                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click="ediItem(row, index)" ><span style='font-size:10px;'>&#9998;</span> </button>
 
@@ -228,6 +235,13 @@
                                                 <tr v-if="form.total_plastic_bag_taxes > 0">
                                                     <td>ICBPER:</td>
                                                     <td>{{ currency_type.symbol }} {{ form.total_plastic_bag_taxes }}</td>
+                                                </tr>
+
+                                                <tr v-if="form.total > 0">
+                                                    <td>OTROS CARGOS:</td>
+                                                    <td>{{ currency_type.symbol }}
+                                                        <el-input-number class="input-custom" v-model="total_global_charge" controls-position="right" @change="calculateTotal" :min="0" :disabled="configuration.active_allowance_charge == 1 ? true:false"></el-input-number>
+                                                    </td>
                                                 </tr>
 
                                                 <tr v-if="form.total > 0">
@@ -481,6 +495,16 @@
                                             </div>
                                         </div>
                                     </template>
+
+                                    <div class="col-12 py-2 px-0" v-if="configuration.active_allowance_charge && form.total > 0">
+                                        <div class="row no-gutters">
+                                            <div class="col-8"><strong>Porcentaje otros cargos</strong></div>
+                                            <div class="col-4">
+                                                <el-input-number  v-model="configuration.percentage_allowance_charge" controls-position="right" @change="calculateTotal" :min="0" size="mini"></el-input-number>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </template>
                             </div>
                             <el-collapse v-model="activePanel" accordion>
@@ -618,8 +642,8 @@
             :currency-type-id-active="form.currency_type_id"
             :exchange-rate-sale="form.exchange_rate_sale"
             :typeUser="typeUser"
-            :configuration="configuration"
-            :editNameProduct="configuration.edit_name_product"
+            :configuration="config"
+            :editNameProduct="config.edit_name_product"
             @add="addRow"></document-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -629,11 +653,11 @@
             :document_type_id = form.document_type_id></person-form>
 
         <document-options :showDialog.sync="showDialogOptions"
-            :recordId="documentNewId"
-            :isContingency="is_contingency"
-            :isUpdate="isUpdate"
-            :showClose="false"
-            :configuration="configuration"></document-options>
+                          :configuration="config"
+                          :isContingency="is_contingency"
+                          :isUpdate="isUpdate"
+                          :recordId="documentNewId"
+                          :showClose="false"></document-options>
 
 
         <document-hotel-form
@@ -692,6 +716,7 @@ import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/ass
 import DocumentTransportForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/transports/form.vue'
 import DocumentDetraction from './partials/detraction.vue'
 import moment from 'moment'
+import  {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
         props: ['idUser', 'typeUser', 'configuration', 'documentId', 'isUpdate'],
@@ -746,6 +771,7 @@ export default {
                 prepayment_deduction:false,
                 activePanel: 0,
                 total_global_discount:0,
+                total_global_charge : 0,
                 loading_search:false,
                 is_amount:true,
                 enabled_discount_global:false,
@@ -763,19 +789,24 @@ export default {
                 readonly_date_of_due: false,
                 seller_class: 'col-lg-6 pb-2',
                 btnText: 'Generar',
-                payment_conditions: []
+                payment_conditions: [],
+                affectation_igv_types: [],
             }
         },
-    computed: {
-      credit_payment_metod:function(){
-          return _.filter(this.payment_method_types, {'is_credit': true})
-      },
-      cash_payment_metod:function(){
-          return  _.filter(this.payment_method_types, {'is_credit': false})
-      },
-    },
-
+        computed: {
+            ...mapState([
+                'config',
+            ]),
+            credit_payment_metod:function(){
+                return _.filter(this.payment_method_types, {'is_credit': true})
+            },
+            cash_payment_metod:function(){
+                return  _.filter(this.payment_method_types, {'is_credit': false})
+            },
+        },
         async created() {
+            this.loadConfiguration()
+            this.$store.commit('setConfiguration', this.configuration)
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -796,11 +827,12 @@ export default {
                     this.user = response.data.user;
                     this.document_type_03_filter = response.data.document_type_03_filter;
                     this.select_first_document_type_03 = response.data.select_first_document_type_03
-                    this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null;
+                    // this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null;
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
                     this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
                     this.form.seller_id = (this.sellers.length > 0)?this.idUser:null;
+                    this.affectation_igv_types = response.data.affectation_igv_types
                     // this.prepayment_documents = response.data.prepayment_documents;
                     this.is_client = response.data.is_client;
                     // this.cat_payment_method_types = response.data.cat_payment_method_types;
@@ -846,55 +878,7 @@ export default {
                 localStorage.removeItem('items');
                 await this.$http.get('/documents/search-items', { params }).then(response => {
                     const itemsResponse = response.data.items.map(i => {
-                        i.affectation_igv_type = {
-                            active: 1,
-                            description: "Gravado - Operación Onerosa",
-                            exportation: 0,
-                            free: 0,
-                            id: "10",
-                        }
-                        i.presentation = {};
-                        i.unit_price = i.sale_unit_price;
-                        i.item = {
-                            amount_plastic_bag_taxes: i.amount_plastic_bag_taxes,
-                            attributes: i.attributes,
-                            brand: i.brand,
-                            calculate_quantity: i.calculate_quantity,
-                            category: i.category,
-                            currency_type_id: i.currency_type_id,
-                            currency_type_symbol: i.currency_type_symbol,
-                            description: i.description,
-                            full_description: i.full_description,
-                            has_igv: i.has_igv,
-                            has_plastic_bag_taxes: i.has_plastic_bag_taxes,
-                            id: i.id,
-                            internal_id: i.internal_id,
-                            item_unit_types: i.item_unit_types,
-                            lots: i.lots,
-                            lots_enabled: i.lots_enabled,
-                            lots_group: i.lots_group,
-                            model: i.model,
-                            presentation: {},
-                            purchase_affectation_igv_type_id: i.purchase_affectation_igv_type_id,
-                            purchase_unit_price: i.purchase_unit_price,
-                            sale_affectation_igv_type_id: i.sale_affectation_igv_type_id,
-                            sale_unit_price: i.sale_unit_price,
-                            series_enabled: i.series_enabled,
-                            stock: i.stock,
-                            unit_price: i.sale_unit_price,
-                            unit_type_id: i.unit_type_id,
-                            warehouses: i.warehouses,
-                        };
-                        i.IdLoteSelected = null;
-                        i.affectation_igv_type_id = "10";
-                        i.discounts = [];
-                        i.charges = [];
-                        i.item_id = i.id;
-                        i.unit_price_value = i.sale_unit_price;
-                        i.input_unit_price_value = i.sale_unit_price;
-                        i.quantity = itemsParsed.find(ip => ip.item_id == i.id).quantity;
-                        i.warehouse_id = null;
-                        return i;
+                        return  this.setItemFromResponse(i,itemsParsed);
                     });
                     this.form.items = itemsResponse.map(i => {
                         return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale)
@@ -912,61 +896,17 @@ export default {
                 localStorage.removeItem('itemsForNotes');
                 await this.$http.get('/documents/search-items', { params }).then(response => {
                     const itemsResponse = response.data.items.map(i => {
-                        i.affectation_igv_type = {
-                            active: 1,
-                            description: "Gravado - Operación Onerosa",
-                            exportation: 0,
-                            free: 0,
-                            id: "10",
-                        }
-                        i.presentation = {};
-                        i.unit_price = i.sale_unit_price;
-                        i.item = {
-                            amount_plastic_bag_taxes: i.amount_plastic_bag_taxes,
-                            attributes: i.attributes,
-                            brand: i.brand,
-                            calculate_quantity: i.calculate_quantity,
-                            category: i.category,
-                            currency_type_id: i.currency_type_id,
-                            currency_type_symbol: i.currency_type_symbol,
-                            description: i.description,
-                            full_description: i.full_description,
-                            has_igv: i.has_igv,
-                            has_plastic_bag_taxes: i.has_plastic_bag_taxes,
-                            id: i.id,
-                            internal_id: i.internal_id,
-                            item_unit_types: i.item_unit_types,
-                            lots: i.lots,
-                            lots_enabled: i.lots_enabled,
-                            lots_group: i.lots_group,
-                            model: i.model,
-                            presentation: {},
-                            purchase_affectation_igv_type_id: i.purchase_affectation_igv_type_id,
-                            purchase_unit_price: i.purchase_unit_price,
-                            sale_affectation_igv_type_id: i.sale_affectation_igv_type_id,
-                            sale_unit_price: i.sale_unit_price,
-                            series_enabled: i.series_enabled,
-                            stock: i.stock,
-                            unit_price: i.sale_unit_price,
-                            unit_type_id: i.unit_type_id,
-                            warehouses: i.warehouses,
-                        };
-                        i.IdLoteSelected = null;
-                        i.affectation_igv_type_id = "10";
-                        i.discounts = [];
-                        i.charges = [];
-                        i.item_id = i.id;
-                        i.unit_price_value = i.sale_unit_price;
-                        i.input_unit_price_value = i.sale_unit_price;
-                        i.quantity = itemsParsed.find(ip => ip.id == i.id).quantity;
-                        i.warehouse_id = null;
-                        return i;
+                        return  this.setItemFromResponse(i,itemsParsed);
                     });
                     this.form.items = itemsResponse.map(i => {
                         return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale)
                     });
                 });
             }
+
+            //parse items from multiple sale notes not group
+            this.processItemsForNotesNotGroup()
+
             const clientfromDispatchesOrNotes = localStorage.getItem('client');
             if (clientfromDispatchesOrNotes) {
                 const client = JSON.parse(clientfromDispatchesOrNotes);
@@ -993,8 +933,116 @@ export default {
                 this.form.sale_notes_relateds = JSON.parse(notesNumbersFromNotes);
                 localStorage.removeItem('notes')
             }
+
         },
         methods: {
+            ...mapActions([
+                'loadConfiguration',
+                'getCurrentCurrency',
+            ]),
+            async changeRowFreeAffectationIgv(row, index){
+
+                if(row.item.change_free_affectation_igv){
+
+                    this.form.items[index].affectation_igv_type_id = '15'
+                    this.form.items[index].affectation_igv_type = await _.find(this.affectation_igv_types, {id: this.form.items[index].affectation_igv_type_id})
+
+                }else{
+
+                    this.form.items[index].affectation_igv_type_id = this.form.items[index].item.original_affectation_igv_type_id
+                    this.form.items[index].affectation_igv_type = await _.find(this.affectation_igv_types, {id: this.form.items[index].affectation_igv_type_id})
+                }
+
+                this.form.items[index] = await calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale)
+                await this.calculateTotal()
+
+            },
+            async processItemsForNotesNotGroup(){
+
+                let itemsNotGroupForNotes = localStorage.getItem('itemsNotGroupForNotes')
+
+                if (itemsNotGroupForNotes) {
+
+                    let itemsParsed = JSON.parse(itemsNotGroupForNotes)
+                     
+                    // prepare - validate prop presentation and others
+                    this.form.items = await this.onPrepareItems(itemsParsed).map(element => {
+                        element.item.presentation = element.item.presentation ? element.item.presentation : []
+                        return element
+                    });
+
+                    await this.calculateTotal()
+                    localStorage.removeItem('itemsNotGroupForNotes');
+                }
+
+            },
+            setItemFromResponse(item,itemsParsed){
+                /* Obtiene el igv del item, si no existe, coloca el gravado*/
+                if (item.sale_affectation_igv_type !== undefined) {
+                    item.affectation_igv_type = item.sale_affectation_igv_type
+                } else {
+                    item.affectation_igv_type = {
+                        active: 1,
+                        description: "Gravado - Operación Onerosa",
+                        exportation: 0,
+                        free: 0,
+                        id: "10",
+                    }
+                }
+                item.presentation = {};
+                item.unit_price = item.sale_unit_price;
+                item.item = {
+                    amount_plastic_bag_taxes: item.amount_plastic_bag_taxes,
+                    attributes: item.attributes,
+                    brand: item.brand,
+                    calculate_quantity: item.calculate_quantity,
+                    category: item.category,
+                    currency_type_id: item.currency_type_id,
+                    currency_type_symbol: item.currency_type_symbol,
+                    description: item.description,
+                    full_description: item.full_description,
+                    has_igv: item.has_igv,
+                    has_plastic_bag_taxes: item.has_plastic_bag_taxes,
+                    id: item.id,
+                    internal_id: item.internal_id,
+                    item_unit_types: item.item_unit_types,
+                    lots: item.lots,
+                    lots_enabled: item.lots_enabled,
+                    lots_group: item.lots_group,
+                    model: item.model,
+                    presentation: {},
+                    purchase_affectation_igv_type_id: item.purchase_affectation_igv_type_id,
+                    purchase_unit_price: item.purchase_unit_price,
+                    sale_affectation_igv_type_id: item.sale_affectation_igv_type_id,
+                    sale_unit_price: item.sale_unit_price,
+                    series_enabled: item.series_enabled,
+                    stock: item.stock,
+                    unit_price: item.sale_unit_price,
+                    unit_type_id: item.unit_type_id,
+                    warehouses: item.warehouses,
+                };
+                item.IdLoteSelected = null;
+                if( item.affectation_igv_type_id  === undefined) {
+                    item.affectation_igv_type_id = item.affectation_igv_type.id;
+                    // item.affectation_igv_type_id = "10";
+                }
+                item.discounts = [];
+                item.charges = [];
+                item.item_id = item.id;
+                item.unit_price_value = item.sale_unit_price;
+                item.input_unit_price_value = item.sale_unit_price;
+
+                item.quantity = 1;
+
+                let tempItem = itemsParsed.find(ip => (ip.item_id == item.id) || (ip.id == item.id));
+                if(tempItem !== undefined){
+                    item.quantity = tempItem.quantity
+                }
+                // item.quantity = itemsParsed.find(ip => ip.item_id == item.id).quantity;
+                item.warehouse_id = null;
+
+                return item
+            },
             // #307 Ajuste para seleccionar automaticamente el tipo de comprobante y serie
             setDefaultDocumentType() {
                 if (this.default_document_type === undefined) this.default_document_type = null;
@@ -1010,6 +1058,9 @@ export default {
                 }
             },
             async onSetFormData(data) {
+
+                this.currency_type = await _.find(this.currency_types, {'id': data.currency_type_id})
+
                 this.form.establishment_id = data.establishment_id;
                 this.form.document_type_id = data.document_type_id;
                 this.form.id = data.id;
@@ -1078,8 +1129,12 @@ export default {
                     operation_type_id: data.invoice.operation_type_id,
                     date_of_due: data.invoice.date_of_due,
                 };
-                this.form.payment_condition_id = '01';
-                this.form.fee = [];
+                // this.form.payment_condition_id = '01';
+
+                let is_credit_installments = await _.find(data.fee, {payment_method_type_id : null})
+                this.form.payment_condition_id = (is_credit_installments) ? '03' : data.payment_condition_id;
+                this.form.fee = data.fee;
+                // this.form.fee = [];
 
                 if (! data.guides) {
                     this.clickAddInitGuides();
@@ -1089,29 +1144,79 @@ export default {
 
                 this.changeDateOfIssue();
                 this.filterCustomers();
-                this.changeDestinationSale();
+                this.updateChangeDestinationSale();
                 this.calculateTotal();
-                this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+                // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+            },
+            updateChangeDestinationSale() {
+
+                if(this.form.payment_condition_id == '01'){
+
+                    if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                        let cash = _.find(this.payment_destinations, {id : 'cash'})
+                        if (cash) {
+                            this.form.payments[0].payment_destination_id = cash.id
+                        } else {
+                            this.form.payment_destination_id = this.payment_destinations[0].id
+                            this.form.payments[0].payment_destination_id = this.payment_destinations[0].id
+                        }
+                    }
+
+                }
             },
             onPrepareAdditionalInformation(data) {
-                if (typeof data === 'object') {
-                    if (data[0]) {
-                        return data;
+
+                let obs = null
+
+                if(Array.isArray(data)){
+
+                    if(data.length > 0){
+                        if(data[0] == ''){
+                            return obs;
+                        }
                     }
-                    return null;
+
+                    obs = data.join('|')
+
                 }
-                return null;
+                // if (typeof data === 'object') {
+                //     if (data[0]) {
+                //         return data;
+                //     }
+                //     return null;
+                // }
+
+                return obs;
             },
             onPrepareItems(items) {
                 return items.map(i => {
+
                     i.unit_price_value = i.unit_value;
-                    i.input_unit_price_value = i.unit_value;
+                    i.input_unit_price_value = (i.item.has_igv) ? i.unit_price : i.unit_value;
+
+                    // i.input_unit_price_value = i.unit_price;
                     i.discounts = i.discounts || [];
                     i.charges = i.charges || [];
+                    i.attributes = i.attributes || [];
                     i.item.id = i.item_id;
                     i.additional_information = this.onPrepareAdditionalInformation(i.additional_information);
+                    i.item = this.onPrepareIndividualItem(i);
                     return i;
                 });
+            },
+            onPrepareIndividualItem(data) {
+
+                let new_item = data.item
+                let currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+
+                new_item.currency_type_id = currency_type.id
+                new_item.currency_type_symbol = currency_type.symbol
+
+                new_item.sale_affectation_igv_type_id = data.affectation_igv_type_id
+                new_item.sale_unit_price = data.unit_price
+                new_item.unit_price = data.unit_price
+
+                return new_item
             },
             onSetSeriesId(documentType, serie) {
                 const find = this.all_series.find(s => s.document_type_id == documentType && s.number == serie);
@@ -1531,6 +1636,10 @@ export default {
                     this.cash_payment_metod[0] !== undefined){
                     id = this.cash_payment_metod[0].id
                 }
+                let total = 0;
+                if(this.form.total !== undefined){
+                    total = this.form.total
+                }
                 this.form.date_of_due = moment().format('YYYY-MM-DD');
                 this.form.payments.push({
                     id: null,
@@ -1539,8 +1648,9 @@ export default {
                     payment_method_type_id: id,
                     reference: null,
                     payment_destination_id: this.getPaymentDestinationId(),
-                    payment: 0,
+                    payment: total,
                 });
+                this.calculatePayments()
 
             },
             getPaymentDestinationId() {
@@ -1560,7 +1670,7 @@ export default {
             clickCancel(index) {
                 this.form.payments.splice(index, 1);
             },
-            ediItem(row, index) {
+            async ediItem(row, index) {
                 row.indexi = index
                 this.recordItem = row
                 this.showDialogAddItem = true
@@ -1599,7 +1709,7 @@ export default {
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     time_of_issue: moment().format('HH:mm:ss'),
                     customer_id: null,
-                    currency_type_id: null,
+                    currency_type_id: this.config.currency_type_id,
                     purchase_order: null,
                     exchange_rate_sale: 0,
                     total_prepayment: 0,
@@ -1657,6 +1767,7 @@ export default {
                 this.clickAddInitGuides()
                 this.is_receivable = false
                 this.total_global_discount = 0
+                this.total_global_charge = 0
                 this.is_amount = true
                 this.prepayment_deduction = false
                 this.imageDetraction = {}
@@ -1680,7 +1791,7 @@ export default {
             resetForm() {
                 this.activePanel = 0
                 this.initForm()
-                this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
+                // this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
                 this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                 this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
@@ -1766,35 +1877,36 @@ export default {
                 this.filterSeries()
                 this.selectDefaultCustomer()
             },
-            async selectDefaultCustomer(){
+            async selectDefaultCustomer() {
 
-                if(this.establishment.customer_id){
+                if (this.establishment.customer_id) {
 
+                    let temp_all_customers = this.all_customers;
+                    let temp_customers = this.customers;
                     await this.$http.get(`/${this.resource}/search/customer/${this.establishment.customer_id}`).then((response) => {
-                        this.all_customers = [...this.all_customers,...response.data.customers]
-                        this.customers = [...this.customers,...response.data.customers]
-                        // this.all_customers = response.data.customers
+                        let data_customer = response.data.customers
+                        temp_all_customers = temp_all_customers.push(...data_customer)
+                        temp_customers = temp_customers.push(...data_customer)
                     })
-                    this.all_customers =  this.all_customers.filter((item, index, self) =>
+                    temp_all_customers = this.all_customers.filter((item, index, self) =>
                         index === self.findIndex((t) => (
-                             t.id === item.id
+                            t.id === item.id
                         ))
                     )
-                    this.customers =  this.customers.filter((item, index, self) =>
+                    temp_customers = this.customers.filter((item, index, self) =>
                         index === self.findIndex((t) => (
-                             t.id === item.id
+                            t.id === item.id
                         ))
                     )
+                    this.all_customers = temp_all_customers;
+                    this.customers = temp_customers;
                     await this.filterCustomers()
                     // this.form.customer_id = (this.customers.length > 0) ? this.establishment.customer_id : null
                     let alt = _.find(this.customers, {'id': this.establishment.customer_id});
                     if (alt !== undefined) {
                         this.form.customer_id = this.establishment.customer_id
                     }
-
-
-                    }
-
+                }
             },
             changeDocumentType() {
                 this.filterSeries();
@@ -1811,11 +1923,11 @@ export default {
                 this.dateValid=false
               } else { this.dateValid = true }
                 this.form.date_of_due = this.form.date_of_issue
-                if (! this.isUpdate) {
+                // if (! this.isUpdate) {
                     this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                         this.form.exchange_rate_sale = response
                     });
-                }
+                // }
             },
             assignmentDateOfPayment(){
                 this.form.payments.forEach((payment)=>{
@@ -1901,6 +2013,9 @@ export default {
                 let total_value = 0
                 let total = 0
                 let total_plastic_bag_taxes = 0
+                let total_discount_no_base = 0
+                // let total_free_igv = 0
+
                 this.form.items.forEach((row) => {
                     total_discount += parseFloat(row.total_discount)
                     total_charge += parseFloat(row.total_charge)
@@ -1908,19 +2023,37 @@ export default {
                     if (row.affectation_igv_type_id === '10') {
                         total_taxed += parseFloat(row.total_value)
                     }
-                    if (row.affectation_igv_type_id === '20') {
+                    if (
+                        row.affectation_igv_type_id === '20'  // 20,Exonerado - Operación Onerosa
+                        || row.affectation_igv_type_id === '21' // 21,Exonerado – Transferencia Gratuita
+                    ) {
                         total_exonerated += parseFloat(row.total_value)
                     }
-                    if (row.affectation_igv_type_id === '30') {
+                    if (
+                        row.affectation_igv_type_id === '30'  // 30,Inafecto - Operación Onerosa
+                        || row.affectation_igv_type_id === '31'  // 31,Inafecto – Retiro por Bonificación
+                        || row.affectation_igv_type_id === '32'  // 32,Inafecto – Retiro
+                        || row.affectation_igv_type_id === '33'  // 33,Inafecto – Retiro por Muestras Médicas
+                        || row.affectation_igv_type_id === '34'  // 34,Inafecto - Retiro por Convenio Colectivo
+                        || row.affectation_igv_type_id === '35'  // 35,Inafecto – Retiro por premio
+                        || row.affectation_igv_type_id === '36' // 36,Inafecto - Retiro por publicidad
+                        || row.affectation_igv_type_id === '37'  // 37,Inafecto - Transferencia gratuita
+                    ) {
                         total_unaffected += parseFloat(row.total_value)
                     }
                     if (row.affectation_igv_type_id === '40') {
                         total_exportation += parseFloat(row.total_value)
                     }
-                    if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
+                    if (['10',
+                        '20', '21',
+                        '30', '31', '32', '33', '34', '35', '36',
+                         '40'].indexOf(row.affectation_igv_type_id) < 0) {
                         total_free += parseFloat(row.total_value)
                     }
-                    if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
+                    if (['10',
+                        '20', '21',
+                        '30', '31', '32', '33', '34', '35', '36',
+                        '40'].indexOf(row.affectation_igv_type_id) > -1) {
                         total_igv += parseFloat(row.total_igv)
                         total += parseFloat(row.total)
                     }
@@ -1929,22 +2062,29 @@ export default {
 
                     if (['13', '14', '15'].includes(row.affectation_igv_type_id)) {
 
-                        let unit_value = (row.total_value/row.quantity) / (1 + row.percentage_igv / 100)
+                        // let unit_value = (row.total_value/row.quantity) / (1 + row.percentage_igv / 100)
+                        let unit_value = row.total_value/row.quantity
                         let total_value_partial = unit_value * row.quantity
                         row.total_taxes = row.total_value - total_value_partial
-                        row.total_igv = row.total_value - total_value_partial
+                        // row.total_igv = row.total_value - total_value_partial
+                        // row.total_taxes = total_value_partial * (row.percentage_igv / 100)
+                        row.total_igv = total_value_partial * (row.percentage_igv / 100)
                         row.total_base_igv = total_value_partial
                         total_value -= row.total_value
-
+                        // total_free_igv += parseFloat(row.total_igv)
+                        // console.log(total_value_partial, unit_value, row)
                     }
 
                 });
 
+
+                this.form.total_discount = _.round(total_discount, 2)
                 this.form.total_exportation = _.round(total_exportation, 2)
                 this.form.total_taxed = _.round(total_taxed, 2)
                 this.form.total_exonerated = _.round(total_exonerated, 2)
                 this.form.total_unaffected = _.round(total_unaffected, 2)
                 this.form.total_free = _.round(total_free, 2)
+                // this.form.total_igv = _.round(total_igv + total_free_igv, 2)
                 this.form.total_igv = _.round(total_igv, 2)
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)
@@ -1965,6 +2105,9 @@ export default {
                 this.setPendingAmount()
 
                 this.calculateFee();
+
+                this.chargeGlobal()
+
             },
             setTotalDefaultPayment(){
 
@@ -1975,6 +2118,73 @@ export default {
             },
             changeTypeDiscount(){
                 this.calculateTotal()
+            },
+            chargeGlobal(){
+
+                let base = parseFloat(this.form.total)
+
+                if(this.configuration.active_allowance_charge){
+                    let percentage_allowance_charge = parseFloat(this.configuration.percentage_allowance_charge)
+                    this.total_global_charge = _.round(base * (percentage_allowance_charge / 100), 2)
+                }
+
+                if(this.total_global_charge == 0){
+                    this.deleteChargeGlobal()
+                    return
+                }
+
+
+                let amount = parseFloat(this.total_global_charge)
+                // let base = this.form.total_taxed + amount
+                let factor = _.round(amount/base,5)
+
+                // console.log(base,factor, amount)
+
+                let charge = _.find(this.form.charges,{ charge_type_id : '50'})
+
+                if(amount > 0 && !charge){
+
+                    this.form.total_charge = _.round(amount, 2)
+                    this.form.total = _.round(this.form.total + this.form.total_charge, 2)
+
+                    this.form.charges.push({
+                        charge_type_id: '50',
+                        description: 'Cargos globales que no afectan la base imponible del IGV/IVAP',
+                        factor: factor,
+                        amount: amount,
+                        base: base
+                    })
+
+                }else{
+
+                    let pos = this.form.charges.indexOf(charge);
+
+                    if(pos > -1){
+
+                        this.form.total_charge = _.round(amount,2)
+                        this.form.total = _.round(this.form.total + this.form.total_charge, 2)
+
+                        this.form.charges[pos].base = base
+                        this.form.charges[pos].amount = amount
+                        this.form.charges[pos].factor = factor
+
+                    }
+                }
+
+
+
+
+            },
+            deleteChargeGlobal(){
+
+                let charge = _.find(this.form.charges,{ charge_type_id : '50'})
+                let index = this.form.charges.indexOf(charge)
+
+                if (index > -1) {
+                    this.form.charges.splice(index, 1)
+                    this.form.total_charge = 0
+                }
+
             },
             discountGlobal(){
 
@@ -2031,6 +2241,11 @@ export default {
                                 end_date: null,
                                 duration: null,
                             })
+                        }else{
+
+                            if(this.isUpdate){
+                                at.value = this.form.plate_number
+                            }
                         }
 
                     });
@@ -2257,6 +2472,21 @@ export default {
             clickRemoveFee(index) {
                 this.form.fee.splice(index, 1);
                 this.calculateFee();
+            },
+            calculatePayments() {
+                let payment_count = this.form.payments.length;
+                let total = this.form.total;
+                let payment = 0;
+                let amount = _.round(total / payment_count, 2);
+                // console.log(amount);
+                _.forEach(this.form.payments, row => {
+                    payment += amount;
+                    if (total - payment < 0) {
+                        amount = _.round(total - payment + amount, 2);
+                    }
+                    row.payment = amount;
+                    // console.error(row.payment)
+                })
             },
             calculateFee() {
                 let fee_count = this.form.fee.length;

@@ -2,6 +2,7 @@
 
 namespace App\Models\Tenant;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Models\Warehouse;
 use App\Models\Tenant\Catalogs\PriceType;
@@ -73,6 +74,73 @@ class DocumentItem extends ModelTenant
         'additional_information'
     ];
 
+    public static function boot() {
+        parent::boot();
+        static::creating(function (self $item) {
+            $document = $item->document;
+            if ($document !== null && empty($item->warehouse_id)) {
+                $warehouse = Warehouse::find($document->establishment_id) ;
+                if($warehouse !== null) {
+                    $item->warehouse_id = $document->establishment_id;
+                }
+            }
+        });
+    }
+
+    /**
+     * Ajusta el stock en ItemWarehouse que es usado como stock por almacen
+     * @param self $item
+     * @param string $event
+     */
+    public static function UpdateItemWarehous(&$item, $event = 'created'){
+        $document = $item->document;
+        if ($document !== null) {
+            $establishment_id = $document->establishment_id;
+            $search = [
+                'item_id' => $item->item_id,
+                'warehouse_id' => $establishment_id,
+            ];
+            $ItemWarehouse = ItemWarehouse::where($search)->first();
+            if ($ItemWarehouse !== null) {
+                $qty = (float)$item->quantity;
+                if($event === 'created') {
+                    $ItemWarehouse->addStock($qty * (-1))->push();
+                }else{
+                    $ItemWarehouse->addStock($qty * (1))->push();
+                    self::FixKardex($item);
+                }
+            }
+        }
+    }
+
+    /**
+     * Devuelve o quita la cantidad del item a kardex.
+     * @param self $model
+     * @param bool $deleting
+     */
+    public static function FixKardex(&$model, $deleting = true){
+        $search = [
+            'inventory_kardexable_id'=>$model->document_id,
+            'item_id'=>$model->item_id,
+            'inventory_kardexable_type'=>Document::class
+        ];
+        $kardex = \Modules\Inventory\Models\InventoryKardex::where($search)->orderBy('id','desc')->first();
+        if(!empty($kardex)) {
+            $qty = abs((float)$kardex->quantity * 1);
+            if($deleting !== true){
+                $qty = $qty * (-1);
+            }
+            $newKardex = new \Modules\Inventory\Models\InventoryKardex([
+                'date_of_issue' => Carbon::now()->format('Y-m-d'),
+                'warehouse_id' => $kardex->warehouse_id,
+                'quantity' => $qty,
+                'inventory_kardexable_id' => $kardex->inventory_kardexable_id,
+                'inventory_kardexable_type' => $kardex->inventory_kardexable_type,
+                'item_id' => $kardex->item_id,
+            ]);
+            $newKardex->push();
+        }
+    }
     public function getItemAttribute($value)
     {
         return (is_null($value))?null:(object) json_decode($value);
@@ -202,6 +270,7 @@ class DocumentItem extends ModelTenant
             return $query->whereHas('document', function($q) use($params){
                             $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                                 ->where('customer_id', $params['person_id'])
+                                ->whereStateTypeAccepted()
                                 ->whereTypeUser();
                         })
                         ->join('documents', 'document_items.document_id', '=', 'documents.id')
@@ -214,6 +283,7 @@ class DocumentItem extends ModelTenant
         $data = $query->whereHas('document', function($q) use($params){
                     $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         // ->where('user_id', $params['seller_id'])
+                        ->whereStateTypeAccepted()
                         ->whereTypeUser();
                 })
                 ->join('documents', 'document_items.document_id', '=', 'documents.id')
@@ -240,6 +310,47 @@ class DocumentItem extends ModelTenant
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
+    }
+
+    /**
+     * @return Item|Item[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|mixed|null
+     */
+    public function getModelItem(){ return Item::find($this->item_id);}
+
+    /**
+     * Devuelve una estructura en conjunto para datos extra al momento de generar un pdf
+     *
+     * @return array
+     */
+    public function getPrintExtraData()
+    {
+
+
+        $item = $this->item;
+        $extra = (property_exists($item, 'extra')) ? $item->extra : null;
+        $extra_string = ($extra != null && property_exists($extra, 'string')) ? $extra->string : null;
+        $colors = ($extra_string != null && property_exists($extra_string, 'colors')) ? $extra_string->colors : null;
+        $CatItemUnitsPerPackage = ($extra_string != null && property_exists($extra_string, 'CatItemUnitsPerPackage')) ? $extra_string->CatItemUnitsPerPackage : null;
+        $CatItemMoldProperty = ($extra_string != null && property_exists($extra_string, 'CatItemMoldProperty')) ? $extra_string->CatItemMoldProperty : null;
+        $CatItemProductFamily = ($extra_string != null && property_exists($extra_string, 'CatItemProductFamily')) ? $extra_string->CatItemProductFamily : null;
+        $CatItemMoldCavity = ($extra_string != null && property_exists($extra_string, 'CatItemMoldCavity')) ? $extra_string->CatItemMoldCavity : null;
+        $CatItemPackageMeasurement = ($extra_string != null && property_exists($extra_string, 'CatItemPackageMeasurement')) ? $extra_string->CatItemPackageMeasurement : null;
+        $CatItemStatus = ($extra_string != null && property_exists($extra_string, 'CatItemStatus')) ? $extra_string->CatItemStatus : null;
+        $CatItemUnitBusiness = ($extra_string != null && property_exists($extra_string, 'CatItemUnitBusiness')) ? $extra_string->CatItemUnitBusiness : null;
+        $data = [
+            'colors' => (!empty($colors)) ? $colors : null,
+            'CatItemUnitsPerPackage' => (!empty($CatItemUnitsPerPackage)) ? $CatItemUnitsPerPackage : null,
+            'CatItemMoldProperty' => (!empty($CatItemMoldProperty)) ? $CatItemMoldProperty : null,
+            'CatItemProductFamily' => (!empty($CatItemProductFamily)) ? $CatItemProductFamily : null,
+            'CatItemMoldCavity' => (!empty($CatItemMoldCavity)) ? $CatItemMoldCavity : null,
+            'CatItemPackageMeasurement' => (!empty($CatItemPackageMeasurement)) ? $CatItemPackageMeasurement : null,
+            'CatItemStatus' => (!empty($CatItemStatus)) ? $CatItemStatus : null,
+            'CatItemUnitBusiness' => (!empty($CatItemUnitBusiness)) ? $CatItemUnitBusiness : null,
+        ];
+        // Se añaden campos extra desde el item
+        $itemModel = $this->getModelItem();
+        $itemModel->getExtraDataToPrint($data);
+        return $data;
     }
 
 }

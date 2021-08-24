@@ -4,10 +4,12 @@
     namespace App\Imports;
 
     use App\Models\Tenant\Item;
+    use Carbon\Carbon;
     use Illuminate\Database\Eloquent\Builder;
     use Illuminate\Support\Collection;
     use Maatwebsite\Excel\Concerns\Importable;
     use Maatwebsite\Excel\Concerns\ToCollection;
+    use Modules\Digemid\Models\CatDigemid;
 
 
     /**
@@ -144,6 +146,7 @@
                 ) {
 
 
+                    /*
                     $item = Item::orWhere(function (Builder $q) use ($Cod_Prod) {
                         $q->Where('internal_id', $Cod_Prod);
                         $q->WhereNotNull('internal_id');
@@ -151,20 +154,42 @@
                         $q->Where('cod_digemid', $Cod_Prod);
                         $q->WhereNotNull('cod_digemid');
                     })->first();
-                    if (empty($item)) {
-                        $item = new Item();
-                    }
-                    $item->fillFormDigemid($row);
-                    if (!empty($item->id)) {
+                    */
+                    $item = Item::FindByCodDigemid($Cod_Prod);
+
+                    if (!empty($item) && !empty($item->id)) {
+                        if(empty($item->sanitary)){
+                            $item->setSanitary($Num_RegSan)->push();
+                        }
                         $this->addUpdated($item);
-                    } else {
-                        $this->addNew($item);
+                        $cat = CatDigemid::WhereItem($item)->first();
+                        if (empty($cat)) {
+                            $cat = new CatDigemid(['item_id' => $item->id, 'cod_digemid' => $item->cod_digemid]);
+                        }
+                        $active = 1;
+                        if (strtolower(trim($Situacion)) !== 'act') {
+                            $active = 0;
+                        }
+                        $cat->fill([
+                                       'nom_prod'               => $Nom_Prod,
+                                       'concent'                => $Concent,
+                                       'nom_form_farm'          => $Nom_Form_Farm,
+                                       'nom_form_farm_simplif'  => $Nom_Form_Farm_Simplif,
+                                       'presentac'              => $Presentac,
+                                       'fracciones'             => $Fracciones,
+                                       'fec_vcto_reg_sanitario' => $Fec_Vcto_Reg_Sanitario,
+                                       'num_reg_san'            => $Num_RegSan,
+                                       'nom_titular'            => $Nom_Titular,
+                                       'active'                 => $active,
+                                       'last_update'            => Carbon::now()->format('Y-m-d H:i:s'),
+                                   ]);
+
+                        $cat->updatePrices();
+                        $cat->push();
+
+                        ++$registered;
 
                     }
-                    $item->push();
-                    $this->addItem($item);
-                    ++$registered;
-
                 }
             }
             $this->data = compact('total', 'registered');

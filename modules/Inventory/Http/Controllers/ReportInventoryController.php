@@ -4,6 +4,7 @@ namespace Modules\Inventory\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade as PDF;
+use DB;
 use Illuminate\Http\Request;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Company;
@@ -40,18 +41,57 @@ class ReportInventoryController extends Controller
     public function records(Request $request)
     {
         $warehouse_id = $request->input('warehouse_id');
+        $brand_id = (int)$request->brand_id;
+        $category_id = (int)$request->category_id;
         $filter = $request->input('filter');
 
         $records = $this->getRecords($warehouse_id);
-        if ($request->has('brand_id') && (int)$request->brand_id != 0) {
-            $records->where('items.brand_id', $request->brand_id);
+
+        if ($brand_id != 0) {
+            $records->where('items.brand_id', $brand_id);
         }
-        if ($request->has('category_id') && (int)$request->category_id != 0) {
-            $records->where('items.category_id', $request->category_id);
+        if ($category_id != 0) {
+            $records->where('items.category_id', $category_id);
         }
         $records->orderBy('items.name','desc');
-        $records = $records->latest()->get();
 
+        $records = $records->latest()->get()->transform(function($row) use ($filter,&$data) {
+            /** @var \Modules\Inventory\Models\ItemWarehouse $row */
+
+            $stock = $row->stock;
+            $add = true;
+            $item = $row->item;
+            if ($filter === '02') {
+                $add = ($stock < 0);
+            }
+            if ($filter === '03') {
+                $add = ($stock == 0);
+            }
+            if ($filter === '04') {
+                $add = ($stock > 0 && $stock <= $item->stock_min);
+            }
+            if ($filter === '05') {
+                $add = ($stock > $item->stock_min);
+            }
+            if ($add) {
+                $data[] = [
+                    'barcode' => $item->barcode,
+                    'internal_id' => $item->internal_id,
+                    'name' => $item->description,
+                    'item_category_name' => optional($item->category)->name,
+                    'stock_min' => $item->stock_min,
+                    'stock' => $stock,
+                    'sale_unit_price' => $item->sale_unit_price,
+                    'purchase_unit_price' => $item->purchase_unit_price,
+                    'profit'=>number_format($item->sale_unit_price-$item->purchase_unit_price,2,'.',''),
+                    'brand_name' => $item->brand->name,
+                    'date_of_due' => optional($item->date_of_due)->format('d/m/Y'),
+                    'warehouse_name' => $row->warehouse->description
+                ];
+            }
+        });
+
+        return $data;
 //        return $records;
 
         $data = [];
@@ -101,18 +141,26 @@ class ReportInventoryController extends Controller
 //        });
     }
 
-    private function getRecords($warehouse_id)
-    {
-        $query =  ItemWarehouse::with(['item', 'item.category', 'item.brand'])
-            ->whereHas('item', function ($q) {
-                $q->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
-                    ->whereNotIsSet();
-            })
-            ->join('items', 'items.id', 'item_warehouse.item_id')
-            ->select(\DB::raw('item_warehouse.*'));
-        if($warehouse_id != 0){
-            $query->where('item_warehouse.warehouse_id',$warehouse_id);
+    /**
+     * @param int $warehouse_id Id de almacen
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    private function getRecords($warehouse_id = 0) {
+        $query = ItemWarehouse::with(['item', 'item.category', 'item.brand'])
+                              ->whereHas('item', function ($q) {
+                                  $q->where([
+                                                ['item_type_id', '01'],
+                                                ['unit_type_id', '!=', 'ZZ'],
+                                            ])
+                                    ->whereNotIsSet();
+                              })
+                              ->join('items', 'items.id', 'item_warehouse.item_id')
+                              ->select(DB::raw('item_warehouse.*'));
+        if ($warehouse_id != 0) {
+            $query->where('item_warehouse.warehouse_id', $warehouse_id);
         }
+        //dd($query);
         return $query;
 
     }
@@ -133,13 +181,15 @@ class ReportInventoryController extends Controller
                 $filename = 'ReporteInv_' . date('YmdHis');
                 return $pdf->download($filename . '.pdf');
             }
-
-            return (new InventoryExport)
+            $inventoryExport = new InventoryExport();
+            $inventoryExport
                 ->records($records)
                 ->company($company)
                 ->establishment($establishment)
                 ->format($format)
-                ->download('ReporteInv_' . Carbon::now() . '.xlsx');
+                ;
+            // return $inventoryExport->view();
+            return $inventoryExport->download('ReporteInv_' . Carbon::now() . '.xlsx');
 
         } catch (\Exception $e) {
             return [

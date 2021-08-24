@@ -521,7 +521,7 @@
                 class="col-lg-4 col-md-6 bg-white m-0 p-0"
                 style="height: calc(100vh - 110px)"
             >
-                <div class="h-75 bg-light" style="overflow-y: auto">
+                <div class="h-50 bg-light" style="overflow-y: auto">
                     <div class="row py-3 border-bottom m-0 p-0">
                         <div class="col-8">
                             <el-select
@@ -801,6 +801,23 @@
                         </div>
                     </div>
                 </div>
+                <div class="h-25 bg-light" style="overflow-y: auto">
+                    <div class="row py-3 border-bottom m-0 p-0">
+                        <div class="col-lg-8 col-md-8">
+                            <el-radio-group v-model="form.document_type_id" size="small" @change="filterSeries">
+                                <el-radio-button label="01"><span style="font-size: 10px;">FACTURA</span></el-radio-button>
+                                <el-radio-button label="03"><span style="font-size: 10px;">BOLETA</span></el-radio-button>
+                                <el-radio-button label="80"><span style="font-size: 10px;">N. VENTA</span></el-radio-button>
+                            </el-radio-group>
+                        </div>
+                        <div class="col-lg-4 col-md-4">
+                            <el-select v-model="form.series_id" class="c-width">
+                                <el-option   v-for="option in series" :key="option.id" :label="option.number" :value="option.id">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <person-form
@@ -977,7 +994,9 @@ export default {
             colors: ["#1cb973", "#bf7ae6", "#fc6304", "#9b4db4", "#77c1f3"],
             pagination: {},
             category_selected: "",
-            focusClienteSelect: false
+            focusClienteSelect: false,
+            //fusionpayment
+            series: []
         };
     },
     async created() {
@@ -1964,7 +1983,17 @@ export default {
             if(item.description === undefined) return 0;
             if(item.description == null) return 0;
             return item.description.length;
-        }
+        },
+        filterSeries() {
+            // this.form.series_id = null
+            // this.series = _.filter(this.all_series, {'document_type_id': this.form.document_type_id });
+            // this.form.series_id = (this.series.length > 0)?this.series[0].id:null
+
+            // if(!this.form.series_id)
+            // {
+            //    return this.$message.warning('El establecimiento no tiene series disponibles para el comprobante');
+            // }
+        },
     }
 };
 </script>

@@ -18,9 +18,9 @@ class CashDocument extends ModelTenant
         'sale_note_id',
 
         'technical_service_id',
-        // 'purchase_id',
         // 'expense_id',
         'expense_payment_id',
+        'purchase_id',
     ];
 
 
@@ -49,10 +49,11 @@ class CashDocument extends ModelTenant
     {
         return $this->belongsTo(TechnicalService::class);
     }
-    // public function purchase()
-    // {
-    //     return $this->belongsTo(Purchase::class);
-    // }
+
+    public function purchase()
+    {
+        return $this->belongsTo(Purchase::class);
+    }
 
     // public function expense()
     // {

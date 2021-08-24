@@ -8,6 +8,7 @@
             <div class="right-wrapper pull-right">
                 <a href="#" @click.prevent="clickCreate()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
                 <a href="#" @click.prevent="onOpenModalGenerateCPE" class="btn btn-custom btn-sm  mt-2 mr-2">Generar comprobante desde múltiples Notas</a>
+                <a href="#" v-if="config.send_data_to_other_server === true"@click.prevent="onOpenModalMigrateNv" class="btn btn-custom btn-sm  mt-2 mr-2">Migrar Datos</a>
             </div>
         </div>
         <div class="card mb-0">
@@ -176,6 +177,15 @@
                                     class="btn waves-effect waves-light btn-xs btn-info">
                                 <i class="fas fa-copy"></i>
                             </button>
+                            <button
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                title="Enviar a otro servidor"
+                                v-if="row.state_type_id != '11' && row.send_other_server=== true"
+                                type="button"
+                                class="btn waves-effect waves-light btn-xs btn-inverse"
+                                @click.prevent="sendToServer(row.id)"><i class="fas fa-wifi"></i>
+                            </button>
                         </td>
 
 
@@ -190,31 +200,54 @@
         <sale-notes-options :showDialog.sync="showDialogOptions"
                           :recordId="saleNotesNewId"
                           :showClose="true"
-                          :configuration="configuration"></sale-notes-options>
+                          :configuration="config"></sale-notes-options>
 
         <sale-note-generate :show.sync="showDialogGenerate"
                            :recordId="recordId"
                            :showGenerate="true"
                            :showClose="false"></sale-note-generate>
         <ModalGenerateCPE :show.sync="showModalGenerateCPE"></ModalGenerateCPE>
+        <UploadToOtherServer
+            :configuration="config"
+            :showMigrate.sync="showMigrateNv"
+        ></UploadToOtherServer>
     </div>
 </template>
 
 <script>
     import DataTable from '../../../components/DataTableSaleNote.vue'
+    import UploadToOtherServer from './partials/upload_other_server_group.vue'
     import SaleNotePayments from './partials/payments.vue'
     import SaleNotesOptions from './partials/options.vue'
     import SaleNoteGenerate from './partials/option_documents'
     import {deletable} from '../../../mixins/deletable'
     import ModalGenerateCPE from './ModalGenerateCPE'
+    import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
     export default {
-        props: ['soapCompany','typeUser','configuration'],
+        props: [
+            'soapCompany',
+            'typeUser',
+            'configuration'
+        ],
         mixins: [deletable],
-        components: {DataTable, SaleNotePayments, SaleNotesOptions, SaleNoteGenerate, ModalGenerateCPE},
+        components: {
+            DataTable,
+            SaleNotePayments,
+            SaleNotesOptions,
+            SaleNoteGenerate,
+            ModalGenerateCPE,
+            UploadToOtherServer
+        },
+        computed:{
+            ...mapState([
+                'config',
+            ]),
+        },
         data() {
             return {
                 showModalGenerateCPE: false,
+                showMigrateNv: false,
                 resource: 'sale-notes',
                 showDialogPayments: false,
                 showDialogOptions: false,
@@ -278,6 +311,10 @@
                 }
             }
         },
+        created() {
+            this.loadConfiguration()
+            this.$store.commit('setConfiguration', this.configuration)
+        },
         filters:{
             period(name)
             {
@@ -299,6 +336,9 @@
             }
         },
         methods: {
+            ...mapActions([
+                'loadConfiguration',
+            ]),
             duplicate(id){
                 this.$http.post(`${this.resource}/duplicate`, {id})
                     .then(response => {
@@ -312,11 +352,13 @@
                     .catch(error => {
 
                     })
-                console.error('Duplicado '+id)
                 this.$eventHub.$emit('reloadData')
             },
             onOpenModalGenerateCPE() {
                 this.showModalGenerateCPE = true;
+            },
+            onOpenModalMigrateNv() {
+                this.showMigrateNv = true;
             },
             clickDownload(external_id) {
                 window.open(`/sale-notes/downloadExternal/${external_id}`, '_blank');
@@ -324,6 +366,28 @@
             clickOptions(recordId) {
                 this.saleNotesNewId = recordId
                 this.showDialogOptions = true
+            },
+            sendToServer(recordId) {
+                this.$http.post('/sale-notes/UpToOther',{'sale_note_id':recordId}).then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message);
+                        this.$eventHub.$emit('reloadData')
+                    }
+                    else {
+                        this.$message.error(response.data.message);
+                    }
+                }).catch(error => {
+                    if(
+                        error.response!== undefined &&
+                        error.response.status !== undefined &&
+                        error.response.status.errors !== undefined &&
+                        error.response.status === 422 ) {
+                        this.errors = error.response.data.errors;
+                    } else {
+                         console.log(error);
+                    }
+                }).then(() => {
+                });
             },
             clickGenerate(recordId) {
                 this.recordId = recordId

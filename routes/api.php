@@ -9,6 +9,7 @@ if ($hostname) {
         Route::middleware(['auth:api', 'locked.tenant'])->group(function () {
             //MOBILE
             Route::get('document/series', 'Tenant\Api\MobileController@getSeries');
+            Route::get('document/paymentmethod', 'Tenant\Api\MobileController@getPaymentmethod');
             Route::get('document/tables', 'Tenant\Api\MobileController@tables');
             Route::get('document/customers', 'Tenant\Api\MobileController@customers');
             Route::post('document/email', 'Tenant\Api\MobileController@document_email');
@@ -40,6 +41,7 @@ if ($hostname) {
             Route::get('services/ruc/{number}', 'Tenant\Api\ServiceController@ruc');
             Route::get('services/dni/{number}', 'Tenant\Api\ServiceController@dni');
             Route::post('services/consult_cdr_status', 'Tenant\Api\ServiceController@consultCdrStatus');
+            Route::post('services/validate_cpe', 'Tenant\Api\ServiceController@validateCpe');
             Route::post('perceptions', 'Tenant\Api\PerceptionController@store');
 
             Route::post('documents_server', 'Tenant\Api\DocumentController@storeServer');
@@ -47,7 +49,6 @@ if ($hostname) {
         });
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
 
-        Route::post('services/validate_cpe', 'Tenant\Api\ServiceController@validateCpe');
         // Route::post('services/consult_status', 'Tenant\Api\ServiceController@consultStatus');
         Route::post('documents/status', 'Tenant\Api\ServiceController@documentStatus');
 

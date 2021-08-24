@@ -6,14 +6,14 @@ use App\CoreFacturalo\Requests\Inputs\Common\ActionInput;
 use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
 use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
+use App\CoreFacturalo\Requests\Inputs\Transform\DocumentWebTransform;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Item;
-use Illuminate\Support\Str;
-use App\CoreFacturalo\Requests\Inputs\Transform\DocumentWebTransform;
-use Modules\Offline\Models\OfflineConfiguration;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Modules\Offline\Models\OfflineConfiguration;
 
 class DocumentInput
 {
@@ -60,6 +60,7 @@ class DocumentInput
             $data_json = Functions::valueKeyInArray($inputs, 'data_json');
         }
 
+        $items = self::items($inputs);
         return [
             'type' => $inputs['type'],
             'group_id' => $inputs['group_id'],
@@ -84,6 +85,7 @@ class DocumentInput
             'quotation_id' => Functions::valueKeyInArray($inputs, 'quotation_id'),
             'sale_note_id' => Functions::valueKeyInArray($inputs, 'sale_note_id'),
             'order_note_id' => Functions::valueKeyInArray($inputs, 'order_note_id'),
+            'dispatch_id' => Functions::valueKeyInArray($inputs, 'dispatch_id'),
             'exchange_rate_sale' => $inputs['exchange_rate_sale'],
             'total_prepayment' => Functions::valueKeyInArray($inputs, 'total_prepayment', 0),
             'total_discount' => Functions::valueKeyInArray($inputs, 'total_discount', 0),
@@ -106,7 +108,7 @@ class DocumentInput
             'affectation_type_prepayment' => Functions::valueKeyInArray($inputs, 'affectation_type_prepayment'),
             'was_deducted_prepayment' => Functions::valueKeyInArray($inputs, 'was_deducted_prepayment', 0),
             'pending_amount_prepayment' => Functions::valueKeyInArray($inputs, 'pending_amount_prepayment', 0),
-            'items' => self::items($inputs),
+            'items' => $items,
             'charges' => self::charges($inputs),
             'discounts' => self::discounts($inputs),
             'prepayments' => self::prepayments($inputs),
@@ -142,7 +144,8 @@ class DocumentInput
             $items = [];
             foreach ($inputs['items'] as $row) {
                 $item = Item::query()->find($row['item_id']);
-                $items[] = [
+                /** @var Item $item */
+                $arayItem = [
                     'item_id' => $item->id,
                     'item' => [
                         'description' => trim($item->description),
@@ -157,6 +160,8 @@ class DocumentInput
                         'lots' => self::lots($row),
                         'IdLoteSelected' => (isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null),
                         'model' => $item->model,
+                        'sanitary' => $item->sanitary,
+                        'cod_digemid' => $item->cod_digemid,
                         'date_of_due' => (!empty($item->date_of_due)) ? $item->date_of_due->format('Y-m-d') : null,
                         'has_igv' => $row['item']['has_igv'] ?? true,
                         'unit_price' => $row['unit_price'] ?? 0,
@@ -189,6 +194,8 @@ class DocumentInput
                     'additional_information' => Functions::valueKeyInArray($row, 'additional_information'),
                     'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf')
                 ];
+                Item::SaveExtraDataToRequest($arayItem,$row);
+                $items[] = $arayItem;
             }
             return $items;
         }
@@ -212,20 +219,19 @@ class DocumentInput
             if ($inputs['attributes']) {
                 $attributes = [];
                 foreach ($inputs['attributes'] as $row) {
-                    $attribute_type_id = $row['attribute_type_id'];
-                    $description = $row['description'];
-                    $value = array_key_exists('value', $row) ? $row['value'] : null;
-                    $start_date = array_key_exists('start_date', $row) ? $row['start_date'] : null;
-                    $end_date = array_key_exists('end_date', $row) ? $row['end_date'] : null;
-                    $duration = array_key_exists('duration', $row) ? $row['duration'] : null;
-
                     $attributes[] = [
-                        'attribute_type_id' => $attribute_type_id,
-                        'description' => $description,
-                        'value' => $value,
-                        'start_date' => $start_date,
-                        'end_date' => $end_date,
-                        'duration' => $duration,
+                        // 'attribute_type_id' => $row['attribute_type_id'] ?? null,
+                        // 'description' => $row['description'] ?? null,
+                        // 'value' => $row['value'] ?? null,
+                        // 'start_date' =>  $row['start_date'] ?? null,
+                        // 'end_date' => $row['end_date'] ?? null,
+                        // 'duration' =>  $row['duration'] ?? null,
+                        'attribute_type_id' => $row['attribute_type_id'],
+                        'description' => $row['description'],
+                        'value' => $row['value'],
+                        'start_date' =>  $row['start_date'],
+                        'end_date' => $row['end_date'],
+                        'duration' =>  $row['duration'],
                     ];
                 }
                 return $attributes;

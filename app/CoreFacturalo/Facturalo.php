@@ -8,6 +8,7 @@ use Mpdf\HTMLParserMode;
 use App\Traits\KardexTrait;
 use App\Models\Tenant\Voided;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\DocumentItem;
 use App\Models\Tenant\Invoice;
 use App\Models\Tenant\Summary;
 use App\Models\Tenant\Establishment;
@@ -123,6 +124,9 @@ class Facturalo
                 $this->saveFee($document, $inputs['fee']);
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
+                    // $row['document_id']=  $document->id;
+                    // $item = new DocumentItem($row);
+                    // $item->push();
                 }
                 $this->updatePrepaymentDocuments($inputs);
                 if($inputs['hotel']) $document->hotel()->create($inputs['hotel']);
@@ -342,6 +346,7 @@ class Facturalo
             $total_plastic_bag_taxes       = $this->document->total_plastic_bag_taxes != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items) + $was_deducted_prepayment;
             $document_payments     = count($this->document->payments);
+            $document_transport     = ($this->document->transport) ? 30 : 0;
 
             $extra_by_item_additional_information = 0;
             $extra_by_item_description = 0;
@@ -360,6 +365,18 @@ class Facturalo
             $legends = $this->document->legends != '' ? '10' : '0';
 
             $quotation_id = ($this->document->quotation_id) ? 15:0;
+
+            //ajustes para footer amazonia
+
+            if($this->configuration->legend_footer AND $format_pdf === 'ticket') {
+                $height_legend = 15;
+            } elseif($this->configuration->legend_footer AND $format_pdf === 'ticket_58') {
+                $height_legend = 30;
+            } elseif($this->configuration->legend_footer AND $format_pdf === 'ticket_50') {
+                $height_legend = 50;
+            } else {
+                $height_legend = 10;
+            }
 
             $pdf = new Mpdf([
                 'mode' => 'utf-8',
@@ -389,7 +406,9 @@ class Facturalo
                     $detraction+
                     $total_plastic_bag_taxes+
                     $quotation_id+
-                    $extra_by_item_additional_information
+                    $extra_by_item_additional_information+
+                    $height_legend+
+                    $document_transport
                 ],
                 'margin_top' => 0,
                 'margin_right' => 1,
@@ -514,13 +533,18 @@ class Facturalo
 
         $stylesheet = file_get_contents($path_css);
 
-        if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
+
+        // if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
             // dd($base_pdf_template);// = config(['tenant.pdf_template'=> $configuration]);
             if(config('tenant.pdf_template_footer')) {
-
-                $html_footer = $template->pdfFooter($base_pdf_template, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
-                $html_footer_legend = "";
+                $html_footer = '';
+                if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
+                    $html_footer = $template->pdfFooter($base_pdf_template, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
+                    $html_footer_legend = "";
+                }
                 // dd($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03']));
+                // se quiere visuzalizar ahora la legenda amazona en todos los formatos
+                $html_footer_legend = '';
                 if($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03'])){
                     $html_footer_legend = $template->pdfFooterLegend($base_pdf_template, $document);
                 }
@@ -530,7 +554,7 @@ class Facturalo
             }
 //            $html_footer = $template->pdfFooter();
 //            $pdf->SetHTMLFooter($html_footer);
-        }
+        // }
 
         if ($base_pdf_template === 'brand') {
 
@@ -624,19 +648,31 @@ class Facturalo
     public function validationCodeResponse($code, $message)
     {
         //Errors
-        if($code === 'ERROR_CDR') {
-            return;
-        }
-        if($code === 'HTTP') {
-//            $message = 'La SUNAT no responde a su solicitud, vuelva a intentarlo.';
-
-            if(in_array($this->type, ['retention', 'dispatch'])){
+        if(!is_numeric($code)){
+            
+            if(in_array($this->type, ['retention', 'dispatch', 'perception'])){
                 throw new Exception("Code: {$code}; Description: {$message}");
             }
 
             $this->updateRegularizeShipping($code, $message);
             return;
         }
+
+        // if($code === 'ERROR_CDR') {
+        //     return;
+        // }
+        
+        // if($code === 'HTTP') {
+        //     // $message = 'La SUNAT no responde a su solicitud, vuelva a intentarlo.';
+
+        //     if(in_array($this->type, ['retention', 'dispatch'])){
+        //         throw new Exception("Code: {$code}; Description: {$message}");
+        //     }
+
+        //     $this->updateRegularizeShipping($code, $message);
+        //     return;
+        // }
+
         if((int)$code === 0) {
             $this->updateState(self::ACCEPTED);
             return;
@@ -644,7 +680,8 @@ class Facturalo
         if((int)$code < 2000) {
             //Excepciones
 
-            if(in_array($this->type, ['retention', 'dispatch'])){
+            if(in_array($this->type, ['retention', 'dispatch', 'perception'])){
+            // if(in_array($this->type, ['retention', 'dispatch'])){
                 throw new Exception("Code: {$code}; Description: {$message}");
             }
 
@@ -1007,12 +1044,25 @@ class Facturalo
                 $document->payments()->delete();
                 $this->savePayments($document, $inputs['payments']);
 
+                $document->fee()->delete();
+                $this->saveFee($document, $inputs['fee']);
+
                 $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
+
                 foreach ($document->items as $it) {
-                    $this->restoreStockInWarehpuse($it->item_id, $warehouse->id, $it->quantity);
+                    //se usa el evento deleted del modelo - InventoryKardexServiceProvider document_item_delete
+                    $it->delete();
+                    // $this->restoreStockInWarehpuse($it->item_id, $warehouse->id, $it->quantity);
                 }
 
-                $document->items()->delete();
+                // Al editar el item, borra los registros anteriores
+                // foreach ($document->items()->get() as $item) {
+                //     /** @var \App\Models\Tenant\DocumentItem $item */
+                //     DocumentItem::UpdateItemWarehous($item,'deleted');
+                //     $item->delete();
+                // }
+                // $document->items()->delete();
+
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
                 }

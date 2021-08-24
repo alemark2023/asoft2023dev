@@ -1,3 +1,295 @@
+## 4.1.3
+
+### docs
+2021-07-20 : docs | changelog update<br>
+
+
+### fixed
+2021-08-06 : fixed | version php causa error sintaxis en consulta de series de notas de venta por api<br>
+2021-08-06 : fixed | #446 | Removiendo debug<br>
+2021-08-06 : fixed | #446 | Finanzas: Cuentas por cobrar: Ajuste de orden para orden de compra y plataforma<br>
+2021-08-06 : fixed | #446 | Finanzas: Cuentas por cobrar: Ajuste de orden para orden de compra y plataforma<br>
+2021-08-06 : fixed | #446 | Platform por Plataforma<br>
+2021-08-06 : fixed | #446 | Ajuste de columnas en reporte general de productos<br>
+2021-08-06 : fixed | - | Hoteles: Habitaciones: Ajuste para no seleccionar almacenes en habitaciones<br>
+2021-08-05 : fixed | #777 | Notas: Ajuste cargos globales en nota credito y debito<br>
+2021-08-04 : fixed | - | Formato de codigo y simplificacion de querys<br>
+2021-08-04 : fixed | - | Formato de codigo<br>
+2021-08-04 : fixed | - | Problemas de short tag en php,<br>
+2021-08-04 : fixed | - | validando retorno para null en configuracion<br>
+2021-08-02 : fixed | #787 |Compile JS<br>
+2021-08-02 : fixed | #787 | Guia: Añadiendo posiblidad de anular la guia, si el documento relacionado se encuentra anlulado (se tomará en cuenta el ultimo documento relacionado)<br>
+2021-08-02 : fixed | - | El reporte de venta, se le quita la extension xlsx para pdf, ya que no es necesaria<br>
+2021-08-02 : fixed | - | S extra en sale notes<br>
+2021-07-30 : fixed | #808 | Reporte General de Productos: Ajuste para SaleNoteItem<br>
+2021-07-30 : fixed | #787 | Compile JS<br>
+2021-07-30 : fixed | - | Añadiendo Log como Log::channel('facturalo')->debug('X'); para log especificos. Quitando log de error de bank en global payment<br>
+2021-07-30 : fixed | - | Propiedad Bank no se encuentra<br>
+2021-07-30 : fixed | #787 | Lista de Documentos: Aádido Pedidos a la tabla de documentos<br>
+2021-07-27 : fixed | #757 | Documentos: Ajustes observaciones descuentos por linea<br>
+2021-07-27 : fixed | #787 | Compile JS<br>
+2021-07-27 : fixed | #787 | Colecciones devuelven Nota de venta para Documentos<br>
+2021-07-27 : fixed | #787 | Documentos: En el listado de documentos, se añade nota de venta para cuando esta cuente con las relaciones. Tambien se añade el estado de las mismas<br>
+2021-07-27 : fixed | - | Minor: Ajuste de estilo<br>
+2021-07-27 : fixed | #656 | Comprobante: Se extiende la exoneracion de igv para los items:<br>
+2021-07-27 : fixed | #656 | Compile JS<br>
+2021-07-27 : fixed | #656 | Nota de venta : Se extiende la exoneracion de igv para los items:<br>
+2021-07-27 : fixed | #656 | Nota de venta / invoice: Cuando se generan notas de venta y pasan a factura, estas no generan correctamente el IGV, se ajusta para que se obtenga el IGV del item en DB<br>
+2021-07-26 : fixed | #446 | Compile JS<br>
+2021-07-26 : fixed | #446 | Reporte de general de venta: Se añade la columna plataforma. Reporte de nota de ventas: Se añade Status del pago.<br>
+2021-07-26 : fixed | #745 | Reporte de Venta: Ajuste para buscar correctamente purchase_item<br>
+2021-07-26 : fixed | - | testingPrice en reporte - venta AÑADIENDO LOG<br>
+2021-07-26 : fixed | - | testingPrice en reporte - venta AÑADIENDO LOG<br>
+2021-07-26 : fixed | - | testingPrice en reporte - venta<br>
+2021-07-26 : fixed | - | testingPrice en reporte - venta<br>
+2021-07-26 : fixed | - | testingPrice en reporte - venta<br>
+2021-07-23 : fixed | #773 | Compile JS<br>
+2021-07-23 : fixed | #773 | Reporte de ventas general : Añadiento campos de modelo y orden de compra<br>
+2021-07-23 : fixed | #745 | Ajuste para evaluar el recurso cuando es llamado desde el reporte<br>
+2021-07-23 : fixed | #773 | Ajuste para evaluar el recurso cuadno es llamado desde el reporte<br>
+2021-07-23 : fixed | #711 | encabezado de tabla de banccos sobre plantilla default3_banks<br>
+2021-07-23 : fixed | #743 | Compile JS<br>
+2021-07-23 : fixed | #743 | Items Compuestos: Modelo pasa a la ultima columna<br>
+2021-07-23 : fixed | #743 | Items Compuestos: Añadiendo modelo a la edicion y al ejempo de xlsx para importar<br>
+2021-07-23 : fixed | #790 | Compile JS<br>
+2021-07-23 : fixed | #790 | Devolucion de Item: Se ajusta inventory warehouse y kardex para el item devuelto al editarlo.<br>
+2021-07-23 : fixed | #790 | Devolucion de Item: Se ajusta inventory warehouse y kardex para el item devuelto al editarlo.<br>
+2021-07-21 : fixed | #745 | Reportes: Reporte general de productos: Ajuste para validar los totales de ganancia en USD y PEN<br>
+2021-07-21 : fixed | #613 | Reporte de Venta: Ajuste para mostrar impuesto.<br>
+2021-07-21 : fixed | #718 | Nota de venta: Generar CPE: Titulo ajustado correctamente a su nota de venta<br>
+2021-07-21 : fixed | | Minor: Ajuste de array $attributes<br>
+2021-07-21 : fixed | | fixed error array_exist in  /Requests/Inputs/DocumentInput.php:221<br>
+2021-07-21 : fixed | | fixed error array_exist in  /Requests/Inputs/DocumentInput.php:221<br>
+
+
+### feature
+2021-08-06 : feature | #596 | Compile JS<br>
+2021-08-06 : feature | #596 | Cotizacion/Pedido: Pedido desde cotizacion, solo es posible por el admin y si no se tiene un pedido.<br>
+2021-08-05 : feature | #596 | Cotizacion/Pedido: Habilita generar pedido desde cotizaciones.<br>
+2021-08-05 : feature | #772 | Se agrega importacion series en compras - seleccion automatica de serie en ventas nuevo cpe<br>
+2021-08-05 : feature | #446 | Compile JS<br>
+2021-08-05 : feature | #446 | Finanzas: Cuentas por cobrar: Reporte de Todos. Añadiendo plataforma y orden de compra<br>
+2021-08-04 : feature | #446 | Finanzas: Cuentas por cobrar: Reporte Formas de pago (dias)<br>
+2021-08-04 : feature | #446 | Finanzas: Cuentas por cobrar: Exportar Pdf<br>
+2021-08-04 : feature | #446 | Finanzas: Cuentas por cobrar: Exportar Excel<br>
+2021-08-04 : feature | #446 | Finanzas: Cuentas por cobrar: Ajuste para componentes reactivos<br>
+2021-08-04 : feature | #446 | Finanzas: Cuentas por cobrar: Añadiendo plataforma y orden de compra.<br>
+2021-08-04 : feature | #446 | Añadiendo web_platforms a cuentas por cobrar<br>
+2021-08-04 : feature | #446 | Reporte Nota de venta: Añadiendo v-if="row.web_platforms !== undefined" en caso que la vista sea consultada desde otro modulo<br>
+2021-08-04 : feature | #446 | Reporte Documentos: Añadido plataforma antes de orden de compra<br>
+2021-08-04 : feature | #446 | Reporte Nota de Venta: Ajsute para añadir plataforma antes de orden de compra.<br>
+2021-08-04 : feature | #446 | Reporte Nota de Venta: Ajsute para añadir plataforma. Se origina desde los items, por lo que pueden haber mas de una plataforma<br>
+2021-08-04 : feature | #622 | Compile JS<br>
+2021-08-04 : feature | #622 | Nota de venta: Mostrar la url de destino de la consulta<br>
+2021-08-03 : feature | #622 | Nota de venta: Ajuste para mensajes de comunicacion e insercion.<br>
+2021-08-03 : feature | #622 | Nota de venta: Ajuste para mensajes de comunicacion e insercion.<br>
+2021-08-03 : feature | #622 | Nota de venta: Ajuste para mensajes de comunicacion e insercion.<br>
+2021-08-03 : feature | #622 | Nota de venta: Enviando Datos al servidor B<br>
+2021-08-03 : feature | #622 | Configuracion: Añadiendo web, token y habilitar por configuracion para el envio de nota de venta.<br>
+2021-08-03 : feature | #622 | Guarda la nota de venta en otro servidor mediante api. Si el item no se encuentra, se crea.<br>
+2021-06-24 : feature | #622 | Obliga al api a crear clientes.<br>
+2021-06-24 : feature | #622 | Exportar Nota de venta a otra plataforma Facturalo<br>
+2021-08-02 : feature | #773 | $web_platform por $platform<br>
+2021-08-02 : feature | #773 | Reporte General de Productos: Añadiendo items de pack en el reporte excel / pdf<br>
+2021-07-30 : feature | #794 | Compile JS<br>
+2021-07-30 : feature | #794 | Usuarios: Generando cambio de token<br>
+2021-07-27 : feature | - | Añadiendo filtrado a tipo de afectacion en el dialogo de item<br>
+2021-07-27 : feature | - | Añadiendo constantes para affectation_igv_types_exonerated_unaffected = '20', '21', '30', '31', '32', '33', '34', '35', '36', '37' en la coleccion de configuracion<br>
+2021-07-27 : feature | #800 | Reporte de Documentos: Añadiendo Distrito, provincia y departamento para descarga en PDF y XLSX<br>
+
+
+## 4.1.2
+
+### docs
+2021-07-07 : docs | changelog<br>
+
+
+### fixed
+2021-07-20 : fixed | #770 #789 | Compile JS<br>
+2021-07-20 : fixed | #770 #789 | Nota de venta y CPE: Ajuste para igv en en exonerado al añadir item<br>
+2021-07-20 : fixed | #601 | consulta campo json en mariabd no soportada<br>
+2021-07-19 : fixed | #613 | Contabilidad: Exportar Reporte: Venta: Validando condicion para tipo de documento y status del documento<br>
+2021-07-16 : fixed | slack | problema al descargar reporte de items para wordpress<br>
+2021-07-16 : fixed | #782 | Nota de venta: Modal de pagos: Cambio de number fil de identifier a getNumberFullAttribute()<br>
+2021-07-15 : fixed | #761 | Guia de Remision: Ajuste para retirar el item de la guia.<br>
+2021-07-15 : fixed | #702 | $type_movement leido correctamente en el reporte excel y pdf<br>
+2021-07-15 : fixed | #613 | Llamado correcto al modelo en ReportItemController.php<br>
+2021-07-15 : fixed | #613 | Contabilidad: Exportar Reporte: Ajuste para mostrar la moneda de los movimientos en el reporte<br>
+2021-07-15 : fixed | #746 | Fixed index<br>
+2021-07-14 : fixed | #761 #775 | Compile JS<br>
+2021-07-14 : fixed | #761 | Comprobantes Avanzados: Guias de Remision: Añadir item: Ajuste para añadir items correctamente.<br>
+2021-07-13 : fixed | #702 | Ajuste error MovementCollection.php:53<br>
+2021-07-13 : fixed | #742 | plantillas de guias muestran productos compuestos nuevamente - se recrea el pdf a partir del boton opciones - mismo boton muestra el pdf en el navegador mientras el otro lo descarga directamente<br>
+2021-07-13 : fixed | #702 | Finanzas: Movimiento: Posiblidad de descargar el pdf y el xml ordenado<br>
+2021-07-12 : fixed | #686 | pie de pagina legenda amazonia - ajuste de espacios respecto a configuracion de visual pdf<br>
+2021-07-12 : fixed | #747 | Reporte de Venta: Cambio de orden de columnas distrito por departamento<br>
+2021-07-12 : fixed | #771 | Compile JS<br>
+2021-07-12 : fixed | #749 | Reporte Caja Chica POS: Ajuste para que los pagos de compra se sumen al egreso total.<br>
+2021-07-12 : fixed | #771 | Customer por defecto en CPE<br>
+2021-07-12 : fixed | #686 | pto1, plantilla legend_amazonia cuenta con leyenda correcta para todos los formatos tipo ticket de factura y boleta<br>
+2021-07-09 : fixed | #753 | Reporte de cuentas por cobrar: La columna total de expenses estaba en la posicion 9, la posicion correcta es 8<br>
+2021-07-09 : fixed | #652 | scroll para listado de guias al generar mediante multiple seleccion<br>
+2021-07-09 : fixed | #741 | Reporte de Venta: Ajuste de columna en reporte por documentos<br>
+2021-07-08 : fixed | #747 | Reporte de Venta: Cambio de localizacion de establecimiento por cliente<br>
+2021-07-08 : fixed | - | Añadiendo comentario de la ruta url para facilitar buscarla<br>
+2021-07-08 : fixed | #642 | Item: descripcion de productos: Se establece el stock para el establecimiento del usuario (no general) en los componentes d eañadir item<br>
+2021-07-08 : fixed | #310 | Guias: corrección ortográfica<br>
+2021-07-07 : fixed | #718 | Nota de venta: Generar CPE desde multiples NV: Corrige mostrar los CPE relacionados en el listado de nota de venta.<br>
+
+
+### feature
+2021-07-20 : feature | #771 | template basado en default3_new_account con mas espacio para las cuentas bancarias<br>
+2021-07-19 : feature | #702 | Removiendo # de las tablas<br>
+2021-07-19 : feature | #596 | Compile JS<br>
+2021-07-19 : feature | #596 | Compile JS<br>
+2021-07-19 : feature | #596 | Reporte de inventario: Añadiendo profit como diferencia entre costo y precio.<br>
+2021-07-19 : feature | #596 | Textos entre cliente y proveedor<br>
+2021-07-19 : feature | #596 | Cliente: Dias de crédito: Mostrando la columna de dias<br>
+2021-07-19 : feature | #596 | Cliente: Dias de crédito: Añadiendo campo de dias de credito<br>
+2021-07-16 : feature | #601 | envio de mensaje al administrador cuando se genera un pedido en ecommerce (plus : historial de pedidos)<br>
+2021-07-14 : feature | #746 | Api: Guias de remision:  PDF: Se muestra documento afectado.Se añade el campo documento_afectado de la forma siguiente :    "documento_afectado": {     "serie_documento": "F001",     "numero_documento": "190",     "codigo_tipo_documento": "01"   }<br>
+2021-07-13 : feature | #748 | Compile #702 #748 #679<br>
+2021-07-13 : feature | #748 | Template DEFAULT_DATE_END: Valida la configuracion, si es farmacia, se le ajusta el registro sanitario del producto<br>
+2021-07-13 : feature | #679 | Compras: Añadiendo Nota dedebito y nota de credito<br>
+2021-07-12 : feature | loretosot habilita metodo de pago en mobilecontroller para uso en app<br>
+2021-07-12 : feature | #686 | pie de pagina legenda amazonia - ajuste de espacios<br>
+2021-07-08 : feature | #640 | crear nuevo cliente en formulario de guia lo asigna automaticamente al campo correspondiente<br>
+2021-07-08 : feature | api validador para app<br>
+2021-07-07 : feature | #310 | Comprobantes avanzados: Se agrega funcionalidad para control de stock en guias<br>
+2021-07-07 : feature | #747 | Reporte de ventas: Añadiendo departamento, distrito y provincia para exportar pdf y excel<br>
+2021-07-07 : feature | #557 | estructura de plantilla heaer_image_full_width aplicada en cotizaciones, pedidos y notas de venta<br>
+2021-07-06 : feature | #310 | Comprobantes avanzados: Se agrega flujo inventario a guias (avance)<br>
+
+
+## 4.1.1
+
+### docs
+2021-06-25 : docs | Update README.md<br>
+2021-06-10 : docs | update changelog<br>
+
+
+### fixed
+2021-07-07 : fixed | #699 | mostrando cantidades de lista de precios y calculando montos de compra en funcion a estos<br>
+2021-07-07 : fixed | #615 | Compile JS<br>
+2021-07-07 : fixed | #615 | Nota de venta: Listado: Seleccionar el vendedor en la nota de venta.<br>
+2021-07-07 : fixed | #716 #615 #454 #547 #674 | Compile JS<br>
+2021-07-06 : fixed | #674 | Nota de ventas: Vendedor puede crear items desde nota de ventas, si esta habilitado por la configuracion<br>
+2021-07-06 : fixed | #716 #615 #454 #547 | Nota de ventas: Añadiendo nombre personalizado de item en planilla default. Posibilidad de añadir vendedor en las notas de venta. Enviando configuracion standar. Modal de generar CPE es cerrado correctamente. Item se homologa a item CPE, puede buscarse por codigo de barra, editarlo, impuesto a bolsa plastica, atributos adicionales.<br>
+2021-07-06 : fixed | - | buble continuo en validador<br>
+2021-07-06 : fixed | #493 | Compile JS<br>
+2021-07-06 : fixed | #493 | Reporte general: Compras: Ajuste para ver serie de productos comprados.<br>
+2021-07-06 : fixed | - | Tramite documentario: Ajuste para siguiente y anterior.<br>
+2021-07-06 : fixed | - | Tramite documentario: Ajuste para siguiente y anterior.<br>
+2021-07-06 : fixed | - | Compile JS - localStorage almacena 5mb solamente. sessionStorage puede almacena mas datos mientras la Tab no se cierre.<br>
+2021-07-05 : fixed | #141 | Nuevo cpe: Ajustes metodos de pago en edicion de cpe<br>
+2021-07-05 : fixed | #141 | Ajuste orden asignacion moneda cpe<br>
+2021-07-05 : fixed | #738 | Reportes: Ajustes reporte compras<br>
+2021-07-01 : fixed | #627 | Cotizaciones: se agrega la posibilidad de elegir vendedores<br>
+2021-07-01 : fixed | #722 | Compras: validacion caja<br>
+2021-06-29 : fixed | #659 | Ventas: Ajustes valores facturacion en importacion de documentos F1<br>
+2021-06-28 : fixed | #507 | Pos - Productos: Aplica precios por almacen a productos - Ajuste crud precios por almacen<br>
+2021-06-28 : fixed | #720 | compile js<br>
+2021-06-25 : fixed | - | Probando descargar 5000 items<br>
+2021-06-25 : fixed | #269 | Compile JS<br>
+2021-06-25 : fixed | #269 | Compras: Importar XML : El importador se basa en el mismo XML firmado generado por Facturalo. Se añade obtener 600 items debido que el importador requiere de estos para comparar los datos<br>
+2021-06-25 : fixed | - | Compile js<br>
+2021-06-25 : fixed | - | CPE: Cuando añades metodos de pago, se divide entre cada uno.<br>
+2021-06-24 : fixed | #650 | eliminado parametro width de <td> en la vista, al parecer impide en ciertas versiones la descarga correcta<br>
+2021-06-24 : fixed | #714 | Compile JS<br>
+2021-06-24 : fixed | #714 | CPE: Ajuste en contado para que ajuste el total directamente. Ajuste para ampliar lotes.<br>
+2021-06-24 : fixed | #590 | Compile JS<br>
+2021-06-24 : fixed | - | Ajuste para no mostrar error en ticket_58<br>
+2021-06-24 : fixed | #590 | Farmacia: Ajuste para importar y exportar items de DIGEMID.<br>
+2021-06-23 : fixed | - | CPE: Lista todos los usuarios cuando tienes uno por defecto, no borra los anteriores.<br>
+2021-06-21 : fixed | #590 | Ajuste para guardar correctamente el permiso de farmacia<br>
+2021-06-17 : fixed | #590 | Creacion de modulo DIGEMID. Falta importacion por catalogo y menu<br>
+2021-06-17 : fixed | #308 | Reportes consolidados: Exportar items en pdf: fix de indices no encontrados<br>
+2021-06-15 : fixed | #664 #631 #657 | Compile js<br>
+2021-06-15 : fixed | #681 | Permitir busqueda por codigo de barras en POS en el campo normal<br>
+2021-06-14 : fixed | #631 | Pedido: Habilita vendedor para que pueda generar comprobantes<br>
+2021-06-14 : fixed | #631 | Configuracion: Cambio de texto "Permite habilitar las acciones en oportunidad de venta para vendedores" a "Permite habilitar las acciones para vendedores".<br>
+2021-06-14 : fixed | #664 | Registro de items en caja: Al editar un item, se reporta en caja nuevamente. Se realiza ajuste para que cuando se edite, pueda actualizarse y no duplicar el registro<br>
+2021-06-14 : fixed | #637 | Reporte Cuentas por pagar, añadiendo columna vendedor<br>
+2021-06-14 : fixed | #678 | Compile JS<br>
+2021-06-09 : fixed | #591 | Comando: php artisan tenancy:run recurrency:sale-note : Se ajusta para que el numero sea consecutivo basado el serie y prefijo<br>
+
+
+### feature
+2021-07-06 : feature | - | Tramite Docuemntario: Añadiendo dias festivos<br>
+2021-07-06 : feature | - | Tramite Documentario: Correccion de fecha final de la etapa<br>
+2021-07-06 : feature | - | Tramite Documentario: Compile JS<br>
+2021-07-05 : feature | #551 | Cotizaciones: Agrega seleccion de almacen al generar cpe<br>
+2021-07-01 : feature | - | Tramite Documentario: Ajuste para las 4 etapas de tramite documentario / Erro ticket_58 en cotizacion<br>
+2021-07-01 : feature | - | Tramite Documentario: Ajuste para las 4 etapas de tramite documentario<br>
+2021-07-01 : feature | - | Tramite Documentario: Ajuste para las 4 etapas de tramite documentario<br>
+2021-07-01 : feature | - | Tramite Documentario: Ajuste para las 4 etapas de tramite documentario<br>
+2021-07-01 : feature | #722 | Pos: Se integra compras a caja chica<br>
+2021-07-01 : feature | - | Tramite Documentario: Compile JS<br>
+2021-07-01 : feature | - | Tramite Documentario: Texto Oficina a Etapa, Icono de ojo para historico de observaciones. Filtro se establece como inicial el dia de hoy.<br>
+2021-06-30 : feature | - | Tramite Documentario: Falta ajustar devolver.<br>
+2021-06-30 : feature | - | Tramite Documentario: Ajuste para cuando ya no se tiene procesos hijos<br>
+2021-06-30 : feature | - | Tramite Documentario: Ajuste para cuando ya no se tiene procesos hijos<br>
+2021-06-30 : feature | - | Tramite Documentario: Compile JS<br>
+2021-06-30 : feature | #722 | Pos: Agregando compras a caja chica<br>
+2021-06-30 : feature | - | Tramite Documentario: Admin puede ver todos los expedientes, pero solo se podran ver los expedientes en la etapa asignada para los usuarios.<br>
+2021-06-30 : feature | - | Tramite Documentario: Ajuste para obtener las observaciones. Textos y visual.<br>
+2021-06-30 : feature | #232 | Ventas: Se agregan cargos globales a nuevo cpe<br>
+2021-06-30 : feature | - | Tramite Documentario: Ajuste de retornos<br>
+2021-06-30 : feature | - | Tramite Documentario: Ajuste de retornos<br>
+2021-06-30 : feature | - | Tramite Documentario: Compilacion JS<br>
+2021-06-30 : feature | - | Tramite Documentario: Ajuste para carga de archivos, atras y adelante en el proceso de tramite<br>
+2021-06-30 : feature | mostrando boton de servidor alterno para que puedan cambiar a NO en la bd de cada facturador, complementar con configuracion de archivo .env<br>
+2021-06-30 : feature | #699 | unidad de medida en listado de productos generales<br>
+2021-06-29 : feature | - | Tramite Documentario: Mejoras al modulo, Ajustes para cargar archivos por dropzone, descargar y borrarlo. Cuadro de observaciones.<br>
+2021-06-29 : feature | #232 | configuracion: se agrega config para recargo al consumo<br>
+2021-06-28 : feature | - | Tramite Documentario: Mejoras al modulo, Oficinas se llama Etapas. Pueden tener 1 hijo. Proceso tiene precio.<br>
+2021-06-28 : feature | #695 | template full_height_ticket ancho de imagen logo completa, solo para tickets<br>
+2021-06-25 : feature | - | instalacion de Vuex<br>
+2021-06-25 : feature | #629 | Reporte de Caja POS: Añadiendo Nota de debito y credito a los documentos que se relacionan.<br>
+2021-06-25 : feature | - | Añadiendo info de version de laravel a la config<br>
+2021-06-23 : feature | #702 | Aumento a 1000 registros para provocar error 504<br>
+2021-06-23 : feature | #702 | Compile JS<br>
+2021-06-23 : feature | #702 | Finanzas: Movimiento: Ajuste de la tabla para que sea por frontend y pueda ordenarse.<br>
+2021-06-22 : feature | #702 |   ini_set('max_execution_time', 0);<br>
+2021-06-22 : feature | #702 | Compile JS<br>
+2021-06-22 : feature | #702 | removiendo paginacion<br>
+2021-06-22 : feature | #702 | Compile JS<br>
+2021-06-22 : feature | #702 | Balance: Finanzas: Ajuste de tabla con el-table para testing. Se cambia la paginacion por frontend<br>
+2021-06-22 : feature | #596 - 5 | Clientes: Listado: Añadiendo columnas para su visualizacion opcional<br>
+2021-06-22 : feature | #596 - 5 | Menor: Ajuste de estilo de codigo<br>
+2021-06-22 : feature | #596 - 5 | Clientes: Añadiendo datos de clientes (Zona, Observacion, Sitio Web)<br>
+2021-06-22 : feature | #596 - 5 | Clientes: Añadiendo datos de clientes (Zona, Observacion, Sitio Web)<br>
+2021-06-21 : feature | #493 | Compile js<br>
+2021-06-21 : feature | #493 | Reporte: Compra: Ocultando plataforma cuando es por compras<br>
+2021-06-21 : feature | #493 | Reporte: Compra: Reporte por productos: Exportar productos de forma individual<br>
+2021-06-21 : feature | #493 | Ajuste para busqueda de productos por compra<br>
+2021-06-21 : feature | #493 | Documentacion de Modelos<br>
+2021-06-21 : feature | #493 | Reporte: Compra: Porductos generales<br>
+2021-06-18 : feature | #493 | Añadiendo ruta para los reportes<br>
+2021-06-18 : feature | #590 | Compile JS<br>
+2021-06-18 : feature | #590 | Ajuste para no sobreescribir datos del item<br>
+2021-06-18 : feature | #590 | Modulo DIGEMID: Ajuste de permisos para DIGEMID<br>
+2021-06-18 : feature | #590 | Modulo DIGEMID: Ajuste de importacion masiva<br>
+2021-06-18 : feature | reporte general de productos muestra nota de credito en opciones del filtro y reporte excel para ventas muestra vendedor<br>
+2021-06-18 : feature | #688 | moneda en reportes de cuentas por cobrar/pagar<br>
+2021-06-16 : feature | #599 | Guias de Remision: Ajuste para prevenir el enviado automatico a Sunat por configuracion. En vez de eso, se hará manual por la lista.<br>
+2021-06-16 : feature | #599 | Guias de Remision: Ajuste para prevenir el enviado automatico a Sunat por configuracion. En vez de eso, se hará manual por la lista.<br>
+2021-06-16 : feature | #627 | Cotizacion: Generar CPE: Permie seleccionar vendedor<br>
+2021-06-16 : feature | #603 | Cotizacion: Nueva Cotizacion: Generar comprobante: Se añade Observacion y orden de compra<br>
+2021-06-16 : feature | #308 |  Compile JS<br>
+2021-06-16 : feature | #308 | Reporte: Guias: Creando el modulo de Consolidado Por Items.<br>
+2021-06-16 : feature | #308 | Ajuste para normalizar las colleciones mediante el modelo.<br>
+2021-06-15 : feature | #533 | mejoras visuales en pos<br>
+2021-06-15 : feature | #308 | Ajuste de estilo de codigo<br>
+2021-06-15 : feature | #657 | Documentacion de variables<br>
+2021-06-15 : feature | #657 | Pedidos: Nuevo / Editar producto se le añade nombre pdf. Template default para order note se ajusta el nombre pdf o, la descripcion del item<br>
+2021-06-10 : feature | #588 #648 | Compile JS<br>
+2021-06-10 : feature | #588 | Producto/Servicio: Producto: Se añade la lista de columnas si la configuracion es de farmacia<br>
+2021-06-10 : feature | #648 | Finanzas: Pagos: Se añade cuentas bancarias al destino de modo BankAccount::class.'::'. id, y asi filtrar el banco correspondiente.<br>
+2021-06-10 : feature | #588 | Producto/Servicio: Producto: Si esta habilitada la configuracion de farmacia, se muestra registro sanitario y codigo de observacion<br>
+2021-06-10 : feature | #588 | Configuracion: Empresa: Añade la posibilidad de colocar el codigo de observacion DIGEMID a la empresa<br>
+
+
 ## 4.1.0
 
 ### docs

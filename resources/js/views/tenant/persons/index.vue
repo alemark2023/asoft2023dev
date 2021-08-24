@@ -45,6 +45,7 @@
                         <th v-if="columns.observation.visible === true" class="text-center">Observaciones</th>
                         <th v-if="columns.zone.visible === true" class="text-center">Zona</th>
                         <th v-if="columns.website.visible === true" class="text-center">WebSite</th>
+                        <th v-if="columns.credit_days.visible === true" class="text-center">Días de crédito</th>
                         <th class="text-right">Acciones</th>
                     <tr>
                     <tr slot-scope="{ index, row }" :class="{ disable_color : !row.enabled}">
@@ -57,6 +58,7 @@
                         <td v-if="columns.observation.visible === true" class="text-left">{{ row.observation }}</td>
                         <td v-if="columns.zone.visible === true" class="text-left">{{ row.zone }}</td>
                         <td v-if="columns.website.visible === true" class="text-left">{{ row.website }}</td>
+                        <td v-if="columns.credit_days.visible === true" class="text-center">{{ row.credit_days }}</td>
                         <td class="text-right">
 
                             <template v-if="row.enabled">
@@ -133,6 +135,10 @@ export default {
                 },
                 person_type: {
                     title: 'Tipo de cliente',
+                    visible: false
+                },
+                credit_days: {
+                    title: 'Días de crédito',
                     visible: false
                 },
             }

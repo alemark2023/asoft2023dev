@@ -4,12 +4,13 @@ namespace App\Models\Tenant;
 
 use App\Notifications\Tenant\PasswordResetNotification;
 use Hyn\Tenancy\Traits\UsesTenantConnection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Modules\LevelAccess\Models\ModuleLevel;
 use Modules\Sale\Models\UserCommission;
-use Illuminate\Database\Eloquent\Model;
 
 
 /**
@@ -360,4 +361,88 @@ class User extends Authenticatable
 
     }
 
+    /**
+     * Devuelve una lista de usuarios vendedores junto con el usuario actual.
+     * Si $withEstablishment es verdadero, devuelve usuarios con establecimientos asignados carlomagno83/facturadorpro4#627
+     * Si $withEstablishment es falso, devuelve usuarios sin establecimientos asignados carlomagno83/facturadorpro4#233
+     *
+     * @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query
+     * @param bool                               $withEstablishment
+     *
+     * @return \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGetSellers(  $query,$withEstablishment = true){
+        if($withEstablishment == false) {
+            $query->without(['establishment']);
+        }else{
+            $query->with(['establishment']);
+
+        }
+        $query->whereIn('type', ['seller']);
+        $query->orWhere('id', auth()->user()->id);
+        return  $query;
+    }
+
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public function scopeGetWorkers($query){
+        $query->whereIn('type', ['seller','admin']);
+        return  $query;
+    }
+
+    /**
+     * Devuelve verdadero si el usuario es Admin.
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return $this->type === 'admin';
+    }
+
+    /**
+     * Genera un token al azar de $length caracteres
+     * @param int|null $length
+     * @return $this
+     */
+    public function updateToken($length = 60)
+    {
+        $this->api_token = Str::random($length);
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCollectionData(){
+        $type = '';
+        switch ($this->type) {
+            case 'admin':
+                $type =  'Administrador' ;
+                break;
+            case 'seller':
+                $type =  'Vendedor' ;
+                break;
+            case 'client':
+                $type =  'Cliente' ;
+                break;
+            default:
+                # code...
+                break;
+        }
+
+        return [
+            'id' => $this->id,
+            'email' => $this->email,
+            'name' => $this->name,
+            'api_token' => $this->api_token,
+            'document_id' => $this->document_id,
+            'serie_id' => ($this->series_id == 0)?null:$this->series_id,
+            'establishment_description' => optional($this->establishment)->description,
+            'type' => $type,
+            'locked' => (bool) $this->locked,
+        ];
+    }
 }

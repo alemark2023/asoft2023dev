@@ -2,6 +2,8 @@
 
 namespace Modules\Sale\Http\Controllers;
 
+use App\Models\Tenant\Catalogs\OperationType;
+use App\Traits\OfflineTrait;
 use Exception;
 use Mpdf\Mpdf;
 use Mpdf\HTMLParserMode;
@@ -47,8 +49,9 @@ use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
 class ContractController extends Controller
 {
 
-    use StorageDocument, FinanceTrait;
-
+    use FinanceTrait;
+    use StorageDocument;
+    use OfflineTrait;
     protected $contract;
     protected $company;
 
@@ -184,7 +187,21 @@ class ContractController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
 
-        return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types', 'discount_types', 'charge_types', 'attribute_types');
+        $operation_types = OperationType::whereActive()->get();
+        $is_client = $this->getIsClient();
+
+        return compact(
+            'items',
+            'categories',
+            'affectation_igv_types',
+            'system_isc_types',
+            'price_types',
+            'discount_types',
+            'charge_types',
+            'attribute_types',
+            'operation_types',
+            'is_client'
+        );
     }
 
     public function record($id)

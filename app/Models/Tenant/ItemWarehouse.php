@@ -44,4 +44,15 @@ class ItemWarehouse extends ModelTenant
         }
         return '';
     }
+
+    /**
+     * Suma una cantidad $qty al stock. Si la cantidad es negativa lo restará
+     *
+     * @param float|int $qty
+     * @return $this
+     */
+    public function addStock (float $qty =0 ){
+        $this->stock += $qty;
+        return $this;
+    }
 }

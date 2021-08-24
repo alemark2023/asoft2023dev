@@ -5,12 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="application/pdf; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Reporte POS - {{$data['cash_user_name']}} - {{$data['cash_date_opening']}} {{$data['cash_time_opening']}}</title>
+    <?php
+    $title = "Rep POS - ".$data['cash_user_name']." - ".$data['cash_date_opening']." ".$data['cash_time_opening'];
+    $title = str_replace(['*', ':', '/', '\\', '?', '[', ']'],'',$title);
+    $title = substr($title,0,31);
+    ?>
+    <title>{{ $title }}</title>
     <style>
         html {
             font-family: sans-serif;
             font-size: 12px;
         }
+
         table {
             width: 100%;
             border-spacing: 0;
@@ -112,6 +118,26 @@
             </td>
             <td class="td-custom">
                 <p><strong>Egreso: </strong>S/. {{$data['cash_egress']}} </p>
+            </td>
+        </tr>
+
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="td-custom">
+                <p>
+                    <strong> Notas de Débito: </strong> S/. {{$data['nota_debito']}}
+                </p>
+            </td>
+            <td class="td-custom">
+                <p>
+                    <strong>
+                        Notas de Crédito:
+                    </strong>
+                    S/. {{ $data['nota_credito'] }}
+                </p>
             </td>
         </tr>
         <tr>

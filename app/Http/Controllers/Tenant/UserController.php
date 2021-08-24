@@ -75,6 +75,21 @@ class UserController extends Controller
         return compact('modules', 'establishments', 'types', 'documents', 'series');
     }
 
+    public function regenerateToken(User $user){
+        $data = [
+            'api_token'=>$user->api_token,
+            'success'=>false,
+            'message' => 'No puedes cambiar el token'
+        ];
+        if(auth()->user()->isAdmin()){
+            $user->updateToken()->push();
+            $data['api_token']=$user->api_token;
+            $data['success']=true;
+            $data['message']='Token cambiado';
+
+        }
+        return $data;
+    }
     public function store(UserRequest $request) {
         $id = $request->input('id');
 

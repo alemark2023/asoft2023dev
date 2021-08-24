@@ -495,4 +495,28 @@ trait InventoryTrait
         $item_warehouse->save();
     }
 
+    
+    public function processIndividualDocumentItem($document_item, $factor = 1)
+    {
+
+        $presentationQuantity = (!empty($document_item->item->presentation)) ? $document_item->item->presentation->quantity_unit : 1;
+        $document = $document_item->document;
+
+        $warehouse = ($document_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($document_item->warehouse_id)->establishment_id) : $this->findWarehouse();
+
+        $this->createInventoryKardex($document_item->document, $document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
+
+        if(!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->dispatch_id){
+            $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
+        }else{
+                        
+            if($document_item->document->dispatch){
+                if(!$document_item->document->dispatch->transfer_reason_type->discount_stock){
+                    $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
+                }
+            }
+        }
+
+    }
+
 }

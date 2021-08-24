@@ -11,7 +11,8 @@
                             <div :class="{'has-danger': errors.establishment}" class="form-group">
                                 <label class="control-label">Establecimiento<span class="text-danger"> *</span></label>
                                 <el-select v-model="form.establishment_id" @change="changeEstablishment">
-                                    <el-option v-for="option in establishments" :key="option.id" :label="option.description"
+                                    <el-option v-for="option in establishments" :key="option.id"
+                                               :label="option.description"
                                                :value="option.id"></el-option>
                                 </el-select>
                                 <small v-if="errors.establishment" class="form-control-feedback"
@@ -64,10 +65,11 @@
                         </div>
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.transport_mode_type_id}" class="form-group">
-                                <label class="control-label">Modo de translado<span
+                                <label class="control-label">Modo de traslado<span
                                     class="text-danger"> *</span></label>
                                 <el-select v-model="form.transport_mode_type_id">
-                                    <el-option v-for="option in transportModeTypes" :key="option.id" :label="option.description"
+                                    <el-option v-for="option in transportModeTypes" :key="option.id"
+                                               :label="option.description"
                                                :value="option.id"></el-option>
                                 </el-select>
                                 <small v-if="errors.transport_mode_type_id" class="form-control-feedback"
@@ -76,10 +78,11 @@
                         </div>
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors.transfer_reason_type_id}" class="form-group">
-                                <label class="control-label">Motivo de translado<span
+                                <label class="control-label">Motivo de traslado<span
                                     class="text-danger"> *</span></label>
                                 <el-select v-model="form.transfer_reason_type_id">
-                                    <el-option v-for="option in transferReasonTypes" :key="option.id" :label="option.description"
+                                    <el-option v-for="option in transferReasonTypes" :key="option.id"
+                                               :label="option.description"
                                                :value="option.id"></el-option>
                                 </el-select>
                                 <small v-if="errors.transfer_reason_type_id" class="form-control-feedback"
@@ -136,7 +139,8 @@
                             <div :class="{'has-danger': errors.packages_number}" class="form-group">
                                 <label class="control-label">Número de paquetes<span
                                     class="text-danger"> *</span></label>
-                                <el-input-number v-model="form.packages_number" :max="9999999999" :min="0" :precision="0"
+                                <el-input-number v-model="form.packages_number" :max="9999999999" :min="0"
+                                                 :precision="0"
                                                  :step="1"></el-input-number>
                                 <small v-if="errors.packages_number" class="form-control-feedback"
                                        v-text="errors.packages_number[0]"></small>
@@ -286,7 +290,7 @@
                                         v-for="option in dispachers"
                                         :key="option.id"
                                         :label="option.number +' - '+ option.name"
-                                       :value="option.id"
+                                        :value="option.id"
                                     ></el-option><!--
                                      'identity_document_type_id',
                                     'number',
@@ -340,7 +344,7 @@
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors.driver}" class="form-group">
                                 <label class="control-label">Selección rápida de conductor</label>
-                                <el-select v-model="driver"  @change="changeDriver" clearable>
+                                <el-select v-model="driver" @change="changeDriver" clearable>
                                     <el-option
                                         v-for="option in drivers"
                                         :key="option.id"
@@ -462,10 +466,20 @@
 import PersonForm from '../persons/form.vue';
 import Items from './items.vue';
 import DispatchOptions from './partials/options.vue'
+import {mapActions, mapState} from "vuex";
 
 export default {
-    props: ['document', 'typeDocument', 'dispatch', 'sale_note'],
-    components: {PersonForm, Items, DispatchOptions},
+    props: [
+        'document',
+        'typeDocument',
+        'dispatch',
+        'configuration',
+    ],
+    components: {
+        PersonForm,
+        Items,
+        DispatchOptions
+    },
     data() {
         return {
             showDialogOptions: false,
@@ -517,10 +531,13 @@ export default {
             }
         }
     },
-    async created() {
-
+    created() {
+        this.loadConfiguration()
+        this.$store.commit('setConfiguration', this.configuration)
         this.initForm();
-        await this.$http.post(`/${this.resource}/tables`).then(response => {
+    },
+    mounted() {
+        this.$http.post(`/${this.resource}/tables`).then(response => {
             this.identityDocumentTypes = response.data.identityDocumentTypes;
             this.transferReasonTypes = response.data.transferReasonTypes;
             this.transportModeTypes = response.data.transportModeTypes;
@@ -536,85 +553,92 @@ export default {
             this.drivers = response.data.drivers;
             this.dispachers = response.data.dispachers;
 
+        }).then(() => {
+            this.form.establishment_id = this.document.establishment_id
+            this.form.date_of_issue = this.document.date_of_issue
+            this.form.date_of_shipping = this.form.date_of_issue
+            this.form.customer_id = this.document.customer_id
+            this.form.transfer_reason_type_id = '01'
+            this.form.transport_mode_type_id = '02'
+            this.form.items = this.document.items
+            this.form.origin.country_id = this.document.establishment.country_id
+            this.form.origin.location_id = [
+                this.document.establishment.department_id,
+                this.document.establishment.province_id,
+                this.document.establishment.district_id
+            ]
+            this.form.origin.address = this.document.establishment.address
+            this.form.delivery.country_id = this.document.customer.country_id
+            this.form.delivery.location_id = [
+                this.document.customer.department_id,
+                this.document.customer.province_id,
+                this.document.customer.district_id
+            ]
+            this.form.delivery.address = this.document.customer.address
+
+            this.form.packages_number = _.sumBy(this.document.items, (o) => {
+                return parseFloat(o.quantity)
+            })
+
+            let total_weight = 0
+
+            this.form.items.forEach(element => {
+                if (element.attributes) {
+
+                    Object.values(element.attributes).forEach(attr => {
+                        if (attr.attribute_type_id === '5032') {
+                            total_weight += parseFloat(attr.value) * parseFloat(element.quantity)
+                        }
+                    });
+                }
+            })
+
+            this.form.total_weight = total_weight
+
+
+            if (this.dispatch) {
+
+                this.form.transfer_reason_description = this.dispatch.transfer_reason_description
+                this.form.unit_type_id = this.dispatch.unit_type_id
+                this.form.total_weight = this.dispatch.total_weight
+                this.form.packages_number = this.dispatch.packages_number
+                this.form.observations = this.dispatch.observations
+
+                this.form.origin.address = (!this.document.establishment.address || this.document.establishment.address == '-') ? this.dispatch.origin.address : this.document.establishment.address
+                this.form.delivery.address = (!this.document.customer.address || this.document.customer.address == '-') ? this.dispatch.delivery.address : this.document.customer.address
+
+                this.form.dispatcher = this.dispatch.dispatcher
+                this.form.driver = this.dispatch.driver
+                this.form.license_plate = this.dispatch.license_plate
+
+                if (this.dispatch.secondary_license_plates) {
+                    this.form.secondary_license_plates = this.dispatch.secondary_license_plates
+                }
+
+            }
+        }).then(() => {
+            this.changeEstablishment()
         });
-        this.form.establishment_id = this.document.establishment_id
-        this.form.date_of_issue = this.document.date_of_issue
-        this.form.date_of_shipping = this.form.date_of_issue
-        this.form.customer_id = this.document.customer_id
-        this.form.transfer_reason_type_id = '01'
-        this.form.transport_mode_type_id = '02'
-        this.form.items = this.document.items
-        this.form.origin.country_id = this.document.establishment.country_id
-        this.form.origin.location_id = [
-            this.document.establishment.department_id,
-            this.document.establishment.province_id,
-            this.document.establishment.district_id
-        ]
-        this.form.origin.address = this.document.establishment.address
-        this.form.delivery.country_id = this.document.customer.country_id
-        this.form.delivery.location_id = [
-            this.document.customer.department_id,
-            this.document.customer.province_id,
-            this.document.customer.district_id
-        ]
-        this.form.delivery.address = this.document.customer.address
 
-        this.form.packages_number = _.sumBy(this.document.items, (o) => {
-            return parseFloat(o.quantity)
-        })
-
-        let total_weight = 0
-
-        this.form.items.forEach(element => {
-            if (element.attributes) {
-
-                Object.values(element.attributes).forEach(attr => {
-                    if (attr.attribute_type_id === '5032') {
-                        total_weight += parseFloat(attr.value) * parseFloat(element.quantity)
-                    }
-                });
-            }
-        })
-
-        this.form.total_weight = total_weight
-
-
-        if (this.dispatch) {
-
-            this.form.transfer_reason_description = this.dispatch.transfer_reason_description
-            this.form.unit_type_id = this.dispatch.unit_type_id
-            this.form.total_weight = this.dispatch.total_weight
-            this.form.packages_number = this.dispatch.packages_number
-            this.form.observations = this.dispatch.observations
-
-            this.form.origin.address = (!this.document.establishment.address || this.document.establishment.address == '-') ? this.dispatch.origin.address : this.document.establishment.address
-            this.form.delivery.address = (!this.document.customer.address || this.document.customer.address == '-') ? this.dispatch.delivery.address : this.document.customer.address
-
-            this.form.dispatcher = this.dispatch.dispatcher
-            this.form.driver = this.dispatch.driver
-            this.form.license_plate = this.dispatch.license_plate
-
-            if (this.dispatch.secondary_license_plates) {
-                this.form.secondary_license_plates = this.dispatch.secondary_license_plates
-            }
-
-        }
 
         // console.log(this.dispatch)
-        this.changeEstablishment()
+
     },
     methods: {
-        changeTransport(){
-            let v =  _.find(this.dispachers, {'id': this.dispacher})
-            if(v !== undefined){
+        ...mapActions([
+            'loadConfiguration',
+        ]),
+        changeTransport() {
+            let v = _.find(this.dispachers, {'id': this.dispacher})
+            if (v !== undefined) {
                 this.form.dispatcher.number = v.number;
                 this.form.dispatcher.name = v.name;
                 this.form.dispatcher.identity_document_type_id = v.identity_document_type_id;
             }
         },
-        changeDriver(){
-            let v =  _.find(this.drivers, {'id': this.driver})
-            if(v !== undefined){
+        changeDriver() {
+            let v = _.find(this.drivers, {'id': this.driver})
+            if (v !== undefined) {
                 this.form.driver.number = v.number;
                 this.form.driver.license = v.license;
                 this.form.driver.identity_document_type_id = v.identity_document_type_id;
@@ -785,6 +809,11 @@ export default {
         close() {
             location.href = '/dispatches';
         },
-    }
+    },
+    computed: {
+        ...mapState([
+            'config',
+        ]),
+    },
 }
 </script>

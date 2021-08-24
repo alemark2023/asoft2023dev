@@ -24,6 +24,7 @@ if ($hostname) {
         Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
             // Route::get('catalogs', 'Tenant\CatalogController@index')->name('tenant.catalogs.index');
             Route::get('list-reports', 'Tenant\SettingController@listReports');
+            Route::get('list-extras', 'Tenant\SettingController@listExtras');
             Route::get('list-settings', 'Tenant\SettingController@indexSettings');
             Route::get('list-banks', 'Tenant\SettingController@listBanks');
             Route::get('list-bank-accounts', 'Tenant\SettingController@listAccountBanks');
@@ -37,6 +38,7 @@ if ($hostname) {
             Route::get('list-incomes', 'Tenant\SettingController@listIncomes');
             Route::get('list-payments', 'Tenant\SettingController@listPayments');
             Route::get('list-vouchers-type', 'Tenant\SettingController@listVouchersType');
+            Route::get('list-transfer-reason-types', 'Tenant\SettingController@listTransferReasonTypes');
 
             Route::get('advanced', 'Tenant\AdvancedController@index')->name('tenant.advanced.index');
 
@@ -78,6 +80,8 @@ if ($hostname) {
             Route::delete('card_brands/{card_brand}', 'Tenant\CardBrandController@destroy');
 
             //Configurations
+            Route::get('configurations/sale-notes', 'Tenant\SaleNoteController@SetAdvanceConfiguration')->name('tenant.sale_notes.configuration');
+            Route::post('configurations/sale-notes', 'Tenant\SaleNoteController@SaveSetAdvanceConfiguration');
             Route::get('configurations/addSeeder', 'Tenant\ConfigurationController@addSeeder');
             Route::get('configurations/preprinted/addSeeder', 'Tenant\ConfigurationController@addPreprintedSeeder');
             Route::get('configurations/getFormats', 'Tenant\ConfigurationController@getFormats');
@@ -134,6 +138,7 @@ if ($hostname) {
             Route::get('users/tables', 'Tenant\UserController@tables');
             Route::get('users/record/{user}', 'Tenant\UserController@record');
             Route::post('users', 'Tenant\UserController@store');
+            Route::post('users/token/{user}', 'Tenant\UserController@regenerateToken');
             Route::get('users/records', 'Tenant\UserController@records');
             Route::delete('users/{user}', 'Tenant\UserController@destroy');
 
@@ -171,22 +176,36 @@ if ($hostname) {
             Route::get('items/images/delete/{id}', 'Tenant\ItemController@delete_images');
             Route::get('items/export', 'Tenant\ItemController@export')->name('tenant.items.export');
             Route::get('items/export/wp', 'Tenant\ItemController@exportWp')->name('tenant.items.export.wp');
+            Route::get('items/export/digemid', 'Tenant\ItemController@exportDigemid');
             Route::get('items/export/barcode', 'Tenant\ItemController@exportBarCode')->name('tenant.items.export.barcode');
             Route::get('items/export/barcode/print', 'Tenant\ItemController@printBarCode')->name('tenant.items.export.barcode.print');
             Route::get('items/export/barcode/last', 'Tenant\ItemController@itemLast')->name('tenant.items.last');
+            Route::post('get-items', 'Tenant\ItemController@getAllItems');
 
             //Persons
-            Route::get('persons/columns', 'Tenant\PersonController@columns');
-            Route::get('persons/tables', 'Tenant\PersonController@tables');
-            Route::get('persons/{type}', 'Tenant\PersonController@index')->name('tenant.persons.index');
-            Route::get('persons/{type}/records', 'Tenant\PersonController@records');
-            Route::get('persons/record/{person}', 'Tenant\PersonController@record');
-            Route::post('persons', 'Tenant\PersonController@store');
-            Route::delete('persons/{person}', 'Tenant\PersonController@destroy');
-            Route::post('persons/import', 'Tenant\PersonController@import');
-            Route::get('persons/enabled/{type}/{person}', 'Tenant\PersonController@enabled');
-            Route::get('persons/{type}/exportation', 'Tenant\PersonController@export')->name('tenant.persons.export');
-
+            Route::prefix('persons')->group(function () {
+                /**
+                 *persons/columns
+                 *persons/tables
+                 *persons/{type}
+                 *persons/{type}/records
+                 *persons/
+                 *persons/{person}
+                 *persons/import
+                 *persons/enabled/{type}/{person}
+                 *persons/{type}/exportation
+                 */
+                Route::get('/columns', 'Tenant\PersonController@columns');
+                Route::get('/tables', 'Tenant\PersonController@tables');
+                Route::get('/{type}', 'Tenant\PersonController@index')->name('tenant.persons.index');
+                Route::get('/{type}/records', 'Tenant\PersonController@records');
+                Route::get('/record/{person}', 'Tenant\PersonController@record');
+                Route::post('', 'Tenant\PersonController@store');
+                Route::delete('/{person}', 'Tenant\PersonController@destroy');
+                Route::post('/import', 'Tenant\PersonController@import');
+                Route::get('/enabled/{type}/{person}', 'Tenant\PersonController@enabled');
+                Route::get('/{type}/exportation', 'Tenant\PersonController@export')->name('tenant.persons.export');
+            });
             //Documents
             Route::post('documents/categories', 'Tenant\DocumentController@storeCategories');
             Route::post('documents/brands', 'Tenant\DocumentController@storeBrands');
@@ -296,6 +315,7 @@ if ($hostname) {
             Route::get('customers/list', 'Tenant\PersonController@clientsForGenerateCPE');
             Route::get('dispatches/client/{id}', 'Tenant\DispatchController@dispatchesByClient');
             Route::post('dispatches/items', 'Tenant\DispatchController@getItemsFromDispatches');
+            Route::get('dispatches/data_table', 'Tenant\DispatchController@data_table');
 
             Route::get('reports/consistency-documents', 'Tenant\ReportConsistencyDocumentController@index')->name('tenant.consistency-documents.index')->middleware('tenant.internal.mode');
             Route::post('reports/consistency-documents/lists', 'Tenant\ReportConsistencyDocumentController@lists');
@@ -324,6 +344,12 @@ if ($hostname) {
             Route::get('unit_types/record/{code}', 'Tenant\UnitTypeController@record');
             Route::post('unit_types', 'Tenant\UnitTypeController@store');
             Route::delete('unit_types/{code}', 'Tenant\UnitTypeController@destroy');
+
+            //Transfer Reason Types
+            Route::get('transfer-reason-types/records', 'Tenant\TransferReasonTypeController@records');
+            Route::get('transfer-reason-types/record/{code}', 'Tenant\TransferReasonTypeController@record');
+            Route::post('transfer-reason-types', 'Tenant\TransferReasonTypeController@store');
+            Route::delete('transfer-reason-types/{code}', 'Tenant\TransferReasonTypeController@destroy');
 
             //Detractions
             Route::get('detraction_types/records', 'Tenant\DetractionTypeController@records');
@@ -422,6 +448,7 @@ if ($hostname) {
 
             Route::get('quotations/search-items', 'Tenant\QuotationController@searchItems');
             Route::get('quotations/search/item/{item}', 'Tenant\QuotationController@searchItemById');
+            Route::get('quotations/item-warehouses/{item}', 'Tenant\QuotationController@itemWarehouses');
 
             //sale-notes
             Route::get('sale-notes', 'Tenant\SaleNoteController@index')->name('tenant.sale_notes.index')->middleware('redirect.level');
@@ -434,6 +461,9 @@ if ($hostname) {
             Route::get('sale-notes/create/{salenote?}', 'Tenant\SaleNoteController@create')->name('tenant.sale_notes.create')->middleware('redirect.level');
 
             Route::get('sale-notes/tables', 'Tenant\SaleNoteController@tables');
+            Route::post('sale-notes/UpToOther', 'Tenant\SaleNoteController@EnviarOtroSitio');
+            Route::post('sale-notes/getUpToOther', 'Tenant\SaleNoteController@getSaleNoteToOtherSite');
+            Route::post('sale-notes/urlUpToOther', 'Tenant\SaleNoteController@getSaleNoteToOtherSiteUrl');
             Route::post('sale-notes/duplicate', 'Tenant\SaleNoteController@duplicate');
             Route::get('sale-notes/table/{table}', 'Tenant\SaleNoteController@table');
             Route::post('sale-notes', 'Tenant\SaleNoteController@store');
@@ -453,6 +483,7 @@ if ($hostname) {
             Route::get('sale-notes/search/item/{item}', 'Tenant\SaleNoteController@searchItemById');
             Route::get('sale-notes/list-by-client', 'Tenant\SaleNoteController@saleNotesByClient');
             Route::post('sale-notes/items', 'Tenant\SaleNoteController@getItemsFromNotes');
+            Route::get('sale-notes/config-group-items', 'Tenant\SaleNoteController@getConfigGroupItems');
 
             Route::get('sale_note_payments/records/{sale_note}', 'Tenant\SaleNotePaymentController@records');
             Route::get('sale_note_payments/document/{sale_note}', 'Tenant\SaleNotePaymentController@document');

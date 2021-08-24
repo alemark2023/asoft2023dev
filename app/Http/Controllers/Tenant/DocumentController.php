@@ -15,6 +15,14 @@ use App\Imports\DocumentsImportTwoFormat;
 use App\Mail\Tenant\DocumentEmail;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\CatColorsItem;
+use App\Models\Tenant\Catalogs\CatItemMoldCavity;
+use App\Models\Tenant\Catalogs\CatItemMoldProperty;
+use App\Models\Tenant\Catalogs\CatItemPackageMeasurement;
+use App\Models\Tenant\Catalogs\CatItemProductFamily;
+use App\Models\Tenant\Catalogs\CatItemStatus;
+use App\Models\Tenant\Catalogs\CatItemUnitBusiness;
+use App\Models\Tenant\Catalogs\CatItemUnitsPerPackage;
 use App\Models\Tenant\Catalogs\ChargeDiscountType;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
@@ -41,6 +49,7 @@ use Carbon\Carbon;
 use Config;
 use Exception;
 use GuzzleHttp\Client;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -55,7 +64,10 @@ use Modules\Item\Models\Category;
 
 class DocumentController extends Controller
 {
-    use StorageDocument, OfflineTrait, FinanceTrait;
+    use FinanceTrait;
+    use OfflineTrait;
+    use StorageDocument;
+
     private $max_count_payment = 0;
 
     public function __construct()
@@ -69,7 +81,7 @@ class DocumentController extends Controller
         $is_client = $this->getIsClient();
         $import_documents = config('tenant.import_documents');
         $import_documents_second = config('tenant.import_documents_second_format');
-        $configuration = Configuration::first();
+        $configuration = Configuration::getPublicConfig();
 
         return view('tenant.documents.index', compact('is_client','import_documents','import_documents_second','configuration'));
     }
@@ -103,7 +115,10 @@ class DocumentController extends Controller
                             ->whereIn('identity_document_type_id',$identity_document_type_id)
                             ->whereIsEnabled()
                             ->get()->transform(function($row) {
-                                return [
+                /** @var  Person $row */
+                return $row->getCollectionData();
+                /* Movido al modelo */
+                return [
                                     'id' => $row->id,
                                     'description' => $row->number.' - '.$row->name,
                                     'name' => $row->name,
@@ -195,6 +210,7 @@ class DocumentController extends Controller
         $payment_destinations = $this->getPaymentDestinations();
         $document_id =  auth()->user()->document_id;
         $series_id =  auth()->user()->series_id;
+        $affectation_igv_types = AffectationIgvType::whereActive()->get();
 
         return compact(
             'document_id',
@@ -221,7 +237,8 @@ class DocumentController extends Controller
             'is_client',
             'select_first_document_type_03',
             'payment_destinations',
-            'payment_conditions'
+            'payment_conditions',
+            'affectation_igv_types'
         );
 
     }
@@ -239,8 +256,51 @@ class DocumentController extends Controller
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $is_client = $this->getIsClient();
 
-        return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types',
-                       'operation_types', 'discount_types', 'charge_types', 'attribute_types','is_client');
+        $configuration= Configuration::first();
+
+        /** Informacion adicional */
+        $colors = collect([]);
+        $CatItemStatus=$colors;
+        $CatItemUnitBusiness = $colors;
+        $CatItemMoldCavity = $colors;
+        $CatItemPackageMeasurement =$colors;
+        $CatItemUnitsPerPackage = $colors;
+        $CatItemMoldProperty = $colors;
+        $CatItemProductFamily= $colors;
+        if($configuration->isShowExtraInfoToItem()){
+
+            $colors = CatColorsItem::all();
+            $CatItemStatus= CatItemStatus::all();
+            $CatItemUnitBusiness = CatItemUnitBusiness::all();
+            $CatItemMoldCavity = CatItemMoldCavity::all();
+            $CatItemPackageMeasurement = CatItemPackageMeasurement::all();
+            $CatItemUnitsPerPackage = CatItemUnitsPerPackage::all();
+            $CatItemMoldProperty = CatItemMoldProperty::all();
+            $CatItemProductFamily= CatItemProductFamily::all();
+        }
+
+
+        /** Informacion adicional */
+
+        return compact(
+            'items',
+            'categories',
+            'affectation_igv_types',
+            'system_isc_types',
+            'price_types',
+            'operation_types',
+            'discount_types',
+            'charge_types',
+            'attribute_types',
+            'is_client',
+            'colors',
+            'CatItemMoldCavity',
+            'CatItemMoldProperty',
+            'CatItemUnitBusiness',
+            'CatItemStatus',
+            'CatItemPackageMeasurement',
+            'CatItemProductFamily',
+            'CatItemUnitsPerPackage');
     }
 
     public function table($table)
@@ -487,9 +547,14 @@ class DocumentController extends Controller
             foreach ($notes as $note) {
                 $noteArray = explode('-', $note);
                 if (count($noteArray) === 2) {
-                    SaleNote::where('series', $noteArray[0])
-                        ->where('number', $noteArray[1])
-                        ->update(['document_id' => $documentId]);
+                    $sale_note = SaleNote::where([
+                                                     'series'=> $noteArray[0],
+                                                     'number'=> $noteArray[1],
+                                                 ])->first();
+                    if(!empty($sale_note)) {
+                        $sale_note->document_id = $documentId;
+                        $sale_note->push();
+                    }
                 }
             }
         }
@@ -735,6 +800,9 @@ class DocumentController extends Controller
         $customers = Person::with('addresses')->whereType('customers')
                     ->where('id',$id)
                     ->get()->transform(function($row) {
+                        /** @var  Person $row */
+                        return $row->getCollectionData();
+                        /* Movido al modelo */
                         return [
                             'id' => $row->id,
                             'description' => $row->number.' - '.$row->name,
@@ -872,56 +940,54 @@ class DocumentController extends Controller
         $purchase_order = $request->purchase_order;
         $guides = $request->guides;
 
-
         $records = Document::query();
 		if ($d_start && $d_end) {
-			$records = $records->whereBetween('date_of_issue', [$d_start, $d_end]);
+			 $records->whereBetween('date_of_issue', [$d_start, $d_end]);
 		}
         if ($date_of_issue) {
             $records = Document::where('date_of_issue', 'like', '%' . $date_of_issue . '%');
         }
+        /** @var Builder $records */
         if ($document_type_id) {
-            $records = $records->where('document_type_id', 'like', '%' . $document_type_id . '%');
+            $records->where('document_type_id', 'like', '%' . $document_type_id . '%');
         }
         if ($series) {
-            $records = $records->where('series', 'like', '%' . $series . '%');
+            $records->where('series', 'like', '%' . $series . '%');
         }
         if ($number) {
-            $records = $records->where('number', $number);
+            $records->where('number', $number);
         }
         if ($state_type_id) {
-            $records = $records->where('state_type_id', 'like', '%' . $state_type_id . '%');
+            $records->where('state_type_id', 'like', '%' . $state_type_id . '%');
         }
         if ($purchase_order) {
-            $records = $records->where('purchase_order', $purchase_order);
+            $records->where('purchase_order', $purchase_order);
         }
-        $records = $records->whereTypeUser()
-            ->latest();
+        $records->whereTypeUser()->latest();
 
-        if($pending_payment){
-            $records = $records->where('total_canceled', false);
-        }
-
-        if($customer_id){
-            $records = $records->where('customer_id', $customer_id);
+        if ($pending_payment) {
+            $records->where('total_canceled', false);
         }
 
-        if($item_id){
-            $records = $records->whereHas('items', function($query) use($item_id){
-                                    $query->where('item_id', $item_id);
-                                });
+        if ($customer_id) {
+            $records->where('customer_id', $customer_id);
         }
 
-        if($category_id){
-
-            $records = $records->whereHas('items', function($query) use($category_id){
-                                    $query->whereHas('relation_item', function($q) use($category_id){
-                                        $q->where('category_id', $category_id);
-                                    });
-                                });
+        if ($item_id) {
+            $records->whereHas('items', function ($query) use ($item_id) {
+                $query->where('item_id', $item_id);
+            });
         }
-        if(!empty($guides)){
-            $records->where('guides','like', DB::raw("%\"number\":\"%").$guides. DB::raw("%\"%"));
+
+        if ($category_id) {
+            $records->whereHas('items', function ($query) use ($category_id) {
+                $query->whereHas('relation_item', function ($q) use ($category_id) {
+                    $q->where('category_id', $category_id);
+                });
+            });
+        }
+        if (!empty($guides)) {
+            $records->where('guides', 'like', DB::raw("%\"number\":\"%") . $guides . DB::raw("%\"%"));
         }
         return $records;
     }

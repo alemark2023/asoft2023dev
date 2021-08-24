@@ -54,13 +54,13 @@ class RecurrencySaleNoteCommand extends Command
 
             $today = Carbon::now()->format('Y-m-d');
 
-            $sale_notes = SaleNote::
-            where(
-                [
-                    ['apply_concurrency', false],
-                    ['automatic_date_of_issue','<=', $today],
-                    ['enabled_concurrency', true]
-                ])->sharedLock()->get();
+            $sale_notes = SaleNote::where([
+                            ['apply_concurrency', false],
+                            ['automatic_date_of_issue','<=', $today],
+                            ['enabled_concurrency', true]
+                        ])
+                        ->sharedLock()
+                        ->get();
 
             foreach ($sale_notes as $sale_note) {
                 // Log::info("init create");
@@ -174,12 +174,15 @@ class RecurrencySaleNoteCommand extends Command
 
                     }
 
-                    $name = [$replicate_sale_note->prefix,$replicate_sale_note->id,date('Ymd')];
+                    // $name = [$replicate_sale_note->prefix,$replicate_sale_note->id,date('Ymd')];
+
+                    $name = [$replicate_sale_note->series, $replicate_sale_note->number, date('Ymd')];
                     $replicate_sale_note->filename = join('-', $name);
+
                     $replicate_sale_note->update();
 
-                    $this->info("La nota de venta: {$replicate_sale_note->identifier} fue generada de forma automática");
-                    Log::info("La nota de venta: {$replicate_sale_note->identifier} fue generada de forma automática");
+                    $this->info("La nota de venta: {$replicate_sale_note->number_full} fue generada de forma automática");
+                    Log::info("La nota de venta: {$replicate_sale_note->number_full} fue generada de forma automática");
                     // return $replicate_sale_note;
 
                 }

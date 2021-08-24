@@ -61,6 +61,7 @@
             return {
                 titleDialog: 'Agregar Producto',
                 showDialogNewItem: false,
+                all_items: [],
                 resource: 'dispatches',
                 errors: {},
                 items: [],
@@ -84,6 +85,7 @@
             create() {
                 this.$http.post(`/${this.resource}/tables`).then(response => {
                     this.items = response.data.items;
+                    this.all_items = this.itemss
                 });
 
                 this.form = {};
@@ -118,6 +120,9 @@
 
                 this.form.IdLoteSelected = null;
             },
+            filterItems() {
+                this.items = this.all_items
+            },
             async searchRemoteItems(input) {
                 if (input.length > 2) {
                     this.loading_search = true
@@ -129,7 +134,7 @@
                             .then(response => {
                                 this.items = response.data.items
                                 this.loading_search = false
-                                this.enabledSearchItemsBarcode()
+                                // this.enabledSearchItemsBarcode()
                                 if(this.items.length == 0){
                                     this.filterItems()
                                 }

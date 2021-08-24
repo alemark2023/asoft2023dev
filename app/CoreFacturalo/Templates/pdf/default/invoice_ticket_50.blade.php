@@ -245,6 +245,70 @@
 </table>
 @endif
 
+
+@if ($document->transport)
+<p class="desc"><strong>Transporte de pasajeros</strong></p>
+
+@php
+    $transport = $document->transport;
+    $origin_district_id = (array)$transport->origin_district_id;
+    $destinatation_district_id = (array)$transport->destinatation_district_id;
+    $origin_district = Modules\Order\Services\AddressFullService::getDescription($origin_district_id[2]);
+    $destinatation_district = Modules\Order\Services\AddressFullService::getDescription($destinatation_district_id[2]);
+@endphp
+ 
+
+<table class="full-width mt-3">
+    <tr>
+        <td><p class="desc-9">{{ $transport->identity_document_type->description }}:</p></td>
+        <td><p class="desc-9">{{ $transport->number_identity_document }}</p></td>
+    </tr>
+    <tr>
+        <td><p class="desc-9">Nombre:</p></td>
+        <td><p class="desc-9">{{ $transport->passenger_fullname }}</p></td>
+    </tr>
+
+
+    <tr>
+        <td><p class="desc-9">N° Asiento:</p></td>
+        <td><p class="desc-9">{{ $transport->seat_number }}</p></td>
+    </tr>
+    <tr>
+        <td><p class="desc-9">M. Pasajero:</p></td>
+        <td><p class="desc-9">{{ $transport->passenger_manifest }}</p></td>
+    </tr>
+
+    <tr>
+        <td><p class="desc-9">F. Inicio:</p></td>
+        <td><p class="desc-9">{{ $transport->start_date }}</p></td>
+    </tr>
+    <tr>
+        <td><p class="desc-9">H. Inicio:</p></td>
+        <td><p class="desc-9">{{ $transport->start_time }}</p></td>
+    </tr>
+
+
+    <tr>
+        <td><p class="desc-9">U. Origen:</p></td>
+        <td><p class="desc-9">{{ $origin_district }}</p></td>
+    </tr>
+    <tr>
+        <td><p class="desc-9">D. Origen:</p></td>
+        <td><p class="desc-9">{{ $transport->origin_address }}</p></td>
+    </tr>
+   
+    <tr>
+        <td><p class="desc-9">U. Destino:</p></td>
+        <td><p class="desc-9">{{ $destinatation_district }}</p></td>
+    </tr>
+    <tr>
+        <td><p class="desc-9">D. Destino:</p></td>
+        <td><p class="desc-9">{{ $transport->destinatation_address }}</p></td>
+    </tr>
+    
+</table>
+@endif
+
 @if (count($document->reference_guides) > 0)
 <br/>
 <strong>Guias de remisión</strong>
@@ -389,6 +453,21 @@
             <td colspan="4" class="text-right font-bold desc">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold desc">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
+        
+        @if($document->total_charge > 0)
+            @php
+                $total_factor = 0;
+                foreach($document->charges as $charge) {
+                    $total_factor = ($total_factor + $charge->factor) * 100;
+                }
+            @endphp
+            <tr>
+                <td colspan="4" class="text-right font-bold desc-9">CARGOS ({{$total_factor}}%): {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold desc-9">{{ number_format($document->total_charge, 2) }}</td>
+            </tr>
+        @endif
+
+
         <tr>
             <td colspan="4" class="text-right font-bold desc">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold desc">{{ number_format($document->total, 2) }}</td>

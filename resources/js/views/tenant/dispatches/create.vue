@@ -53,7 +53,7 @@
                         </div>
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.transport_mode_type_id}">
-                                <label class="control-label">Modo de translado<span class="text-danger"> *</span></label>
+                                <label class="control-label">Modo de traslado<span class="text-danger"> *</span></label>
                                 <el-select v-model="form.transport_mode_type_id">
                                     <el-option v-for="option in transportModeTypes" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
@@ -62,7 +62,7 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors.transfer_reason_type_id}">
-                                <label class="control-label">Motivo de translado<span class="text-danger"> *</span></label>
+                                <label class="control-label">Motivo de traslado<span class="text-danger"> *</span></label>
                                 <el-select v-model="form.transfer_reason_type_id">
                                     <el-option v-for="option in transferReasonTypes" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
@@ -478,8 +478,18 @@
             await this.setDefaultCustomer()
 
             await this.createFromOrderForm()
+
+            this.$eventHub.$on('reloadDataPersons', (customer_id) => {
+                this.reloadDataCustomers(customer_id)
+            })
         },
         methods: {
+            reloadDataCustomers(customer_id) {
+                this.$http.get(`/documents/search/customer/${customer_id}`).then((response) => {
+                    this.customers = response.data.customers
+                    this.form.customer_id = customer_id
+                })
+            },
             changeTransport(){
                 let v =  _.find(this.dispachers, {'id': this.dispacher})
                 if(v !== undefined){
@@ -695,12 +705,14 @@
                 this.$set(this.form.delivery, 'location_id', null);
             },
             addItem(form) {
-                let exist = this.form.items.find((item) => item.id == form.item.id);
+                let it = form.item;
+                let qty = form.quantity;
+                let exist = this.form.items.find((item) => item.id == it.id);
 
                 let attributes = null
 
-                if(form.item.attributes){
-                    attributes = form.item.attributes
+                if(it.attributes){
+                    attributes = it.attributes
                     this.incrementValueAttr(form)
                 }
 
@@ -709,51 +721,80 @@
                     return;
                 }
                 let lot_group = null;
-                if (form.item.IdLoteSelected) {
-                    lot_group = form.item.lots_group.find(l => l.id == form.item.IdLoteSelected);
+                if (it.IdLoteSelected) {
+                    lot_group = it.lots_group.find(l => l.id == it.IdLoteSelected);
                 }
                 this.form.items.push({
                     attributes: attributes,
-                    description: form.item.description,
-                    internal_id: form.item.internal_id,
+                    description: it.description,
+                    internal_id: it.internal_id,
                     quantity: form.quantity,
-                    item_id: form.item.id,
-                    unit_type_id: form.item.unit_type_id,
-                    id: form.item.id,
-                    IdLoteSelected: form.item.IdLoteSelected || '',
+                    item_id: it.id,
+                    unit_type_id: it.unit_type_id,
+                    id: it.id,
+                    IdLoteSelected: it.IdLoteSelected || '',
                     lot_group: lot_group || null,
                 });
             },
             decrementValueAttr(form){
 
-                this.form.packages_number -= parseFloat(form.quantity)
+
+
+                let it = form
+                let attrib = it.attributes
+                let qty = parseFloat(it.quantity)
+
+                //this.form.packages_number -= parseFloat(form.quantity)
+                this.form.packages_number -= qty
 
                 let total_weight = 0
 
-                if(form.attributes){
 
-                    form.attributes.forEach(attr => {
-                        if(attr.attribute_type_id === '5032'){
-                            total_weight -= parseFloat(attr.value) * parseFloat(form.quantity)
+
+                if(attrib){
+                    for (const [key, value] of Object.entries(attrib)) {
+                        if(key === 'attributes' &&  value !== null){
+                            let attr = JSON.parse(value)
+                            if(attr !== null) {
+                                attr.forEach(attr => {
+                                    if (attr.attribute_type_id === '5032') {
+                                        total_weight -= parseFloat(attr.value) * qty
+                                    }
+                                });
+                            }
                         }
-                    });
+                    }
                 }
 
                 this.form.total_weight += total_weight
             },
             incrementValueAttr(form){
 
-                this.form.packages_number += parseFloat(form.quantity)
-
+                let qty = parseFloat(form.quantity)
+                let it = form.item
+                let attrib = it.attributes
+                this.form.packages_number += qty
                 let total_weight = 0
-
-                if(form.item.attributes){
-
-                    form.item.attributes.forEach(attr => {
+                if(attrib){
+                    for (const [key, value] of Object.entries(attrib)) {
+                        if(key === 'attributes' &&  value !== null){
+                            let attr = JSON.parse(value)
+                            if(attr !== null) {
+                                attr.forEach(attr => {
+                                    if (attr.attribute_type_id === '5032') {
+                                        total_weight += parseFloat(attr.value) * qty
+                                    }
+                                });
+                            }
+                        }
+                    }
+                    /*
+                    attrib.attributes.forEach(attr => {
                         if(attr.attribute_type_id === '5032'){
-                            total_weight += parseFloat(attr.value) * parseFloat(form.quantity)
+                            total_weight += parseFloat(attr.value) * qty
                         }
                     });
+                    */
                 }
 
                 this.form.total_weight += total_weight

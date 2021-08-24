@@ -16,6 +16,7 @@ use App\Models\Tenant\Catalogs\AttributeType;
 use App\Models\Tenant\Catalogs\ChargeDiscountType;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
+use App\Models\Tenant\Catalogs\OperationType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Company;
@@ -29,6 +30,7 @@ use App\Models\Tenant\Series;
 use App\Models\Tenant\StateType;
 use App\Models\Tenant\User;
 use App\Models\Tenant\Warehouse;
+use App\Traits\OfflineTrait;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -39,12 +41,15 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
+use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 
 
 class QuotationController extends Controller
 {
 
-    use StorageDocument, FinanceTrait;
+    use FinanceTrait;
+    use OfflineTrait;
+    use StorageDocument;
 
     protected $quotation;
     protected $company;
@@ -171,10 +176,15 @@ class QuotationController extends Controller
         $payment_method_types = PaymentMethodType::orderBy('id','desc')->get();
         $payment_destinations = $this->getPaymentDestinations();
         $configuration = Configuration::select('destination_sale')->first();
+        /*
+        carlomagno83/facturadorpro4#233
+
         $sellers = User::without(['establishment'])
             ->whereIn('type', ['seller'])
             ->orWhere('id', auth()->user()->id)
             ->get();
+        */
+        $sellers = User::GetSellers(false)->get();
 
         return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types', 'configuration',
                         'company', 'document_type_03_filter','payment_method_types', 'payment_destinations', 'sellers');
@@ -189,10 +199,8 @@ class QuotationController extends Controller
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
-        $sellers = User::without(['establishment'])
-                       ->whereIn('type', ['seller'])
-                       ->orWhere('id', auth()->user()->id)
-                       ->get();
+        // $sellers = User::GetSellers(true)->get();
+        $sellers = User::where('establishment_id', auth()->user()->establishment_id)->whereIn('type', ['seller', 'admin'])->orWhere('id', auth()->user()->id)->get();
 
         return compact('series', 'document_types_invoice', 'payment_method_types', 'payment_destinations','sellers');
     }
@@ -206,8 +214,21 @@ class QuotationController extends Controller
         $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
+        $is_client = $this->getIsClient();
+        $operation_types = OperationType::whereActive()->get();
 
-        return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types', 'discount_types', 'charge_types', 'attribute_types');
+        return compact(
+             'items',
+             'categories',
+             'operation_types',
+             'affectation_igv_types',
+             'system_isc_types',
+             'price_types',
+             'discount_types',
+             'charge_types',
+             'attribute_types',
+             'is_client'
+        );
     }
 
     public function record($id)
@@ -427,24 +448,28 @@ class QuotationController extends Controller
     }
 
 
-
+    /**
+     * Realiza la busqueda de producto en cotizacion.
+     * @param Request $request
+     * @return array
+     */
     public function searchItems(Request $request)
     {
-
-
-        $items = Item::orderBy('description')
-                        ->where('description','like', "%{$request->input}%")
-                        ->orWhere('internal_id','like', "%{$request->input}%")
-                        ->orWhereHas('category', function($query) use($request) {
-                            $query->where('name', 'like', '%' . $request->input . '%');
-                        })
-                        ->orWhereHas('brand', function($query) use($request) {
-                            $query->where('name', 'like', '%' . $request->input . '%');
-                        })
-                        ->whereIsActive()
-                        ->get();
-
-
+        $items = Item::orderBy('description')->whereIsActive();
+        if ($request->has('search_by_barcode') && (int)$request->search_by_barcode === 1) {
+            $items->where('barcode', $request->input)
+                ->limit(1);
+        }else{
+            $items->where('description', 'like', "%{$request->input}%")
+                ->orWhere('internal_id', 'like', "%{$request->input}%")
+                ->orWhereHas('category', function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->input . '%');
+                })
+                ->orWhereHas('brand', function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->input . '%');
+                });
+        }
+        $items = $items->get();
         $this->ReturnItem($items);
         return compact('items');
 
@@ -457,9 +482,12 @@ class QuotationController extends Controller
     public function ReturnItem( &$item)
     {
         $configuration =  Configuration::first();
-        $item->transform(function ($row) use($configuration) {
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = \Modules\Inventory\Models\Warehouse::where('establishment_id', $establishment_id)->first();
+
+        $item->transform(function ($row) use($configuration,$warehouse) {
             /** @var \App\Models\Tenant\Item $row */
-            return $row->getDataToItemModal($configuration,false,true);
+            return $row->getDataToItemModal($warehouse,false,true);
             /** Se ha movido al modelo*/
             $full_description = $this->getFullDescription($row);
             return [
@@ -835,5 +863,26 @@ class QuotationController extends Controller
             'success' => true,
             'message' => 'Estado actualizado correctamente'
         ];
+    }
+
+
+    public function itemWarehouses($item_id)
+    {
+
+        $record = Item::find($item_id);
+        // dd($record->warehouses);
+
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
+
+        return collect($record->warehouses)->transform(function ($row) use ($warehouse) {
+            return [
+                'warehouse_description' => $row->warehouse->description,
+                'stock'                 => $row->stock,
+                'warehouse_id'          => $row->warehouse_id,
+                'checked'               => ($row->warehouse_id == $warehouse->id) ? true : false,
+            ];
+        });
+
     }
 }

@@ -1,4 +1,9 @@
 @php
+    use App\Models\Tenant\Configuration;
+$configuration = new Configuration();
+$configuration = $configuration->getCollectionData();
+$is_pharma = $configuration['is_pharmacy'];
+
     $establishment = $document->establishment;
     $customer = $document->customer;
     $invoice = $document->invoice;
@@ -285,6 +290,9 @@
         <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
         <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
         <th class="border-top-bottom text-left py-2">MODELO</th>
+        @if($is_pharma == true)
+            <th class="border-top-bottom text-center py-2">RS</th>
+        @endif
         <th class="border-top-bottom text-right py-2" width="12%">P.UNIT</th>
         <th class="border-top-bottom text-right py-2" width="8%">DTO.</th>
         <th class="border-top-bottom text-right py-2" width="12%">TOTAL</th>
@@ -341,6 +349,11 @@
                 @endif
             </td>
             <td class="text-left align-top">{{ $row->item->model ?? '' }}</td>
+            @if($is_pharma == true)
+                <td class="text-center align-top">
+                    {{$row->item->sanitary ?? '' }}
+                </td>
+            @endif
             <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
             <td class="text-right align-top">
                 @if($row->discounts)

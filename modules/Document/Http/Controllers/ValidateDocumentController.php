@@ -43,7 +43,8 @@ class ValidateDocumentController extends Controller
         
         foreach ($records_paginate->getCollection() as $document)
         {
-            reValidate:
+            // evitado el buble de consulta
+            // reValidate:
             $validate_cpe = new ValidateCpe2();
             $response = $validate_cpe->search($document->company->number,
                                                 $document->document_type_id,
@@ -52,7 +53,6 @@ class ValidateDocumentController extends Controller
                                                 $document->date_of_issue,
                                                 $document->total
                                             );
-
             if ($response['success']) {
                 
                 $response_code = $response['data']['comprobante_estado_codigo'];
@@ -64,9 +64,10 @@ class ValidateDocumentController extends Controller
                 $document->state_type_sunat_description = $response_description; 
                 $document->code = $response_code; 
  
-            } else {
-                goto reValidate;
-            }
+            } //else {
+
+                // goto reValidate;
+            //}
         }
 
         return $records_paginate;

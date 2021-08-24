@@ -449,7 +449,7 @@
                         {{-- Inventario --}}
                         @if(in_array('inventory', $vc_modules))
                         <li class="nav-parent
-                            {{ (in_array($path[0], ['inventory', 'moves', 'transfers', 'devolutions']) |($path[0] === 'reports' && in_array($path[1], ['kardex', 'inventory', 'valued-kardex'])))?'nav-active nav-expanded':'' }}
+                            {{ (in_array($path[0], ['inventory', 'moves', 'transfers', 'devolutions', 'extra_info_items']) |($path[0] === 'reports' && in_array($path[1], ['kardex', 'inventory', 'valued-kardex'])))?'nav-active nav-expanded':'' }}
                         ">
                             <a class="nav-link" href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-archive"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
@@ -487,6 +487,11 @@
                                 </li> --}}
                                 <li class="{{(($path[0] === 'reports') && ($path[1] === 'valued-kardex')) ? 'nav-active' : ''}}">
                                     <a class="nav-link" href="{{route('reports.valued_kardex.index')}}">Kardex valorizado</a>
+                                </li>
+                                @endif
+                                @if(in_array('inventory_item_extra_data', $vc_module_levels) && $configuration->isShowExtraInfoToItem())
+                                <li class="{{($path[0] === 'extra_info_items') ? 'nav-active' : ''}}">
+                                    <a class="nav-link" href="{{route('extra_info_items.index')}}">Datos extra de items</a>
                                 </li>
                                 @endif
                             </ul>
@@ -661,7 +666,7 @@
                     </li>
                     @endif
 
-                    @if(in_array('cuenta', $vc_modules))
+                    {{-- @if(in_array('cuenta', $vc_modules))
                     <li class=" nav-parent
                         {{ ($path[0] === 'cuenta')?'nav-active nav-expanded':'' }}">
                         <a class="nav-link" href="#">
@@ -681,10 +686,10 @@
                             @endif
                         </ul>
                     </li>
-                    @endif
-                    @if(in_array('hotels', $vc_modules) || in_array('documentary-procedure', $vc_modules))
+                    @endif --}}
+                    {{-- @if(in_array('hotels', $vc_modules) || in_array('documentary-procedure', $vc_modules))
                     <li class="nav-description">Módulos extras</li>
-                    @endif
+                    @endif --}}
                     @if(in_array('hotels', $vc_modules))
                     <li class=" nav-parent {{ ($path[0] === 'hotels') ? 'nav-active nav-expanded' : '' }}">
                         <a class="nav-link" href="#">
@@ -729,14 +734,22 @@
                         <ul class="nav nav-children">
                             @if(in_array('documentary_offices', $vc_module_levels))
                             <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'offices')) ? 'nav-active' : '' }}">
-                                <a class="nav-link" href="{{ route('documentary.offices') }}">Oficinas</a>
+                                <a class="nav-link" href="{{ route('documentary.offices') }}">Listado de Etapas</a>
                             </li>
                             @endif
+                                @if(in_array('documentary_requirements', $vc_module_levels))
+
+                                <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'requirements')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ route('documentary.requirements') }}">Listado de requerimientos</a>
+                                </li>
+
+                                @endif
                             @if(in_array('documentary_process', $vc_module_levels))
                             <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'processes')) ? 'nav-active' : '' }}">
-                                <a class="nav-link" href="{{ route('documentary.processes') }}">Procesos</a>
+                                <a class="nav-link" href="{{ route('documentary.processes') }}">Tipos de tramites</a>
                             </li>
                             @endif
+                                {{--
                             @if(in_array('documentary_documents', $vc_module_levels))
                             <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'documents')) ? 'nav-active' : '' }}">
                                 <a class="nav-link" href="{{ route('documentary.documents') }}">Tipos de Documento</a>
@@ -747,9 +760,10 @@
                                 <a class="nav-link" href="{{ route('documentary.actions') }}">Acciones</a>
                             </li>
                             @endif
+                                --}}
                             @if(in_array('documentary_files', $vc_module_levels))
                             <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'files')) ? 'nav-active' : '' }}">
-                                <a class="nav-link" href="{{ route('documentary.files') }}">Expedientes</a>
+                                <a class="nav-link" href="{{ route('documentary.files') }}">Listado de tramites</a>
                             </li>
                             @endif
                         </ul>
@@ -757,30 +771,32 @@
                     @endif
 
                     {{-- DIGEMID --}}
-                        @if(in_array('digemid', $vc_modules) && $configuration->isPharmacy())
-                        <li class=" nav-parent {{ ($path[0] === 'digemid') ? 'nav-active nav-expanded' : '' }}">
-                            <a class="nav-link" href="#">
-                                <i class="fa fas fa-ambulance" aria-hidden="true"></i>
-                                <span>Farmácia</span>
-                            </a>
-                            <ul class="nav nav-children">
+                    @if(in_array('digemid', $vc_modules) && $configuration->isPharmacy())
+                    <li class=" nav-parent {{ ($path[0] === 'digemid') ? 'nav-active nav-expanded' : '' }}">
+                        <a class="nav-link" href="#">
+                            <i class="fa fas fa-ambulance" aria-hidden="true"></i>
+                            <span>Farmacia</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            @if(in_array('digemid', $vc_module_levels))
+                                {{-- <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'offices')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ route('documentary.offices') }}">Oficinas</a>
+                                </li> --}}
+                                <li class="{{ (($path[0] === 'digemid') && ($path[1] === 'digemid')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ route('tenant.digemid.index') }}">Productos</a>
+                                </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+                    {{-- DIGEMID --}}
 
-                                @if(in_array('digemid', $vc_module_levels))
-<!--                                    <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'offices')) ? 'nav-active' : '' }}">
-                                        <a class="nav-link" href="{{ route('documentary.offices') }}">Oficinas</a>
-                                    </li>-->
-
-                                    <li class="{{ (($path[0] === 'digemid') && ($path[1] === 'digemid')) ? 'nav-active' : '' }}">
-                                        <a class="nav-link" href="{{ route('tenant.digemid.index') }}">Productos</a>
-                                    </li>
-                                @endif
-
-
-                            </ul>
-                        </li>
-                        @endif
-
-                        {{-- DIGEMID --}}
+                    <li class="">
+                        <a class="nav-link" href="{{url('list-extras')}}">
+                            <i class="fas fa-cube"></i>
+                            <span>Apps</span>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>

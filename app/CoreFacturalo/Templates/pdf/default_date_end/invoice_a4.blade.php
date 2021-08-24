@@ -1,28 +1,33 @@
 @php
-    $establishment = $document->establishment;
-    $customer = $document->customer;
-    $invoice = $document->invoice;
-    $document_base = ($document->note) ? $document->note : null;
+    use App\Models\Tenant\Configuration;
+$configuration = new Configuration();
+$configuration = $configuration->first()->getCollectionData();
+$is_pharma = $configuration['is_pharmacy'];
 
-    //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
-    $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    $accounts = \App\Models\Tenant\BankAccount::where('show_in_documents', true)->get();
+$establishment = $document->establishment;
+   $customer = $document->customer;
+   $invoice = $document->invoice;
+   $document_base = ($document->note) ? $document->note : null;
 
-    if($document_base) {
+   //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
+   $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
+   $accounts = \App\Models\Tenant\BankAccount::where('show_in_documents', true)->get();
 
-        $affected_document_number = ($document_base->affected_document) ? $document_base->affected_document->series.'-'.str_pad($document_base->affected_document->number, 8, '0', STR_PAD_LEFT) : $document_base->data_affected_document->series.'-'.str_pad($document_base->data_affected_document->number, 8, '0', STR_PAD_LEFT);
+   if($document_base) {
 
-    } else {
+       $affected_document_number = ($document_base->affected_document) ? $document_base->affected_document->series.'-'.str_pad($document_base->affected_document->number, 8, '0', STR_PAD_LEFT) : $document_base->data_affected_document->series.'-'.str_pad($document_base->data_affected_document->number, 8, '0', STR_PAD_LEFT);
 
-        $affected_document_number = null;
-    }
+   } else {
 
-    $payments = $document->payments;
+       $affected_document_number = null;
+   }
 
-    $document->load('reference_guides');
+   $payments = $document->payments;
 
-    $total_payment = $document->payments->sum('payment');
-    $balance = ($document->total - $total_payment) - $document->payments->sum('change');
+   $document->load('reference_guides');
+
+   $total_payment = $document->payments->sum('payment');
+   $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
 @endphp
 <html>
@@ -335,6 +340,14 @@
         <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
         <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
         <th class="border-top-bottom text-left py-2">MODELO</th>
+        @if($is_pharma == true)
+            <th class="border-top-bottom text-center py-2">RS</th>
+        @endif
+        {{--
+            Falta validacion de plantilla del 596
+        <th class="border-top-bottom text-center py-2" width="8%">Color</th>
+        --}}
+
         <th class="border-top-bottom text-center py-2" width="8%">LOTE</th>
         <th class="border-top-bottom text-center py-2" width="8%">FECHA VCTO.</th>
         <th class="border-top-bottom text-right py-2" width="12%">P.UNIT</th>
@@ -344,6 +357,13 @@
     </thead>
     <tbody>
     @foreach($document->items as $row)
+        <?php
+        /*
+        Falta validacion de plantilla del 596
+        $extra_string = $row->getPrintExtraData();
+        */
+        ?>
+
         <tr>
             <td class="text-center align-top">
                 @if(((int)$row->quantity != $row->quantity))
@@ -387,6 +407,18 @@
                 @endif
             </td>
             <td class="text-left align-top">{{ $row->item->model ?? '' }}</td>
+            @if($is_pharma == true)
+                <td class="text-center align-top">
+                    {{$row->item->sanitary ?? '' }}
+                </td>
+            @endif
+            {{--
+            Falta validacion de plantilla del 596
+            <td class="text-center align-top">
+                {{ (isset($extra_string['colors'])?$extra_string['colors']:null) }}
+            </td>
+            --}}
+
             <td class="text-center align-top">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
                 {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}

@@ -130,6 +130,9 @@
                         <th v-if="columns.item_code.visible">Cód. SUNAT</th>
                         <th v-if="(columns.sanitary!== undefined && columns.sanitary.visible===true )">R.S.</th>
                         <th v-if="(columns.cod_digemid!== undefined && columns.cod_digemid.visible===true )">DIGEMID</th>
+                        <template v-if="typeUser == 'admin'">
+                            <th class="text-center">Historial</th>
+                        </template>
                         <th class="text-left">Stock</th>
                         <th class="text-right">P.Unitario (Venta)</th>
                         <th v-if="typeUser != 'seller' && columns.purchase_unit_price.visible" class="text-right">
@@ -155,6 +158,19 @@
                         <td v-if="columns.item_code.visible">{{ row.item_code }}</td>
                         <td v-if="(columns.sanitary!== undefined && columns.sanitary.visible===true )">{{ row.sanitary }}</td>
                         <td v-if="(columns.cod_digemid!== undefined && columns.cod_digemid.visible===true )">{{ row.cod_digemid }}</td>
+
+                        <template v-if="typeUser == 'admin'">
+                            <td class="text-center">
+                                <button
+                                    type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-primary"
+                                    @click.prevent="clickHistory(row.id)"
+                                >
+                                    <i class="fa fa-history"></i>
+                                </button>
+                            </td>
+                        </template>
+
                         <td>
                             <div v-if="config.product_only_location == true">
                                 {{ row.stock }}
@@ -287,10 +303,17 @@
             <items-import-list-price
                 :showDialog.sync="showImportListPriceDialog"
             ></items-import-list-price>
+
+            <items-history
+                :showDialog.sync="showDialogHistory"
+                :recordId="recordId"
+            >
+            </items-history>
         </div>
     </div>
 </template>
 <script>
+
 import ItemsForm from "./form.vue";
 import WarehousesDetail from "./partials/warehouses.vue";
 import ItemsImport from "./import.vue";
@@ -300,6 +323,8 @@ import ItemsExportWp from "./partials/export_wp.vue";
 import ItemsExportBarcode from "./partials/export_barcode.vue";
 import DataTable from "../../../components/DataTable.vue";
 import { deletable } from "../../../mixins/deletable";
+import ItemsHistory from "@viewsModuleItem/items/history.vue";
+import {mapActions, mapState} from "vuex";
 
 export default {
     props: [
@@ -316,6 +341,7 @@ export default {
         DataTable,
         WarehousesDetail,
         ItemsImportListPrice,
+        ItemsHistory,
     },
     data() {
         return {
@@ -330,7 +356,6 @@ export default {
             resource: "items",
             recordId: null,
             warehousesDetail: [],
-            config: {},
             columns: {
                 description: {
                     title: 'Descripción',
@@ -367,11 +392,15 @@ export default {
             },
             item_unit_types: [],
             titleTopBar: '',
-            title: ''
+            title: '',
+            showDialogHistory: false,
         };
     },
     created() {
-         if(this.configuration.is_pharmacy !== true){
+        this.$store.commit('setConfiguration', this.configuration);
+        this.loadConfiguration()
+
+        if(this.config.is_pharmacy !== true){
             delete this.columns.sanitary;
             delete this.columns.cod_digemid;
          }
@@ -383,23 +412,35 @@ export default {
             this.title = 'Listado de productos';
         }
         this.$http.get(`/configurations/record`).then((response) => {
-            this.config = response.data.data;
+            this.$store.commit('setConfiguration',response.data.data);
+            //this.config = response.data.data;
         });
         this.canCreateProduct();
     },
     computed:{
+        ...mapState([
+            'config',
+        ]),
         columnsComputed:function(){
             return this.columns;
         }
     },
     methods: {
+
+        ...mapActions([
+            'loadConfiguration',
+        ]),
+        clickHistory(recordId){
+            this.recordId = recordId
+            this.showDialogHistory = true
+        },
         canCreateProduct()
         {
             if (this.typeUser === 'admin') {
                 this.can_add_new_product = true
             } else if (this.typeUser === 'seller') {
-                if (this.configuration !== undefined && this.configuration.seller_can_create_product !== undefined) {
-                    this.can_add_new_product = this.configuration.seller_can_create_product;
+                if (this.config !== undefined && this.config.seller_can_create_product !== undefined) {
+                    this.can_add_new_product = this.config.seller_can_create_product;
                 }
             }
             return this.can_add_new_product;

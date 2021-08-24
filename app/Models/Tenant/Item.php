@@ -1,17 +1,25 @@
 <?php
 
 namespace App\Models\Tenant;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Catalogs\CatColorsItem;
+use App\Models\Tenant\Catalogs\CatItemMoldCavity;
+use App\Models\Tenant\Catalogs\CatItemMoldProperty;
+use App\Models\Tenant\Catalogs\CatItemPackageMeasurement;
+use App\Models\Tenant\Catalogs\CatItemProductFamily;
+use App\Models\Tenant\Catalogs\CatItemStatus;
+use App\Models\Tenant\Catalogs\CatItemUnitBusiness;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
-use Illuminate\Support\Facades\Config;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Modules\Account\Models\Account;
+use Modules\Digemid\Models\CatDigemid;
+use Modules\Inventory\Helpers\InventoryValuedKardex;
 use Modules\Inventory\Models\Warehouse;
-use Modules\Item\Models\Category;
 use Modules\Item\Models\Brand;
+use Modules\Item\Models\Category;
 use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
 use Modules\Item\Models\WebPlatform;
@@ -21,7 +29,21 @@ use Modules\Item\Models\WebPlatform;
  * Class Item
  *
  * @package App\Models\Tenant
- * @mixin  ModelTenant
+ * @mixin ModelTenant
+ * @method static Builder|Item newModelQuery()
+ * @method static Builder|Item newQuery()
+ * @method static Builder|Item pharmacy()
+ * @method static Builder|Item query()
+ * @method static Builder|Item whereFilterValuedKardex($params)
+ * @method static Builder|Item whereHasInternalId()
+ * @method static Builder|Item whereIsActive()
+ * @method static Builder|Item whereIsNotActive()
+ * @method static Builder|Item whereIsSet()
+ * @method static Builder|Item whereNotIsSet()
+ * @method static Builder|Item whereNotService()
+ * @method static Builder|Item whereService()
+ * @method static Builder|Item whereTypeUser()
+ * @method static Builder|Item whereWarehouse()
  */
 class Item extends ModelTenant
 {
@@ -213,6 +235,15 @@ class Item extends ModelTenant
         return $this->hasMany(InventoryKardex::class);
     }
 
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function cat_digemid()
+    {
+        return $this->hasOne(CatDigemid::class);
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -302,7 +333,11 @@ class Item extends ModelTenant
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
      */
     public function scopePharmacy($query){
-        return $query->whereNotNull('sanitary')->whereNotNull('cod_digemid');
+        return $query
+            ->whereNotNull('items.cod_digemid')
+            ->select('items.*')
+            ->join('cat_digemid','cat_digemid.item_id','=','items.id')
+            ;
     }
 
     /**
@@ -454,44 +489,70 @@ class Item extends ModelTenant
      */
     public function scopeWhereFilterValuedKardex(Builder $query, $params)
     {
+        /*
+        $query->OrWhereHas('document_items', function ($q) use ($params) {
+            $q->whereHas('document', function ($q1) use ($params) {
+                $q1->whereStateTypeAccepted()
+                    ->whereTypeUser()
+                    ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+                if ($params->establishment_id) {
+                    $q1->where('establishment_id', $params->establishment_id);
+                }
+            });
+        });
+        $query->OrWhereHas('sale_note_items', function ($q) use ($params) {
+            $q->whereHas('sale_note', function ($q1) use ($params) {
+                $q1->whereStateTypeAccepted()
+                    ->whereNotChanged()
+                    ->whereTypeUser()
+                    ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+                if ($params->establishment_id) {
+                    $q1->where('establishment_id', $params->establishment_id);
+                }
+            });
 
-        if($params->establishment_id){
+        });
 
-            return $query->with(['document_items'=> function($q) use($params){
-                        $q->whereHas('document', function($q) use($params){
-                            $q->whereStateTypeAccepted()
-                                ->whereTypeUser()
-                                ->whereBetween('date_of_issue', [$params->date_start, $params->date_end])
-                                ->where('establishment_id', $params->establishment_id);
-                        });
-                    },
-                    'sale_note_items' => function($q) use($params){
-                        $q->whereHas('sale_note', function($q) use($params){
-                            $q->whereStateTypeAccepted()
-                                ->whereNotChanged()
-                                ->whereTypeUser()
-                                ->whereBetween('date_of_issue', [$params->date_start, $params->date_end])
-                                ->where('establishment_id', $params->establishment_id);
-                        });
-                    }]);
+        return $query;
+        */
+        // No selecciona corectamente los establecimeintos.
+        if ($params->establishment_id) {
 
-        }
-
-        return $query->with(['document_items'=> function($q) use($params){
-                    $q->whereHas('document', function($q) use($params){
-                        $q->whereStateTypeAccepted()
-                            ->whereTypeUser()
-                            ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
-                    });
-                },
-                'sale_note_items' => function($q) use($params){
-                    $q->whereHas('sale_note', function($q) use($params){
+            return $query->with(['document_items' => function ($q) use ($params) {
+                $q->whereHas('document', function ($q) use ($params) {
+                    $q->whereStateTypeAccepted()
+                        ->whereTypeUser()
+                        ->whereBetween('date_of_issue', [$params->date_start, $params->date_end])
+                        ->where('establishment_id', $params->establishment_id);
+                });
+            },
+                'sale_note_items' => function ($q) use ($params) {
+                    $q->whereHas('sale_note', function ($q) use ($params) {
                         $q->whereStateTypeAccepted()
                             ->whereNotChanged()
                             ->whereTypeUser()
-                            ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+                            ->whereBetween('date_of_issue', [$params->date_start, $params->date_end])
+                            ->where('establishment_id', $params->establishment_id);
                     });
                 }]);
+
+        }
+
+        return $query->with(['document_items' => function ($q) use ($params) {
+            $q->whereHas('document', function ($q) use ($params) {
+                $q->whereStateTypeAccepted()
+                    ->whereTypeUser()
+                    ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+            });
+        },
+            'sale_note_items' => function ($q) use ($params) {
+                $q->whereHas('sale_note', function ($q) use ($params) {
+                    $q->whereStateTypeAccepted()
+                        ->whereNotChanged()
+                        ->whereTypeUser()
+                        ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+                });
+            }]);
     }
 
     /**
@@ -527,7 +588,7 @@ class Item extends ModelTenant
      */
     public function warehousePrices()
     {
-        return $this->hasMany(ItemWarehousePrice::class, 'item_id')->select('item_id', 'price', 'warehouse_id');
+        return $this->hasMany(ItemWarehousePrice::class, 'item_id')->select('id','item_id', 'price', 'warehouse_id');
     }
 
     public static function getSaleUnitPriceByWarehouse(Item $item, int $warehouseId): string
@@ -536,7 +597,7 @@ class Item extends ModelTenant
             ->where('warehouse_id', $warehouseId)
             ->first();
 
-        $price = $warehousePrice ? $warehousePrice->price : $item->sale_unit_price;
+        $price = $warehousePrice->price ?? $item->sale_unit_price;
         return number_format($price, 4, ".", "");
     }
 
@@ -582,6 +643,35 @@ class Item extends ModelTenant
     }
 
     /**
+     * Devuelve la relacion con el almacen dado
+     * @param int $warehouse_id
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function getCurrentItemWarehouse($warehouse_id){
+        return $this->warehouses()->where('warehouse_id',$warehouse_id);
+    }
+
+    private function getLotsBySerie($warehouse, $series,  $search_item_by_series)
+    {
+        $lots = [];
+
+
+        if($search_item_by_series){
+
+            $lots = $this->item_lots()->where('has_sale', false)
+                                ->where('warehouse_id', $warehouse->id)
+                                ->where('series', $series)
+                                ->take(1)
+                                ->get();
+
+        // dd($search_item_by_series, $lots, $this->item_lots);
+        }
+
+        return $lots;
+    }
+
+    /**
      * Devuelve un estandar de estructura para items.
      *
      * Es utilizado en :
@@ -591,19 +681,68 @@ class Item extends ModelTenant
      * @param \App\Models\Tenant\Warehouse|\Modules\Inventory\Models\Warehouse|null $warehouse
      * @param false                                    $with_lots_has_sale
      * @param false                                    $extended_description
+
      *
      * @return array
      */
-    public function getDataToItemModal($warehouse = null, $with_lots_has_sale = false, $extended_description = false) {
+    public function getDataToItemModal(
+        $warehouse = null,
+        $with_lots_has_sale = false,
+        $extended_description = false,
+        $series = null,
+        $search_item_by_series = false,
+        $aditional_data = true
+    ) {
 
         if ($warehouse == null) {
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
         }
-        $detail = $this->getFullDescription($warehouse,$extended_description);
+        $detail = $this->getFullDescription($warehouse, $extended_description);
         $realtion_item_unit_types = $this->item_unit_types;
         $lots_grp = $this->lots_group;
-        $lots = [];
+
+        $lots = $this->getLotsBySerie($warehouse, $series, $search_item_by_series);
+        $blank = [];
+        $currentColors = collect($blank);
+        $ItemUnitsPerPackage = collect($blank);
+        $ItemMoldProperty = collect($blank);
+        $ItemProductFamily = collect($blank);
+        $ItemMoldCavity = collect($blank);
+        $ItemPackageMeasurement = collect($blank);
+        $ItemStatus = collect($blank);
+        $ItemUnitBusiness = collect($blank);
+
+        if($aditional_data === true){
+            $currentColors = $this->getItemColor()->transform(function ($row) {
+                return $row->cat_colors_item_id;
+            });
+            $ItemUnitsPerPackage = $this->getItemUnitsPerPackage()->transform(function ($row) {
+                return $row->cat_item_units_per_package_id;
+            });
+            $ItemMoldProperty = $this->getItemMoldProperty()->transform(function ($row) {
+                return $row->cat_item_mold_properties_id;
+            });
+
+
+            $ItemProductFamily = $this->getItemProductFamily()->transform(function ($row) {
+                return $row->cat_item_product_family_id;
+            });
+            $ItemMoldCavity = $this->getItemMoldCavity()->transform(function ($row) {
+                return $row->cat_item_mold_cavities_id;
+            });
+            $ItemPackageMeasurement = $this->getItemPackageMeasurement()->transform(function ($row) {
+                return $row->cat_item_package_measurements_id;
+            });
+            $ItemStatus = $this->getItemStatus()->transform(function ($row) {
+                return $row->cat_item_status_id;
+            });
+            $ItemUnitBusiness = $this->getItemUnitBusiness()->transform(function ($row) {
+                return $row->cat_item_unit_business_id;
+            });
+
+        }
+
         if ($with_lots_has_sale == true) {
             $lots = $this->item_lots->where('has_sale', false)->transform(function ($row) {
                 return [
@@ -625,6 +764,13 @@ class Item extends ModelTenant
                 ];
             })->values();
         }
+        $stock = $detail['stock'];
+
+        // Obtiene el stock basado el en almacen itemwarehouse
+        $stockItemWarehouse = $this->getCurrentItemWarehouse($warehouse->id)->first();
+        if(is_object($stockItemWarehouse)) {
+            $stock = $stockItemWarehouse->stock;
+        }
 
 
         $data = [
@@ -633,8 +779,18 @@ class Item extends ModelTenant
             'model'                            => $this->model,
             'brand'                            => $detail['brand'],
             'warehouse_description'            => $detail['warehouse_description'],
+            'extra'                         => collect([
+                                                'colors' => null,
+                                                'CatItemUnitsPerPackage' => null,
+                                                'CatItemMoldProperty' => null,
+                                                'CatItemProductFamily' => null,
+                                                'CatItemMoldCavity' => null,
+                                                'CatItemPackageMeasurement' => null,
+                                                'CatItemStatus' => null,
+                                                'CatItemUnitBusiness' => null,
+                                             ]),
             'category'                         => $detail['category'],
-            'stock'                            => $detail['stock'],
+            'stock'                            => $stock,
             'internal_id'                      => $this->internal_id,
             'description'                      => $this->description,
             'currency_type_id'                 => $this->currency_type_id,
@@ -642,16 +798,25 @@ class Item extends ModelTenant
             'sale_unit_price'                  => self::getSaleUnitPriceByWarehouse($this, $warehouse->id),
             'purchase_unit_price'              => $this->purchase_unit_price,
             'unit_type_id'                     => $this->unit_type_id,
+            'sale_affectation_igv_type'     => $this->sale_affectation_igv_type,
             'sale_affectation_igv_type_id'     => $this->sale_affectation_igv_type_id,
             'purchase_affectation_igv_type_id' => $this->purchase_affectation_igv_type_id,
             'calculate_quantity'               => (bool)$this->calculate_quantity,
             'has_igv'                          => (bool)$this->has_igv,
             'has_plastic_bag_taxes'            => (bool)$this->has_plastic_bag_taxes,
             'amount_plastic_bag_taxes'         => $this->amount_plastic_bag_taxes,
+            'colors' => $currentColors,
+            'CatItemUnitsPerPackage' => $ItemUnitsPerPackage,
+            'CatItemMoldProperty' => $ItemMoldProperty,
+            'CatItemProductFamily' => $ItemProductFamily,
+            'CatItemMoldCavity' => $ItemMoldCavity,
+            'CatItemPackageMeasurement' => $ItemPackageMeasurement,
+            'CatItemStatus' => $ItemStatus,
+            'CatItemUnitBusiness' => $ItemUnitBusiness,
             'item_unit_types'                  => collect($realtion_item_unit_types)->transform(function ($item_unit_types) {
                 return [
                     'id'            => $item_unit_types->id,
-                    'description'   => "{$this->description}",
+                    'description'   => "{$item_unit_types->description}",
                     'item_id'       => $item_unit_types->item_id,
                     'unit_type_id'  => $item_unit_types->unit_type_id,
                     'quantity_unit' => $item_unit_types->quantity_unit,
@@ -661,16 +826,17 @@ class Item extends ModelTenant
                     'price_default' => $item_unit_types->price_default,
                 ];
             }),
-            'warehouses'                       => collect($this->warehouses)->transform(function ($warehouses) use ($warehouse) {
+            'warehouses' => collect($this->warehouses)->transform(function ($warehouses) use ($warehouse) {
                 return [
                     'warehouse_description' => $warehouses->warehouse->description,
-                    'stock'                 => $warehouses->stock,
+                    'stock'                 => (!empty($warehouses->stock)) ? $warehouses->stock : 0,
                     'warehouse_id'          => $warehouses->warehouse_id,
                     'checked'               => ($warehouses->warehouse_id == $warehouse->id) ? true : false,
                 ];
             }),
-            'attributes'                       => $this->attributes ? $this->attributes : [],
-            'lots_group'                       => collect($lots_grp)->transform(function ($lots_group) {
+            // se listaran atributos necesarios en pdf de otra forma
+            'attributes'     => $this->getAttributesAttribute($this->attributes['attributes']),
+            'lots_group'     => collect($lots_grp)->transform(function ($lots_group) {
                 return [
                     'id'          => $lots_group->id,
                     'code'        => $lots_group->code,
@@ -679,15 +845,36 @@ class Item extends ModelTenant
                     'checked'     => false,
                 ];
             }),
-            'lots'                             => $lots,
-            'lots_enabled'                     => (bool)$this->lots_enabled,
-            'series_enabled'                   => (bool)$this->series_enabled,
-            'is_set'                           => (bool)$this->is_set,
+            'lots'           => $lots,
+            'lots_enabled'   => (bool)$this->lots_enabled,
+            'series_enabled' => (bool)$this->series_enabled,
+            'is_set'         => (bool)$this->is_set,
 
+            'lot_code'    => $this->lot_code,
+            'date_of_due' => $this->date_of_due,
+            'barcode'     => $this->barcode,
+            'change_free_affectation_igv'     => false,
+            'original_affectation_igv_type_id'     => $this->sale_affectation_igv_type_id,
 
         ];
 
         return $data;
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|mixed|\Modules\Digemid\Models\CatDigemid|object|null
+     */
+    public function getCatDigemid(){
+        return CatDigemid::where('item_id',$this->id)->first();
+    }
+
+    /**
+     * Devuelte el conjunto de tipos de igv que estan exonerados
+     *
+     * @return string[]
+     */
+    public static function AffectationIgvTypesExoneratedUnaffected(){
+        return ['20', '21', '30', '31', '32', '33', '34', '35', '36', '37'];
     }
 
     /**
@@ -708,7 +895,7 @@ class Item extends ModelTenant
         $has_igv_description = null;
         $purchase_has_igv_description = null;
 
-        $affectation_igv_types_exonerated_unaffected = ['20', '21', '30', '31', '32', '33', '34', '35', '36', '37'];
+        $affectation_igv_types_exonerated_unaffected = self::AffectationIgvTypesExoneratedUnaffected();
 
         if (in_array($this->sale_affectation_igv_type_id, $affectation_igv_types_exonerated_unaffected)) {
             $has_igv_description = 'No';
@@ -721,8 +908,28 @@ class Item extends ModelTenant
         } else {
             $purchase_has_igv_description = ((bool)$this->purchase_has_igv) ? 'Si' : 'No';
         }
+        $digemid_exportable = false;
+        $name_disa = '';
+        $laboratory = '';
+        $currentColors = ItemColor::where('item_id', $this->id)->get()->transform(function ($row) {
+            return $row->TransformDatatoEdit();
+        });
+
+        if($configuration->isPharmacy()) {
+            $digemid = $this->getCatDigemid();
+            if (!empty($digemid)) {
+                $digemid_exportable = (bool)$digemid->active;
+                $name_disa = $digemid->getNomProd();
+                $laboratory = $digemid->getNomTitular();
+            }
+        }
+
 
         return [
+            'name_disa'                           => $name_disa,
+            'laboratory'                           => $laboratory,
+            'exportable_pharmacy'                           => $digemid_exportable,
+            'colors' => $currentColors,
             'id'                           => $this->id,
             'sanitary'                 => $this->sanitary,
             'cod_digemid'                 => $this->cod_digemid,
@@ -742,6 +949,7 @@ class Item extends ModelTenant
             'currency_type_id'             => $this->currency_type_id,
             'currency_type_symbol'         => $this->currency_type->symbol,
             'sale_affectation_igv_type_id' => $this->sale_affectation_igv_type_id,
+            'purchase_affectation_igv_type_id' => $this->purchase_affectation_igv_type_id,
             'amount_sale_unit_price'       => $this->sale_unit_price,
             'calculate_quantity'           => (bool)$this->calculate_quantity,
             'has_igv'                      => (bool)$this->has_igv,
@@ -899,5 +1107,305 @@ class Item extends ModelTenant
         }
 
         return $this;
+    }
+
+    /**
+     * @param $cod
+     *
+     * @return \App\Models\Tenant\Item|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|mixed|object|null
+     */
+    public static function FindByCodDigemid($cod){
+        return self::where('cod_digemid',$cod)->first();
+
+    }
+
+    /**
+     * Devuelve el modelo de WebPlatform Asociado
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|mixed|WebPlatform|WebPlatform[]|null
+     */
+    public function getWebPlatformModel(){
+        return WebPlatform::find($this->web_platform_id);
+    }
+
+    /**
+     * @return ItemSet[]|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection|mixed|null
+     */
+    public function getSetItems(){
+
+        $is_set = (bool) $this->is_set;
+        if($is_set){
+            return  ItemSet::where('item_id',$this->id)->get();
+        }
+        return null;
+    }
+
+    /**
+     * Devuelve una estructura en comun para el reporte Kardex
+     * @return array
+     */
+    public function getReportValuedKardexCollection(){
+
+        $values_records = InventoryValuedKardex::getValuesRecords($this->document_items, $this->sale_note_items);
+        $quantity_sale = $values_records['quantity_sale'];
+        $total_sales = $values_records['total_sales'];
+        $item_cost = $quantity_sale * $this->purchase_unit_price;
+        $valued_unit = $total_sales - $item_cost;
+        $item = $this;
+        return [
+            'id' => $this->id,
+            'item_description' => $this->description,
+            'category_description' => optional($this->category)->name,
+            'brand_description' => optional($this->brand)->name,
+            'unit_type_id' => $this->unit_type_id,
+            'quantity_sale' => number_format($quantity_sale, 2, ".", ""),
+            'purchase_unit_price' => number_format($this->purchase_unit_price, 2, ".", ""),
+            'total_sales' => number_format($total_sales, 2, ".", ""),
+            'item_cost' => number_format($item_cost, 2, ".", ""),
+            'valued_unit' => number_format($valued_unit, 2, ".", ""),
+            'warehouses' => $this->warehouses->transform(function ($row, $key) use ($item) {
+                return [
+                    'id' => $row->id,
+                    'stock' => $row->stock,
+                    'warehouse_description' => $row->warehouse->description,
+                    'description' => "{$row->warehouse->description} - {$row->stock}",
+                    'sale_unit_price' => self::getSaleUnitPriceByWarehouse($item, $row->id),
+                ];
+            }),
+
+        ];
+    }
+
+
+    /**
+     * Almacena las unidades por almacen para poder guardarlos en la tabla.
+     *
+     * @param array $ItemUnitsPerPackage
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setItemUnitsPerPackage(array $ItemUnitsPerPackage = []) {
+
+        return $this->setExtraData(ItemUnitsPerPackage::class,'cat_item_units_per_package_id',$ItemUnitsPerPackage);
+
+
+    }
+
+    public function getItemUnitsPerPackage(){
+        return ItemUnitsPerPackage::where('item_id', $this->id)->where('active',1)->get();
+    }
+    /**
+     * Almacena los colores para poder guardarlos en la tabla.
+     * @param array $colors
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setItemColor($colors = []) {
+        return $this->setExtraData(ItemColor::class,'cat_colors_item_id',$colors);
+    }
+    public function getItemColor(){
+        return ItemColor::where('item_id', $this->id)->where('active',1)->get();
+    }
+
+    public function setItemMoldProperty($data = []) {
+        return $this->setExtraData(ItemMoldProperty::class,'cat_item_mold_properties_id',$data);
+    }
+    public function getItemMoldProperty(){
+        return ItemMoldProperty::where('item_id', $this->id)->where('active',1)->get();
+    }
+    public function setItemUnitBusiness($data = []) {
+        return $this->setExtraData(ItemUnitBusiness::class,'cat_item_unit_business_id',$data);
+    }
+
+    public function getItemUnitBusiness(){
+        return ItemUnitBusiness::where('item_id', $this->id)->where('active',1)->get();
+    }
+    public function setItemStatus($data = []) {
+        return $this->setExtraData(ItemStatus::class,'cat_item_status_id',$data);
+    }
+
+    public function getItemStatus(){
+        return ItemStatus::where('item_id', $this->id)->where('active',1)->get();
+    }
+
+    public function setItemPackageMeasurement($data = []) {
+        return $this->setExtraData(ItemPackageMeasurement::class,'cat_item_package_measurements_id',$data);
+    }
+
+    public function getItemPackageMeasurement(){
+        return ItemPackageMeasurement::where('item_id', $this->id)->where('active',1)->get();
+    }
+    public function setItemMoldCavity($data = []) {
+        return $this->setExtraData(ItemMoldCavity::class,'cat_item_mold_cavities_id',$data);
+    }
+
+    public function getItemMoldCavity(){
+        return ItemMoldCavity::where('item_id', $this->id)->where('active',1)->get();
+    }
+    public function setItemProductFamily($data = []) {
+        return $this->setExtraData(ItemProductFamily::class,'cat_item_product_family_id',$data);
+    }
+
+    public function getItemProductFamily(){
+        return ItemProductFamily::where('item_id', $this->id)->where('active',1)->get();
+    }
+
+    /**
+     * @param  ItemMoldProperty|ItemUnitBusiness|ItemStatus|ItemColor|ItemUnitsPerPackage|ItemProductFamily|ItemMoldCavity|ItemPackageMeasurement|null      $class
+     * @param string $field_id
+     * @param array  $data
+     *
+     * @return $this
+     */
+    protected function setExtraData($class,$field_id = '',$data = []){
+        $dataCollection = collect($data);
+        $currentRow = $class::where('item_id',$this->id)
+            ->whereNotIn($field_id,$dataCollection)
+            ->get();
+        foreach ($currentRow as $row){
+            $row->setActive(false)->push();
+            $row->delete();
+        }
+
+
+        foreach($dataCollection as $item){
+
+            $ck = [
+                'item_id'=>$this->id,
+                $field_id=>$item
+            ];
+            $newRow = $class::where($ck)->first();
+            if(empty($newRow)) $newRow = new $class($ck);
+
+            $newRow->setActive(true)->push();
+        }
+        return $this;
+    }
+
+    /**
+     * Genera una estructura unica para los datos extra.
+     *
+     * @param       $array
+     * @param array $row
+     */
+    public static function SaveExtraDataToRequest(&$array, $row = [])
+    {
+
+        $colors_id = isset($row['item']['extra']['colors']) ? (int)$row['item']['extra']['colors'] : null;
+        $CatItemUnitsPerPackage_id = isset($row['item']['extra']['CatItemUnitsPerPackage']) ? (int)$row['item']['extra']['CatItemUnitsPerPackage'] : null;
+        $CatItemMoldProperty_id = isset($row['item']['extra']['CatItemMoldProperty']) ? (int)$row['item']['extra']['CatItemMoldProperty'] : null;
+        $CatItemProductFamily_id = isset($row['item']['extra']['CatItemProductFamily']) ? (int)$row['item']['extra']['CatItemProductFamily'] : null;
+        $CatItemMoldCavity_id = isset($row['item']['extra']['CatItemMoldCavity']) ? (int)$row['item']['extra']['CatItemMoldCavity'] : null;
+        $CatItemPackageMeasurement_id = isset($row['item']['extra']['CatItemPackageMeasurement']) ? (int)$row['item']['extra']['CatItemPackageMeasurement'] : null;
+        $CatItemStatus_id = isset($row['item']['extra']['CatItemStatus']) ? (int)$row['item']['extra']['CatItemStatus'] : null;
+        $CatItemUnitBusiness_id = isset($row['item']['extra']['CatItemUnitBusiness']) ? (int)$row['item']['extra']['CatItemUnitBusiness'] : null;
+
+
+        $array['item']['extra']["colors"] = $colors_id;
+        $array['item']['extra']["CatItemUnitsPerPackage"] = $CatItemUnitsPerPackage_id;
+        $array['item']['extra']["CatItemMoldProperty"] = $CatItemMoldProperty_id;
+        $array['item']['extra']["CatItemProductFamily"] = $CatItemProductFamily_id;
+        $array['item']['extra']["CatItemMoldCavity"] = $CatItemMoldCavity_id;
+        $array['item']['extra']["CatItemPackageMeasurement"] = $CatItemPackageMeasurement_id;
+        $array['item']['extra']["CatItemStatus"] = $CatItemStatus_id;
+        $array['item']['extra']["CatItemUnitBusiness"] = $CatItemUnitBusiness_id;
+
+        // Guarda el nombre del campo si existe
+
+        $colors_string = '';
+        if (!empty($colors_id)) {
+            $temp = CatColorsItem::find($colors_id);
+            if ($temp !== null) {
+                $colors_string = $temp->getName();
+            }
+        }
+        $CatItemUnitsPerPackage_string = '';
+
+        if (!empty($CatItemUnitsPerPackage_id)) {
+            $temp = CatItemUnitBusiness::find($CatItemUnitsPerPackage_id);
+            if ($temp !== null) {
+                $CatItemUnitsPerPackage_string = $temp->getName();
+            }
+        }
+        $CatItemMoldProperty_string = '';
+
+        if (!empty($CatItemMoldProperty_id)) {
+            $temp = CatItemMoldProperty::find($CatItemMoldProperty_id);
+            if ($temp !== null) {
+                $CatItemMoldProperty_string = $temp->getName();
+            }
+        }
+        $CatItemProductFamily_string = '';
+
+        if (!empty($CatItemProductFamily_id)) {
+            $temp = CatItemProductFamily::find($CatItemProductFamily_id);
+            if ($temp !== null) {
+                $CatItemProductFamily_string = $temp->getName();
+            }
+        }
+        $CatItemMoldCavity_string = '';
+
+        if (!empty($CatItemMoldCavity_id)) {
+            $temp = CatItemMoldCavity::find($CatItemMoldCavity_id);
+            if ($temp !== null) {
+                $CatItemMoldCavity_string = $temp->getName();
+            }
+        }
+        $CatItemPackageMeasurement_string = '';
+
+        if (!empty($CatItemPackageMeasurement_id)) {
+            $temp = CatItemPackageMeasurement::find($CatItemPackageMeasurement_id);
+            if ($temp !== null) {
+                $CatItemPackageMeasurement_string = $temp->getName();
+            }
+        }
+        $CatItemStatus_string = '';
+
+        if (!empty($CatItemStatus_id)) {
+            $temp = CatItemStatus::find($CatItemStatus_id);
+            if ($temp !== null) {
+                $CatItemStatus_string = $temp->getName();
+            }
+        }
+        $CatItemUnitBusiness_string = '';
+
+        if (!empty($CatItemUnitBusiness_id)) {
+            $temp = CatItemUnitBusiness::find($CatItemUnitBusiness_id);
+            if ($temp !== null) {
+                $CatItemUnitBusiness_string = $temp->getName();
+            }
+        }
+
+
+        $array['item']['extra']["string"]["colors"] = $colors_string;
+        $array['item']['extra']["string"]["CatItemUnitsPerPackage"] = $CatItemUnitsPerPackage_string;
+        $array['item']['extra']["string"]["CatItemMoldProperty"] = $CatItemMoldProperty_string;
+        $array['item']['extra']["string"]["CatItemProductFamily"] = $CatItemProductFamily_string;
+        $array['item']['extra']["string"]["CatItemMoldCavity"] = $CatItemMoldCavity_string;
+        $array['item']['extra']["string"]["CatItemPackageMeasurement"] = $CatItemPackageMeasurement_string;
+        $array['item']['extra']["string"]["CatItemStatus"] = $CatItemStatus_string;
+        $array['item']['extra']["string"]["CatItemUnitBusiness"] = $CatItemUnitBusiness_string;
+    }
+
+    /**
+     *
+     * Añade elementos extra al momento de generar el pdf
+     *
+     * @param $array
+     */
+    public function getExtraDataToPrint(&$array){
+
+        $array['image_url'] = ($this->image !== 'imagen-no-disponible.jpg')
+            ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image)
+            : asset("/logo/{$this->image}");
+        $array['image_url_medium']=($this->image_medium !== 'imagen-no-disponible.jpg')
+            ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image_medium)
+            : asset("/logo/{$this->image_medium}");
+        $array['image_url_small'] =($this->image_small !== 'imagen-no-disponible.jpg')
+            ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image_small)
+            : asset("/logo/{$this->image_small}");
+
     }
 }

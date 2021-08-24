@@ -97,6 +97,7 @@ Configuración de tareas programadas (crontab-LAMP): [Guía](https://docs.google
 
 ### Base de datos
 Guía acceso a base de datos: [Guía](https://drive.google.com/open?id=1uZ_qt34I8HucJYmt_RfI2orgfl9_dpqIh8RukwiG1uM "Clic")<br>
+Cambiar Contraseña root: [enlace](https://gist.github.com/rordi/ab55c92848fd06884172ed22ae88d7df "clic")<br>
 
 ### Docker
 Iniciar servicios docker: [Guía](https://docs.google.com/document/d/1MMuyeYE53RjDaOR2OLPsCtpxicDzqowlvoMTWpkBaSM/edit# "Clic")<br>

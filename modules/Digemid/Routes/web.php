@@ -21,6 +21,7 @@
             Route::middleware(['auth', 'locked.tenant'])->group(function () {
                 Route::prefix('digemid')->group(function () {
                     Route::get('/', 'DigemidController@index')->name('tenant.digemid.index');
+                    Route::post('/update_exportable/{item?}', 'DigemidController@updateExportableItem');
                 });
             });
         });

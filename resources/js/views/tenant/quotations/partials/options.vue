@@ -366,10 +366,10 @@
             </div>
 
             <series-form v-if="generate && form.quotation" :items="form.quotation.items"></series-form>
-            <div v-show="document.total > 0" class="col-lg-12">
+            <div  v-show="document.total > 0" class="col-lg-12">
                 <div class="form-group pull-right">
                     <label class="control-label"> Total </label> <br>
-                    <label class="control-label">{{ document.currency_type_id }} {{ document.total }}</label>
+                    <label class="control-label">{{ document.currency_type_id }} {{ this.document.tota }}</label>
                 </div>
 
                 <br>
@@ -432,6 +432,8 @@ export default {
         "type",
         "typeUser",
     ],
+    computed:{
+    },
     data() {
         return {
             customer_email: "",
@@ -512,7 +514,15 @@ export default {
             this.document.payments.splice(index, 1);
         },
         clickAddPayment() {
-            if (this.document.payments === undefined) this.document.payments = [];
+           if (this.document.payments === undefined) this.document.payments = [];
+            let total = 0
+            if(
+                this.form !== null &&
+                this.form.quotation !== null &&
+                this.form.quotation.total !== null
+            ){
+                total =this.form.quotation.total
+            }
             this.document.payments.push({
                 id: null,
                 document_id: null,
@@ -520,8 +530,9 @@ export default {
                 payment_method_type_id: "01",
                 payment_destination_id: null,
                 reference: null,
-                payment: parseFloat(this.form.quotation.total),
+                payment: parseFloat(total),
             });
+
         },
         initForm() {
             this.generate = this.showGenerate ? true : false;
@@ -675,6 +686,7 @@ export default {
                             this.showDialogDocumentOptions = true;
                         }
 
+                        this.getRecord()
                         this.$eventHub.$emit("reloadData");
                         this.resetDocument();
                         this.document.customer_id = this.form.quotation.customer_id;
@@ -760,26 +772,30 @@ export default {
                     // this.changeDocumentType()
                 });
 
-            await this.$http
-                .get(`/${this.resource}/record2/${this.recordId}`)
-                .then((response) => {
-                    this.form = response.data.data;
-                    this.document.payments =
-                        response.data.data.quotation.payments;
-                    this.document.total = this.form.quotation.total;
-                    this.document.currency_type_id = this.form.quotation.currency_type_id;
-                    this.document.payment_condition_id = this.form.quotation.payment_condition_id;
-                    if (this.document.payment_condition_id === undefined || this.document.payments.length > 0) {
-                        this.document.payment_condition_id = "01";
-                    }
+            await this.getRecord()
+        },
+        async getRecord(){
 
-                    // console.log(this.form)
-                    // this.validateIdentityDocumentType()
-                    this.getCustomer();
-                    let type = this.type == "edit" ? "editada" : "registrada";
-                    this.titleDialog =
-                        `Cotización ${type}: ` + this.form.identifier;
-                });
+            await this.$http
+                        .get(`/${this.resource}/record2/${this.recordId}`)
+                        .then((response) => {
+                            this.form = response.data.data;
+                            this.document.payments =
+                                response.data.data.quotation.payments;
+                            this.document.total = this.form.quotation.total;
+                            this.document.currency_type_id = this.form.quotation.currency_type_id;
+                            this.document.payment_condition_id = this.form.quotation.payment_condition_id;
+                            if (this.document.payment_condition_id === undefined || this.document.payments.length > 0) {
+                                this.document.payment_condition_id = "01";
+                            }
+
+                            // console.log(this.form)
+                            // this.validateIdentityDocumentType()
+                            this.getCustomer();
+                            let type = this.type == "edit" ? "editada" : "registrada";
+                            this.titleDialog =
+                                `Cotización ${type}: ` + this.form.identifier;
+                        })
         },
         changeDocumentType() {
             // this.filterSeries()
