@@ -186,6 +186,78 @@
                                    v-text="errors.lot_code[0]"></small>
                         </div>
                     </div>
+
+                    <!-- new -->
+
+                    <div v-if="form.item_unit_types !== undefined && form.item_unit_types.length > 0" class="col-md-12">
+                        <div class="table-responsive" style="margin:3px">
+                            <h5 class="separator-title">
+                                Lista de Precios
+                                <el-tooltip class="item"
+                                            content="Aplica para realizar compra/venta en presentacion de diferentes precios y/o cantidades"
+                                            effect="dark"
+                                            placement="top">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </h5>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">Unidad</th>
+                                    <th class="text-center">Descripción</th>
+                                    <th class="text-center">Factor</th>
+                                    <th class="text-center">Precio 1</th>
+                                    <th class="text-center">Precio 2</th>
+                                    <th class="text-center">Precio 3</th>
+                                    <th class="text-center">Precio Default</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="(row, index) in form.item_unit_types" :key="index">
+                                    <td class="text-center">{{ row.unit_type_id }}</td>
+                                    <td class="text-center">{{ row.description }}</td>
+                                    <td class="text-center">{{ row.quantity_unit }}</td>
+                                    <td class="text-center">
+                                        <template v-if="!canEditPrice">
+                                            {{ row.price1 }}
+                                        </template>
+                                        <template v-else>
+                                            <el-input v-model="row.price1"></el-input>
+                                        </template>
+                                    </td>
+                                    <td class="text-center">
+                                        <template v-if="!canEditPrice">
+                                            {{ row.price2 }}
+                                        </template>
+                                        <template v-else>
+                                            <el-input v-model="row.price2"></el-input>
+                                        </template>
+
+                                        </td>
+                                    <td class="text-center">
+                                        <template v-if="!canEditPrice">
+                                            {{ row.price3 }}
+                                        </template>
+                                        <template v-else>
+                                            <el-input v-model="row.price3"></el-input>
+                                        </template>
+                                    </td>
+                                    <td class="text-center">Precio {{ row.price_default }}</td>
+                                    <td class="series-table-actions text-right">
+                                        <button class="btn waves-effect waves-light btn-xs btn-success"
+                                                type="button"
+                                                @click.prevent="selectedPrice(row)">
+                                            <i class="el-icon-check"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- old -->
+                    <!--
                     <div v-if="form.item_unit_types !== undefined && form.item_unit_types.length > 0"
                          class="col-md-12"
                     >
@@ -230,6 +302,7 @@
                         </div>
 
                     </div>
+                    -->
                     <div class="col-md-12 mt-3">
                         <section id="card-section"
                                  class="card mb-2 card-transparent card-collapsed">
@@ -423,6 +496,14 @@ import Keypress from "vue-keypress";
 export default {
     props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
     components: {itemForm, LotsForm, Keypress},
+    computed:{
+        canEditPrice(){
+            if(this.form && this.form.update_price !== undefined) {
+                return this.form.update_price
+            }
+            return false;
+        }
+    },
     data() {
         return {
             search_item_by_barcode: false,
@@ -445,7 +526,8 @@ export default {
             attribute_types: [],
             use_price: 1,
             lot_code: null,
-            change_affectation_igv_type_id: false
+            change_affectation_igv_type_id: false,
+            prices:{},
         }
     },
     created() {
@@ -628,6 +710,7 @@ export default {
             this.form.unit_price = this.form.item.purchase_unit_price
             this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
             this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
+            this.prices =this.form.item_unit_types;
             this.form.purchase_has_igv = this.form.item.purchase_has_igv;
 
         },
@@ -640,6 +723,7 @@ export default {
             this.form.unit_price = this.form.item.purchase_unit_price
             this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
             this.form.item_unit_types = item.item_unit_types
+            this.prices =this.form.item_unit_types;
             this.form.purchase_has_igv = this.form.item.purchase_has_igv;
             this.search_item_by_barcode = 0;
         },
@@ -685,6 +769,7 @@ export default {
             this.row = this.changeWarehouse(this.row)
 
             this.row.date_of_due = date_of_due
+
 
             this.initForm()
 
