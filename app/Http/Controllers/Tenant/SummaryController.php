@@ -81,7 +81,21 @@ class SummaryController extends Controller
     }
     
     public function status($summary_id) {
-        return $this->query($summary_id);
+
+        try {
+
+            return $this->query($summary_id);
+
+        } catch (Exception $e) {
+
+            // codigo personalizado cuando se lanza excepcion por problemas de sunat
+            if($e->getCode() === 511){
+                $this->updateUnknownErrorStatus($summary_id);
+            }
+
+            return $this->getCustomErrorMessage($e->getMessage(), $e);
+        }
+
     }
 
     public function destroy($voided_id)
@@ -106,6 +120,23 @@ class SummaryController extends Controller
         $record = new SummaryResource(Summary::findOrFail($id));
 
         return $record;
+    }
+
+    
+    public function regularize($summary_id) {
+
+        $summary = Summary::findOrFail($summary_id);
+
+        $summary->documents()->update([
+            'state_type_id' => '05'
+        ]);
+
+        //proceso para actualizar estado de resumen y las variables que identifican que se regularizo manualmente
+        return [
+            'success' => true,
+            'message' => 'Los comprobantes fueron regularizados'
+        ];
+
     }
 
 }

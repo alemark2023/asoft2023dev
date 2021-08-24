@@ -53,9 +53,20 @@
                                     @click.prevent="clickTicket(row.id)"
                                     dusk="consult-ticket"
                                     v-if="row.btn_ticket">Consultar</button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
-                                    @click.prevent="clickDelete(row.id)"
-                                    v-if="row.btn_ticket">Eliminar</button>
+                                    
+                            <template v-if="row.unknown_error_status_response">
+                                <!-- <el-tooltip class="item" effect="dark" content="Regularizar comprobantes" placement="top-start"> -->
+                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
+                                            @click.prevent="clickValidateSummary(row)"
+                                            v-if="row.btn_ticket">Regularizar</button>
+                                <!-- </el-tooltip> -->
+                            </template>
+                            <!-- <template v-else> -->
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
+                                        @click.prevent="clickDelete(row.id)"
+                                        v-if="row.btn_ticket">Eliminar</button>
+                            <!-- </template> -->
+                        
                         </td>
                     </tr>
                 </data-table>
@@ -122,6 +133,51 @@
             },
             clickDownload(download) {
                 window.open(download, '_blank');
+            },
+            clickValidateSummary(row){
+
+                this.$msgbox({
+                    type: 'warning',
+                    dangerouslyUseHTMLString: true,
+                    title: `Resúmen ${row.identifier}`,
+                    message: `<strong>¿Los comprobantes del resúmen han sido validados por SUNAT?</strong><br/>
+                              <p>Si acepta la operación, todos los comprobantes informados en el resúmen se modificarán a estado <strong>ACEPTADO</strong></p>`,
+                    showCancelButton: true,
+                    confirmButtonText: 'Aceptar',
+                    cancelButtonText: 'Cancelar',
+                    beforeClose: (action, instance, done) => {
+
+                        if (action === 'confirm') {
+
+                            instance.confirmButtonLoading = true;
+                            instance.confirmButtonText = 'Cargando...';
+
+                            this.$http.get(`/${this.resource}/regularize/${row.id}`)
+                                .then(response => {
+                                    this.$eventHub.$emit('reloadData') 
+                                    if (response.data.success) {
+                                        this.$message.success(response.data.message)
+                                        done();
+                                    } else {
+                                        this.$message.error(response.data.message)
+                                    }
+                                })
+                                .catch(error => {
+                                    this.$message.error(error.response.data.message)
+                                })
+                                .then(() => {
+                                    instance.confirmButtonLoading = false;
+                                })
+ 
+                            console.log("ok")
+
+                        } else {
+                            console.log("cancel")
+                            done();
+                        }
+                    }
+                }) 
+
             },
         }
     }
