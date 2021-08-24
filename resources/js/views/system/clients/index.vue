@@ -266,7 +266,7 @@
                 
                 <td class="text-center">
 
-                  <el-tooltip class="item" effect="dark" content="Comprobantes pendientes de envío" placement="top-start">
+                  <el-tooltip class="item" effect="dark" content="Comprobantes enviados / por enviar" placement="top-start">
                     <el-badge class="item" :value="row.document_not_sent">
                       <i class="far fa-bell text-secondary"></i>
                     </el-badge>
