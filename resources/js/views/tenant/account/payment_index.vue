@@ -7,7 +7,7 @@
       </ol>
       <div class="right-wrapper pull-right">
           <template>
-              <a type="button" class="btn btn-custom btn-sm  mt-2 mr-2" href="/configuration"><i class="fas fa-cogs"></i> Configuración</a>
+              <a type="button" class="btn btn-custom btn-sm  mt-2 mr-2" href="/cuenta/configuration"><i class="fas fa-cogs"></i> Configuración</a>
           </template>
       </div>
     </div>
