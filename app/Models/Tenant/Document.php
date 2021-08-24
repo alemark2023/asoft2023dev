@@ -671,11 +671,11 @@ class Document extends ModelTenant
      * @throws \Exception
      */
     public function updatePdfs(){
-
+        // se genera un solo formato para ser guardado en storage, en este caso esta quedando el ultimo formato, en una actualizacion se podria deifinir por configuracion cual formato es el que esta asignado por defecto
         $formats = [
             'ticket',
-            'a4',
             'a5',
+            'a4',
         ];
         $DownloadController = new DownloadController();
         foreach($formats as $format){
