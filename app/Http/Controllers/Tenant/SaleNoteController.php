@@ -2,61 +2,67 @@
 
 namespace App\Http\Controllers\Tenant;
 
-use App\Models\Tenant\MigrationConfiguration;
-use App\Models\Tenant\SaleNoteMigration;
-use App\Models\Tenant\User;
-use Illuminate\Http\Request;
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
+use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
+use App\CoreFacturalo\Template;
 use App\Http\Controllers\Controller;
-use App\Models\Tenant\Person;
-use App\Models\Tenant\Catalogs\CurrencyType;
-use App\Models\Tenant\Catalogs\ChargeDiscountType;
-use App\Models\Tenant\Establishment;
-use App\Models\Tenant\SaleNote;
-use App\Models\Tenant\SaleNoteItem;
-use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
-use App\Models\Tenant\Item;
-use App\Models\Tenant\Series;
+use App\Http\Requests\Tenant\SaleNoteRequest;
 use App\Http\Resources\Tenant\SaleNoteCollection;
 use App\Http\Resources\Tenant\SaleNoteResource;
 use App\Http\Resources\Tenant\SaleNoteResource2;
+use App\Mail\Tenant\SaleNoteEmail;
+use App\Models\Tenant\BankAccount;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\ChargeDiscountType;
+use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
-use Illuminate\Support\Facades\DB;
+use App\Models\Tenant\Catalogs\OperationType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
-use App\Models\Tenant\Catalogs\AttributeType;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Dispatch;
-use App\Http\Requests\Tenant\SaleNoteRequest;
-// use App\Models\Tenant\Warehouse;
-use Illuminate\Support\Str;
-use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
-use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
-use App\CoreFacturalo\Helpers\Storage\StorageDocument;
-use App\CoreFacturalo\Template;
-use Mpdf\Mpdf;
-use Mpdf\HTMLParserMode;
-use Mpdf\Config\ConfigVariables;
-use Mpdf\Config\FontVariables;
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Item;
+use App\Models\Tenant\ItemWarehouse;
+use App\Models\Tenant\MigrationConfiguration;
 use App\Models\Tenant\PaymentMethodType;
-use App\Mail\Tenant\SaleNoteEmail;
+use App\Models\Tenant\Person;
+use App\Models\Tenant\SaleNote;
+use App\Models\Tenant\SaleNoteItem;
+use App\Models\Tenant\SaleNoteMigration;
+use App\Models\Tenant\Series;
+use App\Models\Tenant\User;
+use App\Traits\OfflineTrait;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Modules\Inventory\Models\Warehouse;
-use Modules\Item\Models\ItemLot;
-use App\Models\Tenant\ItemWarehouse;
-use Modules\Finance\Traits\FinanceTrait;
-use Modules\Item\Models\ItemLotsGroup;
-use App\Models\Tenant\Configuration;
-use Modules\Inventory\Traits\InventoryTrait;
+use Illuminate\Support\Str;
 use Modules\Document\Traits\SearchTrait;
-use App\Models\Tenant\BankAccount;
+use Modules\Finance\Traits\FinanceTrait;
+use Modules\Inventory\Models\Warehouse;
+use Modules\Inventory\Traits\InventoryTrait;
+use Modules\Item\Models\ItemLot;
+use Modules\Item\Models\ItemLotsGroup;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+use Mpdf\HTMLParserMode;
+use Mpdf\Mpdf;
+
+// use App\Models\Tenant\Warehouse;
 
 class SaleNoteController extends Controller
 {
 
-    use StorageDocument, FinanceTrait, InventoryTrait, SearchTrait;
+    use FinanceTrait;
+    use InventoryTrait;
+    use SearchTrait;
+    use StorageDocument;
+    use OfflineTrait;
 
     protected $sale_note;
     protected $company;
@@ -436,8 +442,20 @@ class SaleNoteController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
 
-        return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types',
-                        'discount_types', 'charge_types', 'attribute_types');
+        $operation_types = OperationType::whereActive()->get();
+        $is_client = $this->getIsClient();
+
+        return compact('items',
+        'categories',
+        'affectation_igv_types',
+        'system_isc_types',
+        'price_types',
+        'discount_types',
+        'charge_types',
+        'attribute_types',
+        'operation_types',
+        'is_client'
+        );
     }
 
     public function record($id)

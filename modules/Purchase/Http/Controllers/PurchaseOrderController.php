@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\Http\Controllers;
 
+use App\Models\Tenant\Catalogs\OperationType;
 use App\Models\Tenant\Configuration;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -118,8 +119,23 @@ class PurchaseOrderController extends Controller
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $warehouses = Warehouse::all();
 
-        return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types',
-                        'discount_types', 'charge_types', 'attribute_types','warehouses');
+        $operation_types = OperationType::whereActive()->get();
+        $is_client = $this->getIsClient();
+
+        return compact(
+        'items',
+        'categories',
+        'affectation_igv_types',
+        'system_isc_types',
+        'price_types',
+        'discount_types',
+        'charge_types',
+        'attribute_types',
+        'warehouses',
+        'attribute_types',
+        'operation_types',
+        'is_client'
+        );
     }
 
 

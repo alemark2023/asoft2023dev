@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Tenant;
 
+use App\Models\Tenant\Catalogs\OperationType;
+use App\Traits\OfflineTrait;
 use Exception;
 use Mpdf\Mpdf;
 use Carbon\Carbon;
@@ -51,7 +53,9 @@ use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 class PurchaseController extends Controller
 {
 
-    use FinanceTrait, StorageDocument;
+    use FinanceTrait;
+    use StorageDocument;
+    use OfflineTrait;
 
     public function index()
     {
@@ -150,8 +154,21 @@ class PurchaseController extends Controller
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $warehouses = Warehouse::all();
 
-        return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types',
-                        'discount_types', 'charge_types', 'attribute_types','warehouses');
+        $operation_types = OperationType::whereActive()->get();
+        $is_client = $this->getIsClient();
+
+        return compact(
+            'items' ,
+            'categories' ,
+            'affectation_igv_types' ,
+            'system_isc_types' ,
+            'price_types' ,
+            'discount_types' ,
+            'charge_types' ,
+            'attribute_types' ,
+            'warehouses',
+            'operation_types',
+            'is_client');
     }
 
     public function record($id)

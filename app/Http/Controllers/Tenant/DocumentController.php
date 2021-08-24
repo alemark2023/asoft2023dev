@@ -64,7 +64,10 @@ use Modules\Item\Models\Category;
 
 class DocumentController extends Controller
 {
-    use StorageDocument, OfflineTrait, FinanceTrait;
+    use FinanceTrait;
+    use OfflineTrait;
+    use StorageDocument;
+
     private $max_count_payment = 0;
 
     public function __construct()
@@ -279,8 +282,17 @@ class DocumentController extends Controller
 
         /** Informacion adicional */
 
-        return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types',
-                       'operation_types', 'discount_types', 'charge_types', 'attribute_types','is_client',
+        return compact(
+            'items',
+            'categories',
+            'affectation_igv_types',
+            'system_isc_types',
+            'price_types',
+            'operation_types',
+            'discount_types',
+            'charge_types',
+            'attribute_types',
+            'is_client',
             'colors',
             'CatItemMoldCavity',
             'CatItemMoldProperty',
