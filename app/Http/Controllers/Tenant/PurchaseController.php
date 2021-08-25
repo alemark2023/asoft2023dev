@@ -2,53 +2,44 @@
 
 namespace App\Http\Controllers\Tenant;
 
-use App\Models\Tenant\Catalogs\OperationType;
-use App\Models\Tenant\ItemUnitType;
-use App\Traits\OfflineTrait;
-use Exception;
-use Mpdf\Mpdf;
-use Carbon\Carbon;
-use Mpdf\HTMLParserMode;
-use App\Models\Tenant\Item;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Models\Tenant\Person;
-use App\Models\Tenant\Company;
-
-use Mpdf\Config\FontVariables;
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\CoreFacturalo\Template;
-use App\Models\Tenant\Purchase;
-use Modules\Item\Models\ItemLot;
-use Mpdf\Config\ConfigVariables;
-use Illuminate\Support\Facades\DB;
-use App\Models\Tenant\PurchaseItem;
 use App\Http\Controllers\Controller;
-use App\Models\Tenant\Configuration;
-use App\Models\Tenant\Establishment;
-use App\Models\Tenant\ItemWarehouse;
-use App\Models\Tenant\InventoryKardex;
-use Modules\Item\Models\ItemLotsGroup;
-
-use Modules\Inventory\Models\Warehouse;
-use App\Models\Tenant\PaymentMethodType;
-use Modules\Finance\Traits\FinanceTrait;
-use App\Models\Tenant\Catalogs\PriceType;
-use Modules\Purchase\Models\PurchaseOrder;
+use App\Http\Requests\Tenant\PurchaseImportRequest;
+use App\Http\Requests\Tenant\PurchaseRequest;
+use App\Http\Resources\Tenant\PurchaseCollection;
+use App\Http\Resources\Tenant\PurchaseResource;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\ChargeDiscountType;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
-use App\Http\Requests\Tenant\PurchaseRequest;
-use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\OperationType;
+use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
-
-
-use App\Http\Resources\Tenant\PurchaseResource;
-use App\Http\Resources\Tenant\PurchaseCollection;
-use App\Models\Tenant\Catalogs\AffectationIgvType;
-use App\Models\Tenant\Catalogs\ChargeDiscountType;
-use App\Http\Requests\Tenant\PurchaseImportRequest;
-use App\CoreFacturalo\Helpers\Storage\StorageDocument;
-use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
-use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
+use App\Models\Tenant\Company;
+use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Item;
+use App\Models\Tenant\ItemUnitType;
+use App\Models\Tenant\ItemWarehouse;
+use App\Models\Tenant\PaymentMethodType;
+use App\Models\Tenant\Person;
+use App\Models\Tenant\Purchase;
+use App\Models\Tenant\PurchaseItem;
+use App\Traits\OfflineTrait;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Modules\Finance\Traits\FinanceTrait;
+use Modules\Inventory\Models\Warehouse;
+use Modules\Item\Models\ItemLotsGroup;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+use Mpdf\HTMLParserMode;
+use Mpdf\Mpdf;
 
 
 class PurchaseController extends Controller
@@ -231,6 +222,15 @@ class PurchaseController extends Controller
                             $item_unit_type->price3 = $value['price3'];
                             $item_unit_type->price_default = $value['price_default'];
                             $item_unit_type->save();
+                        }
+                        $warehouse_prices = $item['item_warehouse_prices'];
+                        foreach($warehouse_prices as $prices){
+                            Item::setStaticItemWarehousePrice(
+                                (int)$row['item_id'],
+                                (int)$prices['id'],
+                                (int)$prices['warehouse_id'],
+                                $prices['price']
+                            );
                         }
 
 
@@ -629,7 +629,8 @@ class PurchaseController extends Controller
         $items = $all_items->orderBy('description')->get()->transform(function($row){
             /** @var Item $row*/
             $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
-            return [
+            $temp = $row->getCollectionData();
+            $data =  [
                 'id' => $row->id,
                 'item_code'  => $row->item_code,
                 'full_description' => $full_description,
@@ -660,6 +661,12 @@ class PurchaseController extends Controller
                 }),
                 'series_enabled' => (bool) $row->series_enabled,
             ];
+            foreach ($temp as $k => $v) {
+                if (!isset($data[$k])) {
+                    $data[$k] = $v;
+                }
+            }
+            return $data;
         });
 
         return compact('items');

@@ -775,6 +775,7 @@ class Item extends ModelTenant
 
         $data = [
             'id'                               => $this->id,
+            'item_code'                    => $this->item_code,
             'full_description'                 => $detail['full_description'],
             'model'                            => $this->model,
             'brand'                            => $detail['brand'],
@@ -991,8 +992,15 @@ class Item extends ModelTenant
                     'price_default' => $this->price_default,
                 ];
             }),
-
-
+            'item_warehouse_prices' => $this->warehousePrices->transform(function ($row) {
+                return [
+                    'id' => $row->id,
+                    'item_id' => $row->item_id,
+                    'warehouse_id' => $row->warehouse_id,
+                    'price' => $row->price,
+                    'description' => $row->warehouse->description,
+                ];
+            }),
         ];
     }
 
@@ -1407,5 +1415,66 @@ class Item extends ModelTenant
             ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image_small)
             : asset("/logo/{$this->image_small}");
 
+    }
+
+    /**
+     * Crea o actualiza el precio de inventario.
+     *
+     * @param int    $item_warehouse_id
+     * @param int    $warehouse_id
+     * @param string $price
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setItemWarehousePrice(
+        $item_warehouse_id = 0,
+        $warehouse_id = 0,
+        $price = ''
+    )
+    {
+        if ($price != '') {
+            ItemWarehousePrice::updateOrCreate([
+                'item_id' => $this->id,
+                'warehouse_id' => $warehouse_id,
+            ], [
+                'price' => $price,
+            ]);
+        } else if ($item_warehouse_id != 0) {
+                ItemWarehousePrice::findOrFail($item_warehouse_id)->delete();
+        }
+        return $this;
+    }
+
+    /**
+     * Llamado estatico de setItemWarehousePrice
+     *
+     * @param int    $item_id
+     * @param int    $item_warehouse_id
+     * @param int    $warehouse_id
+     * @param string $price
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public static function setStaticItemWarehousePrice(
+        $item_id = 0,
+        $item_warehouse_id = 0,
+        $warehouse_id = 0,
+        $price = ''
+    )
+    {
+        if($item_id != 0){
+            $item = self::find($item_id);
+            if($item !== null){
+                $item->setItemWarehousePrice(
+                    $item_warehouse_id ,
+                    $warehouse_id ,
+                    $price
+                );
+                return true;
+            }
+        }
+        return false;
     }
 }
