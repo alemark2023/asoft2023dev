@@ -523,6 +523,21 @@
             >
                 <div class="h-50 bg-light" style="overflow-y: auto">
                     <div class="row py-3 border-bottom m-0 p-0">
+                        <div class="col-lg-8 col-md-8">
+                            <el-radio-group v-model="form.document_type_id" size="small" @change="filterSeries">
+                                <el-radio-button label="01"><span style="font-size: 10px;">FACTURA</span></el-radio-button>
+                                <el-radio-button label="03"><span style="font-size: 10px;">BOLETA</span></el-radio-button>
+                                <el-radio-button label="80"><span style="font-size: 10px;">N. VENTA</span></el-radio-button>
+                            </el-radio-group>
+                        </div>
+                        <div class="col-lg-4 col-md-4">
+                            <el-select v-model="form.series_id" class="c-width">
+                                <el-option   v-for="option in series" :key="option.id" :label="option.number" :value="option.id">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="row py-3 border-bottom m-0 p-0">
                         <div class="col-8">
                             <el-select
                                 ref="select_person"
@@ -615,28 +630,28 @@
                                             <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
                                         </td>
                                         <!-- <td>
-                      <p class="font-weight-semibold m-0 text-center">{{currency_type.symbol}}</p>
-                    </td>
-                    <td width="30%">
-                      <p class="font-weight-semibold m-0 text-center">
-                        <el-input
-                          v-model="item.item.unit_price"
-                          @blur="blurCalculateQuantity2(index)"
-                        >
-                        </el-input>
-                      </p>
-                    </td> -->
+                                              <p class="font-weight-semibold m-0 text-center">{{currency_type.symbol}}</p>
+                                            </td>
+                                            <td width="30%">
+                                              <p class="font-weight-semibold m-0 text-center">
+                                                <el-input
+                                                  v-model="item.item.unit_price"
+                                                  @blur="blurCalculateQuantity2(index)"
+                                                >
+                                                </el-input>
+                                              </p>
+                                            </td> -->
 
                                         <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
-<!--                                            <p-->
-<!--                                                class="font-weight-semibold m-0 text-center"-->
-<!--                                            >-->
+                                            <!--<p-->
+                                            <!--class="font-weight-semibold m-0 text-center"-->
+                                            <!-- -->
                                                 {{ currency_type.symbol }}
-<!--                                            </p>-->
+                                            <!--</p>-->
                                         </td>
                                         <td style="width: 80px; vertical-align: top">
-<!--                                            <p class="font-weight-semibold m-0 text-center">-->
-                                                <!-- {{currency_type.symbol}} {{item.total}} -->
+                                            <!--<p class="font-weight-semibold m-0 text-center">-->
+                                            <!-- {{currency_type.symbol}} {{item.total}} -->
                                             <template v-if="edit_unit_price">
                                                 <el-input
                                                     v-model="item.total"
@@ -649,7 +664,7 @@
                                             <template v-else>
                                                 {{ item.total }}
                                             </template>
-<!--                                            </p>-->
+                                            <!--</p>-->
                                         </td>
                                         <td class="text-right" style="width: 36px; padding-left: 0; padding-right: 0; vertical-align: top">
                                             <a class="btn btn-sm btn-default" @click="clickDeleteItem(index)">
@@ -662,9 +677,57 @@
                         </div>
                     </div>
                 </div>
-                <div class="h-25 bg-light" style="overflow-y: auto">
+                <div class="h-50 bg-light" style="overflow-y: auto">
+                    <div class="row py-3 m-0 p-0">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <h2><el-switch @change="changeEnabledDiscount" v-model="enabled_discount" class="control-label font-weight-semibold m-0 text-center m-b-0" active-text="Descuento"></el-switch></h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="control-label">Monto</label>
+                                <el-input v-model="discount_amount" @input="inputDiscountAmount()" :disabled="!enabled_discount">
+                                    <template slot="prepend">{{currency_type.symbol}}</template>
+                                </el-input>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="control-label">Ingrese monto</label>
+                                <el-input v-model="enter_amount" @keyup.enter.native="keyupEnterAmount()" @input="enterAmount()" ref="enter_amount">
+                                    <template slot="prepend">{{currency_type.symbol}}</template>
+                                </el-input>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group" :class="{'has-danger': difference < 0}">
+                                <label class="control-label" v-text="(difference <0) ? 'Faltante' :'Vuelto'"></label>
+                                <h4 class="control-label font-weight-semibold m-0 text-center m-b-0">{{currency_type.symbol}} {{difference}}</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row m-0 p-0">
+                        <div class="col-lg-12" v-if="form_payment.payment_method_type_id=='01'">
+                            <div class="row no-gutters">
+                                <div class="col-lg-3 px-1">
+                                    <button class="btn btn-block btn-secondary" @click="setAmountCash(10)">{{currency_type.symbol}}10</button>
+                                </div>
+                                <div class="col-lg-3 px-1">
+                                    <button class="btn btn-block btn-secondary" @click="setAmountCash(20)" >{{currency_type.symbol}}20</button>
+                                </div>
+                                <div class="col-lg-3 px-1">
+                                    <button class="btn btn-block btn-secondary" @click="setAmountCash(50)"  >{{currency_type.symbol}}50</button>
+                                </div>
+                                <div class="col-lg-3 px-1">
+                                    <button class="btn btn-block btn-secondary"  @click="setAmountCash(100)" >{{currency_type.symbol}}100</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div
-                        class="row border-top bg-light m-0 p-0 h-50 d-flex align-items-right pr-5 pt-2"
+                        class="row border-top mt-1 bg-light m-0 p-0 d-flex align-items-right pr-5 pt-2"
                     >
                         <div
                             class="col-md-12"
@@ -747,74 +810,21 @@
                                 </tr>
                             </table>
                         </div>
-
-                        <!-- <div class="col-12 text-right px-0" v-if="form.total_taxed > 0">
-              <h4 class="font-weight-semibold  m-0">
-                <span class="font-weight-semibold">OP.GRAVADA: </span>
-                <span class="text-blue">{{currency_type.symbol}} {{ form.total_taxed }}</span>
-              </h4>
-            </div>
-
-            <div class="col-12 text-right px-0" v-if="form.total_free > 0">
-              <h4 class="font-weight-semibold  m-0">
-                <span class="font-weight-semibold">OP.GRATUITAS: </span>
-                <span class="text-blue">{{currency_type.symbol}} {{ form.total_free }}</span>
-              </h4>
-            </div>
-
-            <div class="col-12 text-right px-0" v-if="form.total_unaffected > 0">
-              <h4 class="font-weight-semibold  m-0">
-                <span class="font-weight-semibold">OP.INAFECTAS: </span>
-                <span class="text-blue">{{currency_type.symbol}} {{ form.total_unaffected }}</span>
-              </h4>
-            </div>
-
-            <div class="col-12 text-right px-0" v-if="form.total_exonerated > 0">
-              <h4 class="font-weight-semibold  m-0">
-                <span class="font-weight-semibold">OP.EXONERADAS: </span>
-                <span class="text-blue">{{currency_type.symbol}} {{ form.total_exonerated }}</span>
-              </h4>
-            </div>
-
-            <div class="col-12 text-right px-0" v-if="form.total_igv > 0">
-              <h4 class="font-weight-semibold  m-0">
-                <span class="font-weight-semibold">IGV: </span>
-                <span class="text-blue">{{currency_type.symbol}} {{form.total_igv}}</span>
-              </h4>
-            </div> -->
                     </div>
                     <div
-                        class="row text-white m-0 p-0 h-50 d-flex align-items-center"
+                        class="row text-white py-2 m-0 p-0 d-flex align-items-center align-items-end"
                         @click="clickPayment"
                         v-bind:class="[
                             form.total > 0 ? 'bg-info pointer' : 'bg-dark'
                         ]"
                     >
                         <div class="col-6 text-center">
-                            <i class="fas fa-chevron-circle-right fa fw h5"></i>
-                            <span class="font-weight-semibold h5">PAGO</span>
+                            <span class="font-weight-semibold h5">PAGAR</span>
                         </div>
                         <div class="col-6 text-center">
                             <h5 class="font-weight-semibold h5">
                                 {{ currency_type.symbol }} {{ form.total }}
                             </h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="h-25 bg-light" style="overflow-y: auto">
-                    <div class="row py-3 border-bottom m-0 p-0">
-                        <div class="col-lg-8 col-md-8">
-                            <el-radio-group v-model="form.document_type_id" size="small" @change="filterSeries">
-                                <el-radio-button label="01"><span style="font-size: 10px;">FACTURA</span></el-radio-button>
-                                <el-radio-button label="03"><span style="font-size: 10px;">BOLETA</span></el-radio-button>
-                                <el-radio-button label="80"><span style="font-size: 10px;">N. VENTA</span></el-radio-button>
-                            </el-radio-group>
-                        </div>
-                        <div class="col-lg-4 col-md-4">
-                            <el-select v-model="form.series_id" class="c-width">
-                                <el-option   v-for="option in series" :key="option.id" :label="option.number" :value="option.id">
-                                </el-option>
-                            </el-select>
                         </div>
                     </div>
                 </div>
@@ -930,6 +940,9 @@
 .el-input-group__append {
     padding: 0 10px !important;
 }
+.ws-flotante{
+    display: none;
+}
 </style>
 
 <script>
@@ -996,12 +1009,18 @@ export default {
             category_selected: "",
             focusClienteSelect: false,
             //fusionpayment
-            series: []
+            series: [],
+            enabled_discount: false,
+            discount_amount:0,
+            difference: 0,
+            enter_amount: 0,
+            form_payment:{},
         };
     },
     async created() {
         await this.initForm();
         await this.getTables();
+        this.initFormPayment();
         this.events();
 
         await this.getFormPosLocalStorage();
@@ -1984,6 +2003,7 @@ export default {
             if(item.description == null) return 0;
             return item.description.length;
         },
+        //fusionpayment
         filterSeries() {
             // this.form.series_id = null
             // this.series = _.filter(this.all_series, {'document_type_id': this.form.document_type_id });
@@ -1993,6 +2013,33 @@ export default {
             // {
             //    return this.$message.warning('El establecimiento no tiene series disponibles para el comprobante');
             // }
+        },
+        changeEnabledDiscount(){
+            if(!this.enabled_discount){
+                this.discount_amount = 0
+                this.deleteDiscountGlobal()
+                this.reCalculateTotal()
+            }
+        },
+        initFormPayment() {
+
+            this.difference = -this.form.total
+            this.form_payment = {
+                id: null,
+                date_of_payment: moment().format('YYYY-MM-DD'),
+                payment_method_type_id: '01',
+                reference: null,
+                card_brand_id:null,
+                document_id:null,
+                sale_note_id:null,
+                payment: this.form.total,
+            }
+
+            this.form_cash_document = {
+                document_id:null,
+                sale_note_id:null
+            }
+
         },
     }
 };
