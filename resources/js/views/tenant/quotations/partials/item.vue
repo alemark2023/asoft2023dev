@@ -919,7 +919,7 @@ export default {
         async changeItem() {
             this.form.item = _.find(this.items, {'id': this.form.item_id});
             this.item_unit_types = this.form.item.item_unit_types;
-            // this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
+            this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
             this.form.unit_price = this.form.item.sale_unit_price;
             this.form.unit_price_value = this.form.item.sale_unit_price;
             // this.lots = this.form.item.lots
