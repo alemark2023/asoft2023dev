@@ -77,6 +77,9 @@
 
             <summary-options :showDialog.sync="showDialogOptions"
                               :recordId="recordId"></summary-options>
+
+            <summary-regularize :showDialog.sync="showDialogRegularize"
+                              :summary="summary"></summary-regularize>
         </div>
     </div>
 
@@ -85,20 +88,23 @@
 <script>
 
     import SummaryOptions from './partials/options.vue'
+    import SummaryRegularize from './partials/regularize.vue'
     import SummaryForm from './form.vue'
     import DataTable from '../../../components/DataTable.vue'
     import {deletable} from '../../../mixins/deletable'
 
     export default {
         mixins: [deletable],
-        components: {DataTable, SummaryForm, SummaryOptions},
+        components: {DataTable, SummaryForm, SummaryOptions, SummaryRegularize},
         data () {
             return {
                 resource: 'summaries',
                 showDialog: false,
                 showDialogOptions: false,
+                showDialogRegularize: false,
                 recordId: null,
                 records: [],
+                summary: null
             }
         },
         created() {
@@ -135,48 +141,9 @@
                 window.open(download, '_blank');
             },
             clickValidateSummary(row){
-
-                this.$msgbox({
-                    type: 'warning',
-                    dangerouslyUseHTMLString: true,
-                    title: `Resúmen ${row.identifier}`,
-                    message: `<strong>¿Los comprobantes del resúmen han sido validados por SUNAT?</strong><br/>
-                              <p>Si acepta la operación, todos los comprobantes informados en el resúmen se modificarán a estado <strong>ACEPTADO</strong></p>`,
-                    showCancelButton: true,
-                    confirmButtonText: 'Aceptar',
-                    cancelButtonText: 'Cancelar',
-                    beforeClose: (action, instance, done) => {
-
-                        if (action === 'confirm') {
-
-                            instance.confirmButtonLoading = true;
-                            instance.confirmButtonText = 'Cargando...';
-
-                            this.$http.get(`/${this.resource}/regularize/${row.id}`)
-                                .then(response => {
-                                    this.$eventHub.$emit('reloadData') 
-                                    if (response.data.success) {
-                                        this.$message.success(response.data.message)
-                                        done();
-                                    } else {
-                                        this.$message.error(response.data.message)
-                                    }
-                                })
-                                .catch(error => {
-                                    this.$message.error(error.response.data.message)
-                                })
-                                .then(() => {
-                                    instance.confirmButtonLoading = false;
-                                })
- 
-                            console.log("ok")
-
-                        } else {
-                            console.log("cancel")
-                            done();
-                        }
-                    }
-                }) 
+                
+                this.summary = row
+                this.showDialogRegularize = true
 
             },
         }

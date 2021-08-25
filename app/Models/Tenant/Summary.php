@@ -39,6 +39,8 @@ class Summary extends ModelTenant
     protected $casts = [
         'date_of_issue' => 'date',
         'date_of_reference' => 'date',
+        'unknown_error_status_response' => 'boolean',
+        'manually_regularized' => 'boolean',
     ];
 
     /**

@@ -90,7 +90,7 @@ class SummaryController extends Controller
 
             // codigo personalizado cuando se lanza excepcion por problemas de sunat
             if($e->getCode() === 511){
-                $this->updateUnknownErrorStatus($summary_id);
+                $this->updateUnknownErrorStatus($summary_id, $e);
             }
 
             return $this->getCustomErrorMessage($e->getMessage(), $e);
@@ -125,18 +125,45 @@ class SummaryController extends Controller
     
     public function regularize($summary_id) {
 
-        $summary = Summary::findOrFail($summary_id);
+        return DB::connection('tenant')->transaction(function() use($summary_id) {
 
-        $summary->documents()->update([
-            'state_type_id' => '05'
+            $summary = Summary::findOrFail($summary_id);
+
+            foreach ($summary->documents as $doc)
+            {
+                $doc->document->update([
+                    'state_type_id' => '05'
+                ]);
+            }
+
+            $summary->update([
+                'state_type_id' => '05',
+                'manually_regularized' => true,
+            ]);
+
+            return [
+                'success' => true,
+                'message' => 'Los comprobantes fueron regularizados'
+            ];
+
+        });
+
+    }
+
+
+    public function cancelRegularize($summary_id) {
+
+        Summary::findOrFail($summary_id)->update([
+            'unknown_error_status_response' => false,
+            'error_manually_regularized' => null
         ]);
 
-        //proceso para actualizar estado de resumen y las variables que identifican que se regularizo manualmente
         return [
             'success' => true,
-            'message' => 'Los comprobantes fueron regularizados'
+            'message' => 'La operación fue cancelada'
         ];
 
     }
+    
 
 }

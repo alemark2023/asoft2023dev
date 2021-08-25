@@ -64,10 +64,13 @@ trait SummaryTrait
         Log::error("Code: {$exception->getCode()} - Line: {$exception->getLine()} - Message: {$exception->getMessage()} - File: {$exception->getFile()}");
     }
 
-    public function updateUnknownErrorStatus($id) {
+    public function updateUnknownErrorStatus($id, $exception) {
         
         Summary::findOrFail($id)->update([
-            'unknown_error_status_response' => true
+            'unknown_error_status_response' => true,
+            'error_manually_regularized' => [
+                'message' => $exception->getMessage(),
+            ],
         ]);
 
     }
