@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Models\Tenant\Catalogs\OperationType;
+use App\Models\Tenant\ItemUnitType;
 use App\Traits\OfflineTrait;
 use Exception;
 use Mpdf\Mpdf;
@@ -215,6 +216,24 @@ class PurchaseController extends Controller
                     if (isset($row['update_purchase_price']) && $row['update_purchase_price']) {
                         Item::query()->where('id', $row['item_id'])
                             ->update(['purchase_unit_price' => floatval($row['unit_price'])]);
+                        // actualizacion de precios
+                        $item = $row['item'];
+                        $unit_type = $item['item_unit_types'];
+
+                        foreach($unit_type as $value){
+                            $item_unit_type = ItemUnitType::firstOrNew(['id' => $value['id']]);
+                            $item_unit_type->item_id = (int)$row['item_id'];
+                            $item_unit_type->description = $value['description'];
+                            $item_unit_type->unit_type_id = $value['unit_type_id'];
+                            $item_unit_type->quantity_unit = $value['quantity_unit'];
+                            $item_unit_type->price1 = $value['price1'];
+                            $item_unit_type->price2 = $value['price2'];
+                            $item_unit_type->price3 = $value['price3'];
+                            $item_unit_type->price_default = $value['price_default'];
+                            $item_unit_type->save();
+                        }
+
+
                     }
 
 
@@ -607,9 +626,8 @@ class PurchaseController extends Controller
             $all_items->where('description', 'like', "%{$request->input}%")
                 ->orWhere('internal_id', 'like', "%{$request->input}%");
         }
-        $all_items = $all_items->orderBy('description')->get();
-
-        $items = collect($all_items)->transform(function($row){
+        $items = $all_items->orderBy('description')->get()->transform(function($row){
+            /** @var Item $row*/
             $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
             return [
                 'id' => $row->id,
