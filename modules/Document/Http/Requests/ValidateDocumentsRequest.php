@@ -22,13 +22,13 @@ class ValidateDocumentsRequest extends FormRequest
             'document_type_id' => [
                 'required',
             ],
-            'start_number' => [
-                'required',
-                'numeric',
-                'integer',
-                'min:1',
+            // 'start_number' => [
+            //     'required',
+            //     'numeric',
+            //     'integer',
+            //     'min:1',
 
-            ],
+            // ],
         ];
     }
 

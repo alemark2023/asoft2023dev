@@ -59,7 +59,7 @@
 
 <script>
  
-    import DataTable from '../../../../../../../resources/js/components/DataTableValidateDocuments.vue'
+    import DataTable from '@components/DataTableValidateDocuments.vue'
 
     export default {
         components: {DataTable},

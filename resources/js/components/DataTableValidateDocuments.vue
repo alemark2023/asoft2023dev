@@ -194,23 +194,33 @@
             },
             async getRecordsByFilter(){
 
-                this.loading_submit = await true
+                // this.loading_submit = await true
                 await this.getRecords()
                 this.loading_submit = await false
 
             },
             getRecords() {
                 
-                this.$eventHub.$emit('valueLoading', true)
+                // this.$eventHub.$emit('valueLoading', true)
                 return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
+
+                    // console.log(response)
+                    if (response.data.hasOwnProperty('success')){
+                        if (!response.data.success){
+                            this.loading_submit = false
+                            return this.$message.error(response.data.message);
+                        }
+                    }
+                        
                     this.records = response.data.data
                     this.pagination = response.data.meta
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
                     this.loading_submit = false
+
                 }).catch(error => {
                     if (error.response.status === 422) {
                         this.errors = error.response.data 
-                        console.log(error.response.data)
+                        // console.log(error.response.data)
                     } else {
                         console.log(error.response)
                     }

@@ -44,6 +44,9 @@ class CompanyResource extends JsonResource
             'favicon' => $this->favicon,
             'cod_digemid' => $this->cod_digemid,
             'is_pharmacy' => $configuration->isPharmacy(),
+            'integrated_query_client_id' => $this->integrated_query_client_id,
+            'integrated_query_client_secret' => $this->integrated_query_client_secret,
+
         ];
     }
 }
