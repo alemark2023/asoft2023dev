@@ -20,7 +20,7 @@
                                  class="">
                                 <div :class="{'has-danger': errors.has_igv}"
                                      class="form-group">
-                                    <el-checkbox v-model="form.has_igv">Incluye Igv {{ config.include_igv }}
+                                    <el-checkbox v-model="form.has_igv">Incluye Igv
                                     </el-checkbox>
                                     <br>
                                     <small v-if="errors.has_igv"
@@ -408,6 +408,7 @@
                         </div>
                     </div>
                 </el-tab-pane>
+
                 <el-tab-pane class
                              name="second">
                     <span slot="label">Almacenes</span>
