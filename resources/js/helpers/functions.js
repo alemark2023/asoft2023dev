@@ -52,7 +52,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     // $table->json('charges')->nullable();
     // $table->json('discounts')->nullable();
 
-    // fixed for update sale_note 
+    // fixed for update sale_note
     let record_id = (row_old.record_id) ? row_old.record_id : (row_old.id ? row_old.id : null)
 
     let row = {
@@ -122,9 +122,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     // })
     if (row.discounts.length > 0) {
         row.discounts.forEach((discount, index) => {
-
             if (discount.is_amount) {
-
                 if (discount.discount_type.base) {
 
                     discount.base = _.round(total_value_partial, 2)
@@ -239,32 +237,24 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
 
     if (row.discounts.length > 0) {
-
         let sum_discount_no_base = 0
         let sum_discount_base = 0
-
         row.discounts.forEach(discount => {
             sum_discount_no_base += (discount.discount_type_id == '01') ? discount.amount : 0
             sum_discount_base += (discount.discount_type_id == '00') ? discount.amount : 0
         })
-
         //obs 4287
         row.unit_price = (total_value + total_taxes - sum_discount_no_base) / row.quantity
-
         //obs 4288
         let exist_discount_no_base = _.find(row.discounts, {discount_type_id: '01'})
-
         if (exist_discount_no_base) {
-
             row.unit_value = (total_value + total_taxes) / row.quantity
-
             if (row.affectation_igv_type_id === '10') {
                 row.unit_value = row.unit_value / (1 + percentage_igv / 100)
             }
-
         }
-
-        row.total_discount = _.round(sum_discount_no_base, 2)
+        let total_discounts = sum_discount_no_base + sum_discount_base;
+        row.total_discount = _.round(total_discounts, 2)
     }
 
 
