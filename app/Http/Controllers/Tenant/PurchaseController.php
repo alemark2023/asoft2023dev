@@ -209,30 +209,32 @@ class PurchaseController extends Controller
                             ->update(['purchase_unit_price' => floatval($row['unit_price'])]);
                         // actualizacion de precios
                         $item = $row['item'];
-                        $unit_type = $item['item_unit_types'];
-
-                        foreach($unit_type as $value){
-                            $item_unit_type = ItemUnitType::firstOrNew(['id' => $value['id']]);
-                            $item_unit_type->item_id = (int)$row['item_id'];
-                            $item_unit_type->description = $value['description'];
-                            $item_unit_type->unit_type_id = $value['unit_type_id'];
-                            $item_unit_type->quantity_unit = $value['quantity_unit'];
-                            $item_unit_type->price1 = $value['price1'];
-                            $item_unit_type->price2 = $value['price2'];
-                            $item_unit_type->price3 = $value['price3'];
-                            $item_unit_type->price_default = $value['price_default'];
-                            $item_unit_type->save();
+                        if(isset($item['item_unit_types'])) {
+                            $unit_type = $item['item_unit_types'];
+                            foreach ($unit_type as $value) {
+                                $item_unit_type = ItemUnitType::firstOrNew(['id' => $value['id']]);
+                                $item_unit_type->item_id = (int)$row['item_id'];
+                                $item_unit_type->description = $value['description'];
+                                $item_unit_type->unit_type_id = $value['unit_type_id'];
+                                $item_unit_type->quantity_unit = $value['quantity_unit'];
+                                $item_unit_type->price1 = $value['price1'];
+                                $item_unit_type->price2 = $value['price2'];
+                                $item_unit_type->price3 = $value['price3'];
+                                $item_unit_type->price_default = $value['price_default'];
+                                $item_unit_type->save();
+                            }
                         }
-                        $warehouse_prices = $item['item_warehouse_prices'];
-                        foreach($warehouse_prices as $prices){
-                            Item::setStaticItemWarehousePrice(
-                                (int)$row['item_id'],
-                                (int)$prices['id'],
-                                (int)$prices['warehouse_id'],
-                                $prices['price']
-                            );
+                        if(isset($item['item_warehouse_prices'])) {
+                            $warehouse_prices = $item['item_warehouse_prices'];
+                            foreach ($warehouse_prices as $prices) {
+                                Item::setStaticItemWarehousePrice(
+                                    (int)$row['item_id'],
+                                    (int)$prices['id'],
+                                    (int)$prices['warehouse_id'],
+                                    $prices['price']
+                                );
+                            }
                         }
-
 
                     }
 
