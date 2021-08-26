@@ -522,213 +522,174 @@
                 style="height: calc(100vh - 110px)"
             >
                 <div class="h-50 bg-light" style="overflow-y: auto">
-                    <div class="row py-3 border-bottom m-0 p-0">
-                        <div class="col-lg-8 col-md-8">
-                            <el-radio-group v-model="form.document_type_id" size="small" @change="filterSeries">
-                                <el-radio-button label="01"><span style="font-size: 10px;">FACTURA</span></el-radio-button>
-                                <el-radio-button label="03"><span style="font-size: 10px;">BOLETA</span></el-radio-button>
-                                <el-radio-button label="80"><span style="font-size: 10px;">N. VENTA</span></el-radio-button>
-                            </el-radio-group>
+                    <div class="h-40" style="overflow-y: auto">
+                        <div class="row pt-3 border-bottom m-0 p-0">
+                            <div class="col-lg-8 col-md-8">
+                                <el-radio-group v-model="form.document_type_id" size="small" @change="filterSeries">
+                                    <el-radio-button label="01"><span style="font-size: 10px;">FACTURA</span></el-radio-button>
+                                    <el-radio-button label="03"><span style="font-size: 10px;">BOLETA</span></el-radio-button>
+                                    <el-radio-button label="80"><span style="font-size: 10px;">N. VENTA</span></el-radio-button>
+                                </el-radio-group>
+                            </div>
+                            <div class="col-lg-4 col-md-4">
+                                <el-select v-model="form.series_id" class="c-width">
+                                    <el-option   v-for="option in series" :key="option.id" :label="option.number" :value="option.id">
+                                    </el-option>
+                                </el-select>
+                            </div>
                         </div>
-                        <div class="col-lg-4 col-md-4">
-                            <el-select v-model="form.series_id" class="c-width">
-                                <el-option   v-for="option in series" :key="option.id" :label="option.number" :value="option.id">
-                                </el-option>
-                            </el-select>
-                        </div>
-                    </div>
-                    <div class="row py-3 border-bottom m-0 p-0">
-                        <div class="col-8">
-                            <el-select
-                                ref="select_person"
-                                v-model="form.customer_id"
-                                filterable
-                                placeholder="Cliente"
-                                @change="changeCustomer"
-                                @keyup.native="keyupCustomer"
-                                @keyup.enter.native="keyupEnterCustomer"
-                                @focus="focusClienteSelect = true"
-                                @blur="focusClienteSelect = false"
-                            >
-                                <el-option
-                                    v-for="option in all_customers"
-                                    :key="option.id"
-                                    :label="option.description"
-                                    :value="option.id"
-                                ></el-option>
-                            </el-select>
-                        </div>
-                        <div class="col-4">
-                            <div class="btn-group d-flex" role="group">
-                                <a
-                                    class="btn btn-sm btn-default w-100"
-                                    @click.prevent="showDialogNewPerson = true"
+                        <div class="row py-3 border-bottom m-0 p-0">
+                            <div class="col-8">
+                                <el-select
+                                    ref="select_person"
+                                    v-model="form.customer_id"
+                                    filterable
+                                    placeholder="Cliente"
+                                    @change="changeCustomer"
+                                    @keyup.native="keyupCustomer"
+                                    @keyup.enter.native="keyupEnterCustomer"
+                                    @focus="focusClienteSelect = true"
+                                    @blur="focusClienteSelect = false"
                                 >
-                                    <i class="fas fa-plus fa-wf"></i>
-                                </a>
-                                <a
-                                    class="btn btn-sm btn-default w-100"
-                                    @click="clickDeleteCustomer"
-                                >
-                                    <i class="fas fa-trash fa-wf"></i>
-                                </a>
-                                <a
-                                    class="btn btn-sm btn-default w-100"
-                                    @click="selectCurrencyType"
-                                >
-                                    <template
-                                        v-if="form.currency_type_id == 'PEN'"
+                                    <el-option
+                                        v-for="option in all_customers"
+                                        :key="option.id"
+                                        :label="option.description"
+                                        :value="option.id"
+                                    ></el-option>
+                                </el-select>
+                            </div>
+                            <div class="col-4">
+                                <div class="btn-group d-flex" role="group">
+                                    <a
+                                        class="btn btn-sm btn-default w-100"
+                                        @click.prevent="showDialogNewPerson = true"
                                     >
-                                        <strong>S/</strong>
-                                    </template>
-                                    <template v-else>
-                                        <strong>$</strong>
-                                    </template>
-                                    <!-- <i class="fa fa-usd" aria-hidden="true"></i> -->
-                                </a>
+                                        <i class="fas fa-plus fa-wf"></i>
+                                    </a>
+                                    <a
+                                        class="btn btn-sm btn-default w-100"
+                                        @click="clickDeleteCustomer"
+                                    >
+                                        <i class="fas fa-trash fa-wf"></i>
+                                    </a>
+                                    <a
+                                        class="btn btn-sm btn-default w-100"
+                                        @click="selectCurrencyType"
+                                    >
+                                        <template
+                                            v-if="form.currency_type_id == 'PEN'"
+                                        >
+                                            <strong>S/</strong>
+                                        </template>
+                                        <template v-else>
+                                            <strong>$</strong>
+                                        </template>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row py-1 border-bottom m-0 p-0">
-                        <div class="col-12">
-                            <table class="table table-sm table-borderless mb-0 pos-list-items">
-                                <template v-for="(item, index) in form.items">
-                                    <tr :key="index">
-                                        <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
-                                            {{ item.unit_type_id }}
-                                        </td>
-                                        <td style="width: 80px; vertical-align: top">
-                                            <el-input v-model="item.item.aux_quantity"
-                                                      @input="clickAddItem(item, index, true)"
-                                                      @keyup.enter.native="keyupEnterQuantity"></el-input>
-                                            <!-- <el-input
-                                                v-model="item.item.aux_quantity"
-                                                :readonly="
-                                                    item.item.calculate_quantity
-                                                "
-                                                class
-                                                @input="
-                                                    clickAddItem(
-                                                        item,
-                                                        index,
-                                                        true
-                                                    )
-                                                "
-                                                @keyup.enter.native="
-                                                    keyupEnterQuantity
-                                                "
-                                            ></el-input> -->
-                                            <!-- <el-input-number v-model="item.item.aux_quantity" @change="clickAddItem(item,index,true)" :min="1" :max="10"></el-input-number> -->
-                                        </td>
-                                        <td>
-                                            <p class="item-description">
-                                                {{ item.item.description }}
-                                            </p>
-                                            <small>
-                                                {{ nameSets(item.item_id) }}
-                                            </small>
-                                            <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
-                                        </td>
-                                        <!-- <td>
-                                              <p class="font-weight-semibold m-0 text-center">{{currency_type.symbol}}</p>
+                    <div class="h-60" style="overflow-y: auto">
+                        <div class="row py-1 border-bottom m-0 p-0">
+                            <div class="col-12">
+                                <table class="table table-sm table-borderless mb-0 pos-list-items">
+                                    <template v-for="(item, index) in form.items">
+                                        <tr :key="index">
+                                            <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
+                                                {{ item.unit_type_id }}
                                             </td>
-                                            <td width="30%">
-                                              <p class="font-weight-semibold m-0 text-center">
-                                                <el-input
-                                                  v-model="item.item.unit_price"
-                                                  @blur="blurCalculateQuantity2(index)"
-                                                >
-                                                </el-input>
-                                              </p>
-                                            </td> -->
-
-                                        <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
-                                            <!--<p-->
-                                            <!--class="font-weight-semibold m-0 text-center"-->
-                                            <!-- -->
+                                            <td style="width: 80px; vertical-align: top">
+                                                <el-input v-model="item.item.aux_quantity"
+                                                          @input="clickAddItem(item, index, true)"
+                                                          @keyup.enter.native="keyupEnterQuantity"></el-input>
+                                            </td>
+                                            <td>
+                                                <p class="item-description">
+                                                    {{ item.item.description }}
+                                                </p>
+                                                <small>
+                                                    {{ nameSets(item.item_id) }}
+                                                </small>
+                                            </td>
+                                            <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
                                                 {{ currency_type.symbol }}
-                                            <!--</p>-->
-                                        </td>
-                                        <td style="width: 80px; vertical-align: top">
-                                            <!--<p class="font-weight-semibold m-0 text-center">-->
-                                            <!-- {{currency_type.symbol}} {{item.total}} -->
-                                            <template v-if="edit_unit_price">
-                                                <el-input
-                                                    v-model="item.total"
-                                                    @input="calculateQuantity(index)"
-                                                    @blur="blurCalculateQuantity(index)"
-                                                    :readonly="!item.item.calculate_quantity">
-                                                    <!--                                                     <template slot="prepend">{{ currency_type.symbol }}</template>-->
-                                                </el-input>
-                                            </template>
-                                            <template v-else>
-                                                {{ item.total }}
-                                            </template>
-                                            <!--</p>-->
-                                        </td>
-                                        <td class="text-right" style="width: 36px; padding-left: 0; padding-right: 0; vertical-align: top">
-                                            <a class="btn btn-sm btn-default" @click="clickDeleteItem(index)">
-                                                <i class="fas fa-trash fa-wf"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </table>
+                                            </td>
+                                            <td style="width: 80px; vertical-align: top">
+                                                <template v-if="edit_unit_price">
+                                                    <el-input
+                                                        v-model="item.total"
+                                                        @input="calculateQuantity(index)"
+                                                        @blur="blurCalculateQuantity(index)"
+                                                        :readonly="!item.item.calculate_quantity">
+                                                    </el-input>
+                                                </template>
+                                                <template v-else>
+                                                    {{ item.total }}
+                                                </template>
+                                            </td>
+                                            <td class="text-right" style="width: 36px; padding-left: 0; padding-right: 0; vertical-align: top">
+                                                <a class="btn btn-sm btn-default" @click="clickDeleteItem(index)">
+                                                    <i class="fas fa-trash fa-wf"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="h-50 bg-light" style="overflow-y: auto">
-                    <div class="row py-3 m-0 p-0">
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <h2><el-switch @change="changeEnabledDiscount" v-model="enabled_discount" class="control-label font-weight-semibold m-0 text-center m-b-0" active-text="Descuento"></el-switch></h2>
+                    <div class="h-80" style="overflow-y: auto">
+                        <div class="row py-3 m-0 p-0">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <h2><el-switch @change="changeEnabledDiscount" v-model="enabled_discount" class="control-label font-weight-semibold m-0 text-center m-b-0" active-text="Descuento"></el-switch></h2>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="control-label">Monto</label>
+                                    <el-input v-model="discount_amount" @input="inputDiscountAmount()" :disabled="!enabled_discount">
+                                        <template slot="prepend">{{currency_type.symbol}}</template>
+                                    </el-input>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="control-label">Ingrese monto</label>
+                                    <el-input v-model="enter_amount" @keyup.enter.native="keyupEnterAmount()" @input="enterAmount()" ref="enter_amount">
+                                        <template slot="prepend">{{currency_type.symbol}}</template>
+                                    </el-input>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group" :class="{'has-danger': difference < 0}">
+                                    <label class="control-label" v-text="(difference <0) ? 'Faltante' :'Vuelto'"></label>
+                                    <h4 class="control-label font-weight-semibold m-0 text-center m-b-0">{{currency_type.symbol}} {{difference}}</h4>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label class="control-label">Monto</label>
-                                <el-input v-model="discount_amount" @input="inputDiscountAmount()" :disabled="!enabled_discount">
-                                    <template slot="prepend">{{currency_type.symbol}}</template>
-                                </el-input>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label class="control-label">Ingrese monto</label>
-                                <el-input v-model="enter_amount" @keyup.enter.native="keyupEnterAmount()" @input="enterAmount()" ref="enter_amount">
-                                    <template slot="prepend">{{currency_type.symbol}}</template>
-                                </el-input>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="form-group" :class="{'has-danger': difference < 0}">
-                                <label class="control-label" v-text="(difference <0) ? 'Faltante' :'Vuelto'"></label>
-                                <h4 class="control-label font-weight-semibold m-0 text-center m-b-0">{{currency_type.symbol}} {{difference}}</h4>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="row m-0 p-0">
-                        <div class="col-lg-12" v-if="form_payment.payment_method_type_id=='01'">
-                            <div class="row no-gutters">
-                                <div class="col-lg-3 px-1">
-                                    <button class="btn btn-block btn-secondary" @click="setAmountCash(10)">{{currency_type.symbol}}10</button>
-                                </div>
-                                <div class="col-lg-3 px-1">
-                                    <button class="btn btn-block btn-secondary" @click="setAmountCash(20)" >{{currency_type.symbol}}20</button>
-                                </div>
-                                <div class="col-lg-3 px-1">
-                                    <button class="btn btn-block btn-secondary" @click="setAmountCash(50)"  >{{currency_type.symbol}}50</button>
-                                </div>
-                                <div class="col-lg-3 px-1">
-                                    <button class="btn btn-block btn-secondary"  @click="setAmountCash(100)" >{{currency_type.symbol}}100</button>
+                        <div class="row m-0 p-0">
+                            <div class="col-lg-12" v-if="form_payment.payment_method_type_id=='01'">
+                                <div class="row no-gutters">
+                                    <div class="col-lg-3 px-1">
+                                        <button class="btn btn-block btn-secondary" @click="setAmountCash(10)">{{currency_type.symbol}}10</button>
+                                    </div>
+                                    <div class="col-lg-3 px-1">
+                                        <button class="btn btn-block btn-secondary" @click="setAmountCash(20)" >{{currency_type.symbol}}20</button>
+                                    </div>
+                                    <div class="col-lg-3 px-1">
+                                        <button class="btn btn-block btn-secondary" @click="setAmountCash(50)"  >{{currency_type.symbol}}50</button>
+                                    </div>
+                                    <div class="col-lg-3 px-1">
+                                        <button class="btn btn-block btn-secondary"  @click="setAmountCash(100)" >{{currency_type.symbol}}100</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div
-                        class="row border-top mt-1 bg-light m-0 p-0 d-flex align-items-right pr-5 pt-2"
-                    >
                         <div
                             class="col-md-12"
                             style="display: flex; flex-direction: column; align-items: flex-end;"
@@ -811,13 +772,7 @@
                             </table>
                         </div>
                     </div>
-                    <div
-                        class="row text-white py-2 m-0 p-0 d-flex align-items-center align-items-end"
-                        @click="clickPayment"
-                        v-bind:class="[
-                            form.total > 0 ? 'bg-info pointer' : 'bg-dark'
-                        ]"
-                    >
+                    <div class="row h-20 text-white py-2 m-0 p-0 d-flex align-items-center align-items-end" @click="clickPayment" v-bind:class="[form.total > 0 ? 'bg-info pointer' : 'bg-dark']">
                         <div class="col-6 text-center">
                             <span class="font-weight-semibold h5">PAGAR</span>
                         </div>
@@ -942,6 +897,18 @@
 }
 .ws-flotante{
     display: none;
+}
+.h-20 {
+  height: 20% !important;
+}
+.h-40 {
+  height: 40% !important;
+}
+.h-60 {
+  height: 60% !important;
+}
+.h-80 {
+  height: 80% !important;
 }
 </style>
 
