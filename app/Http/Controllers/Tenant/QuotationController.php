@@ -139,11 +139,16 @@ class QuotationController extends Controller
     public function searchCustomers(Request $request)
     {
 
-        $customers = Person::where('number', 'like', "%{$request->input}%")
-                           ->orWhere('name', 'like', "%{$request->input}%")
-                           ->whereType('customers')->orderBy('name')
-                           ->whereIsEnabled()
-                           ->get()->transform(function ($row) {
+        $customers = Person::whereType('customers')
+            ->orderBy('name')
+            ->whereIsEnabled();
+        if($request->has('customer_id')){
+            $customers->where('id',$request->customer_id);
+        }else{
+            $customers->where('number', 'like', "%{$request->input}%")
+                ->orWhere('name', 'like', "%{$request->input}%");
+        }
+        $customers = $customers->get()->transform(function ($row) {
                 /** @var Person $row */
                 return $row->getCollectionData();
                 /* Se ha movido al modelo */
@@ -158,7 +163,6 @@ class QuotationController extends Controller
                     'address'                     => $row->address,
                 ];
             });
-
         return compact('customers');
     }
 
