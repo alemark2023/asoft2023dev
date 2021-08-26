@@ -39,6 +39,20 @@
                         </td>
                         
                         <td>
+                            <span class="badge bg-secondary text-white" :class="
+                                {'bg-danger': (row.sunat_state_type_id === '11'), 
+                                'bg-warning': (row.sunat_state_type_id === '13'), 
+                                'bg-secondary': (row.sunat_state_type_id === '01'), 
+                                'bg-info': (row.sunat_state_type_id === '03'), 
+                                'bg-success': (row.sunat_state_type_id === '05'), 
+                                'bg-secondary': (row.sunat_state_type_id === '07'), 
+                                'bg-dark': (row.sunat_state_type_id === '09')}"
+                            >
+                            {{row.sunat_state_type_description}}
+                            </span>
+                        </td>
+
+                        <!-- <td>
                             <span class="badge bg-secondary text-white" :class="{'bg-danger': (row.state_type_sunat_description == 'ANULADO'), 
                             'bg-warning': (row.state_type_sunat_description == 'POR ANULAR'), 
                             'bg-secondary': (row.state_type_sunat_description == 'REGISTRADO'), 
@@ -47,7 +61,7 @@
                             'bg-secondary': (row.state_type_sunat_description == 'OBSERVADO'), 
                             'bg-dark': (row.state_type_sunat_description == 'RECHAZADO'),
                             'bg-info': (row.state_type_sunat_description == 'NO EXISTE')}">{{row.state_type_sunat_description}}</span>
-                        </td>
+                        </td> -->
                         <!-- <td >{{ row.state_type_sunat_description }}</td> -->
                     </tr>
                 </data-table>

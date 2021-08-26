@@ -12,11 +12,12 @@ use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\StateType;
 use Modules\Document\Http\Requests\ValidateDocumentsRequest;
-use App\CoreFacturalo\Services\Extras\ValidateCpe2;
+// use App\CoreFacturalo\Services\Extras\ValidateCpe2;
 use App\Models\Tenant\Company;
 use Illuminate\Support\Facades\DB;
 use App\CoreFacturalo\Services\IntegratedQuery\{
-    AuthApi
+    AuthApi,
+    ValidateCpe,
 };
 
 class ValidateDocumentController extends Controller
@@ -49,75 +50,48 @@ class ValidateDocumentController extends Controller
     public function validateDocuments($records){
 
         $records_paginate = $records->paginate(config('tenant.items_per_page'));
-        // dd($records_paginate->getCollection());
+
+        // dd($this->access_token, $records_paginate->getCollection());
         
         foreach ($records_paginate->getCollection() as $document)
         {
 
-            $validate_cpe = new ValidateCpe2();
-            $response = $validate_cpe->search($document->company->number,
-                                                $document->document_type_id,
-                                                $document->series,
-                                                $document->number,
-                                                $document->date_of_issue,
-                                                $document->total
-                                            );
+            $validate_cpe = new ValidateCpe(
+                                $this->access_token,
+                                $document->company->number,
+                                $document->document_type_id,
+                                $document->series,
+                                $document->number,
+                                $document->date_of_issue,
+                                $document->total
+                            );
+
+            $response = $validate_cpe->search();
+
+            // dd($response);
+
             if ($response['success']) {
-                
-                $response_code = $response['data']['comprobante_estado_codigo'];
-                $response_description = $response['data']['comprobante_estado_descripcion'];
 
-                $message = $document->number_full.'|Código: '.$response_code.'|Mensaje: '.$response_description;
+                $document->message = $response['message']; 
+                $document->sunat_state_type_id = $response['data']['state_type_id']; 
+                $document->code = $response['data']['estadoCp']; 
+                $document->response = $response; 
 
-                $document->message = $message; 
-                $document->state_type_sunat_description = $response_description; 
-                $document->code = $response_code; 
- 
-            } 
+            } else{
+
+                $document->message = $response['message']; 
+                $document->sunat_state_type_id = null; 
+                $document->code = '-1'; 
+                $document->response = $response; 
+
+            }
+
         }
 
         return $records_paginate;
     }
 
 
-    // public function validateDocuments($records){
-
-    //     $records_paginate = $records->paginate(config('tenant.items_per_page'));
-    //     // $documents = $records_paginate->getCollection();
-
-    //     // dd($records_paginate->getCollection());
-        
-    //     foreach ($records_paginate->getCollection() as $document)
-    //     {
-    //         // evitado el buble de consulta
-    //         // reValidate:
-    //         $validate_cpe = new ValidateCpe2();
-    //         $response = $validate_cpe->search($document->company->number,
-    //                                             $document->document_type_id,
-    //                                             $document->series,
-    //                                             $document->number,
-    //                                             $document->date_of_issue,
-    //                                             $document->total
-    //                                         );
-    //         if ($response['success']) {
-                
-    //             $response_code = $response['data']['comprobante_estado_codigo'];
-    //             $response_description = $response['data']['comprobante_estado_descripcion'];
-
-    //             $message = $document->number_full.'|Código: '.$response_code.'|Mensaje: '.$response_description;
-
-    //             $document->message = $message; 
-    //             $document->state_type_sunat_description = $response_description; 
-    //             $document->code = $response_code; 
- 
-    //         } //else {
-
-    //             // goto reValidate;
-    //         //}
-    //     }
-
-    //     return $records_paginate;
-    // }
 
 
     public function getRecords($request){
@@ -211,4 +185,45 @@ class ValidateDocumentController extends Controller
         ];
 
     }
+
+    
+    // public function validateDocuments($records){
+
+    //     $records_paginate = $records->paginate(config('tenant.items_per_page'));
+    //     // $documents = $records_paginate->getCollection();
+
+    //     // dd($records_paginate->getCollection());
+        
+    //     foreach ($records_paginate->getCollection() as $document)
+    //     {
+    //         // evitado el buble de consulta
+    //         // reValidate:
+    //         $validate_cpe = new ValidateCpe2();
+    //         $response = $validate_cpe->search($document->company->number,
+    //                                             $document->document_type_id,
+    //                                             $document->series,
+    //                                             $document->number,
+    //                                             $document->date_of_issue,
+    //                                             $document->total
+    //                                         );
+    //         if ($response['success']) {
+                
+    //             $response_code = $response['data']['comprobante_estado_codigo'];
+    //             $response_description = $response['data']['comprobante_estado_descripcion'];
+
+    //             $message = $document->number_full.'|Código: '.$response_code.'|Mensaje: '.$response_description;
+
+    //             $document->message = $message; 
+    //             $document->state_type_sunat_description = $response_description; 
+    //             $document->code = $response_code; 
+ 
+    //         } //else {
+
+    //             // goto reValidate;
+    //         //}
+    //     }
+
+    //     return $records_paginate;
+    // }
+
 }
