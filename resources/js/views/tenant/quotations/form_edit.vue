@@ -495,20 +495,20 @@
                 // return unit_price.toFixed(6)
             },
             async changePaymentMethodType(flag_submit = true){
-                let payment_method_type = await _.find(this.payment_method_types, {'id':this.form.payment_method_type_id})
-                if(payment_method_type){
+                // let payment_method_type = await _.find(this.payment_method_types, {'id':this.form.payment_method_type_id})
+                // if(payment_method_type){
 
-                    if(payment_method_type.number_days){
-                        this.form.date_of_issue =  moment().add(payment_method_type.number_days,'days').format('YYYY-MM-DD');
-                        this.changeDateOfIssue()
-                    }
+                //     if(payment_method_type.number_days){
+                //         this.form.date_of_issue =  moment().add(payment_method_type.number_days,'days').format('YYYY-MM-DD');
+                //         this.changeDateOfIssue()
+                //     }
                     // else{
                     //     if(flag_submit){
                     //         this.form.date_of_issue = moment().format('YYYY-MM-DD')
                     //         this.changeDateOfIssue()
                     //     }
                     // }
-                }
+                // }
             },
             initRecord()
             {
