@@ -925,6 +925,7 @@ class Item extends ModelTenant
             }
         }
 
+        $decimal_units = (int)$configuration->decimal_quantity;
 
         return [
             'name_disa'                           => $name_disa,
@@ -979,7 +980,10 @@ class Item extends ModelTenant
                 : asset("/logo/{$this->image_small}"),
             'tags'                         => $this->tags,
             'tags_id'                      => $this->tags->pluck('tag_id'),
-            'item_unit_types'              => collect($this->item_unit_types)->transform(function ($row) use ($configuration) {
+            'item_unit_types'              => $this->item_unit_types->transform(function ($row) use ($decimal_units) {
+                /** @var \App\Models\Tenant\ItemUnitType $row */
+                return $row ->getCollectionData($decimal_units);
+                /** Movido al modelo */
                 return [
                     'id'            => $row->id,
                     'description'   => "{$row->description}",
