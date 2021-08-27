@@ -16,7 +16,7 @@
                     </div>
                 </div>
 
-                <template v-for="(item,index) in form.items">
+                <template v-for="(item,index) in form_pos.items">
                     <div :key="index"
                          class="row py-1 border-bottom m-0 p-0 bg-white">
                         <div class="col-2 p-r-0 m-l-2">
@@ -40,14 +40,14 @@
             </div>
             <div class="h-40 bg-info"
                  style="overflow-y: auto">
-                <template v-if="form.total_plastic_bag_taxes > 0">
+                <template v-if="form_pos.total_plastic_bag_taxes > 0">
                     <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
                         <div class="col-sm-6 py-1">
                             <p class="font-weight-semibold mb-0">SUBTOTAL</p>
                         </div>
                         <div class="col-sm-6 py-1 text-right">
                             <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }} {{
-                                    form.total_taxed
+                                    form_pos.total_taxed
                                                                  }}</p>
                         </div>
                     </div>
@@ -57,7 +57,7 @@
                         </div>
                         <div class="col-sm-6 py-1 text-right">
                             <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
-                                                                 {{ form.total_igv }}</p>
+                                                                 {{ form_pos.total_igv }}</p>
                         </div>
                     </div>
                     <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
@@ -66,7 +66,7 @@
                         </div>
                         <div class="col-sm-6 py-1 text-right">
                             <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
-                                                                 {{ form.total_plastic_bag_taxes }}</p>
+                                                                 {{ form_pos.total_plastic_bag_taxes }}</p>
                         </div>
                     </div>
                 </template>
@@ -77,7 +77,7 @@
                         </div>
                         <div class="col-sm-6 py-1 text-right">
                             <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }} {{
-                                    form.total_taxed
+                                    form_pos.total_taxed
                                                                  }}</p>
                         </div>
                     </div>
@@ -87,7 +87,7 @@
                         </div>
                         <div class="col-sm-6 py-1 text-right">
                             <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
-                                                                 {{ form.total_igv }}</p>
+                                                                 {{ form_pos.total_igv }}</p>
                         </div>
                     </div>
                 </template>
@@ -106,7 +106,7 @@
                     </div>
                     <div class="col-sm-6 py-2 text-right">
                         <h4 class="font-weight-semibold mb-0 text-white">{{ currencyTypeActive.symbol }} {{
-                                form.total
+                                form_pos.total
                                                                          }}</h4>
                     </div>
                 </div>
@@ -129,7 +129,7 @@
             <div class="row d-flex justify-content-center pt-2">
                 <div class="col-lg-6 col-md-6 ">
 
-                    <el-radio-group v-model="form.document_type_id"
+                    <el-radio-group v-model="form_pos.document_type_id"
                                     size="small"
                                     @change="filterSeries">
                         <el-radio-button label="01">FACTURA</el-radio-button>
@@ -140,7 +140,7 @@
 
                 <div class="col-lg-2 col-md-2">
 
-                    <el-select v-model="form.series_id"
+                    <el-select v-model="form_pos.series_id"
                                class="c-width">
                         <el-option v-for="option in series"
                                    :key="option.id"
@@ -163,7 +163,7 @@
 
                         <div class="card-body text-center">
                             <p class="my-0"><small>Monto a cobrar</small></p>
-                            <h1 class="mb-2 mt-0">{{ currencyTypeActive.symbol }} {{ form.total }}</h1>
+                            <h1 class="mb-2 mt-0">{{ currencyTypeActive.symbol }} {{ form_pos.total }}</h1>
                         </div>
                     </div>
                 </div>
@@ -238,7 +238,7 @@
                                 <div class="col-md-6 col-lg-6">
                                     <div class="form-group">
                                         <label class="control-label">N° Placa</label>
-                                        <el-input v-model="form.plate_number"
+                                        <el-input v-model="form_pos.plate_number"
                                                   type="textarea"></el-input>
                                     </div>
                                 </div>
@@ -254,40 +254,106 @@
                             <div class="input-group mb-3">
                                 <div class="col-lg-12 m-bottom">
                                     <div class="row">
+                                        <div class="col-lg-4">
+                                            CONDICIÓN DE PAGO:
+                                        </div>
 
-                                        <div class="col-lg-6">
-                                            <h5><strong>Pagos agregados </strong></h5>
+                                        <div class="col-lg-4">
+                                                <el-select
+                                                    v-model="form_pos.payment_condition_id"
+                                                    @change="changePaymentCondition"
+                                                    popper-class="el-select-document_type"
+                                                    dusk="document_type_id">
+                                                    <el-option value="01"  label="Contado"></el-option>
+                                                    <el-option value="02" label="Crédito"></el-option>
+                                                </el-select>
+
                                         </div>
-                                        <div class="col-lg-1">
-                                        </div>
-                                        <div class="col-lg-5">
+
+                                        <div class="col-lg-4">
                                             <button class="btn btn-sm btn-block btn-primary"
-                                                    @click="clickAddPayment()"><i class="fas fa-plus"></i> Agregar
+                                                    @click="clickSetPayment()"><i class="fas fa-plus"></i> Agregar
                                             </button>
 
+                                        </div>
+
+                                        <div class="col-lg-12">
+                                            &nbsp;
+                                        </div>
+                                        <div class="col-lg-12 text-center">
+                                            <h5><strong>Pagos agregados </strong></h5>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="col-lg-12 m-bottom">
+                                <div class="col-lg-12 m-bottom" v-if="!isCredit">
                                     <div class="row">
-                                        <template v-for="(pay,index) in form.payments">
+                                        <template v-for="(pay,index) in form_pos.payments">
                                             <div :key="pay.id"
                                                  class="col-lg-1">
                                                 <label>{{ index + 1 }}.-</label>
                                             </div>
                                             <div :key="pay.id"
-                                                 class="col-lg-6">
+                                                 class="col-lg-5">
+                                                <label>{{
+                                                        getDescriptionPaymentMethodType(pay.payment_method_type_id)
+                                                       }}</label>
+                                            </div>
+                                            <div :key="pay.id"
+                                                 class="col-lg-5">
+                                                <label>
+                                                    <strong>
+                                                        {{ currencyTypeActive.symbol }}
+                                                        {{ pay.payment }}
+                                                    </strong>
+                                                </label>
+                                            </div>
+
+                                            <div :key="pay.id"
+                                                 class="col-lg-1">
+                                                <button class="btn waves-effect waves-light btn-xs btn-danger"
+                                                        type="button"
+                                                        @click.prevent="removeRow(index)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+
+                                            </div>
+
+
+                                        </template>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 m-bottom" v-if="isCredit">
+                                    <div class="row">
+                                        <template v-for="(pay,index) in form_pos.fee">
+                                            <div :key="pay.id"
+                                                 class="col-lg-1">
+                                                <label>{{ index + 1 }}.-</label>
+                                            </div>
+                                            <div :key="pay.id"
+                                                 class="col-lg-5">
                                                 <label>{{ getDescriptionPaymentMethodType(pay.payment_method_type_id) }}</label>
                                             </div>
                                             <div :key="pay.id"
                                                  class="col-lg-5">
                                                 <label><strong>{{ currencyTypeActive.symbol }}
-                                                               {{ pay.payment }}</strong> </label>
+                                                               {{ pay.amount }}</strong> </label>
                                             </div>
+
+                                            <div :key="pay.id"
+                                                 class="col-lg-1">
+                                                <button class="btn waves-effect waves-light btn-xs btn-danger"
+                                                        type="button"
+                                                        @click.prevent="removeRow(index)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+
+                                            </div>
+
                                         </template>
                                     </div>
                                 </div>
+
                                 <!-- <div class="col-lg-12 m-bottom">
                                     <div class="row">
                                         <div class="col-lg-12">
@@ -359,7 +425,7 @@
                                 <div class="col-md-12 col-lg-12">
                                     <div class="form-group">
                                         <label class="control-label">Datos de referencia</label>
-                                        <el-input v-model="form.reference_data"
+                                        <el-input v-model="form_pos.reference_data"
                                                   type="textarea"></el-input>
                                     </div>
                                 </div>
@@ -377,9 +443,7 @@
         ></options-form>
 
         <multiple-payment-form
-            :payments="payments"
             :showDialog.sync="showDialogMultiplePayment"
-            :total="form.total"
             @add="addRow"
         ></multiple-payment-form>
 
@@ -423,11 +487,43 @@ import CardBrandsForm from '../../card_brands/form.vue'
 import SaleNotesOptions from '../../sale_notes/partials/options.vue'
 import OptionsForm from './options.vue'
 import MultiplePaymentForm from './multiple_payment.vue'
+import moment from "moment";
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
     components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress},
 
-    props: ['form', 'customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany', 'businessTurns'],
+    props: [
+        'form',
+        'customer',
+        'currencyTypeActive',
+        'exchangeRateSale',
+        'is_payment',
+        'soapCompany',
+        'businessTurns'
+    ],
+    computed: {
+        ...mapState([
+            'config',
+            'form_pos',
+            'payment_method_types',
+        ]),
+        credit_payment_metod:function(){
+            return _.filter(this.payment_method_types, {'is_credit': true})
+        },
+        cash_payment_metod:function(){
+            return  _.filter(this.payment_method_types, {'is_credit': false})
+        },
+        isCredit:function(){
+            if(this.form_pos.payment_condition_id === '02') return true;
+            return false
+        },
+        getPaymentMethod:function(){
+            if(this.form_pos.payment_condition_id === '02') return _.filter(this.payment_method_types, {'is_credit': true})
+            return  _.filter(this.payment_method_types, {'is_credit': false})
+
+        }
+    },
     data() {
         return {
             enabled_discount: false,
@@ -456,18 +552,30 @@ export default {
             cancel: false,
             form_cash_document: {},
             statusDocument: {},
-            payment_method_types: [],
+            // payment_method_types: [],
             payments: [],
             locked_submit: false
         }
     },
     async created() {
 
+        this.loadConfiguration()
+        this.$store.commit('setFromPos',this.form)
+        this.loadPos()
         await this.initLStoPayment()
         await this.getTables()
         this.initFormPayment()
         this.inputAmount()
-        this.form.payments = []
+        // this.form_pos.payments = []
+        // this.form_pos.fee = []
+        if(this.form_pos.payments === undefined) this.form_pos.payments = []
+        if(this.form_pos.fee === undefined) this.form_pos.fee = []
+        if(
+            this.form_pos.payment_condition_id === undefined ||
+            this.form_pos.payment_condition_id === null
+        ){
+            this.form_pos.payment_condition_id = '01'
+        }
         this.$eventHub.$on('reloadDataCardBrands', (card_brand_id) => {
             this.reloadDataCardBrands(card_brand_id)
         })
@@ -479,21 +587,39 @@ export default {
 
         await this.setInitialAmount()
 
-        await this.getFormPosLocalStorage()
-        // console.log(this.form.payments, this.payments)
+        this.form_pos.payments.push({
+            id: null,
+            document_id: null,
+            sale_note_id: null,
+            date_of_payment: moment().format('YYYY-MM-DD'),
+            payment_method_type_id: '01',
+            payment_destination_id: 'cash',
+            reference: null,
+            payment: 0,
+        });
+        this.calculatePayment()
+
+        // await this.getFormPosLocalStorage()
+        // console.log(this.form_pos.payments, this.payments)
     },
     mounted() {
         // console.log(this.currencyTypeActive)
+
+
     },
     methods: {
+        ...mapActions([
+            'loadConfiguration',
+            'loadPos',
+        ]),
         handleFn113() {
-            const code = this.form.document_type_id
+            const code = this.form_pos.document_type_id
             if (code == '01') {
-                this.form.document_type_id = '03'
+                this.form_pos.document_type_id = '03'
             } else if (code == '03') {
-                this.form.document_type_id = '80'
+                this.form_pos.document_type_id = '80'
             } else if (code == '80') {
-                this.form.document_type_id = '01'
+                this.form_pos.document_type_id = '01'
             }
 
             this.filterSeries()
@@ -510,8 +636,8 @@ export default {
 
         },
         async setInitialAmount() {
-            this.enter_amount = this.form.total
-            // this.form.payments = this.payments
+            this.enter_amount = this.form_pos.total
+            // this.form_pos.payments = this.payments
             // this.$eventHub.$emit('eventSetFormPosLocalStorage', this.form)
             await this.$refs.enter_amount.$el.getElementsByTagName('input')[0].focus()
             await this.$refs.enter_amount.$el.getElementsByTagName('input')[0].select()
@@ -534,7 +660,7 @@ export default {
 
                 if (this.discount_amount && !isNaN(this.discount_amount) && parseFloat(this.discount_amount) > 0) {
 
-                    if (this.discount_amount >= this.form.total)
+                    if (this.discount_amount >= this.form_pos.total)
                         return this.$message.error("El monto de descuento debe ser menor al total de venta")
 
                     this.deleteDiscountGlobal()
@@ -553,7 +679,7 @@ export default {
         },
         isExonerated() {
 
-            let not_exonerated = this.form.items.find((item) => {
+            let not_exonerated = this.form_pos.items.find((item) => {
                 return item.affectation_igv_type_id != '20'
             })
 
@@ -566,33 +692,33 @@ export default {
 
             let global_discount = parseFloat(this.discount_amount)
 
-            let base = parseFloat(this.form.total)
+            let base = parseFloat(this.form_pos.total)
             let amount = parseFloat(global_discount)
             let factor = _.round(amount / base, 4)
 
-            let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
+            let discount = _.find(this.form_pos.discounts, {'discount_type_id': '03'})
 
             if (global_discount > 0 && !discount) {
 
-                this.form.total_discount = _.round(amount, 2)
+                this.form_pos.total_discount = _.round(amount, 2)
 
-                this.form.total = _.round(this.form.total - amount, 2)
+                this.form_pos.total = _.round(this.form_pos.total - amount, 2)
 
                 if (is_exonerated) {
 
-                    this.form.total_value = this.form.total
-                    this.form.total_exonerated = this.form.total_value
+                    this.form_pos.total_value = this.form_pos.total
+                    this.form_pos.total_exonerated = this.form_pos.total_value
 
                 } else {
 
-                    this.form.total_value = _.round(this.form.total / 1.18, 2)
-                    this.form.total_taxed = this.form.total_value
+                    this.form_pos.total_value = _.round(this.form_pos.total / 1.18, 2)
+                    this.form_pos.total_taxed = this.form_pos.total_value
 
-                    this.form.total_igv = _.round(this.form.total_value * 0.18, 2)
-                    this.form.total_taxes = this.form.total_igv
+                    this.form_pos.total_igv = _.round(this.form_pos.total_value * 0.18, 2)
+                    this.form_pos.total_taxes = this.form_pos.total_igv
                 }
 
-                this.form.discounts.push({
+                this.form_pos.discounts.push({
                     discount_type_id: '03',
                     description: 'Descuentos globales que no afectan la base imponible del IGV/IVAP',
                     factor: factor,
@@ -604,38 +730,38 @@ export default {
             }
             // else{
 
-            //     let index = this.form.discounts.indexOf(discount);
+            //     let index = this.form_pos.discounts.indexOf(discount);
 
             //     if(index > -1){
 
-            //         this.form.total_discount =  _.round(amount,2)
+            //         this.form_pos.total_discount =  _.round(amount,2)
 
-            //         this.form.total =  _.round(this.form.total - amount, 2)
+            //         this.form_pos.total =  _.round(this.form_pos.total - amount, 2)
 
-            //         this.form.total_value =  _.round(this.form.total / 1.18, 2)
-            //         this.form.total_taxed =  this.form.total_value
+            //         this.form_pos.total_value =  _.round(this.form_pos.total / 1.18, 2)
+            //         this.form_pos.total_taxed =  this.form_pos.total_value
 
-            //         this.form.total_igv =  _.round(this.form.total_value * 0.18, 2)
-            //         this.form.total_taxes =  this.form.total_igv
+            //         this.form_pos.total_igv =  _.round(this.form_pos.total_value * 0.18, 2)
+            //         this.form_pos.total_taxes =  this.form_pos.total_igv
 
-            //         this.form.discounts[index].base = base
-            //         this.form.discounts[index].amount = amount
-            //         this.form.discounts[index].factor = factor
+            //         this.form_pos.discounts[index].base = base
+            //         this.form_pos.discounts[index].amount = amount
+            //         this.form_pos.discounts[index].factor = factor
             //     }
 
             // }
 
-            this.difference = this.enter_amount - this.form.total
-            // console.log(this.form.discounts)
+            this.difference = this.enter_amount - this.form_pos.total
+            // console.log(this.form_pos.discounts)
         },
         async setDiscountByItem(amount, is_exonerated) {
 
-            // this.form.sum_total_discount = amount
-            // let discount_by_item = _.round(amount / this.form.items.length, 2)
+            // this.form_pos.sum_total_discount = amount
+            // let discount_by_item = _.round(amount / this.form_pos.items.length, 2)
 
-            let sum_total_items = _.sumBy(this.form.items, 'total')
+            let sum_total_items = _.sumBy(this.form_pos.items, 'total')
 
-            this.form.items = await this.form.items.map((item, index) => {
+            this.form_pos.items = await this.form_pos.items.map((item, index) => {
 
                 if (!item.original_totals) {
                     item.original_totals = {
@@ -697,7 +823,7 @@ export default {
             let total = 0
             let total_plastic_bag_taxes = 0
 
-            this.form.items.forEach((row) => {
+            this.form_pos.items.forEach((row) => {
                 total_discount += parseFloat(row.total_discount)
                 total_charge += parseFloat(row.total_charge)
 
@@ -724,17 +850,17 @@ export default {
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
             });
 
-            this.form.total_exportation = _.round(total_exportation, 2)
-            this.form.total_taxed = _.round(total_taxed, 2)
-            this.form.total_exonerated = _.round(total_exonerated, 2)
-            this.form.total_unaffected = _.round(total_unaffected, 2)
-            this.form.total_free = _.round(total_free, 2)
-            this.form.total_igv = _.round(total_igv, 2)
-            this.form.total_value = _.round(total_value, 2)
-            this.form.total_taxes = _.round(total_igv, 2)
-            this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
-            // this.form.total = _.round(total, 2)
-            this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
+            this.form_pos.total_exportation = _.round(total_exportation, 2)
+            this.form_pos.total_taxed = _.round(total_taxed, 2)
+            this.form_pos.total_exonerated = _.round(total_exonerated, 2)
+            this.form_pos.total_unaffected = _.round(total_unaffected, 2)
+            this.form_pos.total_free = _.round(total_free, 2)
+            this.form_pos.total_igv = _.round(total_igv, 2)
+            this.form_pos.total_value = _.round(total_value, 2)
+            this.form_pos.total_taxes = _.round(total_igv, 2)
+            this.form_pos.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
+            // this.form_pos.total = _.round(total, 2)
+            this.form_pos.total = _.round(total + this.form_pos.total_plastic_bag_taxes, 2)
 
             this.discountGlobal()
 
@@ -742,13 +868,13 @@ export default {
         },
         deleteDiscountGlobal() {
 
-            let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
-            let index = this.form.discounts.indexOf(discount)
+            let discount = _.find(this.form_pos.discounts, {'discount_type_id': '03'})
+            let index = this.form_pos.discounts.indexOf(discount)
             let is_exonerated = this.isExonerated()
 
             if (index > -1) {
-                this.form.discounts.splice(index, 1)
-                this.form.total_discount = 0
+                this.form_pos.discounts.splice(index, 1)
+                this.form_pos.total_discount = 0
                 this.setDiscountByItem(0, is_exonerated)
             }
 
@@ -763,15 +889,132 @@ export default {
             this.difference = await this.getLocalStoragePayment('difference', 0)
         },
         getFormPosLocalStorage() {
-
+            this.form = this.form_pos
+            /*
             let form_pos = localStorage.getItem('form_pos');
             form_pos = JSON.parse(form_pos)
             if (form_pos) {
-                this.form.payments = form_pos.payments
+                this.form_pos.payments = form_pos.payments
             }
+            */
 
         },
+        clickSetPayment(){
+            // console.log(this.form_pos.payment_condition_id +" Validando tipo de pago")
+            if(this.form_pos.payment_condition_id === '02') {
+                this.clickAddPayment()
+            }else{
+                this.clickAddFeeNew();
+
+            }
+        },
+
+        savePos(){
+            // this.$store.commit('setFromPos',this.form_pos)
+        },
+        changePaymentCondition() {
+            this.form_pos.fee = [];
+            this.form_pos.payments = [];
+            if(this.form_pos.payment_condition_id === '01') {
+                this.clickAddPayment();
+            }else if(this.form_pos.payment_condition_id === '02') {
+                this.clickAddFeeNew();
+            }else  if(this.form_pos.payment_condition_id === '03') {
+                this.clickAddFee();
+            }else{
+                // Siempre se agrega un pago por que se asume, la condicion 01 o Contado  / Efectivo
+
+                this.clickAddPayment();
+
+            }
+            this.savePos()
+
+        },
+
+        clickAddFee() {
+            this.form_pos.date_of_due = moment().format('YYYY-MM-DD');
+            // payment_method_type_id
+            this.form_pos.fee.push({
+                id: null,
+                date: moment().format('YYYY-MM-DD'),
+                currency_type_id: this.form_pos.currency_type_id,
+                amount: 0,
+            });
+            this.calculateFee();
+        },
+        clickAddFeeNew() {
+            let first = {
+                id: '05',
+                number_days: 0,
+            };
+            if(this.credit_payment_metod[0]!== undefined){
+                first = this.credit_payment_metod[0];
+            }
+            let date = moment()
+                .add(first.number_days,'days')
+                .format('YYYY-MM-DD')
+            this.form_pos.date_of_due = date;
+            this.form_pos.fee.push({
+                id: null,
+                document_id: null,
+                payment_method_type_id: first.id,
+                // reference: null,
+                // payment_destination_id: this.getPaymentDestinationId(),
+                // payment: 0,
+
+                date: date,
+                currency_type_id: this.form_pos.currency_type_id,
+                amount: 0,
+            });
+            this.calculateFee();
+            this.showDialogMultiplePayment = true
+
+        },
+        calculateFee() {
+            let fee_count = this.form_pos.fee.length;
+            let total = this.form_pos.total;
+            let accumulated = 0;
+            let amount = _.round(total / fee_count, 2);
+            _.forEach(this.form_pos.fee, row => {
+                accumulated += amount;
+                if (total - accumulated < 0) {
+                    amount = _.round(total - accumulated + amount, 2);
+                }
+                row.amount = amount;
+            })
+            this.savePos()
+        },
+        calculatePayment() {
+
+            let payments_count = this.form_pos.payments.length;
+            let total = this.form_pos.total;
+            let accumulated = 0;
+            let amount = _.round(total / payments_count, 2);
+            _.forEach(this.form_pos.payments, row => {
+                accumulated += amount;
+                if (total - accumulated < 0) {
+                    amount = _.round(total - accumulated + amount, 2);
+                }
+                row.payment = amount;
+            })
+            this.savePos()
+        },
         clickAddPayment() {
+
+
+            this.form_pos.payments.push({
+                id: null,
+                document_id: null,
+                sale_note_id: null,
+                date_of_payment: moment().format('YYYY-MM-DD'),
+                payment_method_type_id: '01',
+                payment_destination_id: 'cash',
+                reference: null,
+                payment: 0,
+            });
+            this.calculatePayment()
+            this.savePos()
+
             this.showDialogMultiplePayment = true
         },
         reloadDataCardBrands(card_brand_id) {
@@ -792,18 +1035,24 @@ export default {
             this.form_payment.card_brand_id = (payment_method_type.has_card) ? this.form_payment.card_brand_id : null
         },
         addRow(payments) {
-
-            this.form.payments = payments
+            this.loadPos()
             let acum_payment = 0
-
-            this.form.payments.forEach((item) => {
-                acum_payment += parseFloat(item.payment)
-            })
-
+            if(this.isCredit){
+                this.form_pos.payments = [];
+                this.form_pos.fee.forEach((item) => {
+                    acum_payment += parseFloat(item.amount)
+                })
+            }else {
+                this.form_pos.fee = [];
+                this.form_pos.payments.forEach((item) => {
+                    acum_payment += parseFloat(item.payment)
+                })
+            }
             // this.amount = acum_payment
+            this.savePos()
             this.setAmount(acum_payment)
 
-            // console.log(this.form.payments)
+            // console.log(this.form_pos.payments)
         },
         setAmount(amount) {
             // this.amount = parseFloat(this.amount) + parseFloat(amount)
@@ -816,10 +1065,10 @@ export default {
             row.payment = parseFloat(row.payment) + parseFloat(amount)
             // console.log(row.payment)
 
-            this.form.payments = this.payments
+            this.form_pos.payments = this.payments
             let acum_payment = 0
 
-            this.form.payments.forEach((item) => {
+            this.form_pos.payments.forEach((item) => {
                 acum_payment += parseFloat(item.payment)
             })
 
@@ -832,29 +1081,29 @@ export default {
             r_item.payment = await parseFloat(this.enter_amount)
             // console.log(r_item.payment)
 
-            let ind = this.form.payments.length - 1
-            this.form.payments[ind].payment = parseFloat(this.enter_amount)
+            let ind = this.form_pos.payments.length - 1
+            this.form_pos.payments[ind].payment = parseFloat(this.enter_amount)
             // this.setAmount(item.payment)
 
             let acum_payment = 0
 
-            await this.form.payments.forEach((item) => {
+            await this.form_pos.payments.forEach((item) => {
                 acum_payment += parseFloat(item.payment)
             })
-            // console.log(this.form.payments)
+            // console.log(this.form_pos.payments)
 
             // this.amount = item.payment
             this.amount = acum_payment
             // this.amount = this.enter_amount
             // console.log(this.amount)
-            this.difference = this.amount - this.form.total
+            this.difference = this.amount - this.form_pos.total
 
             if (isNaN(this.difference)) {
                 this.button_payment = true
                 this.difference = "-"
             } else if (this.difference >= 0) {
                 this.button_payment = false
-                this.difference = this.amount - this.form.total
+                this.difference = this.amount - this.form_pos.total
             } else {
                 this.button_payment = true
             }
@@ -881,14 +1130,14 @@ export default {
         },
         inputAmount() {
 
-            this.difference = this.amount - this.form.total
+            this.difference = this.amount - this.form_pos.total
 
             if (isNaN(this.difference)) {
                 this.button_payment = true
                 this.difference = "-"
             } else if (this.difference >= 0) {
                 this.button_payment = false
-                this.difference = this.amount - this.form.total
+                this.difference = this.amount - this.form_pos.total
             } else {
                 this.button_payment = true
             }
@@ -909,7 +1158,7 @@ export default {
         },
         initFormPayment() {
 
-            this.difference = -this.form.total
+            this.difference = -this.form_pos.total
             this.form_payment = {
                 id: null,
                 date_of_payment: moment().format('YYYY-MM-DD'),
@@ -918,7 +1167,7 @@ export default {
                 card_brand_id: null,
                 document_id: null,
                 sale_note_id: null,
-                payment: this.form.total,
+                payment: this.form_pos.total,
             }
 
             this.form_cash_document = {
@@ -929,11 +1178,11 @@ export default {
         },
 
         filterSeries() {
-            this.form.series_id = null
-            this.series = _.filter(this.all_series, {'document_type_id': this.form.document_type_id});
-            this.form.series_id = (this.series.length > 0) ? this.series[0].id : null
+            this.form_pos.series_id = null
+            this.series = _.filter(this.all_series, {'document_type_id': this.form_pos.document_type_id});
+            this.form_pos.series_id = (this.series.length > 0) ? this.series[0].id : null
 
-            if (!this.form.series_id) {
+            if (!this.form_pos.series_id) {
                 return this.$message.warning('El establecimiento no tiene series disponibles para el comprobante');
             }
         },
@@ -956,9 +1205,9 @@ export default {
             return new Promise(resolve => setTimeout(resolve, ms));
         },
         async asignPlateNumberToItems() {
-            if (this.form.plate_number) {
+            if (this.form_pos.plate_number) {
 
-                await this.form.items.forEach(item => {
+                await this.form_pos.items.forEach(item => {
 
                     let at = _.find(item.attributes, {'attribute_type_id': '5010'})
 
@@ -966,7 +1215,7 @@ export default {
                         item.attributes.push({
                             attribute_type_id: '7000',
                             description: "Gastos Art. 37 Renta:  Número de Placa",
-                            value: this.form.plate_number,
+                            value: this.form_pos.plate_number,
                             start_date: null,
                             end_date: null,
                             duration: null,
@@ -978,22 +1227,22 @@ export default {
         async clickPayment() {
             // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
 
-            if (!moment(moment().format("YYYY-MM-DD")).isSame(this.form.date_of_issue)) {
+            if (!moment(moment().format("YYYY-MM-DD")).isSame(this.form_pos.date_of_issue)) {
                 return this.$message.error('La fecha de emisión no coincide con la del día actual');
             }
 
-            if (!this.form.series_id) {
+            if (!this.form_pos.series_id) {
                 return this.$message.warning('El establecimiento no tiene series disponibles para el comprobante');
             }
 
-            if (this.form.document_type_id === "80") {
-                this.form.prefix = "NV";
-                this.form.paid = 1;
+            if (this.form_pos.document_type_id === "80") {
+                this.form_pos.prefix = "NV";
+                this.form_pos.paid = 1;
                 this.resource_documents = "sale-notes";
                 this.resource_payments = "sale_note_payments";
                 this.resource_options = this.resource_documents;
             } else {
-                this.form.prefix = null;
+                this.form_pos.prefix = null;
                 this.resource_documents = "documents";
                 this.resource_payments = "document_payments";
                 this.resource_options = this.resource_documents;
@@ -1006,7 +1255,7 @@ export default {
             await this.$http.post(`/${this.resource_documents}`, this.form).then(response => {
                 if (response.data.success) {
 
-                    if (this.form.document_type_id === "80") {
+                    if (this.form_pos.document_type_id === "80") {
 
                         // this.form_payment.sale_note_id = response.data.data.id;
                         this.form_cash_document.sale_note_id = response.data.data.id;
@@ -1027,6 +1276,8 @@ export default {
 
                     // this.initFormPayment() ;
                     this.cleanLocalStoragePayment()
+
+                    // aqui borrar form
                     this.$eventHub.$emit('saleSuccess');
                 } else {
                     this.$message.error(response.data.message);
@@ -1076,12 +1327,24 @@ export default {
             this.$http.get(`/${this.resource}/payment_tables`)
                 .then(response => {
                     this.all_series = response.data.series
-                    this.payment_method_types = response.data.payment_method_types
+                    // this.payment_method_types = response.data.payment_method_types
+                    //this.$store.commit('setPaymentMethodTypes',response.data.payment_method_types)
+
                     this.cards_brand = response.data.cards_brand
                     this.filterSeries()
                 })
 
         },
+        removeRow(index){
+            if(this.form_pos.payment_condition_id == '01'){
+                this.form_pos.payments.splice(index, 1);
+                this.calculatePayment()
+            }else{
+                this.form_pos.fee.splice(index, 1);
+                this.calculateFee();
+            }
+            this.savePos()
+        }
     }
 }
 </script>

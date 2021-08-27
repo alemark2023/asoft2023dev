@@ -241,7 +241,7 @@
                                             class="font-weight-semibold text-right text-white"
                                         >
                                             <button
-                                                v-if="configuration.options_pos && edit_unit_price"
+                                                v-if="config.options_pos && edit_unit_price"
                                                 type="button"
                                                 class="btn btn-xs btn-primary-pos"
                                                 @click="clickOpenInputEditUP(index)">
@@ -283,7 +283,7 @@
                                     </template>
                                 </div>
                                 <div
-                                    v-if="configuration.options_pos"
+                                    v-if="config.options_pos"
                                     class=" card-footer  bg-primary btn-group flex-wrap"
                                     style="width:100% !important; padding:0 !important; "
                                 >
@@ -847,7 +847,7 @@
             :item_unit_types="[]"
         >
         </warehouses-detail>
-        
+
         <item-unit-types
             :showDialog.sync="showDialogItemUnitTypes"
             :itemUnitTypes="itemUnitTypes"
@@ -934,9 +934,14 @@ import WarehousesDetail from "../items/partials/warehouses.vue";
 import queryString from "query-string";
 import TableItems from "./partials/table.vue";
 import ItemUnitTypes from "./partials/item_unit_types.vue";
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
-    props: ["configuration", "soapCompany", "businessTurns", "typeUser"],
+    props: [
+        "configuration",
+        "soapCompany",
+        "businessTurns",
+        "typeUser"],
     components: {
         PaymentForm,
         ItemForm,
@@ -991,6 +996,10 @@ export default {
         };
     },
     async created() {
+        this.loadConfiguration()
+        this.$store.commit('setConfiguration', this.configuration)
+        this.loadPos()
+
         await this.initForm();
         await this.getTables();
         this.events();
@@ -1007,8 +1016,13 @@ export default {
     },
 
     computed: {
+        ...mapState([
+            'config',
+            'payment_method_types',
+            'form_pos',
+        ]),
         classObjectCol() {
-            let cols = this.configuration.colums_grid_item;
+            let cols = this.config.colums_grid_item;
 
             let clase = "c3";
             switch (cols) {
@@ -1043,12 +1057,16 @@ export default {
                 return true
             }
             if(this.typeUser === 'seller') {
-                return this.configuration.allow_edit_unit_price_to_seller;
+                return this.config.allow_edit_unit_price_to_seller;
             }
             return false;
         }
     },
     methods: {
+        ...mapActions([
+            'loadConfiguration',
+            'loadPos',
+        ]),
         keyupEnterQuantity() {
             this.initFocus();
         },
@@ -1078,12 +1096,12 @@ export default {
 
             if (this.items.length == 1) {
 
-                if(this.items[0].unit_type.length > 0 && this.configuration.select_available_price_list){
+                if(this.items[0].unit_type.length > 0 && this.config.select_available_price_list){
 
-                    // console.log(this.configuration.select_available_price_list)
+                    // console.log(this.config.select_available_price_list)
                     this.itemUnitTypes = this.items[0].unit_type
                     this.showDialogItemUnitTypes = true
-                
+
                 }else{
 
                     this.clickAddItem(this.items[0], 0);
@@ -1172,8 +1190,11 @@ export default {
         setFormPosLocalStorage(form_param = null) {
             if (form_param) {
                 localStorage.setItem("form_pos", JSON.stringify(form_param));
+                this.$store.commit('setFromPos',form_param)
             } else {
                 localStorage.setItem("form_pos", JSON.stringify(this.form));
+                this.$store.commit('setFromPos',this.form)
+
             }
         },
         cancelFormPosLocalStorage() {
@@ -1338,7 +1359,7 @@ export default {
             });
             this.customer = customer;
 
-            if (this.configuration.default_document_type_03) {
+            if (this.config.default_document_type_03) {
                 this.form.document_type_id = "03";
             } else {
                 this.form.document_type_id =
@@ -1450,6 +1471,7 @@ export default {
                 total_taxes: 0,
                 total_value: 0,
                 total: 0,
+                payment_condition_id: "01",
                 operation_type_id: "0101",
                 date_of_due: moment().format("YYYY-MM-DD"),
                 items: [],
@@ -1469,6 +1491,7 @@ export default {
             this.initFormItem();
             this.changeDateOfIssue();
             this.initInputPerson();
+            // this.$store.commit('setFromPos',this.form)
         },
         initInputPerson() {
             this.input_person = {
@@ -1788,6 +1811,7 @@ export default {
                 this.establishment = response.data.establishment;
                 this.currency_types = response.data.currency_types;
                 this.user = response.data.user;
+                this.$store.commit('setPaymentMethodTypes',response.data.payment_method_types)
                 this.form.currency_type_id =
                     this.currency_types.length > 0
                         ? this.currency_types[0].id
