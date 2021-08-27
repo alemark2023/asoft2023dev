@@ -581,7 +581,7 @@ export default {
         })
 
         this.$eventHub.$on('localSPayments', (payments) => {
-            this.payments = payments
+            this.form_pos.payments = payments
 
         })
 
@@ -988,6 +988,7 @@ export default {
         },
         calculatePayment() {
 
+            /*
             let payments_count = this.form_pos.payments.length;
             let total = this.form_pos.total;
             let accumulated = 0;
@@ -999,6 +1000,7 @@ export default {
                 }
                 row.payment = amount;
             })
+            */
             this.savePos()
         },
         clickAddPayment() {
@@ -1037,7 +1039,7 @@ export default {
             this.form_payment.card_brand_id = (payment_method_type.has_card) ? this.form_payment.card_brand_id : null
         },
         addRow(payments) {
-            this.loadPos()
+            /// this.loadPos()
             let acum_payment = 0
             if(this.isCredit){
                 this.form_pos.payments = [];
@@ -1063,11 +1065,9 @@ export default {
             this.inputAmount()
         },
         setAmountCash(amount) {
-            let row = _.last(this.payments, {'payment_method_type_id': '01'})
+            let row = _.last(this.form_pos.payments, {'payment_method_type_id': '01'})
             row.payment = parseFloat(row.payment) + parseFloat(amount)
             // console.log(row.payment)
-
-            this.form_pos.payments = this.payments
             let acum_payment = 0
 
             this.form_pos.payments.forEach((item) => {
@@ -1079,7 +1079,7 @@ export default {
         },
         async enterAmount() {
 
-            let r_item = await _.last(this.payments, {'payment_method_type_id': '01'})
+            let r_item = await _.last(this.form_pos.payments, {'payment_method_type_id': '01'})
             r_item.payment = await parseFloat(this.enter_amount)
             // console.log(r_item.payment)
 

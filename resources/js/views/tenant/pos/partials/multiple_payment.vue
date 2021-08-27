@@ -293,6 +293,7 @@ export default {
 
         calculatePayment() {
 
+            /*
             let payments_count = this.form_pos.payments.length;
             let total = this.form_pos.total;
             let accumulated = 0;
@@ -304,6 +305,7 @@ export default {
                 }
                 row.payment = amount;
             })
+            */
             this.savePos()
         },
         calculateFee() {
