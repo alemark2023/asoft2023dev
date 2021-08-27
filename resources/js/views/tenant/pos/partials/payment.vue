@@ -388,7 +388,7 @@
                                         </div>
                                     </div>
                                 </div>-->
-                                <div v-if="form_payment.payment_method_type_id=='01'"
+                                <div v-if="form_payment.payment_method_type_id=='01' && !isCredit"
                                      class="col-lg-12">
                                     <div class="row">
                                         <div class="col-lg-3">
@@ -585,7 +585,6 @@ export default {
 
         })
 
-        await this.setInitialAmount()
 
         this.form_pos.payments.push({
             id: null,
@@ -598,6 +597,9 @@ export default {
             payment: 0,
         });
         this.calculatePayment()
+        this.reCalculateTotal()
+        await this.setInitialAmount()
+        this.addRow()
 
         // await this.getFormPosLocalStorage()
         // console.log(this.form_pos.payments, this.payments)
