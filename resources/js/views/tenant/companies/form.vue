@@ -207,7 +207,7 @@
                         <template v-if="form.soap_type_id == '02'">
                             <div class="row">
                                 <div class="col-md-12 mt-2">
-                                    <h4 class="border-bottom">Consulta integrada de CPE
+                                    <h4 class="border-bottom">Consulta integrada de CPE - Validador de documentos
                                         <el-tooltip class="item" effect="dark" content="Obtener los datos desde el portal de Sunat" placement="top-start">
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip></h4>

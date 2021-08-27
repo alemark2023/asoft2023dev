@@ -66,17 +66,19 @@
                     </tr>
                 </data-table>
             </div>
- 
+            <document-results :showDialog.sync="showDialogResults"
+                              :data="data"></document-results>
         </div>
     </div>
 </template>
 
 <script>
  
-    import DataTable from '@components/DataTableValidateDocuments.vue'
+    import DataTable from '../../components/DataTableValidateDocuments.vue'
+    import DocumentResults from './partials/results.vue'
 
     export default {
-        components: {DataTable},
+        components: {DataTable, DocumentResults},
         data() {
             return {
                 showDialogVoided: false,
@@ -87,7 +89,8 @@
                 showDialogPayments: false, 
                 loading_submit: false,
                 loading_text: 'Validando documentos electrónicos...',
-
+                showDialogResults: false,
+                data: {},
             }
         },
         created() {
@@ -106,6 +109,14 @@
                     this.loading_submit = loading
                 })
 
+                this.$eventHub.$on('successRegularize', (data) => {
+                    // console.log(data)
+                    this.openResult(data)
+                })
+            },
+            openResult(data){
+                this.data = data
+                this.showDialogResults = true
             } 
         }
     }

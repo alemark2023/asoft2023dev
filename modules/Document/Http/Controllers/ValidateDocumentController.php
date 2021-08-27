@@ -36,7 +36,6 @@ class ValidateDocumentController extends Controller
         
         $auth_api = (new AuthApi())->getToken();
         if(!$auth_api['success']) return $auth_api;
-
         $this->access_token = $auth_api['data']['access_token'];
         
         $records = $this->getRecords($request);
@@ -81,7 +80,7 @@ class ValidateDocumentController extends Controller
 
                 $document->message = $response['message']; 
                 $document->sunat_state_type_id = null; 
-                $document->code = '-1'; 
+                $document->code = '-2';  //custom code
                 $document->response = $response; 
 
             }
@@ -92,8 +91,6 @@ class ValidateDocumentController extends Controller
     }
 
 
-
-
     public function getRecords($request){
 
 
@@ -102,8 +99,6 @@ class ValidateDocumentController extends Controller
         $document_type_id = $request->document_type_id;
         $series = $request->series;
         
-        // dd($request->all());
-
         if($end_number){
 
             $records = Document::where('document_type_id',$document_type_id)
@@ -123,6 +118,7 @@ class ValidateDocumentController extends Controller
 
     }
 
+
     public function data_table()
     {
         
@@ -130,58 +126,96 @@ class ValidateDocumentController extends Controller
         $series = Series::whereIn('document_type_id', ['01', '03','07', '08'])->get();
                        
         return compact('document_types','series');
-
     }
-    
+
+
     public function regularize(ValidateDocumentsRequest $request)
     {
         
-        $document_state = [
-            'ACEPTADO' => '05',
-            'ENVIADO' => '03',
-            'OBSERVADO' => '07',
-            'RECHAZADO' => '09',
-            'ANULADO' => '11',
-            'POR ANULAR' => '13',
-        ];
+        $auth_api = (new AuthApi())->getToken();
+        if(!$auth_api['success']) return $auth_api;
+        $this->access_token = $auth_api['data']['access_token'];
 
         $records = $this->getRecords($request)->get();
+        $state_types = StateType::get();
 
-        DB::connection('tenant')->transaction(function() use($records, $document_state){
-        
+        $data = DB::connection('tenant')->transaction(function() use($records, $state_types){
+
             foreach ($records as $document)
             {
-                reValidate:
-                $validate_cpe = new ValidateCpe2();
-                $response = $validate_cpe->search($document->company->number,
-                                                    $document->document_type_id,
-                                                    $document->series,
-                                                    $document->number,
-                                                    $document->date_of_issue,
-                                                    $document->total
-                                                );
+                $validate_cpe = new ValidateCpe(
+                                    $this->access_token,
+                                    $document->company->number,
+                                    $document->document_type_id,
+                                    $document->series,
+                                    $document->number,
+                                    $document->date_of_issue,
+                                    $document->total
+                                );
+
+                $response = $validate_cpe->search();
+
+                // dd($response, $document);
 
                 if ($response['success']) {
 
-                    $response_description = mb_strtoupper($response['data']['comprobante_estado_descripcion']);
+                    $sunat_state_type_id = $response['data']['state_type_id']; 
 
-                    $state_type_id = isset($document_state[$response_description]) ? $document_state[$response_description] : null;
+                    if($document->state_type_id !== $sunat_state_type_id){
 
-                    if($state_type_id){
-                        $document->state_type_id = $state_type_id;
-                        $document->update();
-                    }
+                        $state_type = $state_types->first(function($state) use($sunat_state_type_id){
+                            return $state->id === $sunat_state_type_id;
+                        });
     
-                } else {
-                    goto reValidate;
+                        if($state_type){
+    
+                            //cpe existe - actualizando estado
+                            $results [] = $this->getResult($document, 'El estado del CPE fue actualizado', true, $sunat_state_type_id);
+    
+                            $document->update([
+                                'state_type_id' => $state_type->id
+                            ]);
+    
+                        }else{
+                            
+                            $results [] = $this->getResult($document, 'No existe en Sunat', false, $sunat_state_type_id);
+                        }
+
+                    }else{
+                        
+                        $results [] = $this->getResult($document, 'Estado de sunat igual al del sistema', false, $sunat_state_type_id);
+                    }
+                    
+
+                } else{
+
+                    //error en la busqueda 
+                    $results [] = $this->getResult($document, 'Error en la busqueda: '.$response['message'], false, $sunat_state_type_id);
+
                 }
             }
 
+            return $results;
         });
 
         return [
             'success' => true,
-            'message' => 'Estados regularizados correctamente'
+            'message' => 'Estados regularizados correctamente',
+            'data' => $data
+        ];
+
+    }
+
+
+    private function getResult($document, $description, $updated, $sunat_state_type_id)
+    {
+        
+        return [
+            'number_full' => $document->number_full,
+            'description' => $description,
+            'updated' => $updated,
+            'initial_state' => $document->state_type_id,
+            'final_state' => $sunat_state_type_id,  
         ];
 
     }

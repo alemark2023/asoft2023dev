@@ -19,7 +19,7 @@ class ValidateCpe
     protected $token;
     
     protected $document_state = [
-        '0' => '0', //'NO EXISTE'
+        '0' => '-1', //'NO EXISTE' custom code
         '1' => '05', //'ACEPTADO'
         '2' => '11', //'ANULADO'
     ];

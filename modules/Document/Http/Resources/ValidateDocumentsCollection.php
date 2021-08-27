@@ -28,7 +28,7 @@ class ValidateDocumentsCollection extends ResourceCollection
             }else{
                 
                 $state_type = $state_types->first(function($state) use($row){
-                    return $state->id == $row->sunat_state_type_id;
+                    return $state->id === $row->sunat_state_type_id;
                 });
 
                 $sunat_state_type_description = null;
