@@ -654,7 +654,6 @@ class PurchaseController extends Controller
                         /**@var ItemUnitType $row */
                         return $row->getCollectionData();
                     }
-                    \Log::debug("No identificado el row \n\n\n\n". var_export($row,true));
                     return $row;
                     return [
                         'id' => $row->id,
