@@ -2060,19 +2060,16 @@ export default {
                     total_value += parseFloat(row.total_value)
                     total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
-                    if (['13', '14', '15'].includes(row.affectation_igv_type_id)) {
+                    // if (['13', '14', '15'].includes(row.affectation_igv_type_id)) {
+                    if (['12','13', '14', '15'].includes(row.affectation_igv_type_id)) {
 
-                        // let unit_value = (row.total_value/row.quantity) / (1 + row.percentage_igv / 100)
                         let unit_value = row.total_value/row.quantity
                         let total_value_partial = unit_value * row.quantity
                         row.total_taxes = row.total_value - total_value_partial
-                        // row.total_igv = row.total_value - total_value_partial
-                        // row.total_taxes = total_value_partial * (row.percentage_igv / 100)
                         row.total_igv = total_value_partial * (row.percentage_igv / 100)
                         row.total_base_igv = total_value_partial
                         total_value -= row.total_value
-                        // total_free_igv += parseFloat(row.total_igv)
-                        // console.log(total_value_partial, unit_value, row)
+                        
                     }
 
                 });
