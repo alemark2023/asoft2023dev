@@ -649,8 +649,13 @@ class PurchaseController extends Controller
                 'lots_enabled' => (bool) $row->lots_enabled,
                 'percentage_perception' => $row->percentage_perception,
                 'item_unit_types' => $row->item_unit_types->transform(function($row) {
-                    /**@var ItemUnitType $row*/
-                    return  $row->getCollectionData();
+                    if(is_array($row)) return $row;
+                    if(is_object($row)) {
+                        /**@var ItemUnitType $row */
+                        return $row->getCollectionData();
+                    }
+                    \Log::debug("No identificado el row \n\n\n\n". var_export($row,true));
+                    return $row;
                     return [
                         'id' => $row->id,
                         'description' => "{$row->description}",
