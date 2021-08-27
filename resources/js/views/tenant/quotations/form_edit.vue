@@ -319,15 +319,15 @@
 </template>
 
 <script>
-    import TermsCondition from './partials/terms_condition.vue'
-    import QuotationFormItem from './partials/item.vue'
-    import PersonForm from '../persons/form.vue'
-    import QuotationOptions from '../quotations/partials/options.vue'
-    import {functions, exchangeRate} from '../../../mixins/functions'
-    import {calculateRowItem} from '../../../helpers/functions'
-    import Logo from '../companies/logo.vue'
+import TermsCondition from './partials/terms_condition.vue'
+import QuotationFormItem from './partials/item.vue'
+import PersonForm from '../persons/form.vue'
+import QuotationOptions from '../quotations/partials/options.vue'
+import {exchangeRate, functions} from '../../../mixins/functions'
+import {calculateRowItem} from '../../../helpers/functions'
+import Logo from '../companies/logo.vue'
 
-    export default {
+export default {
         components: {QuotationFormItem, PersonForm, QuotationOptions, Logo, TermsCondition},
         props: {
             'resourceId': {
@@ -418,20 +418,33 @@
 
                 this.customer_addresses = [];
                 let customer = _.find(this.customers, {'id': this.form.customer_id});
+                if(customer === undefined){
+                    let parameters = `customer_id=${this.form.customer_id}`
+                    let obj = this;
+                    this.$http.get(`/${this.resource}/search/customers?${parameters}`)
+                        .then(response => {
+                             response.data.customers.forEach((row)=>{
+                                this.customers.push(row)
+                            })
+                        })
+                        .then(() => {
+                            customer = _.find(this.customers, {'id': this.form.customer_id});
+                            this.setCustomerAddress(customer)
+                        })
+
+                }else{
+                    this.setCustomerAddress(customer)
+                }
+            },
+            setCustomerAddress(customer){
                 this.customer_addresses = customer.addresses;
-
-                if(customer.address)
-                {
-
+                if(customer.address){
                     if(_.find(this.customer_addresses, {id:null})) return
-
                     this.customer_addresses.unshift({
                         id:null,
                         address: customer.address
                     })
-
                 }
-
             },
             selectDestinationSale() {
 

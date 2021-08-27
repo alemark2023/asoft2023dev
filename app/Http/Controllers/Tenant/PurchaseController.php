@@ -648,7 +648,9 @@ class PurchaseController extends Controller
                 'has_perception' => (bool) $row->has_perception,
                 'lots_enabled' => (bool) $row->lots_enabled,
                 'percentage_perception' => $row->percentage_perception,
-                'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
+                'item_unit_types' => $row->item_unit_types->transform(function($row) {
+                    /**@var ItemUnitType $row*/
+                    return  $row->getCollectionData();
                     return [
                         'id' => $row->id,
                         'description' => "{$row->description}",

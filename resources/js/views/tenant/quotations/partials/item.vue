@@ -567,12 +567,25 @@ export default {
                 return this.config.allow_edit_unit_price_to_seller;
             }
             return false;
-        }
+        },
+
     },
     methods: {
         ...mapActions([
             'loadConfiguration',
         ]),
+        hasAttributes(){
+            if(
+                this.form.item !== undefined &&
+                this.form.item.attributes !== undefined &&
+                this.form.item.attributes !== null &&
+                this.form.item.attributes.length > 0
+            ){
+                return true
+            }
+
+            return false;
+        },
         ItemSlotTooltipView(item) {
             return ItemSlotTooltip(item);
         },
@@ -932,11 +945,7 @@ export default {
             this.cleanTotalItem();
             this.showListStock = true
 
-            if(
-                this.form.item !== undefined &&
-                this.form.item.attributes !== undefined &&
-                this.form.item.attributes.length > 0
-            ) {
+            if(this.hasAttributes()) {
                 const contex = this
                     this.form.item.attributes.forEach((row) => {
 

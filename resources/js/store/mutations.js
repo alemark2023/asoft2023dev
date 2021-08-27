@@ -111,6 +111,15 @@ export default {
         if(debug === undefined ) debug = {};
         state.deb = debug
     },
+    setFromPos(state,form_pos) {
+        if(form_pos === undefined ) form_pos = {};
+        writeLocal('form_pos', JSON.stringify(form_pos))
+        state.form_pos = form_pos
+    },
+    setPaymentMethodTypes(state,payment_method_types) {
+        if(payment_method_types === undefined ) payment_method_types = {};
+        state.payment_method_types = payment_method_types
+    },
 
     setExtraColors(state, extra_colors) {
         if(extra_colors === undefined ) extra_colors = [];

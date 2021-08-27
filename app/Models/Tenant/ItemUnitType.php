@@ -67,7 +67,7 @@ class ItemUnitType extends ModelTenant
             'price2'        => number_format($this->price2, $decimal_units, '.', ''),
             'price3'        => number_format($this->price3, $decimal_units, '.', ''),
             'price_default' => $this->price_default,
-            'eto'=>$this
+
         ];
     }
 
