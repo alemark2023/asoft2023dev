@@ -100,7 +100,7 @@
                 </span>
                     <br>
                     <small class="text-muted">
-                        <a href="{!! {!! \Config('extra.apk_url') !!} !!}" target="_blank">Descargala aquí</a></small>
+                        <a href="{!! \Config('extra.apk_url') !!}" target="_blank">Descargala aquí</a></small>
                 </div>
             </section>
         </div>
