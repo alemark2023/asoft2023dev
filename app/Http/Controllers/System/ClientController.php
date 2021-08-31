@@ -2,25 +2,24 @@
 
 namespace App\Http\Controllers\System;
 
+use App\CoreFacturalo\Helpers\Certificate\GenerateCertificate;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\System\ClientRequest;
+use App\Http\Resources\System\ClientCollection;
+use App\Http\Resources\System\ClientResource;
+use App\Models\System\Client;
+use App\Models\System\Configuration;
+use App\Models\System\Module;
+use App\Models\System\Plan;
 use Carbon\Carbon;
 use Exception;
 use Hyn\Tenancy\Contracts\Repositories\HostnameRepository;
 use Hyn\Tenancy\Contracts\Repositories\WebsiteRepository;
-use App\Http\Resources\System\ClientCollection;
-use App\Http\Resources\System\ClientResource;
-use App\Http\Requests\System\ClientRequest;
 use Hyn\Tenancy\Environment;
-use App\Models\System\Client;
-use App\Models\System\Module;
-use App\Models\System\Plan;
 use Hyn\Tenancy\Models\Hostname;
 use Hyn\Tenancy\Models\Website;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Models\System\Configuration;
-use App\CoreFacturalo\Helpers\Certificate\GenerateCertificate;
+use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
 {
@@ -127,14 +126,14 @@ class ClientController extends Controller
         return new ClientCollection($records);
     }
 
-    
+
     private function getQuantityPendingDocuments(){
-        
+
         return [
             'document_regularize_shipping' => DB::connection('tenant')->table('documents')->where('state_type_id', '01')->where('regularize_shipping', true)->count(),
             'document_not_sent' => DB::connection('tenant')->table('documents')->whereIn('state_type_id', ['01','03'])->where('date_of_issue','<=',date('Y-m-d'))->count(),
         ];
-        
+
     }
 
 
@@ -210,6 +209,29 @@ class ClientController extends Controller
         ];
 
         return compact('line', 'total_documents');
+    }
+
+    /**
+     * Devuelve la informacion si el modulo de farmacia esta habilitado o no para activar la configuracion correspondiente
+     *
+     * @param int $user_id
+     *
+     * @return bool
+     */
+    public static function EnablePharmacy($user_id = 0)
+    {
+        $modulo_id = DB::connection('tenant')
+            ->table('modules')
+            ->where('value', 'digemid')
+            ->first()->id;
+        $modulo = DB::connection('tenant')
+            ->table('module_user')
+            ->where('module_id', $modulo_id)
+            ->where('user_id', $user_id)
+            ->first();
+
+        return ($modulo == null)?false:true;
+
     }
 
     public function update(Request $request)
@@ -296,20 +318,26 @@ class ClientController extends Controller
 
             $array_modules = [];
             $array_levels = [];
+            $user_id = 1;
             foreach ($request->modules as $module) {
                 array_push($array_modules, [
-                    'module_id' => $module, 'user_id' => 1
+                    'module_id' => $module,
+                    'user_id' => $user_id
                 ]);
             }
             foreach ($request->levels as $level) {
                 array_push($array_levels, [
-                    'module_level_id' => $level, 'user_id' => 1
+                    'module_level_id' => $level,
+                    'user_id' => $user_id
                 ]);
             }
             DB::connection('tenant')->table('module_user')->insert($array_modules);
             DB::connection('tenant')->table('module_level_user')->insert($array_levels);
-            // Modules
 
+            // Actualiza el modulo de farmacia.
+            $config = (array)DB::connection('tenant')->table('configurations')->first();
+            $config['is_pharmacy'] = (self::EnablePharmacy($user_id)) ? 1 : 0;
+            DB::connection('tenant')->table('configurations')->update($config);
             return [
                 'success' => true,
                 'message' => 'Cliente Actualizado satisfactoriamente'
