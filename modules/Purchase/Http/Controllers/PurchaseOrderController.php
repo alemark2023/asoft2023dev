@@ -4,6 +4,7 @@ namespace Modules\Purchase\Http\Controllers;
 
 use App\Models\Tenant\Catalogs\OperationType;
 use App\Models\Tenant\Configuration;
+use App\Traits\OfflineTrait;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Person;
@@ -45,6 +46,7 @@ class PurchaseOrderController extends Controller
 {
 
     use StorageDocument;
+    use OfflineTrait;
 
     protected $purchase_order;
     protected $company;

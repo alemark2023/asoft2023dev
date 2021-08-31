@@ -36,6 +36,8 @@ export default {
         if (state.extra_CatItemMoldCavity === undefined) state.extra_CatItemMoldCavity = [];
         if (state.extra_CatItemProductFamily === undefined) state.extra_CatItemProductFamily = [];
         if (state.loading_submit === undefined) state.loading_submit = false;
+        if (state.payment_method_types === undefined) state.payment_method_types = [];
+        if (state.form_pos === undefined) state.form_pos = {};
         // Previenete limite de almacen exedido
         /*
         5MB per app per browser. According to the HTML5 spec, this limit can be increased by the user when needed;
@@ -95,6 +97,10 @@ export default {
     loadWorkers(store) {
         if (state.workers === undefined) state.workers = [];
         // state.workers = readStorageData('workers', true)
+    },
+    loadPos(store) {
+        state.form_pos = readStorageData('form_pos', true);
+        if (state.form_pos === undefined) state.form_pos = {};
     },
     loadAllItems(store) {
         if (state.all_items === undefined) state.all_items = [];

@@ -58,7 +58,7 @@ class ValidateDocumentsCollection extends ResourceCollection
                 'code' => $row->code,
                 'sunat_state_type_description' => mb_strtoupper($sunat_state_type_description),
                 'sunat_state_type_id' => $row->sunat_state_type_id,
-                'response' => $row->response,
+                // 'response' => $row->response,
             ];
         });
     }
