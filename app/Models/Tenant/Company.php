@@ -31,6 +31,8 @@ class Company extends ModelTenant
         'operation_amazonia',
         'img_firm',
         'cod_digemid',
+        'integrated_query_client_id',
+        'integrated_query_client_secret',
     ];
 
     /**

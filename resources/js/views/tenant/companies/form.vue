@@ -203,6 +203,34 @@
                                 </div>
                             </div>
                         </template>
+
+                        <template v-if="form.soap_type_id == '02'">
+                            <div class="row">
+                                <div class="col-md-12 mt-2">
+                                    <h4 class="border-bottom">Consulta integrada de CPE - Validador de documentos
+                                        <el-tooltip class="item" effect="dark" content="Obtener los datos desde el portal de Sunat" placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip></h4>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group" :class="{'has-danger': errors.integrated_query_client_id}">
+                                        <label class="control-label">Client ID</label>
+                                        <el-input v-model="form.integrated_query_client_id"></el-input>
+                                        <small class="form-control-feedback" v-if="errors.integrated_query_client_id" v-text="errors.integrated_query_client_id[0]"></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group" :class="{'has-danger': errors.integrated_query_client_secret}">
+                                        <label class="control-label">Client Secret (Clave)</label>
+                                        <el-input v-model="form.integrated_query_client_secret"></el-input>
+                                        <small class="form-control-feedback" v-if="errors.integrated_query_client_secret" v-text="errors.integrated_query_client_secret[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
                         <div class="row" v-if="form.soap_send_id == '02'">
                             <div class="col-md-12">
                                 <div class="form-group" :class="{'has-danger': errors.soap_url}">
@@ -275,7 +303,9 @@
                     config_system_env: false,
                     img_firm: null,
                     is_pharmacy: false,
-                    cod_digemid: null
+                    cod_digemid: null,
+                    integrated_query_client_id: null,
+                    integrated_query_client_secret: null,
 
                 }
             },
