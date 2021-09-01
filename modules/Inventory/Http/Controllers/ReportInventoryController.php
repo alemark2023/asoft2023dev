@@ -43,6 +43,7 @@ class ReportInventoryController extends Controller
         $warehouse_id = $request->input('warehouse_id');
         $brand_id = (int)$request->brand_id;
         $category_id = (int)$request->category_id;
+        $active = $request->active;
         $filter = $request->input('filter');
 
         $records = $this->getRecords($warehouse_id);
@@ -53,6 +54,11 @@ class ReportInventoryController extends Controller
         if ($category_id != 0) {
             $records->where('items.category_id', $category_id);
         }
+
+        if (!is_null($active)) {
+            $records->where('items.active', $active == '01' ? true : false);
+        }
+
         $records->orderBy('items.name','desc');
 
         $records = $records->latest()->get()->transform(function($row) use ($filter,&$data) {
