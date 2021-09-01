@@ -20,7 +20,7 @@
                 </div>
                 <div class="card-body">
                     <div class="row m-b-10">
-                        <div class="col-md-4">
+                        <div class="col-md-4 mb-3">
                             <el-select v-model="form.warehouse_id"
                                        placeholder="Seleccionar almacén"
                                        @change="changeWarehouse">
@@ -30,17 +30,6 @@
                                            :label="opt.description"
                                            :value="opt.id">
                                 </el-option>
-                            </el-select>
-                        </div>
-                        <div class="col-md-3">
-                            <el-select v-model="form.filter"
-                                       placeholder="Seleccionar filtro"
-                                       @change="changeFilter">
-                                <el-option key="01" label="Todos" value="01"></el-option>
-                                <el-option key="02" label="Stock < 0" value="02"></el-option>
-                                <el-option key="03" label="Stock = 0" value="03"></el-option>
-                                <el-option key="04" label="0 < Stock <= Stock mínimo" value="04"></el-option>
-                                <el-option key="05" label="Stock > Stock mínimo" value="05"></el-option>
                             </el-select>
                         </div>
                         <div class="col-md-3" v-if="filters.categories.visible">
@@ -70,6 +59,27 @@
                                 </el-select>
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <el-select v-model="form.filter"
+                                       placeholder="Seleccionar filtro"
+                                       @change="changeFilter">
+                                <el-option key="01" label="Todos" value="01"></el-option>
+                                <el-option key="02" label="Stock < 0" value="02"></el-option>
+                                <el-option key="03" label="Stock = 0" value="03"></el-option>
+                                <el-option key="04" label="0 < Stock <= Stock mínimo" value="04"></el-option>
+                                <el-option key="05" label="Stock > Stock mínimo" value="05"></el-option>
+                            </el-select>
+                        </div>
+
+                        <div class="col-md-3" v-if="filters.active.visible">
+                            <el-select v-model="form.active"
+                                       placeholder="Seleccionar filtro"
+                                       @change="changeFilter" :clearable="true">
+                                <el-option key="01" label="Habilitados" value="01"></el-option>
+                                <el-option key="00" label="Inhabilitados" value="00"></el-option>
+                            </el-select>
+                        </div>
+
                         <div class="col-auto">
                             <el-button :disabled="records.length <= 0"
                                        :loading="loadingPdf"
@@ -122,7 +132,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr v-for="(row, index) in records">
+                                    <tr v-for="(row, index) in records" :key="index">
                                         <td>{{ index + 1 }}</td>
                                         <td>{{ row.name }}</td>
                                         <td>{{ row.item_category_name }}</td>
@@ -202,6 +212,10 @@ export default {
                 title: 'Marcas',
                 visible: false
             },
+            active: {
+                title: 'Estado',
+                visible: false
+            },
         }
     },
     methods: {
@@ -211,6 +225,7 @@ export default {
                 'filter': '01',
                 'category_id': null,
                 'brand_id': null,
+                active: null
             }
         },
         calculeTotalProfit(){
@@ -239,7 +254,7 @@ export default {
                 this.$message.error('Seleccionar un almacén ');
                 return false;
             }
-            this.loading = true;
+            // this.loading = true;
             this.records = [];
             this.total_profit = 0;
             this.total_all_profit = 0;
@@ -259,7 +274,7 @@ export default {
         },
         async clickExport(format) {
             this.loading = true;
-            // this.loadingSubmit = true;
+            this.loadingSubmit = true;
             this.loadingPdf = (format === 'pdf');
             this.loadingXlsx = (format === 'xlsx');
             this.errors = {};
