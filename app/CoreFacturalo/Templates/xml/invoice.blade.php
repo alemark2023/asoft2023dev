@@ -3,15 +3,11 @@
     $establishment = $document->establishment;
     $customer = $document->customer;
 
-    $tot_charges = 0;
-
-    if($document->charges){
-        foreach($document->charges as $charge){
-            if($charge->charge_type_id == '50'){
-                $tot_charges += $charge->amount;
-            }
-        }
-    }
+    $document_xml_service = new Modules\Document\Services\DocumentXmlService;
+    
+    // Cargos globales que no afectan la base imponible del IGV/IVAP
+    $tot_charges = $document_xml_service->getGlobalChargesNoBase($document);
+   
 
     $tot_discount_no_base = $document->items->sum(function($row){
         return $row->discounts ? collect($row->discounts)->sum(function($discount){
@@ -20,9 +16,7 @@
     });
 
     //descuento globales que no afectan la base imponible
-    $tot_global_discount_no_base = $document->discounts ? collect($document->discounts)->sum(function($discount){
-        return $discount->discount_type_id == '03' ? $discount->amount : 0;
-    }) : 0;
+    $tot_global_discount_no_base = $document_xml_service->getGlobalDiscountsNoBase($document);
 
 @endphp
 {!!  '<'.'?xml version="1.0" encoding="utf-8" standalone="no"?'.'>'  !!}
@@ -413,8 +407,11 @@
         @else
         <cbc:TaxInclusiveAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total }}</cbc:TaxInclusiveAmount>
         @endif
-        @if($document->total_discount > 0)
+        {{-- @if($document->total_discount > 0)
         <cbc:AllowanceTotalAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_discount }}</cbc:AllowanceTotalAmount>
+        @endif --}}
+        @if($tot_global_discount_no_base > 0)
+        <cbc:AllowanceTotalAmount currencyID="{{ $document->currency_type_id }}">{{ $tot_global_discount_no_base }}</cbc:AllowanceTotalAmount>
         @endif
         @if($document->total_charge > 0)
         <cbc:ChargeTotalAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_charge }}</cbc:ChargeTotalAmount>
