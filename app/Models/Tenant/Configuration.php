@@ -6,6 +6,7 @@ namespace App\Models\Tenant;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
+use Modules\Inventory\Models\Warehouse;
 
 /**
  * Class Configuration
@@ -372,6 +373,11 @@ class Configuration extends ModelTenant
         $company = Company::first();
         // $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $establishment =   auth()->user()->establishment;
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+        if($warehouse == null){
+             $warehouse = new Warehouse();
+        }
         $currency = CurrencyType::all();
         $typeUser = '';
         if(\Auth::user()){
@@ -381,6 +387,7 @@ class Configuration extends ModelTenant
             'id' => $this->id,
             'company' => $company,
             'establishment' => $establishment,
+            'warehouse_id' => $warehouse->id,
             'send_auto' => (bool)$this->send_auto,
             'formats' => $this->formats,
             'stock' => (bool)$this->stock,

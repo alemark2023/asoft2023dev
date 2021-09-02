@@ -36,10 +36,20 @@
                                    remote
                                    @change="changeItem"
                         >
-                            <el-option v-for="option in items"
-                                       :key="option.id"
-                                       :label="option.full_description"
-                                       :value="option.id"></el-option>
+                            <el-tooltip
+                                v-for="option in items"
+                                :key="option.id"
+                                placement="left">
+                                <div
+                                    slot="content"
+                                    v-html="ItemSlotTooltipView(option)"
+                                ></div>
+                                <el-option
+                                    :label="ItemOptionDescriptionView(option)"
+                                    :value="option.id"
+                                ></el-option>
+
+                            </el-tooltip>
                         </el-select>
                         <el-input v-show="search_item_by_barcode"
                                   v-model="form.barcode"
@@ -515,11 +525,20 @@ import itemForm from '../../items/form.vue'
 import {calculateRowItem} from '../../../../helpers/functions'
 import LotsForm from '@components/incomeLots.vue'
 import Keypress from "vue-keypress";
+import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
-    props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
+    props: [
+        'showDialog',
+        'currencyTypeIdActive',
+        'exchangeRateSale'
+    ],
     components: {itemForm, LotsForm, Keypress},
     computed: {
+        ...mapState([
+            'config',
+        ]),
         canEditPrice() {
             if (this.form && this.form.update_price !== undefined) {
                 return this.form.update_price
@@ -555,8 +574,9 @@ export default {
         }
     },
     created() {
-        this.initForm()
+        this.loadConfiguration()
         this.activeName = 'first'
+        this.initForm()
         this.$http.get(`/${this.resource}/item/tables`).then(response => {
             this.all_items = response.data.items
             this.affectation_igv_types = response.data.affectation_igv_types
@@ -565,6 +585,7 @@ export default {
             this.charge_types = response.data.charge_types
             this.attribute_types = response.data.attribute_types
             this.warehouses = response.data.warehouses
+            this.$store.commit('setConfiguration', response.data.configuration)
             this.initFilterItems()
         })
 
@@ -573,6 +594,15 @@ export default {
         })
     },
     methods: {
+        ...mapActions([
+            'loadConfiguration',
+        ]),
+        ItemSlotTooltipView(item) {
+            return ItemSlotTooltip(item);
+        },
+        ItemOptionDescriptionView(item) {
+            return ItemOptionDescription(item)
+        },
         handleFn112(response) {
             this.search_item_by_barcode = !this.search_item_by_barcode;
         },
@@ -639,10 +669,14 @@ export default {
         },
         initForm() {
             this.errors = {}
+            let warehouse = 1;
+            if (this.config !== undefined && this.config.warehouse_id !== undefined) {
+                warehouse = this.config.warehouse_id;
+            }
             this.form = {
                 item_id: null,
                 barcode: null,
-                warehouse_id: 1,
+                warehouse_id: warehouse,
                 warehouse_description: null,
                 item: {},
                 affectation_igv_type_id: null,
