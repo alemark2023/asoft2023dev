@@ -62,14 +62,22 @@ class ReportMassiveDownloadController extends Controller
     public function pdf(Request $request) {
 
 
+        $array = json_decode($request->form,true);
         $params = json_decode($request->form);
+
         $document_types = $params->document_types;
 
         if(count($document_types) == 0){
             $document_types = ['all'];
         }
+        $height = isset($array['height'])?$array['height']:'a4';
 
-        return $this->toPrintByView('massive_downloads', $this->createPdf($this->getData($document_types, $params)));
+        $data = $this->getData($document_types, $params);
+        $view =  $this->createPdf($data,'ticket',$array);
+        if($height == 80 || $height == 'ticket' || $height == 'ticket_58'  ){
+            return $view;
+        }
+        return $this->toPrintByView('massive_downloads',$view);
 
     }
 

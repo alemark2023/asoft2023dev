@@ -2,18 +2,19 @@
 
 namespace Modules\Report\Traits;
 
-use Mpdf\HTMLParserMode;
-use Mpdf\Mpdf;
+use App\CoreFacturalo\Template;
+use App\Models\Tenant\{BankAccount, Dispatch, Document, Establishment, SaleNote};
+use App\Models\Tenant\Company;
+use App\Models\Tenant\Configuration;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
-use App\CoreFacturalo\Template;
-use App\Models\Tenant\Configuration;
-use App\Models\Tenant\Company;
-use App\Models\Tenant\{
-    Document,
-    SaleNote,
-    Dispatch
-};
+use Mpdf\HTMLParserMode;
+use Mpdf\Mpdf;
+use Response;
+use setasign\Fpdi\Fpdi;
+use ZipArchive;
 
 
 trait MassiveDownloadTrait
@@ -125,15 +126,218 @@ trait MassiveDownloadTrait
     }
 
 
-    public function createPdf($data) {
+    public function newCreatePdf($sale_note = null, $format_pdf = 'a4', $filename = null) {
+
+        ini_set("pcre.backtrack_limit", "5000000");
+        $template = new Template();
+        $pdf = new Mpdf();
+
+        $this->company = ($this->company != null) ? $this->company : Company::active();
+        $this->document = ($sale_note != null) ? $sale_note : $this->sale_note;
+
+        $this->configuration = Configuration::first();
+        // $configuration = $this->configuration->formats;
+        $base_template = Establishment::find($this->document->establishment_id)->template_pdf;
+
+        $html = $template->pdf($base_template, "sale_note", $this->company, $this->document, $format_pdf);
+
+        if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58')) {
+
+            $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
+            if(config('tenant.enabled_template_ticket_80')) $width = 76;
+
+            $company_logo      = ($this->company->logo) ? 40 : 0;
+            $company_name      = (strlen($this->company->name) / 20) * 10;
+            $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
+            $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
+            $customer_name     = strlen($this->document->customer->name) > '25' ? '10' : '0';
+            $customer_address  = (strlen($this->document->customer->address) / 200) * 10;
+            $p_order           = $this->document->purchase_order != '' ? '10' : '0';
+
+            $total_exportation = $this->document->total_exportation != '' ? '10' : '0';
+            $total_free        = $this->document->total_free != '' ? '10' : '0';
+            $total_unaffected  = $this->document->total_unaffected != '' ? '10' : '0';
+            $total_exonerated  = $this->document->total_exonerated != '' ? '10' : '0';
+            $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
+            $quantity_rows     = count($this->document->items);
+            $payments     = $this->document->payments()->count() * 2;
+
+            $extra_by_item_description = 0;
+            $discount_global = 0;
+            foreach ($this->document->items as $it) {
+                if(strlen($it->item->description)>100){
+                    $extra_by_item_description +=24;
+                }
+                if ($it->discounts) {
+                    $discount_global = $discount_global + 1;
+                }
+            }
+            $legends = $this->document->legends != '' ? '10' : '0';
+            $bank_accounts = BankAccount::count() * 6;
+
+            $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    $width,
+                    60 +
+                    (($quantity_rows * 8) + $extra_by_item_description) +
+                    ($discount_global * 3) +
+                    $company_logo +
+                    $payments +
+                    $company_name +
+                    $company_address +
+                    $company_number +
+                    $customer_name +
+                    $customer_address +
+                    $p_order +
+                    $legends +
+                    $bank_accounts +
+                    $total_exportation +
+                    $total_free +
+                    $total_unaffected +
+                    $total_exonerated +
+                    $total_taxed],
+                'margin_top' => 0,
+                'margin_right' => 2,
+                'margin_bottom' => 0,
+                'margin_left' => 2
+            ]);
+        }
+        elseif($format_pdf === 'a5'){
+
+            $company_name      = (strlen($this->company->name) / 20) * 10;
+            $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
+            $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
+            $customer_name     = strlen($this->document->customer->name) > '25' ? '10' : '0';
+            $customer_address  = (strlen($this->document->customer->address) / 200) * 10;
+            $p_order           = $this->document->purchase_order != '' ? '10' : '0';
+
+            $total_exportation = $this->document->total_exportation != '' ? '10' : '0';
+            $total_free        = $this->document->total_free != '' ? '10' : '0';
+            $total_unaffected  = $this->document->total_unaffected != '' ? '10' : '0';
+            $total_exonerated  = $this->document->total_exonerated != '' ? '10' : '0';
+            $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
+            $quantity_rows     = count($this->document->items);
+            $discount_global = 0;
+            foreach ($this->document->items as $it) {
+                if ($it->discounts) {
+                    $discount_global = $discount_global + 1;
+                }
+            }
+            $legends           = $this->document->legends != '' ? '10' : '0';
+
+
+            $alto = ($quantity_rows * 8) +
+                ($discount_global * 3) +
+                $company_name +
+                $company_address +
+                $company_number +
+                $customer_name +
+                $customer_address +
+                $p_order +
+                $legends +
+                $total_exportation +
+                $total_free +
+                $total_unaffected +
+                $total_exonerated +
+                $total_taxed;
+            $diferencia = 148 - (float)$alto;
+
+            $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    210,
+                    $diferencia + $alto
+                ],
+                'margin_top' => 2,
+                'margin_right' => 5,
+                'margin_bottom' => 0,
+                'margin_left' => 5
+            ]);
+
+
+        }
+        else {
+
+            $pdf_font_regular = config('tenant.pdf_name_regular');
+            $pdf_font_bold = config('tenant.pdf_name_bold');
+
+            if ($pdf_font_regular != false) {
+                $defaultConfig = (new ConfigVariables())->getDefaults();
+                $fontDirs = $defaultConfig['fontDir'];
+
+                $defaultFontConfig = (new FontVariables())->getDefaults();
+                $fontData = $defaultFontConfig['fontdata'];
+
+                $pdf = new Mpdf([
+                    'fontDir' => array_merge($fontDirs, [
+                        app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                            DIRECTORY_SEPARATOR.'pdf'.
+                            DIRECTORY_SEPARATOR.$base_template.
+                            DIRECTORY_SEPARATOR.'font')
+                    ]),
+                    'fontdata' => $fontData + [
+                            'custom_bold' => [
+                                'R' => $pdf_font_bold.'.ttf',
+                            ],
+                            'custom_regular' => [
+                                'R' => $pdf_font_regular.'.ttf',
+                            ],
+                        ]
+                ]);
+            }
+
+        }
+
+        $path_css = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+            DIRECTORY_SEPARATOR.'pdf'.
+            DIRECTORY_SEPARATOR.$base_template.
+            DIRECTORY_SEPARATOR.'style.css');
+
+        $stylesheet = file_get_contents($path_css);
+
+        $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+        if(config('tenant.pdf_template_footer')) {
+            // if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
+            if ($base_template != 'full_height') {
+                $html_footer = $template->pdfFooter($base_template,$this->document);
+            } else {
+                $html_footer = $template->pdfFooter('default',$this->document);
+            }
+            $html_footer_legend = "";
+            if ($base_template != 'legend_amazonia') {
+                if($this->configuration->legend_footer){
+                    $html_footer_legend = $template->pdfFooterLegend($base_template, $this->document);
+                }
+            }
+            $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
+            // }
+        }
+
+        if ($base_template === 'brand') {
+
+            if (($format_pdf === 'ticket') || ($format_pdf === 'ticket_58') || ($format_pdf === 'ticket_50')) {
+                $pdf->SetHTMLHeader("");
+                $pdf->SetHTMLFooter("");
+            }
+        }
+
+        $this->uploadFile($this->document->filename, $pdf->output('', 'S'), 'sale_note');
+    }
+
+    public function createPdf($data,
+                              $format_pdf = 'a4',
+                              $array = [])
+    {
 
         ini_set("pcre.backtrack_limit", "5000000");
 
-        $template = new Template();
-        $format_pdf = "a4";
-        $configuration = Configuration::first();
-        $base_pdf_template = $configuration->formats;
         $company = Company::active();
+        $configuration = Configuration::first();
+        $template = new Template();
+        $base_pdf_template = $configuration->formats;
 
         $pdf_margin_top = 15;
         $pdf_margin_right = 15;
@@ -149,62 +353,350 @@ trait MassiveDownloadTrait
 
         $pdf_font_regular = config('tenant.pdf_name_regular');
         $pdf_font_bold = config('tenant.pdf_name_bold');
-
-        if ($pdf_font_regular != false) {
-
-            $defaultConfig = (new ConfigVariables())->getDefaults();
-            $fontDirs = $defaultConfig['fontDir'];
-
-            $defaultFontConfig = (new FontVariables())->getDefaults();
-            $fontData = $defaultFontConfig['fontdata'];
-
-            $pdf = new Mpdf([
-                'fontDir' => array_merge($fontDirs, [
-                    app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
-                                                DIRECTORY_SEPARATOR.'pdf'.
-                                                DIRECTORY_SEPARATOR.$base_pdf_template.
-                                                DIRECTORY_SEPARATOR.'font')
-                ]),
-                'fontdata' => $fontData + [
-                    'custom_bold' => [
-                        'R' => $pdf_font_bold.'.ttf',
-                    ],
-                    'custom_regular' => [
-                        'R' => $pdf_font_regular.'.ttf',
-                    ],
-                ],
-                'margin_top' => $pdf_margin_top,
-                'margin_right' => $pdf_margin_right,
-                'margin_bottom' => $pdf_margin_bottom,
-                'margin_left' => $pdf_margin_left
-            ]);
-
-        }else {
-
-            $pdf = new Mpdf([
-                'margin_top' => $pdf_margin_top,
-                'margin_right' => $pdf_margin_right,
-                'margin_bottom' => $pdf_margin_bottom,
-                'margin_left' => $pdf_margin_left
-            ]);
-
-        }
-
-        $path_css = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.$base_pdf_template.DIRECTORY_SEPARATOR.'style.css');
+        $path_css = app_path('CoreFacturalo' .
+            DIRECTORY_SEPARATOR . 'Templates' . DIRECTORY_SEPARATOR . 'pdf' . DIRECTORY_SEPARATOR . $base_pdf_template . DIRECTORY_SEPARATOR . 'style.css');
         $stylesheet = file_get_contents($path_css);
 
-        $pdf = $this->addPageRecords($data['documents_01'], $template, $base_pdf_template, $company, $pdf, $stylesheet, $format_pdf, 'invoice', $configuration);
 
-        $pdf = $this->addPageRecords($data['documents_03'], $template, $base_pdf_template, $company, $pdf, $stylesheet, $format_pdf, 'invoice', $configuration);
+        if (($format_pdf === 'ticket') or ($format_pdf === 'ticket_58')) {
+            $width = ($format_pdf === 'ticket_58') ? 56 : 78;
 
-        $pdf = $this->addPageRecords($data['dispatches'], $template, $base_pdf_template, $company, $pdf, $stylesheet, $format_pdf, 'dispatch', $configuration);
+            if (config('tenant.enabled_template_ticket_80')) $width = 76;
 
-        $pdf = $this->addPageRecords($data['sale_notes'], $template, $base_pdf_template, $company, $pdf, $stylesheet, $format_pdf, 'sale_note', $configuration);
+            $pdf_data = [
 
+                'margin_top' => $pdf_margin_top,
+                'margin_right' => $pdf_margin_right,
+                'margin_bottom' => $pdf_margin_bottom,
+                'margin_left' => $pdf_margin_left
+            ];
+
+
+            $documents = isset($data['documents_01']) ? $data['documents_01'] : [];
+            $type = 'invoice';
+            $pdf_array = [];
+            $pdfj = new Fpdi();
+            foreach ($documents as $document) {
+                /** @var Document $document */
+                $pdf = $this->addRecordToPdf(
+                    $document,
+                    $format_pdf,
+                    $base_pdf_template,
+                    $type,
+                    $stylesheet,
+                    $pdf_data
+                );
+
+                $pdf1 = $pdf;
+                $this->addFpi($pdfj, $pdf1);
+                // $this->SaveTempPdf($pdf,$pdf_array,$document);
+            }
+
+            $documents = isset($data['documents_03']) ? $data['documents_03'] : [];
+            $type = 'invoice';
+
+            foreach ($documents as $document) {
+                /** @var Document $document */
+                $pdf = $this->addRecordToPdf(
+                    $document,
+                    $format_pdf,
+                    $base_pdf_template,
+                    $type,
+                    $stylesheet,
+                    $pdf_data
+                );
+
+                $pdf1 = $pdf;
+                $this->addFpi($pdfj, $pdf1);
+                // $this->SaveTempPdf($pdf,$pdf_array,$document);
+            }
+
+            $documents = isset($data['sale_notes']) ? $data['sale_notes'] : [];
+            $type = 'sale_note';
+
+            foreach ($documents as $document) {
+                /** @var SaleNote $document */
+                $pdf = $this->addRecordToPdf(
+                    $document,
+                    $format_pdf,
+                    $base_pdf_template,
+                    $type,
+                    $stylesheet,
+                    $pdf_data
+                );
+
+                $pdf1 = $pdf;
+                $this->addFpi($pdfj, $pdf1);
+                //   $this->SaveTempPdf($pdf,$pdf_array,$document);
+            }
+            /*
+                $documents = isset($data['dispatches']) ? $data['dispatches'] : [];
+                $type = 'dispatch';
+
+                foreach ($documents as $document) {
+                    dd([
+                        __LINE__,
+                        $document
+                    ]);
+                    $pdf = $this->addRecordToPdf(
+                        $document,
+                        $format_pdf,
+                        $base_pdf_template,
+                        $type,
+                        $stylesheet,
+                        $pdf_data
+                    );
+                    $pdf1 = $pdf;
+                    $this->addFpi($pdfj, $pdf1);
+                    // $this->SaveTempPdf($pdf,$pdf_array,$document);
+                }
+            */
+            $start = isset($array['date_start']) ? "-".$array['date_start'] : '';
+            $end = isset($array['date_end']) ? "-".$array['date_end'] : '';
+            $name_file = "massive_downloads$start$end.".microtime(true)."";
+             return  $pdfj->Output('D',$name_file.".pdf");
+
+            $path = $name_file. '.zip';
+            $zip_file = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, storage_path('app/public/temp_pdf/' . $path));
+            $zip = new ZipArchive();
+            if ($zip->open($zip_file, (ZipArchive::CREATE | ZipArchive::OVERWRITE)) !== true) {
+                exit(501);
+            }
+            foreach ($pdf_array as $name => $file) {
+                $zip->addFile($file, $name . ",pdf");
+            }
+            sleep(5);
+            $zip->close();
+            sleep(5);
+            $start = isset($array['date_start']) ? $array['date_start'] : '';
+            $end = isset($array['date_end']) ? $array['date_end'] : '';
+
+            $temp = Response::download($zip_file, $name_file);
+            return $temp;
+
+
+        } else {
+
+            if ($pdf_font_regular != false) {
+
+                $defaultConfig = (new ConfigVariables())->getDefaults();
+                $fontDirs = $defaultConfig['fontDir'];
+
+                $defaultFontConfig = (new FontVariables())->getDefaults();
+                $fontData = $defaultFontConfig['fontdata'];
+
+                $pdf = new Mpdf([
+                    'fontDir' => array_merge($fontDirs, [
+                        app_path('CoreFacturalo' . DIRECTORY_SEPARATOR . 'Templates' .
+                            DIRECTORY_SEPARATOR . 'pdf' .
+                            DIRECTORY_SEPARATOR . $base_pdf_template .
+                            DIRECTORY_SEPARATOR . 'font')
+                    ]),
+                    'fontdata' => $fontData + [
+                            'custom_bold' => [
+                                'R' => $pdf_font_bold . '.ttf',
+                            ],
+                            'custom_regular' => [
+                                'R' => $pdf_font_regular . '.ttf',
+                            ],
+                        ],
+                    'margin_top' => $pdf_margin_top,
+                    'margin_right' => $pdf_margin_right,
+                    'margin_bottom' => $pdf_margin_bottom,
+                    'margin_left' => $pdf_margin_left
+                ]);
+
+            } else {
+
+                $pdf = new Mpdf([
+                    'margin_top' => $pdf_margin_top,
+                    'margin_right' => $pdf_margin_right,
+                    'margin_bottom' => $pdf_margin_bottom,
+                    'margin_left' => $pdf_margin_left
+                ]);
+
+            }
+
+
+            $pdf = $this->addPageRecords($data['documents_01'], $template, $base_pdf_template, $company, $pdf, $stylesheet, $format_pdf, 'invoice', $configuration);
+
+            $pdf = $this->addPageRecords($data['documents_03'], $template, $base_pdf_template, $company, $pdf, $stylesheet, $format_pdf, 'invoice', $configuration);
+
+            $pdf = $this->addPageRecords($data['dispatches'], $template, $base_pdf_template, $company, $pdf, $stylesheet, $format_pdf, 'dispatch', $configuration);
+
+            $pdf = $this->addPageRecords($data['sale_notes'], $template, $base_pdf_template, $company, $pdf, $stylesheet, $format_pdf, 'sale_note', $configuration);
+        }
+        /** @var Mpdf $pdf */
         return $pdf->output('', 'S');
 
     }
 
+    /**
+     * Genera un archivo PDF temporal
+     * @param Mpdf $pdf
+     * @param      $list_files
+     * @param      $document
+     *
+     * @throws \Mpdf\MpdfException
+     */
+    public function SaveTempPdf(Mpdf $pdf, &$list_files, $document){
+        /** @var Document $document */
+        $name = strtoupper(STR::slug("ticket ".$document->series." ".$document->number,'-' ));
+        $path = storage_path('app/public/temp_pdf/' .$name . ".pdf");
+        if (!is_dir(storage_path('app/public/'))) mkdir(storage_path('app/public/'));
+        if (!is_dir(storage_path('app/public/temp_pdf/'))) mkdir(storage_path('app/public/temp_pdf/'));
+        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
+
+        try{
+            unlink($path);
+        }catch (\ErrorException $e){
+
+        }
+
+        $pdf->output($path, 'F');
+        $list_files[$name] = $path;
+
+
+    }
+
+    /**
+     * Unifica varios pdf en uno solo.
+     *
+     * @param      $fpdi
+     * @param Mpdf $pdf
+     *
+     * @throws \Mpdf\MpdfException
+     */
+    public function addFpi(&$fpdi, Mpdf $pdf){
+        $path = storage_path('app/public/temp_pdf/' . microtime() . ".pdf");
+        if (!is_dir(storage_path('app/public/temp_pdf/'))) mkdir(storage_path('app/public/temp_pdf/'));
+        ob_clean();
+        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
+        $pdf->output($path, 'F');
+        if (is_file($path)) {
+            $pageCount = $fpdi->setSourceFile($path);
+            for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+                $pageId = $fpdi->ImportPage($pageNo);
+                $s = $fpdi->getTemplatesize($pageId);
+                $fpdi->AddPage($s['orientation'], $s);
+                $fpdi->useImportedPage($pageId);
+            }
+            unlink($path);
+        }
+
+    }
+    public function addRecordToPdf(
+                $document,
+        $format_pdf = 'a4',
+        $base_pdf_template = '',
+        $type = '',
+        $stylesheet = '',
+                $format = []
+    ): Mpdf
+    {
+        $width = 100;
+        if ($format == 'ticket') $width = 78;
+        if ($format == 'ticket_58') $width = 56;
+        $configuration = Configuration::first();
+        $company = Company::active();
+        $template = new Template();
+
+        $format['mode'] = 'utf-8';
+        $extra_by_item_description = 0;
+        $discount_global = 0;
+        $quantity_rows = count($document->items);
+        $payments = $document->payments()->count() * 2;
+        $company_logo = ($company->logo) ? 40 : 0;
+        $company_name = (strlen($company->name) / 20) * 10;
+        $company_address = (strlen($document->establishment->address) / 30) * 10;
+        $company_number = $document->establishment->telephone != '' ? 10 : 0;
+        $customer_name = strlen($document->customer->name) > '25' ? 10 : 0;
+        $customer_address = (strlen($document->customer->address) / 200) * 10;
+        $p_order = $document->purchase_order != '' ? 10 : 0;
+
+        foreach ($document->items as $it) {
+            if (strlen($it->item->description) > 100) {
+                $extra_by_item_description += 24;
+            }
+            if ($it->discounts) {
+                $discount_global = $discount_global + 1;
+            }
+        }
+        $extra_by_item_description = (($quantity_rows * 8) + $extra_by_item_description);
+        $discount_global *= 3;
+        $legends = $document->legends != '' ? 10 : 0;
+        $total_exportation = $document->total_exportation != '' ? 10 : 0;
+        $total_free = $document->total_free != '' ? 10 : 0;
+        $total_unaffected = $document->total_unaffected != '' ? 10 : 0;
+        $total_exonerated = $document->total_exonerated != '' ? 10 : 0;
+        $total_taxed = $document->total_taxed != '' ? 10 : 0;
+        $bank_accounts = BankAccount::count() * 6;
+
+        $base_h = ($type == 'sale_note') ? 60 : 150;
+        $height =
+            $base_h
+            + $company_logo
+            + $company_name
+            + $bank_accounts
+            + $extra_by_item_description
+            + $discount_global
+            + $payments
+            + $company_address
+            + $company_number
+            + $customer_name
+            + $customer_address
+            + $p_order
+            + $legends
+            + $total_exportation
+            + $total_free
+            + $total_unaffected
+            + $total_exonerated
+            + $total_taxed
+        ;
+        $format['format'] = [
+            $width,
+            $height,
+        ];
+
+
+        $pdf = new Mpdf($format );
+        $html = $template->pdf(
+            $base_pdf_template,
+            $type,
+            $company,
+            $document,
+            $format_pdf);
+        $html_footer_legend = "";
+        if (config('tenant.pdf_template_footer')) {
+            switch ($type) {
+                case 'invoice':
+                    $html_footer = $template->pdfFooter($base_pdf_template, $document);
+                    if ($configuration->legend_footer) {
+                        $html_footer_legend = $template->pdfFooterLegend($base_pdf_template, $document);
+                    }
+                    $pdf->SetHTMLFooter($html_footer . $html_footer_legend);
+                    break;
+
+                case 'dispatch':
+                    $html_footer = $template->pdfFooter($base_pdf_template, $document);
+                    $pdf->SetHTMLFooter($html_footer . $html_footer_legend);
+                    break;
+
+                case 'sale_note':
+                    $html_footer = ($base_pdf_template != 'full_height') ? $template->pdfFooter($base_pdf_template, $document) : $template->pdfFooter('default', $document);
+                    $pdf->SetHTMLFooter($html_footer);
+                    break;
+
+            }
+
+        }
+        $pdf->AddPage();
+        $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);return $pdf;
+        return $pdf;
+
+
+    }
 
     public function addPageRecords($documents, $template, $base_pdf_template, $company, $pdf, $stylesheet, $format_pdf, $type, $configuration){
 
