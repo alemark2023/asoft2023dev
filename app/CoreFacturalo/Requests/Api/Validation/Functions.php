@@ -88,6 +88,12 @@ class Functions
             $item->amount_plastic_bag_taxes = self::getAmountPlasticBagTaxes();
             $item->save();
 
+        }else{
+            
+            $item->update([
+                'description' => $inputs['description'],
+            ]);
+            
         }
 
         return $item->id;
