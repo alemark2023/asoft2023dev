@@ -7,27 +7,41 @@
                 <li><span class="text-muted">Facturas - Notas <small>(crédito y débito)</small> - Boletas - Anulaciones</span>
                 </li>
             </ol>
-            <div class="right-wrapper pull-right" v-if="typeUser != 'integrator'">
+            <div class="right-wrapper pull-right"
+                 v-if="typeUser != 'integrator'">
                 <span v-if="import_documents == true">
-                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i
+                    <button type="button"
+                            class="btn btn-custom btn-sm  mt-2 mr-2"
+                            @click.prevent="clickImport()"><i
                         class="fa fa-upload"></i> Importar Formato 1</button>
                 </span>
                 <span v-if="import_documents_second == true">
-                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImportSecond()"><i
+                    <button type="button"
+                            class="btn btn-custom btn-sm  mt-2 mr-2"
+                            @click.prevent="clickImportSecond()"><i
                         class="fa fa-upload"></i> Importar Formato 2</button>
                 </span>
-                <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2"><i
+                <a :href="`/${resource}/create`"
+                   class="btn btn-custom btn-sm  mt-2 mr-2"><i
                     class="fa fa-plus-circle"></i> Nuevo</a>
                 <div class="btn-group flex-wrap">
-                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2 dropdown-toggle"
-                            data-toggle="dropdown" aria-expanded="false"><i class="fa fa-money-bill-wave-alt"></i>
+                    <button type="button"
+                            class="btn btn-custom btn-sm  mt-2 mr-2 dropdown-toggle"
+                            data-toggle="dropdown"
+                            aria-expanded="false"><i class="fa fa-money-bill-wave-alt"></i>
                         Reporte de Pagos <span class="caret"></span></button>
-                    <div class="dropdown-menu" role="menu" x-placement="bottom-start"
+                    <div class="dropdown-menu"
+                         role="menu"
+                         x-placement="bottom-start"
                          style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
-                        <a class="dropdown-item text-1" href="#" @click.prevent="clickReportPayments()">Generar
-                            Reporte</a>
-                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportPagos()">Descargar
-                            Excel</a>
+                        <a class="dropdown-item text-1"
+                           href="#"
+                           @click.prevent="clickReportPayments()">Generar
+                                                                  Reporte</a>
+                        <a class="dropdown-item text-1"
+                           href="#"
+                           @click.prevent="clickDownloadReportPagos()">Descargar
+                                                                       Excel</a>
                     </div>
                 </div>
             </div>
@@ -40,7 +54,8 @@
                         Mostrar/Ocultar columnas<i class="el-icon-arrow-down el-icon--right"></i>
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item v-for="(column, index) in columns" :key="index">
+                        <el-dropdown-item v-for="(column, index) in columns"
+                                          :key="index">
                             <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
                         </el-dropdown-item>
                     </el-dropdown-menu>
@@ -52,7 +67,9 @@
                         <th>#</th>
                         <th>SOAP</th>
                         <th class="text-center">Fecha Emisión</th>
-                        <th class="text-center" v-if="columns.date_of_due.visible">Fecha Vencimiento</th>
+                        <th class="text-center"
+                            v-if="columns.date_of_due.visible">Fecha Vencimiento
+                        </th>
                         <th>Cliente</th>
                         <th>Número</th>
                         <th v-if="columns.notes.visible">Notas C/D</th>
@@ -62,11 +79,21 @@
                         <th>Estado</th>
                         <th v-if="columns.user_name.visible">Usuario</th>
                         <th class="text-center">Moneda</th>
-                        <th class="text-right" v-if="columns.guides.visible">Guia</th>
-                        <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación</th>
-                        <th class="text-right" v-if="columns.total_free.visible">T.Gratuita</th>
-                        <th class="text-right" v-if="columns.total_unaffected.visible">T.Inafecta</th>
-                        <th class="text-right" v-if="columns.total_exonerated.visible">T.Exonerado</th>
+                        <th class="text-right"
+                            v-if="columns.guides.visible">Guia
+                        </th>
+                        <th class="text-right"
+                            v-if="columns.total_exportation.visible">T.Exportación
+                        </th>
+                        <th class="text-right"
+                            v-if="columns.total_free.visible">T.Gratuita
+                        </th>
+                        <th class="text-right"
+                            v-if="columns.total_unaffected.visible">T.Inafecta
+                        </th>
+                        <th class="text-right"
+                            v-if="columns.total_exonerated.visible">T.Exonerado
+                        </th>
                         <th class="text-right">T.Gravado</th>
                         <th class="text-right">T.Igv</th>
                         <th class="text-right">Total</th>
@@ -75,9 +102,12 @@
                         <th class="text-center"></th>
                         <th class="text-center">Descargas</th>
                         <!--<th class="text-center">Anulación</th>-->
-                        <th class="text-right" v-if="typeUser != 'integrator'">Acciones</th>
+                        <th class="text-right"
+                            v-if="typeUser != 'integrator'">Acciones
+                        </th>
                     <tr>
-                    <tr slot-scope="{ index, row }" :class="{'text-danger': (row.state_type_id === '11'),
+                    <tr slot-scope="{ index, row }"
+                        :class="{'text-danger': (row.state_type_id === '11'),
                             'text-warning': (row.state_type_id === '13'),
                             'border-light': (row.state_type_id === '01'),
                             'border-left border-info': (row.state_type_id === '03'),
@@ -89,26 +119,32 @@
                         <td>{{ index }}</td>
                         <td>{{ row.soap_type_description }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
-                        <td class="text-center" v-if="columns.date_of_due.visible">{{ row.date_of_due }}</td>
+                        <td class="text-center"
+                            v-if="columns.date_of_due.visible">{{ row.date_of_due }}
+                        </td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                         <td>{{ row.number }}<br/>
                             <small v-text="row.document_type_description"></small><br/>
-                            <small v-if="row.affected_document" v-text="row.affected_document"></small>
+                            <small v-if="row.affected_document"
+                                   v-text="row.affected_document"></small>
                         </td>
                         <td v-if="columns.notes.visible">
                             <template v-for="(row,index) in row.notes">
-                                <label class="d-block" :key="index">{{ row.note_type_description }}:
-                                    {{ row.description }}</label>
+                                <label class="d-block"
+                                       :key="index">{{ row.note_type_description }}:
+                                                    {{ row.description }}</label>
                             </template>
                         </td>
                         <td v-if="columns.dispatch.visible">
                             <template v-for="(row,index) in row.dispatches">
-                                <label class="d-block" :key="index">{{ row.description }}</label>
+                                <label class="d-block"
+                                       :key="index">{{ row.description }}</label>
                             </template>
                         </td>
                         <td v-if="columns.sales_note.visible">
                             <template v-for="(row,index) in row.sales_note">
-                                <label class="d-block" :key="index">{{ row.number_full }} ({{row.state_type_description}})</label>
+                                <label class="d-block"
+                                       :key="index">{{ row.number_full }} ({{ row.state_type_description }})</label>
                             </template>
                         </td>
                         <td v-if="columns.order_note.visible">
@@ -118,21 +154,28 @@
                         </td>
 
                         <td>
-                            <el-tooltip v-if="tooltip(row, false)" class="item" effect="dark" placement="bottom">
+                            <el-tooltip v-if="tooltip(row, false)"
+                                        class="item"
+                                        effect="dark"
+                                        placement="bottom">
                                 <div slot="content">{{ tooltip(row) }}</div>
                                 <span class="badge bg-secondary text-white"
                                       :class="{'bg-danger': (row.state_type_id === '11'), 'bg-warning': (row.state_type_id === '13'), 'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}">
                                     {{ row.state_type_description }}
                                 </span>
                             </el-tooltip>
-                            <span v-else class="badge bg-secondary text-white"
+                            <span v-else
+                                  class="badge bg-secondary text-white"
                                   :class="{'bg-danger': (row.state_type_id === '11'), 'bg-warning': (row.state_type_id === '13'), 'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}">
                                 {{ row.state_type_description }}
                             </span>
                             <template v-if="row.regularize_shipping && row.state_type_id === '01'">
-                                <el-tooltip class="item" effect="dark" :content="row.message_regularize_shipping"
+                                <el-tooltip class="item"
+                                            effect="dark"
+                                            :content="row.message_regularize_shipping"
                                             placement="top-start">
-                                    <i class="fas fa-exclamation-triangle fa-lg" style="color: #d2322d !important"></i>
+                                    <i class="fas fa-exclamation-triangle fa-lg"
+                                       style="color: #D2322D !important"></i>
                                 </el-tooltip>
                             </template>
                         </td>
@@ -141,40 +184,54 @@
                             <br/><small v-text="row.user_email"></small>
                         </td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
-                        <td class="text-center" v-if="columns.guides.visible">
-                        <span v-for="(item, i) in row.guides" :key="i">
+                        <td class="text-center"
+                            v-if="columns.guides.visible">
+                        <span v-for="(item, i) in row.guides"
+                              :key="i">
                             {{ item.number }} <br>
                         </span>
                         </td>
-                        <td class="text-right" v-if="columns.total_exportation.visible">{{ row.total_exportation }}</td>
+                        <td class="text-right"
+                            v-if="columns.total_exportation.visible">{{ row.total_exportation }}
+                        </td>
 
-                        <td class="text-right" v-if="columns.total_free.visible">{{ row.total_free }}</td>
+                        <td class="text-right"
+                            v-if="columns.total_free.visible">{{ row.total_free }}
+                        </td>
 
-                        <td class="text-right" v-if="columns.total_unaffected.visible">{{ row.total_unaffected }}</td>
-                        <td class="text-right" v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}</td>
+                        <td class="text-right"
+                            v-if="columns.total_unaffected.visible">{{ row.total_unaffected }}
+                        </td>
+                        <td class="text-right"
+                            v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}
+                        </td>
                         <td class="text-right">{{ row.total_taxed }}</td>
                         <td class="text-right">{{ row.total_igv }}</td>
                         <td class="text-right">{{ row.total }}</td>
                         <td class="text-right">{{ row.balance }}</td>
                         <td>{{ row.purchase_order }}</td>
                         <td class="text-center">
-                            <button type="button" style="min-width: 41px"
+                            <button type="button"
+                                    style="min-width: 41px"
                                     class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickPayment(row.id)">Pagos
                             </button>
                         </td>
                         <td class="text-center">
-                            <button type="button" style="min-width: 41px"
+                            <button type="button"
+                                    style="min-width: 41px"
                                     class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickDownload(row.download_xml)"
                                     v-if="row.has_xml">XML
                             </button>
-                            <button type="button" style="min-width: 41px"
+                            <button type="button"
+                                    style="min-width: 41px"
                                     class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickDownload(row.download_pdf)"
                                     v-if="row.has_pdf">PDF
                             </button>
-                            <button type="button" style="min-width: 41px"
+                            <button type="button"
+                                    style="min-width: 41px"
                                     class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickDownload(row.download_cdr)"
                                     v-if="row.has_cdr">CDR
@@ -192,54 +249,78 @@
                         <!--v-if="row.btn_ticket">Consultar</button>-->
                         <!--</td>-->
 
-                        <td class="text-right" v-if="typeUser != 'integrator'">
+                        <td class="text-right"
+                            v-if="typeUser != 'integrator'">
+
                             <a :href="`/documents/${row.id}/edit`"
                                class="btn btn-success waves-effect waves-light btn-xs m-1__2"
-                               v-if="row.state_type_id === '01' && userId == row.user_id && row.is_editable">Editar</a>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
+                               v-if="row.state_type_id === '01' && userId == row.user_id && row.is_editable">
+                                Editar
+                            </a>
+                            <button type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
                                     @click.prevent="clickDeleteDocument(row.id)"
-                                    v-if="row.btn_delete_doc_type_03">Eliminar
+                                    v-if="row.btn_delete_doc_type_03">
+                                Eliminar
                             </button>
 
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                            <button type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickChangeToRegisteredStatus(row.id)"
-                                    v-if="row.btn_change_to_registered_status">Cambiar a estado registrado
+                                    v-if="row.btn_change_to_registered_status">
+                                Cambiar a estado registrado
                             </button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                            <button type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickReStore(row.id)"
-                                    v-if="row.btn_recreate_document">Volver a recrear
+                                    v-if="row.btn_recreate_document">
+                                Volver a recrear
                             </button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
+                            <button type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
                                     @click.prevent="clickVoided(row.id)"
-                                    v-if="row.btn_voided">Anular
+                                    v-if="row.btn_voided">
+                                Anular
                             </button>
                             <a :href="`/${resource}/note/${row.id}`"
                                class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
-                               v-if="row.btn_note">Nota</a>
+                               v-if="row.btn_note">
+                                Nota
+                            </a>
                             <a :href="`/dispatches/create/${row.id}`"
                                class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
-                               v-if="row.btn_note">Guía</a>
-
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                               v-if="row.btn_guide">
+                                Guía
+                            </a>
+                            <button type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickResend(row.id)"
-                                    v-if="row.btn_resend && !isClient">Reenviar
+                                    v-if="row.btn_resend && !isClient">
+                                Reenviar
                             </button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                            <button type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickSendOnline(row.id)"
-                                    v-if="isClient && !row.send_server">Enviar Servidor
+                                    v-if="isClient && !row.send_server">
+                                Enviar Servidor
                             </button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                            <button type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickCheckOnline(row.id)"
                                     v-if="isClient && row.send_server && (row.state_type_id === '01' || row.state_type_id === '03')">
                                 Consultar Servidor
                             </button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                    @click.prevent="clickOptions(row.id)">Opciones
+                            <button type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                                    @click.prevent="clickOptions(row.id)">
+                                Opciones
                             </button>
 
-                            <button type="button" v-if="row.btn_constancy_detraction"
+                            <button type="button"
+                                    v-if="row.btn_constancy_detraction"
                                     class="btn waves-effect waves-light btn-xs btn-success m-1__2"
-                                    @click.prevent="clickCDetraction(row.id)">C. Detracción
+                                    @click.prevent="clickCDetraction(row.id)">
+                                C. Detracción
                             </button>
                         </td>
                     </tr>

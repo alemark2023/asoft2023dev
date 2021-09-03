@@ -19,6 +19,7 @@ class DocumentCollection extends ResourceCollection
             $has_pdf = true;
             $has_cdr = false;
             $btn_note = false;
+            $btn_guide = true; // Boton para generar guia
             $btn_resend = false;
             $btn_voided = false;
             $btn_consult_cdr = false;
@@ -62,6 +63,11 @@ class DocumentCollection extends ResourceCollection
 
                 }
 
+            }
+            $btn_guide = $btn_note;
+            if($btn_guide === false && ($row->state_type_id === '01')){
+                // #750
+                $btn_guide = true;
             }
 
             if (in_array($row->document_type_id, ['01', '03'])) {
@@ -119,6 +125,7 @@ class DocumentCollection extends ResourceCollection
                 'download_cdr' => $row->download_external_cdr,
                 'btn_voided' => $btn_voided,
                 'btn_note' => $btn_note,
+                'btn_guide' => $btn_guide,
 //                'btn_ticket' => $btn_ticket,
                 'btn_resend' => $btn_resend,
                 'btn_consult_cdr' => $btn_consult_cdr,
