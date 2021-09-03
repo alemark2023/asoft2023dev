@@ -10,8 +10,10 @@ use App\Http\Resources\Tenant\DispatchCollection;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\Country;
 use App\Models\Tenant\Catalogs\Department;
+use App\Models\Tenant\Catalogs\District;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
+use App\Models\Tenant\Catalogs\Province;
 use App\Models\Tenant\Catalogs\TransferReasonType;
 use App\Models\Tenant\Catalogs\TransportModeType;
 use App\Models\Tenant\Catalogs\UnitType;
@@ -346,6 +348,9 @@ class DispatchController extends Controller
 
         $locations = [];
         $departments = Department::whereActive()->get();
+        /** @var Department $department */
+        /** @var Province $province */
+        /** @var District $district */
         foreach ($departments as $department) {
             $children_provinces = [];
             foreach ($department->provinces as $province) {
@@ -353,7 +358,7 @@ class DispatchController extends Controller
                 foreach ($province->districts as $district) {
                     $children_districts[] = [
                         'value' => $district->id,
-                        'label' => $district->description
+                        'label' => $district->id." - ".$district->description
                     ];
                 }
                 $children_provinces[] = [
