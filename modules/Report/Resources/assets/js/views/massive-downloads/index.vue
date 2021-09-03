@@ -117,7 +117,7 @@
                                     <el-select v-model="type"
                                                filterable>
                                         <el-option :id="'a4'"
-                                                   :label="'PDF'"
+                                                   :label="'PDF A4'"
                                                    :value="'a4'"></el-option>
                                         <el-option :id="'ticket'"
                                                    :label="'Ticket PDF'"
