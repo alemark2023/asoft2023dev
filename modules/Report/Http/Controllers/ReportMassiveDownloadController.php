@@ -73,7 +73,7 @@ class ReportMassiveDownloadController extends Controller
         $height = isset($array['height'])?$array['height']:'a4';
 
         $data = $this->getData($document_types, $params);
-        $view =  $this->createPdf($data,'ticket',$array);
+        $view =  $this->createPdf($data,$height,$array);
         if($height == 80 || $height == 'ticket' || $height == 'ticket_58'  ){
             return $view;
         }
