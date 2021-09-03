@@ -371,18 +371,22 @@ class Configuration extends ModelTenant
      */
     public function getCollectionData() {
         $company = Company::first();
-        // $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
-        $establishment =   auth()->user()->establishment;
-        $establishment_id = auth()->user()->establishment_id;
+        /** @var User $user */
+        $user = new User();
+        if(\Auth::user()) {
+            $user = auth()->user();
+        }
+        $establishment =   $user->establishment;
+        $establishment_id = $user->establishment_id;
+        $serie = $user->series_id;
+        $document_id = $user->document_id;
+        $typeUser = $user->type;
+        $unit_type_id = 'KGM'; //Unidad de medida por defecto
         $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
         if($warehouse == null){
              $warehouse = new Warehouse();
         }
         $currency = CurrencyType::all();
-        $typeUser = '';
-        if(\Auth::user()){
-            $typeUser = \Auth::user()->type;
-        }
         return [
             'id' => $this->id,
             'company' => $company,
@@ -437,6 +441,12 @@ class Configuration extends ModelTenant
             'currency_types' => $currency,
             'affectation_igv_types_exonerated_unaffected' => Item::AffectationIgvTypesExoneratedUnaffected(),
             'typeUser'=>$typeUser,
+            'unit_type_id'=>$unit_type_id,
+            'user'=>[
+                'serie'=>$serie,
+                'document_id'=>$document_id,
+                'type'=>$typeUser,
+            ],
 
         ];
     }

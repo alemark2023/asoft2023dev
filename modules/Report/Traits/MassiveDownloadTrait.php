@@ -453,8 +453,7 @@ trait MassiveDownloadTrait
             */
             $start = isset($array['date_start']) ? "-".$array['date_start'] : '';
             $end = isset($array['date_end']) ? "-".$array['date_end'] : '';
-            $name_file = "massive_downloads$start$end.".microtime(true)."";
-             return  $pdfj->Output('D',$name_file.".pdf");
+             return  $pdfj->Output('S');
 
             $path = $name_file. '.zip';
             $zip_file = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, storage_path('app/public/temp_pdf/' . $path));

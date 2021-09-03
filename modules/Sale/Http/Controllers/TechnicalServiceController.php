@@ -22,6 +22,12 @@ use Mpdf\Config\FontVariables;
 use Exception;
 use Modules\Sale\Models\TechnicalService;
 
+/**
+ * Class TechnicalServiceController
+ *
+ * @package Modules\Sale\Http\Controllers
+ * @mixin Controller
+ */
 class TechnicalServiceController extends Controller
 {
     use StorageDocument;
@@ -177,21 +183,8 @@ class TechnicalServiceController extends Controller
 
     public function searchCustomerById($id)
     {
+        return $this->searchClientById($id);
 
-        $customers = Person::whereType('customers')
-            ->where('id', $id)
-            ->get()->transform(function ($row) {
-                return [
-                    'id' => $row->id,
-                    'description' => $row->number . ' - ' . $row->name,
-                    'name' => $row->name,
-                    'number' => $row->number,
-                    'identity_document_type_id' => $row->identity_document_type_id,
-                    'identity_document_type_code' => $row->identity_document_type->code
-                ];
-            });
-
-        return compact('customers');
     }
 
 

@@ -74,9 +74,7 @@ class ReportMassiveDownloadController extends Controller
 
         $data = $this->getData($document_types, $params);
         $view =  $this->createPdf($data,$height,$array);
-        if($height == 80 || $height == 'ticket' || $height == 'ticket_58'  ){
-            return $view;
-        }
+
         return $this->toPrintByView('massive_downloads',$view);
 
     }

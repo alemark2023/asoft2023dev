@@ -10,8 +10,10 @@ use App\Http\Resources\Tenant\DispatchCollection;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\Country;
 use App\Models\Tenant\Catalogs\Department;
+use App\Models\Tenant\Catalogs\District;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
+use App\Models\Tenant\Catalogs\Province;
 use App\Models\Tenant\Catalogs\TransferReasonType;
 use App\Models\Tenant\Catalogs\TransportModeType;
 use App\Models\Tenant\Catalogs\UnitType;
@@ -40,9 +42,17 @@ use Modules\Order\Models\Dispatcher;
 use Modules\Order\Models\Driver;
 use Modules\Order\Models\OrderNote;
 
+/**
+ * Class DispatchController
+ *
+ * @package App\Http\Controllers\Tenant
+ * @mixin Controller
+ */
 class DispatchController extends Controller
 {
-    use StorageDocument, FinanceTrait, SearchTrait;
+    use FinanceTrait;
+    use SearchTrait;
+    use StorageDocument;
 
     public function __construct()
     {
@@ -63,7 +73,7 @@ class DispatchController extends Controller
     }
 
     public function records(Request $request)
-    { 
+    {
         $records = $this->getRecords($request);
 
         return new DispatchCollection($records->paginate(config('tenant.items_per_page')));
@@ -97,7 +107,7 @@ class DispatchController extends Controller
 
     }
 
-    
+
     public function data_table()
     {
         $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
@@ -338,6 +348,9 @@ class DispatchController extends Controller
 
         $locations = [];
         $departments = Department::whereActive()->get();
+        /** @var Department $department */
+        /** @var Province $province */
+        /** @var District $district */
         foreach ($departments as $department) {
             $children_provinces = [];
             foreach ($department->provinces as $province) {
@@ -345,7 +358,7 @@ class DispatchController extends Controller
                 foreach ($province->districts as $district) {
                     $children_districts[] = [
                         'value' => $district->id,
-                        'label' => $district->description
+                        'label' => $district->id." - ".$district->description
                     ];
                 }
                 $children_provinces[] = [

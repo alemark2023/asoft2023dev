@@ -814,7 +814,10 @@ class Item extends ModelTenant
             'CatItemPackageMeasurement' => $ItemPackageMeasurement,
             'CatItemStatus' => $ItemStatus,
             'CatItemUnitBusiness' => $ItemUnitBusiness,
-            'item_unit_types'                  => collect($realtion_item_unit_types)->transform(function ($item_unit_types) {
+            'item_unit_types'                  => $this->item_unit_types->transform(function ($item_unit_types) {
+                if(is_array($item_unit_types)){
+                    return $item_unit_types;
+                }
                 return [
                     'id'            => $item_unit_types->id,
                     'description'   => "{$item_unit_types->description}",

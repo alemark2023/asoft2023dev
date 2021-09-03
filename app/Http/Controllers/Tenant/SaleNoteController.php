@@ -1155,21 +1155,8 @@ class SaleNoteController extends Controller
 
     public function searchCustomerById($id)
     {
+        return $this->searchClientById($id);
 
-        $customers = Person::whereType('customers')
-                    ->where('id',$id)
-                    ->get()->transform(function($row) {
-                        return [
-                            'id' => $row->id,
-                            'description' => $row->number.' - '.$row->name,
-                            'name' => $row->name,
-                            'number' => $row->number,
-                            'identity_document_type_id' => $row->identity_document_type_id,
-                            'identity_document_type_code' => $row->identity_document_type->code
-                        ];
-                    });
-
-        return compact('customers');
     }
 
     public function option_tables()
