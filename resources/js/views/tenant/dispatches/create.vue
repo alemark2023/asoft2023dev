@@ -564,10 +564,23 @@
 import PersonForm from '../persons/form.vue';
 import Items from './items.vue';
 import DispatchOptions from './partials/options.vue'
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
-    props: ['order_form_id'],
-    components: {PersonForm, Items, DispatchOptions,},
+    props: [
+        'order_form_id',
+        'configuration',
+    ],
+    components: {
+        PersonForm,
+        Items,
+        DispatchOptions,
+    },
+    computed:{
+        ...mapState([
+            'config',
+        ]),
+    },
     data() {
         return {
             showDialogOptions: false,
@@ -577,7 +590,6 @@ export default {
             transferReasonTypes: [],
             transportModeTypes: [],
             resource: 'dispatches',
-            establishment_id: null,
             loading_submit: false,
             provincesDelivery: [],
             districtsDelivery: [],
@@ -590,7 +602,8 @@ export default {
             drivers: [],
             driver: null,
             dispachers: [],
-            dispacher: null, countries: [],
+            dispacher: null,
+            countries: [],
             seriesAll: [],
             unitTypes: [],
             customers: [],
@@ -611,6 +624,40 @@ export default {
                     number: null,
                     name: null,
                     identity_document_type_id: null,
+                },
+                establishment_id: null,
+                document_type_id: '09',
+                series_id: null,
+                number: '#',
+                date_of_issue: moment().format('YYYY-MM-DD'),
+                time_of_issue: moment().format('HH:mm:ss'),
+                date_of_shipping: moment().format('YYYY-MM-DD'),
+                customer_id: null,
+                observations: '',
+                transport_mode_type_id: null,
+                transfer_reason_type_id: null,
+                transfer_reason_description: null,
+                transshipment_indicator: false,
+                port_code: null,
+                unit_type_id: null,
+                total_weight: 0,
+                packages_number: null,
+                container_number: null,
+                delivery: {
+                    country_id: 'PE',
+                    location_id: [],
+                    address: null,
+                },
+                origin: {
+                    country_id: 'PE',
+                    location_id: [],
+                    address: null,
+                },
+                items: [],
+                reference_order_form_id: null,
+                license_plate: null,
+                secondary_license_plates: {
+                    semitrailer: null
                 }
             },
             recordId: null,
@@ -618,17 +665,20 @@ export default {
             customerAddresses: [],
         }
     },
-    async created() {
+    created(){
+        this.loadConfiguration()
+        this.$store.commit('setConfiguration', this.configuration)
+    },
+    mounted() {
         // this.clean();
-        await this.initForm()
-
+        this.initForm()
         const itemsFromSummary = localStorage.getItem('items');
         const payload = {}
         if (itemsFromSummary) {
             const items = JSON.parse(itemsFromSummary);
             payload.itemIds = items.map(i => i.id);
         }
-        await this.$http.post(`/${this.resource}/tables`, payload).then(response => {
+         this.$http.post(`/${this.resource}/tables`, payload).then(response => {
             this.company = response.data.company;
             this.identityDocumentTypes = response.data.identityDocumentTypes;
             this.transferReasonTypes = response.data.transferReasonTypes;
@@ -647,17 +697,23 @@ export default {
             if (itemsFromSummary) {
                 this.onLoadItemsFromSummary(response.data.itemsFromSummary, JSON.parse(itemsFromSummary));
             }
-        });
+             this.setDefaultSerie();
+         });
 
-        await this.setDefaultCustomer()
+         this.setDefaultCustomer()
 
-        await this.createFromOrderForm()
+         this.createFromOrderForm()
 
         this.$eventHub.$on('reloadDataPersons', (customer_id) => {
             this.reloadDataCustomers(customer_id)
         })
     },
     methods: {
+
+        ...mapActions([
+            'loadConfiguration',
+            'getCurrentCurrency',
+        ]),
         reloadDataCustomers(customer_id) {
             this.$http.get(`/documents/search/customer/${customer_id}`).then((response) => {
                 this.customers = response.data.customers
@@ -720,6 +776,7 @@ export default {
             localStorage.removeItem('items');
         },
         setDefaultCustomer() {
+            /*
 
             let customer = _.find(this.customers, {number: this.company.number})
 
@@ -727,6 +784,25 @@ export default {
                 this.form.customer_id = customer.id
             }
 
+            */
+            if (this.config.establishment.customer_id) {
+                let temp_customers = this.customers;
+                this.$http.get(`/${this.resource}/search/customer/${this.config.establishment.customer_id}`).then((response) => {
+                    let data_customer = response.data.customers
+                    temp_customers = temp_customers.push(...data_customer)
+                })
+
+                temp_customers = this.customers.filter((item, index, self) =>
+                    index === self.findIndex((t) => (
+                        t.id === item.id
+                    ))
+                )
+                this.customers = temp_customers;
+                let alt = _.find(this.customers, {'id': this.config.establishment.customer_id});
+                if (alt !== undefined) {
+                    this.form.customer_id = this.config.establishment.customer_id
+                }
+            }
         },
         createFromOrderForm() {
 
@@ -783,26 +859,43 @@ export default {
 
             }
         },
+        setDefaultSerie(){
+            let series_id = parseInt(this.config.user.serie);
+            if(isNaN(series_id)) series_id = null;
+            let searchSerie = _.filter(this.seriesAll, {
+                'establishment_id': this.form.establishment_id,
+                'document_type_id': this.form.document_type_id,
+                'id': series_id
+            });
+            if(searchSerie !== undefined && searchSerie.length > 0){
+                console.error(searchSerie)
+                this.form.series_id=series_id;
+            }
+        },
         initForm() {
             this.errors = {}
+            let customer_id = parseInt(this.config.establishment.customer_id);
+            let establishment_id = parseInt(this.config.establishment.id);
+            if(isNaN(customer_id)) customer_id = null;
+            if(isNaN(establishment_id)) establishment_id = null;
             this.form = {
-                establishment_id: null,
+                establishment_id: establishment_id,
                 document_type_id: '09',
                 series_id: null,
                 number: '#',
                 date_of_issue: moment().format('YYYY-MM-DD'),
                 time_of_issue: moment().format('HH:mm:ss'),
                 date_of_shipping: moment().format('YYYY-MM-DD'),
-                customer_id: null,
+                customer_id: customer_id,
                 observations: '',
                 transport_mode_type_id: null,
                 transfer_reason_type_id: null,
                 transfer_reason_description: null,
                 transshipment_indicator: false,
                 port_code: null,
-                unit_type_id: null,
-                total_weight: 0,
-                packages_number: null,
+                unit_type_id: this.config.unit_type_id,
+                total_weight: 1,
+                packages_number: 1,
                 container_number: null,
                 dispatcher: {
                     identity_document_type_id: null
@@ -832,6 +925,7 @@ export default {
                 }
 
             }
+            this.setDefaultSerie();
         },
         changeEstablishment() {
             this.series = _.filter(this.seriesAll, {
@@ -840,7 +934,6 @@ export default {
             });
 
             this.code = this.form.establishment_id;
-            this.establishment_id = this.form.establishment_id;
         },
         filterProvince(origin = true) {
             if (origin) {
