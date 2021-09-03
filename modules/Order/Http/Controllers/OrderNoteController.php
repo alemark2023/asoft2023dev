@@ -315,9 +315,11 @@ class OrderNoteController extends Controller
 
         DB::connection('tenant')->transaction(function () use ($request) {
 
-            $data = $this->mergeData($request);
-
+            
             $this->order_note = OrderNote::firstOrNew(['id' => $request['id']]);
+
+            $data = $this->mergeData($request, $this->order_note);
+
             $this->order_note->fill($data);
             //$this->order_note->items()->delete();
 
@@ -403,13 +405,13 @@ class OrderNoteController extends Controller
         ];
     }
 
-    public function mergeData($inputs)
+    public function mergeData($inputs, $order_note = null)
     {
 
         $this->company = Company::active();
 
         $values = [
-            'user_id' => auth()->id(),
+            'user_id' => ($order_note) ? $order_note->user_id : auth()->id(),
             'external_id' => Str::uuid()->toString(),
             'customer' => PersonInput::set($inputs['customer_id']),
             'establishment' => EstablishmentInput::set($inputs['establishment_id']),
