@@ -1,14 +1,25 @@
 <template>
     <el-dialog   :title="titleDialog" :visible="showDialog" :close-on-click-modal="true" @close="close" @open="create" append-to-body top="7vh" width="30%">
-        <Keypress key-event="keyup" :key-code="87" @success="handleUp87" />
-        <Keypress key-event="keyup" :key-code="83" @success="handleDown83" />
-        <Keypress key-event="keyup" :key-code="68" @success="handleSetPrice68" />
+        <Keypress key-event="keyup" :key-code="119" @success="handleUp119" />
+        <Keypress key-event="keyup" :key-code="120" @success="handleDown120" />
+        <Keypress key-event="keyup" :key-code="115" @success="handleSetPrice115" />
 
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-12">     
- 
+                        <label class="control-label">Información de atajos
+                            <el-tooltip class="item" effect="dark" placement="top-start">
+                                <i class="fa fa-info-circle"></i>
+                                <div slot="content">
+                                    <strong>DESPLAZARSE ARRIBA DE LA LISTA - TECLA F8 </strong><br/><br/>
+                                    <strong>DESPLAZARSE ABAJO DE LA LISTA - TECLA F9 </strong><br/><br/>
+                                    <strong>SELECCIONAR UN ELEMENTO DE LA LISTA (PRECIO) - TECLA F4 </strong><br/><br/>
+                                </div>
+                            </el-tooltip>
+                        </label>
+                    </div> 
+                    <div class="col-md-12">     
                         <el-table
                             ref="tableItemUnitTypes"
                             :data="itemUnitTypes"
@@ -50,7 +61,7 @@
              
         },
         methods: {   
-            handleSetPrice68(){
+            handleSetPrice115(){
 
                 if(!this.currentRow){
                     return this.$message.warning('No ha seleccionado un precio')
@@ -58,7 +69,7 @@
 
                 this.selectedPrice()
             },
-            handleDown83() {
+            handleDown120() {
                 
                 this.currentIndex += 1;
 
@@ -70,7 +81,7 @@
                 }
 
             },
-            handleUp87() { 
+            handleUp119() { 
 
                 if (this.currentIndex == 0) {
                     return;

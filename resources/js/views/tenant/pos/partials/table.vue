@@ -3,7 +3,7 @@
         <Keypress key-event="keyup" :key-code="40" @success="handle40" />
         <Keypress key-event="keyup" :key-code="38" @success="handle38" />
         <Keypress key-event="keyup" :key-code="13" @success="handle13" />
-        <Keypress key-event="keyup" :key-code="81" @success="openTableListPrices81" />
+        <Keypress key-event="keyup" :key-code="113" @success="openTableListPrices113" />
 
         <el-table
             ref="singleTable"
@@ -262,7 +262,7 @@ export default {
             this.$message.success("Precio seleccionado");
             
         },
-        openTableListPrices81(){
+        openTableListPrices113(){
             
             if(this.config.select_available_price_list){
 
