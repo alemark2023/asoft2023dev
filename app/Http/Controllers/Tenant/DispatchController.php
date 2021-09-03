@@ -40,9 +40,17 @@ use Modules\Order\Models\Dispatcher;
 use Modules\Order\Models\Driver;
 use Modules\Order\Models\OrderNote;
 
+/**
+ * Class DispatchController
+ *
+ * @package App\Http\Controllers\Tenant
+ * @mixin Controller
+ */
 class DispatchController extends Controller
 {
-    use StorageDocument, FinanceTrait, SearchTrait;
+    use FinanceTrait;
+    use SearchTrait;
+    use StorageDocument;
 
     public function __construct()
     {
@@ -63,7 +71,7 @@ class DispatchController extends Controller
     }
 
     public function records(Request $request)
-    { 
+    {
         $records = $this->getRecords($request);
 
         return new DispatchCollection($records->paginate(config('tenant.items_per_page')));
@@ -97,7 +105,7 @@ class DispatchController extends Controller
 
     }
 
-    
+
     public function data_table()
     {
         $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
