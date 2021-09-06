@@ -697,7 +697,7 @@ export default {
             if (itemsFromSummary) {
                 this.onLoadItemsFromSummary(response.data.itemsFromSummary, JSON.parse(itemsFromSummary));
             }
-             this.setDefaultSerie();
+            this.changeEstablishment()
          });
 
          this.setDefaultCustomer()
@@ -712,7 +712,6 @@ export default {
 
         ...mapActions([
             'loadConfiguration',
-            'getCurrentCurrency',
         ]),
         reloadDataCustomers(customer_id) {
             this.$http.get(`/documents/search/customer/${customer_id}`).then((response) => {
@@ -862,13 +861,12 @@ export default {
         setDefaultSerie(){
             let series_id = parseInt(this.config.user.serie);
             if(isNaN(series_id)) series_id = null;
-            let searchSerie = _.filter(this.seriesAll, {
+            let searchSerie = _.filter(this.series, {
                 'establishment_id': this.form.establishment_id,
                 'document_type_id': this.form.document_type_id,
                 'id': series_id
             });
             if(searchSerie !== undefined && searchSerie.length > 0){
-                console.error(searchSerie)
                 this.form.series_id=series_id;
             }
         },
@@ -925,7 +923,8 @@ export default {
                 }
 
             }
-            this.setDefaultSerie();
+            this.changeEstablishment();
+
         },
         changeEstablishment() {
             this.series = _.filter(this.seriesAll, {
@@ -934,6 +933,9 @@ export default {
             });
 
             this.code = this.form.establishment_id;
+            this.form.series_id = null;
+            this.setDefaultSerie();
+
         },
         filterProvince(origin = true) {
             if (origin) {
