@@ -446,6 +446,14 @@
         <td class="text-center desc">Código Hash: {{ $document->hash }}</td>
     </tr>
 
+    @if($document->payment_condition_id)
+    <tr>
+        <td class="desc pt-5">
+            <strong>CONDICIÓN DE PAGO: {{ $document->payment_condition->name }} </strong>
+        </td>
+    </tr>
+    @endif
+    
     @if($document->payment_method_type_id)
         <tr>
             <td class="desc pt-5">

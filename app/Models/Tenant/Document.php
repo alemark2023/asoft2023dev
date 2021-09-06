@@ -615,6 +615,14 @@ class Document extends ModelTenant
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function payment_condition()
+    {
+        return $this->belongsTo(PaymentCondition::class);
+    }
+    
+    /**
      * @param $value
      *
      * @return bool

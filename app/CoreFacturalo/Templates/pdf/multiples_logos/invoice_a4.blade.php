@@ -613,6 +613,16 @@
         </td>
     </tr>
 </table>
+ 
+@if($document->payment_condition_id)
+<table class="full-width">
+    <tr>
+        <td>
+            <strong>CONDICIÓN DE PAGO: {{ $document->payment_condition->name }} </strong>
+        </td>
+    </tr>
+</table>
+@endif
 
 @if($document->payment_method_type_id)
     <table class="full-width">
