@@ -147,6 +147,7 @@ class PurchaseController extends Controller
             'data' => [
                 'id' => $purchase->id,
                 'number_full' => "{$purchase->series}-{$purchase->number}",
+                'external_id' => $purchase->external_id,
             ],
         ];
     }
