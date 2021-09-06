@@ -1832,8 +1832,11 @@ export default {
                 await this.$http
                     .get(`/${this.resource}/search_items_cat?${parameters}`)
                     .then(response => {
+
+                        this.all_items = response.data.data;
+
                         if (response.data.data.length > 0) {
-                            this.all_items = response.data.data;
+                            // this.all_items = response.data.data;
                             this.filterItems();
                             this.pagination = response.data.meta;
                             this.pagination.per_page = parseInt(
