@@ -38,4 +38,15 @@ class DocumentXmlService
         return $allowance_total_amount;
     }
 
+    public function getItemsDiscountsNoBase($document)
+    { 
+
+        return $document->items->sum(function($row){
+            return $row->discounts ? collect($row->discounts)->sum(function($discount){
+                return $discount->discount_type_id == '01' ? $discount->amount : 0;
+            }) : 0;
+        });
+
+    }
+
 }
