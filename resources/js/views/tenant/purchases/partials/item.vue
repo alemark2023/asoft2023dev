@@ -126,6 +126,7 @@
                             </div>
                             <el-checkbox v-model="form.update_purchase_price">Actualizar precio de compra</el-checkbox>
                             <el-checkbox v-model="form.update_price">Editar precio de venta</el-checkbox>
+                            <el-checkbox v-show="!isLotEnabled" v-model="form.update_date_of_due">Asignar Fecha de vencimiento</el-checkbox>
                         </div>
                         <div v-if="form.update_price"
                              class="col-md-2">
@@ -143,6 +144,31 @@
                                 <small v-if="errors.sale_unit_price"
                                        class="form-control-feedback"
                                        v-text="errors.sale_unit_price[0]"></small>
+                            </div>
+                        </div>
+                        <div v-if="canSetDateOfDue && !isLotEnabled"
+                             class="col-md-2">
+                            <div :class="{'has-danger': errors.date_of_due}"
+                                 class="form-group">
+                                <label class="control-label">Fecha de Ven Gen
+                                    <el-tooltip class="item"
+                                                content="Fecha de vencimiento general del item. No aplica a lotes."
+                                                effect="dark"
+                                                placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <el-date-picker
+                                    v-model="date_of_due"
+                                    :picker-options="datEmision"
+                                    type="date"
+                                    value-format="yyyy-MM-dd"
+                                    :clearable="false"
+                                ></el-date-picker>
+
+                                <small v-if="errors.date_of_due"
+                                       class="form-control-feedback"
+                                       v-text="errors.date_of_due[0]"></small>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -527,6 +553,7 @@ import LotsForm from '@components/incomeLots.vue'
 import Keypress from "vue-keypress";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+import moment from "moment";
 
 export default {
     props: [
@@ -544,12 +571,40 @@ export default {
                 return this.form.update_price
             }
             return false;
-        }
+        },
+        canSetDateOfDue(){
+            if (this.form && this.form.update_date_of_due !== undefined) {
+                return this.form.update_date_of_due
+            }
+            return false;
+        },
+        isLotEnabled(){
+            if(this.form){
+                let form = this.form;
+                if(
+                    form &&
+                    form.item &&
+                    form.item.lots_enabled
+                ){
+                    // this.date_of_due = null;
+                    this.form.update_date_of_due = false;
+                    return form.item.lots_enabled;
+                }
+            }
+
+            return false;
+        },
     },
     data() {
         return {
+            datEmision: {
+                disabledDate(time) {
+                    return time.getTime() < moment();
+                }
+            },
             search_item_by_barcode: false,
             sale_unit_price: 0,
+            date_of_due: null,
             loading_search: false,
             titleDialog: 'Agregar Producto o Servicio',
             showDialogLots: false,
@@ -695,6 +750,7 @@ export default {
                 date_of_due: null,
                 purchase_has_igv: null,
                 update_price: false,
+                update_date_of_due: false,
                 update_purchase_price: true,
             }
 
@@ -774,6 +830,7 @@ export default {
             this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
             this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
             this.prices = this.form.item_unit_types;
+            this.date_of_due = this.form.date_of_due;
             this.form.purchase_has_igv = this.form.item.purchase_has_igv;
 
         },
@@ -787,6 +844,7 @@ export default {
             this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
             this.form.item_unit_types = item.item_unit_types
             this.prices = this.form.item_unit_types;
+            this.date_of_due = this.form.date_of_due;
             this.form.purchase_has_igv = this.form.item.purchase_has_igv;
             this.search_item_by_barcode = 0;
         },
@@ -818,6 +876,9 @@ export default {
             }
 
             let date_of_due = this.form.date_of_due
+            if(this.date_of_due != null && this.form.update_date_of_due && !this.form.item.lots_enabled ){
+                date_of_due =this.date_of_due;
+            }
 
             this.form.item.unit_price = unit_price
             this.form.item.presentation = this.item_unit_type;
@@ -826,6 +887,7 @@ export default {
             this.row.lot_code = await this.lot_code
             this.row.lots = await this.lots
             this.row.update_price = this.form.update_price
+            this.row.update_date_of_due = this.form.update_date_of_due
             this.row.update_purchase_price = this.form.update_purchase_price
             this.row.sale_unit_price = this.sale_unit_price
 
