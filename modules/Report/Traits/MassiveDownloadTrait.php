@@ -362,6 +362,10 @@ trait MassiveDownloadTrait
             $width = ($format_pdf === 'ticket_58') ? 56 : 78;
 
             if (config('tenant.enabled_template_ticket_80')) $width = 76;
+            $pdf_margin_top = 5;
+            $pdf_margin_right = 1;
+            $pdf_margin_bottom = 5;
+            $pdf_margin_left = 1;
 
             $pdf_data = [
 
@@ -631,7 +635,7 @@ trait MassiveDownloadTrait
         $total_taxed = $document->total_taxed != '' ? 10 : 0;
         $bank_accounts = BankAccount::count() * 6;
 
-        $base_h = ($type == 'sale_note') ? 60 : 150;
+        $base_h = ($type == 'sale_note') ? 60 : 120;
         $height =
             $base_h
             + $company_logo
