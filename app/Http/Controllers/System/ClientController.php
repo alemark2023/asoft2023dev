@@ -99,6 +99,7 @@ class ClientController extends Controller
             $quantity_pending_documents = $this->getQuantityPendingDocuments();
             $row->document_regularize_shipping = $quantity_pending_documents['document_regularize_shipping'];
             $row->document_not_sent = $quantity_pending_documents['document_not_sent'];
+            $row->document_to_be_canceled = $quantity_pending_documents['document_to_be_canceled'];
 
             if($row->start_billing_cycle)
             {
@@ -132,6 +133,7 @@ class ClientController extends Controller
         return [
             'document_regularize_shipping' => DB::connection('tenant')->table('documents')->where('state_type_id', '01')->where('regularize_shipping', true)->count(),
             'document_not_sent' => DB::connection('tenant')->table('documents')->whereIn('state_type_id', ['01','03'])->where('date_of_issue','<=',date('Y-m-d'))->count(),
+            'document_to_be_canceled' => DB::connection('tenant')->table('documents')->where('state_type_id', '13')->count(),
         ];
 
     }
