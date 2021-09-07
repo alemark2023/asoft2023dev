@@ -395,12 +395,35 @@
                     </template>
                 </div>
             </div>
-            <div class="form-actions text-right pt-2">
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Mostrar en cel -->
+
+            <div class="row hidden-md-up form-actions text-center">
+                <div class="col-12">
+                &nbsp;
+                </div>
+                <div class="col-6">
+                    <el-button class="form-control" @click.prevent="close()">Cerrar</el-button>
+                </div>
+                <div class="col-6">
+                    <el-button v-if="form.item_id" class="add form-control btn btn-primary" native-type="submit" type="primary">
+                        {{ titleAction }}
+                    </el-button>
+                </div>
+            </div>
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Mostrar en cel -->
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Ocultar en cel -->
+
+            <div class="form-actions text-right pt-2  hidden-sm-down">
                 <el-button @click.prevent="close()">Cerrar</el-button>
                 <el-button v-if="form.item_id" class="add" native-type="submit" type="primary">
                     {{ titleAction }}
                 </el-button>
             </div>
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Ocultar en cel -->
         </form>
         <item-form :external="true"
                    :showDialog.sync="showDialogNewItem"></item-form>
