@@ -122,6 +122,9 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     // })
     if (row.discounts.length > 0) {
         row.discounts.forEach((discount, index) => {
+
+            let affectation_igv_type_exonerated = ['20', '21', '30', '31', '32', '33', '34', '35', '36', '37']
+
             if (discount.is_amount) {
                 if (discount.discount_type.base) {
 
@@ -140,7 +143,6 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
                 } else {
 
                     let aux_total_line = row.unit_price * row.quantity
-                    let affectation_igv_type_exonerated = ['20', '21', '30', '31', '32', '33', '34', '35', '36', '37']
 
                     if (!affectation_igv_type_exonerated.includes(row.affectation_igv_type_id)) {
                         total_value_partial = (aux_total_line - discount.percentage) / (1 + percentage_igv / 100)
@@ -162,14 +164,32 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
             } else {
 
-                discount.percentage = parseFloat(discount.percentage)
-                discount.factor = discount.percentage / 100
-                discount.base = _.round(total_value_partial, 2)
-                discount.amount = _.round(discount.base * discount.factor, 2)
                 if (discount.discount_type.base) {
-                    discount_base += discount.amount
-                } else {
-                    discount_no_base += discount.amount
+
+                    discount.percentage = parseFloat(discount.percentage)
+                    discount.factor = discount.percentage / 100
+                    discount.base = _.round(total_value_partial, 2)
+                    discount.amount = _.round(discount.base * discount.factor, 2)
+                    // if (discount.discount_type.base) {
+                        discount_base += discount.amount
+                    // } else {
+                    //     discount_no_base += discount.amount
+                    // }
+
+                }else{
+
+                    let aux_total_line = row.unit_price * row.quantity
+                    discount.factor = _.round(discount.percentage / 100, 5)
+                    discount.amount = _.round(aux_total_line * discount.factor, 2)
+
+                    if (!affectation_igv_type_exonerated.includes(row.affectation_igv_type_id)) {
+                        total_value_partial = (aux_total_line - discount.amount) / (1 + percentage_igv / 100)
+                    } else {
+                        total_value_partial = aux_total_line - discount.amount
+                    }
+
+                    discount.base = _.round(aux_total_line, 2)
+
                 }
 
             }
