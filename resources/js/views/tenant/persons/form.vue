@@ -358,7 +358,7 @@
 
 
                                     <el-button
-                                        v-if="temp_email != null && temp_email.length > 1"
+                                        v-if="temp_email != null && temp_email.length > 1 && checkEmail() == true"
                                         icon="el-icon-plus"
                                         size="mini"
                                         @click.prevent="clickAddMail()">
@@ -700,7 +700,10 @@ export default {
                         }
                         this.filterProvinces()
                         this.filterDistricts()
-                    })
+                    }).then(()=>{
+                    this.updateEmail()
+
+                })
             }
         },
         clickAddAddress() {
@@ -752,27 +755,22 @@ export default {
                         if (tem === undefined) {
                             return true;
                         } else {
-                            this.errors.temp_email = "Correo ya registrado"
+                            // this.errors.temp_email = "Correo ya registrado"
                         }
                     }
                 }else{
-                    this.errors.temp_email = "No es un correo valido"
+                    // this.errors.temp_email = "No es un correo valido"
                 }
             return false;
 
         },
         clickAddMail() {
-            // aqui  iria un modal para ingresar un correo
             if(this.form.optional_email === undefined) this.form.optional_email = []
-
-            let valio = this.checkEmail();
-
-            if(valio === true){
+            if(this.checkEmail() === true){
                 let email = this.temp_email;
                 this.form.optional_email.push(
                     {email: email,}
                 )
-
                 this.updateEmail()
                 this.temp_email = null;
             }

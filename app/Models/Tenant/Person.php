@@ -214,7 +214,7 @@ class Person extends ModelTenant
         }
         $total_optional_mail =  count($optional_mail);
         for($i = 0; $i < $total_optional_mail;$i++){
-            $temp =  $optional_mail[$i]['email'] ;
+            $temp =  trim($optional_mail[$i]['email']) ;
             if(!empty($temp) && $temp != $this->email) {
                 $optional_mail_send[] = $temp;
             }
