@@ -19,6 +19,8 @@
     $total_payment = $document->payments->sum('payment');
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
+    $document_xml_service = new Modules\Document\Services\DocumentXmlService;
+    $has_discounts_no_base = $document_xml_service->hasDiscountsNoBase($document);
 @endphp
 <html>
 <head>
@@ -512,10 +514,22 @@
             </tr>
         @endif
 
+        @if($has_discounts_no_base)
+        <tr>
+            <td colspan="4" class="text-right font-bold desc">TOTAL: {{ $document->currency_type->symbol }}</td>
+            <td class="text-right font-bold desc">{{ number_format($document->total, 2) }}</td>
+        </tr>
+        <tr>
+            <td colspan="4" class="text-right font-bold desc">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
+            <td class="text-right font-bold desc">{{ number_format($document->total_payable_amount, 2) }}</td>
+        </tr>
+        @else
         <tr>
             <td colspan="4" class="text-right font-bold desc">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold desc">{{ number_format($document->total, 2) }}</td>
         </tr>
+        @endif
+         
         @if($balance < 0)
            <tr>
                <td colspan="4" class="text-right font-bold desc">VUELTO: {{ $document->currency_type->symbol }}</td>

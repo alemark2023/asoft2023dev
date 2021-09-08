@@ -51,6 +51,7 @@ class DocumentUpdateInput
 			$data_json = Functions::valueKeyInArray($inputs, 'data_json');
 		}
 
+
 		return [
 			'id'                        => $inputs['id'],
 			'type'                      => $inputs['type'],
@@ -93,6 +94,7 @@ class DocumentUpdateInput
 			'total_value'               => $inputs['total_value'],
 			'total_perception'          => $inputs['total_perception'] ?? 0,
 			'total'                     => $inputs['total'],
+            'total_payable_amount'      => (Functions::valueKeyInArray($inputs, 'total_payable_amount')) ? $inputs['total_payable_amount'] : $inputs['total'],
 			'has_prepayment'            => Functions::valueKeyInArray($inputs, 'has_prepayment', 0),
 			'items'                     => self::items($inputs),
 			'charges'                   => self::charges($inputs),

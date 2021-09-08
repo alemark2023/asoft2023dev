@@ -103,12 +103,12 @@
                 <div class="row m-0 p-0 h-25 d-flex align-items-center">
                     <div class="col-sm-6 py-2">
                         <p class="font-weight-semibold mb-0 text-white">TOTAL</p>
+                        <p class="font-weight-semibold mb-0 text-white" v-if="enabled_discount && form.total_payable_amount">TOTAL A PAGAR</p>
                     </div>
-                    <div class="col-sm-6 py-2 text-right">
-                        <h4 class="font-weight-semibold mb-0 text-white">{{ currencyTypeActive.symbol }} {{
-                                form.total
-                                                                         }}</h4>
-                    </div>
+                    <div class="col-sm-6 py-2 text-right"> 
+                        <h4 class="font-weight-semibold mb-0 text-white">{{ currencyTypeActive.symbol }} {{form.total}}</h4>
+                        <h4 class="font-weight-semibold mb-0 text-white" v-if="enabled_discount && form.total_payable_amount">{{ currencyTypeActive.symbol }} {{form.total_payable_amount}}</h4>
+                    </div> 
                 </div>
                 <div class="row m-0 p-0 h-25 d-flex align-items-center bg-white">
                     <div class="col-lg-6">
@@ -163,7 +163,12 @@
 
                         <div class="card-body text-center">
                             <p class="my-0"><small>Monto a cobrar</small></p>
-                            <h1 class="mb-2 mt-0">{{ currencyTypeActive.symbol }} {{ form.total }}</h1>
+                            <template v-if="enabled_discount && form.total_payable_amount">
+                                <h1 class="mb-2 mt-0">{{ currencyTypeActive.symbol }} {{ form.total_payable_amount }}</h1>
+                            </template>
+                            <template v-else>
+                                <h1 class="mb-2 mt-0">{{ currencyTypeActive.symbol }} {{ form.total }}</h1>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -575,22 +580,23 @@ export default {
             if (global_discount > 0 && !discount) {
 
                 this.form.total_discount = _.round(amount, 2)
+                this.form.total_payable_amount = _.round(this.form.total - amount, 2)
 
-                this.form.total = _.round(this.form.total - amount, 2)
+                // this.form.total = _.round(this.form.total - amount, 2)
 
-                if (is_exonerated) {
+                // if (is_exonerated) {
 
-                    this.form.total_value = this.form.total
-                    this.form.total_exonerated = this.form.total_value
+                //     this.form.total_value = this.form.total
+                //     this.form.total_exonerated = this.form.total_value
 
-                } else {
+                // } else {
 
-                    this.form.total_value = _.round(this.form.total / 1.18, 2)
-                    this.form.total_taxed = this.form.total_value
+                //     this.form.total_value = _.round(this.form.total / 1.18, 2)
+                //     this.form.total_taxed = this.form.total_value
 
-                    this.form.total_igv = _.round(this.form.total_value * 0.18, 2)
-                    this.form.total_taxes = this.form.total_igv
-                }
+                //     this.form.total_igv = _.round(this.form.total_value * 0.18, 2)
+                //     this.form.total_taxes = this.form.total_igv
+                // }
 
                 this.form.discounts.push({
                     discount_type_id: '03',
@@ -600,7 +606,7 @@ export default {
                     base: base
                 })
 
-                await this.setDiscountByItem(amount, is_exonerated)
+                // await this.setDiscountByItem(amount, is_exonerated)
             }
             // else{
 
@@ -625,7 +631,8 @@ export default {
 
             // }
 
-            this.difference = this.enter_amount - this.form.total
+            // this.difference = this.enter_amount - this.form.total
+            this.difference = this.enter_amount - this.form.total_payable_amount
             // console.log(this.form.discounts)
         },
         async setDiscountByItem(amount, is_exonerated) {
@@ -633,54 +640,54 @@ export default {
             // this.form.sum_total_discount = amount
             // let discount_by_item = _.round(amount / this.form.items.length, 2)
 
-            let sum_total_items = _.sumBy(this.form.items, 'total')
+            // let sum_total_items = _.sumBy(this.form.items, 'total')
 
-            this.form.items = await this.form.items.map((item, index) => {
+            // this.form.items = await this.form.items.map((item, index) => {
 
-                if (!item.original_totals) {
-                    item.original_totals = {
-                        total: item.total,
-                        total_value: item.total_value,
-                        total_base_igv: item.total_base_igv,
-                        total_igv: item.total_igv,
-                        total_taxes: item.total_taxes,
-                        unit_price: item.unit_price,
-                        unit_value: item.unit_value,
-                        quantity: item.quantity,
-                    }
-                }
+            //     if (!item.original_totals) {
+            //         item.original_totals = {
+            //             total: item.total,
+            //             total_value: item.total_value,
+            //             total_base_igv: item.total_base_igv,
+            //             total_igv: item.total_igv,
+            //             total_taxes: item.total_taxes,
+            //             unit_price: item.unit_price,
+            //             unit_value: item.unit_value,
+            //             quantity: item.quantity,
+            //         }
+            //     }
 
-                let original_total = item.original_totals.total
+            //     let original_total = item.original_totals.total
 
-                let calc_discount_item = original_total / sum_total_items * amount
+            //     let calc_discount_item = original_total / sum_total_items * amount
 
-                // console.log(calc_discount_item)
+            //     // console.log(calc_discount_item)
 
-                if (is_exonerated || item.affectation_igv_type_id == '20') {
+            //     if (is_exonerated || item.affectation_igv_type_id == '20') {
 
-                    item.total = _.round(original_total - calc_discount_item, 2)
-                    item.total_value = item.total
-                    item.total_base_igv = item.total_value
-                    item.unit_price = item.total / item.original_totals.quantity
-                    item.unit_value = item.unit_price
+            //         item.total = _.round(original_total - calc_discount_item, 2)
+            //         item.total_value = item.total
+            //         item.total_base_igv = item.total_value
+            //         item.unit_price = item.total / item.original_totals.quantity
+            //         item.unit_value = item.unit_price
 
-                } else {
+            //     } else {
 
-                    item.total = _.round(original_total - calc_discount_item, 2)
-                    // item.total = original_total - discount_by_item
-                    item.total_value = _.round(item.total / 1.18, 2)
-                    item.total_base_igv = item.total_value
-                    item.total_igv = _.round(item.total_value * 0.18, 2)
-                    item.total_taxes = item.total_igv
-                    // let aux_total_line = item.original_totals.unit_price * item.original_totals.quantity
-                    // item.unit_price = item.original_totals.unit_price - (discount_by_item/item.original_totals.quantity)
-                    item.unit_price = item.total / item.original_totals.quantity
-                    item.unit_value = item.unit_price / 1.18
+            //         item.total = _.round(original_total - calc_discount_item, 2)
+            //         // item.total = original_total - discount_by_item
+            //         item.total_value = _.round(item.total / 1.18, 2)
+            //         item.total_base_igv = item.total_value
+            //         item.total_igv = _.round(item.total_value * 0.18, 2)
+            //         item.total_taxes = item.total_igv
+            //         // let aux_total_line = item.original_totals.unit_price * item.original_totals.quantity
+            //         // item.unit_price = item.original_totals.unit_price - (discount_by_item/item.original_totals.quantity)
+            //         item.unit_price = item.total / item.original_totals.quantity
+            //         item.unit_value = item.unit_price / 1.18
 
-                }
+            //     }
 
-                return item
-            });
+            //     return item
+            // });
 
         },
         reCalculateTotal() {
@@ -735,6 +742,7 @@ export default {
             this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
             // this.form.total = _.round(total, 2)
             this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
+            this.form.total_payable_amount = this.form.total
 
             this.discountGlobal()
 
@@ -744,12 +752,12 @@ export default {
 
             let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
             let index = this.form.discounts.indexOf(discount)
-            let is_exonerated = this.isExonerated()
+            // let is_exonerated = this.isExonerated()
 
             if (index > -1) {
                 this.form.discounts.splice(index, 1)
                 this.form.total_discount = 0
-                this.setDiscountByItem(0, is_exonerated)
+                // this.setDiscountByItem(0, is_exonerated)
             }
 
         },
@@ -847,14 +855,16 @@ export default {
             this.amount = acum_payment
             // this.amount = this.enter_amount
             // console.log(this.amount)
-            this.difference = this.amount - this.form.total
+            // this.difference = this.amount - this.form.total
+            this.difference = this.amount - (this.form.total_payable_amount ? this.form.total_payable_amount : this.form.total)
 
             if (isNaN(this.difference)) {
                 this.button_payment = true
                 this.difference = "-"
             } else if (this.difference >= 0) {
                 this.button_payment = false
-                this.difference = this.amount - this.form.total
+                // this.difference = this.amount - this.form.total
+                this.difference = this.amount - (this.form.total_payable_amount ? this.form.total_payable_amount : this.form.total)
             } else {
                 this.button_payment = true
             }
@@ -881,14 +891,16 @@ export default {
         },
         inputAmount() {
 
-            this.difference = this.amount - this.form.total
+            // this.difference = this.amount - this.form.total
+            this.difference = this.amount - (this.form.total_payable_amount ? this.form.total_payable_amount : this.form.total)
 
             if (isNaN(this.difference)) {
                 this.button_payment = true
                 this.difference = "-"
             } else if (this.difference >= 0) {
                 this.button_payment = false
-                this.difference = this.amount - this.form.total
+                // this.difference = this.amount - this.form.total
+                this.difference = this.amount - (this.form.total_payable_amount ? this.form.total_payable_amount : this.form.total)
             } else {
                 this.button_payment = true
             }
@@ -909,7 +921,9 @@ export default {
         },
         initFormPayment() {
 
-            this.difference = -this.form.total
+            // this.difference = -this.form.total
+            this.difference = -(this.form.total_payable_amount ? this.form.total_payable_amount : this.form.total)
+            
             this.form_payment = {
                 id: null,
                 date_of_payment: moment().format('YYYY-MM-DD'),
@@ -918,7 +932,8 @@ export default {
                 card_brand_id: null,
                 document_id: null,
                 sale_note_id: null,
-                payment: this.form.total,
+                // payment: this.form.total,
+                payment: (this.form.total_payable_amount ? this.form.total_payable_amount : this.form.total),
             }
 
             this.form_cash_document = {

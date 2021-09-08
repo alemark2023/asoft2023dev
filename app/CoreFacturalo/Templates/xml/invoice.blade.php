@@ -412,12 +412,14 @@
         @if($document->total_prepayment > 0)
         <cbc:PrepaidAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_prepayment }}</cbc:PrepaidAmount>
         @endif
-        @if($total_discount_no_base > 0)
+        {{-- @if($total_discount_no_base > 0)
         <cbc:PayableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total - $total_discount_no_base}}</cbc:PayableAmount>
         @else
         <cbc:PayableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total }}</cbc:PayableAmount>
+        @endif --}}
+        @if($document->total_payable_amount > 0)
+        <cbc:PayableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_payable_amount }}</cbc:PayableAmount>
         @endif
-
     </cac:LegalMonetaryTotal>
     @foreach($document->items as $row)
     <cac:InvoiceLine>

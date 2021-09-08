@@ -61,6 +61,7 @@ class DocumentInput
         }
 
         $items = self::items($inputs);
+
         return [
             'type' => $inputs['type'],
             'group_id' => $inputs['group_id'],
@@ -104,6 +105,7 @@ class DocumentInput
             'total_taxes' => $inputs['total_taxes'],
             'total_value' => $inputs['total_value'],
             'total' => $inputs['total'],
+            'total_payable_amount' => (Functions::valueKeyInArray($inputs, 'total_payable_amount')) ? $inputs['total_payable_amount'] : $inputs['total'],
             'has_prepayment' => Functions::valueKeyInArray($inputs, 'has_prepayment', 0),
             'affectation_type_prepayment' => Functions::valueKeyInArray($inputs, 'affectation_type_prepayment'),
             'was_deducted_prepayment' => Functions::valueKeyInArray($inputs, 'was_deducted_prepayment', 0),

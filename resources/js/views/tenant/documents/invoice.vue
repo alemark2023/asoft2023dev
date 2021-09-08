@@ -1705,6 +1705,7 @@ export default {
             this.form.total_value = parseFloat(data.total_value);
             this.form.total_charge = parseFloat(data.total_charge);
             this.form.total = parseFloat(data.total);
+            this.form.total_payable_amount = parseFloat(data.total_payable_amount);
             this.form.series_id = this.onSetSeriesId(data.document_type_id, data.series);
             this.form.operation_type_id = data.invoice.operation_type_id;
             this.form.terms_condition = data.terms_condition || '';
@@ -2323,6 +2324,7 @@ export default {
                 total_taxes: 0,
                 total_value: 0,
                 total: 0,
+                total_payable_amount: 0,
                 operation_type_id: null,
                 date_of_due: moment().format('YYYY-MM-DD'),
                 items: [],

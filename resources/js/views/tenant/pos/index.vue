@@ -1450,6 +1450,7 @@ export default {
                 total_taxes: 0,
                 total_value: 0,
                 total: 0,
+                total_payable_amount: 0,
                 operation_type_id: "0101",
                 date_of_due: moment().format("YYYY-MM-DD"),
                 items: [],
@@ -1765,6 +1766,7 @@ export default {
             this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
             // this.form.total = _.round(total, 2);
             this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
+            this.form.total_payable_amount = this.form.total
 
         },
         changeDateOfIssue() {
