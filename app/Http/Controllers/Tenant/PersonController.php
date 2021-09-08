@@ -77,6 +77,9 @@ class PersonController extends Controller
 
     public function store(PersonRequest $request)
     {
+
+
+
         if($request->state){
             if($request->state != "ACTIVO"){
                 return [
@@ -88,7 +91,9 @@ class PersonController extends Controller
 
         $id = $request->input('id');
         $person = Person::firstOrNew(['id' => $id]);
-        $person->fill($request->all());
+        $data = $request->all();
+        unset($data['optional_email'],$data['id']);
+        $person->fill($data);
         $person->save();
 
         $person->addresses()->delete();
@@ -98,6 +103,10 @@ class PersonController extends Controller
             $person->addresses()->updateOrCreate( ['id' => $row['id']], $row);
         }
 
+        $optional_email = $request->optional_email;
+        if(!empty($optional_email)){
+            $person->setOptionalEmailArray($optional_email)->push();
+        }
         return [
             'success' => true,
             'message' => ($id)?'Cliente editado con éxito':'Cliente registrado con éxito',
