@@ -598,8 +598,8 @@ trait MassiveDownloadTrait
     ): Mpdf
     {
         $width = 100;
-        if ($format == 'ticket') $width = 78;
-        if ($format == 'ticket_58') $width = 56;
+        if ($format_pdf == 'ticket' ||$format_pdf == 80) $width = 78;
+        if ($format_pdf == 'ticket_58') $width = 56;
         $configuration = Configuration::first();
         $company = Company::active();
         $template = new Template();
@@ -625,7 +625,7 @@ trait MassiveDownloadTrait
                 $discount_global = $discount_global + 1;
             }
         }
-        $extra_by_item_description = (($quantity_rows * 8) + $extra_by_item_description);
+        $extra_by_item_description = (($quantity_rows * 8) + 8 + $extra_by_item_description);
         $discount_global *= 3;
         $legends = $document->legends != '' ? 10 : 0;
         $total_exportation = $document->total_exportation != '' ? 10 : 0;
