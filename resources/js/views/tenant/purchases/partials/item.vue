@@ -150,7 +150,7 @@
                              class="col-md-2">
                             <div :class="{'has-danger': errors.date_of_due}"
                                  class="form-group">
-                                <label class="control-label">Fecha de Ven Gen
+                                <label class="control-label">Fec. Vencimiento
                                     <el-tooltip class="item"
                                                 content="Fecha de vencimiento general del item. No aplica a lotes."
                                                 effect="dark"
