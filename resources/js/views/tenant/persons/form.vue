@@ -341,6 +341,54 @@
                                            v-text="errors.email[0]"></small>
                                 </div>
                             </div>
+
+                            <!-- Correos electronicos alterno -->
+                            <div class="col-6">
+                                <div
+                                    class="form-group">
+                                    <label class="control-label">Correos </label>
+                                    <el-input
+
+                                        v-model="temp_email"
+                                        dusk="email"
+                                        @change="checkEmail()"
+                                    >
+
+                                    </el-input>
+
+
+                                    <el-button
+                                        v-if="temp_email != null && temp_email.length > 1"
+                                        icon="el-icon-plus"
+                                        size="mini"
+                                        @click.prevent="clickAddMail()">
+                                        Agregar Correo
+                                    </el-button>
+
+                                    <label class="control-label" v-if="temp_optional_email !== undefined &&
+                                     temp_optional_email.length > 0">
+                                        <el-tag
+                                            v-for="mail in temp_optional_email"
+                                            :key="mail.email"
+                                            :closable="true"
+                                            :type="'success'"
+                                            @close="removeEmail(mail)"
+                                        >
+                                            {{ mail.email }}
+                                        </el-tag>
+
+                                    </label>
+                                    <small v-if= "errors.temp_email && errors.temp_email.length > 0"
+                                           class="form-control-feedback"
+                                           v-text="errors.temp_email"></small>
+
+
+                                    <small v-if="errors.email"
+                                           class="form-control-feedback"
+                                           v-text="errors.email[0]"></small>
+                                </div>
+                            </div>
+                            <!-- Correos electronicos alterno -->
                         </div>
                         <div class="row m-t-10">
                             <div class="col-md-12 text-center">
@@ -524,7 +572,11 @@ export default {
             resource: 'persons',
             errors: {},
             api_service_token: false,
-            form: {},
+            form: {
+                optional_email: []
+            },
+            temp_optional_email: [],
+            temp_email: null,
             countries: [],
             all_departments: [],
             all_provinces: [],
@@ -562,7 +614,7 @@ export default {
             if (this.form.identity_document_type_id === '1') {
                 return 8
             }
-        }
+        },
     },
     methods: {
         initForm() {
@@ -593,7 +645,10 @@ export default {
                     full_name: null,
                     phone: null,
                 },
+                optional_email: []
             }
+            this.updateEmail()
+
         },
         async opened() {
 
@@ -663,6 +718,65 @@ export default {
                 'phone': null,
                 'main': false,
             });
+        },
+        validateEmail(email) {
+            var re = /\S+@\S+\.\S+/;
+            return re.test(email);
+        },
+        updateEmail(){
+            this.temp_optional_email = this.form.optional_email;
+
+        },
+        removeEmail(email) {
+            if(this.form.optional_email === undefined) this.form.optional_email = []
+            this.form.optional_email = this.form.optional_email.filter(function (item) {
+                return item.email !== email.email;
+            });
+
+            this.updateEmail()
+
+        },
+        checkEmail(){
+            this.errors.temp_email = null;
+            if(this.temp_email === null ) {
+                return false;
+            }
+            if(this.temp_email === undefined ) {
+                return false;
+            }
+            let email = this.temp_email;
+
+                if (this.validateEmail(email)) {
+                    if(this.form.optional_email !== undefined) {
+                        let tem = _.find(this.form.optional_email, {'email': email});
+                        if (tem === undefined) {
+                            return true;
+                        } else {
+                            this.errors.temp_email = "Correo ya registrado"
+                        }
+                    }
+                }else{
+                    this.errors.temp_email = "No es un correo valido"
+                }
+            return false;
+
+        },
+        clickAddMail() {
+            // aqui  iria un modal para ingresar un correo
+            if(this.form.optional_email === undefined) this.form.optional_email = []
+
+            let valio = this.checkEmail();
+
+            if(valio === true){
+                let email = this.temp_email;
+                this.form.optional_email.push(
+                    {email: email,}
+                )
+
+                this.updateEmail()
+                this.temp_email = null;
+            }
+
         },
         validateDigits() {
 
