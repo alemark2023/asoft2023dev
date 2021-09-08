@@ -242,6 +242,14 @@ class PurchaseController extends Controller
 
                     }
 
+                    if (isset($row['update_date_of_due'], $row['date_of_due']) && $row['update_date_of_due'] && !empty($row['date_of_due'])) {
+                        $item_id = (int)$row['item_id'];
+                        $it = Item::find($item_id);
+                        if($it != null){
+                            $it->date_of_due = $row['date_of_due'];
+                            $it->push();
+                        }
+                    }
 
                     if (array_key_exists('lots', $row)) {
 
