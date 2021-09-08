@@ -315,7 +315,17 @@ class PurchaseQuotationController extends Controller
             $supplier_email = $supplier->email;
 
             Configuration::setConfigSmtpMail();
-            Mail::to($supplier_email)->send(new PurchaseQuotationEmail($client, $purchase_quotation));
+            $array_email = explode(',', $supplier_email);
+            if (count($array_email) > 1) {
+                foreach ($array_email as $email_to) {
+                    $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                        Mail::to($email_to)->send(new  PurchaseQuotationEmail($client, $purchase_quotation));
+                    }
+                }
+            } else {
+                Mail::to($supplier_email)->send(new  PurchaseQuotationEmail($client, $purchase_quotation));
+            }
         }
 
         return [

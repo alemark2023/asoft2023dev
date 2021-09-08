@@ -74,7 +74,7 @@ class PurchaseController extends Controller
     {
 
         $identity_document_type_id = $this->getIdentityDocumentTypeId($request->document_type_id);
-        
+
         $persons = Person::where('number','like', "%{$request->input}%")
                             ->orWhere('name','like', "%{$request->input}%")
                             ->whereType('suppliers')
@@ -98,11 +98,11 @@ class PurchaseController extends Controller
 
     }
 
-    
+
     public function getIdentityDocumentTypeId($document_type_id){
 
         return ($document_type_id == '01') ? [6] : [1,4,6,7,0];
-        
+
     }
 
 
@@ -160,7 +160,7 @@ class PurchaseController extends Controller
 
     }
 
-    
+
     public function createPdf($purchase = null, $format_pdf = null, $filename = null) {
 
         ini_set("pcre.backtrack_limit", "5000000");
@@ -307,7 +307,17 @@ class PurchaseController extends Controller
         $supplier_email = $request->input('email');
 
         Configuration::setConfigSmtpMail();
-        Mail::to($supplier_email)->send(new PurchaseEmail($company, $record));
+        $array_email = explode(',', $supplier_email);
+        if (count($array_email) > 1) {
+            foreach ($array_email as $email_to) {
+                $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                    Mail::to($email_to)->send(new  PurchaseEmail($company, $record));
+                }
+            }
+        } else {
+            Mail::to($supplier_email)->send(new  PurchaseEmail($company, $record));
+        }
 
         return [
             'success' => true,
