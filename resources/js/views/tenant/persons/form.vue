@@ -346,7 +346,7 @@
                             <div class="col-6">
                                 <div
                                     class="form-group">
-                                    <label class="control-label">Correos </label>
+                                    <label class="control-label">Correos opcionales </label>
                                     <el-input
 
                                         v-model="temp_email"
