@@ -1500,6 +1500,12 @@ export default {
             };
         },
         async clickPayment() {
+
+            if(!this.form.total_payable_amount){
+                console.log("hot fix payable")
+                this.form.total_payable_amount = this.form.total //fix para agregar total_payable_amount a json almacenado en local storage
+            }
+
             let flag = 0;
             this.form.items.forEach(row => {
                 if (row.aux_quantity < 0 || row.total < 0 || isNaN(row.total)) {
