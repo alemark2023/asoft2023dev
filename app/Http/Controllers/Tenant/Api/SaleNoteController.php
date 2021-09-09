@@ -131,71 +131,72 @@ class SaleNoteController extends Controller
         }
         if($force_create_if_not_exist === true){
             $person = PersonModel::find($inputs['customer_id']);
-            if($person === null) {
-                self::ExtraLog(__FILE__."::".__LINE__."   ".__FUNCTION__."  \n Buscando la persona "."\n\n\n\n");
+            if ($person === null) {
+                self::ExtraLog(__FILE__ . "::" . __LINE__ . "   " . __FUNCTION__ . "  \n Buscando la persona " . "\n\n\n\n");
                 $client_data = $inputs['datos_del_cliente_o_receptor'];
 
                 $client_number = isset($client_data['numero_documento']) ? $client_data['numero_documento'] : null;
-                $person = PersonModel::where('number',$client_number)->first();
-                if($person ===  null && !empty($client_number)){
+                $person = PersonModel::where('number', $client_number)->first();
+                if ($person === null && !empty($client_number)) {
                     $data_person = [
-                        'number'=>$client_number,
-                        'identity_document_type_id'=> $client_data['codigo_tipo_documento_identidad'] ?? '6',
-                        'name'=> $client_data['apellidos_y_nombres_o_razon_social'] ?? '',
-                        'country_id'=> $client_data['codigo_pais'] ?? 'PE',
-                        'district_id'=> $client_data['ubigeo'] ?? '',
-                        'address'=> $client_data['direccion'] ?? '',
-                        'email'=> $client_data['correo_electronico'] ?? '',
-                        'telephone'=> $client_data['telefono'] ?? '',
+                        'number' => $client_number,
+                        'identity_document_type_id' => $client_data['codigo_tipo_documento_identidad'] ?? '6',
+                        'name' => $client_data['apellidos_y_nombres_o_razon_social'] ?? '',
+                        'country_id' => $client_data['codigo_pais'] ?? 'PE',
+                        'district_id' => $client_data['ubigeo'] ?? '',
+                        'address' => $client_data['direccion'] ?? '',
+                        'email' => $client_data['correo_electronico'] ?? '',
+                        'telephone' => $client_data['telefono'] ?? '',
                     ];
                     $person = new PersonModel($data_person);
                     $person->push();
                 }
-                $inputs['customer_id'] = $person->id;
-                $items = $inputs['items'];
-                self::ExtraLog(__FILE__."::".__LINE__."   ".__FUNCTION__."  \n Buscando Items ".var_export($items,true)."\n\n\n\n");
-
-                foreach ($items as $key => $item) {
-                    $item_in = $item['full_item'];
-                    self::ExtraLog('Item Antes \n\n\n\n\n'.var_export($item['full_item'],true)."\n<<<<<<<<<<<<<<<<<<<<<<<<");
-                    unset(
-                        $item_in['item_id'],
-                        $item_in['internal_id'],
-                        $item_in['id'],
-                        $item_in['barcode'],
-                        $item_in['tags'],
-                        $item_in['unit_type'],
-                        $item_in['item_type'],
-                        $item_in['currency_type'],
-                        $item_in['warehouses'],
-                        $item_in['item_unit_types']
-                    );
-                    foreach($item_in as $k=>$v){
-                        if(empty($v)){
-                            unset($item_in[$k]);
-                        }
-                    }
-                    self::ExtraLog('Item Despues \n\n\n\n\n'.var_export($item_in,true)."\n<<<<<<<<<<<<<<<<<<<<<<<<");
-                    $identicalItem = Item::where($item_in)->first();
-                    if ($identicalItem === null) {
-                        $identicalItem = new Item($item_in);
-                        $identicalItem->stock = 1;
-                        $identicalItem->stock_min = 1;
-                        $identicalItem->push();
-
-                    }
-                    $items[$key]['id'] = $identicalItem->id;
-                    $items[$key]['attributes'] = $identicalItem->attributes;
-                    $items[$key]['item_id'] = $identicalItem->id;
-                    $items[$key]['barcode'] = $identicalItem->barcode;
-                    $items[$key]['item']['barcode'] = $identicalItem->barcode;
-                    $items[$key]['item']['id'] = $identicalItem->id;
-                    $items[$key]['item']['item_id'] = $identicalItem->id;
-                }
-
-                $inputs['items'] = $items ;
             }
-            if(!isset($inputs['establishment_id']) || empty($inputs['establishment_id'])){
+            $inputs['customer_id'] = $person->id;
+            $items = $inputs['items'];
+            self::ExtraLog(__FILE__ . "::" . __LINE__ . "   " . __FUNCTION__ . "  \n Buscando Items " . var_export($items, true) . "\n\n\n\n");
+
+            foreach ($items as $key => $item) {
+                $item_in = $item['full_item'];
+                self::ExtraLog('Item Antes \n\n\n\n\n' . var_export($item['full_item'], true) . "\n<<<<<<<<<<<<<<<<<<<<<<<<");
+                unset(
+                    $item_in['item_id'],
+                    $item_in['internal_id'],
+                    $item_in['id'],
+                    $item_in['barcode'],
+                    $item_in['tags'],
+                    $item_in['unit_type'],
+                    $item_in['item_type'],
+                    $item_in['currency_type'],
+                    $item_in['warehouses'],
+                    $item_in['item_unit_types']
+                );
+                foreach ($item_in as $k => $v) {
+                    if (empty($v)) {
+                        unset($item_in[$k]);
+                    }
+                }
+                self::ExtraLog('Item Despues \n\n\n\n\n' . var_export($item_in, true) . "\n<<<<<<<<<<<<<<<<<<<<<<<<");
+                $identicalItem = Item::where($item_in)->first();
+                if ($identicalItem === null) {
+                    $identicalItem = new Item($item_in);
+                    $identicalItem->stock = 1;
+                    $identicalItem->stock_min = 1;
+                    $identicalItem->push();
+
+                }
+                $items[$key]['id'] = $identicalItem->id;
+                $items[$key]['attributes'] = $identicalItem->attributes;
+                $items[$key]['item_id'] = $identicalItem->id;
+                $items[$key]['barcode'] = $identicalItem->barcode;
+                $items[$key]['item']['barcode'] = $identicalItem->barcode;
+                $items[$key]['item']['id'] = $identicalItem->id;
+                $items[$key]['item']['item_id'] = $identicalItem->id;
+            }
+
+            $inputs['items'] = $items;
+
+            if (!isset($inputs['establishment_id']) || empty($inputs['establishment_id'])) {
                 $inputs['establishment_id'] = $inputs['establishment_id'] ?: auth()->user()->establishment_id;
             }
         }
