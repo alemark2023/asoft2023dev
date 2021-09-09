@@ -26,7 +26,17 @@ class OrderNoteController extends Controller
         $customer_email = $request->input('email');
 
         Configuration::setConfigSmtpMail();
-        Mail::to($customer_email)->send(new OrderNoteEmail($client, $order_note));
+        $array_email = explode(',', $customer_email);
+        if (count($array_email) > 1) {
+            foreach ($array_email as $email_to) {
+                $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                    Mail::to($email_to)->send(new OrderNoteEmail($client, $order_note));
+                }
+            }
+        } else {
+            Mail::to($customer_email)->send(new OrderNoteEmail($client, $order_note));
+        }
         return [
             'success' => true,
             'message'=> 'Email enviado correctamente.'

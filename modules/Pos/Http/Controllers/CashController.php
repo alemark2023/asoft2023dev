@@ -25,7 +25,17 @@ class CashController extends Controller
         $email = $request->input('email');
 
         Configuration::setConfigSmtpMail();
-        Mail::to($email)->send(new CashEmail($company, $this->getPdf($request->cash_id)));
+        $array_email = explode(',', $email);
+        if (count($array_email) > 1) {
+            foreach ($array_email as $email_to) {
+                $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                    Mail::to($email_to)->send(new CashEmail($company, $this->getPdf($request->cash_id)));
+                }
+            }
+        } else {
+            Mail::to($email)->send(new CashEmail($company, $this->getPdf($request->cash_id)));
+        }
 
         return [
             'success' => true

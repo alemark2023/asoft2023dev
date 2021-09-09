@@ -316,7 +316,7 @@ class OrderNoteController extends Controller
 
         DB::connection('tenant')->transaction(function () use ($request) {
 
-            
+
             $this->order_note = OrderNote::firstOrNew(['id' => $request['id']]);
 
             $data = $this->mergeData($request, $this->order_note);
@@ -775,7 +775,17 @@ class OrderNoteController extends Controller
         // $this->reloadPDF($order_note, "a4", $order_note->filename);
 
         Configuration::setConfigSmtpMail();
-        Mail::to($customer_email)->send(new OrderNoteEmail($client, $order_note));
+        $array_email = explode(',', $customer_email);
+        if (count($array_email) > 1) {
+            foreach ($array_email as $email_to) {
+                $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                    Mail::to($email_to)->send(new OrderNoteEmail($client, $order_note));
+                }
+            }
+        } else {
+            Mail::to($customer_email)->send(new OrderNoteEmail($client, $order_note));
+        }
         return [
             'success' => true
         ];

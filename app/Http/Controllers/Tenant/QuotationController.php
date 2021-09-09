@@ -811,7 +811,17 @@ class QuotationController extends Controller
         // $this->reloadPDF($quotation, "a4", $quotation->filename);
 
         Configuration::setConfigSmtpMail();
-        Mail::to($customer_email)->send(new QuotationEmail($client, $quotation));
+        $array_email = explode(',', $customer_email);
+        if (count($array_email) > 1) {
+            foreach ($array_email as $email_to) {
+                $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                    Mail::to($email_to)->send(new QuotationEmail($client, $quotation));
+                }
+            }
+        } else {
+            Mail::to($customer_email)->send(new QuotationEmail($client, $quotation));
+        }
         return [
             'success' => true
         ];

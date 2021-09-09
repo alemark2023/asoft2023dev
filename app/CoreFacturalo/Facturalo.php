@@ -183,7 +183,17 @@ class Facturalo
             $document = $this->document;
             $email = ($this->document->customer) ? $this->document->customer->email : $this->document->supplier->email;
             Configuration::setConfigSmtpMail();
-            Mail::to($email)->send(new DocumentEmail($company, $document));
+            $array_email = explode(',', $email);
+            if (count($array_email) > 1) {
+                foreach ($array_email as $email_to) {
+                    $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                        Mail::to($email_to)->send(new DocumentEmail($company, $document));
+                    }
+                }
+            } else {
+                Mail::to($email)->send(new DocumentEmail($company, $document));
+            }
 
         }
     }
@@ -649,7 +659,7 @@ class Facturalo
     {
         //Errors
         if(!is_numeric($code)){
-            
+
             if(in_array($this->type, ['retention', 'dispatch', 'perception'])){
                 throw new Exception("Code: {$code}; Description: {$message}");
             }
@@ -661,7 +671,7 @@ class Facturalo
         // if($code === 'ERROR_CDR') {
         //     return;
         // }
-        
+
         // if($code === 'HTTP') {
         //     // $message = 'La SUNAT no responde a su solicitud, vuelva a intentarlo.';
 
