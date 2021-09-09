@@ -69,4 +69,27 @@ class DocumentXmlService
         return $has_discounts_no_base;
     }
 
+    
+    public function hasDiscountsNoBaseByInputs($inputs)
+    { 
+
+        $has_discounts_no_base = false;
+
+        if(array_key_exists('discounts', $inputs)) {
+
+            if($inputs['discounts']){
+
+                $discount = collect($inputs['discounts'])->first(function($row){
+                    return in_array($row['discount_type_id'], ['03', '63']);
+                });
+    
+                if($discount) $has_discounts_no_base = true;
+            }
+
+        }
+
+        return $has_discounts_no_base;
+    }
+
+
 }

@@ -17,10 +17,13 @@
     $document->load('reference_guides');
 
     $total_payment = $document->payments->sum('payment');
-    $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
     $document_xml_service = new Modules\Document\Services\DocumentXmlService;
     $has_discounts_no_base = $document_xml_service->hasDiscountsNoBase($document);
+    
+    $document_total = ($has_discounts_no_base) ? $document->total_payable_amount : $document->total;
+    $balance = ($document_total - $total_payment) - $document->payments->sum('change');
+
 @endphp
 <html>
 <head>
@@ -484,7 +487,7 @@
                 <td class="text-right font-bold desc">{{ number_format($document->total_taxed, 2) }}</td>
             </tr>
         @endif
-        @if($document->total_discount > 0)
+        @if($document->total_discount > 0 && !$has_discounts_no_base)
             <tr>
                 <td colspan="4" class="text-right font-bold desc">DESCUENTO TOTAL: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold desc">{{ number_format($document->total_discount, 2) }}</td>
@@ -518,6 +521,10 @@
         <tr>
             <td colspan="4" class="text-right font-bold desc">TOTAL: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold desc">{{ number_format($document->total, 2) }}</td>
+        </tr>
+        <tr>
+            <td colspan="4" class="text-right font-bold desc">DESCUENTO TOTAL: {{ $document->currency_type->symbol }}</td>
+            <td class="text-right font-bold desc">{{ number_format($document->total_discount, 2) }}</td>
         </tr>
         <tr>
             <td colspan="4" class="text-right font-bold desc">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>

@@ -1502,8 +1502,8 @@ export default {
         async clickPayment() {
 
             if(!this.form.total_payable_amount){
-                console.log("hot fix payable")
-                this.form.total_payable_amount = this.form.total //fix para agregar total_payable_amount a json almacenado en local storage
+                //fix para agregar total_payable_amount si no existe prop en json almacenado en local storage
+                this.form.total_payable_amount = this.form.total 
             }
 
             let flag = 0;
