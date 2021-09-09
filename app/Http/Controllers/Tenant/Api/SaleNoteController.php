@@ -116,6 +116,7 @@ class SaleNoteController extends Controller
     public function mergeData($inputs)
     {
         $this->company = Company::active();
+        self::ExtraLog(__FILE__."::".__LINE__."  \n Campos  ".__FUNCTION__." \n". json_encode($inputs) ."\n\n\n\n");
 
         $type_period = $inputs['type_period'];
         $quantity_period = $inputs['quantity_period'];
@@ -153,6 +154,7 @@ class SaleNoteController extends Controller
                 $items = $inputs['items'];
                 foreach ($items as $key => $item) {
                     $item_in = $item['full_item'];
+                    self::ExtraLog('Item Antes \n\n\n\n\n'.var_export($item['full_item'],true)."\n<<<<<<<<<<<<<<<<<<<<<<<<");
                     unset(
                         $item_in['item_id'],
                         $item_in['internal_id'],
@@ -170,6 +172,7 @@ class SaleNoteController extends Controller
                             unset($item_in[$k]);
                         }
                     }
+                    self::ExtraLog('Item Despues \n\n\n\n\n'.var_export($item_in,true)."\n<<<<<<<<<<<<<<<<<<<<<<<<");
                     $identicalItem = Item::where($item_in)->first();
                     if ($identicalItem === null) {
                         $identicalItem = new Item($item_in);
