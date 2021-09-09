@@ -23,11 +23,13 @@ class SaleNoteRequest extends FormRequest
     public function rules()
     {
 
-        \Log::channel('facturalo')->error("\n".__FILE__."\n");
-
-        \Log::channel('facturalo')->error("\n************************************************************************************************************************\n".
-            json_encode($this->toArray()).
-            "\n************************************************************************************************************************\n");
+        if(\Config('extra.extra_log') === true) {
+            $data =json_decode(json_encode($this->toArray()),true);
+            \Log::channel('facturalo')->error("\n" . __FILE__ ."::".__LINE__."    ".__FUNCTION__. "\n");
+            \Log::channel('facturalo')->error("\n************************************************************************************************************************\n" .
+                 var_export($data,true).
+                "\n************************************************************************************************************************\n");
+        }
         return [
             'customer_id' => [
                 'required',

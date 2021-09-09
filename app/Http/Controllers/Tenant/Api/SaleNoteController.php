@@ -60,6 +60,7 @@ class SaleNoteController extends Controller
         $data = [];
         if($request['force_create_if_not_exist']) {
             // Se saca de tenant, para que pueda guardar el item correctamente.
+            self::ExtraLog(__FILE__."::".__LINE__."   ".__FUNCTION__."  \n Entra por crear ".__FUNCTION__." \n". var_export($request->all(),true) ."\n\n\n\n");
             $data = $this->mergeData($request);
         }
 
@@ -116,7 +117,7 @@ class SaleNoteController extends Controller
     public function mergeData($inputs)
     {
         $this->company = Company::active();
-        self::ExtraLog(__FILE__."::".__LINE__."  \n Campos  ".__FUNCTION__." \n". json_encode($inputs) ."\n\n\n\n");
+        // self::ExtraLog(__FILE__."::".__LINE__."  \n Campos ".__FUNCTION__." \n". json_encode($inputs) ."\n\n\n\n");
 
         $type_period = $inputs['type_period'];
         $quantity_period = $inputs['quantity_period'];
@@ -131,7 +132,7 @@ class SaleNoteController extends Controller
         if($force_create_if_not_exist === true){
             $person = PersonModel::find($inputs['customer_id']);
             if($person === null) {
-
+                self::ExtraLog(__FILE__."::".__LINE__."   ".__FUNCTION__."  \n Buscando la persona "."\n\n\n\n");
                 $client_data = $inputs['datos_del_cliente_o_receptor'];
 
                 $client_number = isset($client_data['numero_documento']) ? $client_data['numero_documento'] : null;
@@ -152,6 +153,8 @@ class SaleNoteController extends Controller
                 }
                 $inputs['customer_id'] = $person->id;
                 $items = $inputs['items'];
+                self::ExtraLog(__FILE__."::".__LINE__."   ".__FUNCTION__."  \n Buscando Items ".var_export($items,true)."\n\n\n\n");
+
                 foreach ($items as $key => $item) {
                     $item_in = $item['full_item'];
                     self::ExtraLog('Item Antes \n\n\n\n\n'.var_export($item['full_item'],true)."\n<<<<<<<<<<<<<<<<<<<<<<<<");
