@@ -76,6 +76,7 @@
                         <th v-if="columns.dispatch.visible">Guía de Remisión</th>
                         <th v-if="columns.sales_note.visible">Nota de venta</th>
                         <th v-if="columns.order_note.visible">Pedidos</th>
+                        <th v-if="columns.send_it.visible">Email Enviado</th>
                         <th>Estado</th>
                         <th v-if="columns.user_name.visible">Usuario</th>
                         <th class="text-center">Moneda</th>
@@ -151,6 +152,36 @@
                             <template v-if="row.order_note && row.order_note.identifier">
                                 {{ row.order_note.identifier }}
                             </template>
+                        </td>
+                        <td v-if="columns.send_it.visible">
+                            <!--
+                            <el-tooltip
+                                        class="item"
+                                        effect="dark"
+                                        placement="bottom">
+                                <div slot="content">
+                                    <span v-for="(item, i) in row.email_send_it_array"
+                                          :key="i">
+                                        {{ (item.email_send_it === false)?'No enviado':'Enviado' }} - {{ item.email }}  - {{ item.send_date }} <br>
+                                    </span>
+                                </div>
+                                <span class="badge "
+                                      :class="
+                                      {'text-danger': (row.email_send_it === false), 'text-success': (row.email_send_it === true), }">
+                                    <i class="fas fa-lg"
+                                       :class="{ 'fa-times': (row.email_send_it === false), 'fa-check': (row.email_send_it === true), }"
+                                    ></i>
+                                </span>
+                            </el-tooltip>-->
+
+                            <span class="badge "
+                                  :class="
+                                      {'text-danger': (row.email_send_it === false), 'text-success': (row.email_send_it === true), }">
+                                    <i class="fas fa-lg"
+                                       :class="{ 'fa-times': (row.email_send_it === false), 'fa-check': (row.email_send_it === true), }"
+                                    ></i>
+                                </span>
+
                         </td>
 
                         <td>
@@ -435,6 +466,10 @@ export default {
                 },
                 order_note: {
                     title: 'Pedidos',
+                    visible: false
+                },
+                send_it: {
+                    title: 'Correo enviado al destinatario',
                     visible: false
                 },
             }
