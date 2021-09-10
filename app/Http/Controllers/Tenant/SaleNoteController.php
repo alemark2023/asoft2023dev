@@ -1270,6 +1270,11 @@ class SaleNoteController extends Controller
         $record = SaleNote::find($request->input('id'));
         $customer_email = $request->input('customer_email');
 
+        $email = $customer_email;
+        $mailable = new SaleNoteEmail($company, $record);
+        $id = (int) $request->id;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, 2);
+        /*
         Configuration::setConfigSmtpMail();
         $array_email = explode(',', $customer_email);
         if (count($array_email) > 1) {
@@ -1281,7 +1286,7 @@ class SaleNoteController extends Controller
             }
         } else {
             Mail::to($customer_email)->send(new SaleNoteEmail($company, $record));
-        }
+        }*/
 
         return [
             'success' => true

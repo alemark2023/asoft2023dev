@@ -447,6 +447,12 @@ class DispatchController extends Controller
     {
         $record = Dispatch::find($request->input('id'));
         $customer_email = $request->input('customer_email');
+        $email = $customer_email;
+        $mailable =new DispatchEmail($record);
+        $id =  $request->input('id');
+        $model = __FILE__.";;".__LINE__;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, 4);
+        /*
         Configuration::setConfigSmtpMail();
         $array_email = explode(',', $customer_email);
         if (count($array_email) > 1) {
@@ -459,6 +465,7 @@ class DispatchController extends Controller
         } else {
             Mail::to($customer_email)->send(new DispatchEmail($record));
         }
+        */
         return [
             'success' => true
         ];

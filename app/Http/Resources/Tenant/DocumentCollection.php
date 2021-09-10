@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Tenant;
 
+use App\Models\Tenant\EmailSendLog;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class DocumentCollection extends ResourceCollection
@@ -92,6 +93,23 @@ class DocumentCollection extends ResourceCollection
             $nvs = $row->getNvCollection();
 
             $order_note = $row->getOrderNoteCollection();
+            // Regresa si se hn enviado correos
+            $email_send_it = false;
+            $email_send_it_array = [];
+            $send_it = EmailSendLog::Document()->FindRelationId($row->id)->get();
+            if(count($send_it)> 0){
+                /** @var EmailSendLog $log*/
+                foreach($send_it as $log){
+                    $email_send_it_array[] = [
+                        'email'=>$log->email,
+                        'send_it'=>$log->sendit,
+                        'send_date'=>$log->created_at->format('Y-m-d H:i'),
+                    ];
+                    if($email_send_it == false){
+                        $email_send_it = $log->sendit;
+                    }
+                }
+            }
 
             return [
 
@@ -148,6 +166,8 @@ class DocumentCollection extends ResourceCollection
                 'user_name' => ($row->user) ? $row->user->name : '',
                 'user_email' => ($row->user) ? $row->user->email : '',
                 'user_id' => $row->user_id,
+                'email_send_it' => $email_send_it,
+                'email_send_it_array' => $email_send_it_array,
                 'external_id' => $row->external_id,
 
                 'notes' => (in_array($row->document_type_id, ['01', '03'])) ? $row->affected_documents->transform(function($row) {

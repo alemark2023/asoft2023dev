@@ -680,6 +680,12 @@ class DocumentController extends Controller
         $company = Company::active();
         $document = Document::find($request->input('id'));
         $customer_email = $request->input('customer_email');
+        $email = $customer_email;
+        $mailable =  new DocumentEmail($company, $document);
+        $id = (int) $request->input('id');
+        $sendIt = EmailController::SendMail($email, $mailable, $id, 1);
+        // Centralizar el envio de correos a Email Controller
+        /*
         Configuration::setConfigSmtpMail();
         $array_customer = explode(',', $customer_email);
         if (count($array_customer) > 1) {
@@ -689,6 +695,7 @@ class DocumentController extends Controller
         } else {
             Mail::to($customer_email)->send(new DocumentEmail($company, $document));
         }
+        */
         return [
             'success' => true
         ];
