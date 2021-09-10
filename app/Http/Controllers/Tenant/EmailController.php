@@ -58,29 +58,14 @@
          */
         public static function SendMail($email, $mailable, $id = 0, $type = null): bool
         {
-            Configuration::setConfigSmtpMail();
-            $array_email = explode(',', $email);
-            $ret = true;
-
-            $envio = [];
             $sendit = new self();
             $sendit
                 ->setType($type)
                 ->setId($id);
-            if (count($array_email) > 1) {
-                foreach ($array_email as $email_to) {
-                    $email_to = trim($email_to);
-                    if (!empty($email_to)) {
-                        $envio[] = $email_to;
-                        $ret = $sendit->setEmail($email_to)->SendAMail($mailable);
-                    }
-                }
-            } else {
-                $envio[] = $email;
-                $ret= $sendit->setEmail($email)->SendAMail($mailable);
-            }
-            // dd([$envio,$email]);
-            return $ret;
+
+            return $sendit
+                ->setEmail(str_replace([',',' '], [';',''], $email))
+                ->SendAMail($mailable);
         }
 
         /**
@@ -90,6 +75,7 @@
          */
         protected function SendAMail($mailable)
         {
+            Configuration::setConfigSmtpMail();
             $ret = true;
             try {
                 Mail::to($this->getEmail())->send($mailable);
