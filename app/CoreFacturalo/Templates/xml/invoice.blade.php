@@ -398,7 +398,7 @@
         @if($tot_charges > 0)
         <cbc:TaxInclusiveAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total - $tot_charges}}</cbc:TaxInclusiveAmount>
         @else
-        <cbc:TaxInclusiveAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total }}</cbc:TaxInclusiveAmount>
+        <cbc:TaxInclusiveAmount currencyID="{{ $document->currency_type_id }}">{{ $document->subtotal }}</cbc:TaxInclusiveAmount>
         @endif
         {{-- @if($document->total_discount > 0)
         <cbc:AllowanceTotalAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_discount }}</cbc:AllowanceTotalAmount>
@@ -417,9 +417,10 @@
         @else
         <cbc:PayableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total }}</cbc:PayableAmount>
         @endif --}}
-        @if($document->total_payable_amount > 0)
+        {{-- @if($document->total_payable_amount > 0)
         <cbc:PayableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_payable_amount }}</cbc:PayableAmount>
-        @endif
+        @endif --}}
+        <cbc:PayableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total }}</cbc:PayableAmount>
     </cac:LegalMonetaryTotal>
     @foreach($document->items as $row)
     <cac:InvoiceLine>

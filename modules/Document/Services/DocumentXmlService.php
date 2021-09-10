@@ -91,38 +91,38 @@ class DocumentXmlService
             }
         }
 
-
-        // if(array_key_exists('items', $inputs)) {
-
-
-        //     $total_items_no_base = collect($inputs['items'])->sum(function($row){
-
-        //         if(array_key_exists('discounts', $row)){
-
-        //             if($row['discounts']){
-
-        //                 return collect($row['discounts'])->sum(function($discount){
-        //                     return $discount['discount_type_id'] == '01' ? $discount['amount'] : 0;
-        //                 });
-
-        //             }else{
-        //                 return 0;
-        //             }
-
-        //         }else{
-        //             return 0;
-        //         }
-        //         // dd($row);
-                
-        //     });
-
-        //     if($total_items_no_base > 0) $has_discounts_no_base = true;
-
-        //     // dd($total_items_no_base, $has_discounts_no_base);
-
-        // }
+        $total_items_no_base = $this->getItemsDiscountsNoBaseByInputs($inputs);
+        if($total_items_no_base > 0) $has_discounts_no_base = true;
 
         return $has_discounts_no_base;
+    }
+
+
+    public function getItemsDiscountsNoBaseByInputs($inputs)
+    {
+
+        $total_items_no_base = 0;
+
+        if(array_key_exists('items', $inputs)) {
+
+            $total_items_no_base = collect($inputs['items'])->sum(function($row){
+
+                $sum_total_items = 0;
+
+                if(array_key_exists('discounts', $row)){
+                    if($row['discounts']){
+                        $sum_total_items = collect($row['discounts'])->sum(function($discount){
+                            return $discount['discount_type_id'] == '01' ? $discount['amount'] : 0;
+                        });
+                    }
+                }
+
+                return $sum_total_items;
+            });
+
+        }
+
+        return $total_items_no_base;
     }
 
 

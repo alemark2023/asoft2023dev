@@ -1450,7 +1450,7 @@ export default {
                 total_taxes: 0,
                 total_value: 0,
                 total: 0,
-                total_payable_amount: 0,
+                subtotal: 0,
                 operation_type_id: "0101",
                 date_of_due: moment().format("YYYY-MM-DD"),
                 items: [],
@@ -1501,9 +1501,9 @@ export default {
         },
         async clickPayment() {
 
-            if(!this.form.total_payable_amount){
-                //fix para agregar total_payable_amount si no existe prop en json almacenado en local storage
-                this.form.total_payable_amount = this.form.total 
+            if(!this.form.subtotal){
+                //fix para agregar subtotal si no existe prop en json almacenado en local storage
+                this.form.subtotal = this.form.total 
             }
 
             let flag = 0;
@@ -1772,7 +1772,7 @@ export default {
             this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
             // this.form.total = _.round(total, 2);
             this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
-            this.form.total_payable_amount = this.form.total
+            this.form.subtotal = this.form.total
 
         },
         changeDateOfIssue() {

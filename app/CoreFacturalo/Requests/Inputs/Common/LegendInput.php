@@ -4,7 +4,7 @@ namespace App\CoreFacturalo\Requests\Inputs\Common;
 
 use App\CoreFacturalo\Helpers\Number\NumberLetter;
 use App\Models\Tenant\Company;
-use Modules\Document\Services\DocumentXmlService;
+// use Modules\Document\Services\DocumentXmlService;
 
 class LegendInput
 {
@@ -40,26 +40,12 @@ class LegendInput
 
         }
 
-        $has_discounts_no_base = (new DocumentXmlService())->hasDiscountsNoBaseByInputs($inputs);
 
-        if($has_discounts_no_base){
-
-            if(array_key_exists('total_payable_amount', $inputs)) {
-                $legends[] = [
-                    'code' => 1000,
-                    'value' => NumberLetter::convertToLetter($inputs['total_payable_amount'])
-                ];
-            }
-
-        }else{
-
-            if(array_key_exists('total', $inputs)) {
-                $legends[] = [
-                    'code' => 1000,
-                    'value' => NumberLetter::convertToLetter($inputs['total'])
-                ];
-            }
-
+        if(array_key_exists('total', $inputs)) {
+            $legends[] = [
+                'code' => 1000,
+                'value' => NumberLetter::convertToLetter($inputs['total'])
+            ];
         }
 
         return $legends;

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class TenantAddTotalPayableAmountToDocuments extends Migration
+class TenantAddSubtotalToDocuments extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class TenantAddTotalPayableAmountToDocuments extends Migration
     public function up()
     {
         Schema::table('documents', function (Blueprint $table) {
-            $table->decimal('total_payable_amount', 12, 2)->default(0)->after('total');
+            $table->decimal('subtotal', 12, 2)->default(0)->after('total_value');
         });
     }
 
@@ -26,7 +26,7 @@ class TenantAddTotalPayableAmountToDocuments extends Migration
     public function down()
     {
         Schema::table('documents', function (Blueprint $table) {
-            $table->dropColumn('total_payable_amount');
+            $table->dropColumn('subtotal');
         });
     }
 }

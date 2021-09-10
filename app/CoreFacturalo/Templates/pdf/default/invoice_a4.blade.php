@@ -22,12 +22,7 @@
     $document->load('reference_guides');
 
     $total_payment = $document->payments->sum('payment');
-
-    $document_xml_service = new Modules\Document\Services\DocumentXmlService;
-    $has_discounts_no_base = $document_xml_service->hasDiscountsNoBase($document);
-
-    $document_total = ($has_discounts_no_base) ? $document->total_payable_amount : $document->total;
-    $balance = ($document_total - $total_payment) - $document->payments->sum('change');
+    $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
 @endphp
 <html>
@@ -540,7 +535,7 @@
                 <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
             </tr>
         @endif
-        @if($document->total_discount > 0 && !$has_discounts_no_base)
+         @if($document->total_discount > 0)
             <tr>
                 <td colspan="8" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
@@ -583,27 +578,10 @@
                 <td class="text-right font-bold">{{ number_format(($document->total + $document->perception->amount), 2) }}</td>
             </tr>
         @else
-
-            @if($has_discounts_no_base)
-            <tr>
-                <td colspan="8" class="text-right font-bold">TOTAL: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
-            </tr>
-            <tr>
-                <td colspan="8" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
-            </tr>
-            <tr>
-                <td colspan="8" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_payable_amount, 2) }}</td>
-            </tr>
-            @else
             <tr>
                 <td colspan="8" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
             </tr>
-            @endif
-
         @endif
 
         @if($balance < 0)

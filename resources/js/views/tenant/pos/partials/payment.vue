@@ -103,11 +103,9 @@
                 <div class="row m-0 p-0 h-25 d-flex align-items-center">
                     <div class="col-sm-6 py-2">
                         <p class="font-weight-semibold mb-0 text-white">TOTAL</p>
-                        <p class="font-weight-semibold mb-0 text-white" v-if="enabled_discount && form.total_payable_amount">TOTAL A PAGAR</p>
                     </div>
                     <div class="col-sm-6 py-2 text-right"> 
                         <h4 class="font-weight-semibold mb-0 text-white">{{ currencyTypeActive.symbol }} {{form.total}}</h4>
-                        <h4 class="font-weight-semibold mb-0 text-white" v-if="enabled_discount && form.total_payable_amount">{{ currencyTypeActive.symbol }} {{form.total_payable_amount}}</h4>
                     </div> 
                 </div>
                 <div class="row m-0 p-0 h-25 d-flex align-items-center bg-white">
@@ -163,12 +161,12 @@
 
                         <div class="card-body text-center">
                             <p class="my-0"><small>Monto a cobrar</small></p>
-                            <template v-if="enabled_discount && form.total_payable_amount">
+                            <!-- <template v-if="enabled_discount && form.total_payable_amount">
                                 <h1 class="mb-2 mt-0">{{ currencyTypeActive.symbol }} {{ form.total_payable_amount }}</h1>
                             </template>
-                            <template v-else>
+                            <template v-else> -->
                                 <h1 class="mb-2 mt-0">{{ currencyTypeActive.symbol }} {{ form.total }}</h1>
-                            </template>
+                            <!-- </template> -->
                         </div>
                     </div>
                 </div>
@@ -580,7 +578,7 @@ export default {
             if (global_discount > 0 && !discount) {
 
                 this.form.total_discount = _.round(amount, 2)
-                this.form.total_payable_amount = _.round(this.form.total - amount, 2)
+                this.form.total = _.round(this.form.total - amount, 2)
 
                 this.form.discounts.push({
                     discount_type_id: '03',
@@ -592,8 +590,8 @@ export default {
 
             }
 
-            // this.difference = this.enter_amount - this.form.total
-            this.difference = this.enter_amount - this.form.total_payable_amount
+            this.difference = this.enter_amount - this.form.total
+            // this.difference = this.enter_amount - this.form.total_payable_amount
             // console.log(this.form.discounts)
         }, 
         reCalculateTotal() {
@@ -647,8 +645,8 @@ export default {
             this.form.total_taxes = _.round(total_igv, 2)
             this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
             // this.form.total = _.round(total, 2)
+            this.form.subtotal = _.round(total + this.form.total_plastic_bag_taxes, 2)
             this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
-            this.form.total_payable_amount = this.form.total
 
             this.discountGlobal()
 
@@ -761,16 +759,14 @@ export default {
             this.amount = acum_payment
             // this.amount = this.enter_amount
             // console.log(this.amount)
-            // this.difference = this.amount - this.form.total
-            this.difference = this.amount - (this.form.total_payable_amount ? this.form.total_payable_amount : this.form.total)
+            this.difference = this.amount - this.form.total
 
             if (isNaN(this.difference)) {
                 this.button_payment = true
                 this.difference = "-"
             } else if (this.difference >= 0) {
                 this.button_payment = false
-                // this.difference = this.amount - this.form.total
-                this.difference = this.amount - (this.form.total_payable_amount ? this.form.total_payable_amount : this.form.total)
+                this.difference = this.amount - this.form.total
             } else {
                 this.button_payment = true
             }
@@ -797,16 +793,14 @@ export default {
         },
         inputAmount() {
 
-            // this.difference = this.amount - this.form.total
-            this.difference = this.amount - (this.form.total_payable_amount ? this.form.total_payable_amount : this.form.total)
+            this.difference = this.amount - this.form.total
 
             if (isNaN(this.difference)) {
                 this.button_payment = true
                 this.difference = "-"
             } else if (this.difference >= 0) {
                 this.button_payment = false
-                // this.difference = this.amount - this.form.total
-                this.difference = this.amount - (this.form.total_payable_amount ? this.form.total_payable_amount : this.form.total)
+                this.difference = this.amount - this.form.total
             } else {
                 this.button_payment = true
             }
@@ -827,8 +821,7 @@ export default {
         },
         initFormPayment() {
 
-            // this.difference = -this.form.total
-            this.difference = -(this.form.total_payable_amount ? this.form.total_payable_amount : this.form.total)
+            this.difference = -this.form.total
             
             this.form_payment = {
                 id: null,
@@ -838,8 +831,7 @@ export default {
                 card_brand_id: null,
                 document_id: null,
                 sale_note_id: null,
-                // payment: this.form.total,
-                payment: (this.form.total_payable_amount ? this.form.total_payable_amount : this.form.total),
+                payment: this.form.total,
             }
 
             this.form_cash_document = {

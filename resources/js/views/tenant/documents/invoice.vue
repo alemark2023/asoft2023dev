@@ -1386,6 +1386,7 @@ export default {
             btnText: 'Generar',
             payment_conditions: [],
             affectation_igv_types: [],
+            total_discount_no_base: 0,
         }
     },
     computed: {
@@ -1397,6 +1398,9 @@ export default {
         },
         cash_payment_metod: function () {
             return _.filter(this.payment_method_types, {'is_credit': false})
+        },
+        existDiscountsNoBase : function () {
+            return this.total_discount_no_base > 0 ? true : false
         },
     },
     async created() {
@@ -1705,7 +1709,7 @@ export default {
             this.form.total_value = parseFloat(data.total_value);
             this.form.total_charge = parseFloat(data.total_charge);
             this.form.total = parseFloat(data.total);
-            this.form.total_payable_amount = parseFloat(data.total_payable_amount);
+            this.form.subtotal = parseFloat(data.subtotal);
             this.form.series_id = this.onSetSeriesId(data.document_type_id, data.series);
             this.form.operation_type_id = data.invoice.operation_type_id;
             this.form.terms_condition = data.terms_condition || '';
@@ -2324,7 +2328,7 @@ export default {
                 total_taxes: 0,
                 total_value: 0,
                 total: 0,
-                total_payable_amount: 0,
+                subtotal: 0,
                 operation_type_id: null,
                 date_of_due: moment().format('YYYY-MM-DD'),
                 items: [],
@@ -2377,6 +2381,8 @@ export default {
 
             this.enabled_payments = true
             this.readonly_date_of_due = false
+            this.total_discount_no_base = 0
+            
         },
         initInputPerson() {
             this.input_person = {
@@ -2620,7 +2626,8 @@ export default {
             let total_value = 0
             let total = 0
             let total_plastic_bag_taxes = 0
-            let total_discount_no_base = 0
+            this.total_discount_no_base = 0
+            
             // let total_free_igv = 0
 
             this.form.items.forEach((row) => {
@@ -2679,6 +2686,9 @@ export default {
 
                 }
 
+                //sum discount no base
+                this.total_discount_no_base += this.sumDiscountsNoBaseByItem(row) 
+
             });
 
 
@@ -2694,7 +2704,8 @@ export default {
             this.form.total_taxes = _.round(total_igv, 2)
             this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
             // this.form.total = _.round(total, 2)
-            this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
+            this.form.subtotal = _.round(total + this.form.total_plastic_bag_taxes, 2)
+            this.form.total = _.round(total + this.form.total_plastic_bag_taxes - this.total_discount_no_base, 2)
 
             if (this.enabled_discount_global)
                 this.discountGlobal()
@@ -2712,6 +2723,20 @@ export default {
 
             this.chargeGlobal()
 
+        },
+        sumDiscountsNoBaseByItem(row){
+
+            let sum_discount_no_base = 0
+
+            if(row.discounts){
+                // if(row.discounts.length > 0){
+                    sum_discount_no_base = _.sumBy(row.discounts, function(discount) {
+                         return  (discount.discount_type_id == '01') ? discount.amount : 0
+                    })
+                // }
+            }
+
+            return sum_discount_no_base
         },
         setTotalDefaultPayment() {
 
