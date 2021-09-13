@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant\Api;
 
+use App\Http\Controllers\Tenant\EmailController;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment as EstablishmentModel;
 use App\Models\Tenant\Person as PersonModel;
@@ -464,6 +465,11 @@ class SaleNoteController extends Controller
         $record = SaleNote::find($request->input('id'));
         $customer_email = $request->input('email');
 
+        $email = $customer_email;
+        $mailable = new SaleNoteEmail($company, $record);
+        $id =  $request->id;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, 2);
+        /*
         Configuration::setConfigSmtpMail();
         $array_email = explode(',', $customer_email);
         if (count($array_email) > 1) {
@@ -476,6 +482,7 @@ class SaleNoteController extends Controller
         } else {
             Mail::to($customer_email)->send(new SaleNoteEmail($company, $record));
         }
+        */
 
         return [
             'success' => true,

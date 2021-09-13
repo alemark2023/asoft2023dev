@@ -2,6 +2,7 @@
 
 namespace Modules\Pos\Http\Controllers;
 
+use App\Http\Controllers\Tenant\EmailController;
 use App\Models\Tenant\Configuration;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -26,6 +27,11 @@ class CashControllerRevision extends Controller
         $company = Company::active();
         $email = $request->input('email');
 
+        $mailable = new CashEmail($company, $this->getPdf($request->cash_id));
+        $id = (int)$request->cash_id;
+        $model = __FILE__.";;".__LINE__;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+        /*
         Configuration::setConfigSmtpMail();
         $array_email = explode(',', $email);
         if (count($array_email) > 1) {
@@ -37,7 +43,7 @@ class CashControllerRevision extends Controller
             }
         } else {
             Mail::to($email)->send(new CashEmail($company, $this->getPdf($request->cash_id)));
-        }
+        }*/
 
         return [
             'success' => true

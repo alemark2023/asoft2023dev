@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\Http\Controllers\Api;
 
+use App\Http\Controllers\Tenant\EmailController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Person;
@@ -306,7 +307,12 @@ class PurchaseController extends Controller
         $record = Purchase::find($request->input('id'));
         $supplier_email = $request->input('email');
 
-        Configuration::setConfigSmtpMail();
+        $email = $supplier_email;
+        $mailable = new  PurchaseEmail($company, $record);
+        $id = (int)$record->id;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, 5);
+        /*
+         Configuration::setConfigSmtpMail();
         $array_email = explode(',', $supplier_email);
         if (count($array_email) > 1) {
             foreach ($array_email as $email_to) {
@@ -317,7 +323,7 @@ class PurchaseController extends Controller
             }
         } else {
             Mail::to($supplier_email)->send(new  PurchaseEmail($company, $record));
-        }
+        }*/
 
         return [
             'success' => true,

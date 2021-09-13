@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\Http\Controllers;
 
+use App\Http\Controllers\Tenant\EmailController;
 use App\Models\Tenant\Catalogs\OperationType;
 use App\Models\Tenant\Configuration;
 use App\Traits\OfflineTrait;
@@ -421,6 +422,11 @@ class PurchaseOrderController extends Controller
         $record = PurchaseOrder::find($request->input('id'));
         $customer_email = $request->input('customer_email');
 
+        $email = $customer_email;
+        $mailable = new  PurchaseOrderEmail($record);
+        $id = (int)$record->id;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, 5);
+        /*
         Configuration::setConfigSmtpMail();
         $array_email = explode(',', $customer_email);
         if (count($array_email) > 1) {
@@ -433,6 +439,7 @@ class PurchaseOrderController extends Controller
         } else {
             Mail::to($customer_email)->send(new  PurchaseOrderEmail($record));
         }
+        */
         return [
             'success' => true
         ];

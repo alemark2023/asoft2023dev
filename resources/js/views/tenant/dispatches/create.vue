@@ -698,9 +698,9 @@ export default {
                 this.onLoadItemsFromSummary(response.data.itemsFromSummary, JSON.parse(itemsFromSummary));
             }
             this.changeEstablishment()
+         }).then(()=>{
+             this.setDefaultCustomer();
          });
-
-         this.setDefaultCustomer()
 
          this.createFromOrderForm()
 
@@ -786,20 +786,24 @@ export default {
             */
             if (this.config.establishment.customer_id) {
                 let temp_customers = this.customers;
-                this.$http.get(`/${this.resource}/search/customer/${this.config.establishment.customer_id}`).then((response) => {
-                    let data_customer = response.data.customers
-                    temp_customers = temp_customers.push(...data_customer)
-                })
-
-                temp_customers = this.customers.filter((item, index, self) =>
-                    index === self.findIndex((t) => (
-                        t.id === item.id
-                    ))
-                )
-                this.customers = temp_customers;
-                let alt = _.find(this.customers, {'id': this.config.establishment.customer_id});
+                let customer_id =this.config.establishment.customer_id;
+                let custom  = temp_customers.find(l => l.id == customer_id);
+                if(custom === undefined) {
+                    this.$http.get(`/${this.resource}/search/customer/${customer_id}`).then((response) => {
+                        let data_customer = response.data.customers
+                        temp_customers = temp_customers.push(...data_customer)
+                    })
+                    temp_customers = this.customers.filter((item, index, self) =>
+                        index === self.findIndex((t) => (
+                            t.id === item.id
+                        ))
+                    )
+                    this.customers = temp_customers;
+                }
+                let alt = _.find(this.customers, {'id': customer_id});
                 if (alt !== undefined) {
-                    this.form.customer_id = this.config.establishment.customer_id
+                    this.form.customer_id = customer_id
+                    this.changeCustomer();
                 }
             }
         },
@@ -924,6 +928,7 @@ export default {
 
             }
             this.changeEstablishment();
+
 
         },
         changeEstablishment() {
@@ -1105,6 +1110,7 @@ export default {
                     this.$message.error(error.response.data.message);
                 }
             }).then(() => {
+                this.setDefaultCustomer();
                 this.loading_submit = false;
             });
         },

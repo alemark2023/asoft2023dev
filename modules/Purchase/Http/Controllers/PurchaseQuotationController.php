@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\Http\Controllers;
 
+use App\Http\Controllers\Tenant\EmailController;
 use App\Models\Tenant\Configuration;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -314,6 +315,12 @@ class PurchaseQuotationController extends Controller
             $client = Person::find($supplier->supplier_id);
             $supplier_email = $supplier->email;
 
+            $email = $supplier_email;
+            $mailable =new  PurchaseQuotationEmail($client, $purchase_quotation);
+            $id = (int)$purchase_quotation->id;
+            $model = __FILE__.";;".__LINE__;
+            $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+            /*
             Configuration::setConfigSmtpMail();
             $array_email = explode(',', $supplier_email);
             if (count($array_email) > 1) {
@@ -326,6 +333,7 @@ class PurchaseQuotationController extends Controller
             } else {
                 Mail::to($supplier_email)->send(new  PurchaseQuotationEmail($client, $purchase_quotation));
             }
+            */
         }
 
         return [

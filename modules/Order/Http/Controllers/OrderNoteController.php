@@ -2,6 +2,7 @@
 
 namespace Modules\Order\Http\Controllers;
 
+use App\Http\Controllers\Tenant\EmailController;
 use App\Models\Tenant\Catalogs\OperationType;
 use App\Models\Tenant\Quotation;
 use App\Traits\OfflineTrait;
@@ -773,7 +774,12 @@ class OrderNoteController extends Controller
         $customer_email = $request->input('customer_email');
 
         // $this->reloadPDF($order_note, "a4", $order_note->filename);
-
+        $email = $customer_email;
+        $mailable = new OrderNoteEmail($client, $order_note);
+        $id = (int) $order_note->id;
+        $model = __FILE__.";;".__LINE__;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+        /*
         Configuration::setConfigSmtpMail();
         $array_email = explode(',', $customer_email);
         if (count($array_email) > 1) {
@@ -785,7 +791,7 @@ class OrderNoteController extends Controller
             }
         } else {
             Mail::to($customer_email)->send(new OrderNoteEmail($client, $order_note));
-        }
+        }*/
         return [
             'success' => true
         ];

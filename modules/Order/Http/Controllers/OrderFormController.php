@@ -2,6 +2,7 @@
 namespace Modules\Order\Http\Controllers;
 
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\Http\Controllers\Tenant\EmailController;
 use Modules\Order\Http\Resources\OrderFormCollection;
 use Modules\Order\Http\Resources\OrderFormResource;
 use App\Http\Controllers\Controller;
@@ -271,6 +272,12 @@ class OrderFormController extends Controller
         $record = OrderForm::find($request->input('id'));
         $customer_email = $request->input('customer_email');
 
+        $email = $customer_email;
+        $mailable = new OrderFormEmail($company, $record);
+        $id = (int) $record->id;
+        $model = __FILE__.";;".__LINE__;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+        /*
         Configuration::setConfigSmtpMail();
         $array_email = explode(',', $customer_email);
         if (count($array_email) > 1) {
@@ -283,6 +290,7 @@ class OrderFormController extends Controller
         } else {
             Mail::to($customer_email)->send(new OrderFormEmail($company, $record));
         }
+        */
 
         return [
             'success' => true

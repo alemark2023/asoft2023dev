@@ -2,6 +2,7 @@
 
 namespace Modules\Sale\Http\Controllers;
 
+use App\Http\Controllers\Tenant\EmailController;
 use App\Models\Tenant\Catalogs\OperationType;
 use App\Traits\OfflineTrait;
 use Exception;
@@ -538,6 +539,12 @@ class ContractController extends Controller
         $contract = Contract::find($request->id);
         $customer_email = $request->input('customer_email');
 
+        $email = $customer_email;
+        $mailable = new ContractEmail($client, $contract);
+        $id = (int)$contract->id;
+        $model = __FILE__.";;".__LINE__;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+        /*
         Configuration::setConfigSmtpMail();
         $array_email = explode(',', $customer_email);
         if (count($array_email) > 1) {
@@ -550,6 +557,7 @@ class ContractController extends Controller
         } else {
             Mail::to($customer_email)->send(new ContractEmail($client, $contract));
         }
+        */
         return [
             'success' => true
         ];

@@ -2,6 +2,7 @@
 
 namespace Modules\Sale\Http\Controllers;
 
+use App\Http\Controllers\Tenant\EmailController;
 use App\Models\Tenant\Configuration;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -439,6 +440,12 @@ class SaleOpportunityController extends Controller
         $sale_opportunity = SaleOpportunity::find($request->id);
         $customer_email = $request->input('customer_email');
 
+        $email = $customer_email;
+        $mailable = new SaleOpportunityEmail($client, $sale_opportunity);
+        $id = (int)$sale_opportunity->id;
+        $model = __FILE__.";;".__LINE__;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+        /*
         Configuration::setConfigSmtpMail();
         $array_email = explode(',', $customer_email);
         if (count($array_email) > 1) {
@@ -450,7 +457,7 @@ class SaleOpportunityController extends Controller
             }
         } else {
             Mail::to($customer_email)->send(new SaleOpportunityEmail($client, $sale_opportunity));
-        }
+        }*/
 
         return [
             'success' => true

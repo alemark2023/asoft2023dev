@@ -9,9 +9,6 @@ use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\AccountPayment;
 use App\Models\System\ClientPayment;
-
-
-
 use App\Http\Resources\Tenant\AccountPaymentCollection;
 use Culqi\Culqi;
 use Culqi\CulqiException;
@@ -150,6 +147,12 @@ class AccountController extends Controller
             $document->product = $request->producto;
             $document->total = $request->precio_culqi;
             $document->items = json_decode($request->items, true);
+            $email = $customer_email;
+            $mailable =new CulqiEmail($document);
+            $id =  $document->id;
+            $model = __FILE__."::".__LINE__;
+            $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+            /*
             Configuration::setConfigSmtpMail();
         $array_email = explode(',', $customer_email);
         if (count($array_email) > 1) {
@@ -161,7 +164,7 @@ class AccountController extends Controller
             }
         } else {
             Mail::to($customer_email)->send(new CulqiEmail($document));
-        }
+        }*/
 
             return [
                 'success' => true,

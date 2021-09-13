@@ -2,6 +2,7 @@
 
 namespace Modules\Ecommerce\Http\Controllers;
 
+use App\Http\Controllers\Tenant\EmailController;
 use App\Models\Tenant\Configuration;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -275,6 +276,12 @@ class EcommerceController extends Controller
     public function paymentCashEmail($customer_email, $document)
     {
         try {
+            $email = $customer_email;
+            $mailable = new CulqiEmail($document);
+            $id = (int) $document->id;
+            $model = __FILE__.";;".__LINE__;
+            $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+            /*
             Configuration::setConfigSmtpMail();
             $array_email = explode(',', $customer_email);
             if (count($array_email) > 1) {
@@ -286,7 +293,7 @@ class EcommerceController extends Controller
                 }
             } else {
                 Mail::to($customer_email)->send(new CulqiEmail($document));
-            }
+            }*/
         }catch(\Exception $e)
         {
             return true;

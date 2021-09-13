@@ -2,6 +2,7 @@
 
 namespace App\CoreFacturalo;
 
+use App\Http\Controllers\Tenant\EmailController;
 use Exception;
 use Mpdf\Mpdf;
 use Mpdf\HTMLParserMode;
@@ -182,6 +183,11 @@ class Facturalo
             $company = $this->company;
             $document = $this->document;
             $email = ($this->document->customer) ? $this->document->customer->email : $this->document->supplier->email;
+            $mailable =new DocumentEmail($company, $document);
+            $id =  $document->id;
+            $model = __FILE__.";;".__LINE__;
+            $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+            /*
             Configuration::setConfigSmtpMail();
             $array_email = explode(',', $email);
             if (count($array_email) > 1) {
@@ -194,6 +200,7 @@ class Facturalo
             } else {
                 Mail::to($email)->send(new DocumentEmail($company, $document));
             }
+            */
 
         }
     }

@@ -2,6 +2,7 @@
 namespace Modules\Ecommerce\Http\Controllers;
 
 
+use App\Http\Controllers\Tenant\EmailController;
 use App\Models\Tenant\Configuration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -97,6 +98,12 @@ class CulqiController extends Controller
         $document->total = $request->precio_culqi;
         $document->items = json_decode($request->items, true);
 
+          $email = $customer_email;
+          $mailable = new CulqiEmail($document);
+          $id = (int) $request->id;
+          $model = __FILE__.";;".__LINE__;
+          $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+          /*
           Configuration::setConfigSmtpMail();
           $array_email = explode(',', $customer_email);
           if (count($array_email) > 1) {
@@ -109,6 +116,7 @@ class CulqiController extends Controller
           } else {
               Mail::to($customer_email)->send(new CulqiEmail($document));
           }
+          */
 
         return [
             'success' => true,
