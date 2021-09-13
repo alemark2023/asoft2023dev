@@ -8,6 +8,17 @@
             <div class="form-body">
                 <div class="row">
                     <div class="col-12">
+                        <el-select v-model="type">
+                            <el-option
+                                v-for="option in types"
+                                :key="option.id"
+                                :label="option.description"
+                                :value="option.id"
+                            ></el-option>
+                        </el-select>
+                    </div>
+                    <div v-if="type === 0"
+                         class="col-12">
                         <template>
                             <label class="control-label">
                                 Seleccione rango de impresión
@@ -57,7 +68,12 @@ export default {
                 range: [1, 100]
             },
             max_item: 1,
+            type: 0,
             fromPharmacy: false,
+            types: [
+                {'id': 0, 'description': 'Normal'},
+                {'id': 1, 'description': 'Impresión 5cm x 2.5cm'},
+            ],
         }
     },
     created() {
@@ -82,8 +98,11 @@ export default {
                 isPharmacy: this.fromPharmacy,
                 ...this.form.range
             });
-            window.open(`/${this.resource}/export/barcode/?${query}`, '_blank');
-
+            if (this.type == 1) {
+                window.open(`/${this.resource}/export/barcode_full/?${query}`, '_blank');
+            } else {
+                window.open(`/${this.resource}/export/barcode/?${query}`, '_blank');
+            }
             this.loading_submit = false
             this.$emit('update:showDialog', false)
             this.initForm()
