@@ -144,21 +144,18 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
                     let aux_total_line = row.unit_price * row.quantity
 
-                    if (!affectation_igv_type_exonerated.includes(row.affectation_igv_type_id)) {
-                        total_value_partial = (aux_total_line - discount.percentage) / (1 + percentage_igv / 100)
-                    } else {
-                        total_value_partial = aux_total_line - discount.percentage
-                    }
+                    // if (!affectation_igv_type_exonerated.includes(row.affectation_igv_type_id)) {
+                    //     total_value_partial = (aux_total_line - discount.percentage) / (1 + percentage_igv / 100)
+                    // } else {
+                    //     total_value_partial = aux_total_line - discount.percentage
+                    // }
 
                     discount.base = _.round(aux_total_line, 2)
                     //amount and percentage are equals in input
                     discount.amount = _.round(discount.percentage, 2)
-
                     discount.percentage = _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)), 2)
-
                     discount.factor = _.round(discount.percentage / 100, 5)
                     // discount.factor = _.round(discount.percentage / 100, 2)
-
                     // discount_no_base += discount.amount
                 }
 
@@ -178,15 +175,16 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
                 }else{
 
+
                     let aux_total_line = row.unit_price * row.quantity
                     discount.factor = _.round(discount.percentage / 100, 5)
                     discount.amount = _.round(aux_total_line * discount.factor, 2)
 
-                    if (!affectation_igv_type_exonerated.includes(row.affectation_igv_type_id)) {
-                        total_value_partial = (aux_total_line - discount.amount) / (1 + percentage_igv / 100)
-                    } else {
-                        total_value_partial = aux_total_line - discount.amount
-                    }
+                    // if (!affectation_igv_type_exonerated.includes(row.affectation_igv_type_id)) {
+                    //     total_value_partial = (aux_total_line - discount.amount) / (1 + percentage_igv / 100)
+                    // } else {
+                    //     total_value_partial = aux_total_line - discount.amount
+                    // }
 
                     discount.base = _.round(aux_total_line, 2)
 
@@ -257,22 +255,27 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
 
     if (row.discounts.length > 0) {
+
         let sum_discount_no_base = 0
         let sum_discount_base = 0
+
         row.discounts.forEach(discount => {
             sum_discount_no_base += (discount.discount_type_id == '01') ? discount.amount : 0
             sum_discount_base += (discount.discount_type_id == '00') ? discount.amount : 0
         })
+
         //obs 4287
         row.unit_price = (total_value + total_taxes - sum_discount_no_base) / row.quantity
+
         //obs 4288
-        let exist_discount_no_base = _.find(row.discounts, {discount_type_id: '01'})
-        if (exist_discount_no_base) {
-            row.unit_value = (total_value + total_taxes) / row.quantity
-            if (row.affectation_igv_type_id === '10') {
-                row.unit_value = row.unit_value / (1 + percentage_igv / 100)
-            }
-        }
+        // let exist_discount_no_base = _.find(row.discounts, {discount_type_id: '01'})
+        // if (exist_discount_no_base) {
+        //     row.unit_value = (total_value + total_taxes) / row.quantity
+        //     if (row.affectation_igv_type_id === '10') {
+        //         row.unit_value = row.unit_value / (1 + percentage_igv / 100)
+        //     }
+        // }
+
         let total_discounts = sum_discount_no_base + sum_discount_base;
         row.total_discount = _.round(total_discounts, 2)
     }

@@ -159,7 +159,8 @@ class Document extends ModelTenant
         'terms_condition',
         'payment_condition_id',
         'is_editable',
-        'dispatch_id'
+        'dispatch_id',
+        'subtotal',
     ];
 
     protected $casts = [

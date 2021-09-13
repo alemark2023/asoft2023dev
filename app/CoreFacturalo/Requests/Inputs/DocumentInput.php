@@ -61,6 +61,7 @@ class DocumentInput
         }
 
         $items = self::items($inputs);
+
         return [
             'type' => $inputs['type'],
             'group_id' => $inputs['group_id'],
@@ -103,6 +104,7 @@ class DocumentInput
             'total_plastic_bag_taxes' => Functions::valueKeyInArray($inputs, 'total_plastic_bag_taxes', 0),
             'total_taxes' => $inputs['total_taxes'],
             'total_value' => $inputs['total_value'],
+            'subtotal' => (Functions::valueKeyInArray($inputs, 'subtotal')) ? $inputs['subtotal'] : $inputs['total'],
             'total' => $inputs['total'],
             'has_prepayment' => Functions::valueKeyInArray($inputs, 'has_prepayment', 0),
             'affectation_type_prepayment' => Functions::valueKeyInArray($inputs, 'affectation_type_prepayment'),
