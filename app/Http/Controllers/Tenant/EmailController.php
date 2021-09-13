@@ -2,13 +2,10 @@
 
     namespace App\Http\Controllers\Tenant;
 
+    use App\Http\Controllers\Controller;
     use App\Models\Tenant\Configuration;
     use App\Models\Tenant\EmailSendLog;
-    use ErrorException;
     use Exception;
-    use Illuminate\Http\Request;
-    use App\Http\Controllers\Controller;
-    use Illuminate\Mail\Mailable;
     use Illuminate\Support\Facades\Mail;
     use Log;
     use Swift_RfcComplianceException;
@@ -59,13 +56,28 @@
         public static function SendMail($email, $mailable, $id = 0, $type = null): bool
         {
             $sendit = new self();
+            $mail = explode(';', str_replace([',', ' '], [';', ''], $email));
             $sendit
                 ->setType($type)
                 ->setId($id);
+            if (!empty($mail) && count($mail) > 0) {
+                foreach ($mail as $email) {
+                    $email = trim($email);
+                    if (!empty($email)) {
+                        $sendit
+                            ->setEmail($email)
+                            ->SendAMail($mailable);
+                    }
+                }
 
-            return $sendit
-                ->setEmail(str_replace([',',' '], [';',''], $email))
-                ->SendAMail($mailable);
+            } else {
+                $sendit
+                    ->setEmail(str_replace([',', ' '], [';', ''], $email))
+                    ->SendAMail($mailable);
+            }
+
+
+            return true;
         }
 
         /**
@@ -130,12 +142,13 @@
         public function saveModel($sendit = false)
         {
 
+
             $e = new EmailSendLog();
             $e->setRelationId($this->getId());
             if (is_numeric($this->type)) {
-                $e->setModelByType($this->getType());
-
-                $e->setEmail($this->getEmail())
+                $e
+                    ->setModelByType($this->getType())
+                    ->setEmail($this->getEmail())
                     ->setSendit((bool)$sendit)
                     ->push();
 

@@ -245,13 +245,9 @@ export default {
             this.loading = true;
             await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                 this.form = response.data.data;
-                console.log('eto ' +`/${this.resource}/record/${this.recordId}`)
-
                 this.titleDialog = 'Comprobante: ' + this.form.number;
                 if (this.generatDispatch) window.open(`/dispatches/create/${this.form.id}/i/${this.dispatchId}`)
             }).finally(() => {
-                console.error(this.form)
-                console.log('getRecord')
                 this.loading = false
             });
         },
