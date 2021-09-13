@@ -1795,7 +1795,8 @@ export default {
                 i.input_unit_price_value = (i.item.has_igv) ? i.unit_price : i.unit_value;
 
                 // i.input_unit_price_value = i.unit_price;
-                i.discounts = i.discounts || [];
+                i.discounts = (i.discounts) ? Object.values(i.discounts) : []
+                // i.discounts = i.discounts || [];
                 i.charges = i.charges || [];
                 i.attributes = i.attributes || [];
                 i.item.id = i.item_id;
