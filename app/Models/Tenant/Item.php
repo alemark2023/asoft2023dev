@@ -1484,4 +1484,96 @@ class Item extends ModelTenant
         }
         return false;
     }
+
+    /**
+     * Deuelve codificacion 64 para el codigo de barras
+     *
+     * @param int   $height
+     * @param int[] $colour
+     *
+     * @return string
+     */
+    public function getBarCode(int $height = 60, $colour = [0,0,0]){
+
+       $code = $this->getIdentificacionCode();
+        if(empty($code)) {
+            return null;
+        }
+        $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+        return  "data:image/png;base64,".base64_encode($generator->getBarcode($code, $generator::TYPE_CODE_128, 1, $height, $colour));
+    }
+
+    /**
+     * Obtiene el codigo de barras o el codigo interno para devolverlo
+     * @return string|null
+     */
+    public function getIdentificacionCode()
+    {
+        $code = $this->barcode;
+        if(empty($code)){
+            $code = $this->internal_id;
+        }
+        return $code;
+    }
+
+
+    /**
+     * Obtiene una estructura estandar para generar los codigos de barra
+     * Normalmente, el alto ($barCodeHeight) de codigo de barradas es 60 px.
+     *
+     * @param int $barCodeHeight
+     *
+     * @return array
+     */
+    public function getBarCodeData($barCodeHeight = 60 ){
+
+        $data = [];
+        $data['internal_id'] = $this->internal_id;
+        $data['name'] = $this->getDescription();
+        $data['model'] = $this->model;
+        $data['code'] = $this->getIdentificacionCode();
+        $data['short_name'] = substr($data['name'],0,30);
+        $data['short_model'] = substr($data['model'],0,10);
+        $data['bar_code'] = $this->getBarCode($barCodeHeight);
+        $data['price'] = $this->currency_type->symbol." ".$this->withoutRounding();
+        $data['second_name'] = $this->second_name;
+        $data['short_second_name'] = substr($data['second_name'],0,4);
+        $data['talla'] = $data['short_second_name'];
+        return $data;
+    }
+
+
+    /**
+     * Genera los numeros para el codigo de barras sin redondeo.
+     *
+     * @param int $total_decimals
+     *
+     * @return mixed|string
+     */
+    public  function withoutRounding( $total_decimals = 2) {
+        $number = (string)$this->sale_unit_price;
+        if($number === '') {
+            $number = '0';
+        }
+        if(strpos($number, '.') === false) {
+            $number .= '.';
+        }
+        $number_arr = explode('.', $number);
+
+        $decimals = substr($number_arr[1], 0, $total_decimals);
+        if($decimals === false) {
+            $decimals = '0';
+        }
+
+        $return = '';
+        if($total_decimals == 0) {
+            $return = $number_arr[0];
+        } else {
+            if(strlen($decimals) < $total_decimals) {
+                $decimals = str_pad($decimals, $total_decimals, '0', STR_PAD_RIGHT);
+            }
+            $return = $number_arr[0] . '.' . $decimals;
+        }
+        return $return;
+    }
 }
