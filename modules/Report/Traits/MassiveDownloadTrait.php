@@ -3,6 +3,7 @@
 namespace Modules\Report\Traits;
 
 use App\CoreFacturalo\Template;
+use App\Http\Controllers\PdfUnionController;
 use App\Models\Tenant\{BankAccount, Dispatch, Document, Establishment, SaleNote};
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
@@ -392,7 +393,7 @@ trait MassiveDownloadTrait
                 );
 
                 $pdf1 = $pdf;
-                $this->addFpi($pdfj, $pdf1);
+                PdfUnionController::addFpi($pdfj, $pdf1);
                 // $this->SaveTempPdf($pdf,$pdf_array,$document);
             }
 
@@ -411,7 +412,7 @@ trait MassiveDownloadTrait
                 );
 
                 $pdf1 = $pdf;
-                $this->addFpi($pdfj, $pdf1);
+                PdfUnionController::addFpi($pdfj, $pdf1);
                 // $this->SaveTempPdf($pdf,$pdf_array,$document);
             }
 
@@ -430,7 +431,7 @@ trait MassiveDownloadTrait
                 );
 
                 $pdf1 = $pdf;
-                $this->addFpi($pdfj, $pdf1);
+                PdfUnionController::addFpi($pdfj, $pdf1);
                 //   $this->SaveTempPdf($pdf,$pdf_array,$document);
             }
             /*
@@ -451,32 +452,11 @@ trait MassiveDownloadTrait
                         $pdf_data
                     );
                     $pdf1 = $pdf;
-                    $this->addFpi($pdfj, $pdf1);
+                    PdfUnionController::addFpi($pdfj, $pdf1);
                     // $this->SaveTempPdf($pdf,$pdf_array,$document);
                 }
             */
-            $start = isset($array['date_start']) ? "-".$array['date_start'] : '';
-            $end = isset($array['date_end']) ? "-".$array['date_end'] : '';
              return  $pdfj->Output('S');
-
-            $path = $name_file. '.zip';
-            $zip_file = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, storage_path('app/public/temp_pdf/' . $path));
-            $zip = new ZipArchive();
-            if ($zip->open($zip_file, (ZipArchive::CREATE | ZipArchive::OVERWRITE)) !== true) {
-                exit(501);
-            }
-            foreach ($pdf_array as $name => $file) {
-                $zip->addFile($file, $name . ",pdf");
-            }
-            sleep(5);
-            $zip->close();
-            sleep(5);
-            $start = isset($array['date_start']) ? $array['date_start'] : '';
-            $end = isset($array['date_end']) ? $array['date_end'] : '';
-
-            $temp = Response::download($zip_file, $name_file);
-            return $temp;
-
 
         } else {
 
@@ -562,32 +542,6 @@ trait MassiveDownloadTrait
 
     }
 
-    /**
-     * Unifica varios pdf en uno solo.
-     *
-     * @param      $fpdi
-     * @param Mpdf $pdf
-     *
-     * @throws \Mpdf\MpdfException
-     */
-    public function addFpi(&$fpdi, Mpdf $pdf){
-        $path = storage_path('app/public/temp_pdf/' . microtime() . ".pdf");
-        if (!is_dir(storage_path('app/public/temp_pdf/'))) mkdir(storage_path('app/public/temp_pdf/'));
-        ob_clean();
-        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
-        $pdf->output($path, 'F');
-        if (is_file($path)) {
-            $pageCount = $fpdi->setSourceFile($path);
-            for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
-                $pageId = $fpdi->ImportPage($pageNo);
-                $s = $fpdi->getTemplatesize($pageId);
-                $fpdi->AddPage($s['orientation'], $s);
-                $fpdi->useImportedPage($pageId);
-            }
-            unlink($path);
-        }
-
-    }
     public function addRecordToPdf(
                 $document,
         $format_pdf = 'a4',
@@ -695,7 +649,7 @@ trait MassiveDownloadTrait
         }
         $pdf->AddPage();
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
-        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);return $pdf;
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
         return $pdf;
 
 
