@@ -38,4 +38,45 @@ class Controller extends BaseController
 
         return compact('customers');
     }
+
+    /**
+     * Valida si existe una conexion valida al sitio de destino, se requiere configuracion adicional para guardarlo en el archivo
+     * en ese caso se debe revisar la funcion ExtraLog
+     *
+     * @param string $host
+     * @param int    $wait_seconds
+     */
+    public function pingSite ($host = 'demo.facturalo.pro', $wait_seconds = 1){
+
+        $ports = [
+            'http'  => 80,
+            'https' => 443,
+        ];
+        $string = '';
+        foreach ($ports as $key => $port) {
+            $fp = @fsockopen($host, $port, $errCode, $errStr, $wait_seconds);
+            $string .= "<br>Ping $host:$port ($key) ==> ";
+            if ($fp) {
+                $string.= 'SUCCESS';
+                fclose($fp);
+            } else {
+                $string.= "ERROR: $errCode - $errStr";
+            }
+            $string.= PHP_EOL;
+        }
+        self::ExtraLog(__FILE__."::".__LINE__." \n Validando Host $host  \n>>>>\n$string");
+    }
+
+    /**
+     * Guarda un log en facturalo si la variable EXTRA_LOG es verdadera en el archivo .env
+     * @param string $string
+     */
+    public static function ExtraLog($string = ''){
+        if(\Config('extra.extra_log') === true){
+            \Log::channel('facturalo')->debug(
+                "\n**************************************DEBUG SE ENCUENTRA ACTIVADO**********************************************************************************\n".
+                $string.
+                "\n**************************************DEBUG SE ENCUENTRA ACTIVADO**********************************************************************************\n");
+        }
+    }
 }

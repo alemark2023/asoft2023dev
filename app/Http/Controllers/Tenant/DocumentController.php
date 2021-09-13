@@ -681,9 +681,14 @@ class DocumentController extends Controller
         $document = Document::find($request->input('id'));
         $customer_email = $request->input('customer_email');
         Configuration::setConfigSmtpMail();
-
-        Mail::to($customer_email)->send(new DocumentEmail($company, $document));
-
+        $array_customer = explode(',', $customer_email);
+        if (count($array_customer) > 1) {
+            foreach ($array_customer as $customer) {
+                Mail::to($customer)->send(new DocumentEmail($company, $document));
+            }
+        } else {
+            Mail::to($customer_email)->send(new DocumentEmail($company, $document));
+        }
         return [
             'success' => true
         ];

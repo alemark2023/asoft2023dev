@@ -640,7 +640,7 @@ class SaleNote extends ModelTenant
             $tem_item['affectation_igv_type']=$item->affectation_igv_type;
             $it = $item->item;
             $ot = Item::find($it->id);
-            $tem_item['full_item'] = Item::where('id', $it->id)->select(
+            $item_select =  Item::where('id', $it->id)->select(
                 'name',
                 'second_name',
                 'description',
@@ -672,6 +672,7 @@ class SaleNote extends ModelTenant
                 'cod_digemid',
                 'sanitary'
             )->first();
+            $tem_item['full_item'] =$item_select!==null?$item_select->toArray():[];
             $property = [
                 'full_description',
                 'name',

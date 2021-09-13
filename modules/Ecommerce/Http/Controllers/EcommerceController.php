@@ -276,7 +276,17 @@ class EcommerceController extends Controller
     {
         try {
             Configuration::setConfigSmtpMail();
-            Mail::to($customer_email)->send(new CulqiEmail($document));
+            $array_email = explode(',', $customer_email);
+            if (count($array_email) > 1) {
+                foreach ($array_email as $email_to) {
+                    $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                        Mail::to($email_to)->send(new CulqiEmail($document));
+                    }
+                }
+            } else {
+                Mail::to($customer_email)->send(new CulqiEmail($document));
+            }
         }catch(\Exception $e)
         {
             return true;

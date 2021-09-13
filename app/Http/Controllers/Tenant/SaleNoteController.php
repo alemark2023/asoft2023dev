@@ -37,7 +37,10 @@ use App\Models\Tenant\Series;
 use App\Models\Tenant\User;
 use App\Traits\OfflineTrait;
 use Carbon\Carbon;
+use ErrorException;
 use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -115,6 +118,10 @@ class SaleNoteController extends Controller
         };
         $token = $migrationConfiguration->getApiKey();
         $web = $migrationConfiguration->getUrl();
+        /*
+        $token = 'TESTING_TOKEN_mmmddasdadasd';
+        $web = 'testing.url';
+        */
 
         $alreadySendit = SaleNoteMigration::where([
             'sale_notes_id' => $saleNoteId,
@@ -134,46 +141,129 @@ class SaleNoteController extends Controller
             return $dataSend;
         };
 
+         // Hace ping para validar puertos, Implementado para testing de conexion
+        $this->pingSite($web);
+        $data_note = $sale_note->getDataToApiExport();
 
-        $data = $sale_note->getDataToApiExport();
 
         $alreadySendit = new SaleNoteMigration([
             'sale_notes_id' => $saleNoteId,
             'user_id' => auth()->user()->id,
             'success' => 1,
             'url' => $web,
-            'data' => json_encode($data),
+            'data' => json_encode($data_note),
         ]);
-        $curl = curl_init();
+        $web = "https://$web";
+        $web_Url = "$web/api/sale-note";
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'http://' . $web . '/api/sale-note',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => json_encode($data),
-            CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . $token,
-                'Content-Type: application/json',
-                'Cookie: Cookie_1=value'
-            ),
-        ));
-        $response = curl_exec($curl);
-        curl_close($curl);
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $token,
+            'Accept'        => 'application/json',
+        ];
+        $client = new  Client([
+            'base_uri'=>$web,
+            'verify'          => false,
+            'headers'          => $headers,
+
+        ]);
+
+        try {
+            $send = [
+                'form_params' => $data_note,
+                'headers' => $headers,
+            ];
+            $ype_send = 'POST';
+            self::ExtraLog(__FILE__."::".__LINE__."  \n Enviando por >$ype_send<  a la url $web_Url \n\n".__FUNCTION__." \n". json_encode($send) ."\n\n\n\n");
+            $response = $client->request($ype_send, $web_Url,$send);
+        }catch (RequestException $e){
+            $code = $e->getCode();
+            $responsea = $e->getResponse();
+            if(empty($responsea)){
+                $dataSend['message'] = 'No se ha obtenido respuesta del sitio '.$web;
+                return $dataSend;
+            }
+            $responseBodyAsString = $responsea->getBody()->getContents();
+            $response = json_decode($responseBodyAsString);
+            try {
+                if (property_exists($response, 'success')) {
+                    $success = $response->success;
+                    $alreadySendit->setSuccess();
+                    if (property_exists($response, 'data')) {
+                        $data = $response->data;
+                        if ($success == true) {
+                            $alreadySendit
+                                ->setSuccess(true)
+                                ->setNumber($data->number)
+                                ->setRemoteId($data->id);
+                        }
+                    } else {
+                        if (property_exists($response, 'message')) {
+                            $message = $response->message;
+                            $err_gen = 'NV-GEN-';
+                            if ($this->searchInString('SQLSTATE[23000]', $message)) {
+                                $err_gen = 'NV-SQL-';
+                                if ($this->searchInString('`persons`', $message)) {
+                                    $err_gen .= "001";
+                                    $dataSend['message'] = 'Problemas insertando datos del cliente. ' . $err_gen;
+                                } else {
+                                    $err_gen .= "003";
+                                    $dataSend['message'] = 'Problemas insertando datos' . $err_gen;
+                                }
+
+                            } else {
+                                if (
+                                    $this->searchInString("Trying to get property 'description' of non-object", $message) &&
+                                    $this->searchInString("sale_note_a4.blade.php", $message)
+                                ) {
+                                    $err_gen = "NV-FILE-001";
+                                    $dataSend['message'] = 'Problemas generando los atributos del item en el pdf ' . $err_gen;
+                                    $err_gen.= '\n\n\nPosiblemente sea el atributo en parte del siguiente codigo   @if($row->attributes)
+                    @foreach($row->attributes as $attr)
+                        <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
+                    @endforeach
+                @endif \n\n\n';
+
+                                }else {
+                                    $err_gen .= "004";
+                                    $dataSend['message'] = "Error desconocido. Codigo $err_gen";
+                                    $dataSend['extra'] = $response->message;
+                                }
+                            }
+                            \Log::channel('facturalo')->error(__FILE__ . "::" . __LINE__ . " \n $err_gen: No se ha podido determinar el fallo. La respuesta es \n" .
+                                var_export($response->message, true));
+                            return $dataSend;
+
+                        }
+                    }
+                    $alreadySendit->push();
+                    $dataSend['message'] = 'Se ha generado correctamente bajo el numero ' . $alreadySendit->getNumber();
+                    $dataSend['success'] = true;
+                }
+            }catch (ErrorException $er){
+                \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n NV-M-501: No se ha podido determinar el fallo. La respuesta es \n".
+                    $responseBodyAsString."\n");
+            }
+
+            \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n NV-M-500: No se ha podido determinar el fallo. La respuesta es \n".
+                var_export($response,true));
+            $dataSend['message'] = 'Error desconocido. Codigo : NV-M-500';
+            return $dataSend;
+        }
+
+        self::ExtraLog(__FILE__."::".__LINE__."  \n Datos de RESPUESTA ".__FUNCTION__." \n". var_export($response,true) ."\n\n\n\n");
 
         if($response == false){
-            \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n NV-M-404: La respuesta ha sido falsa, posiblemente no se encuentre la web $web \n".
+            \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n NV-M-404: La respuesta ha sido falsa, posiblemente no se encuentre la web $web_Url \n".
                 var_export($response,true));
             $dataSend['message'] = 'Problemas de conexion con el servidor. Revise la configuracion. Codigo : NV-M-404';
 
             return $dataSend;
         }
 
-        $response = json_decode($response);
+        $responseBodyAsString = $response->getBody()->getContents();
+        $response = json_decode($responseBodyAsString);
+
         if (property_exists($response, 'success')) {
             $success = $response->success;
             $alreadySendit->setSuccess();
@@ -234,6 +324,7 @@ class SaleNoteController extends Controller
         $proccesed = [];
         $text = '';
         $success = false;
+        $extra = '';
         if($request->has('sale_note_id')){
             // para una NV
             $saleNoteId = $request->sale_note_id;
@@ -248,12 +339,14 @@ class SaleNoteController extends Controller
                 if($success == false){
                     $success = $temp['success'];
                 }
+                $extra .= $temp['extra']." | "??null;
                 $sms = $temp['message']??null;
                 $text.=($sms !== null)?$sms."<br>":null;
             }
         }
         $data['success']= $success;
         $data['message']= $text;
+        $data['extra_info']= $extra;
         $data['proccesed']= $proccesed;
         return $data;
     }
@@ -1178,7 +1271,17 @@ class SaleNoteController extends Controller
         $customer_email = $request->input('customer_email');
 
         Configuration::setConfigSmtpMail();
-        Mail::to($customer_email)->send(new SaleNoteEmail($company, $record));
+        $array_email = explode(',', $customer_email);
+        if (count($array_email) > 1) {
+            foreach ($array_email as $email_to) {
+                $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                    Mail::to($email_to)->send(new SaleNoteEmail($company, $record));
+                }
+            }
+        } else {
+            Mail::to($customer_email)->send(new SaleNoteEmail($company, $record));
+        }
 
         return [
             'success' => true

@@ -60,6 +60,7 @@ class SaleNoteController extends Controller
         $data = [];
         if($request['force_create_if_not_exist']) {
             // Se saca de tenant, para que pueda guardar el item correctamente.
+            self::ExtraLog(__FILE__."::".__LINE__."   ".__FUNCTION__."  \n Entra por crear ".__FUNCTION__." \n". var_export($request->all(),true) ."\n\n\n\n");
             $data = $this->mergeData($request);
         }
 
@@ -116,6 +117,7 @@ class SaleNoteController extends Controller
     public function mergeData($inputs)
     {
         $this->company = Company::active();
+        // self::ExtraLog(__FILE__."::".__LINE__."  \n Campos ".__FUNCTION__." \n". json_encode($inputs) ."\n\n\n\n");
 
         $type_period = $inputs['type_period'];
         $quantity_period = $inputs['quantity_period'];
@@ -128,68 +130,76 @@ class SaleNoteController extends Controller
             $automatic_date_of_issue = $add_period_date->format('Y-m-d');
         }
         if($force_create_if_not_exist === true){
+            // busca la persona por id
             $person = PersonModel::find($inputs['customer_id']);
-            if($person === null) {
-
-                $client_data = $inputs['datos_del_cliente_o_receptor'];
-
-                $client_number = isset($client_data['numero_documento']) ? $client_data['numero_documento'] : null;
-                $person = PersonModel::where('number',$client_number)->first();
-                if($person ===  null && !empty($client_number)){
-                    $data_person = [
-                        'number'=>$client_number,
-                        'identity_document_type_id'=> $client_data['codigo_tipo_documento_identidad'] ?? '6',
-                        'name'=> $client_data['apellidos_y_nombres_o_razon_social'] ?? '',
-                        'country_id'=> $client_data['codigo_pais'] ?? 'PE',
-                        'district_id'=> $client_data['ubigeo'] ?? '',
-                        'address'=> $client_data['direccion'] ?? '',
-                        'email'=> $client_data['correo_electronico'] ?? '',
-                        'telephone'=> $client_data['telefono'] ?? '',
-                    ];
-                    $person = new PersonModel($data_person);
-                    $person->push();
-                }
-                $inputs['customer_id'] = $person->id;
-                $items = $inputs['items'];
-                foreach ($items as $key => $item) {
-                    $item_in = $item['full_item'];
-                    unset(
-                        $item_in['item_id'],
-                        $item_in['internal_id'],
-                        $item_in['id'],
-                        $item_in['barcode'],
-                        $item_in['tags'],
-                        $item_in['unit_type'],
-                        $item_in['item_type'],
-                        $item_in['currency_type'],
-                        $item_in['warehouses'],
-                        $item_in['item_unit_types']
-                    );
-                    foreach($item_in as $k=>$v){
-                        if(empty($v)){
-                            unset($item_in[$k]);
-                        }
-                    }
-                    $identicalItem = Item::where($item_in)->first();
-                    if ($identicalItem === null) {
-                        $identicalItem = new Item($item_in);
-                        $identicalItem->stock = 1;
-                        $identicalItem->stock_min = 1;
-                        $identicalItem->push();
-
-                    }
-                    $items[$key]['id'] = $identicalItem->id;
-                    $items[$key]['attributes'] = $identicalItem->attributes;
-                    $items[$key]['item_id'] = $identicalItem->id;
-                    $items[$key]['barcode'] = $identicalItem->barcode;
-                    $items[$key]['item']['barcode'] = $identicalItem->barcode;
-                    $items[$key]['item']['id'] = $identicalItem->id;
-                    $items[$key]['item']['item_id'] = $identicalItem->id;
-                }
-
-                $inputs['items'] = $items ;
+            $client_data = $inputs['datos_del_cliente_o_receptor'];
+            $client_number = isset($client_data['numero_documento']) ? $client_data['numero_documento'] : null;
+            // compara el numero con el id del cliente, Si es diferente, deberia crear el cliente
+            if($client_number !== $person->number){
+                $person = null;
             }
-            if(!isset($inputs['establishment_id']) || empty($inputs['establishment_id'])){
+            if ($person === null) {
+                $person = PersonModel::where('number', $client_number)->first();
+            }
+            if ($person === null && !empty($client_number)) {
+                $data_person = [
+                    'number' => $client_number,
+                    'identity_document_type_id' => $client_data['codigo_tipo_documento_identidad'] ?? '6',
+                    'name' => $client_data['apellidos_y_nombres_o_razon_social'] ?? '',
+                    'country_id' => $client_data['codigo_pais'] ?? 'PE',
+                    'district_id' => $client_data['ubigeo'] ?? '',
+                    'address' => $client_data['direccion'] ?? '',
+                    'email' => $client_data['correo_electronico'] ?? '',
+                    'telephone' => $client_data['telefono'] ?? '',
+                ];
+                $person = new PersonModel($data_person);
+                $person->push();
+            }
+            $inputs['customer_id'] = $person->id;
+            $items = $inputs['items'];
+            self::ExtraLog(__FILE__ . "::" . __LINE__ . "   " . __FUNCTION__ . "  \n Buscando Items " . var_export($items, true) . "\n\n\n\n");
+
+            foreach ($items as $key => $item) {
+                $item_in = $item['full_item'];
+                self::ExtraLog('Item Antes \n\n\n\n\n' . var_export($item['full_item'], true) . "\n<<<<<<<<<<<<<<<<<<<<<<<<");
+                unset(
+                    $item_in['item_id'],
+                    $item_in['internal_id'],
+                    $item_in['id'],
+                    $item_in['barcode'],
+                    $item_in['tags'],
+                    $item_in['unit_type'],
+                    $item_in['item_type'],
+                    $item_in['currency_type'],
+                    $item_in['warehouses'],
+                    $item_in['item_unit_types']
+                );
+                foreach ($item_in as $k => $v) {
+                    if (empty($v)) {
+                        unset($item_in[$k]);
+                    }
+                }
+                self::ExtraLog('Item Despues \n\n\n\n\n' . var_export($item_in, true) . "\n<<<<<<<<<<<<<<<<<<<<<<<<");
+                $identicalItem = Item::where($item_in)->first();
+                if ($identicalItem === null) {
+                    $identicalItem = new Item($item_in);
+                    $identicalItem->stock = 1;
+                    $identicalItem->stock_min = 1;
+                    $identicalItem->push();
+
+                }
+                $items[$key]['id'] = $identicalItem->id;
+                $items[$key]['attributes'] = $identicalItem->attributes;
+                $items[$key]['item_id'] = $identicalItem->id;
+                $items[$key]['barcode'] = $identicalItem->barcode;
+                $items[$key]['item']['barcode'] = $identicalItem->barcode;
+                $items[$key]['item']['id'] = $identicalItem->id;
+                $items[$key]['item']['item_id'] = $identicalItem->id;
+            }
+
+            $inputs['items'] = $items;
+
+            if (!isset($inputs['establishment_id']) || empty($inputs['establishment_id'])) {
                 $inputs['establishment_id'] = $inputs['establishment_id'] ?: auth()->user()->establishment_id;
             }
         }
@@ -455,7 +465,17 @@ class SaleNoteController extends Controller
         $customer_email = $request->input('email');
 
         Configuration::setConfigSmtpMail();
-        Mail::to($customer_email)->send(new SaleNoteEmail($company, $record));
+        $array_email = explode(',', $customer_email);
+        if (count($array_email) > 1) {
+            foreach ($array_email as $email_to) {
+                $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                    Mail::to($email_to)->send(new SaleNoteEmail($company, $record));
+                }
+            }
+        } else {
+            Mail::to($customer_email)->send(new SaleNoteEmail($company, $record));
+        }
 
         return [
             'success' => true,
