@@ -342,8 +342,9 @@
             {{-- @if($document->total_igv > 0)
             <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_igv }}</cbc:TaxAmount>
             @else --}}
-            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ round($document->total_free * 0.18, 2) }}</cbc:TaxAmount>
+            {{-- <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ round($document->total_free * 0.18, 2) }}</cbc:TaxAmount> --}}
             {{-- @endif --}}
+            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_igv_free }}</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cac:TaxScheme>
                     <cbc:ID>9996</cbc:ID>
