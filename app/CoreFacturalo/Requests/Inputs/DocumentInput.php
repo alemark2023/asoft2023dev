@@ -97,6 +97,7 @@ class DocumentInput
             'total_unaffected' => Functions::valueKeyInArray($inputs, 'total_unaffected', 0),
             'total_exonerated' => Functions::valueKeyInArray($inputs, 'total_exonerated', 0),
             'total_igv' => $inputs['total_igv'],
+            'total_igv_free' => Functions::valueKeyInArray($inputs, 'total_igv_free', 0),
             'total_base_isc' => Functions::valueKeyInArray($inputs, 'total_base_isc', 0),
             'total_isc' => Functions::valueKeyInArray($inputs, 'total_isc', 0),
             'total_base_other_taxes' => Functions::valueKeyInArray($inputs, 'total_base_other_taxes', 0),

@@ -39,6 +39,7 @@ class DocumentTransform
             'total_unaffected' => Functions::valueKeyInArray($totals, 'total_operaciones_inafectas'),
             'total_exonerated' => Functions::valueKeyInArray($totals, 'total_operaciones_exoneradas'),
             'total_igv' => Functions::valueKeyInArray($totals, 'total_igv'),
+            'total_igv_free' => Functions::valueKeyInArray($totals, 'total_igv_operaciones_gratuitas'),
             'total_base_isc' => Functions::valueKeyInArray($totals, 'total_base_isc'),
             'total_isc' => Functions::valueKeyInArray($totals, 'total_isc'),
             'total_base_other_taxes' => Functions::valueKeyInArray($totals, 'total_base_otros_impuestos'),

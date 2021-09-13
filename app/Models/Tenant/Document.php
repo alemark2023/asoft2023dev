@@ -161,6 +161,7 @@ class Document extends ModelTenant
         'is_editable',
         'dispatch_id',
         'subtotal',
+        'total_igv_free',
     ];
 
     protected $casts = [
