@@ -17,13 +17,13 @@
                             ></el-option>
                         </el-select>
                     </div>
-                    <div v-if="type === 0"
+                    <div
                          class="col-12">
                         <template>
                             <label class="control-label">
                                 Seleccione rango de impresión
                                 <el-tooltip class="item"
-                                            content="Generar una cantidad muy alta puede causar lentitud en el servidor"
+                                            content="Seleccione el rango de id para los items. Seleccionar una cantidad muy alta puede causar lentitud en el servidor"
                                             effect="dark"
                                             placement="top-start">
                                     <i class="fa fa-info-circle"></i>
