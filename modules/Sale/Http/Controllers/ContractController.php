@@ -2,6 +2,7 @@
 
 namespace Modules\Sale\Http\Controllers;
 
+use App\Http\Controllers\SearchItemController;
 use App\Http\Controllers\Tenant\EmailController;
 use App\Models\Tenant\Catalogs\OperationType;
 use App\Traits\OfflineTrait;
@@ -185,7 +186,8 @@ class ContractController extends Controller
 
     public function item_tables() {
 
-        $items = $this->table('items');
+        // $items = $this->table('items');
+        $items = SearchItemController::getNotServiceItemToModal();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
@@ -597,5 +599,28 @@ class ContractController extends Controller
             'success' => true,
             'message' => 'Estado actualizado correctamente'
         ];
+    }
+
+    /**
+     * @param $id
+     *
+     * @return array
+     */
+    public function searchItemById($id)
+    {
+        $items =  SearchItemController::searchByIdToModal($id);
+        return compact('items');
+
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function searchItems(Request $request)
+    {
+        $items = SearchItemController::getNotServiceItemToModal($request);
+        return compact('items');
     }
 }

@@ -7,6 +7,7 @@ use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\CoreFacturalo\Template;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SearchItemController;
 use App\Http\Requests\Tenant\SaleNoteRequest;
 use App\Http\Resources\Tenant\SaleNoteCollection;
 use App\Http\Resources\Tenant\SaleNoteResource;
@@ -526,7 +527,8 @@ class SaleNoteController extends Controller
 
     public function item_tables()
     {
-        $items = $this->table('items');
+        // $items = $this->table('items');
+        $items = SearchItemController::getNotServiceItemToModal();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
@@ -1100,14 +1102,8 @@ class SaleNoteController extends Controller
         // dd($request->all());
         $establishment_id = auth()->user()->establishment_id;
         $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
-        $warehouse_id = ($warehouse) ? $warehouse->id:null;
-
-        $items_not_services = $this->getItemsNotServices($request);
-        $items_services = $this->getItemsServices($request);
-        $all_items = $items_not_services->merge($items_services);
-
-        $items = collect($all_items)->transform(function($row) use($warehouse_id, $warehouse){
-
+        $warehouse_id = ($warehouse) ? $warehouse->id : null;
+        $items = SearchItemController::getNotServiceItem($request)->transform(function ($row) use ($warehouse_id, $warehouse) {
             $detail = $this->getFullDescription($row, $warehouse);
 
             return [
@@ -1162,15 +1158,7 @@ class SaleNoteController extends Controller
 
         $establishment_id = auth()->user()->establishment_id;
         $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
-
-        $search_item = $this->getItemsNotServicesById($id);
-
-        if(count($search_item) == 0){
-            $search_item = $this->getItemsServicesById($id);
-        }
-
-        $items = collect($search_item)->transform(function($row) use($warehouse){
-
+        $items = SearchItemController::searchById($id)->transform(function ($row) use ($warehouse) {
             $detail = $this->getFullDescription($row, $warehouse);
 
             return [
