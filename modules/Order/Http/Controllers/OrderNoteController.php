@@ -2,6 +2,7 @@
 
 namespace Modules\Order\Http\Controllers;
 
+use App\Http\Controllers\SearchItemController;
 use App\Http\Controllers\Tenant\EmailController;
 use App\Models\Tenant\Catalogs\OperationType;
 use App\Models\Tenant\Quotation;
@@ -228,9 +229,40 @@ class OrderNoteController extends Controller
 
         return compact('series', 'document_types_invoice', 'payment_method_types', 'payment_destinations');
     }
+    public function searchItemById($id)
+    {
+        $items = Item::where('id', $id)
+            ->whereIsActive()
+            ->get();
 
+        $this->ReturnItem($items);
+        return compact('items');
+
+    }
+    /**
+     * Normaliza la salida de la colección de items para su consumo en las funciones.
+     *
+     */
+    public function ReturnItem( &$item)
+    {
+        $configuration =  Configuration::first();
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = \Modules\Inventory\Models\Warehouse::where('establishment_id', $establishment_id)->first();
+
+        $item->transform(function ($row) use($configuration,$warehouse) {
+            /** @var \App\Models\Tenant\Item $row */
+            return $row->getDataToItemModal($warehouse,false,true);
+        });
+    }
+
+    public function searchItems(Request $request)
+    {
+        $items = SearchItemController::getNotServiceItemToModal($request);
+        return compact('items');
+    }
     public function item_tables() {
-        $items = $this->table('items');
+        // $items = $this->table('items');
+        $items = SearchItemController::getNotServiceItemToModal();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
