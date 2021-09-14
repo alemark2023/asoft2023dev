@@ -42,6 +42,29 @@
             return $item->orderBy('description')->get();
 
         }
+        /**
+         * @param Request|null $request
+         * @param int          $id
+         *
+         * @return Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed
+         */
+        public static function getServiceItemToPurchase(Request $request = null, $id = 0)
+        {
+            self::validateRequest($request);
+            $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
+            $input = self::setInputByRequest($request);
+            /** @var Item $item */
+            $item = self::getAllItemBase($request,true,$id);
+            $item->WhereNotIsSet();
+
+            if ($search_by_barcode === false && $input != null) {
+                $item->whereWarehouse();
+            }
+
+
+            return $item->orderBy('description')->get();
+
+        }
 
         /**
          * @param Request|null $request
@@ -297,6 +320,46 @@
             $search_item =  self::getNotServiceItem(null,$id);
             if(count($search_item) == 0){
                 $search_item =  self::getServiceItem(null,$id);
+
+            }
+            return $search_item;
+        }
+        /**
+         * @param Request $request
+         *
+         * @return Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed
+         */
+        public static function searchByRequest(Request  $request){
+            $search_item =  self::getNotServiceItem($request);
+            if(count($search_item) == 0){
+                $search_item =  self::getServiceItem($request);
+
+            }
+            return $search_item;
+        }
+
+        /**
+         * @param int $id
+         *
+         * @return Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed
+         */
+        public static function searchByIdToPurchase($id = 0){
+            $search_item =  self::getNotServiceItemToPurchase(null,$id);
+            if(count($search_item) == 0){
+                $search_item =  self::getServiceItemToPurchase(null,$id);
+
+            }
+            return $search_item;
+        }
+        /**
+         * @param Request $request
+         *
+         * @return Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed
+         */
+        public static function searchByRequestToPurchase(Request  $request){
+            $search_item =  self::getNotServiceItemToPurchase($request);
+            if(count($search_item) == 0){
+                $search_item =  self::getServiceItemToPurchase($request);
 
             }
             return $search_item;
