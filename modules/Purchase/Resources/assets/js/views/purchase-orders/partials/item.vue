@@ -1,34 +1,71 @@
 <template>
-    <el-dialog :title="titleDialog"
+    <el-dialog :close-on-click-modal="false"
+               :title="titleDialog"
                :visible="showDialog"
+               top="7vh"
                @close="close"
                @open="create">
         <form autocomplete="off"
               @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
-                    <div class="col-md-6">
-                        <div :class="{'has-danger': errors.item_id}"
+                    <div class="col-md-7 col-lg-7 col-xl-7 col-sm-7">
+                        <div id="custom-select"
+                             :class="{'has-danger': errors.item_id}"
                              class="form-group">
                             <label class="control-label">
                                 Producto/Servicio
                                 <a href="#"
                                    @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
                             </label>
-                            <el-select v-model="form.item_id"
-                                       filterable
-                                       @change="changeItem">
-                                <el-option v-for="option in items"
-                                           :key="option.id"
-                                           :label="option.full_description"
-                                           :value="option.id"></el-option>
-                            </el-select>
+                            <template id="select-append">
+                                <el-input id="custom-input">
+                                    <el-select
+                                        id="select-width"
+                                        ref="selectSearchNormal"
+                                        slot="prepend"
+                                        v-model="form.item_id"
+
+                                        :loading="loading_search"
+                                        :remote-method="searchRemoteItems"
+                                        filterable
+                                        placeholder="Buscar"
+                                        popper-class="el-select-items"
+                                        remote
+                                        @change="changeItem"
+                                        @focus="focusSelectItem">
+
+                                        <el-tooltip
+                                            v-for="option in items"
+                                            :key="option.id"
+                                            placement="left">
+                                            <div
+                                                slot="content"
+                                                v-html="ItemSlotTooltipView(option)"
+                                            ></div>
+                                            <el-option
+                                                :label="ItemOptionDescriptionView(option)"
+                                                :value="option.id"
+                                            ></el-option>
+
+                                        </el-tooltip>
+                                    </el-select>
+                                    <el-tooltip slot="append"
+                                                class="item"
+                                                content="Ver Stock del Producto"
+                                                effect="dark"
+                                                placement="bottom">
+                                        <el-button @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i>
+                                        </el-button>
+                                    </el-tooltip>
+                                </el-input>
+                            </template>
                             <small v-if="errors.item_id"
                                    class="form-control-feedback"
                                    v-text="errors.item_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-5">
                         <div :class="{'has-danger': errors.affectation_igv_type_id}"
                              class="form-group">
                             <label class="control-label">Afectación Igv</label>
@@ -51,6 +88,7 @@
                              class="form-group">
                             <label class="control-label">Cantidad</label>
                             <el-input-number v-model="form.quantity"
+                                             :disabled="form.item.calculate_quantity"
                                              :min="0.01"></el-input-number>
                             <small v-if="errors.quantity"
                                    class="form-control-feedback"
@@ -61,7 +99,8 @@
                         <div :class="{'has-danger': errors.unit_price}"
                              class="form-group">
                             <label class="control-label">Precio Unitario</label>
-                            <el-input v-model="form.unit_price">
+                            <el-input v-model="form.unit_price"
+                                      @input="calculateQuantity">
                                 <template v-if="form.item.currency_type_symbol"
                                           slot="prepend">{{ form.item.currency_type_symbol }}
                                 </template>
@@ -116,8 +155,8 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="(row, index) in form.item_unit_types">
-
+                                <tr v-for="(row, index) in item_unit_types"
+                                    :key="index">
                                     <td class="text-center">{{ row.unit_type_id }}</td>
                                     <td class="text-center">{{ row.description }}</td>
                                     <td class="text-center">{{ row.quantity_unit }}</td>
@@ -282,6 +321,24 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                <div v-show="form.item.calculate_quantity"
+                                     class="col-md-3 col-sm-6">
+                                    <div :class="{'has-danger': errors.total_item}"
+                                         class="form-group">
+                                        <label class="control-label">Total venta producto</label>
+                                        <el-input ref="total_item"
+                                                  v-model="total_item"
+                                                  :min="0.01"
+                                                  @input="calculateQuantity">
+                                            <template v-if="form.item.currency_type_symbol"
+                                                      slot="prepend">{{ form.item.currency_type_symbol }}
+                                            </template>
+                                        </el-input>
+                                        <small v-if="errors.total_item"
+                                               class="form-control-feedback"
+                                               v-text="errors.total_item[0]"></small>
+                                    </div>
+                                </div>
                             </div>
                         </section>
                     </div>
@@ -314,23 +371,43 @@
 </style>
 <script>
 
-import {calculateRowItem} from '../../../../../../../../resources/js/helpers/functions'
 import itemForm from '../../../../../../../../resources/js/views/tenant/items/form.vue'
+import {calculateRowItem} from '../../../../../../../../resources/js/helpers/functions'
 import LotsForm from './lots.vue'
 
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import VueCkeditor from "vue-ckeditor5";
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+import {ItemOptionDescription, ItemSlotTooltip} from "../../../../../../../../resources/js/helpers/modal_item";
+import WarehousesDetail
+    from "../../../../../../../Sale/Resources/assets/js/views/sale_opportunities/partials/warehouses";
 
 export default {
-    props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
-    components: {itemForm, LotsForm},
+    props: [
+        'showDialog',
+        'currencyTypeIdActive',
+        'exchangeRateSale'
+    ],
+    components: {itemForm, LotsForm, 'vue-ckeditor': VueCkeditor.component},
+
     data() {
         return {
+            can_add_new_product: false,
+            loading_search: false,
+            titleAction: '',
+            is_client: false,
             titleDialog: 'Agregar Producto o Servicio',
             resource: 'purchase-orders',
             showDialogNewItem: false,
+            has_list_prices: false,
             errors: {},
             form: {},
+            all_items: [],
             items: [],
             warehouses: [],
+            operation_types: [],
+            all_affectation_igv_types: [],
+            aux_items: [],
             affectation_igv_types: [],
             system_isc_types: [],
             discount_types: [],
@@ -338,11 +415,26 @@ export default {
             attribute_types: [],
             use_price: 1,
             change_affectation_igv_type_id: false,
+            activePanel: 0,
+            total_item: 0,
+            item_unit_types: [],
+            item_unit_type: {},
+            showWarehousesDetail: false,
+            warehousesDetail: [],
+            showListStock: false,
+            search_item_by_barcode: false,
+            isUpdateWarehouseId: null,
             showDialogLots: false,
-            lots: []
+            showDialogSelectLots: false,
+            lots: [],
+            editors: {
+                classic: ClassicEditor
+            },
         }
     },
     created() {
+        this.loadConfiguration()
+        // this.$store.commit('setConfiguration', this.configuration)
         this.initForm()
         this.$http.get(`/${this.resource}/item/tables`).then(response => {
             this.items = response.data.items
@@ -359,12 +451,106 @@ export default {
             this.reloadDataItems(item_id)
         })
     },
+    computed: {
+
+        ...mapState([
+            'config',
+        ]),
+    },
     methods: {
+        ...mapActions([
+            'loadConfiguration',
+        ]),
+        hasAttributes() {
+            if (
+                this.form.item !== undefined &&
+                this.form.item.attributes !== undefined &&
+                this.form.item.attributes !== null &&
+                this.form.item.attributes.length > 0
+            ) {
+                return true
+            }
+
+            return false;
+        },
+        ItemSlotTooltipView(item) {
+            return ItemSlotTooltip(item);
+        },
+        ItemOptionDescriptionView(item) {
+            return ItemOptionDescription(item)
+        },
+        async searchRemoteItems(input) {
+            if (input.length > 2) {
+                this.loading_search = true
+                const params = {
+                    'input': input,
+                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0
+                }
+                await this.$http.get(`/${this.resource}/search-items/`, {params})
+                    .then(response => {
+                        this.items = response.data.items
+                        this.loading_search = false
+                        this.enabledSearchItemsBarcode()
+                        this.enabledSearchItemBySeries()
+                        if (this.items.length == 0) {
+                            this.filterItems()
+                        }
+                    })
+            } else {
+                await this.filterItems()
+            }
+
+        },
         filterItems() {
             this.items = this.items.filter(item => item.warehouses.length > 0)
         },
+        enabledSearchItemsBarcode() {
+            if (this.search_item_by_barcode) {
+                this.$refs.selectBarcode.$data.selectedLabel = '';
+                if (this.items.length == 1) {
+                    this.form.item_id = this.items[0].id;
+                    this.$refs.selectBarcode.blur();
+                    this.changeItem();
+                }
+            }
+        },
+        async enabledSearchItemBySeries() {
+
+            if (this.config.search_item_by_series && this.items.length == 1) {
+
+                this.$notify({title: "Serie ubicada", message: "Producto añadido!", type: "success", duration: 1200});
+                this.form.item_id = this.items[0].id;
+                this.$refs.selectSearchNormal.$data.selectedLabel = '';
+
+                await this.changeItem();
+
+                this.lots = await this.form.item.lots.map((lot) => {
+                    lot.has_sale = true
+                })
+
+                await this.clickAddItem()
+
+                this.$refs.selectSearchNormal.$data.selectedLabel = '';
+            }
+
+            if (this.config.search_item_by_series && this.items.length == 0) {
+                this.$notify({title: "Serie no ubicada", message: "", type: "warning", duration: 1200});
+            }
+
+        },
+
+        filterMethod(query) {
+
+            let item = _.find(this.items, {'internal_id': query});
+
+            if (item) {
+                this.form.item_id = item.id
+                this.changeItem()
+            }
+        },
         initForm() {
-            this.errors = {}
+            this.errors = {};
+
             this.form = {
                 item_id: null,
                 warehouse_id: 1,
@@ -383,9 +569,15 @@ export default {
                 attributes: [],
                 item_unit_types: [],
                 purchase_has_igv: false,
-            }
+                has_igv: null,
+                item_unit_type_id: null,
+                unit_type_id: null,
+                is_set: false,
+            };
 
+            this.total_item = 0;
             this.item_unit_type = {};
+            this.has_list_prices = false;
         },
         // initializeFields() {
         //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
@@ -461,6 +653,8 @@ export default {
         },
         changeItem() {
             this.form.item = _.find(this.items, {'id': this.form.item_id})
+            console.error(this.form.item)
+            console.log(this.form.item.purchase_unit_price +' <<< ')
             this.form.unit_price = this.form.item.purchase_unit_price
             this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
 
@@ -491,6 +685,15 @@ export default {
             this.initForm()
             // this.initializeFields()
             this.$emit('add', this.row)
+            this.setFocusSelectItem()
+
+        },
+        focusSelectItem() {
+            this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
+        },
+        setFocusSelectItem() {
+
+            this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
 
         },
         changeWarehouse(row) {
@@ -498,6 +701,12 @@ export default {
             row.warehouse_id = warehouse.id
             row.warehouse_description = warehouse.description
             return row
+        },
+
+        calculateQuantity() {
+            if (this.form.item.calculate_quantity) {
+                this.form.quantity = _.round((this.total_item / this.form.unit_price), 4)
+            }
         },
         reloadDataItems(item_id) {
             this.$http.get(`/${this.resource}/table/items`).then((response) => {
