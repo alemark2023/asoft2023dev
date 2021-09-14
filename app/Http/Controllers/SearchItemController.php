@@ -30,8 +30,8 @@
         {
             self::validateRequest($request);
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
-            $input = ($request->has('input')) ? (bool)$request->input : null;
-/** @var Item $item */
+            $input = self::setInputByRequest($request);
+            /** @var Item $item */
             $item = self::getAllItemBase($request,true,$id);
 
             if ($search_by_barcode === false && $input != null) {
@@ -66,8 +66,12 @@
             $id = (int)$id;
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
             $input = ($request->has('input')) ? $request->input : null;
+            if(empty($input) && $request->has('input_item')){
+                $input = ($request->has('input_item')) ? $request->input_item : null;
 
-            $item = Item::whereIsActive()
+            }
+            $item = Item::
+                  whereIsActive()
                 ->whereTypeUser();
 
             if ($service == false) {
@@ -95,29 +99,53 @@
                     $item
                         ->where('barcode', $input)
                         ->limit(1);
-                } elseif ($input != null) {
-                    $item
-                        ->where('description', 'like', "%{$input}%")
-                        ->orWhere('internal_id', 'like', "%{$input}%")
-                        ->orWhereHas('category', function ($query) use ($input) {
-                            $query->where('name', 'like', '%' . $input . '%');
-                        })
-                        ->orWhereHas('brand', function ($query) use ($input) {
-                            $query->where('name', 'like', '%' . $input . '%');
-                        })
-                        ->OrWhereJsonContains('attributes', ['value' => $input]);
-
                 } else {
+                    self::setFilter($item,$request);
                     $item->take(20);
                 }
 
 
             }
 
-            $item->orderBy('description');
-            return $item;
+            return $item->orderBy('description');
         }
 
+
+        protected static function setFilter(&$item, Request $request = null){
+
+            $input = ($request->has('input')) ? $request->input : null;
+            if(empty($input) && $request->has('input_item')){
+                $input = ($request->has('input_item')) ? $request->input_item : null;
+
+            }
+            if (!empty($input)) {
+                $whereItem[] = ['description', 'like', '%' . $input . '%'];
+                $whereItem[] = ['internal_id', 'like', '%' . $input . '%'];
+                $whereItem[] = ['barcode', '=', $input];
+
+                $whereExtra[] = ['name', 'like', '%' . $input . '%'];
+
+                foreach ($whereItem as $index => $wItem) {
+                    if ($index < 1) {
+                        $item->Where([$wItem]);
+                    } else {
+                        $item->orWhere([$wItem]);
+                    }
+                }
+                if (!empty($whereExtra)) {
+                    $item
+                        ->orWhereHas('brand', function ($query) use ($whereExtra) {
+                            $query->where($whereExtra);
+                        })
+                        ->orWhereHas('category', function ($query) use ($whereExtra) {
+                            $query->where($whereExtra);
+                        });
+                }
+                $item->OrWhereJsonContains('attributes', ['value' => $input]);
+            }
+
+
+        }
         /**
          * @param              $item
          * @param Request|null $request
@@ -127,7 +155,7 @@
 
             self::validateRequest($request);
             $warehouse = ModuleWarehouse::select('id')->where('establishment_id', auth()->user()->establishment_id)->first();
-            $input = ($request->has('input')) ? (bool)$request->input : null;
+            $input = self::setInputByRequest($request);
             $item->wherehas('item_lots', function ($query) use ($warehouse, $input) {
                 $query->where('has_sale', false);
                 $query->where('warehouse_id', $warehouse->id);
@@ -151,6 +179,21 @@
         }
 
         /**
+         * Busca la propiedad input o input_item para generar busquedas
+         * @param Request|null $request
+         *
+         * @return mixed|null
+         */
+        protected static function setInputByRequest(Request $request = null){
+            if(!empty($request)) {
+                $input = ($request->has('input')) ? $request->input : null;
+                if (empty($input) && $request->has('input_item')) {
+                    $input = ($request->has('input_item')) ? $request->input_item : null;
+                }
+            }
+            return $input;
+        }
+        /**
          * @param Request|null $request
          * @param int          $id
          *
@@ -161,8 +204,7 @@
 
             self::validateRequest($request);
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
-            $input = ($request->has('input')) ? (bool)$request->input : null;
-
+            $input = self::setInputByRequest($request);
             $item = self::getAllItemBase($request,false,$id);
 
 
@@ -173,6 +215,33 @@
 
             return $item->orderBy('description')->get();
         }
+        /**
+         * Devuelve el conjunto para ventas sin los pack o productos compuestos
+         * @param Request|null $request
+         * @param int          $id
+         *
+         * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+         */
+        public static function getNotServiceItemToPurchase(Request $request = null, $id = 0)
+        {
+
+            self::validateRequest($request);
+            $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
+            $input = self::setInputByRequest($request);
+
+            $item = self::getAllItemBase($request,false,$id);
+
+            $item->WhereNotIsSet();
+
+            if ($search_by_barcode === false && $input != null) {
+                $item->whereWarehouse();
+            }
+
+
+            return $item->orderBy('description')->get();
+        }
+
+
 
 
         /**

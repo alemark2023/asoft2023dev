@@ -571,9 +571,12 @@ class PurchaseController extends Controller
                 break;
 
             case 'items':
-
-                $items = Item::whereNotIsSet()->whereIsActive()->orderBy('description')->take(20)->get(); //whereWarehouse()
+                return SearchItemController::getNotServiceItemToPurchase()->transform(function($row) {
+/*
+                    $items = Item::whereNotIsSet()->whereIsActive()->orderBy('description')->take(20)->get(); //whereWarehouse()
                 return collect($items)->transform(function($row) {
+                    */
+                /** @var Item $row */
                     $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                     return [
                         'id' => $row->id,
@@ -630,7 +633,7 @@ class PurchaseController extends Controller
 
     public function searchItems(Request $request)
     {
-        $items = SearchItemController::getNotServiceItem($request)->transform(function ($row) {
+        $items = SearchItemController::getNotServiceItemToPurchase($request)->transform(function ($row) {
             /** @var Item $row */
             $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
             $temp = array_merge($row->getCollectionData(), $row->getDataToItemModal());
@@ -687,17 +690,10 @@ class PurchaseController extends Controller
     public function searchItemById($id)
     {
 
-        $search_item = Item::where('id', $id)
-                        ->whereNotIsSet()
-                        ->whereIsActive()
-                        ->orderBy('description')
-                        ->take(1)
-                        ->get();
 
-        $items = collect($search_item)->transform(function($row){
-
-            $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
-
+        $items = SearchItemController::getNotServiceItemToPurchase(null, $id)->transform(function ($row) {
+            /** @var Item $row */
+            $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
             return [
                 'id' => $row->id,
                 'item_code'  => $row->item_code,
