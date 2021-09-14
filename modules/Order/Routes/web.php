@@ -34,6 +34,8 @@ if($current_hostname) {
              * order-notes/documents
              * order-notes/documents
              * order-notes/document_tables
+             * order-notes/search-items
+             * order-notes/search/item/{item}
              */
             Route::prefix('order-notes')->group(function () {
 

@@ -231,30 +231,10 @@ class OrderNoteController extends Controller
     }
     public function searchItemById($id)
     {
-        $items = Item::where('id', $id)
-            ->whereIsActive()
-            ->get();
-
-        $this->ReturnItem($items);
+        $items =  SearchItemController::searchByIdToModal($id);
         return compact('items');
 
     }
-    /**
-     * Normaliza la salida de la colección de items para su consumo en las funciones.
-     *
-     */
-    public function ReturnItem( &$item)
-    {
-        $configuration =  Configuration::first();
-        $establishment_id = auth()->user()->establishment_id;
-        $warehouse = \Modules\Inventory\Models\Warehouse::where('establishment_id', $establishment_id)->first();
-
-        $item->transform(function ($row) use($configuration,$warehouse) {
-            /** @var \App\Models\Tenant\Item $row */
-            return $row->getDataToItemModal($warehouse,false,true);
-        });
-    }
-
     public function searchItems(Request $request)
     {
         $items = SearchItemController::getNotServiceItemToModal($request);
