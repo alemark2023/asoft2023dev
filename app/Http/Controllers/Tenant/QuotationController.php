@@ -7,6 +7,7 @@ use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\CoreFacturalo\Template;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SearchItemController;
 use App\Http\Requests\Tenant\QuotationRequest;
 use App\Http\Resources\Tenant\QuotationCollection;
 use App\Http\Resources\Tenant\QuotationResource;
@@ -210,7 +211,8 @@ class QuotationController extends Controller
     }
 
     public function item_tables() {
-        $items = $this->table('items');
+        // $items = $this->table('items');
+        $items = SearchItemController::getNotServiceItemToModal();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
@@ -459,6 +461,9 @@ class QuotationController extends Controller
      */
     public function searchItems(Request $request)
     {
+        $items = SearchItemController::getNotServiceItemToModal($request)
+        ;
+        /*
         $items = Item::orderBy('description')->whereIsActive();
         if ($request->has('search_by_barcode') && (int)$request->search_by_barcode === 1) {
             $items->where('barcode', $request->input)
@@ -475,6 +480,7 @@ class QuotationController extends Controller
         }
         $items = $items->get();
         $this->ReturnItem($items);
+        */
         return compact('items');
 
     }

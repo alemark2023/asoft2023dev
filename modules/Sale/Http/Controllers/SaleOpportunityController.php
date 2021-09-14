@@ -2,6 +2,7 @@
 
 namespace Modules\Sale\Http\Controllers;
 
+use App\Http\Controllers\SearchItemController;
 use App\Http\Controllers\Tenant\EmailController;
 use App\Models\Tenant\Configuration;
 use Illuminate\Http\Request;
@@ -159,7 +160,9 @@ class SaleOpportunityController extends Controller
 
     public function item_tables() {
 
-        $items = $this->table('items');
+        // $items = $this->table('items');
+        $items = SearchItemController::getNotServiceItemToModal();
+
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $price_types = PriceType::whereActive()->get();
 

@@ -7,6 +7,7 @@ use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\CoreFacturalo\Template;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SearchItemController;
 use App\Http\Requests\Tenant\SaleNoteRequest;
 use App\Http\Resources\Tenant\SaleNoteCollection;
 use App\Http\Resources\Tenant\SaleNoteResource;
@@ -526,7 +527,8 @@ class SaleNoteController extends Controller
 
     public function item_tables()
     {
-        $items = $this->table('items');
+        // $items = $this->table('items');
+        $items = SearchItemController::getNotServiceItemToModal();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
