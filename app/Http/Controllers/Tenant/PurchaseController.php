@@ -630,23 +630,11 @@ class PurchaseController extends Controller
 
     public function searchItems(Request $request)
     {
-
-        $all_items = Item::whereNotIsSet()
-            ->whereIsActive();
-        if ($request->has('barcode') && !empty($request->barcode)) {
-            //codigo de barras
-            $all_items->where('barcode', "{$request->barcode}");
-            // $all_items->where('barcode', 'like', "%{$request->barcode}%");
-        } else {
-            // normal
-            $all_items->where('description', 'like', "%{$request->input}%")
-                ->orWhere('internal_id', 'like', "%{$request->input}%");
-        }
-        $items = $all_items->orderBy('description')->get()->transform(function($row){
-            /** @var Item $row*/
-            $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
-            $temp = array_merge($row->getCollectionData(),$row->getDataToItemModal());
-            $data =  [
+        $items = SearchItemController::getNotServiceItem($request)->transform(function ($row) {
+            /** @var Item $row */
+            $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
+            $temp = array_merge($row->getCollectionData(), $row->getDataToItemModal());
+            $data = [
                 'id' => $row->id,
                 'item_code'  => $row->item_code,
                 'full_description' => $full_description,

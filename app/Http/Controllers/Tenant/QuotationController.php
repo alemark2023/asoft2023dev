@@ -461,26 +461,7 @@ class QuotationController extends Controller
      */
     public function searchItems(Request $request)
     {
-        $items = SearchItemController::getNotServiceItemToModal($request)
-        ;
-        /*
-        $items = Item::orderBy('description')->whereIsActive();
-        if ($request->has('search_by_barcode') && (int)$request->search_by_barcode === 1) {
-            $items->where('barcode', $request->input)
-                ->limit(1);
-        }else{
-            $items->where('description', 'like', "%{$request->input}%")
-                ->orWhere('internal_id', 'like', "%{$request->input}%")
-                ->orWhereHas('category', function ($query) use ($request) {
-                    $query->where('name', 'like', '%' . $request->input . '%');
-                })
-                ->orWhereHas('brand', function ($query) use ($request) {
-                    $query->where('name', 'like', '%' . $request->input . '%');
-                });
-        }
-        $items = $items->get();
-        $this->ReturnItem($items);
-        */
+        $items = SearchItemController::getNotServiceItemToModal($request);
         return compact('items');
 
     }
@@ -544,11 +525,8 @@ class QuotationController extends Controller
 
     public function searchItemById($id)
     {
-        $items = Item::where('id', $id)
-                        ->whereIsActive()
-                        ->get();
 
-        $this->ReturnItem($items);
+        $items =  SearchItemController::searchByIdToModal($id);
         return compact('items');
 
     }

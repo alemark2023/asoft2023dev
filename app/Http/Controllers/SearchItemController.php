@@ -22,16 +22,25 @@
 
         /**
          * @param Request|null $request
+         * @param int          $id
          *
          * @return Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed
          */
-        public static function getServiceItem(Request $request = null)
+        public static function getServiceItem(Request $request = null, $id = 0)
         {
             self::validateRequest($request);
-            /** @var Item $item */
-            return self::getAllItemBase($request, true)
-                ->orderBy('description')
-                ->get();
+            $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
+            $input = ($request->has('input')) ? (bool)$request->input : null;
+/** @var Item $item */
+            $item = self::getAllItemBase($request,true,$id);
+
+            if ($search_by_barcode === false && $input != null) {
+                $item->whereWarehouse();
+            }
+
+
+            return $item->orderBy('description')->get();
+
         }
 
         /**
@@ -143,9 +152,9 @@
 
         /**
          * @param Request|null $request
-         * @param false        $search_item_by_series
+         * @param int          $id
          *
-         * @return Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed
+         * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
          */
         public static function getNotServiceItem(Request $request = null, $id = 0)
         {
@@ -171,14 +180,58 @@
          *
          * @return \Illuminate\Database\Eloquent\Collection|Collection
          */
-        public static function getNotServiceItemToModal(Request $request = null)
+        public static function getNotServiceItemToModal(Request $request = null, $id = 0)
         {
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
             self::validateRequest($request);
-            return self::getNotServiceItem($request)->transform(function ($row) use ($warehouse) {
+            return self::getNotServiceItem($request, $id)->transform(function ($row) use ($warehouse) {
                 /** @var Item $row */
                 return $row->getDataToItemModal($warehouse);
             });
         }
+
+
+        /**
+         * Reaqliza una busqueda de item por id, Intenta por item, luego por servicio
+         * Devuelve un standar de modal
+         *
+         * @param int $id
+         *
+         * @return \Illuminate\Database\Eloquent\Collection|Collection
+         */
+        public static function searchByIdToModal($id = 0){
+            $establishment_id = auth()->user()->establishment_id;
+            $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
+
+            $items = self::searchById($id)->transform(function($row) use($warehouse){
+                /** @var Item $row */
+                return $row->getDataToItemModal(
+                    $warehouse,
+                    true,
+                    null,
+                    false,
+                    true
+                );
+
+            });
+            return $items;
+        }
+
+
+        /**
+         * @param int $id
+         *
+         * @return Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed
+         */
+        public static function searchById($id = 0){
+            $search_item =  self::getNotServiceItem(null,$id);
+            if(count($search_item) == 0){
+                $search_item =  self::getServiceItem(null,$id);
+
+            }
+            return $search_item;
+        }
+
+
     }
