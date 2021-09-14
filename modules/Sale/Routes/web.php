@@ -9,6 +9,25 @@ if($current_hostname) {
     Route::domain($current_hostname->fqdn)->group(function () {
         Route::middleware(['auth', 'locked.tenant'])->group(function () {
 
+            /**
+             sale-opportunities
+             sale-opportunities/columns
+             sale-opportunities/records
+             sale-opportunities/record/{id}
+             sale-opportunities/create/{id}
+             sale-opportunities/earch/customers
+             sale-opportunities/earch/customers/{id}
+             sale-opportunities/tables
+             sale-opportunities/table/{table}
+             sale-opportunities/item/tables
+             sale-opportunities/email
+             sale-opportunities/download/{external_id}/{format?}
+             sale-opportunities/print/{external_id}/{format?}
+             sale-opportunities/search-items
+             sale-opportunities/search/item/{item}
+             sale-opportunities/uploads
+             sale-opportunities/download-file/{filename}
+             */
             Route::prefix('sale-opportunities')->group(function() {
 
                 Route::get('', 'SaleOpportunityController@index')->name('tenant.sale_opportunities.index')->middleware(['redirect.level']);
@@ -32,6 +51,8 @@ if($current_hostname) {
 
                 Route::post('uploads', 'SaleOpportunityFileController@uploadFile');
                 Route::get('download-file/{filename}', 'SaleOpportunityFileController@download');
+                Route::get('search-items', 'SaleOpportunityFileController@searchItems');
+                Route::get('search/item/{item}', 'SaleOpportunityFileController@searchItemById');
 
             });
 
