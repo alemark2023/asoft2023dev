@@ -1,0 +1,6 @@
+- ## Módulos
+    - [Farmacia](/{{route}}/{{version}}/modulo-farmacia)
+- ## Migración
+    - [Documento individual](/{{route}}/{{version}}/migracion-de-documento-individual)
+- ## PDF
+    - [Plantilla personalizada](/{{route}}/{{version}}/plantilla-pdf-personalizada)
