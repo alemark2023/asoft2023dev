@@ -88,11 +88,9 @@
             $items_id = ($request->has('items_id')) ? $request->items_id : null;
             $id = (int)$id;
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
-            $input = ($request->has('input')) ? $request->input : null;
-            if(empty($input) && $request->has('input_item')){
-                $input = ($request->has('input_item')) ? $request->input_item : null;
 
-            }
+            $input = self::setInputByRequest($request);
+
             $item = Item::
                   whereIsActive()
                 ->whereTypeUser();
@@ -109,7 +107,7 @@
             }
 
             if ($search_item_by_series) {
-                self::getItemsBySerie($item, $request);
+                // self::getItemsBySerie($item, $request);
             }
 
             if ($items_id != null) {
@@ -136,11 +134,8 @@
 
         protected static function setFilter(&$item, Request $request = null){
 
-            $input = ($request->has('input')) ? $request->input : null;
-            if(empty($input) && $request->has('input_item')){
-                $input = ($request->has('input_item')) ? $request->input_item : null;
+            $input = self::setInputByRequest($request);
 
-            }
             if (!empty($input)) {
                 $whereItem[] = ['description', 'like', '%' . $input . '%'];
                 $whereItem[] = ['internal_id', 'like', '%' . $input . '%'];
@@ -179,12 +174,14 @@
             self::validateRequest($request);
             $warehouse = ModuleWarehouse::select('id')->where('establishment_id', auth()->user()->establishment_id)->first();
             $input = self::setInputByRequest($request);
-            $item->wherehas('item_lots', function ($query) use ($warehouse, $input) {
-                $query->where('has_sale', false);
-                $query->where('warehouse_id', $warehouse->id);
-                $query->where('series', $input);
-                return $query;
-            })->take(1);
+            if(!empty($input)) {
+                $item->wherehas('item_lots', function ($query) use ($warehouse, $input) {
+                    $query->where('has_sale', false);
+                    $query->where('warehouse_id', $warehouse->id);
+                    $query->where('series', $input);
+                    return $query;
+                })->take(1);
+            }
 
         }
 
@@ -210,8 +207,10 @@
         protected static function setInputByRequest(Request $request = null){
             if(!empty($request)) {
                 $input = ($request->has('input')) ? $request->input : null;
+                \Log::debug(__FILE__." $input");
                 if (empty($input) && $request->has('input_item')) {
                     $input = ($request->has('input_item')) ? $request->input_item : null;
+                    \Log::debug(__FILE__." $input");
                 }
             }
             return $input;
@@ -277,6 +276,9 @@
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
             self::validateRequest($request);
+            if(!empty($request)) {
+                \Log::debug(__FILE__ . " " . var_export($request->all(),true));
+            }
             return self::getNotServiceItem($request, $id)->transform(function ($row) use ($warehouse) {
                 /** @var Item $row */
                 return $row->getDataToItemModal($warehouse);
