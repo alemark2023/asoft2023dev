@@ -326,6 +326,7 @@
                                  class="form-group">
                                 <label class="control-label">Dirección<span class="text-danger"> *</span></label>
                                 <el-select v-model="form.delivery.address_id"
+                                           filterable
                                            placeholder="Dirección..."
                                            @change="onChangeAddress">
                                     <el-option v-for="(ad, i) in customerAddresses"
@@ -583,6 +584,7 @@ export default {
     },
     data() {
         return {
+            min_qty: 0.1,
             showDialogOptions: false,
             showDialogNewPerson: false,
             identityDocumentTypes: [],
@@ -1142,12 +1144,15 @@ export default {
         },
         verifyQuantityItems() {
             let validate = true
+            let v = 0;
             this.form.items.forEach((element) => {
-
-                if (parseInt(element.quantity) < 1) validate = false
-
+                v = parseFloat(element.quantity);
+                if(isNaN(v)) {
+                    validate = false
+                } else if (v < this.min_qty) {
+                    validate = false
+                }
             })
-
             return {validate}
         }
     }
