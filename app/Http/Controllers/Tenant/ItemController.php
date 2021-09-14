@@ -178,11 +178,14 @@ class ItemController extends Controller
             $CatItemProductFamily= CatItemProductFamily::all();
         }
         /** Informacion adicional */
+        $configuration = $configuration->getCollectionData();
+        /*
         $configuration = Configuration::select(
             'affectation_igv_type_id',
             'is_pharmacy',
             'show_extra_info_to_item'
         )->firstOrFail();
+        */
         return compact(
             'unit_types',
             'currency_types',
