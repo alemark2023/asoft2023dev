@@ -1,6 +1,8 @@
 <template>
-    <el-dialog :title="titleDialog"
+    <el-dialog :close-on-click-modal="false"
+               :title="titleDialog"
                :visible="showDialog"
+               top="7vh"
                @close="close"
                @open="create">
         <form autocomplete="off"
@@ -17,7 +19,7 @@
                                    @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
                             </label>
 
-                            <!-- <el-select v-model="form.item_id" @change="changeItem" filterable  ref="select_item" @focus="focusSelectItem">
+                            <!-- <el-select v-model="form.item_id" @change="changeItem" filterable  ref="selectSearchNormal" @focus="focusSelectItem">
                                 <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                             </el-select> -->
 
@@ -26,19 +28,33 @@
                                 <el-input id="custom-input">
                                     <el-select
                                         id="select-width"
-                                        ref="select_item"
+                                        ref="selectSearchNormal"
                                         slot="prepend"
                                         v-model="form.item_id"
+
+                                        :loading="loading_search"
+                                        :remote-method="searchRemoteItems"
                                         filterable
                                         placeholder="Buscar"
                                         popper-class="el-select-items"
+                                        remote
                                         @change="changeItem"
                                         @focus="focusSelectItem">
 
-                                        <el-option v-for="option in items"
-                                                   :key="option.id"
-                                                   :label="option.full_description"
-                                                   :value="option.id"></el-option>
+                                        <el-tooltip
+                                            v-for="option in items"
+                                            :key="option.id"
+                                            placement="left">
+                                            <div
+                                                slot="content"
+                                                v-html="ItemSlotTooltipView(option)"
+                                            ></div>
+                                            <el-option
+                                                :label="ItemOptionDescriptionView(option)"
+                                                :value="option.id"
+                                            ></el-option>
+
+                                        </el-tooltip>
                                     </el-select>
                                     <el-tooltip slot="append"
                                                 class="item"
@@ -356,18 +372,35 @@ import itemForm from '@views/items/form.vue'
 import {calculateRowItem} from '@helpers/functions'
 import WarehousesDetail from './warehouses.vue'
 
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import VueCkeditor from "vue-ckeditor5";
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+import {ItemOptionDescription, ItemSlotTooltip} from "../../../../../../../../resources/js/helpers/modal_item";
+
 export default {
-    props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
-    components: {itemForm, WarehousesDetail},
+    props: [
+        'showDialog',
+        'currencyTypeIdActive',
+        'exchangeRateSale'
+    ],
+    components: {itemForm, WarehousesDetail, 'vue-ckeditor': VueCkeditor.component},
+
     data() {
         return {
+            can_add_new_product: false,
+            loading_search: false,
+            titleAction: '',
+            is_client: false,
             titleDialog: 'Agregar Producto o Servicio',
             resource: 'contracts',
             showDialogNewItem: false,
-            showWarehousesDetail: false,
+            has_list_prices: false,
             errors: {},
             form: {},
+            all_items: [],
             items: [],
+            operation_types: [],
+            all_affectation_igv_types: [],
             aux_items: [],
             affectation_igv_types: [],
             system_isc_types: [],
@@ -376,14 +409,26 @@ export default {
             attribute_types: [],
             use_price: 1,
             change_affectation_igv_type_id: false,
+            activePanel: 0,
             total_item: 0,
-            has_list_prices: false,
-            warehousesDetail: [],
             item_unit_types: [],
-            item_unit_type: {}
+            item_unit_type: {},
+            showWarehousesDetail: false,
+            warehousesDetail: [],
+            showListStock: false,
+            search_item_by_barcode: false,
+            isUpdateWarehouseId: null,
+            showDialogLots: false,
+            showDialogSelectLots: false,
+            lots: [],
+            editors: {
+                classic: ClassicEditor
+            },
         }
     },
     created() {
+        this.loadConfiguration()
+        // this.$store.commit('setConfiguration', this.configuration)
         this.initForm()
         this.$http.get(`/${this.resource}/item/tables`).then(response => {
             this.items = response.data.items
@@ -400,8 +445,107 @@ export default {
             this.reloadDataItems(item_id)
         })
     },
+    computed: {
+
+        ...mapState([
+            'config',
+        ]),
+    },
     methods: {
 
+        ...mapActions([
+            'loadConfiguration',
+        ]),
+
+        hasAttributes() {
+            if (
+                this.form.item !== undefined &&
+                this.form.item.attributes !== undefined &&
+                this.form.item.attributes !== null &&
+                this.form.item.attributes.length > 0
+            ) {
+                return true
+            }
+
+            return false;
+        },
+        ItemSlotTooltipView(item) {
+            return ItemSlotTooltip(item);
+        },
+        ItemOptionDescriptionView(item) {
+            return ItemOptionDescription(item)
+        },
+
+        async searchRemoteItems(input) {
+            if (input.length > 2) {
+                this.loading_search = true
+                const params = {
+                    'input': input,
+                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0
+                }
+                await this.$http.get(`/${this.resource}/search-items/`, {params})
+                    .then(response => {
+                        this.items = response.data.items
+                        this.loading_search = false
+                        this.enabledSearchItemsBarcode()
+                        this.enabledSearchItemBySeries()
+                        if (this.items.length == 0) {
+                            this.filterItems()
+                        }
+                    })
+            } else {
+                await this.filterItems()
+            }
+
+        },
+        filterItems() {
+            this.items = this.all_items
+        },
+
+        enabledSearchItemsBarcode() {
+            if (this.search_item_by_barcode) {
+                this.$refs.selectBarcode.$data.selectedLabel = '';
+                if (this.items.length == 1) {
+                    this.form.item_id = this.items[0].id;
+                    this.$refs.selectBarcode.blur();
+                    this.changeItem();
+                }
+            }
+        },
+        async enabledSearchItemBySeries() {
+
+            if (this.config.search_item_by_series && this.items.length == 1) {
+
+                this.$notify({title: "Serie ubicada", message: "Producto añadido!", type: "success", duration: 1200});
+                this.form.item_id = this.items[0].id;
+                this.$refs.selectSearchNormal.$data.selectedLabel = '';
+
+                await this.changeItem();
+
+                this.lots = await this.form.item.lots.map((lot) => {
+                    lot.has_sale = true
+                })
+
+                await this.clickAddItem()
+
+                this.$refs.selectSearchNormal.$data.selectedLabel = '';
+            }
+
+            if (this.config.search_item_by_series && this.items.length == 0) {
+                this.$notify({title: "Serie no ubicada", message: "", type: "warning", duration: 1200});
+            }
+
+        },
+
+        filterMethod(query) {
+
+            let item = _.find(this.items, {'internal_id': query});
+
+            if (item) {
+                this.form.item_id = item.id
+                this.changeItem()
+            }
+        },
         clickWarehouseDetail() {
 
             if (!this.form.item_id) {
@@ -413,9 +557,9 @@ export default {
             this.warehousesDetail = item.warehouses
             this.showWarehousesDetail = true
         },
-        filterItems() {
+        //filterItems() {
             // this.items = this.items.filter(item => item.warehouses.length >0)
-        },
+        // },
         initForm() {
             this.errors = {};
 
@@ -446,9 +590,6 @@ export default {
         // initializeFields() {
         //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
         // },
-        create() {
-            //     this.initializeFields()
-        },
         clickAddDiscount() {
             this.form.discounts.push({
                 discount_type_id: null,
@@ -584,11 +725,11 @@ export default {
             this.setFocusSelectItem()
         },
         focusSelectItem() {
-            this.$refs.select_item.$el.getElementsByTagName('input')[0].focus()
+            this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
         },
         setFocusSelectItem() {
 
-            this.$refs.select_item.$el.getElementsByTagName('input')[0].focus()
+            this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
 
         },
         cleanTotalItem() {
@@ -615,11 +756,16 @@ export default {
 
             return this.errors
         },
+        create() {
+            //     this.initializeFields()
+        },
         reloadDataItems(item_id) {
             this.$http.get(`/${this.resource}/table/items`).then((response) => {
                 this.items = response.data
                 this.form.item_id = item_id
+                if (item_id) {
                 this.changeItem()
+                }
                 // this.filterItems()
 
             })

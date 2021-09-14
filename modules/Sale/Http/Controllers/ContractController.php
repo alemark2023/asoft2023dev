@@ -600,4 +600,27 @@ class ContractController extends Controller
             'message' => 'Estado actualizado correctamente'
         ];
     }
+
+    /**
+     * @param $id
+     *
+     * @return array
+     */
+    public function searchItemById($id)
+    {
+        $items =  SearchItemController::searchByIdToModal($id);
+        return compact('items');
+
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function searchItems(Request $request)
+    {
+        $items = SearchItemController::getNotServiceItemToModal($request);
+        return compact('items');
+    }
 }

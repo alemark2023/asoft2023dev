@@ -65,6 +65,30 @@ if($current_hostname) {
 
             });
 
+            /**
+            contracts/
+            contracts/columns
+            contracts/records
+            contracts/create/{id?}
+            contracts/state-type/{state_type_id}/{id}
+            contracts/filter
+            contracts/tables
+            contracts/table/{table}
+            contracts/record/{contract}
+            contracts/voided/{id}
+            contracts/item/tables
+            contracts/option/tables
+            contracts/search/customers
+            contracts/search/customer/{id}
+            contracts/download/{external_id}/{format?}
+            contracts/print/{external_id}/{format?}
+            contracts/email
+            contracts/search/item/{item}
+            contracts/search-items
+            contracts/record2/{contract}
+            contracts/changed/{contract}
+            contracts/generate-quotation/{quotation}
+             */
 
             Route::prefix('contracts')->group(function () {
 
@@ -72,6 +96,8 @@ if($current_hostname) {
                 Route::get('/columns', 'ContractController@columns');
                 Route::get('/records', 'ContractController@records');
                 Route::get('/create/{id?}', 'ContractController@create')->name('tenant.contracts.create')->middleware('redirect.level');
+                Route::get('search-items', 'ContractController@searchItems');
+                Route::get('search/item/{item}', 'ContractController@searchItemById');
 
                 Route::get('/state-type/{state_type_id}/{id}', 'ContractController@updateStateType');
                 Route::get('/filter', 'ContractController@filter');
