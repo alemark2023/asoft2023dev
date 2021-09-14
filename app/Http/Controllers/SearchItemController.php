@@ -106,8 +106,8 @@
 
             }
 
-            if ($search_item_by_series) {
-                // self::getItemsBySerie($item, $request);
+            if ($search_item_by_series == true) {
+                self::getItemsBySerie($item, $request);
             }
 
             if ($items_id != null) {
@@ -160,6 +160,7 @@
                         });
                 }
                 $item->OrWhereJsonContains('attributes', ['value' => $input]);
+
             }
 
 
@@ -175,7 +176,7 @@
             $warehouse = ModuleWarehouse::select('id')->where('establishment_id', auth()->user()->establishment_id)->first();
             $input = self::setInputByRequest($request);
             if(!empty($input)) {
-                $item->wherehas('item_lots', function ($query) use ($warehouse, $input) {
+                $item->orWhereHas('item_lots', function ($query) use ($warehouse, $input) {
                     $query->where('has_sale', false);
                     $query->where('warehouse_id', $warehouse->id);
                     $query->where('series', $input);
@@ -207,10 +208,8 @@
         protected static function setInputByRequest(Request $request = null){
             if(!empty($request)) {
                 $input = ($request->has('input')) ? $request->input : null;
-                \Log::debug(__FILE__." $input");
                 if (empty($input) && $request->has('input_item')) {
                     $input = ($request->has('input_item')) ? $request->input_item : null;
-                    \Log::debug(__FILE__." $input");
                 }
             }
             return $input;
@@ -276,9 +275,6 @@
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
             self::validateRequest($request);
-            if(!empty($request)) {
-                \Log::debug(__FILE__ . " " . var_export($request->all(),true));
-            }
             return self::getNotServiceItem($request, $id)->transform(function ($row) use ($warehouse) {
                 /** @var Item $row */
                 return $row->getDataToItemModal($warehouse);
