@@ -174,6 +174,14 @@ export default {
     setWarehouses(state, warehouses) {
         state.warehouses = warehouses
     },
+    sethasGlobalIgv(state, hasGlobalIgv) {
+        if(hasGlobalIgv === undefined) hasGlobalIgv = false;
+        state.hasGlobalIgv = hasGlobalIgv
+    },
+    setEnabledGlobalIgvToPurchase(state, enabled_global_igv_to_purchase) {
+        if(enabled_global_igv_to_purchase === undefined) enabled_global_igv_to_purchase = false;
+        state.config.enabled_global_igv_to_purchase = enabled_global_igv_to_purchase
+    },
     setAllItems(state, all_items) {
         if(state.all_items !== undefined) {
             let temp_item = [state.all_items, ...all_items]

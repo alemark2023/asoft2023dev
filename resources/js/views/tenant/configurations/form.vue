@@ -337,7 +337,7 @@
                                         </div>
                                     </div>
 
-                                    
+
                                     <div class="col-md-6 mt-4">
                                         <label class="control-label">Agrupar productos y cantidades - Generar CPE
 
@@ -354,7 +354,7 @@
                                             <small class="form-control-feedback" v-if="errors.group_items_generate_document" v-text="errors.group_items_generate_document[0]"></small>
                                         </div>
                                     </div>
-                                    
+
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3" name="fourth">
@@ -480,6 +480,14 @@
                                         <tenant-options-form></tenant-options-form>
                                     </div>
                                 </div>
+                            </el-tab-pane>
+                            <el-tab-pane class="mb-3" name="seven">
+                                <span slot="label"><h3>Compras</h3></span>
+                                <tenant-configurations-form-purchases
+                                    @EmitChange="UpdateFormPurchase"
+                                    :errors="errors"
+                                ></tenant-configurations-form-purchases>
+
                             </el-tab-pane>
                         </el-tabs>
                         <terms-condition :showDialog.sync="showDialogTermsCondition"
@@ -621,19 +629,29 @@
                     search_item_by_series: false,
                     change_free_affectation_igv: false,
                     select_available_price_list: false,
-                    group_items_generate_document: false
+                    group_items_generate_document: false,
+                    enabled_global_igv_to_purchase: this.config.enabled_global_igv_to_purchase
                 };
+            },
+            UpdateFormPurchase(e){
+                //Añadir la variable para cada item en compra. No es posible pasar elemento form por vuex
+              this.form.enabled_global_igv_to_purchase = this.config.enabled_global_igv_to_purchase
+                this.submit();
             },
             submit() {
                 this.loading_submit = true;
 
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
-                    if (response.data.success) {
-                        this.$message.success(response.data.message);
+                    let data = response.data;
+                    if (data.success) {
+                        this.$message.success(data.message);
+                    }else {
+                        this.$message.error(data.message);
                     }
-                    else {
-                        this.$message.error(response.data.message);
+                    if(data !== undefined && data.configuration !== undefined){
+                        this.$store.commit('setConfiguration', data.configuration)
                     }
+
                 }).catch(error => {
                     if (error.response.status === 422) {
                         this.errors = error.response.data.errors;

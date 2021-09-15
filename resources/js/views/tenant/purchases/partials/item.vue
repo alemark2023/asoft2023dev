@@ -126,7 +126,9 @@
                             </div>
                             <el-checkbox v-model="form.update_purchase_price">Actualizar precio de compra</el-checkbox>
                             <el-checkbox v-model="form.update_price">Editar precio de venta</el-checkbox>
-                            <el-checkbox v-show="!isLotEnabled" v-model="form.update_date_of_due">Asignar Fecha de vencimiento</el-checkbox>
+                            <el-checkbox v-show="!isLotEnabled"
+                                         v-model="form.update_date_of_due">Asignar Fecha de vencimiento
+                            </el-checkbox>
                         </div>
                         <div v-if="form.update_price"
                              class="col-md-2">
@@ -160,10 +162,10 @@
                                 </label>
                                 <el-date-picker
                                     v-model="date_of_due"
+                                    :clearable="false"
                                     :picker-options="datEmision"
                                     type="date"
                                     value-format="yyyy-MM-dd"
-                                    :clearable="false"
                                 ></el-date-picker>
 
                                 <small v-if="errors.date_of_due"
@@ -565,6 +567,7 @@ export default {
     computed: {
         ...mapState([
             'config',
+            'hasGlobalIgv',
         ]),
         canEditPrice() {
             if (this.form && this.form.update_price !== undefined) {
@@ -572,20 +575,20 @@ export default {
             }
             return false;
         },
-        canSetDateOfDue(){
+        canSetDateOfDue() {
             if (this.form && this.form.update_date_of_due !== undefined) {
                 return this.form.update_date_of_due
             }
             return false;
         },
-        isLotEnabled(){
-            if(this.form){
+        isLotEnabled() {
+            if (this.form) {
                 let form = this.form;
-                if(
+                if (
                     form &&
                     form.item &&
                     form.item.lots_enabled
-                ){
+                ) {
                     // this.date_of_due = null;
                     this.form.update_date_of_due = false;
                     return form.item.lots_enabled;
@@ -630,6 +633,7 @@ export default {
     },
     created() {
         this.loadConfiguration()
+        this.loadHasGlobalIgv()
         this.activeName = 'first'
         this.initForm()
         this.$http.get(`/${this.resource}/item/tables`).then(response => {
@@ -651,6 +655,7 @@ export default {
     methods: {
         ...mapActions([
             'loadConfiguration',
+            'loadHasGlobalIgv',
         ]),
         ItemSlotTooltipView(item) {
             return ItemSlotTooltip(item);
@@ -832,7 +837,14 @@ export default {
             this.prices = this.form.item_unit_types;
             this.date_of_due = this.form.date_of_due;
             this.form.purchase_has_igv = this.form.item.purchase_has_igv;
+            this.setGlobalIgvToItem()
 
+        },
+        setGlobalIgvToItem() {
+            if (config.enabled_global_igv_to_purchase === true) {
+                // Ajusta el igv, si es global, se lo añade o quita al precio del item directamente
+                this.form.has_igv = this.hasGlobalIgv
+            }
         },
 
         changeItemAlt() {
@@ -847,6 +859,7 @@ export default {
             this.date_of_due = this.form.date_of_due;
             this.form.purchase_has_igv = this.form.item.purchase_has_igv;
             this.search_item_by_barcode = 0;
+            this.setGlobalIgvToItem()
         },
         async clickAddItem() {
             if (this.form.item.lots_enabled) {
@@ -876,8 +889,8 @@ export default {
             }
 
             let date_of_due = this.form.date_of_due
-            if(this.date_of_due != null && this.form.update_date_of_due && !this.form.item.lots_enabled ){
-                date_of_due =this.date_of_due;
+            if (this.date_of_due != null && this.form.update_date_of_due && !this.form.item.lots_enabled) {
+                date_of_due = this.date_of_due;
             }
 
             this.form.item.unit_price = unit_price

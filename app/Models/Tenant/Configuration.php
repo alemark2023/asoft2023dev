@@ -7,6 +7,7 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
 use Modules\Inventory\Models\Warehouse;
+use phpDocumentor\Reflection\Types\Boolean;
 
 /**
  * Class Configuration
@@ -96,6 +97,7 @@ class Configuration extends ModelTenant
         'currency_type_id',
         'show_extra_info_to_item',
         'group_items_generate_document',
+        'enabled_global_igv_to_purchase',
     ];
 
     protected $casts = [
@@ -111,6 +113,7 @@ class Configuration extends ModelTenant
         'select_available_price_list' => 'boolean',
         'show_extra_info_to_item' => 'boolean',
         'group_items_generate_document' => 'boolean',
+        'enabled_global_igv_to_purchase' => 'boolean',
     ];
 
     /**
@@ -442,6 +445,7 @@ class Configuration extends ModelTenant
             'affectation_igv_types_exonerated_unaffected' => Item::AffectationIgvTypesExoneratedUnaffected(),
             'typeUser'=>$typeUser,
             'unit_type_id'=>$unit_type_id,
+            'enabled_global_igv_to_purchase'=>$this->isEnabledGlobalIgvToPurchase(),
             'user'=>[
                 'serie'=>$serie,
                 'document_id'=>$document_id,
@@ -527,6 +531,27 @@ class Configuration extends ModelTenant
         $this->search_item_by_series = (bool) $search_item_by_series;
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isEnabledGlobalIgvToPurchase(): bool
+    {
+        return (bool) $this->enabled_global_igv_to_purchase;
+    }
+
+    /**
+     * @param bool $enabled_global_igv_to_purchase
+     *
+     * @return Configuration
+     */
+    public function setEnabledGlobalIgvToPurchase(bool $enabled_global_igv_to_purchase = false): Configuration
+    {
+        $this->enabled_global_igv_to_purchase = (bool) $enabled_global_igv_to_purchase;
+        return $this;
+    }
+
+
 
 
 }

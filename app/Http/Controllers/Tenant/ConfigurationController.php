@@ -258,9 +258,11 @@ class ConfigurationController extends Controller
         $configuration->fill($request->all());
         $configuration->save();
 
+
         return [
             'success' => true,
-            'message' => 'Configuración actualizada'
+            'configuration' => $configuration->getCollectionData(),
+            'message' => 'Configuración actualizada',
         ];
     }
 

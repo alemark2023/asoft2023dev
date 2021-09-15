@@ -32,6 +32,7 @@ Vue.component('tenant-companies-logo', require('./views/tenant/companies/logo.vu
 Vue.component('tenant-certificates-index', require('./views/tenant/certificates/index.vue'));
 Vue.component('tenant-certificates-form', require('./views/tenant/certificates/form.vue'));
 Vue.component('tenant-configurations-form', require('./views/tenant/configurations/form.vue'));
+Vue.component('tenant-configurations-form-purchases', require('./views/tenant/configurations/partials/purchases.vue'));
 Vue.component('tenant-configurations-visual', require('./views/tenant/configurations/visual.vue'));
 Vue.component('tenant-configurations-pdf', require('./views/tenant/configurations/pdf_templates.vue'));
 Vue.component('tenant-configurations-sale-notes', require('./views/tenant/configurations/sale_notes.vue'));

@@ -106,6 +106,9 @@ export default {
         if (state.all_items === undefined) state.all_items = [];
         // state.all_items = getUniqueArray(readStorageData('all_items', true), ['id'])
     },
+    loadHasGlobalIgv(store) {
+        if (state.hasGlobalIgv === undefined) state.hasGlobalIgv = false;
+    },
     loadCompany(store) {
         let t = readStorageData('company', true)
         if (t !== null) {
