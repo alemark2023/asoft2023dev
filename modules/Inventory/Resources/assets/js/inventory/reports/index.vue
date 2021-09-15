@@ -149,7 +149,9 @@
                                     </tbody>
                                     <tfoot>
                                     <tr>
-                                        <td colspan="7" class="celda"></td>
+                                        <td colspan="5" class="celda"></td>
+                                        <td class="celda">S/ {{total_sale_unit_price}}</td>
+                                        <td class="celda">S/ {{total_purchase_unit_price}}</td>
                                         <td class="celda">S/ {{total_profit}}</td>
                                         <td class="celda">S/ {{total_all_profit}}</td>
                                     </tr>
@@ -198,6 +200,8 @@ export default {
             brands: [],
             filters: [],
             records: [],
+            total_purchase_unit_price: 0,
+            total_sale_unit_price: 0,
         }
     },
     created() {
@@ -229,15 +233,27 @@ export default {
             }
         },
         calculeTotalProfit(){
+
             this.total_profit = 0;
             this.total_all_profit = 0;
+            this.total_purchase_unit_price = 0;
+            this.total_sale_unit_price = 0;
+
             if(this.records.length > 0) {
+
                 let el = this;
                 this.records.forEach(function (a, b) {
+
                     el.total_profit +=  Math.abs(a.profit);
                     el.total_all_profit += Math.abs(a.profit * a.stock);
+
+                    el.total_purchase_unit_price +=  _.round(parseFloat(a.purchase_unit_price), 6)
+                    el.total_sale_unit_price +=  _.round(parseFloat(a.sale_unit_price), 6)
+
                 })
+
             }
+
             this.total_profit = this.total_profit.toFixed(2)
             this.total_all_profit = this.total_all_profit.toFixed(2)
         },
