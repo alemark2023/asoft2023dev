@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\Http\Controllers\Api;
 
+use App\Http\Controllers\SearchItemController;
 use App\Http\Controllers\Tenant\EmailController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -110,7 +111,9 @@ class PurchaseController extends Controller
     public function item_tables()
     {
 
-        $items = $this->table('items');
+        // $items = $this->table('items');
+        $items = SearchItemController::getNotServiceItemToModal();
+
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
 
         return compact('items', 'affectation_igv_types');

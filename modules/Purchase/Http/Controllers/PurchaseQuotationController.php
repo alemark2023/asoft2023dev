@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\Http\Controllers;
 
+use App\Http\Controllers\SearchItemController;
 use App\Http\Controllers\Tenant\EmailController;
 use App\Models\Tenant\Configuration;
 use Illuminate\Http\Request;
@@ -78,7 +79,9 @@ class PurchaseQuotationController extends Controller
     public function item_tables()
     {
 
-        $items = $this->table('items');
+        // $items = $this->table('items');
+        $items = SearchItemController::getNotServiceItemToModal();
+
 
         return compact('items');
     }

@@ -8,7 +8,16 @@ export default {
     config: {
         id: 0,
         company: {},
-        establishment: {},
+        establishment: {
+            address:null,
+            email:null,
+            telephone:null,
+            district:{description:null},
+            province:{description:null},
+            department:{description:null},
+            country:{description:null},
+
+        },
         send_auto: false,
         formats: 0,
         warehouse_id: 0,

@@ -5,6 +5,7 @@ use App\CoreFacturalo\Facturalo;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\Exports\PaymentExport;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SearchItemController;
 use App\Http\Requests\Tenant\DocumentEmailRequest;
 use App\Http\Requests\Tenant\DocumentRequest;
 use App\Http\Requests\Tenant\DocumentUpdateRequest;
@@ -245,7 +246,8 @@ class DocumentController extends Controller
 
     public function item_tables()
     {
-        $items = $this->table('items');
+        // $items = $this->table('items');
+        $items = SearchItemController::getNotServiceItemToModal();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();

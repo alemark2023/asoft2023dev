@@ -6,6 +6,7 @@ use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\CoreFacturalo\Template;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SearchItemController;
 use App\Http\Requests\Tenant\PurchaseImportRequest;
 use App\Http\Requests\Tenant\PurchaseRequest;
 use App\Http\Resources\Tenant\PurchaseCollection;
@@ -136,7 +137,8 @@ class PurchaseController extends Controller
     public function item_tables()
     {
 
-        $items = $this->table('items');
+        // $items = $this->table('items');
+        $items = SearchItemController::getNotServiceItemToModal();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
@@ -569,9 +571,12 @@ class PurchaseController extends Controller
                 break;
 
             case 'items':
-
-                $items = Item::whereNotIsSet()->whereIsActive()->orderBy('description')->take(20)->get(); //whereWarehouse()
+                return SearchItemController::getNotServiceItemToPurchase()->transform(function($row) {
+/*
+                    $items = Item::whereNotIsSet()->whereIsActive()->orderBy('description')->take(20)->get(); //whereWarehouse()
                 return collect($items)->transform(function($row) {
+                    */
+                /** @var Item $row */
                     $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                     return [
                         'id' => $row->id,
@@ -628,23 +633,11 @@ class PurchaseController extends Controller
 
     public function searchItems(Request $request)
     {
-
-        $all_items = Item::whereNotIsSet()
-            ->whereIsActive();
-        if ($request->has('barcode') && !empty($request->barcode)) {
-            //codigo de barras
-            $all_items->where('barcode', "{$request->barcode}");
-            // $all_items->where('barcode', 'like', "%{$request->barcode}%");
-        } else {
-            // normal
-            $all_items->where('description', 'like', "%{$request->input}%")
-                ->orWhere('internal_id', 'like', "%{$request->input}%");
-        }
-        $items = $all_items->orderBy('description')->get()->transform(function($row){
-            /** @var Item $row*/
-            $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
-            $temp = array_merge($row->getCollectionData(),$row->getDataToItemModal());
-            $data =  [
+        $items = SearchItemController::getNotServiceItemToPurchase($request)->transform(function ($row) {
+            /** @var Item $row */
+            $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
+            $temp = array_merge($row->getCollectionData(), $row->getDataToItemModal());
+            $data = [
                 'id' => $row->id,
                 'item_code'  => $row->item_code,
                 'full_description' => $full_description,
@@ -697,17 +690,10 @@ class PurchaseController extends Controller
     public function searchItemById($id)
     {
 
-        $search_item = Item::where('id', $id)
-                        ->whereNotIsSet()
-                        ->whereIsActive()
-                        ->orderBy('description')
-                        ->take(1)
-                        ->get();
 
-        $items = collect($search_item)->transform(function($row){
-
-            $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
-
+        $items = SearchItemController::getNotServiceItemToPurchase(null, $id)->transform(function ($row) {
+            /** @var Item $row */
+            $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
             return [
                 'id' => $row->id,
                 'item_code'  => $row->item_code,
