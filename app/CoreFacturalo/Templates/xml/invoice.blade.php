@@ -211,7 +211,6 @@
     <cac:PrepaidPayment>
         <cbc:ID>{{ $loop->iteration }}</cbc:ID>
         <cbc:PaidAmount currencyID="{{ $document->currency_type_id }}">{{ $prepayment->total }}</cbc:PaidAmount>
-        {{-- <cbc:PaidAmount currencyID="{{ $document->currency_type_id }}">{{ $prepayment->amount }}</cbc:PaidAmount> --}}
     </cac:PrepaidPayment>
     @endforeach
     @endif
