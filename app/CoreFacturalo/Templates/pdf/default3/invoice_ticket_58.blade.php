@@ -117,6 +117,38 @@
             </td>
         </tr>
     @endif
+    
+    @if ($document->detraction)
+    {{--<strong>Operación sujeta a detracción</strong>--}}
+        <tr>
+            <td  class="align-top"><p class="desc">N. Cta Detracciones:</p></td>
+            <td><p class="desc">{{ $document->detraction->bank_account}}</p></td>
+        </tr>
+        <tr>
+            <td  class="align-top"><p class="desc">B/S Sujeto a detracción:</p></td>
+            @inject('detractionType', 'App\Services\DetractionTypeService')
+            <td><p class="desc">{{$document->detraction->detraction_type_id}} - {{ $detractionType->getDetractionTypeDescription($document->detraction->detraction_type_id ) }}</p></td>
+        </tr>
+        <tr>
+            <td  class="align-top"><p class="desc">Método de pago:</p></td>
+            <td><p class="desc">{{ $detractionType->getPaymentMethodTypeDescription($document->detraction->payment_method_id ) }}</p></td>
+        </tr>
+        <tr>
+            <td  class="align-top"><p class="desc">Porcentaje detracción:</p></td>
+            <td><p class="desc">{{ $document->detraction->percentage}}%</p></td>
+        </tr>
+        <tr>
+            <td  class="align-top"><p class="desc">Monto detracción:</p></td>
+            <td><p class="desc">S/ {{ $document->detraction->amount}}</p></td>
+        </tr>
+        @if($document->detraction->pay_constancy)
+        <tr>
+            <td  class="align-top"><p class="desc">Constancia de pago:</p></td>
+            <td><p class="desc">{{ $document->detraction->pay_constancy}}</p></td>
+        </tr>
+        @endif
+    @endif
+    
     @if ($document->purchase_order)
         <tr>
             <td><p class="desc">Orden de Compra:</p></td>

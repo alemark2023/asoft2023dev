@@ -151,7 +151,7 @@
         @if ($document->detraction)
             <td width="120px">MONTO DETRACCIÓN</td>
             <td width="8px">:</td>
-            <td>{{ $document->currency_type->symbol }} {{ $document->detraction->amount}}</td>
+            <td>S/ {{ $document->detraction->amount}}</td>
         @endif
         @if ($document->detraction)
             @if($document->detraction->pay_constancy)
