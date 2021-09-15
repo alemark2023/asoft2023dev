@@ -171,7 +171,7 @@
                                 <el-checkbox v-model="localHasGlobalIgv"
                                              @change="changeHasGlobalIgv">¿La compra tiene igv?
                                     <el-tooltip class="item"
-                                                content="Hace que el item tenga IGV al momento de añadirlo."
+                                                content="Al estar la configuracion activa, sobreescribe el igv del item. Si no esta checado, el producto no tendra igv."
                                                 effect="dark"
                                                 placement="top-end">
                                         <i class="fa fa-info-circle"></i>

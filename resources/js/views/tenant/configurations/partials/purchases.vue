@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-6 mt-4">
             <label class="control-label">
-                Establece el IGV global en la compra.
+                Poder cambiar el IGV global de los items en la compra.
             </label>
             <div :class="{'has-danger': errors.enabled_global_igv_to_purchase}"
                  class="form-group">
@@ -47,7 +47,6 @@ export default {
             let conf = this.config.enabled_global_igv_to_purchase;
             // Para cada configuracion. Guarsdarla ebn el global.
             this.$store.commit('setEnabledGlobalIgvToPurchase', conf)
-            this.loadConfiguration()
             this.$emit('EmitChange', conf)
 
         }

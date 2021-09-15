@@ -483,14 +483,11 @@
                             </el-tab-pane>
                             <el-tab-pane class="mb-3" name="seven">
                                 <span slot="label"><h3>Compras</h3></span>
-                                <div class="row">
-                                    <div class="col-12 mt-4">
-                                        <tenant-configurations-form-purchases
-                                            @EmitChange="UpdateFormPurchase"
-                                            :errors="errors"
-                                        ></tenant-configurations-form-purchases>
-                                    </div>
-                                </div>
+                                <tenant-configurations-form-purchases
+                                    @EmitChange="UpdateFormPurchase"
+                                    :errors="errors"
+                                ></tenant-configurations-form-purchases>
+
                             </el-tab-pane>
                         </el-tabs>
                         <terms-condition :showDialog.sync="showDialogTermsCondition"
@@ -639,7 +636,7 @@
             UpdateFormPurchase(e){
                 //Añadir la variable para cada item en compra. No es posible pasar elemento form por vuex
               this.form.enabled_global_igv_to_purchase = this.config.enabled_global_igv_to_purchase
-              this.submit();
+                this.submit();
             },
             submit() {
                 this.loading_submit = true;
