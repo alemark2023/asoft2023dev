@@ -509,6 +509,24 @@ class Configuration extends ModelTenant
         return $this;
     }
 
+    /**
+     * @return bool
+     */
+    public function isSearchItemBySeries(): bool
+    {
+        return (bool)$this->search_item_by_series;
+    }
+
+    /**
+     * @param bool $search_item_by_series
+     *
+     * @return Configuration
+     */
+    public function setSearchItemBySeries(bool $search_item_by_series): Configuration
+    {
+        $this->search_item_by_series = (bool) $search_item_by_series;
+        return $this;
+    }
 
 
 }

@@ -132,7 +132,7 @@
                         'input': input,
                         'search_by_barcode': this.search_item_by_barcode ? 1 : 0
                     }
-                    await this.$http.get(`/documents/search-items/`, { params })
+                    await this.$http.get(`/documents/search-items`, { params })
                             .then(response => {
                                 this.items = response.data.items
                                 this.loading_search = false
