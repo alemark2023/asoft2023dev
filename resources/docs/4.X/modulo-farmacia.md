@@ -1,15 +1,16 @@
-# Plantilla PDF personalizada
+# Módulo de Farmacia
 
 ---
 
-- [First Section](#section-1)
+- [Activación del módulo](#section-1)
+- [Configuración de empresa](#section-2)
+- [Creación de producto](#section-3)
+- [Lista de productos](#section-4)
+- [Importar Productos](#section-5)
+- [Exportar lista para DIGEMID](#section-6)
 
 <a name="section-1"></a>
-## First Section
-
-Write something cool.. 🦊
-
-## Activación del modulo.
+## Activación del módulo
 
 ### Desde Admin
 
@@ -24,7 +25,7 @@ Es posible habilitar el modulo desde la configuración https://demo.facturalo.pr
 
 ![image](https://gitlab.com/carlomagno83/facturadorpro4/-/wikis/uploads/3644f7df11cc5631c618dd8e5c4c05d7/image.png)
 
-
+<a name="section-2"></a>
 ## Configuración de empresa
 
 En los datos de empresa, para la dirección https://demo.facturalo.pro/companies/create. se habilita "Datos de farmacia" el cual corresponde a "Código de observación DIGEMID"
@@ -33,6 +34,15 @@ En los datos de empresa, para la dirección https://demo.facturalo.pro/companies
 
 Este datos se utilizará mas adelante.
 
+<a name="section-3"></a>
+## Creación de producto
+
+cuando se crea un producto desde este apartado, se requerirá el código DIGEMID y el Registro sanitario.
+![image](https://gitlab.com/carlomagno83/facturadorpro4/-/wikis/uploads/5dbb4ab15ae675551bce7ba8c1d119a2/image.png)
+
+> {danger} debe registrar sus propios productos con la información correcta antes de continuar con los siguientes pasos
+
+<a name="section-4"></a>
 ## Lista de productos  DIGEMID
 
 https://demo.facturalo.pro/digemid
@@ -41,12 +51,8 @@ https://demo.facturalo.pro/digemid
 
 Se habilita del modulo de Farmacia, productos, para listar todos los productos de farmacia disponibles.
 
-## Creación de producto
 
-En este apartado, cuando se crea un producto desde este apartado, se requerirá el código DIGEMID y el Registro sanitario.
-![image](https://gitlab.com/carlomagno83/facturadorpro4/-/wikis/uploads/5dbb4ab15ae675551bce7ba8c1d119a2/image.png)
-
-
+<a name="section-5"></a>
 ## Importar Productos para exportación
 
 Se usa como base el archivo facilitado por DIGEMIDen http://opm.digemid.minsa.gob.pe/#/consulta-producto en la sección "Menu Principal" haciendo click en el "Catálogo de productos farmacéuticos"
@@ -60,9 +66,9 @@ al descargar el archivo xlsx. se procede a importarlo en la plataforma, en la se
 Esto marca el producto para su futura exportación  de forma automática.
 
 ![image](https://gitlab.com/carlomagno83/facturadorpro4/-/wikis/uploads/43fcc86d85314eea35fbb2320e94f30d/image.png)
-solo se considerará los productos registrados en el sistema, basado
+<br>solo se considerará los productos registrados en el sistema
 
-
+<a name="section-6"></a>
 ## Exportar lista para DIGEMID
 
 ![image](https://gitlab.com/carlomagno83/facturadorpro4/-/wikis/uploads/019931ad841ab9958f54daa65e2b632c/image.png)
