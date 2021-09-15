@@ -217,7 +217,10 @@
                                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                                     <label class="control-label">Observación
                                                     </label>
-                                                    <el-input  type="textarea"  :rows="3" v-model="form.description"></el-input>
+                                                    <el-input  type="textarea"  :rows="3" v-model="form.description"
+                                                        maxlength="1000"
+                                                        show-word-limit>
+                                                    </el-input>
                                                     <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                                                 </div>
                                             </div>

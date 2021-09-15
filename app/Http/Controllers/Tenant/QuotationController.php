@@ -603,6 +603,9 @@ class QuotationController extends Controller
             $terms_condition = $document->terms_condition ? 15 : 0;
             $contact = $document->contact ? 15 : 0;
 
+            $document_description = ($document->description) ? count(explode("\n", $document->description)) * 3 : 0;
+            
+
             foreach ($document->items as $it) {
                 if ($it->discounts) {
                     $discount_global = $discount_global + 1;
@@ -631,6 +634,7 @@ class QuotationController extends Controller
                     $total_exonerated +
                     $terms_condition +
                     $contact +
+                    $document_description +
                     $total_taxed],
                 'margin_top' => 2,
                 'margin_right' => 5,
