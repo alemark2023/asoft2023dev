@@ -339,7 +339,8 @@
                                                 </tr>
                                                 <tr v-if="form.total_prepayment > 0">
                                                     <td>ANTICIPOS:</td>
-                                                    <td>{{ currency_type.symbol }} {{ form.total_prepayment }}</td>
+                                                    <td>{{ currency_type.symbol }} {{ form.total_discount }}</td>
+                                                    <!-- <td>{{ currency_type.symbol }} {{ form.total_prepayment }}</td> -->
                                                 </tr>
                                                 <tr v-if="form.total_igv > 0">
                                                     <td>IGV:</td>
@@ -647,7 +648,7 @@
                                     </tr>
                                     <tr v-if="form.total_prepayment > 0">
                                         <td>ANTICIPOS:</td>
-                                        <td>{{ currency_type.symbol }} {{ form.total_prepayment }}</td>
+                                        <td>{{ currency_type.symbol }} {{ form.total_discount }}</td>
                                     </tr>
                                     <tr v-if="form.total_igv > 0">
                                         <td>IGV:</td>
@@ -1965,8 +1966,11 @@ export default {
         discountGlobalPrepayment() {
 
             let global_discount = 0
+            let sum_total_prepayment = 0
+
             this.form.prepayments.forEach((item) => {
                 global_discount += parseFloat(item.amount)
+                sum_total_prepayment += parseFloat(item.total)
             })
 
             // let base = (this.form.affectation_type_prepayment == 10) ? parseFloat(this.form.total_taxed):parseFloat(this.form.total_exonerated)
@@ -1974,20 +1978,22 @@ export default {
 
             switch (this.form.affectation_type_prepayment) {
                 case 10:
-                    base = parseFloat(this.form.total_taxed)
+                    base = parseFloat(this.form.total_taxed) + global_discount
+                    // base = parseFloat(this.form.total_taxed)
                     break;
                 case 20:
-                    base = parseFloat(this.form.total_exonerated)
+                    base = parseFloat(this.form.total_exonerated) + global_discount
                     break;
                 case 30:
-                    base = parseFloat(this.form.total_unaffected)
+                    base = parseFloat(this.form.total_unaffected) + global_discount
                     break;
             }
 
-            let amount = _.round(parseFloat(global_discount), 2)
+            let amount = _.round(global_discount, 2)
             let factor = _.round(amount / base, 4)
 
-            this.form.total_prepayment = _.round(global_discount, 2)
+            this.form.total_prepayment = _.round(sum_total_prepayment, 2)
+            // this.form.total_prepayment = _.round(global_discount, 2)
 
             if (this.form.affectation_type_prepayment == 10) {
 
@@ -1995,12 +2001,12 @@ export default {
                 let discount = _.find(this.form.discounts, {'discount_type_id': '04'})
 
                 if (global_discount > 0 && !discount) {
+
                     this.form.total_discount = _.round(amount, 2)
-                    this.form.total_taxed = _.round(base - amount, 2)
-                    this.form.total_value = _.round(base - amount, 2)
-                    this.form.total_igv = _.round(this.form.total_value * 0.18, 2)
+                    this.form.total_taxed = _.round(this.form.total_taxed - amount, 2)
+                    this.form.total_igv = _.round(this.form.total_taxed * 0.18, 2)
                     this.form.total_taxes = _.round(this.form.total_igv, 2)
-                    this.form.total = _.round(this.form.total_value + this.form.total_taxes, 2)
+                    this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
 
                     this.form.discounts.push({
                         discount_type_id: "04",
@@ -2017,11 +2023,10 @@ export default {
                     if (pos > -1) {
 
                         this.form.total_discount = _.round(amount, 2)
-                        this.form.total_taxed = _.round(base - amount, 2)
-                        this.form.total_value = _.round(base - amount, 2)
-                        this.form.total_igv = _.round(this.form.total_value * 0.18, 2)
+                        this.form.total_taxed = _.round(this.form.total_taxed - amount, 2)
+                        this.form.total_igv = _.round(this.form.total_taxed * 0.18, 2)
                         this.form.total_taxes = _.round(this.form.total_igv, 2)
-                        this.form.total = _.round(this.form.total_value + this.form.total_taxes, 2)
+                        this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
 
                         this.form.discounts[pos].base = base
                         this.form.discounts[pos].amount = amount
@@ -2035,11 +2040,9 @@ export default {
 
                 let exonerated_discount = _.find(this.form.discounts, {'discount_type_id': '05'})
 
-
                 this.form.total_discount = _.round(amount, 2)
-                this.form.total_exonerated = _.round(base - amount, 2)
-                this.form.total_value = this.form.total_exonerated
-                this.form.total = this.form.total_value
+                this.form.total_exonerated = _.round(this.form.total_exonerated - amount, 2)
+                this.form.total = this.form.total_exonerated
 
                 if (global_discount > 0 && !exonerated_discount) {
                     this.form.discounts.push({
@@ -2069,9 +2072,8 @@ export default {
                 let unaffected_discount = _.find(this.form.discounts, {'discount_type_id': '06'})
 
                 this.form.total_discount = _.round(amount, 2)
-                this.form.total_unaffected = _.round(base - amount, 2)
-                this.form.total_value = this.form.total_unaffected
-                this.form.total = this.form.total_value
+                this.form.total_unaffected = _.round(this.form.total_unaffected - amount, 2)
+                this.form.total = this.form.total_unaffected
 
                 if (global_discount > 0 && !unaffected_discount) {
                     this.form.discounts.push({
