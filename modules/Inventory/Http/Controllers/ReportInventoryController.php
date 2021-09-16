@@ -173,6 +173,7 @@ class ReportInventoryController extends Controller
 
     public function export(Request $request)
     {
+
         try {
             $company = Company::query()->first();
             $establishment = Establishment::query()->first();
@@ -180,9 +181,10 @@ class ReportInventoryController extends Controller
 
             $records = $request->input('records');
             $format = $request->input('format');
+            $totals = $request->input('totals');
 
             if ($format === 'pdf') {
-                $pdf = PDF::loadView('inventory::reports.inventory.report', compact('records', 'company', 'establishment', 'format'));
+                $pdf = PDF::loadView('inventory::reports.inventory.report', compact('records', 'company', 'establishment', 'format', 'totals'));
                 $pdf->setPaper('A4', 'landscape');
                 $filename = 'ReporteInv_' . date('YmdHis');
                 return $pdf->download($filename . '.pdf');
@@ -193,7 +195,7 @@ class ReportInventoryController extends Controller
                 ->company($company)
                 ->establishment($establishment)
                 ->format($format)
-                ;
+                ->totals($totals);
             // return $inventoryExport->view();
             return $inventoryExport->download('ReporteInv_' . Carbon::now() . '.xlsx');
 

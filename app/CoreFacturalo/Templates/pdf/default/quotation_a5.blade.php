@@ -158,7 +158,8 @@
     @if ($document->description)
         <tr>
             <td width="15%" class="align-top">Observación: </td>
-            <td width="85%">{{ $document->description }}</td>
+            <td width="85%">{!! str_replace("\n", "<br/>", $document->description) !!}</td>
+            {{-- <td width="85%">{{ $document->description }}</td> --}}
         </tr>
     @endif
 </table>
