@@ -877,6 +877,7 @@ export default {
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
 
+
                 if (this.isEditItemNote) {
                     this.form.item.currency_type_id = this.currencyTypeIdActive
                     this.form.item.currency_type_symbol = (this.currencyTypeIdActive == 'PEN') ? 'S/' : '$'
@@ -888,6 +889,11 @@ export default {
                         await this.regularizeLots()
                         this.lots = this.form.item.lots
                     }
+
+                }else{
+
+                    this.form.item.lots = this.recordItem.item.lots
+                    this.lots = this.recordItem.item.lots
 
                 }
 
