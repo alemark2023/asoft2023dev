@@ -149,7 +149,10 @@
                                     </tbody>
                                     <tfoot>
                                     <tr>
-                                        <td colspan="7" class="celda"></td>
+                                        <td colspan="5" class="celda"></td>
+                                        <td class="celda">S/ {{ totals.sale_unit_price }}</td>
+                                        <td class="celda">S/ {{ totals.purchase_unit_price }}</td>
+
                                         <td class="celda">S/ {{total_profit}}</td>
                                         <td class="celda">S/ {{total_all_profit}}</td>
                                     </tr>
@@ -198,6 +201,10 @@ export default {
             brands: [],
             filters: [],
             records: [],
+            totals: {
+                purchase_unit_price: 0,
+                sale_unit_price: 0,
+            }
         }
     },
     created() {
@@ -219,6 +226,14 @@ export default {
         }
     },
     methods: {
+        initTotals(){
+            
+            this.totals = {
+                purchase_unit_price: 0,
+                sale_unit_price: 0,
+            }
+
+        },
         initForm() {
             this.form = {
                 'warehouse_id': null,
@@ -229,17 +244,33 @@ export default {
             }
         },
         calculeTotalProfit(){
+
             this.total_profit = 0;
             this.total_all_profit = 0;
+            this.total_purchase_unit_price = 0;
+            this.total_sale_unit_price = 0;
+
             if(this.records.length > 0) {
+
                 let el = this;
                 this.records.forEach(function (a, b) {
+
                     el.total_profit +=  Math.abs(a.profit);
                     el.total_all_profit += Math.abs(a.profit * a.stock);
+
+                    el.totals.purchase_unit_price +=  parseFloat(a.purchase_unit_price)
+                    el.totals.sale_unit_price +=  parseFloat(a.sale_unit_price)
+
                 })
+
             }
+
             this.total_profit = this.total_profit.toFixed(2)
             this.total_all_profit = this.total_all_profit.toFixed(2)
+
+            this.totals.purchase_unit_price = this.totals.purchase_unit_price.toFixed(6)
+            this.totals.sale_unit_price = this.totals.sale_unit_price.toFixed(6)
+
         },
         initTables() {
             this.$http.get(`/${this.resource}/tables`)
@@ -258,6 +289,8 @@ export default {
             this.records = [];
             this.total_profit = 0;
             this.total_all_profit = 0;
+            this.initTotals()
+
             await this.$http.post(`/${this.resource}/records`, this.form)
                 .then(response => {
 
@@ -284,6 +317,7 @@ export default {
                 responseType: 'blob',
                 data: {
                     'records': this.records,
+                    'totals': this.totals,
                     'format': format,
                 }
             })
