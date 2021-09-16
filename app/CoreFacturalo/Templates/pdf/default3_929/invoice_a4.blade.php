@@ -143,7 +143,7 @@ $total_igv = $currency_symbol . " " . setNubmer($document->total_igv);
 $total_importe = $currency_symbol . " " . setNubmer($document->total);
 
 $total_items = count($array_items);
-$cantidad_linea = 35;
+$cantidad_linea = 25;
 
 foreach (array_reverse((array)$document->legends) as $row) {
     $total_word .= ($row->code == "1000") ? $row->value . " " . $document->currency_type->description : $row->code . " " . $row->value;
