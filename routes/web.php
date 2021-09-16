@@ -691,6 +691,7 @@ if ($hostname) {
             Route::get('configurations/record', 'System\ConfigurationController@record');
             Route::get('information', 'System\ConfigurationController@InfoIndex')->name('system.information');
             Route::get('configurations/apiruc', 'System\ConfigurationController@apiruc');
+            Route::get('configurations/apkurl', 'System\ConfigurationController@apkurl');
 
             // backup
             Route::get('backup', 'System\BackupController@index')->name('system.backup');

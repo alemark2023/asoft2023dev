@@ -53,6 +53,11 @@ class ConfigurationController extends Controller
             $configuration->token_apiruc = $request->token_apiruc;
         }
 
+        if($request->apk_url)
+        {
+            $configuration->apk_url = $request->apk_url;
+        }
+
         $configuration->save();
 
         return [
@@ -167,5 +172,15 @@ class ConfigurationController extends Controller
                 $val *= 1024;
         }
         return $val;
+    }
+
+    public function apkurl()
+    {
+
+        $configuration = Configuration::first();
+
+        return [
+            'apk_url' => $configuration->apk_url
+        ];
     }
 }
