@@ -841,9 +841,9 @@ export default {
 
         },
         setGlobalIgvToItem() {
-            if (config.enabled_global_igv_to_purchase === true) {
+            if (this.config.enabled_global_igv_to_purchase === true) {
                 // Ajusta el igv, si es global, se lo añade o quita al precio del item directamente
-                this.form.has_igv = this.hasGlobalIgv
+                this.form.purchase_has_igv = this.hasGlobalIgv
             }
         },
 

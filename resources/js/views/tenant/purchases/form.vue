@@ -169,6 +169,7 @@
                         <div class="col-md-8 mt-2 mb-2" v-if="config.enabled_global_igv_to_purchase === true">
                             <div class="form-group">
                                 <el-checkbox v-model="localHasGlobalIgv"
+                                             :disabled="(this.form.items.length != 0 && this.config.enabled_global_igv_to_purchase === true)"
                                              @change="changeHasGlobalIgv">¿La compra tiene igv?
                                     <el-tooltip class="item"
                                                 content="Al estar la configuracion activa, sobreescribe el igv del item. Si no esta checado, el producto no tendra igv."
@@ -588,8 +589,9 @@ export default {
         changeHasGlobalIgv() {
             if(this.form.items.length < 1 && this.config.enabled_global_igv_to_purchase === true) {
                 this.$store.commit('sethasGlobalIgv', !this.hasGlobalIgv);
-                this.localHasGlobalIgv = this.hasGlobalIgv;
+             this.loadHasGlobalIgv()
             }
+            this.localHasGlobalIgv = this.hasGlobalIgv;
 
         },
         changeHasPayment() {
