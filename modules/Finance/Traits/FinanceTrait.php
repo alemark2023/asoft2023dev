@@ -2,11 +2,7 @@
 
     namespace Modules\Finance\Traits;
 
-
-    use App\Models\Tenant\Bank;
-    use App\Models\Tenant\DocumentPayment;
-    use App\Models\Tenant\PurchasePayment;
-    use App\Models\Tenant\SaleNotePayment;
+    use App\Models\Tenant\{DocumentPayment, PurchasePayment, SaleNotePayment};
     use App\Models\Tenant\TransferAccountPayment;
     use App\Models\Tenant\BankAccount;
     use App\Models\Tenant\Cash;
@@ -252,7 +248,8 @@
             $egress = $expense_payment +
                 $purchase_payment;
 
-            $balance = $entry -
+            $balance =
+                $entry -
                 $egress +
                 $transfer_beween_account;
             $income_payment_return = $income_payment +
@@ -432,7 +429,6 @@
         {
             $records = $bank_accounts->map(function ($row) {
 
-
                 $document_payment = $this->getSumPayment($row->global_destination, DocumentPayment::class);
                 $expense_payment = $this->getSumPayment($row->global_destination, ExpensePayment::class);
                 $sale_note_payment = $this->getSumPayment($row->global_destination, SaleNotePayment::class);
@@ -441,8 +437,9 @@
                 // $contract_payment = 0; //$this->getSumPayment($row->global_destination, ContractPayment::class);
                 $contract_payment = $this->getSumPayment($row->global_destination, ContractPayment::class);
                 $income_payment = $this->getSumPayment($row->global_destination, IncomePayment::class);
-                $technical_service_payment = $this->getSumPayment($row->global_destination, Transfer::class);
+                $technical_service_payment = $this->getSumPayment($row->global_destination, TechnicalServicePayment::class);
                 $transfer_beween_account = $this->getTransferAccountPayment($row);
+
 
                 $entry = $document_payment +
                     $sale_note_payment +
