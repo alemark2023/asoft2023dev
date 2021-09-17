@@ -12,6 +12,8 @@ use Carbon\Carbon;
 use Modules\Inventory\Http\Resources\ReportValuedKardexCollection;
 use Modules\Report\Traits\ReportTrait;
 use Modules\Inventory\Helpers\InventoryValuedKardex;
+use Modules\Inventory\Exports\ValuedKardexFormatSunatExport;
+
 
 class ReportValuedKardexController extends Controller
 {
@@ -94,4 +96,23 @@ class ReportValuedKardexController extends Controller
         return $valuedKardexExport->download('Reporte_Kardex_Valorizado_' . Carbon::now() . '.xlsx');
 
     }
+    
+
+    public function excelFormatSunat(Request $request)
+    {
+
+        $company = Company::first();
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+
+        $records = InventoryValuedKardex::getTransformRecords($this->getRecords($request->all())->get());
+        $valuedKardexFormatSunatExport = new ValuedKardexFormatSunatExport();
+        $valuedKardexFormatSunatExport
+            ->records($records)
+            ->company($company)
+            ->establishment($establishment);
+
+        return $valuedKardexFormatSunatExport->download('Reporte_Kardex_Valorizado_Sunat_13_1' . Carbon::now() . '.xlsx');
+
+    }
+    
 }
