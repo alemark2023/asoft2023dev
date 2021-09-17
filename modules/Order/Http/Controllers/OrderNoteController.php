@@ -231,18 +231,18 @@ class OrderNoteController extends Controller
     }
     public function searchItemById($id)
     {
-        $items =  SearchItemController::searchByIdToModal($id);
+        $items =  SearchItemController::getItemsToOrderNote(null,$id);
         return compact('items');
 
     }
     public function searchItems(Request $request)
     {
-        $items = SearchItemController::getNotServiceItemToModal($request);
+        $items = SearchItemController::getItemsToOrderNote($request);
         return compact('items');
     }
     public function item_tables() {
         // $items = $this->table('items');
-        $items = SearchItemController::getNotServiceItemToModal();
+        $items = SearchItemController::getItemsToOrderNote();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
