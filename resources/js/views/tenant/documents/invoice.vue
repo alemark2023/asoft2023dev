@@ -2632,6 +2632,8 @@ export default {
             let total = 0
             let total_plastic_bag_taxes = 0
             this.total_discount_no_base = 0
+
+            let total_igv_free = 0
             
             // let total_free_igv = 0
 
@@ -2691,8 +2693,7 @@ export default {
 
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
-                // if (['13', '14', '15'].includes(row.affectation_igv_type_id)) {
-                if (['12', '13', '14', '15'].includes(row.affectation_igv_type_id)) {
+                if (['12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
 
                     let unit_value = row.total_value / row.quantity
                     let total_value_partial = unit_value * row.quantity
@@ -2700,6 +2701,8 @@ export default {
                     row.total_igv = total_value_partial * (row.percentage_igv / 100)
                     row.total_base_igv = total_value_partial
                     total_value -= row.total_value
+
+                    total_igv_free += row.total_igv
 
                 }
 
@@ -2709,6 +2712,7 @@ export default {
             });
 
 
+            this.form.total_igv_free = _.round(total_igv_free, 2)
             this.form.total_discount = _.round(total_discount, 2)
             this.form.total_exportation = _.round(total_exportation, 2)
             this.form.total_taxed = _.round(total_taxed, 2)
