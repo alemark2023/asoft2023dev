@@ -112,8 +112,8 @@
             <div class="col-4">
                 <el-button
                     class="submit "
-                    type="primary"
                     style="width: 100%;"
+                    type="primary"
                     @click.prevent="transferAmount">
                     <i class="fa fa-cash-register"></i>
                     Transferir
@@ -177,7 +177,6 @@ export default {
         getBankAccounts() {
             this.$http.post(`/${this.resource}/bank_accounts`, {}).then((resource) => {
                 let data = resource.data;
-                console.error(data)
                 this.banks = data.banks
             })
         },
@@ -185,16 +184,16 @@ export default {
         getCashAccounts() {
             this.$http.post(`/${this.resource}/cash`, {}).then((resource) => {
                 let data = resource.data;
-                console.error(data)
                 this.cashs = data.cash
             })
         },
         transferAmount() {
-
             this.$http.post(`/${this.resource}/transfer`, {data: this.transfer_amount}).then((resource) => {
                 let data = resource.data;
-                console.error(data)
                 this.cashs = data.cash
+            }).then(() => {
+                this.$emit('reloadAccounts', true)
+                this.clickClose()
             })
 
         },
