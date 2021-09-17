@@ -784,13 +784,14 @@
                     </li>
                     @endif
                     {{-- DIGEMID --}}
-
+                    @if(in_array('apps', $vc_modules))
                     <li class="">
                         <a class="nav-link" href="{{url('list-extras')}}">
                             <i class="fas fa-cube"></i>
                             <span>Apps</span>
                         </a>
                     </li>
+                    @endif
                 </ul>
             </nav>
         </div>

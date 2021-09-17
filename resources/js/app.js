@@ -306,6 +306,9 @@ Vue.component('system-backup', require('./views/system/backup/index.vue'));
 //culqi
 Vue.component('system-configuration-culqi', require('./views/system/configuration/culqi.vue'))
 
+//apk url
+Vue.component('system-configuration-apk-url', require('./views/system/configuration/apk-url.vue'))
+
 //token
 Vue.component('system-configuration-token', require('./views/system/configuration/token_ruc_dni.vue'))
 

@@ -3,6 +3,7 @@
     namespace App\Http\Controllers\Tenant;
 
     use App\Http\Controllers\Controller;
+    use App\Models\Tenant\Configuration;
 
     /**
      * Class SettingController
@@ -120,6 +121,8 @@
          * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
         public function listExtras() {
-            return view('tenant.settings.list_extras');
+            // vista blade no vue
+            $configuration = Configuration::first();
+            return view('tenant.settings.list_extras')->with('apk_url', $configuration->apk_url);
         }
     }
