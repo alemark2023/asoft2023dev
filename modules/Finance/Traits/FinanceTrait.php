@@ -282,9 +282,7 @@
                     $total_currency_type = $this->calculateTotalCurrencyType($row->payment->associated_record_payment, $row->payment->payment);
 
                 }catch (ErrorException $e){
-                    \Log::critical(__FILE__."::".__LINE__."\nclsae de row ".get_class($row));
-                    \Log::critical(__FILE__."::".__LINE__."\n".var_export($row,true));
-                    \Log::critical(__FILE__."::".__LINE__."\n".var_export($row->payment,true));
+                    \Log::critical(__FILE__."::".__LINE__." El elemento ".$row->id." de tipo  ".get_class($row)." No encuentra pagos asociados");
                     return 0;
                 }
 
