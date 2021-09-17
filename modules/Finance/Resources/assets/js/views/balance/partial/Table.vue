@@ -80,11 +80,15 @@
                     </template>
 
                     <div class="col-3">
+                        <label class="control-label" style="width: 100%;">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </label>
+
                         <el-button
                             class="submit"
-                            type="success"
+                            type="info"
                             @click.prevent="ShowTransferModal()">
-                            <i class="fa fa-file-excel"></i>
+                            <i class="fa fa-cash-register"></i>
                             Transferir entre cuentas
                         </el-button>
                     </div>

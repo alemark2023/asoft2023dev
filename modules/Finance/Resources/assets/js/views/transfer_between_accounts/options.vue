@@ -103,17 +103,19 @@
             </div>
             <div class="col-4">
                 <el-button
-                    class="submit form-control"
+                    class="submit"
+                    style="width: 100%;"
                     @click.prevent="clickClose">
                     Cerrar
                 </el-button>
             </div>
             <div class="col-4">
                 <el-button
-                    class="submit form-control"
-                    icon="el-icon-search"
+                    class="submit "
                     type="primary"
+                    style="width: 100%;"
                     @click.prevent="transferAmount">
+                    <i class="fa fa-cash-register"></i>
                     Transferir
                 </el-button>
             </div>
