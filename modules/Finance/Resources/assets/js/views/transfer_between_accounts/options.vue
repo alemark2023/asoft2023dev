@@ -95,27 +95,22 @@
 
                 </el-input-number>
             </div>
+            <div class="col-12">
+                &nbsp;
+            </div>
             <div class="col-4">
                 &nbsp;
             </div>
             <div class="col-4">
-                <label class="control-label">
-                    &nbsp;
-                </label>
                 <el-button
-                    class="submit"
-                    icon="el-icon-search"
-                    type="primary"
+                    class="submit form-control"
                     @click.prevent="clickClose">
                     Cerrar
                 </el-button>
             </div>
             <div class="col-4">
-                <label class="control-label">
-                    &nbsp;
-                </label>
                 <el-button
-                    class="submit"
+                    class="submit form-control"
                     icon="el-icon-search"
                     type="primary"
                     @click.prevent="transferAmount">

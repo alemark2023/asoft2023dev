@@ -7,6 +7,8 @@
     use App\Models\Tenant\Company;
     use App\Models\Tenant\Configuration;
     use App\Models\Tenant\Establishment;
+    use App\Models\Tenant\TransferAccountPayment;
+    use Auth;
     use Barryvdh\DomPDF\Facade as PDF;
     use Carbon\Carbon;
     use Illuminate\Contracts\View\Factory;
@@ -164,15 +166,13 @@
         public function getBankAcounts()
         {
             $banks = BankAccount::where('status', 1)->get()->transform(function ($bank) {
-                $data = [
-                    'id' => "B:" . $bank->id,
-                    'bank_id' => $bank->bank_id,
-                    'description' => $bank->description,
-                    'number' => $bank->number,
-                    'currency_type_id' => $bank->currency_type_id,
-                    'cci' => $bank->cci,
-                    // 'initial_balance'=> $bank-> initial_balance,
-                ];
+                $data = $this->getBalanceBySingleBankAcount($bank);
+                $data['id'] = "B:" . $bank->id;
+                $data['bank_id'] = $bank->bank_id;
+                $data['description'] = $bank->description;
+                $data['number'] = $bank->number;
+                $data['currency_type_id'] = $bank->currency_type_id;
+                $data['cci'] = $bank->cci;
 
                 $data['description'] = $data['description'] . " - " . $data['currency_type_id'] . " - " . $data['cci'];
                 return $data;
@@ -183,27 +183,28 @@
 
         public function getCashAcounts()
         {
-            $cash = Cash::where('state', 1)->get()->transform(function ($cash) {
-                $data = [
-                    'id' => "C:" . $cash->id,
+            $cash = Cash::where('state', 1)
+                ->where('user_id', Auth::user()->id)
+                ->get()
+                ->transform(function ($cash) {
+                    $data = $this->getBalanceBySingleBankAcount($cash);
+                    $data['id'] = "C:" . $cash->id;
+                    $data['user_id'] = $cash->user_id;
+                    $data['date_opening'] = $cash->date_opening;
+                    $data['time_opening'] = $cash->time_opening;
+                    $data['date_closed'] = $cash->date_closed;
+                    $data['time_closed'] = $cash->time_closed;
+                    $data['beginning_balance'] = $cash->beginning_balance;
+                    $data['final_balance'] = $cash->final_balance;
+                    $data['income'] = $cash->income;
+                    $data['state'] = $cash->state;
+                    $data['reference_number'] = $cash->reference_number;
 
-                    'user_id' => $cash->user_id,
-                    'date_opening' => $cash->date_opening,
-                    'time_opening' => $cash->time_opening,
-                    'date_closed' => $cash->date_closed,
-                    'time_closed' => $cash->time_closed,
-                    'beginning_balance' => $cash->beginning_balance,
-                    'final_balance' => $cash->final_balance,
-                    'income' => $cash->income,
-                    'state' => $cash->state,
-                    'reference_number' => $cash->reference_number,
 
-                ];
+                    $data['description'] = $data['reference_number'];
+                    return $data;
 
-                $data['description'] = $data['reference_number'];
-                return $data;
-
-            });
+                });
             return compact('cash');
         }
 
@@ -216,12 +217,79 @@
                 $from = $data['from'];
                 $to = $data['to'];
                 $amount_transform = $data['amount_transform'];
+                $transfer = null;
+                $transfer_minus = null;
                 $origin = null;
                 $destiny = null;
                 self::setAcountToTransfer($origin, $from);
                 self::setAcountToTransfer($destiny, $to);
-                $return['modelo']['origin']= $origin;
-                $return['modelo']['destiny']= $destiny;
+
+                // getBalanceBySingleBankAcount
+                // Se debe validar el monto maximo
+                if (
+                    !empty($origin) &&
+                    !empty($destiny)
+                ) {
+
+                    $transfer = new TransferAccountPayment();
+                    $transfer_minus = new TransferAccountPayment();
+                    if (get_class($origin) == get_class($destiny)) {
+                        if (get_class($origin) == Cash::class) {
+                            $transfer->TransforFromCashToCash(
+                                $origin->id,
+                                $destiny->id,
+                                $amount_transform
+                            );
+                            $transfer_minus->TransforFromCashToCash(
+                                $destiny->id,
+                                $origin->id,
+                                $amount_transform * (-1)
+                            );
+                        } elseif (get_class($origin) == BankAccount::class) {
+                            $transfer->TransforFromBankToBank(
+                                $origin->id,
+                                $destiny->id,
+                                $amount_transform
+                            );
+                            $transfer_minus->TransforFromBankToBank(
+                                $destiny->id,
+                                $origin->id,
+                                $amount_transform * (-1)
+                            );
+                        }
+                    } else {
+                        if (get_class($origin) == Cash::class) {
+                            $transfer->TransforFromCashToBank(
+                                $origin->id,
+                                $destiny->id,
+                                $amount_transform
+                            );
+                            $transfer_minus->TransforFromBankToCash(
+                                $destiny->id,
+                                $origin->id,
+                                $amount_transform * (-1)
+                            );
+                        } elseif (get_class($origin) == BankAccount::class) {
+                            $transfer->TransforFromBankToCash(
+                                $origin->id,
+                                $destiny->id,
+                                $amount_transform
+                            );
+                            $transfer_minus->TransforFromCashToBank(
+                                $destiny->id,
+                                $origin->id,
+                                $amount_transform * (-1)
+                            );
+                        }
+                    }
+
+                    $transfer->push();
+                    $transfer_minus->push();
+                }
+                $return['modelo']['origin'] = $origin;
+                $return['modelo']['destiny'] = $destiny;
+                $return['modelo']['transfer'] = $transfer;
+                $return['modelo']['transfer_minus'] = $transfer_minus;
 
             }
             return $return;
