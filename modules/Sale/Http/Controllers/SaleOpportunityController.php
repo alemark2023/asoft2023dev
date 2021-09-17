@@ -160,8 +160,8 @@ class SaleOpportunityController extends Controller
 
     public function item_tables() {
 
-        // $items = $this->table('items');
-        $items = SearchItemController::getNotServiceItemToModal();
+         $items = $this->table('items');
+        // $items = SearchItemController::getNotServiceItemToModal();
 
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $price_types = PriceType::whereActive()->get();

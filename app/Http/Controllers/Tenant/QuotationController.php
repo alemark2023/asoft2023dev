@@ -212,7 +212,7 @@ class QuotationController extends Controller
 
     public function item_tables() {
         // $items = $this->table('items');
-        $items = SearchItemController::getNotServiceItemToModal();
+        $items = SearchItemController::getItemsToQuotation();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
@@ -604,7 +604,7 @@ class QuotationController extends Controller
             $contact = $document->contact ? 15 : 0;
 
             $document_description = ($document->description) ? count(explode("\n", $document->description)) * 3 : 0;
-            
+
 
             foreach ($document->items as $it) {
                 if ($it->discounts) {

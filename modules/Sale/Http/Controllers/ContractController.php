@@ -186,8 +186,8 @@ class ContractController extends Controller
 
     public function item_tables() {
 
-        // $items = $this->table('items');
-        $items = SearchItemController::getNotServiceItemToModal();
+         // $items = $this->table('items');
+         $items = SearchItemController::getItemToContract();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
@@ -608,7 +608,7 @@ class ContractController extends Controller
      */
     public function searchItemById($id)
     {
-        $items =  SearchItemController::searchByIdToModal($id);
+        $items =  SearchItemController::getItemToContract(null,$id);
         return compact('items');
 
     }
@@ -620,7 +620,7 @@ class ContractController extends Controller
      */
     public function searchItems(Request $request)
     {
-        $items = SearchItemController::getNotServiceItemToModal($request);
+        $items = SearchItemController::getItemToContract($request);
         return compact('items');
     }
 }

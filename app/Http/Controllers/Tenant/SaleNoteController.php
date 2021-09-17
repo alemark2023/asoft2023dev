@@ -528,7 +528,7 @@ class SaleNoteController extends Controller
     public function item_tables()
     {
         // $items = $this->table('items');
-        $items = SearchItemController::getNotServiceItemToModal();
+        $items = SearchItemController::getItemsToSaleNote();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
@@ -1016,6 +1016,7 @@ class SaleNoteController extends Controller
 
             case 'items':
 
+                return SearchItemController::getItemsToSaleNote();
                 $establishment_id = auth()->user()->establishment_id;
                 $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
                 // $warehouse_id = ($warehouse) ? $warehouse->id:null;
@@ -1103,7 +1104,17 @@ class SaleNoteController extends Controller
         $establishment_id = auth()->user()->establishment_id;
         $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
         $warehouse_id = ($warehouse) ? $warehouse->id : null;
-        $items = SearchItemController::getNotServiceItem($request)->transform(function ($row) use ($warehouse_id, $warehouse) {
+        /*
+        $items_not_services = $this->getItemsNotServices($request);
+        $items_services = $this->getItemsServices($request);
+        $all_items = $items_not_services->merge($items_services);
+
+        $items = collect($all_items)->transform(function($row) use($warehouse_id, $warehouse){
+        */
+        $items = SearchItemController::getItemsToSaleNote();
+
+        /*
+        $items = SearchItemController::getItemsToSaleNote($request)->transform(function ($row) use ($warehouse_id, $warehouse) {
             $detail = $this->getFullDescription($row, $warehouse);
 
             return [
@@ -1120,11 +1131,11 @@ class SaleNoteController extends Controller
                 'unit_type_id' => $row->unit_type_id,
                 'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                 'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                'has_igv' => (bool) $row->has_igv,
-                'lots_enabled' => (bool) $row->lots_enabled,
-                'series_enabled' => (bool) $row->series_enabled,
-                'is_set' => (bool) $row->is_set,
-                'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse_id){
+                'has_igv' => (bool)$row->has_igv,
+                'lots_enabled' => (bool)$row->lots_enabled,
+                'series_enabled' => (bool)$row->series_enabled,
+                'is_set' => (bool)$row->is_set,
+                'warehouses' => collect($row->warehouses)->transform(function ($row) use ($warehouse_id) {
                     return [
                         'warehouse_id' => $row->warehouse->id,
                         'warehouse_description' => $row->warehouse->description,
@@ -1134,20 +1145,20 @@ class SaleNoteController extends Controller
                 }),
                 'item_unit_types' => $row->item_unit_types,
                 'lots' => [],
-                'lots_group' => collect($row->lots_group)->transform(function($row){
+                'lots_group' => collect($row->lots_group)->transform(function ($row) {
                     return [
-                        'id'  => $row->id,
+                        'id' => $row->id,
                         'code' => $row->code,
                         'quantity' => $row->quantity,
                         'date_of_due' => $row->date_of_due,
-                        'checked'  => false
+                        'checked' => false
                     ];
                 }),
                 'lot_code' => $row->lot_code,
                 'date_of_due' => $row->date_of_due
             ];
         });
-
+*/
         return compact('items');
 
     }
@@ -1155,12 +1166,17 @@ class SaleNoteController extends Controller
 
     public function searchItemById($id)
     {
-
+        return  SearchItemController::getItemsToSaleNote(null, $id);
         $establishment_id = auth()->user()->establishment_id;
         $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
-        $items = SearchItemController::searchById($id)->transform(function ($row) use ($warehouse) {
-            $detail = $this->getFullDescription($row, $warehouse);
+        $search_item = $this->getItemsNotServicesById($id);
 
+        if(count($search_item) == 0){
+            $search_item = $this->getItemsServicesById($id);
+        }
+
+        $items = collect($search_item)->transform(function($row) use($warehouse){
+            $detail = $this->getFullDescription($row, $warehouse);
             return [
                 'id' => $row->id,
                 'full_description' => $detail['full_description'],
@@ -1175,11 +1191,11 @@ class SaleNoteController extends Controller
                 'unit_type_id' => $row->unit_type_id,
                 'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                 'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                'has_igv' => (bool) $row->has_igv,
-                'lots_enabled' => (bool) $row->lots_enabled,
-                'series_enabled' => (bool) $row->series_enabled,
-                'is_set' => (bool) $row->is_set,
-                'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse){
+                'has_igv' => (bool)$row->has_igv,
+                'lots_enabled' => (bool)$row->lots_enabled,
+                'series_enabled' => (bool)$row->series_enabled,
+                'is_set' => (bool)$row->is_set,
+                'warehouses' => collect($row->warehouses)->transform(function ($row) use ($warehouse) {
                     return [
                         'warehouse_id' => $row->warehouse->id,
                         'warehouse_description' => $row->warehouse->description,
@@ -1189,13 +1205,13 @@ class SaleNoteController extends Controller
                 }),
                 'item_unit_types' => $row->item_unit_types,
                 'lots' => [],
-                'lots_group' => collect($row->lots_group)->transform(function($row){
+                'lots_group' => collect($row->lots_group)->transform(function ($row) {
                     return [
-                        'id'  => $row->id,
+                        'id' => $row->id,
                         'code' => $row->code,
                         'quantity' => $row->quantity,
                         'date_of_due' => $row->date_of_due,
-                        'checked'  => false
+                        'checked' => false
                     ];
                 }),
                 'lot_code' => $row->lot_code,

@@ -247,7 +247,7 @@ class DocumentController extends Controller
     public function item_tables()
     {
         // $items = $this->table('items');
-        $items = SearchItemController::getNotServiceItemToModal();
+        $items = SearchItemController::getItemsToDocuments();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
@@ -366,6 +366,8 @@ class DocumentController extends Controller
         }
 
         if ($table === 'items') {
+
+            return SearchItemController::getItemsToDocuments();
 
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();

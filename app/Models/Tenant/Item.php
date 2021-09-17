@@ -1576,4 +1576,54 @@ class Item extends ModelTenant
         }
         return $return;
     }
+
+    public function getDataToPurchase(){
+
+        $full_description = ($this->internal_id)?$this->internal_id.' - '.$this->description:$this->description;
+        return [
+            'id' => $this->id,
+            'item_code'  => $this->item_code,
+            'full_description' => $full_description,
+            'description' => $this->description,
+            'currency_type_id' => $this->currency_type_id,
+            'currency_type_symbol' => $this->currency_type->symbol,
+            'sale_unit_price' => $this->sale_unit_price,
+            'purchase_unit_price' => $this->purchase_unit_price,
+            'unit_type_id' => $this->unit_type_id,
+            'sale_affectation_igv_type_id' => $this->sale_affectation_igv_type_id,
+            'purchase_affectation_igv_type_id' => $this->purchase_affectation_igv_type_id,
+            'purchase_has_igv' => (bool) $this->purchase_has_igv,
+            'has_perception' => (bool) $this->has_perception,
+            'lots_enabled' => (bool) $this->lots_enabled,
+            'percentage_perception' => $this->percentage_perception,
+            'item_unit_types' => collect($this->item_unit_types)->transform(function($row) {
+                // validar este
+                dd([
+                    __LINE__,
+                    __FILE__,
+                    $this->item_unit_types
+                ]);
+                return [
+                    'id' => $row->id,
+                    'description' => "{$row->description}",
+                    'item_id' => $row->item_id,
+                    'unit_type_id' => $row->unit_type_id,
+                    'quantity_unit' => $row->quantity_unit,
+                    'price1' => $row->price1,
+                    'price2' => $row->price2,
+                    'price3' => $row->price3,
+                    'price_default' => $row->price_default,
+                ];
+            }),
+            'series_enabled' => (bool) $this->series_enabled,
+
+            // 'warehouses' => collect($row->warehouses)->transform(function($row) {
+            //     return [
+            //         'warehouse_id' => $row->warehouse->id,
+            //         'warehouse_description' => $row->warehouse->description,
+            //         'stock' => $row->stock,
+            //     ];
+            // })
+        ];
+    }
 }

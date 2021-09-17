@@ -114,7 +114,7 @@ class PurchaseOrderController extends Controller
     {
 
         // $items = $this->table('items');
-        $items = $this->formatItem(SearchItemController::getNotServiceItemToPurchase());
+        $items =  SearchItemController::getItemToPurchaseOrder();
 
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
@@ -511,7 +511,7 @@ class PurchaseOrderController extends Controller
      */
     public function searchItemById($id)
     {
-        $items = $this->formatItem(SearchItemController::searchByIdToPurchase($id));
+        $items = SearchItemController::getItemToPurchaseOrder(null, $id);
 
         return compact('items');
 
@@ -524,13 +524,14 @@ class PurchaseOrderController extends Controller
      */
     public function searchItems(Request $request)
     {
-        $items = $this->formatItem(SearchItemController::searchByRequestToPurchase($request));
+        $items = SearchItemController::getItemToPurchaseOrder($request);
 
         return compact('items');
     }
 
 
     /**
+     * @deprecated
      * @param \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection $items
      */
     public function formatItem($items){
