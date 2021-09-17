@@ -1111,7 +1111,7 @@ class SaleNoteController extends Controller
 
         $items = collect($all_items)->transform(function($row) use($warehouse_id, $warehouse){
         */
-        $items = SearchItemController::getItemsToSaleNote();
+        $items = SearchItemController::getItemsToSaleNote($request);
 
         /*
         $items = SearchItemController::getItemsToSaleNote($request)->transform(function ($row) use ($warehouse_id, $warehouse) {
