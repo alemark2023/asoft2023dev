@@ -294,7 +294,7 @@ class DocumentController extends Controller
     public function searchItems(Request $request)
     {
 
-        $items = SearchItemController::getNotServiceItemToModal($request);
+        $items = SearchItemController::getItemsToDocuments($request);
 
         return compact('items');
 
