@@ -504,12 +504,16 @@
         public static function TransformToModalSaleNote($items, Warehouse $warehouse = null)
         {
             $warehouse_id = ($warehouse) ? $warehouse->id : null;
+            if($warehouse_id == null){
+                $establishment_id = auth()->user()->establishment_id;
+                $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+                $warehouse_id = ($warehouse) ? $warehouse->id : null;
+            }
 
             return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
                 /** @var Item $row */
                             $detail = $row->getFullDescription($warehouse, false);
 
-                // $detail = self::getFullDescriptionToSaleNote($row, $warehouse);
                 return [
                     'id' => $row->id,
                     'full_description' => $detail['full_description'],
@@ -630,6 +634,11 @@
         {
             $warehouse_id = ($warehouse) ? $warehouse->id : null;
 
+            if($warehouse_id == null){
+                $establishment_id = auth()->user()->establishment_id;
+                $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+                $warehouse_id = ($warehouse) ? $warehouse->id : null;
+            }
             return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
                 /** @var Item $row */
                 $detail = self::getFullDescriptionToSaleNote($row, $warehouse);
@@ -703,6 +712,11 @@
         {
             $warehouse_id = ($warehouse) ? $warehouse->id : null;
 
+            if($warehouse_id == null){
+                $establishment_id = auth()->user()->establishment_id;
+                $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+                $warehouse_id = ($warehouse) ? $warehouse->id : null;
+            }
             return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
                 /** @var Item $row */
                 $full_description = self::getFullDescriptionToPurchaseOrder($row);
