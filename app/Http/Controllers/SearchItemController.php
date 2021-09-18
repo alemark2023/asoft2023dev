@@ -127,7 +127,8 @@
                 $ItemToSearchBySeries
                     ->WhereService()
                     // ->with(['item_lots'])
-                    ->whereNotIsSet();
+                    ->whereNotIsSet()
+                ;
 
 
             }
@@ -416,15 +417,23 @@
             return $search_item;
         }
 
+
         /**
          * Retorna la coleccion de items par Documento y Boleta.
          *  Usado en app/Http/Controllers/Tenant/DocumentController.php::250
          *  Usado en app/Http/Controllers/Tenant/DocumentController.php::370
+         *  Usado en modules/Document/Http/Controllers/DocumentController.php::297
          *
-         * @return Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed
+         * @param Request| null $request
+         * @param int     $id
+         *
+         * @return \Illuminate\Database\Eloquent\Collection|Collection
          */
-        public static function getItemsToDocuments()
+        public static function getItemsToDocuments(Request $request = null,$id = 0)
         {
+            $items_not_services = self::getNotServiceItem($request, $id);
+            $items_services = self::getServiceItem($request, $id);
+            return self::TransformToModal($items_not_services->merge($items_services));
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
             // $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
@@ -476,10 +485,13 @@
             */
 
 
+            $establishment_id = auth()->user()->establishment_id;
+            $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+
             $items_not_services = self::getNotServiceItem($request, $id);
             $items_services = self::getServiceItem($request, $id);
 
-            return self::TransformToModalSaleNote($items_not_services->merge($items_services));
+            return self::TransformToModalSaleNote($items_not_services->merge($items_services),$warehouse);
 
         }
 
@@ -492,10 +504,16 @@
         public static function TransformToModalSaleNote($items, Warehouse $warehouse = null)
         {
             $warehouse_id = ($warehouse) ? $warehouse->id : null;
+            if($warehouse_id == null){
+                $establishment_id = auth()->user()->establishment_id;
+                $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+                $warehouse_id = ($warehouse) ? $warehouse->id : null;
+            }
 
             return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
                 /** @var Item $row */
-                $detail = self::getFullDescriptionToSaleNote($row, $warehouse);
+                            $detail = $row->getFullDescription($warehouse, false);
+
                 return [
                     'id' => $row->id,
                     'full_description' => $detail['full_description'],
@@ -616,6 +634,11 @@
         {
             $warehouse_id = ($warehouse) ? $warehouse->id : null;
 
+            if($warehouse_id == null){
+                $establishment_id = auth()->user()->establishment_id;
+                $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+                $warehouse_id = ($warehouse) ? $warehouse->id : null;
+            }
             return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
                 /** @var Item $row */
                 $detail = self::getFullDescriptionToSaleNote($row, $warehouse);
@@ -689,6 +712,11 @@
         {
             $warehouse_id = ($warehouse) ? $warehouse->id : null;
 
+            if($warehouse_id == null){
+                $establishment_id = auth()->user()->establishment_id;
+                $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+                $warehouse_id = ($warehouse) ? $warehouse->id : null;
+            }
             return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
                 /** @var Item $row */
                 $full_description = self::getFullDescriptionToPurchaseOrder($row);
