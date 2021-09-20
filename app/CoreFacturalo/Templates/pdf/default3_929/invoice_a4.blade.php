@@ -106,6 +106,7 @@ foreach ($items as $item_obj) {
 
     $item = [];
 
+
     $it = (array)$item_obj->item;
     $item['code'] = isset($it['internal_id']) ? $it['internal_id'] : null;
 
@@ -113,31 +114,37 @@ foreach ($items as $item_obj) {
     if ($item_obj->name_product_pdf && !empty($item_obj->name_product_pdf)) {
         $item['description'] = $item_obj->name_product_pdf;
     }
-    $item['qty'] = setNubmer($item_obj->quantity, 1);
+    $item['qty'] = $item_obj->quantity;
     $item['unit'] = isset($it['unit_type_id']) ? $it['unit_type_id'] : null;
-    $item['p_unit'] = setNubmer($item_obj->unit_price);
+    $item['p_unit'] = ($item_obj->unit_price);
     $total_discount_line = 0;
     $item['dscto'] = 0;
     $dsc = [];
     if ($item_obj->discounts) {
         foreach ($item_obj->discounts as $disto) {
             $dsc[] = $disto;
-            $total_discount_line = $total_discount_line + $disto->amount;
+            $total_discount_line += $disto->amount;
             $item['dscto'] += ($disto->factor * 100);
             // <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
         }
     }
-    $item_obj->dstto= $total_discount_line;
-    // $debug[] = $item_obj;
+    $item_obj->dstto = $total_discount_line;
+    $deb = $item_obj->toArray();
     $item['dsc'] = $dsc;
-    $item['dscto'] = (empty($item['dscto'])) ? null : setNubmer($item['dscto'], 2)."%";
+    $item['dscto'] = (empty($item['dscto'])) ? 0 : $item['dscto'];
+    $item['dscto1'] = (empty($total_discount_line)) ? null : $total_discount_line;
+    $item['neto'] = ($item['p_unit'] - $total_discount_line);
+    $item['total'] = ($item['neto'] * $item['qty']);
+    $item['dscto'] = (empty($item['dscto'])) ? null : setNubmer($item['dscto'], 2) . "%";
     $item['dscto1'] = (empty($total_discount_line)) ? null : setNubmer($total_discount_line, 2);
-    $item['neto'] = setNubmer($item_obj->total_value);
-    $item['total'] = setNubmer($item_obj->total);
-    // for ($a = 0; $a < 120; $a++) {
-    $debug[] = $item;
+
+    $item['qty'] = setNubmer($item['qty'], 1);
+    $item['p_unit'] = setNubmer($item['p_unit']);
+    $item['neto'] = setNubmer($item['neto']);
+    $item['total'] = setNubmer($item['total']);
+    $deb['we'] = $it;
+    $debug[] = $deb;
     $array_items[] = $item;
-    // }
 
 }
 
@@ -191,7 +198,9 @@ $total_array_chunk = count($array_chunk);
         {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
     </head>
     <body>
-    {{-- <pre>{{ var_export($debug,true) }}</pre> --}}
+
+    {{--<pre>{{ var_export($debug,true) }}</pre>--}}
+
     @if($document->state_type->id == '11')
         <div class="company_logo_box"
              style="position: absolute; text-align: center; top:30%;">
