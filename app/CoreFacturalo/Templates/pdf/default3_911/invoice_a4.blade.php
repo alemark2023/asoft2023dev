@@ -615,17 +615,18 @@
                 @endif
             @endforeach
             <br>
-            @if(in_array($document->document_type->id,['01','03']))
-                @foreach($accounts as $account)
-                    <p>
-                        <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
-                        <span class="font-bold">N°:</span> {{$account->number}}
-                        @if($account->cci)
-                            <span class="font-bold">CCI:</span> {{$account->cci}}
-                        @endif
-                    </p>
-                @endforeach
-            @endif
+            {{--            @if(in_array($document->document_type->id,['01','03']))
+            @foreach($accounts as $account)
+                <p>
+                    <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                    <span class="font-bold">N°:</span> {{$account->number}}
+                    @if($account->cci)
+                        <span class="font-bold">CCI:</span> {{$account->cci}}
+                    @endif
+                </p>
+            @endforeach
+        @endif
+        --}}
         </td>
         <td width="35%"
             class="text-right">
@@ -696,10 +697,39 @@
             <td>{{ $document->user->name }}</td>
         </tr>
 
-        </tr>
-
     </table>
 @endif
+
+@if($document != null)
+
+    <table class="full-width border-box my-2">
+        <tr>
+            <th class="p-1"
+                width="25%">Banco
+            </th>
+            <th class="p-1">Moneda</th>
+            <th class="p-1"
+                width="30%">Código de Cuenta Interbancaria
+            </th>
+            <th class="p-1"
+                width="25%">Código de Cuenta
+            </th>
+        </tr>
+        @foreach($accounts as $account)
+            <tr>
+                <td class="text-center">{{$account->bank->description}}</td>
+                <td class="text-center text-upp">{{$account->currency_type->description}}</td>
+                <td class="text-center">
+                    @if($account->cci)
+                        {{$account->cci}}
+                    @endif
+                </td>
+                <td class="text-center">{{$account->number}}</td>
+            </tr>
+        @endforeach
+    </table>
+@endif
+
 @if ($document->terms_condition)
     <br>
     <table class="full-width">
