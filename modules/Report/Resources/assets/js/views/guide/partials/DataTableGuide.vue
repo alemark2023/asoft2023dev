@@ -172,6 +172,42 @@
                             </el-select>
                         </div>
                     </div> -->
+                    <div class="col-lg-2 col-md-2">
+                        <div class="form-group">
+                            <label class="control-label" style="width: 100%;">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </label>
+                            <el-checkbox
+                                v-model="filter_range"
+                            >
+                                Filtra por numeración
+                            </el-checkbox>
+                        </div>
+                    </div>
+
+                    <!-- Minimo -->
+                    <div class="col-lg-2 col-md-2" v-if="filter_range">
+                        <div class="form-group">
+                            <label class="control-label">Desde número
+                            </label>
+                            <el-input-number v-model="form.min"
+                                             :min="0"
+                                             :precision="0"
+                                             :step="1"></el-input-number>
+                        </div>
+                    </div>
+                    <!-- Minimo -->
+                    <div class="col-lg-2 col-md-2" v-if="filter_range">
+                        <div class="form-group">
+                            <label class="control-label">Hasta número
+                            </label>
+                            <el-input-number v-model="form.max"
+                                             :min="0"
+                                             :precision="0"
+                                             :step="1"></el-input-number>
+                        </div>
+                    </div>
+
 
 
                     <div class="col-md-12 col-12">&nbsp;</div>
@@ -251,7 +287,7 @@ import moment from 'moment'
 import queryString from 'query-string'
 // modules/Report/Resources/assets/js/components/partials/totals_by_item.vue
 // modules/Report/Resources/assets/js/components/DataTableGuide.vue
-import TotalsByItemForm from './partials/totals_by_item.vue'
+import TotalsByItemForm from '../../../components/partials/totals_by_item.vue'
 
 export default {
     components: {TotalsByItemForm},
@@ -260,6 +296,7 @@ export default {
     },
     data() {
         return {
+            filter_range:false,
             showDialog: false,
             loading_submit: false,
             items: [],
@@ -277,7 +314,10 @@ export default {
             web_platforms: [],
             customers: {},
             users: {},
-            form: {},
+            form: {
+                min: 1,
+                max: 2,
+            },
             pickerOptionsDates: {
                 disabledDate: (time) => {
                     time = moment(time).format('YYYY-MM-DD')
@@ -445,11 +485,16 @@ export default {
 
         },
         getQueryParameters() {
-            return queryString.stringify({
+            let param = {
                 page: this.pagination.current_page,
                 limit: this.limit,
                 ...this.form
-            })
+            };
+            if(this.filter_range === false) {
+                delete param.min;
+                delete param.max;
+            }
+            return queryString.stringify(param)
         },
 
         changeDisabledDates() {
