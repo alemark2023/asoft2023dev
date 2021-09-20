@@ -17,8 +17,50 @@
                             ></el-option>
                         </el-select>
                     </div>
-                    <div
-                         class="col-12">
+
+
+                    <!-- Minimo -->
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="control-label">
+                                Desde el Número
+                                <el-tooltip class="item"
+                                            content="Este número especifica el campo ID del item."
+                                            effect="dark"
+                                            placement="top-start">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
+                            <el-input-number
+                                v-model="form.range[0]"
+                                :max="max_item"
+                                :min="1"
+                                :precision="0"
+                                :step="1"></el-input-number>
+                        </div>
+                    </div>
+                    <!-- Minimo -->
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="control-label">
+                                Hasta el Número
+                                <el-tooltip class="item"
+                                            content="Este número especifica el campo ID del item."
+                                            effect="dark"
+                                            placement="top-start">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
+                            <el-input-number
+                                v-model="form.range[1]"
+                                :max="max_item"
+                                :min="1"
+                                :precision="0"
+                                :step="1"></el-input-number>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
                         <template>
                             <label class="control-label">
                                 Seleccione rango de impresión
@@ -31,7 +73,7 @@
                             </label>
                             <el-slider
                                 v-model="form.range"
-                                :max="max_item.data"
+                                :max="max_item"
                                 :min="1"
                                 range>
                             </el-slider>
@@ -110,7 +152,10 @@ export default {
         lastItem() {
             this.$http.get(`${this.resource}/export/barcode/last`)
                 .then(response => {
-                    this.max_item = response.data
+                    let total = response.data.data;
+
+                    if(isNaN(total)) total = 1
+                    this.max_item = total
                 })
         }
     }
