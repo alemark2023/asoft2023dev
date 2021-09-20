@@ -25,6 +25,7 @@
         $waterMark64 .= ";base64, ";
         $waterMark64 .= base64_encode(file_get_contents($brandFile));
     }
+    $allowed_items = 80 - (\App\Models\Tenant\BankAccount::all()->count())*3;
 
 ?>
 
@@ -331,6 +332,7 @@
     </tr>
     </tbody>
 </table>
+{{--
 <table class="full-width">
     <tr>
         <td width="65%"
@@ -348,18 +350,10 @@
         </td>
     </tr>
     <tr>
-        {{-- <td width="65%">
-            @foreach($document->legends as $row)
-                <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>
-            @endforeach
-            <br/>
-            <strong>Información adicional</strong>
-            @foreach($document->additional_information as $information)
-                <p>{{ $information }}</p>
-            @endforeach
-        </td> --}}
+
     </tr>
 </table>
+--}}
 <br>
 <table class="full-width">
     <tr>
@@ -385,5 +379,30 @@
     </tr>
 
 </table>
+
+
+@if($document != null)
+
+    <table class="full-width border-box my-2">
+        <tr>
+            <th class="p-1" width="25%">Banco</th>
+            <th class="p-1">Moneda</th>
+            <th class="p-1" width="30%">Código de Cuenta Interbancaria</th>
+            <th class="p-1" width="25%">Código de Cuenta</th>
+        </tr>
+        @foreach($accounts as $account)
+            <tr>
+                <td class="text-center">{{$account->bank->description}}</td>
+                <td class="text-center text-upp">{{$account->currency_type->description}}</td>
+                <td class="text-center">
+                    @if($account->cci)
+                        {{$account->cci}}
+                    @endif
+                </td>
+                <td class="text-center">{{$account->number}}</td>
+            </tr>
+        @endforeach
+    </table>
+@endif
 </body>
 </html>
