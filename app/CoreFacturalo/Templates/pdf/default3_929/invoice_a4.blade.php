@@ -5,6 +5,8 @@ use App\Models\Tenant\Document;use App\Models\Tenant\DocumentItem;use App\Models
  * @var Document $document
  * @var Company  $company
  */
+
+$debug = [];
 $company = isset($company) ? $company : new Company();
 $establishment = $document->establishment;
 
@@ -22,7 +24,7 @@ $establishment_email = ($establishment->email !== '-') ? 'Email: ' . $establishm
 
 
 $customer = $document->customer;
-
+// $debug[] = $customer->address;
 $invoice = $document->invoice;
 $document_base = ($document->note) ? $document->note : null;
 
@@ -58,7 +60,7 @@ $blank_line = '';
 for ($i = 1; $i < $address_length; $i++) {
     $blank_line .= "&nbsp;";
 }
-if ($customer->address && !empty($customer->address)) {
+if ($customer->address) {
     $customer_address = $customer->address;
     $customer_address .= ($customer->district_id !== '-') ? ', ' . $customer->district->description : '';
     $customer_address .= ($customer->province_id !== '-') ? ', ' . $customer->province->description : '';
@@ -70,8 +72,8 @@ if ($customer->address && !empty($customer->address)) {
 
     }
 }
-$customer_address = substr($customer_address, $max_address_length);
 $customer_address = str_pad($customer_address, $max_address_length, ' ');
+
 $date = $document->date_of_issue->format('d/m/Y');
 $currency = $document->currency_type->description;
 $gudie = "";
@@ -99,33 +101,42 @@ function setNubmer($number, $decimal = 2, $mil = ',', $dec = '.')
 {
     return number_format($number, $decimal, $mil, $dec);
 }
-
 foreach ($items as $item_obj) {
     /** @var DocumentItem $item_obj */
 
     $item = [];
-    $it = (array)$item_obj->item;
 
+    $it = (array)$item_obj->item;
     $item['code'] = isset($it['internal_id']) ? $it['internal_id'] : null;
 
     $item['description'] = isset($it['description']) ? $it['description'] : null;
     if ($item_obj->name_product_pdf && !empty($item_obj->name_product_pdf)) {
         $item['description'] = $item_obj->name_product_pdf;
     }
-    $item['qty'] = setNubmer($item_obj->quantity,1);
+    $item['qty'] = setNubmer($item_obj->quantity, 1);
     $item['unit'] = isset($it['unit_type_id']) ? $it['unit_type_id'] : null;
     $item['p_unit'] = setNubmer($item_obj->unit_price);
     $total_discount_line = 0;
+    $item['dscto'] = 0;
+    $dsc = [];
     if ($item_obj->discounts) {
         foreach ($item_obj->discounts as $disto) {
+            $dsc[] = $disto;
             $total_discount_line = $total_discount_line + $disto->amount;
+            $item['dscto'] += ($disto->factor * 100);
+            // <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
         }
     }
-    $item['dscto'] = (empty($total_discount_line))?null: setNubmer($total_discount_line,0);
+    $item_obj->dstto= $total_discount_line;
+    // $debug[] = $item_obj;
+    $item['dsc'] = $dsc;
+    $item['dscto'] = (empty($item['dscto'])) ? null : setNubmer($item['dscto'], 2)."%";
+    $item['dscto1'] = (empty($total_discount_line)) ? null : setNubmer($total_discount_line, 2);
     $item['neto'] = setNubmer($item_obj->total_value);
     $item['total'] = setNubmer($item_obj->total);
     // for ($a = 0; $a < 120; $a++) {
-        $array_items[] = $item;
+    $debug[] = $item;
+    $array_items[] = $item;
     // }
 
 }
@@ -180,6 +191,7 @@ $total_array_chunk = count($array_chunk);
         {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
     </head>
     <body>
+    {{-- <pre>{{ var_export($debug,true) }}</pre> --}}
     @if($document->state_type->id == '11')
         <div class="company_logo_box"
              style="position: absolute; text-align: center; top:30%;">
