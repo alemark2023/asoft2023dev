@@ -178,7 +178,7 @@
                     $max = (int)$request['min'];
                 }
                 if($min !== 0 && $max !== 0) {
-                    $dispatch->whereBetween('dispatch_items.dispatch_id', [$min, $max]);
+                    $dispatch->whereBetween('dispatch.number', [$min, $max]);
                 }
             }
 
