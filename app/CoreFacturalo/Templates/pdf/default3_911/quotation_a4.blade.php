@@ -1,8 +1,8 @@
 <?php
+;
+    use App\Models\Tenant\Company;use App\Models\Tenant\QuotationItem;
 
-    use App\Models\Tenant\Company;
-
-    $brandFile = public_path("watermark" . DIRECTORY_SEPARATOR . "item_brand.jpg");
+$brandFile = public_path("watermark" . DIRECTORY_SEPARATOR . "item_brand.jpg");
     $companyFile = ($company->logo) ? public_path("storage/uploads/logos/{$company->logo}") : null;
 
     $establishment = $document->establishment;
@@ -35,16 +35,14 @@
     {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
 </head>
 <body>
-<div class="item_watermark"
-     style="position: absolute; text-align: center; top:29%;">
-    <img style="width: 100%"
-         height="230px"
-         src="{!! $waterMark64 !!}"
-         alt="anulado"
-         class=""
-         style="opacity: 0.3;width: 95%">
-</div>
 
+<div class="item_watermark"
+     style="position: absolute; text-align: center; top:20%;">
+    <img
+        height="100%"
+        src="{!! $waterMark64 !!}"
+        style="opacity: 0.2;width: 95%">
+</div>
 <table class="full-width">
     <tr>
         @if($company->logo)
@@ -226,6 +224,14 @@
     </thead>
     <tbody>
     @foreach($document->items as $row)
+        <?php
+        /** @var QuotationItem $row */
+        $dq = (float)$row->quantity;
+        $bas = (float)$row->total_base_igv;
+        $dq = (empty($dq)) ? 1 : $dq;
+        $bas = (empty($bas)) ? 1 : $bas;
+        $valor_initario = $bas / $dq;
+        ?>
         <tr>
             <td class="text-center align-top">
                 @if(((int)$row->quantity != $row->quantity))
@@ -255,7 +261,7 @@
                 @endif
 
             </td>
-            <td class="text-right align-top">{{ number_format($row->total_base_igv, 2) }}</td>
+            <td class="text-right align-top">{{ number_format($valor_initario, 2) }}</td>
             <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
             <td class="text-right align-top">
                 @if($row->discounts)
