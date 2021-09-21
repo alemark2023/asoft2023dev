@@ -4,3 +4,5 @@
     - [Documento individual](/{{route}}/{{version}}/migracion-de-documento-individual)
 - ## PDF
     - [Plantilla personalizada](/{{route}}/{{version}}/plantilla-pdf-personalizada)
+- ## Validador
+    - [Configuración SUNAT](/{{route}}/{{version}}/configuracion-nuevo-validador)
