@@ -1,50 +1,51 @@
 @php
-    $establishment = $document->establishment;
-    $customer = $document->customer;
-    $invoice = $document->invoice;
-    $document_base = ($document->note) ? $document->note : null;
-
-
+    use App\Models\Tenant\DocumentItem;
     use App\Models\Tenant\Company;
+$establishment = $document->establishment;
+$customer = $document->customer;
+$invoice = $document->invoice;
+$document_base = ($document->note) ? $document->note : null;
+$debug = [];
 
-    $brandFile = public_path("watermark" . DIRECTORY_SEPARATOR . "item_brand.jpg");
-    $companyFile = ($company->logo) ? public_path("storage/uploads/logos/{$company->logo}") : null;
+
+$brandFile = public_path("watermark" . DIRECTORY_SEPARATOR . "item_brand.jpg");
+$companyFile = ($company->logo) ? public_path("storage/uploads/logos/{$company->logo}") : null;
 
 
 
-    //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
-    $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    $accounts = \App\Models\Tenant\BankAccount::all();
+//$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
+$document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
+$accounts = \App\Models\Tenant\BankAccount::all();
 
-    if($document_base) {
+if($document_base) {
 
-        $affected_document_number = ($document_base->affected_document) ? $document_base->affected_document->series.'-'.str_pad($document_base->affected_document->number, 8, '0', STR_PAD_LEFT) : $document_base->data_affected_document->series.'-'.str_pad($document_base->data_affected_document->number, 8, '0', STR_PAD_LEFT);
+$affected_document_number = ($document_base->affected_document) ? $document_base->affected_document->series.'-'.str_pad($document_base->affected_document->number, 8, '0', STR_PAD_LEFT) : $document_base->data_affected_document->series.'-'.str_pad($document_base->data_affected_document->number, 8, '0', STR_PAD_LEFT);
 
-    } else {
+} else {
 
-        $affected_document_number = null;
-    }
+$affected_document_number = null;
+}
 
-    $payments = $document->payments;
+$payments = $document->payments;
 
-    $document->load('reference_guides');
+$document->load('reference_guides');
 
-    $total_payment = $document->payments->sum('payment');
-    $balance = ($document->total - $total_payment) - $document->payments->sum('change');
+$total_payment = $document->payments->sum('payment');
+$balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
-   /** @var Company $company */
-    if ($company->logo) {
-        $logo_b64 = "data:";
-        $logo_b64 .= ($company->logo) ? mime_content_type($companyFile) : null;
-        $logo_b64 .= ";base64, ";
-        $logo_b64 .= ($company->logo) ? base64_encode(file_get_contents($companyFile)) : null;
-    }
-    if(!empty($brandFile)) {
-        $waterMark64 = "data:";
-        $waterMark64 .= mime_content_type($brandFile);
-        $waterMark64 .= ";base64, ";
-        $waterMark64 .= base64_encode(file_get_contents($brandFile));
-    }
+/** @var Company $company */
+if ($company->logo) {
+$logo_b64 = "data:";
+$logo_b64 .= ($company->logo) ? mime_content_type($companyFile) : null;
+$logo_b64 .= ";base64, ";
+$logo_b64 .= ($company->logo) ? base64_encode(file_get_contents($companyFile)) : null;
+}
+if(!empty($brandFile)) {
+$waterMark64 = "data:";
+$waterMark64 .= mime_content_type($brandFile);
+$waterMark64 .= ";base64, ";
+$waterMark64 .= base64_encode(file_get_contents($brandFile));
+}
 
 
 @endphp
@@ -56,14 +57,13 @@
 <body>
 
 <div class="item_watermark"
-     style="position: absolute; text-align: center; top:29%;">
-    <img style="width: 100%"
-         height="230px"
+     style="position: absolute; text-align: center; top:20%;">
+    <img
+         height="100%"
          src="{!! $waterMark64 !!}"
-         alt="anulado"
-         class=""
-         style="opacity: 0.3;width: 95%">
+         style="opacity: 0.2;width: 95%">
 </div>
+
 @if($document->state_type->id == '11')
     <div class="company_logo_box"
          style="position: absolute; text-align: center; top:30%;">
@@ -374,6 +374,14 @@
     </thead>
     <tbody>
     @foreach($document->items as $row)
+        <?php
+        /** @var DocumentItem $row */
+        $dq = (float)$row->quantity;
+        $bas = (float)$row->total_base_igv;
+        $dq = (empty($dq)) ? 1 : $dq;
+        $bas = (empty($bas)) ? 1 : $bas;
+        $valor_initario = $bas / $dq;
+        ?>
         <tr>
             <td class="text-center align-top">{{ $row->item->internal_id }}</td>
             <td class="text-center align-top">
@@ -426,7 +434,7 @@
                 @endisset
 
             </td>
-            <td class="text-right align-top">{{ number_format($row->total_base_igv, 2) }}</td>
+            <td class="text-right align-top">{{ number_format($valor_initario, 2) }}</td>
             <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
             <td class="text-right align-top">
                 @if($row->discounts)
@@ -448,7 +456,6 @@
                 class="border-bottom"></td>
         </tr>
     @endforeach
-
 
 
     @if ($document->prepayments)
@@ -741,5 +748,6 @@
         </tr>
     </table>
 @endif
+{{-- <pre>{{var_export($debug,true)}}</pre> --}}
 </body>
 </html>
