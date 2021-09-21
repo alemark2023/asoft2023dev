@@ -73,7 +73,7 @@
 
                         </template>
 
-                        <el-tooltip class="item"
+                        <!-- <el-tooltip class="item"
                                     content="Formato SUNAT 13.1"
                                     effect="dark"
                                     placement="top">
@@ -81,7 +81,7 @@
                             <el-button class="submit" type="success" @click.prevent="clickDownload('excel-format-sunat')"><i
                                 class="fa fa-file-excel"></i> Exportar Format Sunat
                             </el-button>
-                        </el-tooltip>
+                        </el-tooltip> -->
 
                     </div>
 

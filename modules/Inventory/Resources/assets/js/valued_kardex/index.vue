@@ -27,6 +27,7 @@
                         <th class="text-center">Costo de producto</th>
                         <th class="text-center">Unidad valorizada</th>
                         <th>Stock</th>
+                        <th class="text-center">Exportar</th>
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
@@ -56,6 +57,18 @@
                             </el-popover>
 
                         </td>
+                        <td class="text-center">
+                            <el-tooltip class="item"
+                                        content="Exportar Formato SUNAT 13.1"
+                                        effect="dark"
+                                        placement="top">
+
+                                <el-button class="submit" type="success" @click.prevent="clickDownload('excel-format-sunat')"><i
+                                    class="fa fa-file-excel"></i> 
+                                </el-button>
+                            </el-tooltip>
+                        </td>
+
                     </tr>
                 </data-table>
 
@@ -82,6 +95,13 @@ export default {
     created() {
         this.title = 'Kardex valorizado'
     },
-    methods: {}
+    methods: {
+        clickDownload(type) {
+            // let query = queryString.stringify({
+            //     ...this.form
+            // });
+            // window.open(`/${this.resource}/${type}/?${query}`, '_blank');
+        },
+    }
 }
 </script>
