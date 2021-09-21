@@ -2693,7 +2693,7 @@ export default {
 
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
-                if (['12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
+                if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
 
                     let unit_value = row.total_value / row.quantity
                     let total_value_partial = unit_value * row.quantity
