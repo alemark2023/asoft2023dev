@@ -103,20 +103,16 @@ function setNubmer($number, $decimal = 2, $mil = ',', $dec = '.')
 }
 foreach ($items as $item_obj) {
     /** @var DocumentItem $item_obj */
-
     $item = [];
-
-
     $it = (array)$item_obj->item;
     $item['code'] = isset($it['internal_id']) ? $it['internal_id'] : null;
-
     $item['description'] = isset($it['description']) ? $it['description'] : null;
     if ($item_obj->name_product_pdf && !empty($item_obj->name_product_pdf)) {
         $item['description'] = $item_obj->name_product_pdf;
     }
     $item['qty'] = $item_obj->quantity;
     $item['unit'] = isset($it['unit_type_id']) ? $it['unit_type_id'] : null;
-    $item['p_unit'] = ($item_obj->unit_price);
+    $item['p_unit'] = ($item_obj->unit_value);
     $total_discount_line = 0;
     $item['dscto'] = 0;
     $dsc = [];
@@ -128,12 +124,11 @@ foreach ($items as $item_obj) {
             // <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
         }
     }
+
     $item_obj->dstto = $total_discount_line;
-    $deb = $item_obj->toArray();
     $item['dsc'] = $dsc;
-    $item['dscto'] = (empty($item['dscto'])) ? 0 : $item['dscto'];
     $item['dscto1'] = (empty($total_discount_line)) ? null : $total_discount_line;
-    $item['neto'] = ($item['p_unit'] - $total_discount_line);
+    $item['neto'] = $item['p_unit'] - ($item['p_unit'] * ($item['dscto'] / 100));
     $item['total'] = ($item['neto'] * $item['qty']);
     $item['dscto'] = (empty($item['dscto'])) ? null : setNubmer($item['dscto'], 2) . "%";
     $item['dscto1'] = (empty($total_discount_line)) ? null : setNubmer($total_discount_line, 2);
@@ -142,8 +137,6 @@ foreach ($items as $item_obj) {
     $item['p_unit'] = setNubmer($item['p_unit']);
     $item['neto'] = setNubmer($item['neto']);
     $item['total'] = setNubmer($item['total']);
-    $deb['we'] = $it;
-    $debug[] = $deb;
     $array_items[] = $item;
 
 }
@@ -199,7 +192,6 @@ $total_array_chunk = count($array_chunk);
     </head>
     <body>
 
-    {{--<pre>{{ var_export($debug,true) }}</pre>--}}
 
     @if($document->state_type->id == '11')
         <div class="company_logo_box"
@@ -589,6 +581,11 @@ $total_array_chunk = count($array_chunk);
     </table>
     <!-- Aqui Tabla de factura -->
     @endfor
+
+
+{{--    <pre>{{ var_export($debug,true) }}</pre>--}}
+
+
     </body>
 
     </html>
