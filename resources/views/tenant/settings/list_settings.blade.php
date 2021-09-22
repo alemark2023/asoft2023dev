@@ -118,9 +118,9 @@
                     <li>
                         <a href="{{route('tenant.advanced.pdf_templates')}}">PDF</a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="{{route('tenant.advanced.pdf_guide_templates')}}">Guía de remisión</a>
-                    </li>
+                    </li> --}}
                     <li>
                         <a href="{{route('tenant.advanced.pdf_preprinted_templates')}}">Pre Impresos</a>
                     </li>

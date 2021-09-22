@@ -40,23 +40,21 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div v-for="(o, index) in formatos"
-                         class="my-2 col-sm-12 col-md-6 col-lg-4 col-xl-3">
-                        <el-card :id="o.formats"
+                    <div v-for="template in formatos" class="my-2 col-sm-12 col-md-6 col-lg-4 col-xl-3">
+                        <el-card :id="template.id"
                                  :body-style="{ padding: '0px' }">
-                            <a @click="viewImage(o.formats)">
-                                <img :src="path.origin+'/templates/pdf/'+o.formats+'/image.png'"
+                            <a @click="viewImage(template)">
+                                <img :src="path.origin+'/'+template.urls.invoice"
                                      class="image"
                                      style="width: 100%"></a>
                             <div style="padding: 14px;">
-                                <span class="text-center">{{ o.formats }}</span>
+                                <span class="text-center">{{ template.name }}</span>
                                 <div v-if="form.establishment_id"
                                      class="bottom clearfix text-right">
-                                    <!-- <el-button type="submit" class="button" @change="changeFormat(o.formats)">Activo</el-button> -->
                                     <el-radio v-model="form.current_format"
-                                              :label="o.formats"
-                                              @change="changeFormat(o.formats)">
-                                        <span v-if="form.current_format == o.formats">Activo</span>
+                                              :label="template.name"
+                                              @change="changeFormat(template.name)">
+                                        <span v-if="form.current_format == template.name">Activo</span>
                                         <span v-else>Activar</span>
                                     </el-radio>
                                 </div>
@@ -68,22 +66,43 @@
         </div>
         <el-dialog
             :visible.sync="modalImage"
-            width="60">
+            width="100">
             <span>
-                <img :src="path.origin+'/templates/pdf/'+template+'/image.png'"
-                     class="image"
-                     style="width: 100%">
+                <div class="block">
+                    <el-carousel arrow="always" :interval="10000" height="550px">
+                        <el-carousel-item>
+                            <img  :src="path.origin+'/'+template.urls.invoice"
+                                class="image"
+                                style="width: 100%; height:100%;">
+                        </el-carousel-item>
+                        <el-carousel-item v-if="template.urls.guide != ''">
+                            <img  :src="path.origin+'/'+template.urls.guide"
+                                class="image"
+                                style="width: 100%; height:100%;">
+                        </el-carousel-item>
+                    </el-carousel>
+                </div>
             </span>
             <span slot="footer"
                   class="dialog-footer">
                 <el-button @click="modalImage = false">Cerrar</el-button>
                 <el-button v-if="form.establishment_id"
                            type="primary"
-                           @click="changeFormat(template)">Activar</el-button>
+                           @click="changeFormat(template.name)">Activar</el-button>
             </span>
         </el-dialog>
     </div>
 </template>
+
+<style scoped>
+.el-carousel__item:nth-child(2n) {
+background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n+1) {
+background-color: #d3dce6;
+}
+</style>
 
 <script>
 
@@ -103,7 +122,10 @@ export default {
             formatos: [],
             path: location,
             modalImage: false,
-            template: ''
+            template: {
+                name: '',
+                urls: {}
+            }
         }
     },
     async created() {
@@ -117,8 +139,8 @@ export default {
         // });
 
         await this.$http.get(`/${this.resource}/getFormats`).then(response => {
-            if (response.data !== '') this.formatos = response.data.filter(r => this.imageGuide(r.formats))
-            // console.log(this.formatos)
+            if (response.data !== '') this.formatos = response.data.formats
+            // if (response.data !== '') this.formatos = response.data.filter(r => this.image(r.formats))
         });
 
     },
@@ -149,12 +171,11 @@ export default {
                 location.reload()
             })
         },
-        viewImage($value) {
-            this.template = $value
-
+        viewImage(template) {
+            this.template = template
             this.modalImage = true
         },
-        imageGuide(folder) {
+        image(folder) {
             let url = this.path.origin + '/templates/pdf/' + folder + '/image.png'
             // console.log(url)
             var http = new XMLHttpRequest();

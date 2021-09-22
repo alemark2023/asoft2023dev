@@ -19,6 +19,7 @@ use Mpdf\Config\FontVariables;
 use App\CoreFacturalo\Template;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Establishment;
+use App\Models\Tenant\FormatTemplate;
 
 class ConfigurationController extends Controller
 {
@@ -132,28 +133,35 @@ class ConfigurationController extends Controller
                         ->table('format_templates')
                         ->truncate();
         $archivos = Storage::disk('core')->allDirectories('Templates/pdf');
-        $colection = [];
+        $collection = [];
         $valor = [];
         foreach ($archivos as $valor) {
-            $lina = explode('/', $valor);
-            if (count($lina) <= 3) {
-                array_push($colection, $lina);
+            $line = explode('/', $valor);
+            if (count($line) <= 3) {
+                array_push($collection, $line);
             }
         }
 
-        foreach ($colection as $insertar) {
+        foreach ($collection as $insertar) {
+            $urls = [
+                'guide' => \File::exists(public_path('templates/pdf/'.$insertar[2].'/image_guide.png')) ? 'templates/pdf/'.$insertar[2].'/image_guide.png' : '',
+                'invoice' => \File::exists(public_path('templates/pdf/'.$insertar[2].'/image.png')) ? 'templates/pdf/'.$insertar[2].'/image.png' : 'templates/pdf/default/image.png',
+            ];
+
             $insertar = DB::connection('tenant')
             ->table('format_templates')
-            ->insert(['formats' => $insertar[2]]);
+            ->insert([
+                ['formats' => $insertar[2], 'urls' => json_encode($urls)]
+            ]);
         }
 
-        // revisión custom
-        $exists = Storage::disk('core')->exists('Templates/pdf/custom/style.css');
-        if (!$exists) {
-            Storage::disk('core')->copy('Templates/pdf/default/style.css', 'Templates/pdf/custom/style.css');
-            Storage::disk('core')->copy('Templates/pdf/default/invoice_a4.blade.php', 'Templates/pdf/custom/invoice_a4.blade.php');
-            Storage::disk('core')->copy('Templates/pdf/default/partials/footer.blade.php', 'Templates/pdf/custom/partials/footer.blade.php');
-        }
+        // revisión custom //obsoleto
+        // $exists = Storage::disk('core')->exists('Templates/pdf/custom/style.css');
+        // if (!$exists) {
+        //     Storage::disk('core')->copy('Templates/pdf/default/style.css', 'Templates/pdf/custom/style.css');
+        //     Storage::disk('core')->copy('Templates/pdf/default/invoice_a4.blade.php', 'Templates/pdf/custom/invoice_a4.blade.php');
+        //     Storage::disk('core')->copy('Templates/pdf/default/partials/footer.blade.php', 'Templates/pdf/custom/partials/footer.blade.php');
+        // }
 
         return [
             'success' => true,
@@ -214,7 +222,11 @@ class ConfigurationController extends Controller
 
     public function getFormats()
     {
-        $formats = DB::connection('tenant')->table('format_templates')->get();
+        $formats = FormatTemplate::get()->transform(function($row) {
+                return $row->getCollectionData();
+        });
+
+        return compact('formats');
 
         return $formats;
     }
