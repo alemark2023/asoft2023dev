@@ -33,7 +33,7 @@
                                   readonly></el-input>
                         <small v-if="form.current_format"
                                style="cursor:pointer">
-                            <a @click="viewImage(form.current_format)">
+                            <a @click="viewModalImage(form.current_format)">
                                 Ver plantilla
                             </a>
                         </small>
@@ -129,20 +129,10 @@ export default {
         }
     },
     async created() {
-
-        // await this.$http.get(`/${this.resource}/record`) .then(response => {
-        //     if (response.data !== ''){
-        //         // console.log(response.data);
-        //         this.form = response.data.data;
-        //     }
-        //     // console.log(this.placeholder)
-        // });
-
         await this.$http.get(`/${this.resource}/getFormats`).then(response => {
             if (response.data !== '') this.formatos = response.data.formats
             // if (response.data !== '') this.formatos = response.data.filter(r => this.image(r.formats))
         });
-
     },
     methods: {
         changeFormat(value) {
@@ -165,7 +155,6 @@ export default {
             this.form.current_format = selected.template_pdf;
         },
         addSeeder() {
-            var ruta = location.host
             this.$http.get(`/${this.resource}/addSeeder`).then(response => {
                 this.$message.success(response.data.message);
                 location.reload()
@@ -175,15 +164,10 @@ export default {
             this.template = template
             this.modalImage = true
         },
-        image(folder) {
-            let url = this.path.origin + '/templates/pdf/' + folder + '/image.png'
-            // console.log(url)
-            var http = new XMLHttpRequest();
-            http.open('HEAD', url, false);
-            http.send();
-            // console.log(http.status)
-            return http.status != 404;
-        },
+        viewModalImage(name) {
+            this.template = this.formatos.filter(template => template.name == name)[0]
+            this.modalImage = true
+        }
     }
 }
 </script>
