@@ -1,121 +1,129 @@
 <template>
     <div class="dialog-modal">
-        <el-dialog :title="titleDialog"
-                   :visible="showDialog"
-                   @open="create"
-                   width="30%"
-                   :close-on-click-modal="false"
+        <el-dialog :close-on-click-modal="false"
                    :close-on-press-escape="false"
-                   :show-close="false">
-            <div class="row" v-show="!showGenerate">
+                   :show-close="false"
+                   :title="titleDialog"
+                   :visible="showDialog"
+                   width="30%"
+                   @open="create">
+            <div v-show="!showGenerate"
+                 class="row">
                 <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
                     <p>Imprimir A4</p>
-                    <button type="button"
-                            class="btn btn-lg btn-info waves-effect waves-light"
+                    <button class="btn btn-lg btn-info waves-effect waves-light"
+                            type="button"
                             @click="clickToPrint('a4')">
                         <i class="fa fa-file-alt"></i>
                     </button>
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
                     <p>Imprimir A5</p>
-                    <button type="button"
-                            class="btn btn-lg btn-info waves-effect waves-light"
+                    <button class="btn btn-lg btn-info waves-effect waves-light"
+                            type="button"
                             @click="clickToPrint('a5')">
                         <i class="fa fa-file-alt"></i>
                     </button>
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
                     <p>Imprimir Ticket</p>
-                    <button type="button"
-                            class="btn btn-lg btn-info waves-effect waves-light"
+                    <button class="btn btn-lg btn-info waves-effect waves-light"
+                            type="button"
                             @click="clickToPrint('ticket')">
                         <i class="fa fa-receipt"></i>
                     </button>
                 </div>
             </div>
-            <div class="row" v-show="!showGenerate">
+            <div v-show="!showGenerate"
+                 class="row">
                 <div class="col-md-12">
                     <el-input v-model="customer_email">
                         <el-button slot="append"
+                                   :loading="loading"
                                    icon="el-icon-message"
-                                   @click="clickSendEmail"
-                                   :loading="loading">Enviar
+                                   @click="clickSendEmail">Enviar
                         </el-button>
                     </el-input>
                 </div>
             </div>
-            <div class="row" v-if="typeUser === 'admin'">
-                <div class="col-md-9" v-show="!showGenerate">
+            <div v-if="typeUser === 'admin'"
+                 class="row">
+                <div v-show="!showGenerate"
+                     class="col-md-9">
                     <div class="form-group">
                         <el-checkbox v-model="generate">Generar comprobante electrónico</el-checkbox>
                     </div>
                 </div>
             </div>
-            <div class="row" v-if="generate">
+            <div v-if="generate"
+                 class="row">
                 <div class="col-lg-12">
                     <div class="form-group">
                         <label class="control-label">Cliente</label>
                         <el-select v-model="form.customer_id"
-                                   filterable
-                                   remote
-                                   class="border-left rounded-left border-info"
-                                   popper-class="el-select-customers"
-                                   placeholder="Escriba el nombre o número de documento del cliente"
+                                   :loading="loading_search"
                                    :remote-method="searchRemoteCustomers"
-                                   :loading="loading_search">
+                                   class="border-left rounded-left border-info"
+                                   filterable
+                                   placeholder="Escriba el nombre o número de documento del cliente"
+                                   popper-class="el-select-customers"
+                                   remote>
                             <el-option v-for="option in customers"
                                        :key="option.id"
-                                       :value="option.id"
-                                       :label="option.description"></el-option>
+                                       :label="option.description"
+                                       :value="option.id"></el-option>
                         </el-select>
-                        <small class="form-control-feedback"
-                               v-if="errors.customer_id"
+                        <small v-if="errors.customer_id"
+                               class="form-control-feedback"
                                v-text="errors.customer_id[0]"></small>
                     </div>
                 </div>
                 <div class="col-lg-4">
-                    <div class="form-group" :class="{'has-danger': errors.document_type_id}">
+                    <div :class="{'has-danger': errors.document_type_id}"
+                         class="form-group">
                         <label class="control-label">Tipo comprobante</label>
                         <el-select v-model="form.document_type_id"
-                                   @change="changeDocumentType"
+                                   class="border-left rounded-left border-info"
                                    popper-class="el-select-document_type"
-                                   class="border-left rounded-left border-info">
+                                   @change="changeDocumentType">
                             <el-option v-for="option in document_types"
                                        :key="option.id"
-                                       :value="option.id"
-                                       :label="option.name"></el-option>
+                                       :label="option.name"
+                                       :value="option.id"></el-option>
                         </el-select>
-                        <small class="form-control-feedback"
-                               v-if="errors.document_type_id"
+                        <small v-if="errors.document_type_id"
+                               class="form-control-feedback"
                                v-text="errors.document_type_id[0]"></small>
                     </div>
                 </div>
                 <div class="col-lg-4">
-                    <div class="form-group" :class="{'has-danger': errors.series_id}">
+                    <div :class="{'has-danger': errors.series_id}"
+                         class="form-group">
                         <label class="control-label">Serie</label>
                         <el-select v-model="form.series">
                             <el-option v-for="option in series"
                                        :key="option.number"
-                                       :value="option.number"
-                                       :label="option.number"></el-option>
+                                       :label="option.number"
+                                       :value="option.number"></el-option>
                         </el-select>
-                        <small class="form-control-feedback"
-                               v-if="errors.series_id"
+                        <small v-if="errors.series_id"
+                               class="form-control-feedback"
                                v-text="errors.series_id[0]"></small>
                     </div>
                 </div>
                 <div class="col-lg-4">
-                    <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
+                    <div :class="{'has-danger': errors.date_of_issue}"
+                         class="form-group">
                         <label class="control-label">Fecha de emisión</label>
-                        <el-date-picker readonly
-                                        v-model="form.date_of_issue"
+                        <el-date-picker v-model="form.date_of_issue"
+                                        :clearable="false"
+                                        format="dd/MM/yyyy"
+                                        readonly
                                         type="date"
                                         value-format="yyyy-MM-dd"
-                                        format="dd/MM/yyyy"
-                                        :clearable="false"
                                         @change="changeDateOfIssue"></el-date-picker>
-                        <small class="form-control-feedback"
-                               v-if="errors.date_of_issue"
+                        <small v-if="errors.date_of_issue"
+                               class="form-control-feedback"
                                v-text="errors.date_of_issue[0]"></small>
                     </div>
                 </div>
@@ -131,17 +139,21 @@
                 <!--                               v-text="errors.date_of_due[0]"></small>-->
                 <!--                    </div>-->
                 <!--                </div>-->
-<!--                <div class="col-lg-4">-->
-<!--                    <div class="form-group" v-show="form.document_type_id === '03'">-->
-<!--                        <el-checkbox v-model="form.is_receivable" class="font-weight-bold">¿Es venta por cobrar?-->
-<!--                        </el-checkbox>-->
-<!--                    </div>-->
-<!--                </div>-->
-                <div class="col-lg-12" v-if="form.items.length > 0">
+                <!--                <div class="col-lg-4">-->
+                <!--                    <div class="form-group" v-show="form.document_type_id === '03'">-->
+                <!--                        <el-checkbox v-model="form.is_receivable" class="font-weight-bold">¿Es venta por cobrar?-->
+                <!--                        </el-checkbox>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+                <div v-if="form.items.length > 0"
+                     class="col-lg-12">
                     <label class="control-label">Descripción del servicio</label>
-                    <el-input type="textarea" autosize v-model="form.items[0].description"></el-input>
+                    <el-input v-model="form.items[0].description"
+                              autosize
+                              type="textarea"></el-input>
                 </div>
-                <div class="col-lg-12" v-show="is_document_type_invoice && form.payments.length > 0">
+                <div v-show="is_document_type_invoice && form.payments.length > 0"
+                     class="col-lg-12">
                     <table style="width: 100%">
                         <thead>
                         <tr>
@@ -150,31 +162,34 @@
                             <th>Referencia</th>
                             <th>Monto</th>
                             <th style="width: 15px">
-                                <a style="font-size:18px" href="#" @click.prevent="clickAddPayment"
-                                   class="text-center font-weight-bold text-center text-info">[+]</a>
+                                <a class="text-center font-weight-bold text-center text-info"
+                                   href="#"
+                                   style="font-size:18px"
+                                   @click.prevent="clickAddPayment">[+]</a>
                             </th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="(row, index) in form.payments" :key="index">
+                        <tr v-for="(row, index) in form.payments"
+                            :key="index">
                             <td>
                                 <el-select v-model="row.payment_method_type_id">
                                     <el-option
                                         v-for="option in payment_method_types"
                                         :key="option.id"
-                                        :value="option.id"
                                         :label="option.description"
+                                        :value="option.id"
                                     ></el-option>
                                 </el-select>
                             </td>
                             <td>
                                 <el-select v-model="row.payment_destination_id"
-                                           filterable
-                                           :disabled="row.payment_destination_disabled">
+                                           :disabled="row.payment_destination_disabled"
+                                           filterable>
                                     <el-option v-for="option in payment_destinations"
                                                :key="option.id"
-                                               :value="option.id"
-                                               :label="option.description"></el-option>
+                                               :label="option.description"
+                                               :value="option.id"></el-option>
                                 </el-select>
                             </td>
                             <td>
@@ -184,8 +199,8 @@
                                 <el-input v-model="row.payment"></el-input>
                             </td>
                             <td class="series-table-actions text-center">
-                                <button type="button"
-                                        class="btn waves-effect waves-light btn-xs btn-danger"
+                                <button class="btn waves-effect waves-light btn-xs btn-danger"
+                                        type="button"
                                         @click.prevent="clickCancel(index)">
                                     <i class="fa fa-trash"></i>
                                 </button>
@@ -195,36 +210,39 @@
                     </table>
                 </div>
             </div>
-            <span slot="footer" class="dialog-footer">
+            <span slot="footer"
+                  class="dialog-footer">
                 <template v-if="showClose">
                     <el-button @click="clickClose">Cerrar</el-button>
-                    <el-button class="submit"
-                               type="primary"
-                               @click="submit"
+                    <el-button v-if="generate"
                                :loading="loading_submit"
-                               v-if="generate">Generar</el-button>
+                               class="submit"
+                               type="primary"
+                               @click="submit">Generar</el-button>
                 </template>
                 <template v-else>
-                    <el-button class="submit"
-                               type="primary"
-                               plain
-                               @click="submit"
+                    <el-button v-if="generate"
                                :loading="loading_submit"
-                               v-if="generate">Generar comprobante</el-button>
-                    <el-button @click="clickFinalize" v-else>Ir al listado</el-button>
-                    <el-button type="primary" @click="clickNew">Nueva cotización</el-button>
+                               class="submit"
+                               plain
+                               type="primary"
+                               @click="submit">Generar comprobante</el-button>
+                    <el-button v-else
+                               @click="clickFinalize">Ir al listado</el-button>
+                    <el-button type="primary"
+                               @click="clickNew">Nueva cotización</el-button>
                 </template>
             </span>
         </el-dialog>
 
-        <document-options :showDialog.sync="showDialogDocumentOptions"
+        <document-options :isContingency="false"
                           :recordId="documentNewId"
-                          :isContingency="false"
-                          :showClose="true"></document-options>
+                          :showClose="true"
+                          :showDialog.sync="showDialogDocumentOptions"></document-options>
 
-        <sale-note-options :showDialog.sync="showDialogSaleNoteOptions"
-                           :recordId="documentNewId"
-                           :showClose="true"></sale-note-options>
+        <sale-note-options :recordId="documentNewId"
+                           :showClose="true"
+                           :showDialog.sync="showDialogSaleNoteOptions"></sale-note-options>
     </div>
 </template>
 
@@ -336,6 +354,9 @@ export default {
                     let total_taxed = _.round(unit_value, 2);
                     let total_igv = _.round(total - total_taxed, 2);
                     let item_description = `Descripción: ${this.record.description}, Estado: ${this.record.state}, Razón: ${this.record.reason + "\n"}`;
+                    if (this.record.items !== undefined) {
+                        this.form.items = this.record.items
+                    }
 
                     this.form.items.push({
                         'id': null,
@@ -356,6 +377,14 @@ export default {
                         'total_taxes': total_igv,
                         'total': total,
                         'quantity': 1
+                    });
+                    total=0;
+                    total_taxed=0
+                    total_igv=0
+                    this.form.items.forEach((row) => {
+                        total+=row.total;
+                        total_igv+=row.total_igv;
+                        total_taxed+=row.total_value;
                     });
 
                     this.form.total_taxed = total_taxed;

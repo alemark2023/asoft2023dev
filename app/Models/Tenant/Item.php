@@ -1626,4 +1626,13 @@ class Item extends ModelTenant
             // })
         ];
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public  function technical_service_item()
+    {
+        return $this->hasMany(TechnicalServiceItem::class, 'item_id');
+    }
+
 }
