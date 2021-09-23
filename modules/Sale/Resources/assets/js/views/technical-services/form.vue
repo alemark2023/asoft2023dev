@@ -1220,8 +1220,14 @@ export default {
             }
         },
         create() {
+            this.total = 0;
+            this.initForm()
 
             this.titleDialog = (this.recordId) ? 'Editar servicio técnico' : 'Nuevo servicio técnico'
+            this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+                this.$store.commit('setExchangeRate', response)
+                this.form.exchange_rate_sale = this.exchange_rate
+            });
 
             if (this.recordId) {
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)

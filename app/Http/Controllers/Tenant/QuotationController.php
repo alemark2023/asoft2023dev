@@ -461,7 +461,7 @@ class QuotationController extends Controller
      */
     public function searchItems(Request $request)
     {
-        $items = SearchItemController::getNotServiceItemToModal($request);
+        $items = SearchItemController::getItemsToQuotation($request);
         return compact('items');
 
     }
@@ -526,7 +526,7 @@ class QuotationController extends Controller
     public function searchItemById($id)
     {
 
-        $items =  SearchItemController::searchByIdToModal($id);
+        $items =  SearchItemController::getItemsToQuotation(null,$id);
         return compact('items');
 
     }
