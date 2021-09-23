@@ -352,7 +352,8 @@ class DocumentController extends Controller
 
     public function searchItemById($id)
     {
-        $items = SearchItemController::searchByIdToModal($id);
+        // $items = SearchItemController::searchByIdToModal($id);
+        $items = SearchItemController::getItemsToDocuments(null, $id);
         return compact('items');
     }
 

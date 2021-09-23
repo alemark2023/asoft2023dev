@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tenant\Person;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -78,5 +79,30 @@ class Controller extends BaseController
                 $string.
                 "\n**************************************DEBUG SE ENCUENTRA ACTIVADO**********************************************************************************\n");
         }
+    }
+
+    /**
+     * @param $id
+     *
+     * @return array
+     */
+    public function searchItemById($id)
+    {
+        $items = SearchItemController::getItemsToDocuments(null, $id);
+
+        return compact('items');
+
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function searchItems(Request $request)
+    {
+        $items = SearchItemController::getItemsToDocuments($request);
+
+        return compact('items');
     }
 }

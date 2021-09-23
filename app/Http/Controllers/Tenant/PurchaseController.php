@@ -138,7 +138,7 @@ class PurchaseController extends Controller
     {
 
         // $items = $this->table('items');
-        $items = SearchItemController::getNotServiceItemToModal();
+        $items = SearchItemController::getItemToPurchase();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
@@ -571,7 +571,8 @@ class PurchaseController extends Controller
                 break;
 
             case 'items':
-                return SearchItemController::getNotServiceItemToPurchase()->transform(function($row) {
+                return SearchItemController::getItemToPurchase();
+                return SearchItemController::getItemToPurchase()->transform(function($row) {
 /*
                     $items = Item::whereNotIsSet()->whereIsActive()->orderBy('description')->take(20)->get(); //whereWarehouse()
                 return collect($items)->transform(function($row) {
@@ -633,55 +634,59 @@ class PurchaseController extends Controller
 
     public function searchItems(Request $request)
     {
-        $items = SearchItemController::getNotServiceItemToPurchase($request)->transform(function ($row) {
-            /** @var Item $row */
-            $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
-            $temp = array_merge($row->getCollectionData(), $row->getDataToItemModal());
-            $data = [
-                'id' => $row->id,
-                'item_code'  => $row->item_code,
-                'full_description' => $full_description,
-                'description' => $row->description,
-                'currency_type_id' => $row->currency_type_id,
-                'currency_type_symbol' => $row->currency_type->symbol,
-                'sale_unit_price' => $row->sale_unit_price,
-                'purchase_unit_price' => $row->purchase_unit_price,
-                'unit_type_id' => $row->unit_type_id,
-                'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
-                'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                'purchase_has_igv' => (bool) $row->purchase_has_igv,
-                'has_perception' => (bool) $row->has_perception,
-                'lots_enabled' => (bool) $row->lots_enabled,
-                'percentage_perception' => $row->percentage_perception,
-                'item_unit_types' => $row->item_unit_types->transform(function($row) {
-                    if(is_array($row)) return $row;
-                    if(is_object($row)) {
-                        /**@var ItemUnitType $row */
-                        return $row->getCollectionData();
+        $items = SearchItemController::getItemToPurchase($request);
+        // Solo para evitar que entre en esta seccion
+        $a =null;
+        if($a != null) {
+            $items = SearchItemController::getItemToPurchase($request)->transform(function ($row) {
+                /** @var Item $row */
+                $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
+                $temp = array_merge($row->getCollectionData(), $row->getDataToItemModal());
+                $data = [
+                    'id' => $row->id,
+                    'item_code' => $row->item_code,
+                    'full_description' => $full_description,
+                    'description' => $row->description,
+                    'currency_type_id' => $row->currency_type_id,
+                    'currency_type_symbol' => $row->currency_type->symbol,
+                    'sale_unit_price' => $row->sale_unit_price,
+                    'purchase_unit_price' => $row->purchase_unit_price,
+                    'unit_type_id' => $row->unit_type_id,
+                    'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                    'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                    'purchase_has_igv' => (bool)$row->purchase_has_igv,
+                    'has_perception' => (bool)$row->has_perception,
+                    'lots_enabled' => (bool)$row->lots_enabled,
+                    'percentage_perception' => $row->percentage_perception,
+                    'item_unit_types' => $row->item_unit_types->transform(function ($row) {
+                        if (is_array($row)) return $row;
+                        if (is_object($row)) {
+                            /**@var ItemUnitType $row */
+                            return $row->getCollectionData();
+                        }
+                        return $row;
+                        return [
+                            'id' => $row->id,
+                            'description' => "{$row->description}",
+                            'item_id' => $row->item_id,
+                            'unit_type_id' => $row->unit_type_id,
+                            'quantity_unit' => $row->quantity_unit,
+                            'price1' => $row->price1,
+                            'price2' => $row->price2,
+                            'price3' => $row->price3,
+                            'price_default' => $row->price_default,
+                        ];
+                    }),
+                    'series_enabled' => (bool)$row->series_enabled,
+                ];
+                foreach ($temp as $k => $v) {
+                    if (!isset($data[$k])) {
+                        $data[$k] = $v;
                     }
-                    return $row;
-                    return [
-                        'id' => $row->id,
-                        'description' => "{$row->description}",
-                        'item_id' => $row->item_id,
-                        'unit_type_id' => $row->unit_type_id,
-                        'quantity_unit' => $row->quantity_unit,
-                        'price1' => $row->price1,
-                        'price2' => $row->price2,
-                        'price3' => $row->price3,
-                        'price_default' => $row->price_default,
-                    ];
-                }),
-                'series_enabled' => (bool) $row->series_enabled,
-            ];
-            foreach ($temp as $k => $v) {
-                if (!isset($data[$k])) {
-                    $data[$k] = $v;
                 }
-            }
-            return $data;
-        });
-
+                return $data;
+            });
+        }
         return compact('items');
 
     }
@@ -691,42 +696,46 @@ class PurchaseController extends Controller
     {
 
 
-        $items = SearchItemController::getNotServiceItemToPurchase(null, $id)->transform(function ($row) {
-            /** @var Item $row */
-            $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
-            return [
-                'id' => $row->id,
-                'item_code'  => $row->item_code,
-                'full_description' => $full_description,
-                'description' => $row->description,
-                'currency_type_id' => $row->currency_type_id,
-                'currency_type_symbol' => $row->currency_type->symbol,
-                'sale_unit_price' => $row->sale_unit_price,
-                'purchase_unit_price' => $row->purchase_unit_price,
-                'unit_type_id' => $row->unit_type_id,
-                'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
-                'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                'purchase_has_igv' => (bool) $row->purchase_has_igv,
-                'has_perception' => (bool) $row->has_perception,
-                'lots_enabled' => (bool) $row->lots_enabled,
-                'percentage_perception' => $row->percentage_perception,
-                'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
-                    return [
-                        'id' => $row->id,
-                        'description' => "{$row->description}",
-                        'item_id' => $row->item_id,
-                        'unit_type_id' => $row->unit_type_id,
-                        'quantity_unit' => $row->quantity_unit,
-                        'price1' => $row->price1,
-                        'price2' => $row->price2,
-                        'price3' => $row->price3,
-                        'price_default' => $row->price_default,
-                    ];
-                }),
-                'series_enabled' => (bool) $row->series_enabled,
-            ];
-        });
-
+        $items =SearchItemController::getItemToPurchase(null, $id);
+        $a = null;
+        // Solo para que no entre en esta seccion
+        if($a !== null) {
+            $items = SearchItemController::getNotServiceItemToPurchase(null, $id)->transform(function ($row) {
+                /** @var Item $row */
+                $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
+                return [
+                    'id' => $row->id,
+                    'item_code' => $row->item_code,
+                    'full_description' => $full_description,
+                    'description' => $row->description,
+                    'currency_type_id' => $row->currency_type_id,
+                    'currency_type_symbol' => $row->currency_type->symbol,
+                    'sale_unit_price' => $row->sale_unit_price,
+                    'purchase_unit_price' => $row->purchase_unit_price,
+                    'unit_type_id' => $row->unit_type_id,
+                    'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                    'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                    'purchase_has_igv' => (bool)$row->purchase_has_igv,
+                    'has_perception' => (bool)$row->has_perception,
+                    'lots_enabled' => (bool)$row->lots_enabled,
+                    'percentage_perception' => $row->percentage_perception,
+                    'item_unit_types' => collect($row->item_unit_types)->transform(function ($row) {
+                        return [
+                            'id' => $row->id,
+                            'description' => "{$row->description}",
+                            'item_id' => $row->item_id,
+                            'unit_type_id' => $row->unit_type_id,
+                            'quantity_unit' => $row->quantity_unit,
+                            'price1' => $row->price1,
+                            'price2' => $row->price2,
+                            'price3' => $row->price3,
+                            'price_default' => $row->price_default,
+                        ];
+                    }),
+                    'series_enabled' => (bool)$row->series_enabled,
+                ];
+            });
+        }
         return compact('items');
     }
 

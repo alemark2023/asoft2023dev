@@ -80,7 +80,7 @@ class PurchaseQuotationController extends Controller
     {
 
         // $items = $this->table('items');
-        $items = SearchItemController::getNotServiceItemToModal();
+        $items = SearchItemController::getItemToPurchaseQuotation();
 
 
         return compact('items');
@@ -342,5 +342,31 @@ class PurchaseQuotationController extends Controller
         return [
             'success' => true
         ];
+    }
+
+
+    /**
+     * @param $id
+     *
+     * @return array
+     */
+    public function searchItemById($id)
+    {
+        $items = SearchItemController::getItemToPurchaseQuotation(null, $id);
+
+        return compact('items');
+
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function searchItems(Request $request)
+    {
+        $items = SearchItemController::getItemToPurchaseQuotation($request);
+
+        return compact('items');
     }
 }
