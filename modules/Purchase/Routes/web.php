@@ -29,6 +29,9 @@ if($current_hostname) {
                 Route::get('item/tables', 'PurchaseQuotationController@item_tables');
                 Route::get('download/{external_id}/{format?}', 'PurchaseQuotationController@download');
                 Route::get('print/{external_id}/{format?}', 'PurchaseQuotationController@toPrint');
+                Route::get('search-items', 'PurchaseQuotationController@searchItems');
+                Route::get('search/item/{item}', 'PurchaseQuotationController@searchItemById');
+
             });
 
             /**

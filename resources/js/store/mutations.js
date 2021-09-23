@@ -34,6 +34,9 @@ export default {
     setCustomers(state, customers) {
         state.customers = customers
     },
+    setExchangeRate(state, exchange_rate) {
+        state.exchange_rate = exchange_rate
+    },
     setCurrencys(state, currencys) {
         state.currencys = currencys
     },

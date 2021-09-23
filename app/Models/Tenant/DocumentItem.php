@@ -303,6 +303,28 @@ class DocumentItem extends ModelTenant
 
     }
 
+    /**
+     * Devuelve un array de los items para el documento
+     * @return Item
+     */
+    public function getArrayItem()
+    {
+        /** @var Item $item */
+        $item = (array)$this->item;
+        $item['extra'] = isset($item['extra']) ? (array)$item['extra'] : [];
+
+        $item['unit_type_id'] = $item['unit_type_id'] ?? '';
+
+        $item['sale_affectation_igv_type'] = isset($item['sale_affectation_igv_type']) ? (array)$item['sale_affectation_igv_type'] : [];
+        $item['description'] = $item['description'] ?? '';
+        $item['item_type_id'] = $item['item_type_id'] ?? '';
+        $item['presentation'] = $item['presentation'] ?? [];
+        $item['IdLoteSelected'] = $item['IdLoteSelected'] ?? null;
+        $item['has_igv'] = $item['has_igv'] ?? false;
+        $item['unit_price'] = $item['unit_price'] ?? 0;
+        return $item;
+
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

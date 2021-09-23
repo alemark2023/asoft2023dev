@@ -1,6 +1,7 @@
 <template>
     <el-dialog :close-on-click-modal="false" :title="titleDialog" :visible="showDialog" top="7vh" @close="close"
-               @open="create">
+               @open="create"
+               :append-to-body="true">
         <form autocomplete="off" @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
@@ -266,7 +267,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12 mt-2">
+                        <div class="col-md-12 mt-2" v-if="showDiscounts">
                             <el-collapse v-model="activePanel">
                                 <el-collapse-item :disabled="recordItem != null"
                                                   name="1" title="+ Agregar Descuentos/Cargos/Atributos especiales">
@@ -485,7 +486,8 @@ export default {
         'isEditItemNote',
         'configuration',
         'documentTypeId',
-        'noteCreditOrDebitTypeId'
+        'noteCreditOrDebitTypeId',
+        'displayDiscount',
     ],
     components: {
         ItemForm,
@@ -496,6 +498,7 @@ export default {
     },
     data() {
         return {
+            showDiscounts: true,
             extra_temp: undefined,
             can_add_new_product: false,
             loading_search: false,
@@ -543,6 +546,14 @@ export default {
         this.loadConfiguration()
         this.$store.commit('setConfiguration', this.configuration)
         this.initForm()
+        if(this.displayDiscount !== undefined){
+            if(this.displayDiscount == true){
+                this.showDiscounts = true;
+            }else{
+                this.showDiscounts = false;
+
+            }
+        }
     },
     mounted() {
         this.getTables()
