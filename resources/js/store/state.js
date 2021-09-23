@@ -5,6 +5,7 @@ export default {
     hasGlobalIgv: false,
     loading_submit: false,
     color: {},
+    exchange_rate:0,
     mold: {},
     config: {
         id: 0,

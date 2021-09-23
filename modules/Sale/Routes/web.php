@@ -130,6 +130,18 @@ if($current_hostname) {
 
         });
 
+        /**
+         * technical-services/
+         * technical-services/columns
+         * technical-services/records
+         * technical-services/tables
+         * technical-services/record/{contract}
+         * technical-services/search/customers
+         * technical-services/search/customer/{id}
+         * technical-services/download/{id}/{format?}
+         * technical-services/print/{id}/{format?}
+         * technical-services/{id
+        */
         Route::prefix('technical-services')->group(function () {
 
             Route::get('', 'TechnicalServiceController@index')->name('tenant.technical_services.index')->middleware(['redirect.level']);
@@ -169,6 +181,13 @@ if($current_hostname) {
 
         });
 
+        /**
+         * technical-service-payments/
+         * technical-service-payments/records/{record}
+         * technical-service-payments/document/{record}
+         * technical-service-payments/tables
+         * technical-service-payments/{record_payment}
+         */
         Route::prefix('technical-service-payments')->group(function () {
 
             Route::get('/records/{record}', 'TechnicalServicePaymentController@records');
@@ -178,6 +197,13 @@ if($current_hostname) {
             Route::delete('/{record_payment}', 'TechnicalServicePaymentController@destroy');
 
         });
+
+        /**
+         * generate-document/
+         * generate-document/record/{table}/{record}
+         * generate-document/table
+         * generate-document/customers
+         */
 
         Route::prefix('generate-document')->group(function () {
             Route::get('/record/{table}/{record}', 'GenerateDocumentController@record');

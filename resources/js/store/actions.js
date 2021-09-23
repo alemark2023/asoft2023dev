@@ -106,6 +106,10 @@ export default {
         if (state.all_items === undefined) state.all_items = [];
         // state.all_items = getUniqueArray(readStorageData('all_items', true), ['id'])
     },
+    loadExchangeRate(store) {
+        if (state.exchange_rate === undefined) state.exchange_rate = 1;
+        // state.all_items = getUniqueArray(readStorageData('all_items', true), ['id'])
+    },
     loadHasGlobalIgv(store) {
         if (state.hasGlobalIgv === undefined) state.hasGlobalIgv = false;
     },
