@@ -227,6 +227,7 @@
                 IncomePayment::class => 'income',
                 CashTransaction::class => 'cash_transaction',
                 TechnicalServicePayment::class => 'technical_service',
+                TransferAccountPayment ::class => 'transfer_account',
             ];
 
             return $instance_type[$this->payment_type];
