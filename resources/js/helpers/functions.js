@@ -308,4 +308,15 @@ function getUniqueArray(arr, keyProps) {
     )
 }
 
-export {calculateRowItem, getUniqueArray}
+function showNamePdfOfDescription(item, show_pdf_name) {
+    if (show_pdf_name !== undefined && show_pdf_name === true) {
+        let temn = item.name_product_pdf;
+        temn = temn.substring(3)
+        temn = temn.slice(0, -4)
+        if (temn.length > 0) {
+            return temn;
+        }
+    }
+    return item.description
+}
+export {calculateRowItem, getUniqueArray, showNamePdfOfDescription}
