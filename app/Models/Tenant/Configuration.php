@@ -99,6 +99,7 @@ class Configuration extends ModelTenant
         'show_extra_info_to_item',
         'group_items_generate_document',
         'enabled_global_igv_to_purchase',
+        'show_pdf_name',
     ];
 
     protected $casts = [
@@ -115,6 +116,7 @@ class Configuration extends ModelTenant
         'show_extra_info_to_item' => 'boolean',
         'group_items_generate_document' => 'boolean',
         'enabled_global_igv_to_purchase' => 'boolean',
+        'show_pdf_name' => 'boolean',
     ];
 
     /**
@@ -449,6 +451,7 @@ class Configuration extends ModelTenant
             'typeUser'=>$typeUser,
             'unit_type_id'=>$unit_type_id,
             'enabled_global_igv_to_purchase'=>$this->isEnabledGlobalIgvToPurchase(),
+            'show_pdf_name'=>$this->isShowPdfName(),
             'user'=>[
                 'serie'=>$serie,
                 'document_id'=>$document_id,
@@ -554,6 +557,24 @@ class Configuration extends ModelTenant
         return $this;
     }
 
+    /**
+     * @return bool
+     */
+    public function isShowPdfName(): bool
+    {
+        return (bool)$this->show_pdf_name;
+    }
+
+    /**
+     * @param bool $show_pdf_name
+     *
+     * @return Company
+     */
+    public function setShowPdfName(bool $show_pdf_name): Company
+    {
+        $this->show_pdf_name = (bool)$show_pdf_name;
+        return $this;
+    }
 
 
 

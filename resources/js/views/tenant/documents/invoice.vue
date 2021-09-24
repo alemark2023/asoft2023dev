@@ -240,7 +240,7 @@
                                 <tr v-for="(row, index) in form.items"
                                     :key="index">
                                     <td>{{ index + 1 }}</td>
-                                    <td>{{ row.item.description }}
+                                    <td>{{ setDescriptionOfItem(row.item) }}
                                         {{
                                             row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''
                                         }}<br/><small>{{ row.affectation_igv_type.description }}</small>
@@ -1304,7 +1304,7 @@ import DocumentFormItem from './partials/item.vue'
 import PersonForm from '../persons/form.vue'
 import DocumentOptions from '../documents/partials/options.vue'
 import {exchangeRate, functions} from '../../../mixins/functions'
-import {calculateRowItem} from '../../../helpers/functions'
+import {calculateRowItem, showNamePdfOfDescription} from '../../../helpers/functions'
 import Logo from '../companies/logo.vue'
 import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
 import DocumentTransportForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/transports/form.vue'
@@ -3163,6 +3163,9 @@ export default {
                 }
                 row.amount = amount;
             })
+        },
+        setDescriptionOfItem(item){
+            return showNamePdfOfDescription(item,this.config.show_pdf_name)
         }
     }
 }
