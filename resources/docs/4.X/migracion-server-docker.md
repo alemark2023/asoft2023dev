@@ -28,7 +28,7 @@ Migrar todos los datos del facturador de un servidor A a un servidor B
 * Ingresar a servidor e instalar zip `apt-get install zip unzip`
 * crear una carpeta scp `mkdir scp`
 * copiar el contenido de las carpetas proxy y certs `cp -r proxy/ scp/` y `cp -r certs/ scp/`
-* verificar el pero del facturador `du -sh facturador/`
+* verificar el peso del facturador `du -sh facturador/`
   * si el peso es inferior a 5GB se recomienda usar `zip -r facturador.zip facturador/`
   * si es mayor usar `tar -cvf facturador.tar facturador/` para mayor seguridad de la data
 * mover el archivo comprimido a scp `mv facturador.zip scp/`
@@ -96,8 +96,8 @@ scp -r scp/ root@192.196.138.123:/root/
 ## Despliegue
 
 * ingresar a la carpeta scp y descomprimir los archivos `cd scp`
-* si son archivos .zip usar `unzip facturadior.zip` y `unzip mysql.zip`
-* si son archivos .tar usa `tar -xvf facturadior.tar`
+* si son archivos .zip usar `unzip facturador.zip` y `unzip mysql.zip`
+* si son archivos .tar usa `tar -xvf facturador.tar`
 * mover las carpetas a la ruta destino (suele ser /root o /home/usuario) `mv proxy /ruta_destino` `mv facturador /ruta_destino` y `mv certs /ruta_destino`
 * mover la carpeta de mysql a la ruta de volumenes de docker `mv facturador1_mysqldata_1/ /var/lib/docker/volumes/`
 * ingresar a la carpeta del facturador y levantar los servicios `docker-compose up -d`
