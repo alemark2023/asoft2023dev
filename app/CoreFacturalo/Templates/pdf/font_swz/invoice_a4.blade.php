@@ -107,21 +107,6 @@
                         <td>{{ $placa }}</td>
                     </tr>
                 @endif
-
-                @php
-                    if($document->payment_condition_id === '01') {
-                        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '10')->first();
-                    }else{
-                        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
-                    }
-                @endphp
-
-                <tr>
-                    <td>CONDICIÓN DE PAGO:</td>
-                    <td>
-                        {{ $paymentCondition->description  }}
-                    </td>
-                </tr>
                 @if ($document->purchase_order)
                     <tr>
                         <td>ORDEN DE COMPRA:</td>
@@ -315,6 +300,69 @@
     </tr>
     </tbody>
 </table>
+@php
+    if($document->payment_condition_id === '01') {
+        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '10')->first();
+    }else{
+        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
+    }
+@endphp
+<table class="full-width">
+    <tr>
+        <td>
+            <p style="text-transform: uppercase;">
+                CONDICIÓN DE PAGO:
+                <strong>
+                    {{ $paymentCondition->description  }}
+                </strong>
+            </p>
+        </td>
+    </tr>
+</table>
+@if ($document->payment_condition_id === '01')
+    @if($payments->count())
+        <table class="full-width">
+            <tr>
+                <td>
+                    <p style="text-transform: uppercase;">
+                        <strong>PAGOS:</strong>
+                    </p>
+                </td>
+            </tr>
+            @php
+                $payment = 0
+            @endphp
+            @foreach($payments as $row)
+                <tr>
+                    <td>
+                        <p style="text-transform: uppercase;">
+                            &#8226; {{ $row->payment_method_type->description }}
+                            - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}
+                        </p>
+                    </td>
+                </tr>
+                @endforeach
+                </tr>
+        </table>
+    @endif
+@else
+    <table class="full-width">
+        @foreach($document->fee as $key => $quote)
+            <tr>
+                <td>
+                    <p style="text-transform: uppercase;">
+                        &#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1) : $quote->getStringPaymentMethodType()) }}
+                        / Fecha: {{ $quote->date->format('d-m-Y') }} /
+                        Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}
+                    </p>
+                </td>
+            </tr>
+            @endforeach
+            </tr>
+    </table>
+@endif
+<br>
+<br>
 <table class="full-width">
     <tr>
         <td width="65%"
