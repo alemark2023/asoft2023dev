@@ -109,30 +109,23 @@
             $items_id = ($request->has('items_id')) ? $request->items_id : null;
             $id = (int)$id;
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
-
-
             $input = self::setInputByRequest($request);
 
-            $item = Item:: whereIsActive()//    ->whereTypeUser()
-            ;
+            $item = Item:: whereIsActive();
             $ItemToSearchBySeries = Item:: whereIsActive();
             if ($service == false) {
-                $item->WhereNotService()
-                    ->with('warehousePrices');
-                $ItemToSearchBySeries->WhereNotService()
-                    ->with('warehousePrices');
+                $item->WhereNotService();
+                $ItemToSearchBySeries->WhereNotService();
             } else {
-                $item
-                    ->WhereService()
-                    // ->with(['item_lots'])
+                $item->WhereService()
                     ->whereNotIsSet();
-                $ItemToSearchBySeries
-                    ->WhereService()
-                    // ->with(['item_lots'])
+                $ItemToSearchBySeries->WhereService()
                     ->whereNotIsSet();
 
 
             }
+            $item->with('warehousePrices');
+            $ItemToSearchBySeries->with('warehousePrices');
 
             $alt_item = $item;
 
@@ -180,7 +173,6 @@
                             ->limit(1);
                     } else {
                         self::setFilter($item, $request);
-                        $item->take(20);
                     }
                 }
             }
@@ -206,6 +198,7 @@
          */
         protected static function setFilter(&$item, Request $request = null)
         {
+            /** @var Builder $item */
 
             $input = self::setInputByRequest($request);
 
@@ -233,7 +226,9 @@
                         });
                 }
                 $item->OrWhereJsonContains('attributes', ['value' => $input]);
-                /** @var Builder $item */
+            }else{
+                // Si no se filtran datos, entonces se toman 20
+                $item->take(20);
             }
 
 
@@ -440,7 +435,7 @@
             // $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
             $item_not_service = Item::with('warehousePrices')
                 ->whereIsActive()
-                ->orderBy('description');
+            ->orderBy('description');
             $service_item = Item::with('warehousePrices')
                 ->where('items.unit_type_id', 'ZZ')
                 ->whereIsActive()
