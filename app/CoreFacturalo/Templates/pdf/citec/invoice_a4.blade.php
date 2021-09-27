@@ -19,8 +19,10 @@
     if($config->formats == "citec")
     {
         $miimage = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'citec'.DIRECTORY_SEPARATOR.'membrete.jpg');
+		if(!file_exists($miimage)){
+			 $miimage = null;
     }
-
+    }
 
 @endphp
 <html>
@@ -30,7 +32,11 @@
 </head>
 <body>
 <div class="" style="position: absolute; text-align: center; z-index: 0; width:80%; top: 10px;">
-    <img src="data:{{mime_content_type($miimage)}};base64, {{base64_encode(file_get_contents($miimage))}}" alt="anulado" class="">
+    <img
+        @if(!empty($miimage))
+        src="data:{{mime_content_type($miimage)}};base64, {{base64_encode(file_get_contents($miimage))}}"
+        @endif
+        alt="anulado" class="">
 </div>
 <div style="z-index: 1; position: absolute;width: 280px; left: 410px;">
         <div class="pb-4 pt-2 px-3 text-center" style="background-color: rgb(40,87,165);">
