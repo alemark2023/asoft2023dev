@@ -57,28 +57,28 @@ class ValidateDocumentsCommand extends Command
         if ($establishment_id) {
 
             $documents = Document::query()
-                ->where('establishment_id', $establishment_id)
-                ->where('state_type_id', $state_type_id)
-                ->orderBy('series')
-                ->orderBy('number')
-                ->get();
+                                ->where('establishment_id', $establishment_id)
+                                ->where('state_type_id', $state_type_id)
+                                ->orderBy('series')
+                                ->orderBy('number')
+                                ->get();
 
         } else {
 
             $documents = Document::query()
-                ->where('state_type_id', $state_type_id)
-                ->orderBy('series')
-                ->orderBy('number')
-                ->get();
+                                ->where('state_type_id', $state_type_id)
+                                ->orderBy('series')
+                                ->orderBy('number')
+                                ->get();
 
         }
 
         $count = 0;
         $this->info('-------------------------------------------------');
         $this->info(Company::query()->first()->name);
-        $this->info('Documentos:' . count($documents));
+        $this->info('Documentos:' . $documents->count());
 
-        if(count($documents) > 0){
+        if($documents->count() > 0){
             
             $auth_api = (new AuthApi())->getToken();
             
@@ -118,13 +118,10 @@ class ValidateDocumentsCommand extends Command
 
                         $state_type_description = $state_type ? $state_type->description : 'No existe';
 
-                        $message = $count.': '.$document->number_full.' |Código: '.$response_code.'|Mensaje: '.$response_description.'|Estado: '.$response_state_type_id.' - '.$state_type_description;
+                        $message = $count.': '.$document->number_full.' | Código: '.$response_code.'| Mensaje: '.$response_description.'| Estado: '.$response_state_type_id.' - '.$state_type_description;
                         $this->info($message);
                         
-                        if($response_code !== '1')
-                        {
-                            Log::info($message);
-                        }
+                        if($response_code !== '1') Log::info($message);
 
                     }
  
