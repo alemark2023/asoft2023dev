@@ -377,9 +377,9 @@ export default {
                         'total_taxes': total_igv,
                         'total': total,
                         'quantity': 1,
-                        'attributes': [],
-                        'discounts': [],
-                        'charges': [],
+                        'attributes': {},
+                        'discounts': {},
+                        'charges': {},
 
                     });
                     total = 0;
