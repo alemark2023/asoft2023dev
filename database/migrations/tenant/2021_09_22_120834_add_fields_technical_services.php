@@ -19,7 +19,7 @@
 
                 $table->unsignedInteger('establishment_id')->default(0)->nullable()->after('soap_type_id');
                 $table->json('establishment')->nullable()->after('establishment_id');
-                $table->text('currency_type_id')->default('PEN')->nullable()->after('customer');
+                $table->text('currency_type_id')->nullable()->after('customer');
                 $table->text('payment_condition_id')->nullable()->after('currency_type_id');
                 $table->text('payment_method_type_id')->nullable()->after('payment_condition_id');
                 $table->unsignedInteger('seller_id')->default(0)->nullable()->after('payment_method_type_id');

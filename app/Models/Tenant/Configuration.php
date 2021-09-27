@@ -119,6 +119,21 @@ class Configuration extends ModelTenant
         'show_pdf_name' => 'boolean',
     ];
 
+
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function (self $item) {
+
+            if(empty($item->apk_url)) $item->apk_url = 'https://facturaloperu.com/apk/app-debug.apk';
+        });
+        static::retrieved(function (self $item) {
+
+            if (empty($item->apk_url)) $item->apk_url = 'https://facturaloperu.com/apk/app-debug.apk';
+        });
+
+    }
+
     /**
      * @return bool
      */
@@ -568,14 +583,32 @@ class Configuration extends ModelTenant
     /**
      * @param bool $show_pdf_name
      *
-     * @return Company
+     * @return Configuration
      */
-    public function setShowPdfName(bool $show_pdf_name): Company
+    public function setShowPdfName(bool $show_pdf_name): Configuration
     {
         $this->show_pdf_name = (bool)$show_pdf_name;
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getApkUrl(): ?string
+    {
+        return $this->apk_url;
+    }
+
+    /**
+     * @param string|null $apk_url
+     *
+     * @return Configuration
+     */
+    public function setApkUrl(?string $apk_url): Configuration
+    {
+        $this->apk_url = $apk_url;
+        return $this;
+    }
 
 
 }

@@ -186,6 +186,7 @@
                 if (empty($item->establishment_id) && !empty($item->user_id)) {
                     $item->establishment_id = $item->user->establishment_id;
                 }
+                if(empty($item->currency_type_id)) $item->currency_type_id = 'PEN';
             });
             static::retrieved(function (self $item) {
 
