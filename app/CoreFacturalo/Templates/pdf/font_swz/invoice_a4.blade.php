@@ -17,6 +17,8 @@
             $affected_document_number = null;
         }
         $bank_accounts = \App\Models\Tenant\BankAccount::all();
+		$payments = $document->payments;
+
         $attribute = $document->getAttributes();
 		$placa = isset($attribute['plate_number'])?$attribute['plate_number']:null;
 @endphp
@@ -332,6 +334,7 @@
             @php
                 $payment = 0
             @endphp
+            @if(isset($payments))
             @foreach($payments as $row)
                 <tr>
                     <td>
@@ -342,6 +345,7 @@
                     </td>
                 </tr>
                 @endforeach
+                @endif
                 </tr>
         </table>
     @endif
