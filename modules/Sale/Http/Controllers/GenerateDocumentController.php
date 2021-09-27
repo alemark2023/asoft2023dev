@@ -79,6 +79,7 @@
                 $inputs = $request->all();
                 $items = $request->input('items');
                 foreach ($items as $index => $item) {
+                    $unit_type = $item['item']['unit_type_id']??'ZZ';
                     if (isset($item['additional_information']) && is_array($item['additional_information'])) {
                         $item['additional_information'] = implode(' ', $item['additional_information']);
                     }
@@ -98,6 +99,7 @@
                     $a->fill($tempItem);
                     $inputs['items'][$index] = $a->toArray();
                     $inputs['items'][$index]['item'] = (array)$a->getArrayItem();
+                    $inputs['items'][$index]['item']['unit_type_id']  = !empty($unit_type)?$unit_type:'ZZ';
                     if (isset($inputs['items'][$index]['additional_information'])) {
                         $inputs['items'][$index]['additional_information'] = implode(' ', $inputs['items'][$index]['additional_information']);
                     }
