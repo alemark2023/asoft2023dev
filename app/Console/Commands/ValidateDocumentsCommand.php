@@ -76,7 +76,7 @@ class ValidateDocumentsCommand extends Command
         $count = 0;
         $this->info('-------------------------------------------------');
         $this->info(Company::query()->first()->name);
-        $this->info('Documentos:' . $documents->count());
+        $this->info('----- Documentos:' . $documents->count().' ----- ');
 
         if($documents->count() > 0){
             
@@ -118,7 +118,10 @@ class ValidateDocumentsCommand extends Command
 
                         $state_type_description = $state_type ? $state_type->description : 'No existe';
 
-                        $message = $count.': '.$document->number_full.' | Código: '.$response_code.'| Mensaje: '.$response_description.'| Estado: '.$response_state_type_id.' - '.$state_type_description;
+                        $message = $count.': '.$document->number_full.' | Código: '.$response_code.' | Mensaje: '.$response_description
+                                    .'| Estado Sistema: '.$document->state_type_id.' - '.$document->state_type->description
+                                    .' | Estado Sunat: '.$response_state_type_id.' - '.$state_type_description;
+
                         $this->info($message);
                         
                         if($response_code !== '1') Log::info($message);
