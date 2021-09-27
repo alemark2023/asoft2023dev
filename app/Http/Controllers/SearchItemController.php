@@ -188,7 +188,7 @@
         public static function SetWarehouseToUser(&$item)
         {
             /** @var Item $item */
-            // $item->whereWarehouse();
+             $item->whereWarehouse();
 
         }
 
