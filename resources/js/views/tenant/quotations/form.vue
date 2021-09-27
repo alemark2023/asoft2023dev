@@ -259,7 +259,8 @@
                                         <tbody v-if="form.items.length > 0">
                                             <tr v-for="(row, index) in form.items" :key="index">
                                                 <td>{{index + 1}}</td>
-                                                <td>{{row.item.description}} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
+                                                <td>
+                                                    {{ setDescriptionOfItem (row.item) }} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
                                                 <td class="text-right">{{row.quantity}}</td>
                                                 <!-- <td class="text-right">{{currency_type.symbol}} {{row.unit_price}}</td> -->
@@ -344,7 +345,7 @@
     import PersonForm from '../persons/form.vue'
     import QuotationOptions from '../quotations/partials/options.vue'
     import {functions, exchangeRate} from '../../../mixins/functions'
-    import {calculateRowItem} from '../../../helpers/functions'
+    import {calculateRowItem, showNamePdfOfDescription} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
     import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
@@ -821,6 +822,9 @@
                     this.form.customer_id = customer_id
                 })
             },
+            setDescriptionOfItem(item){
+                return showNamePdfOfDescription(item,this.config.show_pdf_name)
+            }
         }
     }
 </script>
