@@ -160,9 +160,7 @@ export default {
     computed: {},
     created() {
         this.initForm()
-        this.$eventHub.$on('reloadData', () => {
-            this.getRecords()
-        })
+        this.events()
     },
     async mounted() {
 
@@ -174,6 +172,29 @@ export default {
 
     },
     methods: {
+        exportFormatSunat(item_id){
+            
+            let data = this.form
+            data.item_id = item_id
+
+            let query = queryString.stringify({
+                ...data
+            })
+
+            window.open(`/${this.resource}/excel-format-sunat/?${query}`, '_blank')
+
+        },
+        events(){
+            
+            this.$eventHub.$on('exportFormatSunat', (item_id) => {
+                this.exportFormatSunat(item_id)
+            })
+
+            this.$eventHub.$on('reloadData', () => {
+                this.getRecords()
+            })
+
+        },
         clickDownload(type) {
             let query = queryString.stringify({
                 ...this.form

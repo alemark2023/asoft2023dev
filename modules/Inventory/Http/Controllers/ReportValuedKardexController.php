@@ -101,10 +101,23 @@ class ReportValuedKardexController extends Controller
     public function excelFormatSunat(Request $request)
     {
 
+        // dd($request->all());
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+        $data_of_period = $this->getDataOfPeriod($request);
 
-        $records = InventoryValuedKardex::getTransformRecords($this->getRecords($request->all())->get());
+
+        $params = [
+            'item_id' => $request['item_id'],
+            'establishment_id' => $request['establishment_id'],
+            'date_start' => $data_of_period['d_start'],
+            'date_end' => $data_of_period['d_end'],
+        ];
+
+        $records = InventoryValuedKardex::getRecordsFormatSunat((object) $params);
+
+        // dd($records);
+
         $valuedKardexFormatSunatExport = new ValuedKardexFormatSunatExport();
         $valuedKardexFormatSunatExport
             ->records($records)

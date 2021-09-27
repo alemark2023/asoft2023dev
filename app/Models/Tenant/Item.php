@@ -253,6 +253,14 @@ class Item extends ModelTenant
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function dispatch_items()
+    {
+        return $this->hasMany(DispatchItem::class);
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function sale_affectation_igv_type()
@@ -1626,4 +1634,61 @@ class Item extends ModelTenant
             // })
         ];
     }
+
+    
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param                                       $params
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWhereFilterValuedKardexFormatSunat(Builder $query, $params)
+    {
+        
+        // if ($params->establishment_id) {
+
+        //     return $query->with(['document_items' => function ($q) use ($params) {
+        //         $q->whereHas('document', function ($q) use ($params) {
+        //             $q->whereStateTypeAccepted()
+        //                 ->whereTypeUser()
+        //                 ->whereBetween('date_of_issue', [$params->date_start, $params->date_end])
+        //                 ->where('establishment_id', $params->establishment_id);
+        //         });
+        //     },
+        //         'sale_note_items' => function ($q) use ($params) {
+        //             $q->whereHas('sale_note', function ($q) use ($params) {
+        //                 $q->whereStateTypeAccepted()
+        //                     ->whereNotChanged()
+        //                     ->whereTypeUser()
+        //                     ->whereBetween('date_of_issue', [$params->date_start, $params->date_end])
+        //                     ->where('establishment_id', $params->establishment_id);
+        //             });
+        //         }]);
+
+        // }
+
+        // dd($params);
+
+        return $query->with([
+                'document_items' => function ($q) use ($params) {
+                    $q->whereHas('document', function ($q) use ($params) {
+                        $q->whereValuedKardexFormatSunat($params);
+                    });
+                },
+                'purchase_item' => function ($q) use ($params) {
+                    $q->whereHas('purchase', function ($q) use ($params) {
+                        $q->whereValuedKardexFormatSunat($params);
+                    });
+                },
+                'dispatch_items' => function ($q) use ($params) {
+                    $q->whereHas('dispatch', function ($q) use ($params) {
+                        $q->whereValuedKardexFormatSunat($params);
+                    });
+                }
+            ])
+            ->without([
+                'currency_type', 'item_type', 'warehouses', 'item_unit_types', 'tags'
+            ]);
+    }
+
 }

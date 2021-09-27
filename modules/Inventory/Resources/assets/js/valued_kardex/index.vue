@@ -63,7 +63,7 @@
                                         effect="dark"
                                         placement="top">
 
-                                <el-button class="submit" type="success" @click.prevent="clickDownload('excel-format-sunat')"><i
+                                <el-button type="success" @click.prevent="clickDownloadFormatSunat(row.id)"><i
                                     class="fa fa-file-excel"></i> 
                                 </el-button>
                             </el-tooltip>
@@ -96,11 +96,8 @@ export default {
         this.title = 'Kardex valorizado'
     },
     methods: {
-        clickDownload(type) {
-            // let query = queryString.stringify({
-            //     ...this.form
-            // });
-            // window.open(`/${this.resource}/${type}/?${query}`, '_blank');
+        clickDownloadFormatSunat(item_id) {        
+            this.$eventHub.$emit('exportFormatSunat', item_id)
         },
     }
 }

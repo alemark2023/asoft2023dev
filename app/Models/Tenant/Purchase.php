@@ -521,4 +521,18 @@ class Purchase extends ModelTenant
             'print_a4'                       => url('')."/purchases/print/{$this->external_id}/a4",
         ];
     }
+
+    
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public function scopeWhereValuedKardexFormatSunat($query, $params)
+    {
+        return $query->whereStateTypeAccepted()
+                    ->whereTypeUser()
+                    ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
     }
+    
+}

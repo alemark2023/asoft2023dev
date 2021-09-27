@@ -429,4 +429,27 @@ class Dispatch extends ModelTenant
         $this->attributes['data_affected_document'] = (is_null($value))?null:json_encode($value);
     }
 
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public function scopeWhereStateTypeAccepted($query)
+    {
+        return $query->whereIn('state_type_id', ['01','03','05','07','13']);
+    }
+
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public function scopeWhereValuedKardexFormatSunat($query, $params)
+    {
+        return $query->whereIn('transfer_reason_type_id', ['01', '02'])
+                    ->whereStateTypeAccepted()
+                    ->whereTypeUser()
+                    ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+    }
+
 }
