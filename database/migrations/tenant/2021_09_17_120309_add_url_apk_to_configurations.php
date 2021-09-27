@@ -15,7 +15,7 @@
         public function up()
         {
             Schema::table('configurations', function (Blueprint $table) {
-                $table->text('apk_url')->nullable()->default('https://facturaloperu.com/apk/app-debug.apk')->after('phone_whatsapp');
+                $table->text('apk_url')->nullable()->after('phone_whatsapp');
             });
         /*
          $configuration = Configuration::first();

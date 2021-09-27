@@ -15,16 +15,9 @@
         public function up()
         {
             Schema::table('configurations', function (Blueprint $table) {
-                $table->text('apk_url')->nullable()->default('https://facturaloperu.com/apk/app-debug.apk');
+                $table->text('apk_url')->nullable();
             });
 
-        /*
-        $configuration = Configuration::first();
-        if ($configuration) {
-            $configuration->apk_url = 'https://facturaloperu.com/apk/app-debug.apk';
-            $configuration->save();
-        }
-        */
         }
 
         /**

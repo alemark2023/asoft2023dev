@@ -203,6 +203,7 @@
                                         <div :class="{'has-danger': errors.currency_type_id}"
                                              class="form-group">
                                             <el-select v-model="form.currency_type_id"
+                                                       @change="submit"
                                                        filterable>
                                                 <el-option v-for="option in config.currency_types"
                                                            :key="option.id"
