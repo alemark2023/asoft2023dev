@@ -376,15 +376,19 @@ export default {
                         'total_value': total_taxed,
                         'total_taxes': total_igv,
                         'total': total,
-                        'quantity': 1
+                        'quantity': 1,
+                        'attributes': [],
+                        'discounts': [],
+                        'charges': [],
+
                     });
-                    total=0;
-                    total_taxed=0
-                    total_igv=0
+                    total = 0;
+                    total_taxed = 0
+                    total_igv = 0
                     this.form.items.forEach((row) => {
-                        total+=row.total;
-                        total_igv+=row.total_igv;
-                        total_taxed+=row.total_value;
+                        total += row.total;
+                        total_igv += row.total_igv;
+                        total_taxed += row.total_value;
                     });
 
                     this.form.total_taxed = total_taxed;
