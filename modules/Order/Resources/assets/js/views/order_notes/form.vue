@@ -166,7 +166,7 @@
                                         <tbody v-if="form.items.length > 0">
                                         <tr v-for="(row, index) in form.items" :key="index">
                                             <td>{{ index + 1 }}</td>
-                                            <td>{{ row.item.description }}
+                                            <td>{{ setDescriptionOfItem (row.item) }}
                                                 {{ row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : '' }}<br/><small>{{ row.affectation_igv_type.description }}</small>
                                             </td>
                                             <td class="text-center">{{ row.item.unit_type_id }}</td>
@@ -264,7 +264,7 @@ import OrderNoteFormItem from './partials/item.vue'
 import PersonForm from '@views/persons/form.vue'
 import OrderNoteOptions from './partials/options.vue'
 import {functions, exchangeRate} from '@mixins/functions'
-import {calculateRowItem} from '@helpers/functions'
+import {calculateRowItem,showNamePdfOfDescription} from '@helpers/functions'
 import Logo from '@views/companies/logo.vue'
 import {mapActions, mapState} from "vuex";
 
@@ -528,7 +528,7 @@ export default {
                     total += parseFloat(row.total)
                 }
                 total_value += parseFloat(row.total_value)
-                
+
                 if (['13', '14', '15'].includes(row.affectation_igv_type_id)) {
 
                     let unit_value = row.total_value/row.quantity
@@ -588,6 +588,9 @@ export default {
                 this.form.customer_id = customer_id
             })
         },
+        setDescriptionOfItem(item){
+            return showNamePdfOfDescription(item,this.config.show_pdf_name)
+        }
     },
     computed: {
         ...mapState([
