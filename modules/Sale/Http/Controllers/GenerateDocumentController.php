@@ -129,21 +129,25 @@
         }
 
         /**
+         * Normalmente, los items no registrados son parte del servicio, por ello unit_type_id es ZZ
+         *
          * @param $row
          *
          * @return HigherOrderBuilderProxy|mixed
          */
         public function storeItem($row)
         {
+
             $internal_id = $row['internal_id'] ?? ($row['item']['internal_id'] ?? null);
             $description = $row['description'] ?? ($row['item']['description'] ?? null);
             $item_type_id = $row['item_type_id'] ?? ($row['item']['item_type_id'] ?? null);
             $second_name = $row['second_name'] ?? ($row['item']['second_name'] ?? null);
             $name = $row['name'] ?? ($row['item']['name'] ?? null);
-            $unit_type_id = $row['unit_type_id'] ?? ($row['item']['unit_type_id'] ?? 'NIU');
+            $unit_type_id = $row['unit_type_id'] ?? ($row['item']['unit_type_id'] ?? 'ZZ');
             $currency_type_id = $row['currency_type_id'] ?? ($row['item']['currency_type_id'] ?? 'PEN');
             $unit_price = $row['unit_price'] ?? ($row['item']['unit_price'] ?? null);
             $affectation_igv_type_id = $row['affectation_igv_type_id'] ?? ($row['item']['affectation_igv_type_id'] ?? null);
+            if(empty($unit_type_id)) $unit_type_id = 'ZZ';
             $data = [
                 'internal_id' => $internal_id,
                 'description' => $description,
