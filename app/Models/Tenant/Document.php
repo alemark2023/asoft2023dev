@@ -774,4 +774,16 @@ class Document extends ModelTenant
             ->get();
     }
 
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public function scopeWhereValuedKardexFormatSunat($query, $params)
+    {
+        return $query->whereStateTypeAccepted()
+                    ->whereTypeUser()
+                    ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+    }
+    
 }

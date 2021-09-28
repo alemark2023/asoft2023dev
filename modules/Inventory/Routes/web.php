@@ -176,6 +176,7 @@
                     Route::prefix('valued-kardex')->group(function () {
                         Route::get('', 'ReportValuedKardexController@index')->name('reports.valued_kardex.index');
                         Route::get('/excel', 'ReportValuedKardexController@excel');
+                        Route::get('/excel-format-sunat', 'ReportValuedKardexController@excelFormatSunat');
                         Route::get('/filter', 'ReportValuedKardexController@filter');
                         Route::get('/records', 'ReportValuedKardexController@records');
 

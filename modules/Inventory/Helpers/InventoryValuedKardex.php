@@ -4,6 +4,13 @@ namespace Modules\Inventory\Helpers;
 
 
 use App\Models\Tenant\Item;
+use App\Models\Tenant\{
+    DocumentItem,
+    DispatchItem,
+    PurchaseItem,
+};
+use Carbon\Carbon;
+
 
 class InventoryValuedKardex
 {
@@ -90,5 +97,168 @@ class InventoryValuedKardex
     }
 
 
+    public static function getDataFormatSunat($params)
+    {
+
+        $item = Item::whereFilterValuedKardexFormatSunat($params)->findOrFail($params->item_id);
+
+        $purchase_items = $item->purchase_item;
+        $document_items = $item->document_items;
+        $dispatch_items = $item->dispatch_items;
+        
+        $all_record_items = ($purchase_items->merge($dispatch_items))->merge($document_items);
+
+        // dd(self::transformRecordItems($all_record_items));
+
+        return [
+            'item' => $item,
+            'records' => self::transformRecordItems($all_record_items)
+        ];
+
+    }
+ 
+    public static function getDataAdditional($request, $params, $item)
+    {
+
+        $data = [];
+        $data['internal_id'] = $item->internal_id;
+        $data['table_five'] = '01';
+        $data['description'] = $item->description;
+        $data['unit_type_table_six'] = $item->findUnitTypeCodeTableSix();
+
+        // dd($request->all(), $params, $item);
+        if($request->period == 'month'){
+        
+            $data['period'] = Carbon::parse($request->month_end)->format('Y');
+            $data['month'] = Carbon::parse($request->month_end)->format('m');
+        
+        }else{
+            
+            $data['period'] = "{$params->date_start} - {$params->date_end}";
+            $data['month'] = null;
+
+        }
+
+        return $data;
+
+    }
+     
+
+    private static function transformRecordItems($collection)
+    {
+
+        return $collection->transform(function($record_item){
+
+            $data = [];
+
+            if($record_item instanceof DocumentItem){
+
+                $document = $record_item->document;
+
+                $data = [
+                    'type' => 'output',
+                    'model_type' => 'document',
+                    'date_of_issue' => $document->date_of_issue->format('d-m-Y'),
+                    'document_type_id' => $document->document_type_id,
+                    'series' => $document->series,
+                    'number' => $document->number,
+                    'operation_type' => 'VENTA',
+                    'operation_type_code' => '01',
+                    'input_quantity' => null,
+                    'input_unit_price' => null,
+                    'input_total' => null,
+                    'output_quantity' => $record_item->quantity,
+                    'output_unit_price' => $record_item->unit_price,
+                    'output_total' => $record_item->total,
+
+                    'factor' => -1,
+                    'quantity' => $record_item->quantity,
+                    'total' => $record_item->total,
+                ];
+
+
+            }else if($record_item instanceof PurchaseItem){
+
+                $document = $record_item->purchase;
+
+                $data = [
+                    'type' => 'input',
+                    'model_type' => 'purchase',
+                    'date_of_issue' => $document->date_of_issue->format('d-m-Y'),
+                    'document_type_id' => $document->document_type_id,
+                    'series' => $document->series,
+                    'number' => $document->number,
+                    'operation_type' => 'COMPRA',
+                    'operation_type_code' => '02',
+                    'input_quantity' => $record_item->quantity,
+                    'input_unit_price' => $record_item->unit_price,
+                    'input_total' => $record_item->total,
+                    'output_quantity' => null,
+                    'output_unit_price' => null,
+                    'output_total' => null,
+
+                    'factor' => 1,
+                    'quantity' => $record_item->quantity,
+                    'total' => $record_item->total,
+                ];
+
+            }else if($record_item instanceof DispatchItem){
+
+                $type = ($record_item->dispatch->transfer_reason_type_id == '01') ? 'output' : 'input';
+                $document = $record_item->dispatch;
+
+
+                $input_quantity = null;
+                $input_unit_price = null;
+                $input_total = null;
+                $output_quantity = null;
+                $output_unit_price = null;
+                $output_total = null;
+                $operation_type = null;
+                
+                if($type == 'input'){
+                    
+                    $input_quantity =  $record_item->quantity;
+                    $input_unit_price =  $record_item->relation_item->purchase_unit_price;
+                    $input_total = $record_item->quantity * $record_item->relation_item->purchase_unit_price;
+                    $operation_type = 'COMPRA';
+                    $factor = 1;
+
+                }else{
+
+                    $output_quantity =  $record_item->quantity;
+                    $output_unit_price =  $record_item->relation_item->sale_unit_price;
+                    $output_total =  $record_item->quantity * $record_item->relation_item->sale_unit_price;
+                    $operation_type = 'VENTA';
+                    $factor = -1;
+
+                }
+                
+                $data = [
+                    'type' => $type,
+                    'model_type' => 'dispatch',
+                    'date_of_issue' => $document->date_of_issue->format('d-m-Y'),
+                    'document_type_id' => $document->document_type_id,
+                    'series' => $document->series,
+                    'number' => $document->number,
+                    'operation_type' => $operation_type,
+                    'operation_type_code' => $record_item->dispatch->transfer_reason_type_id,
+                    'input_quantity' =>  $input_quantity,
+                    'input_unit_price' => $input_unit_price,
+                    'input_total' => $input_total,
+                    'output_quantity' => $output_quantity,
+                    'output_unit_price' => $output_unit_price,
+                    'output_total' => $output_total,
+
+                    'factor' => $factor,
+                    'quantity' => $record_item->quantity,
+                    'total' => $output_total ?? $input_total,
+                ];
+
+            }
+
+            return $data;
+        });
+    }
 
 }
