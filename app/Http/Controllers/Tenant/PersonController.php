@@ -174,7 +174,7 @@ class PersonController extends Controller
                 {
                     $children_districts[] = [
                         'value' => $district->id,
-                        'label' => $district->description
+                        'label' => $district->id." - ". $district->description
                     ];
                 }
                 $children_provinces[] = [
