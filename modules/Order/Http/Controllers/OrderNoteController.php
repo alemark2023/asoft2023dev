@@ -197,7 +197,8 @@ class OrderNoteController extends Controller
                                     'name' => $row->name,
                                     'number' => $row->number,
                                     'identity_document_type_id' => $row->identity_document_type_id,
-                                    'identity_document_type_code' => $row->identity_document_type->code
+                                    'identity_document_type_code' => $row->identity_document_type->code,
+                                    'address' => $row->address,
                                 ];
                             });
 
@@ -461,7 +462,8 @@ class OrderNoteController extends Controller
                         'name' => $row->name,
                         'number' => $row->number,
                         'identity_document_type_id' => $row->identity_document_type_id,
-                        'identity_document_type_code' => $row->identity_document_type->code
+                        'identity_document_type_code' => $row->identity_document_type->code,
+                        'address' => $row->address,
                     ];
                 });
                 return $customers;

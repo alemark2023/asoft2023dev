@@ -67,6 +67,17 @@
                                     <small class="form-control-feedback" v-if="errors.delivery_date" v-text="errors.delivery_date[0]"></small>
                                 </div>
                             </div>
+                            
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="control-label">Dirección de envío
+                                    </label>
+                                    <el-input v-model="form.shipping_address"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.shipping_address"
+                                           v-text="errors.shipping_address[0]"></small>
+                                </div>
+                            </div>
+
                             <div class="col-lg-6">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Descripcion
@@ -343,6 +354,7 @@
                     await this.$http.get(`/${this.resource}/record2/${this.resourceId}`)
                         .then(response => {
                             this.form = response.data.data.order_note;
+                            console.log(this.form)
                         })
                 }
             },
@@ -444,6 +456,7 @@
                     discounts: [],
                     attributes: [],
                     guides: [],
+                    shipping_address: null,
                     additional_information:null,
                     actions: {
                         format_pdf:'a4',
