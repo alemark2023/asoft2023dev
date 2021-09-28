@@ -24,16 +24,23 @@ class ValuedKardexFormatSunatExport implements  FromView, ShouldAutoSize
     
     public function establishment($establishment) {
         $this->establishment = $establishment;
-        
         return $this;
     }
     
+    public function additionalData($additionalData) {
+        $this->additionalData = $additionalData;
+        return $this;
+    }
+
     public function view(): View {
         
         return view('inventory::reports.valued_kardex.report_excel_sunat', [
             'records'=> $this->records,
             'company' => $this->company,
-            'establishment'=>$this->establishment
+            'establishment' => $this->establishment,
+            'additionalData' => $this->additionalData
         ]);
+
     }
+
 }

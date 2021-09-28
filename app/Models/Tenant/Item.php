@@ -1645,29 +1645,33 @@ class Item extends ModelTenant
     public function scopeWhereFilterValuedKardexFormatSunat(Builder $query, $params)
     {
         
-        // if ($params->establishment_id) {
+        if ($params->establishment_id) {
+ 
+            return $query->with([
+                    'document_items' => function ($q) use ($params) {
+                        $q->whereHas('document', function ($q) use ($params) {
+                            $q->whereValuedKardexFormatSunat($params)
+                                ->where('establishment_id', $params->establishment_id);
+                        });
+                    },
+                    'purchase_item' => function ($q) use ($params) {
+                        $q->whereHas('purchase', function ($q) use ($params) {
+                            $q->whereValuedKardexFormatSunat($params)
+                                ->where('establishment_id', $params->establishment_id);
+                        });
+                    },
+                    'dispatch_items' => function ($q) use ($params) {
+                        $q->whereHas('dispatch', function ($q) use ($params) {
+                            $q->whereValuedKardexFormatSunat($params)
+                                ->where('establishment_id', $params->establishment_id);
+                        });
+                    }
+                ])
+                ->without([
+                    'currency_type', 'item_type', 'warehouses', 'item_unit_types', 'tags'
+                ]);
+        }
 
-        //     return $query->with(['document_items' => function ($q) use ($params) {
-        //         $q->whereHas('document', function ($q) use ($params) {
-        //             $q->whereStateTypeAccepted()
-        //                 ->whereTypeUser()
-        //                 ->whereBetween('date_of_issue', [$params->date_start, $params->date_end])
-        //                 ->where('establishment_id', $params->establishment_id);
-        //         });
-        //     },
-        //         'sale_note_items' => function ($q) use ($params) {
-        //             $q->whereHas('sale_note', function ($q) use ($params) {
-        //                 $q->whereStateTypeAccepted()
-        //                     ->whereNotChanged()
-        //                     ->whereTypeUser()
-        //                     ->whereBetween('date_of_issue', [$params->date_start, $params->date_end])
-        //                     ->where('establishment_id', $params->establishment_id);
-        //             });
-        //         }]);
-
-        // }
-
-        // dd($params);
 
         return $query->with([
                 'document_items' => function ($q) use ($params) {
@@ -1690,5 +1694,61 @@ class Item extends ModelTenant
                 'currency_type', 'item_type', 'warehouses', 'item_unit_types', 'tags'
             ]);
     }
+
+    
+    /**
+     * Buscar codigo de la tabla 6 
+     */
+    public function findUnitTypeCodeTableSix()
+    {
+        
+        $record = $this->findUnitTypeCodeTableSixByDescription( strtoupper($this->unit_type->description) );
+        if($record) return $record;
+
+        //buscar otros
+        $others = $this->findUnitTypeCodeTableSixByDescription('OTROS');
+        $others['description'] = $others['description'] .' - '. strtoupper($this->unit_type->description);
+
+        return $others;
+    }
+
+
+    /**
+     * Buscar codigo de la tabla 6 por descripcion de unidad
+     */
+    public function findUnitTypeCodeTableSixByDescription($description)
+    {
+
+        return $this->getDataTableSixKardexSunat()->first(function($row) use($description){
+            return $row['description'] == strtoupper($description);
+        });
+        
+    }
+
+    /**
+     * Datos de la tabla 6 para reporte kardex valorizado formato sunat 13.1
+     */
+    public function getDataTableSixKardexSunat()
+    {
+        return collect([
+            ['code' => '01', 'description' => 'KILOGRAMOS'],
+            ['code' => '02', 'description' => 'LIBRAS'],
+            ['code' => '03', 'description' => 'TONELADAS LARGAS'],
+            ['code' => '04', 'description' => 'TONELADAS MÉTRICAS'],
+            ['code' => '05', 'description' => 'TONELADAS CORTAS'],
+            ['code' => '06', 'description' => 'GRAMOS'],
+            ['code' => '07', 'description' => 'UNIDADES'],
+            ['code' => '08', 'description' => 'LITROS'],
+            ['code' => '09', 'description' => 'GALONES'],
+            ['code' => '10', 'description' => 'BARRILES'],
+            ['code' => '11', 'description' => 'LATAS'],
+            ['code' => '12', 'description' => 'CAJAS'],
+            ['code' => '13', 'description' => 'MILLARES'],
+            ['code' => '14', 'description' => 'METROS CÚBICOS'],
+            ['code' => '15', 'description' => 'METROS'],
+            ['code' => '99', 'description' => 'OTROS'],
+        ]);
+    }
+
 
 }

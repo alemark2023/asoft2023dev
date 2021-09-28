@@ -9,6 +9,8 @@ use App\Models\Tenant\{
     DispatchItem,
     PurchaseItem,
 };
+use Carbon\Carbon;
+
 
 class InventoryValuedKardex
 {
@@ -95,24 +97,52 @@ class InventoryValuedKardex
     }
 
 
-    public static function getRecordsFormatSunat($params)
+    public static function getDataFormatSunat($params)
     {
 
-        // dd($params);
         $item = Item::whereFilterValuedKardexFormatSunat($params)->findOrFail($params->item_id);
 
         $purchase_items = $item->purchase_item;
         $document_items = $item->document_items;
         $dispatch_items = $item->dispatch_items;
         
-        $all_record_items = ($document_items->merge($dispatch_items))->merge($purchase_items);
+        $all_record_items = ($purchase_items->merge($dispatch_items))->merge($document_items);
 
-        // dd(self::transformRecordItems($all_record_items)->pluck('balance_quantity'));
+        // dd(self::transformRecordItems($all_record_items));
 
-        return self::transformRecordItems($all_record_items);
+        return [
+            'item' => $item,
+            'records' => self::transformRecordItems($all_record_items)
+        ];
 
     }
  
+    public static function getDataAdditional($request, $params, $item)
+    {
+
+        $data = [];
+        $data['internal_id'] = $item->internal_id;
+        $data['table_five'] = '01';
+        $data['description'] = $item->description;
+        $data['unit_type_table_six'] = $item->findUnitTypeCodeTableSix();
+
+        // dd($request->all(), $params, $item);
+        if($request->period == 'month'){
+        
+            $data['period'] = Carbon::parse($request->month_end)->format('Y');
+            $data['month'] = Carbon::parse($request->month_end)->format('m');
+        
+        }else{
+            
+            $data['period'] = "{$params->date_start} - {$params->date_end}";
+            $data['month'] = null;
+
+        }
+
+        return $data;
+
+    }
+     
 
     private static function transformRecordItems($collection)
     {
@@ -140,6 +170,10 @@ class InventoryValuedKardex
                     'output_quantity' => $record_item->quantity,
                     'output_unit_price' => $record_item->unit_price,
                     'output_total' => $record_item->total,
+
+                    'factor' => -1,
+                    'quantity' => $record_item->quantity,
+                    'total' => $record_item->total,
                 ];
 
 
@@ -162,6 +196,10 @@ class InventoryValuedKardex
                     'output_quantity' => null,
                     'output_unit_price' => null,
                     'output_total' => null,
+
+                    'factor' => 1,
+                    'quantity' => $record_item->quantity,
+                    'total' => $record_item->total,
                 ];
 
             }else if($record_item instanceof DispatchItem){
@@ -184,6 +222,7 @@ class InventoryValuedKardex
                     $input_unit_price =  $record_item->relation_item->purchase_unit_price;
                     $input_total = $record_item->quantity * $record_item->relation_item->purchase_unit_price;
                     $operation_type = 'COMPRA';
+                    $factor = 1;
 
                 }else{
 
@@ -191,6 +230,7 @@ class InventoryValuedKardex
                     $output_unit_price =  $record_item->relation_item->sale_unit_price;
                     $output_total =  $record_item->quantity * $record_item->relation_item->sale_unit_price;
                     $operation_type = 'VENTA';
+                    $factor = -1;
 
                 }
                 
@@ -209,6 +249,10 @@ class InventoryValuedKardex
                     'output_quantity' => $output_quantity,
                     'output_unit_price' => $output_unit_price,
                     'output_total' => $output_total,
+
+                    'factor' => $factor,
+                    'quantity' => $record_item->quantity,
+                    'total' => $output_total ?? $input_total,
                 ];
 
             }

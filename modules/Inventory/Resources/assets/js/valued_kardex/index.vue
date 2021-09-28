@@ -58,12 +58,13 @@
 
                         </td>
                         <td class="text-center">
+
                             <el-tooltip class="item"
                                         content="Exportar Formato SUNAT 13.1"
                                         effect="dark"
                                         placement="top">
 
-                                <el-button type="success" @click.prevent="clickDownloadFormatSunat(row.id)"><i
+                                <el-button type="success" @click.prevent="clickDownloadFormatSunat(row.id)" size="small"><i
                                     class="fa fa-file-excel"></i> 
                                 </el-button>
                             </el-tooltip>

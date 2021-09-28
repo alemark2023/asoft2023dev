@@ -103,23 +103,25 @@ class ReportValuedKardexController extends Controller
 
         // dd($request->all());
         $company = Company::first();
-        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : null;
         $data_of_period = $this->getDataOfPeriod($request);
 
 
-        $params = [
+        $params = (object)[
             'item_id' => $request['item_id'],
             'establishment_id' => $request['establishment_id'],
             'date_start' => $data_of_period['d_start'],
             'date_end' => $data_of_period['d_end'],
         ];
 
-        $records = InventoryValuedKardex::getRecordsFormatSunat((object) $params);
+        $data = InventoryValuedKardex::getDataFormatSunat($params);
+        $additionalData = InventoryValuedKardex::getDataAdditional($request, $params, $data['item']);
+        $records = $data['records'];
 
-        // dd($records);
 
         $valuedKardexFormatSunatExport = new ValuedKardexFormatSunatExport();
         $valuedKardexFormatSunatExport
+            ->additionalData($additionalData)
             ->records($records)
             ->company($company)
             ->establishment($establishment);
