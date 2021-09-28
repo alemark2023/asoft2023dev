@@ -106,11 +106,29 @@ import DataTable from '@components/DataTable.vue'
 import {deletable} from '@mixins/deletable'
 import TechnicalServicePayments from './partials/payments.vue'
 import TechnicalServiceOptions from './partials/options'
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+
 
 export default {
-    mixins: [deletable],
-    props: ['typeUser'],
-    components: {TechnicalServicesForm, DataTable, TechnicalServicePayments, TechnicalServiceOptions},
+    mixins: [
+        deletable
+    ],
+    props: [
+        'typeUser'
+    ],
+    computed: {
+        ...mapState([
+            'exchange_rate',
+            'config',
+            'currency_types',
+        ]),
+    },
+    components: {
+        TechnicalServicesForm,
+        DataTable,
+        TechnicalServicePayments,
+        TechnicalServiceOptions
+    },
     data() {
         return {
             title: null,
@@ -122,9 +140,17 @@ export default {
         }
     },
     created() {
+        this.loadConfiguration();
+        this.loadCurrencyTypes();
+        this.loadExchangeRate();
         this.title = 'Servicios de soporte técnico'
     },
     methods: {
+        ...mapActions([
+            'loadConfiguration',
+            'loadExchangeRate',
+            'loadCurrencyTypes',
+        ]),
         clickPayment(recordId) {
             this.recordId = recordId;
             this.showDialogPayments = true

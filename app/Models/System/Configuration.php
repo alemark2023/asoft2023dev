@@ -31,11 +31,11 @@ class Configuration extends Model
         parent::boot();
         static::creating(function (self $item) {
 
-            if(empty($item->apk_url)) $item->apk_url = 'https://facturaloperu.com/apk/app-debug.apk';
+            // if(empty($item->apk_url)) $item->apk_url = 'https://facturaloperu.com/apk/app-debug.apk';
         });
         static::retrieved(function (self $item) {
 
-            if (empty($item->apk_url)) $item->apk_url = 'https://facturaloperu.com/apk/app-debug.apk';
+            // if (empty($item->apk_url)) $item->apk_url = 'https://facturaloperu.com/apk/app-debug.apk';
         });
 
     }

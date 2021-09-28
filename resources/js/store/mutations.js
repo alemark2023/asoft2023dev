@@ -37,6 +37,9 @@ export default {
     setExchangeRate(state, exchange_rate) {
         state.exchange_rate = exchange_rate
     },
+    setExchangeRateSale(state, exchange_rate) {
+        state.exchange_rate_sale = exchange_rate_sale
+    },
     setCurrencys(state, currencys) {
         state.currencys = currencys
     },
@@ -184,6 +187,10 @@ export default {
     setEnabledGlobalIgvToPurchase(state, enabled_global_igv_to_purchase) {
         if(enabled_global_igv_to_purchase === undefined) enabled_global_igv_to_purchase = false;
         state.config.enabled_global_igv_to_purchase = enabled_global_igv_to_purchase
+    },
+    setCurrencyTypes(state, currency_types) {
+        if(currency_types === undefined) currency_types = [];
+        state.currency_types = currency_types
     },
     setAllItems(state, all_items) {
         if(state.all_items !== undefined) {

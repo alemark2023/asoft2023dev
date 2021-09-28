@@ -250,15 +250,32 @@
 
 import DocumentOptions from "../../../../../../../../resources/js/views/tenant/documents/partials/options";
 import SaleNoteOptions from "../../../../../../../../resources/js/views/tenant/sale_notes/partials/options";
+import queryString from 'query-string'
 
 // import DocumentOptions from "../../documents/partials/options.vue";
 // import SaleNoteOptions from "../../sale_notes/partials/options.vue";
 import SeriesForm from "./series_form";
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
     components: {DocumentOptions, SaleNoteOptions, SeriesForm},
 
-    props: ["showDialog", "recordId", "showClose", "showGenerate", "type", "typeUser",],
+    computed: {
+        ...mapState([
+            'exchange_rate',
+            'config',
+            'currency_types',
+        ]),
+    },
+    props: [
+        "showDialog",
+        "recordId",
+        "showClose",
+        "showGenerate",
+        "type",
+        "typeUser",
+        "exchange_rate_sale",
+    ],
     data() {
         return {
             customer_email: "",
@@ -288,6 +305,9 @@ export default {
         };
     },
     async created() {
+        this.loadConfiguration();
+        this.loadExchangeRate();
+        this.loadCurrencyTypes();
         await this.initTables();
         await this.searchRemoteCustomers('');
         this.initForm();
@@ -297,6 +317,11 @@ export default {
         // this.clickAddPayment();
     },
     methods: {
+        ...mapActions([
+            'loadConfiguration',
+            'loadExchangeRate',
+            'loadCurrencyTypes',
+        ]),
         async initTables() {
             await this.$http.get(`/generate-document/tables`)
                 .then((response) => {
@@ -324,7 +349,7 @@ export default {
                 customer_id: null,
                 is_receivable: false,
                 currency_type_id: 'PEN',
-                exchange_rate_sale: 3.7,
+                exchange_rate_sale: this.exchange_rate_sale,
                 total_taxed: 0,
                 total_igv: 0,
                 total_taxes: 0,
@@ -363,6 +388,7 @@ export default {
                         'item_id': null,
                         'internal_id': moment().format("YYYYMMDDHHmmss"),
                         'item_type_id': '02',
+                        'has_igv': true,
                         'price_type_id': '01',
                         'unit_type_id': 'ZZ',
                         'affectation_igv_type_id': '10',
@@ -377,11 +403,11 @@ export default {
                         'total_taxes': total_igv,
                         'total': total,
                         'quantity': 1,
-                        'attributes': {},
-                        'discounts': {},
-                        'charges': {},
+                        'discounts': [],
+                        'charges': [],
 
                     });
+
                     total = 0;
                     total_taxed = 0
                     total_igv = 0
@@ -391,6 +417,7 @@ export default {
                         total_taxed += row.total_value;
                     });
 
+                    this.form.items = this.onPrepareItems(this.form.items)
                     this.form.total_taxed = total_taxed;
                     this.form.total_igv = total_igv;
                     this.form.total_taxes = total_igv;
@@ -400,6 +427,71 @@ export default {
                     this.titleDialog = `Servicio de soporte técnico`;
                 });
             this.loading = false;
+        },
+        onPrepareAdditionalInformation(data) {
+            let obs = null
+            if (Array.isArray(data)) {
+                if (data.length > 0) {
+                    if (data[0] == '') {
+                        return obs;
+                    }
+                }
+                obs = data.join('|')
+
+            }
+            // if (typeof data === 'object') {
+            //     if (data[0]) {
+            //         return data;
+            //     }
+            //     return null;
+            // }
+            return obs;
+        },
+        onPrepareIndividualItem(data) {
+
+            let new_item = data.item
+            if(data.item === undefined){
+                new_item = {};
+            }
+            if (this.form.currency_type_id === undefined) {
+                this.form.currency_type_id = 'PEN'
+            }
+            let currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+
+
+            if (currency_type !== undefined) {
+                new_item.currency_type_id = currency_type.id
+                new_item.currency_type_symbol = currency_type.symbol
+            }else{
+                new_item.currency_type_id = 'PEN'
+                new_item.currency_type_symbol  = "S/";
+            }
+
+            new_item.sale_affectation_igv_type_id = data.affectation_igv_type_id
+            new_item.sale_unit_price = data.unit_price
+            new_item.unit_price = data.unit_price
+            return new_item
+        },
+        onPrepareItems(items) {
+            return items.map(i => {
+
+                i.unit_price_value = i.unit_value;
+                i.input_unit_price_value = (i.has_igv) ? i.unit_value: i.unit_price ;
+
+                // i.input_unit_price_value = i.unit_price;
+                i.discounts = (i.discounts) ? Object.values(i.discounts) : []
+                // i.discounts = i.discounts || [];
+                i.charges = i.charges || [];
+                i.attributes = i.attributes || [];
+                if(i.item_id !== null) {
+                    i.item.id = i.item_id;
+                }
+
+                i.additional_information = this.onPrepareAdditionalInformation(i.additional_information);
+                i.item = this.onPrepareIndividualItem(i);
+
+                return i;
+            });
         },
         async searchRemoteCustomers(input) {
             this.loading_search = true;
@@ -438,7 +530,7 @@ export default {
                 customer_id: null,
                 currency_type_id: null,
                 purchase_order: null,
-                exchange_rate_sale: 0,
+                exchange_rate_sale: this.exchange_rate_sale,
                 total_prepayment: 0,
                 total_charge: 0,
                 total_discount: 0,
@@ -524,7 +616,12 @@ export default {
             // this.form.items[0].item_id = item_id;
 
             // await this.$http.post(`/${this.resource_documents}`, this.form)
-            await this.$http.post(`/generate-document`, this.form)
+            if(
+                this.form.exchange_rate_sale === undefined
+            ){
+                this.form.exchange_rate_sale =  this.exchange_rate;
+            }
+                await this.$http.post(`/generate-document`, this.form)
                 .then((response) => {
                     if (response.data.success) {
                         console.log(response.data.data);
@@ -556,7 +653,7 @@ export default {
                         this.$message.error(error.response.data.message);
                     }
                 })
-                .then(() => {
+                .finally(() => {
                     this.loading_submit = false;
                 });
         },
