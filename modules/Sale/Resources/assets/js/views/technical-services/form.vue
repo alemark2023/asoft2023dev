@@ -408,6 +408,8 @@
 
         <person-form :document_type_id=form.document_type_id
                      :external="true"
+                     :exchange-rate-sale="form.exchange_rate_sale"
+                     :currency_types = currency_types
                      :showDialog.sync="showDialogNewPerson"
                      type="customers"></person-form>
     </el-dialog>
@@ -427,8 +429,8 @@ export default {
     computed: {
         ...mapState([
             'exchange_rate',
-            'deb',
             'config',
+            'currency_types',
         ]),
     },
     mixins: [functions, exchangeRate],
@@ -467,7 +469,7 @@ export default {
             showDialogOptions: false,
             loading_form: false,
             document_types: [],
-            currency_types: [],
+            // currency_types: [],
             discount_types: [],
             charges_types: [],
             business_turns: [],
@@ -514,6 +516,7 @@ export default {
     async created() {
         this.loadConfiguration()
         this.loadExchangeRate()
+        this.loadCurrencyTypes()
         await this.initForm()
         await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
@@ -522,7 +525,8 @@ export default {
 
                 this.document_types = response.data.document_types_invoice;
                 this.document_types_guide = response.data.document_types_guide;
-                this.currency_types = response.data.currency_types
+                // this.currency_types = response.data.currency_types
+                this.$store.commit('setCurrencyTypes',response.data.currency_types)
                 this.business_turns = response.data.business_turns
                 this.establishments = response.data.establishments
                 this.operation_types = response.data.operation_types
@@ -569,6 +573,7 @@ export default {
         ...mapActions([
             'loadConfiguration',
             'loadExchangeRate',
+            'loadCurrencyTypes',
         ]),
         async changeOperationType() {
             this.form.customer_id = null
