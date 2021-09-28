@@ -294,7 +294,7 @@ class DocumentController extends Controller
     public function searchItems(Request $request)
     {
 
-        $items = SearchItemController::getNotServiceItemToModal($request);
+        $items = SearchItemController::getItemsToDocuments($request);
 
         return compact('items');
 
@@ -352,7 +352,8 @@ class DocumentController extends Controller
 
     public function searchItemById($id)
     {
-        $items = SearchItemController::searchByIdToModal($id);
+        // $items = SearchItemController::searchByIdToModal($id);
+        $items = SearchItemController::getItemsToDocuments(null, $id);
         return compact('items');
     }
 

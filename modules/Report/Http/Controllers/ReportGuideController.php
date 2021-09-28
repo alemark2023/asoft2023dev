@@ -168,6 +168,21 @@
             if ($item_id != 0) {
                 $dispatch->where('dispatch_items.item_id', $item_id);
             }
+
+
+            if (isset($request['min']) && isset($request['max'])) {
+                $min = (int)$request['min'];
+                $max = (int)$request['max'];
+                if($max < $min){
+                    $min = (int)$request['max'];
+                    $max = (int)$request['min'];
+                }
+                if($min !== 0 && $max !== 0) {
+                    $dispatch->whereBetween('dispatches.number', [$min, $max]);
+                }
+            }
+
+
             /** @var \Illuminate\Support\Collection $ids */
             $ids = $dispatch->select('dispatch_items.id as id')->get()->pluck('id')->unique();
 

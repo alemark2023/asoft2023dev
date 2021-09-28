@@ -19,7 +19,11 @@
                                 <br>
                                 <span v-if="establishment.address != '-'">{{ establishment.address }} </span>
                                 <br>
-                                <span v-if="establishment.email != '-'">{{ establishment.email }} </span><span v-if="establishment.telephone != '-'">- {{ establishment.telephone }}</span>
+                                <span v-if="establishment.email != '-'">{{
+                                        establishment.email
+                                                                        }} </span><span v-if="establishment.telephone != '-'">- {{
+                                    establishment.telephone
+                                                                                                                              }}</span>
                             </address>
                         </div>
                         <div class="col-xl-4 col-md-4 col-12 align-self-end">
@@ -236,8 +240,10 @@
                                 <tr v-for="(row, index) in form.items"
                                     :key="index">
                                     <td>{{ index + 1 }}</td>
-                                    <td>{{ row.item.description }}
-                                        {{ row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : '' }}<br/><small>{{ row.affectation_igv_type.description }}</small>
+                                    <td>{{ setDescriptionOfItem(row.item) }}
+                                        {{
+                                            row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''
+                                        }}<br/><small>{{ row.affectation_igv_type.description }}</small>
                                     </td>
                                     <td class="text-center">{{ row.item.unit_type_id }}</td>
 
@@ -254,7 +260,7 @@
                                     <td class="text-right">{{ currency_type.symbol }} {{ row.total_value }}</td>
                                     <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
                                     <td class="text-right">
-                                        <template v-if="configuration.change_free_affectation_igv">
+                                        <template v-if="config.change_free_affectation_igv">
                                             <el-tooltip class="item"
                                                         content="Modificar afectación Gravado – Bonificaciones"
                                                         effect="dark"
@@ -358,7 +364,7 @@
                                                     <td>OTROS CARGOS:</td>
                                                     <td>{{ currency_type.symbol }}
                                                         <el-input-number v-model="total_global_charge"
-                                                                         :disabled="configuration.active_allowance_charge == 1 ? true:false"
+                                                                         :disabled="config.active_allowance_charge == 1 ? true:false"
                                                                          :min="0"
                                                                          class="input-custom"
                                                                          controls-position="right"
@@ -663,7 +669,7 @@
                                         <td>OTROS CARGOS:</td>
                                         <td>{{ currency_type.symbol }}
                                             <el-input-number v-model="total_global_charge"
-                                                             :disabled="configuration.active_allowance_charge == 1 ? true:false"
+                                                             :disabled="config.active_allowance_charge == 1 ? true:false"
                                                              :min="0"
                                                              class="input-custom"
                                                              controls-position="right"
@@ -914,7 +920,7 @@
                             <div class="col-6 text-center">
                                 <button
                                     class="btn btn-default form-control"
-                                        @click.prevent="close()">Cancelar
+                                    @click.prevent="close()">Cancelar
                                 </button>
                             </div>
                             <div class="col-6 text-center">
@@ -1039,12 +1045,12 @@
                                         </div>
                                     </template>
 
-                                    <div v-if="configuration.active_allowance_charge && form.total > 0"
+                                    <div v-if="config.active_allowance_charge && form.total > 0"
                                          class="col-12 py-2 px-0">
                                         <div class="row no-gutters">
                                             <div class="col-8"><strong>Porcentaje otros cargos</strong></div>
                                             <div class="col-4">
-                                                <el-input-number v-model="configuration.percentage_allowance_charge"
+                                                <el-input-number v-model="config.percentage_allowance_charge"
                                                                  :min="0"
                                                                  controls-position="right"
                                                                  size="mini"
@@ -1298,7 +1304,7 @@ import DocumentFormItem from './partials/item.vue'
 import PersonForm from '../persons/form.vue'
 import DocumentOptions from '../documents/partials/options.vue'
 import {exchangeRate, functions} from '../../../mixins/functions'
-import {calculateRowItem} from '../../../helpers/functions'
+import {calculateRowItem, showNamePdfOfDescription} from '../../../helpers/functions'
 import Logo from '../companies/logo.vue'
 import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
 import DocumentTransportForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/transports/form.vue'
@@ -1307,7 +1313,13 @@ import moment from 'moment'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
-    props: ['idUser', 'typeUser', 'configuration', 'documentId', 'isUpdate'],
+    props: [
+        'idUser',
+        'typeUser',
+        'configuration',
+        'documentId',
+        'isUpdate'
+    ],
     components: {
         DocumentFormItem,
         PersonForm,
@@ -1400,7 +1412,7 @@ export default {
         cash_payment_metod: function () {
             return _.filter(this.payment_method_types, {'is_credit': false})
         },
-        existDiscountsNoBase : function () {
+        existDiscountsNoBase: function () {
             return this.total_discount_no_base > 0 ? true : false
         },
     },
@@ -1538,7 +1550,6 @@ export default {
     methods: {
         ...mapActions([
             'loadConfiguration',
-            'getCurrentCurrency',
         ]),
         async changeRowFreeAffectationIgv(row, index) {
 
@@ -1754,10 +1765,17 @@ export default {
 
             if (this.form.payment_condition_id == '01') {
 
-                if (this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                if (this.config.destination_sale && this.payment_destinations.length > 0) {
                     let cash = _.find(this.payment_destinations, {id: 'cash'})
                     if (cash) {
-                        this.form.payments[0].payment_destination_id = cash.id
+                        if (this.form.payments[0] !== undefined) {
+                            this.form.payments[0].payment_destination_id = cash.id
+                        } else {
+                            this.form.payments.push({
+                                payment_destination_id: cash.id,
+                            })
+
+                        }
                     } else {
                         this.form.payment_destination_id = this.payment_destinations[0].id
                         this.form.payments[0].payment_destination_id = this.payment_destinations[0].id
@@ -1855,7 +1873,7 @@ export default {
 
         },
         changeDestinationSale() {
-            if (this.configuration.destination_sale && this.payment_destinations.length > 0) {
+            if (this.config.destination_sale && this.payment_destinations.length > 0) {
                 let cash = _.find(this.payment_destinations, {id: 'cash'})
                 if (cash) {
                     this.form.payments[0].payment_destination_id = cash.id
@@ -2258,7 +2276,7 @@ export default {
         },
         getPaymentDestinationId() {
 
-            if (this.configuration.destination_sale &&
+            if (this.config.destination_sale &&
                 this.payment_destinations.length > 0) {
 
                 let cash = _.find(this.payment_destinations, {id: 'cash'})
@@ -2380,14 +2398,14 @@ export default {
 
             this.initInputPerson()
 
-            if (!this.configuration.restrict_receipt_date) {
+            if (!this.config.restrict_receipt_date) {
                 this.datEmision = {}
             }
 
             this.enabled_payments = true
             this.readonly_date_of_due = false
             this.total_discount_no_base = 0
-            
+
         },
         initInputPerson() {
             this.input_person = {
@@ -2502,14 +2520,14 @@ export default {
                     temp_customers = temp_customers.push(...data_customer)
                 })
                 temp_all_customers = this.all_customers.filter((item, index, self) =>
-                    index === self.findIndex((t) => (
-                        t.id === item.id
-                    ))
+                        index === self.findIndex((t) => (
+                            t.id === item.id
+                        ))
                 )
                 temp_customers = this.customers.filter((item, index, self) =>
-                    index === self.findIndex((t) => (
-                        t.id === item.id
-                    ))
+                        index === self.findIndex((t) => (
+                            t.id === item.id
+                        ))
                 )
                 this.all_customers = temp_all_customers;
                 this.customers = temp_customers;
@@ -2531,7 +2549,7 @@ export default {
         },
         changeDateOfIssue() {
             let minDate = moment().subtract(7, 'days')
-            if (moment(this.form.date_of_issue) < minDate && this.configuration.restrict_receipt_date) {
+            if (moment(this.form.date_of_issue) < minDate && this.config.restrict_receipt_date) {
                 this.$message.error('No puede seleccionar una fecha menor a 6 días.');
                 this.dateValid = false
             } else {
@@ -2634,7 +2652,7 @@ export default {
             this.total_discount_no_base = 0
 
             let total_igv_free = 0
-            
+
             // let total_free_igv = 0
 
             this.form.items.forEach((row) => {
@@ -2687,13 +2705,13 @@ export default {
 
                 // console.log(row.total_value)
 
-                if(!['21', '37'].includes(row.affectation_igv_type_id)){
+                if (!['21', '37'].includes(row.affectation_igv_type_id)) {
                     total_value += parseFloat(row.total_value)
                 }
 
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
-                if (['12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
+                if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
 
                     let unit_value = row.total_value / row.quantity
                     let total_value_partial = unit_value * row.quantity
@@ -2707,7 +2725,7 @@ export default {
                 }
 
                 //sum discount no base
-                this.total_discount_no_base += this.sumDiscountsNoBaseByItem(row) 
+                this.total_discount_no_base += this.sumDiscountsNoBaseByItem(row)
 
             });
 
@@ -2745,15 +2763,15 @@ export default {
             this.chargeGlobal()
 
         },
-        sumDiscountsNoBaseByItem(row){
+        sumDiscountsNoBaseByItem(row) {
 
             let sum_discount_no_base = 0
 
-            if(row.discounts){
+            if (row.discounts) {
                 // if(row.discounts.length > 0){
-                    sum_discount_no_base = _.sumBy(row.discounts, function(discount) {
-                         return  (discount.discount_type_id == '01') ? discount.amount : 0
-                    })
+                sum_discount_no_base = _.sumBy(row.discounts, function (discount) {
+                    return (discount.discount_type_id == '01') ? discount.amount : 0
+                })
                 // }
             }
 
@@ -2773,8 +2791,8 @@ export default {
 
             let base = parseFloat(this.form.total)
 
-            if (this.configuration.active_allowance_charge) {
-                let percentage_allowance_charge = parseFloat(this.configuration.percentage_allowance_charge)
+            if (this.config.active_allowance_charge) {
+                let percentage_allowance_charge = parseFloat(this.config.percentage_allowance_charge)
                 this.total_global_charge = _.round(base * (percentage_allowance_charge / 100), 2)
             }
 
@@ -2934,7 +2952,7 @@ export default {
         },
         async submit() {
             if (this.form.show_terms_condition) {
-                this.form.terms_condition = this.configuration.terms_condition_sale;
+                this.form.terms_condition = this.config.terms_condition_sale;
             }
             if (this.form.has_prepayment || this.prepayment_deduction) {
                 let error_prepayment = await this.validateAffectationTypePrepayment()
@@ -3145,6 +3163,9 @@ export default {
                 }
                 row.amount = amount;
             })
+        },
+        setDescriptionOfItem(item){
+            return showNamePdfOfDescription(item,this.config.show_pdf_name)
         }
     }
 }

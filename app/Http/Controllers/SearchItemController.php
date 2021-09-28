@@ -4,6 +4,8 @@
 
     use App\Models\Tenant\Configuration;
     use App\Models\Tenant\Item;
+    use App\Models\Tenant\ItemUnitType;
+    use App\Models\Tenant\ItemWarehouse;
     use App\Models\Tenant\Warehouse;
     use Illuminate\Database\Query\Builder;
     use Illuminate\Http\Request;
@@ -107,30 +109,23 @@
             $items_id = ($request->has('items_id')) ? $request->items_id : null;
             $id = (int)$id;
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
-
-
             $input = self::setInputByRequest($request);
 
-            $item = Item:: whereIsActive()//    ->whereTypeUser()
-            ;
+            $item = Item:: whereIsActive();
             $ItemToSearchBySeries = Item:: whereIsActive();
             if ($service == false) {
-                $item->WhereNotService()
-                    ->with('warehousePrices');
-                $ItemToSearchBySeries->WhereNotService()
-                    ->with('warehousePrices');
+                $item->WhereNotService();
+                $ItemToSearchBySeries->WhereNotService();
             } else {
-                $item
-                    ->WhereService()
-                    // ->with(['item_lots'])
+                $item->WhereService()
                     ->whereNotIsSet();
-                $ItemToSearchBySeries
-                    ->WhereService()
-                    // ->with(['item_lots'])
+                $ItemToSearchBySeries->WhereService()
                     ->whereNotIsSet();
 
 
             }
+            $item->with('warehousePrices');
+            $ItemToSearchBySeries->with('warehousePrices');
 
             $alt_item = $item;
 
@@ -178,7 +173,6 @@
                             ->limit(1);
                     } else {
                         self::setFilter($item, $request);
-                        $item->take(20);
                     }
                 }
             }
@@ -194,7 +188,7 @@
         public static function SetWarehouseToUser(&$item)
         {
             /** @var Item $item */
-            // $item->whereWarehouse();
+             $item->whereWarehouse();
 
         }
 
@@ -204,6 +198,7 @@
          */
         protected static function setFilter(&$item, Request $request = null)
         {
+            /** @var Builder $item */
 
             $input = self::setInputByRequest($request);
 
@@ -231,7 +226,9 @@
                         });
                 }
                 $item->OrWhereJsonContains('attributes', ['value' => $input]);
-                /** @var Builder $item */
+            }else{
+                // Si no se filtran datos, entonces se toman 20
+                $item->take(20);
             }
 
 
@@ -416,21 +413,29 @@
             return $search_item;
         }
 
+
         /**
          * Retorna la coleccion de items par Documento y Boleta.
          *  Usado en app/Http/Controllers/Tenant/DocumentController.php::250
          *  Usado en app/Http/Controllers/Tenant/DocumentController.php::370
+         *  Usado en modules/Document/Http/Controllers/DocumentController.php::297
          *
-         * @return Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed
+         * @param Request| null $request
+         * @param int           $id
+         *
+         * @return \Illuminate\Database\Eloquent\Collection|Collection
          */
-        public static function getItemsToDocuments()
+        public static function getItemsToDocuments(Request $request = null, $id = 0)
         {
+            $items_not_services = self::getNotServiceItem($request, $id);
+            $items_services = self::getServiceItem($request, $id);
+            return self::TransformToModal($items_not_services->merge($items_services));
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
             // $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
             $item_not_service = Item::with('warehousePrices')
                 ->whereIsActive()
-                ->orderBy('description');
+            ->orderBy('description');
             $service_item = Item::with('warehousePrices')
                 ->where('items.unit_type_id', 'ZZ')
                 ->whereIsActive()
@@ -476,10 +481,13 @@
             */
 
 
+            $establishment_id = auth()->user()->establishment_id;
+            $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+
             $items_not_services = self::getNotServiceItem($request, $id);
             $items_services = self::getServiceItem($request, $id);
 
-            return self::TransformToModalSaleNote($items_not_services->merge($items_services));
+            return self::TransformToModalSaleNote($items_not_services->merge($items_services), $warehouse);
 
         }
 
@@ -492,10 +500,16 @@
         public static function TransformToModalSaleNote($items, Warehouse $warehouse = null)
         {
             $warehouse_id = ($warehouse) ? $warehouse->id : null;
+            if ($warehouse_id == null) {
+                $establishment_id = auth()->user()->establishment_id;
+                $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+                $warehouse_id = ($warehouse) ? $warehouse->id : null;
+            }
 
             return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
                 /** @var Item $row */
-                $detail = self::getFullDescriptionToSaleNote($row, $warehouse);
+                $detail = $row->getFullDescription($warehouse, false);
+
                 return [
                     'id' => $row->id,
                     'full_description' => $detail['full_description'],
@@ -515,15 +529,15 @@
                     'series_enabled' => (bool)$row->series_enabled,
                     'is_set' => (bool)$row->is_set,
                     'warehouses' => collect($row->warehouses)->transform(function ($row) use ($warehouse_id) {
-                        /** @var \App\Models\Tenant\ItemWarehouse  $row */
-                        /** @var \App\Models\Tenant\Warehouse $c_warehouse */
+                        /** @var ItemWarehouse $row */
+                        /** @var Warehouse $c_warehouse */
                         $c_warehouse = $row->warehouse;
 
                         return [
                             'warehouse_id' => $c_warehouse->id,
                             'warehouse_description' => $c_warehouse->description,
                             'stock' => $row->stock,
-                            'checked' => ($c_warehouse->id ==$warehouse_id) ? true : false,
+                            'checked' => ($c_warehouse->id == $warehouse_id) ? true : false,
                         ];
                     }),
                     'item_unit_types' => $row->item_unit_types,
@@ -545,49 +559,18 @@
         }
 
         /**
-         * @param Item           $item
-         * @param Warehouse|null $warehouse
+         * Centralizado de busqueda para Cotizaciones
          *
-         * @return string[]
-         */
-        public static function getFullDescriptionToSaleNote(Item $item, Warehouse $warehouse = null)
-        {
-
-            $desc = ($item->internal_id) ? $item->internal_id . ' - ' . $item->description : $item->description;
-            $category = ($item->category) ? "{$item->category->name}" : "";
-            $brand = ($item->brand) ? "{$item->brand->name}" : "";
-
-            if ($item->unit_type_id != 'ZZ') {
-                $warehouse_stock = ($item->warehouses && $warehouse) ? number_format($item->warehouses->where('warehouse_id', $warehouse->id)->first() != null ? $item->warehouses->where('warehouse_id', $warehouse->id)->first()->stock : 0, 2) : 0;
-                $stock = ($item->warehouses && $warehouse) ? "{$warehouse_stock}" : "";
-            } else {
-                $stock = '';
-            }
-
-
-            $desc = "{$desc} - {$brand}";
-
-            return [
-                'full_description' => $desc,
-                'brand' => $brand,
-                'category' => $category,
-                'stock' => $stock,
-            ];
-        }
-
-        /**
+         * @param Request|null $request
+         * @param int          $id
+         *
          * @return \Illuminate\Database\Eloquent\Collection|Collection
          */
-        public static function getItemsToQuotation()
+        public static function getItemsToQuotation(Request $request = null, $id = 0)
         {
-            $items = Item::orderBy('description')
-                ->whereIsActive()
-                // ->with(['warehouses' => function($query) use($warehouse){
-                //     return $query->where('warehouse_id', $warehouse->id);
-                // }])
-                ->take(20)->get();
-            return self::TransformToModal($items);
-
+            $items_not_services = self::getNotServiceItem($request, $id);
+            $items_services = self::getServiceItem($request, $id);
+            return self::TransformToModal($items_not_services->merge($items_services));
         }
 
         /**
@@ -616,6 +599,11 @@
         {
             $warehouse_id = ($warehouse) ? $warehouse->id : null;
 
+            if ($warehouse_id == null) {
+                $establishment_id = auth()->user()->establishment_id;
+                $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+                $warehouse_id = ($warehouse) ? $warehouse->id : null;
+            }
             return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
                 /** @var Item $row */
                 $detail = self::getFullDescriptionToSaleNote($row, $warehouse);
@@ -663,6 +651,37 @@
         }
 
         /**
+         * @param Item           $item
+         * @param Warehouse|null $warehouse
+         *
+         * @return string[]
+         */
+        public static function getFullDescriptionToSaleNote(Item $item, Warehouse $warehouse = null)
+        {
+
+            $desc = ($item->internal_id) ? $item->internal_id . ' - ' . $item->description : $item->description;
+            $category = ($item->category) ? "{$item->category->name}" : "";
+            $brand = ($item->brand) ? "{$item->brand->name}" : "";
+
+            if ($item->unit_type_id != 'ZZ') {
+                $warehouse_stock = ($item->warehouses && $warehouse) ? number_format($item->warehouses->where('warehouse_id', $warehouse->id)->first() != null ? $item->warehouses->where('warehouse_id', $warehouse->id)->first()->stock : 0, 2) : 0;
+                $stock = ($item->warehouses && $warehouse) ? "{$warehouse_stock}" : "";
+            } else {
+                $stock = '';
+            }
+
+
+            $desc = "{$desc} - {$brand}";
+
+            return [
+                'full_description' => $desc,
+                'brand' => $brand,
+                'category' => $category,
+                'stock' => $stock,
+            ];
+        }
+
+        /**
          * @param Request|null $request
          * @param int          $id
          *
@@ -689,6 +708,11 @@
         {
             $warehouse_id = ($warehouse) ? $warehouse->id : null;
 
+            if ($warehouse_id == null) {
+                $establishment_id = auth()->user()->establishment_id;
+                $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+                $warehouse_id = ($warehouse) ? $warehouse->id : null;
+            }
             return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
                 /** @var Item $row */
                 $full_description = self::getFullDescriptionToPurchaseOrder($row);
@@ -740,6 +764,165 @@
             $desc = "{$desc} {$category} {$brand}";
 
             return $desc;
+        }
+
+        /**
+         * @param Request|null $request
+         * @param int          $id
+         *
+         * @return mixed
+         */
+        public static function getItemToPurchaseQuotation(Request $request = null, $id = 0)
+        {
+            $items_not_services = self::getNotServiceItem($request, $id);
+            $items_services = self::getServiceItem($request, $id);
+            $establishment_id = auth()->user()->establishment_id;
+            $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+
+            return self::TransformModalToPurchaseQuotation($items_not_services->merge($items_services), $warehouse);
+            //
+        }
+
+        /**
+         * @param                $items
+         * @param Warehouse|null $warehouse
+         *
+         * @return mixed
+         */
+        public static function TransformModalToPurchaseQuotation($items, Warehouse $warehouse = null)
+        {
+            $warehouse_id = ($warehouse) ? $warehouse->id : null;
+
+            if ($warehouse_id == null) {
+                $establishment_id = auth()->user()->establishment_id;
+                $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+                $warehouse_id = ($warehouse) ? $warehouse->id : null;
+            }
+            return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
+                /** @var Item $row */
+                $full_description = self::getFullDescriptionToPurchaseQuotation($row);
+                return [
+                    'id' => $row->id,
+                    'full_description' => $full_description,
+                    'description' => $row->description,
+                    'unit_type_id' => $row->unit_type_id,
+                    'is_set' => (bool)$row->is_set,
+                    'model' => $row->model,
+                    'currency_type_id' => $row->currency_type_id,
+                    'currency_type_symbol' => $row->currency_type->symbol,
+                    'sale_unit_price' => $row->sale_unit_price,
+                    'purchase_unit_price' => $row->purchase_unit_price,
+                    'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                    'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                    'has_perception' => (bool)$row->has_perception,
+                    'purchase_has_igv' => (bool)$row->purchase_has_igv,
+                    'percentage_perception' => $row->percentage_perception,
+                    'item_unit_types' => collect($row->item_unit_types)->transform(function ($row) {
+                        return [
+                            'id' => $row->id,
+                            'description' => "{$row->description}",
+                            'item_id' => $row->item_id,
+                            'unit_type_id' => $row->unit_type_id,
+                            'quantity_unit' => $row->quantity_unit,
+                            'price1' => $row->price1,
+                            'price2' => $row->price2,
+                            'price3' => $row->price3,
+                            'price_default' => $row->price_default,
+                        ];
+                    }),
+                    'series_enabled' => (bool)$row->series_enabled,
+                ];
+            });
+        }
+
+        /**
+         * @param Item $item
+         *
+         * @return string
+         */
+        public static function getFullDescriptionToPurchaseQuotation($item)
+        {
+            /** @var Item $item */
+
+            $desc = ($item->internal_id) ? $item->internal_id . ' - ' . $item->description : $item->description;
+            $category = ($item->category) ? " - {$item->category->name}" : "";
+            $brand = ($item->brand) ? " - {$item->brand->name}" : "";
+
+            $desc = "{$desc} {$category} {$brand}";
+
+            return $desc;
+        }
+
+        /**
+         * @param Request|null $request
+         * @param int          $id
+         *
+         * @return mixed
+         */
+        public static function getItemToPurchase(Request $request = null, $id = 0)
+        {
+            $items_not_services = self::getNotServiceItem($request, $id);
+            $items_services = self::getServiceItem($request, $id);
+            $establishment_id = auth()->user()->establishment_id;
+            $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+
+            return self::TransformModalToPurchase($items_not_services->merge($items_services), $warehouse);
+            //
+        }
+
+        public static function TransformModalToPurchase($items, Warehouse $warehouse = null)
+        {
+            $warehouse_id = ($warehouse) ? $warehouse->id : null;
+
+            if ($warehouse_id == null) {
+                $establishment_id = auth()->user()->establishment_id;
+                $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+                $warehouse_id = ($warehouse) ? $warehouse->id : null;
+            }
+            return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
+                /** @var Item $row */
+                $temp = array_merge($row->getCollectionData(), $row->getDataToItemModal());
+                $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
+                $data = [
+                    'id' => $row->id,
+                    'item_code' => $row->item_code,
+                    'full_description' => $full_description,
+                    'description' => $row->description,
+                    'currency_type_id' => $row->currency_type_id,
+                    'currency_type_symbol' => $row->currency_type->symbol,
+                    'sale_unit_price' => $row->sale_unit_price,
+                    'purchase_unit_price' => $row->purchase_unit_price,
+                    'unit_type_id' => $row->unit_type_id,
+                    'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                    'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                    'purchase_has_igv' => (bool)$row->purchase_has_igv,
+                    'has_perception' => (bool)$row->has_perception,
+                    'lots_enabled' => (bool)$row->lots_enabled,
+                    'percentage_perception' => $row->percentage_perception,
+                    // 'warehouses' => collect($row->warehouses)->transform(function($row) {
+                    //     return [
+                    //         'warehouse_id' => $row->warehouse->id,
+                    //         'warehouse_description' => $row->warehouse->description,
+                    //         'stock' => $row->stock,
+                    //     ];
+                    // }) [
+                    'item_unit_types' => $row->item_unit_types->transform(function ($row) {
+                        if (is_array($row)) return $row;
+                        if (is_object($row)) {
+                            /**@var ItemUnitType $row */
+                            return $row->getCollectionData();
+                        }
+                        return $row;
+                    }),
+                    'series_enabled' => (bool)$row->series_enabled,
+                ];
+                foreach ($temp as $k => $v) {
+                    if (!isset($data[$k])) {
+                        $data[$k] = $v;
+                    }
+                }
+                return $data;
+            });
         }
 
         /**

@@ -136,7 +136,7 @@ class SaleNoteController extends Controller
             $client_data = $inputs['datos_del_cliente_o_receptor'];
             $client_number = isset($client_data['numero_documento']) ? $client_data['numero_documento'] : null;
             // compara el numero con el id del cliente, Si es diferente, deberia crear el cliente
-            if($client_number !== $person->number){
+            if($person !== null && $client_number !== $person->number){
                 $person = null;
             }
             if ($person === null) {

@@ -99,6 +99,7 @@ class Configuration extends ModelTenant
         'show_extra_info_to_item',
         'group_items_generate_document',
         'enabled_global_igv_to_purchase',
+        'show_pdf_name',
     ];
 
     protected $casts = [
@@ -115,7 +116,23 @@ class Configuration extends ModelTenant
         'show_extra_info_to_item' => 'boolean',
         'group_items_generate_document' => 'boolean',
         'enabled_global_igv_to_purchase' => 'boolean',
+        'show_pdf_name' => 'boolean',
     ];
+
+
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function (self $item) {
+
+            //i f(empty($item->apk_url)) $item->apk_url = 'https://facturaloperu.com/apk/app-debug.apk';
+        });
+        static::retrieved(function (self $item) {
+
+           // if (empty($item->apk_url)) $item->apk_url = 'https://facturaloperu.com/apk/app-debug.apk';
+        });
+
+    }
 
     /**
      * @return bool
@@ -449,6 +466,7 @@ class Configuration extends ModelTenant
             'typeUser'=>$typeUser,
             'unit_type_id'=>$unit_type_id,
             'enabled_global_igv_to_purchase'=>$this->isEnabledGlobalIgvToPurchase(),
+            'show_pdf_name'=>$this->isShowPdfName(),
             'user'=>[
                 'serie'=>$serie,
                 'document_id'=>$document_id,
@@ -554,7 +572,43 @@ class Configuration extends ModelTenant
         return $this;
     }
 
+    /**
+     * @return bool
+     */
+    public function isShowPdfName(): bool
+    {
+        return (bool)$this->show_pdf_name;
+    }
 
+    /**
+     * @param bool $show_pdf_name
+     *
+     * @return Configuration
+     */
+    public function setShowPdfName(bool $show_pdf_name): Configuration
+    {
+        $this->show_pdf_name = (bool)$show_pdf_name;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getApkUrl(): ?string
+    {
+        return $this->apk_url;
+    }
+
+    /**
+     * @param string|null $apk_url
+     *
+     * @return Configuration
+     */
+    public function setApkUrl(?string $apk_url): Configuration
+    {
+        $this->apk_url = $apk_url;
+        return $this;
+    }
 
 
 }

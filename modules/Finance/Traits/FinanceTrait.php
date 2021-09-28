@@ -8,6 +8,7 @@
     use App\Models\Tenant\Cash;
     use App\Models\Tenant\Company;
     use Carbon\Carbon;
+    use ErrorException;
     use Illuminate\Database\Eloquent\Collection;
     use Modules\Expense\Models\ExpensePayment;
     use Modules\Finance\Models\IncomePayment;
@@ -276,7 +277,13 @@
         {
             return $record->where('payment_type', $model)->sum(function ($row) {
 
-                $total_credit_notes = ($row->instance_type == 'document') ? $this->getTotalCreditNotes($row->payment->associated_record_payment) : 0;
+                try{
+                    $total_credit_notes = ($row->instance_type == 'document') ? $this->getTotalCreditNotes($row->payment->associated_record_payment) : 0;
+                }catch (ErrorException $e){
+                    // se dispara un error cuando no hay relacion de paymeny y associated_record_payment
+                    // \Log::critical(__FILE__."::".__LINE__." El elemento ".$row->id." de tipo  ".get_class($row)." No encuentra pagos asociados");
+                    $total_credit_notes = 0;
+                }
                 $total_currency_type = $this->calculateTotalCurrencyType($row->payment->associated_record_payment, $row->payment->payment);
 
                 return $total_currency_type - $total_credit_notes;
@@ -323,6 +330,7 @@
          */
         public function getTransferAccountPayment($model)
         {
+            if(empty($model) ) return 0;
             $filter = [
                 'destiny_id' => $model->id,
                 'destiny_type' => get_class($model),

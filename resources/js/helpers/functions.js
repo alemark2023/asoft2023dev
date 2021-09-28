@@ -168,12 +168,12 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
                     discount.base = _.round(total_value_partial, 2)
                     discount.amount = _.round(discount.base * discount.factor, 2)
                     // if (discount.discount_type.base) {
-                        discount_base += discount.amount
+                    discount_base += discount.amount
                     // } else {
                     //     discount_no_base += discount.amount
                     // }
 
-                }else{
+                } else {
 
 
                     let aux_total_line = row.unit_price * row.quantity
@@ -308,4 +308,20 @@ function getUniqueArray(arr, keyProps) {
     )
 }
 
-export {calculateRowItem, getUniqueArray}
+function showNamePdfOfDescription(item, show_pdf_name) {
+    if (show_pdf_name !== undefined &&
+        show_pdf_name === true &&
+        item !== undefined &&
+        item.name_product_pdf !== undefined
+    ) {
+        let temn = item.name_product_pdf;
+        temn = temn.substring(3)
+        temn = temn.slice(0, -4)
+        if (temn.length > 0) {
+            return temn;
+        }
+    }
+    return item.description
+}
+
+export {calculateRowItem, getUniqueArray, showNamePdfOfDescription}

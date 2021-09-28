@@ -1,3 +1,122 @@
+## 4.1.5
+
+### docs
+2021-09-21 : docs | configuracion nuevo validador<br>
+2021-09-15 : docs | wiki funcional - similar a wiki en gitlab del proyecto<br>
+2021-09-14 : feature | wiki-docs | añadiendo vistas en base a la wiki que se posee en gitlab - rutas: dominio/docs subdominio/docs<br>
+2021-09-14 : docs | add package larecipe<br>
+2021-09-06 : docs | changelog update<br>
+
+
+### fixed
+2021-09-17 : fixed | - | Validando almacenes<br>
+2021-09-17 : fixed | #953 #960 #962 | busqueda de items<br>
+2021-09-17 : fixed | #958 | Ajustes calculos para operaciones gravadas gratuitas<br>
+2021-09-17 : fixed | #885 | Balance: Ajuste de textos e icon os<br>
+2021-09-17 : fixed | #885 | Balance: Transferencia entre cuentas y caja<br>
+2021-09-17 : fixed | #960 | Nota de venta: Pasando request para cuando se realzia una busqueda de item<br>
+2021-09-17 : fixed | #885 | Geneerando modal para transferencias entre cuentas bancarias<br>
+2021-09-17 : fixed | #953 | Unficando #823 en SearchItemController.<br>
+2021-09-16 : fixed | #926 | Ajustes error de calculo, op. exoneradas - gratuitas<br>
+2021-09-16 : fixed | #933 | Ajuste al mostrar series seleccionadas - edicion item nuevo cpe<br>
+2021-09-15 : fixed | #922 | Ajuste pdf moneda detraccion usd<br>
+2021-09-15 : fixed | #931 | Ajustes anticipos op, exonerada e inafecta<br>
+2021-09-14 : fixed | #931 | Ajustes anticipos gravados<br>
+2021-09-14 : fixed | #823 | Busqueda por Lote: Si se tiene activada la busqueda por lote y al momento de buscar, se encuentra el registro, se devuelve el elemento.<br>
+2021-09-14 : fixed | - | Quitando logs<br>
+2021-09-14 : fixed | - | Añadiendo log<br>
+2021-09-14 : fixed | - | Ajustes de controlador<br>
+2021-09-14 : fixed | #823 #900 | Compile JS<br>
+2021-09-14 : fixed | #921 | Agrega condicion de pago en plantilla default3<br>
+2021-09-13 : fixed | #918 | Ajustes op. gratuita - api<br>
+2021-09-13 : fixed | #704 | Pedidos: Añadiendo filtrado en direccion. Ajuste de minimo para 0.1.<br>
+2021-09-13 : fixed | #574 | Quitando Logs<br>
+2021-09-13 : fixed | #574 #704 #900 | Compile JS<br>
+2021-09-13 : fixed | #900 | Items: Codigo de Barras: Exportar Codiugo de barras en formato 5cm x 2.5cm, desde seccion de items.<br>
+2021-09-13 : fixed | - | PDF: Estandarizacion de codigo para generacion de un pdf a partir de varios<br>
+2021-09-13 : fixed | #900 | Codigo de barras: Generar el PDF para codigod e barras de 5 cm x 2.5 cm.<br>
+2021-09-13 : fixed | #903 | Se agrega cuotas - pagos plantilla multiples logos<br>
+2021-09-13 : fixed | - | Minor: Ajuste de estilo<br>
+2021-09-13 : fixed | #914 | validar propiedad discounts - dscto por item<br>
+2021-09-10 : fixed | #914 | Ajustes descuentos no afectan a la bi, global - item<br>
+2021-09-10 : fixed | #704 | Dispaches: Ajuste en obtencion de direcciones.<br>
+2021-09-10 : fixed | #574 | Correos: Guardando eventos de envio de correo en la tabla correspondiente<br>
+2021-09-10 : fixed | #574 | Correos: Centralizando el codigo de envio de correo para evitar duplicidad de codigo.<br>
+2021-09-09 : fixed | #914 | ajuste validacion dscto por item no afecta a la bi<br>
+2021-09-09 : fixed | #914 | Ajustes descuento global afecta bi<br>
+2021-09-09 : fixed | #622 | Testing: Añadiendo logs<br>
+2021-09-09 : fixed | #622 | Testing: Añadiendo logs<br>
+2021-09-09 : fixed | #622 | Testing: Añadiendo logs<br>
+2021-09-09 : fixed | #622 | Testing: Añadiendo logs<br>
+2021-09-09 : fixed | #622 | Compile JS<br>
+2021-09-09 : fixed | #622 | Migrar NV a otro server: Cambio de curl a GuzzleHttp<br>
+2021-09-09 : fixed | #914 | test variable payable<br>
+2021-09-08 : fixed | #914 | Modificaciones para descuento global que no afecta a la bi<br>
+2021-09-07 : fixed | #889 | Se agrega n! ruc en plantilla header_image_full_width<br>
+2021-09-07 : fixed | #813 | Reporte Masivo: Ajuste de bordes derecho e izquierdo a 1<br>
+2021-09-07 : fixed | #907 | Ajustes descuentos por item que no afectan a la bi - por % dscto<br>
+2021-09-07 : fixed | #704 | Compile JS<br>
+2021-09-06 : fixed | #704 | Compile JS<br>
+2021-09-06 : fixed | #704 | Guias de Remision: Ajuste para seleccion de serie si existe.<br>
+
+
+### feature
+2021-09-21 : feature | #940 | default_brand_as_lab: Factura/Boleta, Nota, Nota de venta: Ajuste para Marca como Laboratorio (Brand as Lab)<br>
+2021-09-21 : feature | - | Añadiendo Ignore a marcas de agua<br>
+2021-09-20 : feature |#929 | Ajuste en plantilla 929 Boleta/Factura:<br>
+2021-09-20 : feature |#936 | Reporte de Guia: Cambio de ID por Number<br>
+2021-09-20 : feature |#936 | Reporte de Guia: Cambio de ID por Number<br>
+2021-09-20 : feature | #813 #900 #936 | Compile JS<br>
+2021-09-20 : feature | #936 | Guias: Consulta de guías por producto: Se añade filtro con rango de número de comprobante<br>
+2021-09-20 : feature | #936 | Minor: Ajuste de formato de codigo<br>
+2021-09-20 : feature | #900 | Código de barras: Añadiendo rango de id minimo y maximo por edicion del usuario.<br>
+2021-09-20 : feature | #813 | Descarga masiva de comprobantes: Añadiendo filtro por number .<br>
+2021-09-20 : feature | #911 | Template: Factura/Boleta A4: Ajustes de cuentas bancarias<br>
+2021-09-20 : feature | #929 | Template: Factura/Boleta A4: Ajustes para direccion y % ded esciuento<br>
+2021-09-20 : feature | #911 | Template: Factura/Cotizacion A4: Añadiendo imagen de visualziacion<br>
+2021-09-20 : feature | #911 | Template: Factura/Cotizacion A4: Imagen de fondo en public\watermark\item_brand.jpg como marca de agua. Valor unitario (precio sin iva) en cotizacion y factura formato A4.<br>
+2021-09-17 : feature | #885 | Balance: Transferencia: Al momento de realizar la transferencia, el modal debe desaparecer<br>
+2021-09-17 : feature | - | Quitando log<br>
+2021-09-17 : feature | - | añadiendo log<br>
+2021-09-17 : feature | #885 |  Ajuste para objeto id<br>
+2021-09-17 : feature | #885 |  Compile JS<br>
+2021-09-17 : feature | #871 | url asignada en admin para apk es listada en menu apps de cliente<br>
+2021-09-16 : feature | #871 | url configurada desde admin (menu configuracion) - falta mostrar en tenant<br>
+2021-09-16 : feature | #885 | Compile JS<br>
+2021-09-16 : feature | #871 | ocultar menu apps desde admin<br>
+2021-09-16 : feature | #885 | Compras: Cambio de has_igv a purchase_has_igv: Tambien previene que pueda cambiarse el global igv al momento de ingresar items<br>
+2021-09-16 : feature | #924 | Clientes: Importar: Añadiendo tipo de cliente.<br>
+2021-09-16 : feature | #929 | Template: Boleta/Factura 929: Ajuste para 25 items<br>
+2021-09-16 : feature | #929 | Template: Boleta/Factura 929: Ajuste para 35 items<br>
+2021-09-16 : feature | #929 | Template: Boleta/Factura 929<br>
+2021-09-16 : feature | #925 | Se agrega costo total, precio venta - reporte inventario<br>
+2021-09-15 : feature | #925 | se agrega suma total precio venta y compra - vista reporte inventario<br>
+2021-09-15 : feature | #862 | Cotizaciones: modificacion longitud campo obs, pdf, ajustes en vista<br>
+2021-09-15 : feature | #929 | Minor: Ajuste de estilo y responsivo<br>
+2021-09-15 : feature | #885 | Compile JS<br>
+2021-09-15 : feature | #885 | Compras / Configuracion: Mejorando textos<br>
+2021-09-15 : feature | #885 | Compras: Ajuste para establecer IGV de compras globalmente para los items.<br>
+2021-09-15 : feature | wiki-doc | vista por defecto incial<br>
+2021-09-14 : feature | wiki-docs | añadiendo vistas en base a la wiki que se posee en gitlab - rutas: dominio/docs subdominio/docs<br>
+2021-09-13 : feature | #574  | Compile JS<br>
+2021-09-08 : feature | #574 | Compile JS<br>
+2021-09-08 : feature | #574 | Clientes/Person: Añadiendo palabra opcionales<br>
+2021-09-08 : feature | #574 | Clientes/Person: Envio correcto para multiples direcciones separadas con , a demas, de guardar correctamente el dato<br>
+2021-09-08 : feature | #574 | Mails/Emails: Añadiendo la posiblidad de enviar a multiples direcciones cuando estas, se separan con coma (,)<br>
+2021-09-08 : feature | #574 | Clientes/Person: Añadiendo optional_email para editarlo y optional_email_send que deberia ser usado para enviar correos<br>
+2021-09-08 : feature | #574 | Clientes/Person: Ajuste de vue para añadir correos opcionales.<br>
+2021-09-08 : feature | - | Minor: Ajuste de estilo de codigo<br>
+2021-09-08 : feature | #705 | Compile JS<br>
+2021-09-08 : feature | #813 | Reporte Masivo: Formato 80 MM correcto al imprimir<br>
+2021-09-08 : feature | #705 | Compras: Cambio de nomemclatura de "Fecha de Ven Gen" a "Fec. Vencimiento"<br>
+2021-09-07 : feature | #898 | Admin: se agrega notificacion cpe por anular<br>
+2021-09-07 : feature | #705 | Compras: Ajuste para establecer date_of_due en items de forma general, solo para aquellos que no tengan lotes.<br>
+2021-09-07 : feature | #744 | Compile JS<br>
+2021-09-07 : feature | #744 | Factura / Cotizacion / Nota de venta: Unificando estructura basado en resources/js/views/tenant/documents/partials/item.vue<br>
+2021-09-07 : feature | #744 | Factura: Item: ajustes graficos de botones, Se puede mejorar evitando duplicar codigo para movil. Atencion en @todo<br>
+2021-09-07 : feature | #744 | Factura: Se duplica codigo para el resumen de pagos y poder sacarlo de la tabla. Asi ordenarse correctamente en dispositvivos moviles. Se puede plantear hacer modificaciones como elemento para evitar la duplicidad de codigo. Atencion en @todo<br>
+
+
 ## 4.1.4
 
 ### docs

@@ -189,6 +189,7 @@
         </div>
         <tenant-finance-modal-transfer-between-accounts
             :showDialogTransfer.sync="showDialogTransfer"
+            :reloadAccounts="getRecordsByFilter"
         >
 
         </tenant-finance-modal-transfer-between-accounts>

@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tenant\Person;
+use App\Models\Tenant\User;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Collection;
 
 /**
  * Class Controller
@@ -78,5 +81,45 @@ class Controller extends BaseController
                 $string.
                 "\n**************************************DEBUG SE ENCUENTRA ACTIVADO**********************************************************************************\n");
         }
+    }
+
+    /**
+     * @param $id
+     *
+     * @return array
+     */
+    public function searchItemById($id)
+    {
+        $items = SearchItemController::getItemsToDocuments(null, $id);
+
+        return compact('items');
+
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function searchItems(Request $request)
+    {
+        $items = SearchItemController::getItemsToDocuments($request);
+
+        return compact('items');
+    }
+
+    /**
+     * @return User[]|\Illuminate\Database\Eloquent\Collection|Collection
+     */
+    public function getSellers()
+    {
+
+        return User::whereIn('type', ['seller', 'admin'])->orderBy('name')->get()->transform(function ($row) {
+            return [
+                'id' => $row->id,
+                'name' => $row->name,
+                'type' => $row->type,
+            ];
+        });
     }
 }

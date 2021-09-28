@@ -19,5 +19,12 @@ class Warehouse extends ModelTenant
     {
         return $this->hasMany(InventoryKardex::class);
     }
-    
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public  function technical_service_item()
+    {
+        return $this->hasMany(TechnicalServiceItem::class, 'warehouse_id');
+    }
 }

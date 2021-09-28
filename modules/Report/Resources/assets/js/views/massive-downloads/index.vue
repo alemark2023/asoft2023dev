@@ -127,6 +127,44 @@
                                 </div>
                             </div>
 
+                            <div class="col-lg-2 col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </label>
+                                    <el-checkbox
+                                        v-model="filter_range"
+                                    >
+                                        Filtra por Rango de comprobantes
+                                    </el-checkbox>
+                                </div>
+                            </div>
+
+                            <!-- Minimo -->
+                            <div class="col-lg-2 col-md-2" v-if="filter_range">
+                                <div class="form-group">
+                                    <label class="control-label">Desde Comprobante
+                                    </label>
+                                    <el-input-number v-model="form.min"
+                                                     :min="0"
+                                                     :precision="0"
+                                                     :step="1"></el-input-number>
+                                </div>
+                            </div>
+                            <!-- Minimo -->
+                            <div class="col-lg-2 col-md-2" v-if="filter_range">
+                                <div class="form-group">
+                                    <label class="control-label">Hasta el Comprobante
+                                    </label>
+                                    <el-input-number v-model="form.max"
+                                                     :min="0"
+                                                     :precision="0"
+                                                     :step="1"></el-input-number>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                &nbsp;
+                            </div>
                             <div class="col-md-6"
                                  style="margin-top:29px">
                                 <el-button :loading="loading_submit"
@@ -174,8 +212,12 @@ export default {
         return {
             resource: 'reports/massive-downloads',
             loading_submit: false,
+            filter_range:false,
             type: 'a4',
-            form: {},
+            form: {
+                min: 1,
+                max: 2,
+            },
             persons: [],
             series: [],
             sellers: [],
@@ -282,8 +324,13 @@ export default {
         },
         getQueryParameters() {
 
+            let req = this.form;
+            if(this.filter_range === false) {
+                delete req.min;
+                delete req.max;
+            }
             return queryString.stringify({
-                form: JSON.stringify(this.form)
+                form: JSON.stringify(req)
             })
 
         },
