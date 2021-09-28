@@ -73,7 +73,8 @@
                                                class="border-left rounded-left border-info"
                                                dusk="document_type_id"
                                                popper-class="el-select-document_type"
-                                               @change="changeDocumentType">
+                                               @change="changeDocumentType"
+                                               :disabled="isUpdateDocument">
                                         <el-option v-for="option in document_types"
                                                    :key="option.id"
                                                    :label="option.description"
@@ -1414,6 +1415,9 @@ export default {
         },
         existDiscountsNoBase: function () {
             return this.total_discount_no_base > 0 ? true : false
+        },
+        isUpdateDocument: function () {
+            return (this.documentId) ? true : false
         },
     },
     async created() {
