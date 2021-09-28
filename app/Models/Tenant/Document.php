@@ -363,7 +363,7 @@
          */
         public function seller()
         {
-            return $this->belongsTo(User::class, 'id', 'seller_id');
+            return $this->belongsTo(User::class);
         }
 
         /**
