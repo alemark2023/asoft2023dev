@@ -365,8 +365,9 @@
                                         Agregar Correo
                                     </el-button>
 
-                                    <label class="control-label" v-if="temp_optional_email !== undefined &&
-                                     temp_optional_email.length > 0">
+                                    <label v-if="temp_optional_email !== undefined &&
+                                     temp_optional_email.length > 0"
+                                           class="control-label">
                                         <el-tag
                                             v-for="mail in temp_optional_email"
                                             :key="mail.email"
@@ -378,7 +379,7 @@
                                         </el-tag>
 
                                     </label>
-                                    <small v-if= "errors.temp_email && errors.temp_email.length > 0"
+                                    <small v-if="errors.temp_email && errors.temp_email.length > 0"
                                            class="form-control-feedback"
                                            v-text="errors.temp_email"></small>
 
@@ -700,7 +701,7 @@ export default {
                         }
                         this.filterProvinces()
                         this.filterDistricts()
-                    }).then(()=>{
+                    }).then(() => {
                     this.updateEmail()
 
                 })
@@ -726,12 +727,12 @@ export default {
             var re = /\S+@\S+\.\S+/;
             return re.test(email);
         },
-        updateEmail(){
+        updateEmail() {
             this.temp_optional_email = this.form.optional_email;
 
         },
         removeEmail(email) {
-            if(this.form.optional_email === undefined) this.form.optional_email = []
+            if (this.form.optional_email === undefined) this.form.optional_email = []
             this.form.optional_email = this.form.optional_email.filter(function (item) {
                 return item.email !== email.email;
             });
@@ -739,34 +740,34 @@ export default {
             this.updateEmail()
 
         },
-        checkEmail(){
+        checkEmail() {
             this.errors.temp_email = null;
-            if(this.temp_email === null ) {
+            if (this.temp_email === null) {
                 return false;
             }
-            if(this.temp_email === undefined ) {
+            if (this.temp_email === undefined) {
                 return false;
             }
             let email = this.temp_email;
 
-                if (this.validateEmail(email)) {
-                    if(this.form.optional_email !== undefined) {
-                        let tem = _.find(this.form.optional_email, {'email': email});
-                        if (tem === undefined) {
-                            return true;
-                        } else {
-                            // this.errors.temp_email = "Correo ya registrado"
-                        }
+            if (this.validateEmail(email)) {
+                if (this.form.optional_email !== undefined) {
+                    let tem = _.find(this.form.optional_email, {'email': email});
+                    if (tem === undefined) {
+                        return true;
+                    } else {
+                        // this.errors.temp_email = "Correo ya registrado"
                     }
-                }else{
-                    // this.errors.temp_email = "No es un correo valido"
                 }
+            } else {
+                // this.errors.temp_email = "No es un correo valido"
+            }
             return false;
 
         },
         clickAddMail() {
-            if(this.form.optional_email === undefined) this.form.optional_email = []
-            if(this.checkEmail() === true){
+            if (this.form.optional_email === undefined) this.form.optional_email = []
+            if (this.checkEmail() === true) {
                 let email = this.temp_email;
                 this.form.optional_email.push(
                     {email: email,}
