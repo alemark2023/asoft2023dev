@@ -480,14 +480,10 @@
             $items = $items_u->merge($items_s);
             */
 
-
-            $establishment_id = auth()->user()->establishment_id;
-            $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
-
             $items_not_services = self::getNotServiceItem($request, $id);
             $items_services = self::getServiceItem($request, $id);
 
-            return self::TransformToModalSaleNote($items_not_services->merge($items_services), $warehouse);
+            return self::TransformToModalSaleNote($items_not_services->merge($items_services));
 
         }
 
@@ -508,17 +504,9 @@
 
             return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
                 /** @var Item $row */
-                $detail = $row->getFullDescription($warehouse, false);
 
-                return [
+                $temp =   [
                     'id' => $row->id,
-                    'full_description' => $detail['full_description'],
-                    'brand' => $detail['brand'],
-                    'category' => $detail['category'],
-                    'stock' => $detail['stock'],
-                    'description' => $row->description,
-                    'currency_type_id' => $row->currency_type_id,
-                    'currency_type_symbol' => $row->currency_type->symbol,
                     'sale_unit_price' => round($row->sale_unit_price, 2),
                     'purchase_unit_price' => $row->purchase_unit_price,
                     'unit_type_id' => $row->unit_type_id,
@@ -552,8 +540,10 @@
                         ];
                     }),
                     'lot_code' => $row->lot_code,
-                    'date_of_due' => $row->date_of_due
+                    'date_of_due' => $row->date_of_due,
                 ];
+
+                return  array_merge($row->getCollectionData(), $row->getDataToItemModal(),$temp);
             });
 
         }
