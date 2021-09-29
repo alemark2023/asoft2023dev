@@ -534,7 +534,7 @@
 
                                             <el-tooltip
                                                 class="item"
-                                                content="Muestra el nombre del producto que se ingresa en el pdf, en vez del nombre del producto. Solo para CPE"
+                                                content="Muestra el nombre del producto que se ingresa en el pdf, en vez del nombre del producto. Solo para CPE y Cotización"
                                                 effect="dark"
                                                 placement="top-start">
                                                 <i class="fa fa-info-circle"></i>
@@ -549,6 +549,28 @@
                                             <small v-if="errors.show_pdf_name"
                                                    class="form-control-feedback"
                                                    v-text="errors.show_pdf_name[0]"></small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Permitir Colocar direccion de llegada en guía
+
+                                            <el-tooltip
+                                                class="item"
+                                                content="En guías, cambia el selector a texto para poder introducir el valor. Maximo 100 caracteres"
+                                                effect="dark"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div :class="{'has-danger': errors.dispatches_address_text}"
+                                             class="form-group">
+                                            <el-switch v-model="form.dispatches_address_text"
+                                                       active-text="Si"
+                                                       inactive-text="No"
+                                                       @change="submit"></el-switch>
+                                            <small v-if="errors.dispatches_address_text"
+                                                   class="form-control-feedback"
+                                                   v-text="errors.dispatches_address_text[0]"></small>
                                         </div>
                                     </div>
 
@@ -784,7 +806,8 @@ export default {
             errors: {},
             form: {
                 finances: {},
-                visual: {}
+                visual: {},
+                dispatches_address_text:false,
             },
             affectation_igv_types: [],
             placeholder: '',
@@ -881,6 +904,7 @@ export default {
                 change_free_affectation_igv: false,
                 select_available_price_list: false,
                 show_pdf_name: this.config.show_pdf_name,
+                dispatches_address_text: this.config.dispatches_address_text,
                 group_items_generate_document: false,
                 enabled_global_igv_to_purchase: this.config.enabled_global_igv_to_purchase
             };

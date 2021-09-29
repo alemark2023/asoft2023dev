@@ -328,7 +328,22 @@
                                        v-text="errors.delivery.location_id[0]"></small>
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-6" v-if="config.dispatches_address_text">
+                            <div :class="{'has-danger': errors['delivery.address']}"
+                                 class="form-group">
+                                <label class="control-label">Dirección<span class="text-danger"> *</span></label>
+                                <el-input v-model="form.delivery.address"
+                                           placeholder="Dirección..."
+                                          :maxlength="100"
+                                >
+                                </el-input>
+                                <!-- <el-input v-model="form.delivery.address" :maxlength="100" placeholder="Dirección..."></el-input> -->
+                                <small v-if="errors['delivery.address']"
+                                       class="form-control-feedback"
+                                       v-text="errors['delivery.address'][0]"></small>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" v-if="!config.dispatches_address_text">
                             <div :class="{'has-danger': errors['delivery.address']}"
                                  class="form-group">
                                 <label class="control-label">Dirección<span class="text-danger"> *</span></label>
@@ -341,12 +356,12 @@
                                                :label="ad.address"
                                                :value="ad.address"></el-option>
                                 </el-select>
-                                <!-- <el-input v-model="form.delivery.address" :maxlength="100" placeholder="Dirección..."></el-input> -->
                                 <small v-if="errors['delivery.address']"
                                        class="form-control-feedback"
                                        v-text="errors['delivery.address'][0]"></small>
                             </div>
                         </div>
+
                     </div>
                     <hr>
                     <h4>Datos transportista</h4>

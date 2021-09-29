@@ -5,6 +5,10 @@ namespace App\Http\Requests\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+/**
+ *
+ * @mixin FormRequest
+ */
 class DispatchRequest extends FormRequest
 {
     public function authorize()
@@ -29,7 +33,7 @@ class DispatchRequest extends FormRequest
             'delivery.address'=> [
                 'required',
                 'max:100',
-               
+
             ],
             'dispatcher.identity_document_type_id'=> [
                 'required',
@@ -67,8 +71,8 @@ class DispatchRequest extends FormRequest
                 'max:100',
             ],
 
-            
-           
+
+
         ];
     }
 
