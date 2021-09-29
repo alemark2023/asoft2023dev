@@ -302,25 +302,46 @@ if ($hostname) {
             Route::get('retentions/document/tables', 'Tenant\RetentionController@document_tables');
             Route::get('retentions/table/{table}', 'Tenant\RetentionController@table');
 
-            //Dispatches
-            Route::get('dispatches', 'Tenant\DispatchController@index')->name('tenant.dispatches.index');
-            Route::get('dispatches/columns', 'Tenant\DispatchController@columns');
-            Route::get('dispatches/records', 'Tenant\DispatchController@records');
-            Route::get('dispatches/create/{document?}/{type?}/{dispatch?}', 'Tenant\DispatchController@create');
-            Route::post('dispatches/tables', 'Tenant\DispatchController@tables');
-            Route::post('dispatches', 'Tenant\DispatchController@store');
-            Route::get('dispatches/record/{id}', 'Tenant\DispatchController@record');
-            Route::post('dispatches/sendSunat/{document}', 'Tenant\DispatchController@sendDispatchToSunat');
-            Route::post('dispatches/email', 'Tenant\DispatchController@email');
-            Route::get('dispatches/generate/{sale_note}', 'Tenant\DispatchController@generate');
-            Route::get('dispatches/record/{id}/tables', 'Tenant\DispatchController@generateDocumentTables');
-            Route::post('dispatches/record/{id}/set-document-id', 'Tenant\DispatchController@setDocumentId');
+            /** Dispatches
+             * dispatches
+             * dispatches/columns
+             * dispatches/records
+             * dispatches/create/{document?}/{type?}/{dispatch?}
+             * dispatches/tables
+             * dispatches
+             * dispatches/record/{id}
+             * dispatches/sendSunat/{document}
+             * dispatches/email
+             * dispatches/generate/{sale_note}
+             * dispatches/record/{id}/tables
+             * dispatches/record/{id}/set-document-id
+             * dispatches/search/customers
+             * dispatches/search/customer/{id}
+             * dispatches/client/{id}
+             * dispatches/items
+             * dispatches/data_table
+             * dispatches/search/customer/{id}
+             */
+            Route::prefix('dispatches')->group(function () {
+                Route::get('', 'Tenant\DispatchController@index')->name('tenant.dispatches.index');
+                Route::get('/columns', 'Tenant\DispatchController@columns');
+                Route::get('/records', 'Tenant\DispatchController@records');
+                Route::get('/create/{document?}/{type?}/{dispatch?}', 'Tenant\DispatchController@create');
+                Route::post('/tables', 'Tenant\DispatchController@tables');
+                Route::post('', 'Tenant\DispatchController@store');
+                Route::get('/record/{id}', 'Tenant\DispatchController@record');
+                Route::post('/sendSunat/{document}', 'Tenant\DispatchController@sendDispatchToSunat');
+                Route::post('/email', 'Tenant\DispatchController@email');
+                Route::get('/generate/{sale_note}', 'Tenant\DispatchController@generate');
+                Route::get('/record/{id}/tables', 'Tenant\DispatchController@generateDocumentTables');
+                Route::post('/record/{id}/set-document-id', 'Tenant\DispatchController@setDocumentId');
+                Route::get('/client/{id}', 'Tenant\DispatchController@dispatchesByClient');
+                Route::post('/items', 'Tenant\DispatchController@getItemsFromDispatches');
+                Route::get('/data_table', 'Tenant\DispatchController@data_table');
+                Route::get('/search/customers', 'Tenant\DispatchController@searchCustomers');
+                Route::get('/search/customer/{id}', 'Tenant\DispatchController@searchClientById');
+            });
             Route::get('customers/list', 'Tenant\PersonController@clientsForGenerateCPE');
-            Route::get('dispatches/client/{id}', 'Tenant\DispatchController@dispatchesByClient');
-            Route::post('dispatches/items', 'Tenant\DispatchController@getItemsFromDispatches');
-            Route::get('dispatches/data_table', 'Tenant\DispatchController@data_table');
-            Route::get('dispatches/search/customer/{id}', 'Tenant\DispatchController@searchClientById');
-
             Route::get('reports/consistency-documents', 'Tenant\ReportConsistencyDocumentController@index')->name('tenant.consistency-documents.index')->middleware('tenant.internal.mode');
             Route::post('reports/consistency-documents/lists', 'Tenant\ReportConsistencyDocumentController@lists');
 

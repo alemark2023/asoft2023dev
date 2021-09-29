@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Tenant\Person;
 use App\Models\Tenant\User;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Collection;
 
 /**
@@ -122,4 +122,42 @@ class Controller extends BaseController
             ];
         });
     }
+
+    /**
+     * Metodo general para buscar clientes
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function searchCustomers(Request $request)
+    {
+
+        //true de boletas en env esta en true filtra a los con dni   , false a todos
+        $identity_document_type_id = [1, 4, 6, 7, 0];
+        if (in_array($request->operation_type_id, ['0101', '1001', '1004'])) {
+            $identity_document_type_id = config('tenant.document_type_03_filter') ? [1] : [1, 4, 6, 7, 0];
+            if ($request->document_type_id == '01') {
+                $identity_document_type_id = [6];
+            }
+        }
+        //dispatcher
+        if($request->has('searchBy')) {
+            if ($request->searchBy == 'dispatches') {
+                $identity_document_type_id = ['6', '4', '1'];
+            }
+        }
+        $customers = Person::where('number','like', "%{$request->input}%")
+            ->orWhere('name','like', "%{$request->input}%")
+            ->whereType('customers')->orderBy('name')
+            ->whereIn('identity_document_type_id',$identity_document_type_id)
+            ->whereIsEnabled()
+            ->get()->transform(function($row) {
+                /** @var  Person $row */
+                return $row->getCollectionData();
+            });
+
+        return compact('customers');
+    }
+
+
 }

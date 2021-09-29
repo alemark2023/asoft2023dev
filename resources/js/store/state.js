@@ -26,6 +26,7 @@ export default {
         formats: 0,
         warehouse_id: 0,
         stock: false,
+        dispatches_address_text: false,
         cron: false,
         sunat_alternate_server: false,
         compact_sidebar: false,

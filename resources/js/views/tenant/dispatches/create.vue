@@ -75,8 +75,15 @@
                                        @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
                                 </label>
                                 <el-select v-model="form.customer_id"
+                                           :loading="loading_search"
+                                           :remote-method="searchRemoteCustomers"
+                                           dusk="customer_id"
                                            filterable
-                                           @change="changeCustomer">
+                                           placeholder="Escriba el nombre o número de documento del cliente"
+                                           popper-class="el-select-customers"
+                                           remote
+                                           @change="changeCustomer"
+                                           @keyup.enter.native="keyupCustomer">
                                     <el-option v-for="option in customers"
                                                :key="option.id"
                                                :label="option.description"
@@ -321,7 +328,22 @@
                                        v-text="errors.delivery.location_id[0]"></small>
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-6" v-if="config.dispatches_address_text">
+                            <div :class="{'has-danger': errors['delivery.address']}"
+                                 class="form-group">
+                                <label class="control-label">Dirección<span class="text-danger"> *</span></label>
+                                <el-input v-model="form.delivery.address"
+                                           placeholder="Dirección..."
+                                          :maxlength="100"
+                                >
+                                </el-input>
+                                <!-- <el-input v-model="form.delivery.address" :maxlength="100" placeholder="Dirección..."></el-input> -->
+                                <small v-if="errors['delivery.address']"
+                                       class="form-control-feedback"
+                                       v-text="errors['delivery.address'][0]"></small>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" v-if="!config.dispatches_address_text">
                             <div :class="{'has-danger': errors['delivery.address']}"
                                  class="form-group">
                                 <label class="control-label">Dirección<span class="text-danger"> *</span></label>
@@ -334,12 +356,12 @@
                                                :label="ad.address"
                                                :value="ad.address"></el-option>
                                 </el-select>
-                                <!-- <el-input v-model="form.delivery.address" :maxlength="100" placeholder="Dirección..."></el-input> -->
                                 <small v-if="errors['delivery.address']"
                                        class="form-control-feedback"
                                        v-text="errors['delivery.address'][0]"></small>
                             </div>
                         </div>
+
                     </div>
                     <hr>
                     <h4>Datos transportista</h4>
@@ -608,6 +630,8 @@ export default {
             countries: [],
             seriesAll: [],
             unitTypes: [],
+            all_customers: [],
+            loading_search: false,
             customers: [],
             code: null,
             locations: [],
@@ -616,6 +640,7 @@ export default {
                 errors: {}
             },
             form: {
+                operation_type_id: null,
                 driver: {
                     number: null,
                     name: null,
@@ -691,6 +716,7 @@ export default {
             this.districtsAll = response.data.districts;
             this.unitTypes = response.data.unitTypes;
             this.customers = response.data.customers;
+             this.all_customers = this.customers;
             this.countries = response.data.countries;
             this.locations = response.data.locations;
             this.seriesAll = response.data.series;
@@ -775,6 +801,47 @@ export default {
                 }
             });
             localStorage.removeItem('items');
+        },
+        searchRemoteCustomers(input) {
+            if (input.length > 0) {
+                this.loading_search = true
+                let parameters = `input=${input}&document_type_id=${this.form.document_type_id}&searchBy=${this.resource}`;
+                if(this.form.operation_type_id !== undefined ){
+                    parameters = parameters+`&operation_type_id=${this.form.operation_type_id}`
+                }
+                this.$http.get(`/${this.resource}/search/customers?${parameters}`)
+                    .then(response => {
+                        this.customers = response.data.customers
+                        this.loading_search = false
+                        if (this.customers.length == 0) {
+                             this.filterCustomers()
+                        }
+                    })
+            } else {
+                this.filterCustomers()
+            }
+
+        },
+        filterCustomers() {
+            // if (['0101', '1001', '1004'].includes(this.form.operation_type_id)) {
+
+                if (this.form.document_type_id === '01') {
+                    this.customers = _.filter(this.all_customers, {'identity_document_type_id': '6'})
+                } else {
+                    if (this.document_type_03_filter) {
+                        this.customers = _.filter(this.all_customers, (c) => {
+                            return c.identity_document_type_id !== '6'
+                        })
+                    } else {
+                        this.customers = this.all_customers
+                    }
+                }
+
+                /*
+            } else {
+                this.customers = this.all_customers
+            }
+            */
         },
         setDefaultCustomer() {
             /*
@@ -1011,6 +1078,30 @@ export default {
                 IdLoteSelected: it.IdLoteSelected || '',
                 lot_group: lot_group || null,
             });
+        },
+        keyupCustomer() {
+
+            if (this.input_person.number) {
+
+                if (!isNaN(parseInt(this.input_person.number))) {
+
+                    switch (this.input_person.number.length) {
+                        case 8:
+                            this.input_person.identity_document_type_id = '1'
+                            this.showDialogNewPerson = true
+                            break;
+
+                        case 11:
+                            this.input_person.identity_document_type_id = '6'
+                            this.showDialogNewPerson = true
+                            break;
+                        default:
+                            this.input_person.identity_document_type_id = '6'
+                            this.showDialogNewPerson = true
+                            break;
+                    }
+                }
+            }
         },
         decrementValueAttr(form) {
 
