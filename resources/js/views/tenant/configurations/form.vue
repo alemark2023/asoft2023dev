@@ -574,6 +574,27 @@
                                         </div>
                                     </div>
 
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Asignar dirección de partida - guía
+                                            <el-tooltip
+                                                class="item"
+                                                content="Se asigna la dirección de partida mediante la informacion registrada en establecimiento - Disponible en guías"
+                                                effect="dark"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div :class="{'has-danger': errors.set_address_by_establishment}"
+                                             class="form-group">
+                                            <el-switch v-model="form.set_address_by_establishment"
+                                                       active-text="Si"
+                                                       inactive-text="No"
+                                                       @change="submit"></el-switch>
+                                            <small v-if="errors.set_address_by_establishment"
+                                                   class="form-control-feedback"
+                                                   v-text="errors.set_address_by_establishment[0]"></small>
+                                        </div>
+                                    </div>
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3"
@@ -906,7 +927,8 @@ export default {
                 show_pdf_name: this.config.show_pdf_name,
                 dispatches_address_text: this.config.dispatches_address_text,
                 group_items_generate_document: false,
-                enabled_global_igv_to_purchase: this.config.enabled_global_igv_to_purchase
+                enabled_global_igv_to_purchase: this.config.enabled_global_igv_to_purchase,
+                set_address_by_establishment: false,
             };
         },
         UpdateFormPurchase(e) {

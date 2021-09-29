@@ -101,6 +101,7 @@ class Configuration extends ModelTenant
         'enabled_global_igv_to_purchase',
         'show_pdf_name',
         'dispatches_address_text',
+        'set_address_by_establishment',
     ];
 
     protected $casts = [
@@ -119,6 +120,7 @@ class Configuration extends ModelTenant
         'enabled_global_igv_to_purchase' => 'boolean',
         'show_pdf_name' => 'boolean',
         'dispatches_address_text' => 'boolean',
+        'set_address_by_establishment' => 'boolean',
     ];
 
 
@@ -463,6 +465,7 @@ class Configuration extends ModelTenant
             'show_extra_info_to_item' => (bool)$this->show_extra_info_to_item,
             'percentage_allowance_charge' => $this->percentage_allowance_charge,
             'group_items_generate_document' => $this->group_items_generate_document,
+            'set_address_by_establishment' => $this->set_address_by_establishment,
             'currency_type_id' => $this->getCurrencyTypeId(),
             'currency_types' => $currency,
             'affectation_igv_types_exonerated_unaffected' => Item::AffectationIgvTypesExoneratedUnaffected(),
