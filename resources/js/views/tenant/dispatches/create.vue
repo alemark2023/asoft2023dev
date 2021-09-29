@@ -805,7 +805,7 @@ export default {
         searchRemoteCustomers(input) {
             if (input.length > 0) {
                 this.loading_search = true
-                let parameters = `input=${input}&document_type_id=${this.form.document_type_id}`;
+                let parameters = `input=${input}&document_type_id=${this.form.document_type_id}&searchBy=${this.resource}`;
                 if(this.form.operation_type_id !== undefined ){
                     parameters = parameters+`&operation_type_id=${this.form.operation_type_id}`
                 }

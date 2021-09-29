@@ -131,12 +131,19 @@ class Controller extends BaseController
      */
     public function searchCustomers(Request $request)
     {
+
         //true de boletas en env esta en true filtra a los con dni   , false a todos
         $identity_document_type_id = [1, 4, 6, 7, 0];
         if (in_array($request->operation_type_id, ['0101', '1001', '1004'])) {
             $identity_document_type_id = config('tenant.document_type_03_filter') ? [1] : [1, 4, 6, 7, 0];
             if ($request->document_type_id == '01') {
                 $identity_document_type_id = [6];
+            }
+        }
+        //dispatcher
+        if($request->has('searchBy')) {
+            if ($request->searchBy == 'dispatches') {
+                $identity_document_type_id = ['6', '4', '1'];
             }
         }
         $customers = Person::where('number','like', "%{$request->input}%")
