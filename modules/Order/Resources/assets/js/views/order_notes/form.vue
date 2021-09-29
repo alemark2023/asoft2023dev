@@ -47,7 +47,8 @@
                                                dusk="customer_id"
                                                placeholder="Escriba el nombre o número de documento del cliente"
                                                :remote-method="searchRemoteCustomers"
-                                               :loading="loading_search">
+                                               :loading="loading_search"
+                                               @change="changeCustomer">
 
                                         <el-option v-for="option in customers" :key="option.id" :value="option.id"
                                                    :label="option.description"></el-option>
@@ -366,6 +367,18 @@ export default {
             'loadCompany',
             'loadEstablishment',
         ]),
+        changeCustomer(){
+            this.setAddressByCustomer()
+        },
+        setAddressByCustomer(){
+            
+            let customer = _.find(this.customers, {id : this.form.customer_id})
+
+            if(customer){
+                this.form.shipping_address = customer.address
+            }
+
+        },
         getFormatUnitPriceRow(unit_price) {
             return _.round(unit_price, 6)
             // return unit_price.toFixed(6)
@@ -586,6 +599,7 @@ export default {
             this.$http.get(`/${this.resource}/search/customer/${customer_id}`).then((response) => {
                 this.customers = response.data.customers
                 this.form.customer_id = customer_id
+                this.setAddressByCustomer()
             })
         },
         setDescriptionOfItem(item){

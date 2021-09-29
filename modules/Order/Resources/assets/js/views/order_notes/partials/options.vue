@@ -40,15 +40,18 @@
             <i class="fa fa-receipt"></i>
           </button>
         </div>
-        <div class="col text-center font-weight-bold" v-if="configuration.ticket_58">
-            <p>Imprimir Ticket 58MM</p>
-            <button type="button"
-              class="btn btn-lg btn-info waves-effect waves-light"
-              @click="clickToPrint('ticket_58')"
-            >
-              <i class="fa fa-receipt"></i>
-            </button>
-        </div>
+        <template v-if="configuration">
+          <div class="col text-center font-weight-bold" v-if="configuration.ticket_58">
+              <p>Imprimir Ticket 58MM</p>
+              <button type="button"
+                class="btn btn-lg btn-info waves-effect waves-light"
+                @click="clickToPrint('ticket_58')"
+              >
+                <i class="fa fa-receipt"></i>
+              </button>
+          </div>
+        </template>
+
       </div>
       <br />
       <div class="row" v-show="!showGenerate">
