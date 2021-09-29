@@ -3,19 +3,19 @@
 namespace Modules\Inventory\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Barryvdh\DomPDF\Facade as PDF;
-use DB;
-use Illuminate\Http\Request;
-use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Company;
-use App\Models\Tenant\Item;
-use Modules\Inventory\Models\ItemWarehouse;
+use App\Models\Tenant\Establishment;
+use Barryvdh\DomPDF\Facade as PDF;
+use Carbon\Carbon;
+use DB;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Modules\Inventory\Exports\InventoryExport;
+use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Inventory\Models\Warehouse;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
 
-use Carbon\Carbon;
 class ReportInventoryController extends Controller
 {
     public function tables()
@@ -45,7 +45,9 @@ class ReportInventoryController extends Controller
         $category_id = (int)$request->category_id;
         $active = $request->active;
         $filter = $request->input('filter');
-
+        $date_end = $request->has('date_end') ? $request->date_end : null;
+        $date_start = $request->has('date_start') ? $request->date_start : null;
+        /** @var Builder $records */
         $records = $this->getRecords($warehouse_id);
 
         if ($brand_id != 0) {
@@ -58,8 +60,18 @@ class ReportInventoryController extends Controller
         if (!is_null($active)) {
             $records->where('items.active', $active == '01' ? true : false);
         }
-
-        $records->orderBy('items.name','desc');
+        if (!empty($date_start) && !empty($date_end)) {
+            $date_end = Carbon::createFromFormat('Y-m-d', $request->date_end);
+            $date_start = Carbon::createFromFormat('Y-m-d', $request->date_start);
+            $records->whereBetween('items.date_of_due', [$date_start, $date_end]);
+        } elseif (!empty($date_start)) {
+            $date_start = Carbon::createFromFormat('Y-m-d', $request->date_start);
+            $records->where('items.date_of_due', '>=', $date_start);
+        } elseif (!empty($date_end)) {
+            $date_end = Carbon::createFromFormat('Y-m-d', $request->date_end);
+            $records->where('items.date_of_due', '<=', $date_end);
+        }
+        $records->orderBy('items.name', 'desc');
 
         $records = $records->latest()->get()->transform(function($row) use ($filter,&$data) {
             /** @var \Modules\Inventory\Models\ItemWarehouse $row */
@@ -150,7 +162,7 @@ class ReportInventoryController extends Controller
     /**
      * @param int $warehouse_id Id de almacen
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     private function getRecords($warehouse_id = 0) {
         $query = ItemWarehouse::with(['item', 'item.category', 'item.brand'])
