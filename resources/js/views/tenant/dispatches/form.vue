@@ -562,12 +562,21 @@ export default {
             this.form.transport_mode_type_id = '02'
             this.form.items = this.document.items
             this.form.origin.country_id = this.document.establishment.country_id
-            this.form.origin.location_id = [
-                this.document.establishment.department_id,
-                this.document.establishment.province_id,
-                this.document.establishment.district_id
-            ]
-            this.form.origin.address = this.document.establishment.address
+
+            if(this.configuration.set_address_by_establishment)
+            {
+                this.setOriginAddressByEstablishment()
+            }else
+            {
+                this.form.origin.location_id = [
+                    this.document.establishment.department_id,
+                    this.document.establishment.province_id,
+                    this.document.establishment.district_id
+                ]
+                this.form.origin.address = this.document.establishment.address
+            }
+
+
             this.form.delivery.country_id = this.document.customer.country_id
             this.form.delivery.location_id = [
                 this.document.customer.department_id,
@@ -625,6 +634,24 @@ export default {
 
     },
     methods: {
+        setOriginAddressByEstablishment(){
+
+            if(this.configuration.set_address_by_establishment){
+
+                let establishment = _.find(this.establishments, { id : this.form.establishment_id})
+    
+                if(this.form.origin && establishment){
+    
+                    this.form.origin.address = establishment.address
+                    this.form.origin.location_id = [
+                        establishment.department_id,
+                        establishment.province_id,
+                        establishment.district_id
+                    ]
+                }
+            }
+
+        },
         ...mapActions([
             'loadConfiguration',
         ]),
@@ -700,6 +727,7 @@ export default {
         changeEstablishment() {
             this.form.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
             this.filterSeries()
+            this.setOriginAddressByEstablishment()
         },
         changeDateOfIssue() {
             this.form.date_of_shipping = this.form.date_of_issue

@@ -1009,6 +1009,27 @@ export default {
             this.code = this.form.establishment_id;
             this.form.series_id = null;
             this.setDefaultSerie();
+            this.setOriginAddressByEstablishment()
+        },
+        setOriginAddressByEstablishment(){
+
+
+            if(this.configuration.set_address_by_establishment){
+
+                let establishment = _.find(this.establishments, { id : this.form.establishment_id})
+    
+                if(this.form.origin && establishment){
+
+                    this.form.origin.address = establishment.address
+                    this.form.origin.location_id = [
+                        establishment.department_id,
+                        establishment.province_id,
+                        establishment.district_id
+                    ]
+    
+                }
+
+            }
 
         },
         filterProvince(origin = true) {
