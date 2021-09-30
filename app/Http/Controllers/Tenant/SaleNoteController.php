@@ -56,7 +56,7 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
-
+use Modules\Sale\Helpers\SaleNoteHelper;
 // use App\Models\Tenant\Warehouse;
 
 class SaleNoteController extends Controller
@@ -1675,5 +1675,16 @@ class SaleNoteController extends Controller
         return $data;
 
     }
+
+    public function transformDataOrder(Request $request){
+
+        $data = SaleNoteHelper::transformForOrder($request->all());
+
+        return [
+            'data' => $data
+        ];
+        
+    }
+
 
 }
