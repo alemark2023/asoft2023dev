@@ -1,16 +1,19 @@
 <template>
     <div class="row card-table-report">
         <div class="col-md-12">
-            <div v-loading="loading" class="card card-primary">
+            <div v-loading="loading"
+                 class="card card-primary">
                 <div class="card-header">
                     <h4 class="card-title">Consulta de inventarios</h4>
-                    <div class="data-table-visible-columns" style="top:10px">
+                    <div class="data-table-visible-columns"
+                         style="top:10px">
                         <el-dropdown :hide-on-click="false">
                             <el-button type="primary">
                                 Mostrar/Ocultar filtros<i class="el-icon-arrow-down el-icon--right"></i>
                             </el-button>
                             <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item v-for="(column, index) in filters" :key="index">
+                                <el-dropdown-item v-for="(column, index) in filters"
+                                                  :key="index">
                                     <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
                                 </el-dropdown-item>
                             </el-dropdown-menu>
@@ -21,10 +24,13 @@
                 <div class="card-body">
                     <div class="row m-b-10">
                         <div class="col-md-4 mb-3">
+                            <label class="control-label">Almacen</label>
                             <el-select v-model="form.warehouse_id"
                                        placeholder="Seleccionar almacén"
                                        @change="changeWarehouse">
-                                <el-option key="all" label="Todos" value="all"></el-option>
+                                <el-option key="all"
+                                           label="Todos"
+                                           value="all"></el-option>
                                 <el-option v-for="opt in warehouses"
                                            :key="opt.id"
                                            :label="opt.description"
@@ -32,54 +38,98 @@
                                 </el-option>
                             </el-select>
                         </div>
-                        <div class="col-md-3" v-if="filters.categories.visible">
-                            <div class="form-group">
-                                <el-select
-                                    v-model="form.category_id"
-                                    clearable
-                                    filterable
-                                    placeholder="Seleccionar categoría"
-                                    @change="changeFilter">
-                                    <el-option v-for="option in categories" :key="option.id" :label="option.name"
-                                               :value="option.id"></el-option>
-                                </el-select>
-
-                            </div>
+                        <div v-if="filters.categories.visible"
+                             class="col-md-3">
+                            <label class="control-label">Categoría</label>
+                            <el-select
+                                v-model="form.category_id"
+                                clearable
+                                filterable
+                                placeholder="Seleccionar categoría"
+                                @change="changeFilter">
+                                <el-option v-for="option in categories"
+                                           :key="option.id"
+                                           :label="option.name"
+                                           :value="option.id"></el-option>
+                            </el-select>
                         </div>
-                        <div class="col-md-3" v-if="filters.brand.visible">
-                            <div class="form-group">
-                                <el-select
-                                    v-model="form.brand_id"
-                                    clearable
-                                    filterable
-                                    placeholder="Seleccionar marca"
-                                    @change="changeFilter">
-                                    <el-option v-for="option in brands" :key="option.id" :label="option.name"
-                                               :value="option.id"></el-option>
-                                </el-select>
-                            </div>
+                        <div v-if="filters.brand.visible"
+                             class="col-md-3">
+                            <label class="control-label">Marca</label>
+                            <el-select
+                                v-model="form.brand_id"
+                                clearable
+                                filterable
+                                placeholder="Seleccionar marca"
+                                @change="changeFilter">
+                                <el-option v-for="option in brands"
+                                           :key="option.id"
+                                           :label="option.name"
+                                           :value="option.id"></el-option>
+                            </el-select>
+
                         </div>
                         <div class="col-md-3">
+                            <label class="control-label">Por stock</label>
+
                             <el-select v-model="form.filter"
                                        placeholder="Seleccionar filtro"
                                        @change="changeFilter">
-                                <el-option key="01" label="Todos" value="01"></el-option>
-                                <el-option key="02" label="Stock < 0" value="02"></el-option>
-                                <el-option key="03" label="Stock = 0" value="03"></el-option>
-                                <el-option key="04" label="0 < Stock <= Stock mínimo" value="04"></el-option>
-                                <el-option key="05" label="Stock > Stock mínimo" value="05"></el-option>
+                                <el-option key="01"
+                                           label="Todos"
+                                           value="01"></el-option>
+                                <el-option key="02"
+                                           label="Stock < 0"
+                                           value="02"></el-option>
+                                <el-option key="03"
+                                           label="Stock = 0"
+                                           value="03"></el-option>
+                                <el-option key="04"
+                                           label="0 < Stock <= Stock mínimo"
+                                           value="04"></el-option>
+                                <el-option key="05"
+                                           label="Stock > Stock mínimo"
+                                           value="05"></el-option>
                             </el-select>
                         </div>
 
-                        <div class="col-md-3" v-if="filters.active.visible">
+                        <div v-if="filters.active.visible"
+                             class="col-md-3">
+                            <label class="control-label">Estado del item</label>
                             <el-select v-model="form.active"
+                                       :clearable="true"
                                        placeholder="Seleccionar filtro"
-                                       @change="changeFilter" :clearable="true">
-                                <el-option key="01" label="Habilitados" value="01"></el-option>
-                                <el-option key="00" label="Inhabilitados" value="00"></el-option>
+                                       @change="changeFilter">
+                                <el-option key="01"
+                                           label="Habilitados"
+                                           value="01"></el-option>
+                                <el-option key="00"
+                                           label="Inhabilitados"
+                                           value="00"></el-option>
                             </el-select>
                         </div>
 
+                        <div class="col-md-3" v-if="filters.range.visible">
+                            <label class="control-label">Fecha de vencimiento - inicio</label>
+                            <el-date-picker v-model="form.date_start"
+                                            :clearable="true"
+                                            format="dd/MM/yyyy"
+                                            type="date"
+                                            value-format="yyyy-MM-dd"
+                                            @change="changeDisabledDates"></el-date-picker>
+                        </div>
+                        <div class="col-md-3"  v-if="filters.range.visible">
+                            <label class="control-label">Fecha de vencimiento - Fecha término</label>
+                            <el-date-picker v-model="form.date_end"
+                                            :clearable="true"
+                                            :picker-options="pickerOptionsDates"
+                                            format="dd/MM/yyyy"
+                                            type="date"
+                                            @change="changeDisabledDates"
+                                            value-format="yyyy-MM-dd"></el-date-picker>
+                        </div>
+
+                        <div class="col-12">&nbsp;</div>
                         <div class="col-auto">
                             <el-button :disabled="records.length <= 0"
                                        :loading="loadingPdf"
@@ -94,11 +144,12 @@
                         </div>
                     </div>
 
-                    <div v-if="records.length > 0" class="row">
+                    <div v-if="records.length > 0"
+                         class="row">
                         <div class="col-md-12">
                             <div class="table-responsive">
                                 <table class="table table-striped table-responsive-xl table-bordered table-hover"
-                                       >
+                                >
                                     <thead class="">
                                     <tr>
                                         <th>#</th>
@@ -108,23 +159,25 @@
                                         <th class="text-right">Stock actual</th>
                                         <th class="text-right">Precio de venta</th>
                                         <th class="text-right">Costo</th>
-                                        <th>Ganancia <el-tooltip
-                                            class="item"
-                                            effect="dark"
-                                            content="Precio de venta - Costo"
-                                            placement="top-start"
-                                        >
-                                            <i class="fa fa-info-circle"></i>
-                                        </el-tooltip>
+                                        <th>Ganancia
+                                            <el-tooltip
+                                                class="item"
+                                                content="Precio de venta - Costo"
+                                                effect="dark"
+                                                placement="top-start"
+                                            >
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
                                         </th>
-                                        <th>Ganancia Total<el-tooltip
-                                            class="item"
-                                            effect="dark"
-                                            content="Precio de venta - Costo * Cantidad"
-                                            placement="top-start"
-                                        >
-                                            <i class="fa fa-info-circle"></i>
-                                        </el-tooltip>
+                                        <th>Ganancia Total
+                                            <el-tooltip
+                                                class="item"
+                                                content="Precio de venta - Costo * Cantidad"
+                                                effect="dark"
+                                                placement="top-start"
+                                            >
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
                                         </th>
                                         <th>Marca</th>
                                         <th class="text-center">F. vencimiento</th>
@@ -132,7 +185,8 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr v-for="(row, index) in records" :key="index">
+                                    <tr v-for="(row, index) in records"
+                                        :key="index">
                                         <td>{{ index + 1 }}</td>
                                         <td>{{ row.name }}</td>
                                         <td>{{ row.item_category_name }}</td>
@@ -149,12 +203,13 @@
                                     </tbody>
                                     <tfoot>
                                     <tr>
-                                        <td colspan="5" class="celda"></td>
+                                        <td class="celda"
+                                            colspan="5"></td>
                                         <td class="celda">S/ {{ totals.sale_unit_price }}</td>
                                         <td class="celda">S/ {{ totals.purchase_unit_price }}</td>
 
-                                        <td class="celda">S/ {{total_profit}}</td>
-                                        <td class="celda">S/ {{total_all_profit}}</td>
+                                        <td class="celda">S/ {{ total_profit }}</td>
+                                        <td class="celda">S/ {{ total_all_profit }}</td>
                                     </tr>
                                     </tfoot>
                                 </table>
@@ -164,7 +219,8 @@
                             Total {{ records.length }}
                         </div>
                     </div>
-                    <div v-else class="row">
+                    <div v-else
+                         class="row">
                         <div class="col-md-12">
                             <strong>No se encontraron registros</strong>
                         </div>
@@ -204,7 +260,13 @@ export default {
             totals: {
                 purchase_unit_price: 0,
                 sale_unit_price: 0,
-            }
+            },
+            pickerOptionsDates: {
+                disabledDate: (time) => {
+                    time = moment(time).format('YYYY-MM-DD')
+                    return this.form.date_start > time
+                }
+            },
         }
     },
     created() {
@@ -223,11 +285,21 @@ export default {
                 title: 'Estado',
                 visible: false
             },
+            range: {
+                title: 'Rango de fechas',
+                visible: false
+            },
         }
     },
     methods: {
-        initTotals(){
-            
+        changeDisabledDates() {
+            if (this.form.date_end < this.form.date_start) {
+                this.form.date_end = this.form.date_start
+            }
+            this.getRecords();
+        },
+        initTotals() {
+
             this.totals = {
                 purchase_unit_price: 0,
                 sale_unit_price: 0,
@@ -243,23 +315,23 @@ export default {
                 active: null
             }
         },
-        calculeTotalProfit(){
+        calculeTotalProfit() {
 
             this.total_profit = 0;
             this.total_all_profit = 0;
             this.total_purchase_unit_price = 0;
             this.total_sale_unit_price = 0;
 
-            if(this.records.length > 0) {
+            if (this.records.length > 0) {
 
                 let el = this;
                 this.records.forEach(function (a, b) {
 
-                    el.total_profit +=  Math.abs(a.profit);
+                    el.total_profit += Math.abs(a.profit);
                     el.total_all_profit += Math.abs(a.profit * a.stock);
 
-                    el.totals.purchase_unit_price +=  parseFloat(a.purchase_unit_price)
-                    el.totals.sale_unit_price +=  parseFloat(a.sale_unit_price)
+                    el.totals.purchase_unit_price += parseFloat(a.purchase_unit_price)
+                    el.totals.sale_unit_price += parseFloat(a.sale_unit_price)
 
                 })
 
@@ -290,6 +362,12 @@ export default {
             this.total_profit = 0;
             this.total_all_profit = 0;
             this.initTotals()
+            let range = this.filters.range.visible
+            if(range !== true){
+                delete this.form.date_start
+                delete this.form.date_end
+            }
+            // Remover filtro de fecha
 
             await this.$http.post(`/${this.resource}/records`, this.form)
                 .then(response => {

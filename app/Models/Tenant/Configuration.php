@@ -100,6 +100,8 @@ class Configuration extends ModelTenant
         'group_items_generate_document',
         'enabled_global_igv_to_purchase',
         'show_pdf_name',
+        'dispatches_address_text',
+        'set_address_by_establishment',
     ];
 
     protected $casts = [
@@ -117,6 +119,8 @@ class Configuration extends ModelTenant
         'group_items_generate_document' => 'boolean',
         'enabled_global_igv_to_purchase' => 'boolean',
         'show_pdf_name' => 'boolean',
+        'dispatches_address_text' => 'boolean',
+        'set_address_by_establishment' => 'boolean',
     ];
 
 
@@ -454,12 +458,14 @@ class Configuration extends ModelTenant
             'item_per_page' => config('tenant.items_per_page'),
             'active_warehouse_prices' => (bool)$this->active_warehouse_prices,
             'active_allowance_charge' => (bool)$this->active_allowance_charge,
+            'dispatches_address_text' => $this->isDispatchesAddressText(),
             'search_item_by_series' => (bool)$this->search_item_by_series,
             'change_free_affectation_igv' => (bool)$this->change_free_affectation_igv,
             'select_available_price_list' => (bool)$this->select_available_price_list,
             'show_extra_info_to_item' => (bool)$this->show_extra_info_to_item,
             'percentage_allowance_charge' => $this->percentage_allowance_charge,
             'group_items_generate_document' => $this->group_items_generate_document,
+            'set_address_by_establishment' => $this->set_address_by_establishment,
             'currency_type_id' => $this->getCurrencyTypeId(),
             'currency_types' => $currency,
             'affectation_igv_types_exonerated_unaffected' => Item::AffectationIgvTypesExoneratedUnaffected(),
@@ -609,6 +615,26 @@ class Configuration extends ModelTenant
         $this->apk_url = $apk_url;
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isDispatchesAddressText(): bool
+    {
+        return (bool) $this->dispatches_address_text;
+    }
+
+    /**
+     * @param bool $dispatches_address_text
+     *
+     * @return Configuration
+     */
+    public function setDispatchesAddressText(bool $dispatches_address_text): Configuration
+    {
+        $this->dispatches_address_text = (bool) $dispatches_address_text;
+        return $this;
+    }
+
 
 
 }

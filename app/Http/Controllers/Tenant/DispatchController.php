@@ -313,7 +313,7 @@ class DispatchController extends Controller
                 ];
             });
 
-        $identities = ['6', '1'];
+        $identities = ['6', '4', '1'];
 
         // $dni_filter = config('tenant.document_type_03_filter');
         // if($dni_filter){

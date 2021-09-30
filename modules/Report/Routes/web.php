@@ -253,7 +253,13 @@
 
                     });
 
-                    Route::prefix('massive-downloads')->group(function () {
+                   /**
+                    * reports/massive-downloads/
+                    * reports/massive-downloads/filter
+                    * reports/massive-downloads/pdf
+                    * reports/massive-downloads/records
+                    */
+                   Route::prefix('massive-downloads')->group(function () {
 
                         Route::get('', 'ReportMassiveDownloadController@index')
                              ->name('tenant.reports.massive-downloads.index');

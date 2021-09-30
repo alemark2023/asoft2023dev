@@ -39,8 +39,10 @@ export default {
         if (state.payment_method_types === undefined) state.payment_method_types = [];
         if (state.form_pos === undefined) state.form_pos = {};
         if (state.currency_types === undefined) state.currency_types = [];
+        if (state.items === undefined) state.items = [];
         if (state.exchange_rate_sale === undefined) state.exchange_rate_sale = 1;
         if (state.exchange_rate === undefined) state.exchange_rate = 1;
+        if (state.item === undefined) state.item = {};
         // Previenete limite de almacen exedido
         /*
         5MB per app per browser. According to the HTML5 spec, this limit can be increased by the user when needed;
@@ -112,6 +114,14 @@ export default {
     loadAllItems(store) {
         if (state.all_items === undefined) state.all_items = [];
         // state.all_items = getUniqueArray(readStorageData('all_items', true), ['id'])
+    },
+    loadItem(store) {
+        if (state.item === undefined) state.item = {};
+
+    },
+    loadItems(store) {
+        if (state.items === undefined) state.items = [];
+        // state.items = getUniqueArray(readStorageData('items', true), ['id'])
     },
     loadExchangeRate(store) {
         if (state.exchange_rate === undefined) state.exchange_rate = 1;
