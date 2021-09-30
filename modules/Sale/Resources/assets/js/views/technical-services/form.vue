@@ -354,10 +354,11 @@
                                         <tr>
 
                                             <td class="text-center pt-3"
-                                                colspan="9">
+                                                colspan="9" >
                                                 <button class="btn waves-effect waves-light btn-primary btn-sm hidden-sm-down"
                                                         style="width: 180px;"
                                                         type="button"
+                                                        :disabled="load_record"
                                                         @click.prevent="clickAddItemInvoice">+ Agregar Producto
                                                 </button>
                                             </td>
@@ -397,7 +398,7 @@
             :exchange-rate-sale="form.exchange_rate_sale"
 
             :isEditItemNote="false"
-            :operation-type-id="form.operation_type_id"
+            :operationTypeId="'0101'"
             :recordItem="recordItem"
             :showDialog.sync="showDialogAddItem"
             :typeUser="config.typeUser"
@@ -437,6 +438,7 @@ export default {
     components: {PersonForm},
     data() {
         return {
+            load_record: true,
             showDialogNewPerson: false,
             showDialogAddItem: false,
             recordItem: null,
@@ -514,6 +516,7 @@ export default {
         }
     },
     async created() {
+        this.load_record = true
         this.loadConfiguration()
         this.loadExchangeRate()
         this.loadCurrencyTypes()
@@ -563,6 +566,8 @@ export default {
                     this.form.exchange_rate_sale = this.exchange_rate
 
                 });
+            }).finally(()=>{
+                this.load_record = false
             })
 
         this.$eventHub.$on('reloadDataPersons', (customer_id) => {
@@ -1226,6 +1231,7 @@ export default {
         },
         create() {
             this.total = 0;
+            this.load_record = true;
             this.initForm()
 
             this.titleDialog = (this.recordId) ? 'Editar servicio técnico' : 'Nuevo servicio técnico'
@@ -1244,6 +1250,11 @@ export default {
                         this.reloadDataCustomers(this.form.customer_id)
                         this.calculateTotal()
                     })
+                    .finally(()=>{
+                        this.load_record = false;
+                })
+            }else{
+                this.load_record = false
             }
         },
         submit() {
