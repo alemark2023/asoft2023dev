@@ -183,9 +183,9 @@ export default {
                     if (response.data.success) {
 
                         this.documentNewId = response.data.data.id
+                        this.saveUpdateStatus()
                         this.$eventHub.$emit("reloadData")
                         this.$message.success('Transaccion finalizada correctamente')
-                        this.saveUpdateStatus()
                         this.clickClose()
 
                     } else {
