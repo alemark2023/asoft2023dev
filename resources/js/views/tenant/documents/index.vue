@@ -283,11 +283,21 @@
                         <td class="text-right"
                             v-if="typeUser != 'integrator'">
 
-                            <a :href="`/documents/${row.id}/edit`"
-                               class="btn btn-success waves-effect waves-light btn-xs m-1__2"
-                               v-if="row.state_type_id === '01' && userId == row.user_id && row.is_editable">
-                                Editar
-                            </a>
+                            <template v-if="configuration.permission_to_edit_cpe">
+                                <a :href="`/documents/${row.id}/edit`"
+                                    class="btn btn-success waves-effect waves-light btn-xs m-1__2"
+                                    v-if="row.state_type_id === '01' && userPermissionEditCpe && row.is_editable">
+                                    Editar
+                                </a>
+                            </template>
+                            <template v-else>
+                                <a :href="`/documents/${row.id}/edit`"
+                                    class="btn btn-success waves-effect waves-light btn-xs m-1__2"
+                                    v-if="row.state_type_id === '01' && userId == row.user_id && row.is_editable">
+                                    Editar
+                                </a>
+                            </template>
+
                             <button type="button"
                                     class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
                                     @click.prevent="clickDeleteDocument(row.id)"
@@ -399,7 +409,7 @@ import ReportPaymentComplete from './partials/report_payment_complete.vue'
 
 export default {
     mixins: [deletable],
-    props: ['isClient', 'typeUser', 'import_documents', 'import_documents_second', 'userId', 'configuration'],
+    props: ['isClient', 'typeUser', 'import_documents', 'import_documents_second', 'userId', 'configuration', 'userPermissionEditCpe'],
     components: {
         DocumentsVoided,
         ItemsImport,

@@ -509,7 +509,8 @@ class ClientController extends Controller
             'api_token' => $token,
             'establishment_id' => $establishment_id,
             'type' => $request->input('type'),
-            'locked' => true
+            'locked' => true,
+            'permission_edit_cpe' => true,
         ]);
 
 
