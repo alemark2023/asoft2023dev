@@ -374,6 +374,7 @@
 
 
             if (($format_pdf === 'ticket') or ($format_pdf === 'ticket_58')) {
+                $base_pdf_template = $configuration->formats;
                 $width = ($format_pdf === 'ticket_58') ? 56 : 78;
 
                 if (config('tenant.enabled_template_ticket_80')) $width = 76;
