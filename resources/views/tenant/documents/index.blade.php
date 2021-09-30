@@ -6,6 +6,7 @@
                             :type-user="{{ json_encode(auth()->user()->type) }}"
                             :import_documents="{{ json_encode($import_documents) }}"
                             user-id="{{ auth()->user()->id }}"
+                            :user-permission-edit-cpe="{{ json_encode(auth()->user()->permission_edit_cpe) }}"
                             :import_documents_second="{{ json_encode($import_documents_second) }}"
                             :configuration="{{ $configuration }}"></tenant-documents-index>
 

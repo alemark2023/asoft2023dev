@@ -102,6 +102,7 @@ class Configuration extends ModelTenant
         'show_pdf_name',
         'dispatches_address_text',
         'set_address_by_establishment',
+        'permission_to_edit_cpe',
     ];
 
     protected $casts = [
@@ -121,6 +122,7 @@ class Configuration extends ModelTenant
         'show_pdf_name' => 'boolean',
         'dispatches_address_text' => 'boolean',
         'set_address_by_establishment' => 'boolean',
+        'permission_to_edit_cpe' => 'boolean',
     ];
 
 
@@ -466,6 +468,7 @@ class Configuration extends ModelTenant
             'percentage_allowance_charge' => $this->percentage_allowance_charge,
             'group_items_generate_document' => $this->group_items_generate_document,
             'set_address_by_establishment' => $this->set_address_by_establishment,
+            'permission_to_edit_cpe' => $this->permission_to_edit_cpe,
             'currency_type_id' => $this->getCurrencyTypeId(),
             'currency_types' => $currency,
             'affectation_igv_types_exonerated_unaffected' => Item::AffectationIgvTypesExoneratedUnaffected(),

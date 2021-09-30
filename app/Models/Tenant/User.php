@@ -73,6 +73,7 @@ class User extends Authenticatable
         'address', 'telephone',
          'document_id',
          'series_id',
+        'permission_edit_cpe',
     ];
 
     /**
@@ -85,7 +86,8 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'series_id'=> 'int'
+        'series_id'=> 'int',
+        'permission_edit_cpe' => 'boolean',
     ];
 
     public function modules()
