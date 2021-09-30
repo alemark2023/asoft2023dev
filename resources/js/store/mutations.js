@@ -165,6 +165,15 @@ export default {
         if(records === undefined ) records = [];
         state.records = records
     },
+
+    setItems(state, items) {
+        if(items === undefined ) items = [];
+        state.items = items
+    },
+    setItem(state, item) {
+        if(item === undefined ) item = {};
+        state.item = item
+    },
     setPagination(state, pagination) {
         if(pagination === undefined ) pagination = {
             current_page : 1,

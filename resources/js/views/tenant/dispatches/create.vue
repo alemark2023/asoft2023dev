@@ -328,13 +328,14 @@
                                        v-text="errors.delivery.location_id[0]"></small>
                             </div>
                         </div>
-                        <div class="col-lg-6" v-if="config.dispatches_address_text">
+                        <div v-if="config.dispatches_address_text"
+                             class="col-lg-6">
                             <div :class="{'has-danger': errors['delivery.address']}"
                                  class="form-group">
                                 <label class="control-label">Dirección<span class="text-danger"> *</span></label>
                                 <el-input v-model="form.delivery.address"
-                                           placeholder="Dirección..."
                                           :maxlength="100"
+                                          placeholder="Dirección..."
                                 >
                                 </el-input>
                                 <!-- <el-input v-model="form.delivery.address" :maxlength="100" placeholder="Dirección..."></el-input> -->
@@ -343,7 +344,8 @@
                                        v-text="errors['delivery.address'][0]"></small>
                             </div>
                         </div>
-                        <div class="col-lg-6" v-if="!config.dispatches_address_text">
+                        <div v-if="!config.dispatches_address_text"
+                             class="col-lg-6">
                             <div :class="{'has-danger': errors['delivery.address']}"
                                  class="form-group">
                                 <label class="control-label">Dirección<span class="text-danger"> *</span></label>
@@ -547,16 +549,102 @@
                                 </td>
                             </tr>
                             </tbody>
+                            <tfoot>
+                            <tr>
+                                <td class="text-right hidden-sm-down"
+                                    colspan="2">
+                                    <label class="control-label">
+                                        Producto
+                                        <a v-if="can_add_new_product"
+                                           href="#"
+                                           @click.prevent="showDialogNewItem = true"
+                                        >[+ Nuevo]</a>
+                                    </label>
+                                </td>
+                                <td class="hidden-sm-down">
+                                    <!-- Selector para item -->
+                                    <div :class="{'has-danger': errors.items}"
+                                         class="form-group">
+                                        <el-select v-model="current_item"
+                                                   :loading="loading_search"
+                                                   :remote-method="searchRemoteItems"
+                                                   filterable
+                                                   remote
+                                                   @change="onChangeItem">
+                                            <el-option
+                                                v-for="option in items"
+                                                :key="option.id"
+                                                :label="option.full_description"
+                                                :value="option.id"></el-option>
+                                        </el-select>
+                                        <small v-if="errors.items"
+                                               class="form-control-feedback"
+                                               v-text="errors.items[0]"></small>
+                                    </div>
+                                    <template v-if="item">
+                                        <div v-if="item.lots_enabled && item.lots_group.length > 0"
+                                             class="col-12 mt-2">
+                                            <a class="text-center font-weight-bold text-info"
+                                               href="#"
+                                               @click.prevent="clickLotGroup">
+                                                [&#10004; Seleccionar lote]
+                                            </a>
+                                        </div>
+                                    </template>
+                                    <!-- Selector para item -->
+                                </td>
+                                <td class="text-right hidden-sm-down">
+                                    <!-- Aqui colocar cantidad -->
+                                    <div :class="{'has-danger': errors.quantity}"
+                                         class="form-group">
+                                        <!--
+                                        <label class="control-label">Cantidad</label>
+                                        -->
+                                        <el-input-number
+                                            v-model="quantity"
+                                            :max="99999999"
+                                            :min="0.01"
+                                            :precision="4"
+                                            :step="1"
+                                            placeholder="Cantidad"></el-input-number>
+                                        <small v-if="errors.quantity"
+                                               class="form-control-feedback"
+                                               v-text="errors.quantity[0]"></small>
+                                    </div>
+                                    <!-- Aqui colocar cantidad -->
+                                </td>
+                                <td class="text-right hidden-sm-down">
+                                    <!-- Agregar -->
+                                    <el-button style="width:100%"
+                                               type="primary"
+                                               @click="addAItemInRow">Agregar
+                                    </el-button>
+                                    <!-- Agregar -->
+
+                                    <!--
+                                    <button class="btn waves-effect waves-light btn-xs btn-danger"
+                                            type="button"
+                                            @click.prevent="clickRemoveItem(index)">x
+                                    </button>
+                                    -->
+                                </td>
+                            </tr>
+                            <tr>
+                                <!-- Mostrar en movil -->
+                                <td class="text-center hidden-md-up"
+                                    colspan="5">
+                                    <button class="btn waves-effect waves-light btn-primary"
+                                            type="button"
+                                            @click.prevent="showDialogAddItems = true">+ Agregar Producto
+                                    </button>
+                                </td>
+                            </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
                 <div class="col-lg-12">
-                    <div class="form-group">
-                        <button class="btn waves-effect waves-light btn-primary"
-                                type="button"
-                                @click.prevent="showDialogAddItems = true">+ Agregar Producto
-                        </button>
-                    </div>
+                    &nbsp;
                 </div>
                 <div class="form-actions text-right mt-4">
                     <el-button @click.prevent="close()">Cancelar</el-button>
@@ -573,19 +661,32 @@
                      :showDialog.sync="showDialogNewPerson"
                      type="customers"></person-form>
 
-        <items :dialogVisible.sync="showDialogAddItems"
-               @addItem="addItem"></items>
+        <items
+            :dialogVisible.sync="showDialogAddItems"
+            @addItem="addItem"></items>
 
         <dispatch-options :isUpdate="(order_form_id) ? true:false"
                           :recordId="recordId"
                           :showClose="false"
                           :showDialog.sync="showDialogOptions"></dispatch-options>
+        <item-form :external="true"
+                   :showDialog.sync="showDialogNewItem"></item-form>
+        <lots-group
+            v-if="item"
+            :lots_group="item.lots_group"
+            :quantity="quantity"
+            :showDialog.sync="showDialogLots"
+            @addRowLotGroup="addRowLotGroup">
+        </lots-group>
     </div>
 </template>
 
 <script>
 import PersonForm from '../persons/form.vue';
 import Items from './items.vue';
+import itemForm from '../items/form.vue';
+import LotsGroup from '../documents/partials/lots_group.vue';
+
 import DispatchOptions from './partials/options.vue'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
@@ -595,17 +696,27 @@ export default {
         'configuration',
     ],
     components: {
+        itemForm,
+        LotsGroup,
         PersonForm,
         Items,
         DispatchOptions,
     },
-    computed:{
+    computed: {
         ...mapState([
             'config',
+            'item',
+            'items',
+            'all_items',
         ]),
+
     },
     data() {
         return {
+            can_add_new_product: false,
+            showDialogNewItem: false,
+            IdLoteSelected: false,
+            showDialogLots: false,
             min_qty: 0.1,
             showDialogOptions: false,
             showDialogNewPerson: false,
@@ -632,10 +743,13 @@ export default {
             unitTypes: [],
             all_customers: [],
             loading_search: false,
+            search_item_by_barcode: false,
             customers: [],
             code: null,
             locations: [],
             series: [],
+            current_item: null,
+            quantity: 0,
             errors: {
                 errors: {}
             },
@@ -692,9 +806,10 @@ export default {
             customerAddresses: [],
         }
     },
-    created(){
+    created() {
         this.loadConfiguration()
         this.$store.commit('setConfiguration', this.configuration)
+        this.canCreateProduct();
     },
     mounted() {
         // this.clean();
@@ -705,7 +820,7 @@ export default {
             const items = JSON.parse(itemsFromSummary);
             payload.itemIds = items.map(i => i.id);
         }
-         this.$http.post(`/${this.resource}/tables`, payload).then(response => {
+        this.$http.post(`/${this.resource}/tables`, payload).then(response => {
             this.company = response.data.company;
             this.identityDocumentTypes = response.data.identityDocumentTypes;
             this.transferReasonTypes = response.data.transferReasonTypes;
@@ -716,7 +831,7 @@ export default {
             this.districtsAll = response.data.districts;
             this.unitTypes = response.data.unitTypes;
             this.customers = response.data.customers;
-             this.all_customers = this.customers;
+            this.all_customers = this.customers;
             this.countries = response.data.countries;
             this.locations = response.data.locations;
             this.seriesAll = response.data.series;
@@ -726,21 +841,106 @@ export default {
                 this.onLoadItemsFromSummary(response.data.itemsFromSummary, JSON.parse(itemsFromSummary));
             }
             this.changeEstablishment()
-         }).then(()=>{
-             this.setDefaultCustomer();
-         });
+        }).then(() => {
+            this.setDefaultCustomer();
+        });
 
-         this.createFromOrderForm()
+        this.createFromOrderForm()
 
         this.$eventHub.$on('reloadDataPersons', (customer_id) => {
             this.reloadDataCustomers(customer_id)
         })
     },
     methods: {
-
         ...mapActions([
+            'loadItems',
             'loadConfiguration',
         ]),
+        canCreateProduct() {
+            if (this.config.typeUser === 'admin') {
+                this.can_add_new_product = true
+            } else if (this.config.typeUser === 'seller' && this.config.seller_can_create_product !== undefined) {
+                this.can_add_new_product = this.config.seller_can_create_product;
+            }
+            return this.can_add_new_product;
+        },
+        getAllItems() {
+            this.$http.post(`/${this.resource}/tables`).then(response => {
+                // this.items = response.data.items;
+                this.all_items = this.items
+                this.$store.commit('setItems', response.data.items)
+                this.$store.commit('setAllItems', response.data.items)
+
+            });
+        },
+        addRowLotGroup(id) {
+            this.IdLoteSelected = id;
+        },
+        clickLotGroup() {
+            this.showDialogLots = true
+        },
+        async searchRemoteItems(input) {
+            if (input.length > 2) {
+                this.loading_search = true
+
+                const params = {
+                    'input': input,
+                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0
+                }
+                await this.$http.get(`/documents/search-items`, {params})
+                    .then(response => {
+                        // this.items = response.data.items
+                        this.$store.commit('setItems', response.data.items)
+                        this.loading_search = false
+                        // this.enabledSearchItemsBarcode()
+                        if (this.items.length == 0) {
+                            this.filterItems()
+                        }
+                    })
+            } else {
+                await this.filterItems()
+            }
+        },
+        onChangeItem() {
+            this.IdLoteSelected = null;
+            this.$store.commit('setItem', this.items.find(it => it.id == this.current_item))
+        },
+        filterItems() {
+            this.$store.commit('setItems', this.all_items)
+        },
+        addAItemInRow() {
+            this.errors = {};
+            if (this.item.lots_enabled) {
+                if (!this.IdLoteSelected)
+                    return this.$message.error('Debe seleccionar un lote.');
+            }
+
+            if ((this.current_item != null) && (this.quantity != null)) {
+                this.quantity = Math.abs(this.quantity)
+                if (isNaN(this.quantity)) {
+                    this.quantity = 0;
+                }
+                const item = this.items.find((item) => item.id == this.current_item)
+                item.IdLoteSelected = this.IdLoteSelected;
+
+                this.addItem({
+                    item: item,
+                    quantity: this.quantity,
+                })
+                this.$store.commit('setItem', {})
+                return;
+            }
+
+            if (this.current_item == null) {
+                this.$set(this.errors, 'items', ['Seleccione el producto']);
+            }
+
+            if (this.quantity == null) {
+                this.$set(this.errors, 'quantity', ['Digite la cantidad']);
+            }
+
+            this.IdLoteSelected = null;
+        },
         reloadDataCustomers(customer_id) {
             this.$http.get(`/documents/search/customer/${customer_id}`).then((response) => {
                 this.customers = response.data.customers
@@ -806,15 +1006,15 @@ export default {
             if (input.length > 0) {
                 this.loading_search = true
                 let parameters = `input=${input}&document_type_id=${this.form.document_type_id}&searchBy=${this.resource}`;
-                if(this.form.operation_type_id !== undefined ){
-                    parameters = parameters+`&operation_type_id=${this.form.operation_type_id}`
+                if (this.form.operation_type_id !== undefined) {
+                    parameters = parameters + `&operation_type_id=${this.form.operation_type_id}`
                 }
                 this.$http.get(`/${this.resource}/search/customers?${parameters}`)
                     .then(response => {
                         this.customers = response.data.customers
                         this.loading_search = false
                         if (this.customers.length == 0) {
-                             this.filterCustomers()
+                            this.filterCustomers()
                         }
                     })
             } else {
@@ -825,23 +1025,23 @@ export default {
         filterCustomers() {
             // if (['0101', '1001', '1004'].includes(this.form.operation_type_id)) {
 
-                if (this.form.document_type_id === '01') {
-                    this.customers = _.filter(this.all_customers, {'identity_document_type_id': '6'})
-                } else {
-                    if (this.document_type_03_filter) {
-                        this.customers = _.filter(this.all_customers, (c) => {
-                            return c.identity_document_type_id !== '6'
-                        })
-                    } else {
-                        this.customers = this.all_customers
-                    }
-                }
-
-                /*
+            if (this.form.document_type_id === '01') {
+                this.customers = _.filter(this.all_customers, {'identity_document_type_id': '6'})
             } else {
-                this.customers = this.all_customers
+                if (this.document_type_03_filter) {
+                    this.customers = _.filter(this.all_customers, (c) => {
+                        return c.identity_document_type_id !== '6'
+                    })
+                } else {
+                    this.customers = this.all_customers
+                }
             }
-            */
+
+            /*
+        } else {
+            this.customers = this.all_customers
+        }
+        */
         },
         setDefaultCustomer() {
             /*
@@ -855,17 +1055,17 @@ export default {
             */
             if (this.config.establishment.customer_id) {
                 let temp_customers = this.customers;
-                let customer_id =this.config.establishment.customer_id;
-                let custom  = temp_customers.find(l => l.id == customer_id);
-                if(custom === undefined) {
+                let customer_id = this.config.establishment.customer_id;
+                let custom = temp_customers.find(l => l.id == customer_id);
+                if (custom === undefined) {
                     this.$http.get(`/${this.resource}/search/customer/${customer_id}`).then((response) => {
                         let data_customer = response.data.customers
                         temp_customers = temp_customers.push(...data_customer)
                     })
                     temp_customers = this.customers.filter((item, index, self) =>
-                        index === self.findIndex((t) => (
-                            t.id === item.id
-                        ))
+                            index === self.findIndex((t) => (
+                                t.id === item.id
+                            ))
                     )
                     this.customers = temp_customers;
                 }
@@ -931,24 +1131,24 @@ export default {
 
             }
         },
-        setDefaultSerie(){
+        setDefaultSerie() {
             let series_id = parseInt(this.config.user.serie);
-            if(isNaN(series_id)) series_id = null;
+            if (isNaN(series_id)) series_id = null;
             let searchSerie = _.filter(this.series, {
                 'establishment_id': this.form.establishment_id,
                 'document_type_id': this.form.document_type_id,
                 'id': series_id
             });
-            if(searchSerie !== undefined && searchSerie.length > 0){
-                this.form.series_id=series_id;
+            if (searchSerie !== undefined && searchSerie.length > 0) {
+                this.form.series_id = series_id;
             }
         },
         initForm() {
             this.errors = {}
             let customer_id = parseInt(this.config.establishment.customer_id);
             let establishment_id = parseInt(this.config.establishment.id);
-            if(isNaN(customer_id)) customer_id = null;
-            if(isNaN(establishment_id)) establishment_id = null;
+            if (isNaN(customer_id)) customer_id = null;
+            if (isNaN(establishment_id)) establishment_id = null;
             this.form = {
                 establishment_id: establishment_id,
                 document_type_id: '09',
@@ -1011,14 +1211,14 @@ export default {
             this.setDefaultSerie();
             this.setOriginAddressByEstablishment()
         },
-        setOriginAddressByEstablishment(){
+        setOriginAddressByEstablishment() {
 
 
-            if(this.configuration.set_address_by_establishment){
+            if (this.configuration.set_address_by_establishment) {
 
-                let establishment = _.find(this.establishments, { id : this.form.establishment_id})
-    
-                if(this.form.origin && establishment){
+                let establishment = _.find(this.establishments, {id: this.form.establishment_id})
+
+                if (this.form.origin && establishment) {
 
                     this.form.origin.address = establishment.address
                     this.form.origin.location_id = [
@@ -1026,7 +1226,7 @@ export default {
                         establishment.province_id,
                         establishment.district_id
                     ]
-    
+
                 }
 
             }
@@ -1259,7 +1459,7 @@ export default {
             let v = 0;
             this.form.items.forEach((element) => {
                 v = parseFloat(element.quantity);
-                if(isNaN(v)) {
+                if (isNaN(v)) {
                     validate = false
                 } else if (v < this.min_qty) {
                     validate = false
