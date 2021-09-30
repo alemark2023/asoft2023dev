@@ -352,8 +352,8 @@
             $company = Company::active();
             $configuration = Configuration::first();
             $template = new Template();
-            $base_pdf_template = $configuration->formats;
-
+             // $base_pdf_template = $configuration->formats;
+            $base_pdf_template = \Auth::user()->establishment->template_pdf;
             $pdf_margin_top = 15;
             $pdf_margin_right = 15;
             $pdf_margin_bottom = 15;
