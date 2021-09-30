@@ -127,6 +127,7 @@
             'additional_information',
             'document_id',
             'seller_id',
+            'order_id',
         ];
 
         protected $casts = [
@@ -374,6 +375,15 @@
         public function documents()
         {
             return $this->hasMany(Document::class);
+        }
+
+        /**
+         * @return BelongsTo
+         * order from ecommerce
+         */
+        public function order()
+        {
+            return $this->belongsTo(Order::class);
         }
 
         /**

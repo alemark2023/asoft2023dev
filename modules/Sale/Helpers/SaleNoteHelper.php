@@ -8,6 +8,7 @@ use App\Models\Tenant\Item;
 use App\CoreFacturalo\Requests\Api\Transform\Common\PersonTransform;
 use App\CoreFacturalo\Requests\Api\Validation\Functions as FunctionsApi;
 use App\CoreFacturalo\Requests\Inputs\Functions;
+use App\Http\Controllers\SearchItemController;
 
 class SaleNoteHelper
 {
@@ -20,6 +21,7 @@ class SaleNoteHelper
         $customer = PersonTransform::transform($inputs['datos_del_cliente_o_receptor']);
 
         $inputs_transform = [
+            
             'establishment_id' => auth()->user()->establishment_id,
             'series_id' => Functions::valueKeyInArray($inputs, 'series_id'),
             'date_of_issue' => Functions::valueKeyInArray($inputs, 'fecha_de_emision'),
@@ -48,6 +50,12 @@ class SaleNoteHelper
             'total_value' => Functions::valueKeyInArray($totals, 'total_valor', 0),
             'total' => Functions::valueKeyInArray($totals, 'total_venta', 0),
             'items' => self::items($inputs),
+            'quantity_period' => 0,
+            'payments' => [],
+            'charges' => [],
+            'discounts' => [],
+            'guides' => [],
+
         ];
 
 
@@ -65,48 +73,52 @@ class SaleNoteHelper
 
             foreach ($inputs['items'] as $row) {
                 
-                $item = Item::where('internal_id', $row['codigo_interno'])->firstOrFail();
-
+                $record_items = Item::where('internal_id', $row['codigo_interno'])->take(1)->get(); //necesario para transformar la coleccion y preparar el item
+                $data_item = (SearchItemController::TransformToModalSaleNote($record_items))->first();
+                
                 $items[] = [
-                    'item_id' => $item->id,
-                    'item' => [
-                        'description' => trim($row['descripcion']),
-                        'item_type_id' => $item->item_type_id,
-                        'internal_id' => $item->internal_id,
-                        'item_code' => trim($item->item_code),
-                        'item_code_gs1' => $item->item_code_gs1,
-                        'unit_type_id' => strtoupper($row['unidad_de_medida']),
-                        'presentation' => (key_exists('item', $row)) ? (isset($row['item']['presentation']) ? $row['item']['presentation'] : []) : [],
-                        'amount_plastic_bag_taxes' => $item->amount_plastic_bag_taxes,
-                        'is_set' => $item->is_set,
-                        'lots' => self::lots($row),
-                        'IdLoteSelected' => (isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null),
-                        'model' => $item->model,
-                        'sanitary' => $item->sanitary,
-                        'cod_digemid' => $item->cod_digemid,
-                        'date_of_due' => (!empty($item->date_of_due)) ? $item->date_of_due->format('Y-m-d') : null,
-                        'has_igv' => $row['item']['has_igv'] ?? true,
-                        'unit_price' => $row['unit_price'] ?? 0,
-                    ],
-                    // 'internal_id' => isset($row['codigo_interno']) ? $row['codigo_interno']:'',
-                    // 'description' => $row['descripcion'],
-                    // 'name' => Functions::valueKeyInArray($row, 'nombre'),
-                    // 'second_name' => Functions::valueKeyInArray($row, 'nombre_secundario'),
-                    // 'item_type_id' => Functions::valueKeyInArray($row, 'codigo_tipo_item', '01'),
-                    'item_code' => Functions::valueKeyInArray($row, 'codigo_producto_sunat'),
-                    'item_code_gs1' => Functions::valueKeyInArray($row, 'codigo_producto_gsl'),
+                    'item_id' => $data_item['id'],
+                    'item' => $data_item,
                     'currency_type_id' => $inputs['codigo_tipo_moneda'],
                     'quantity' => Functions::valueKeyInArray($row, 'cantidad'),
                     'unit_value' => Functions::valueKeyInArray($row, 'valor_unitario'),
-                    'price_type_id' => Functions::valueKeyInArray($row, 'codigo_tipo_precio'),
-                    'unit_price' => Functions::valueKeyInArray($row, 'precio_unitario'),
                     'affectation_igv_type_id' => Functions::valueKeyInArray($row, 'codigo_tipo_afectacion_igv'),
                     'total_base_igv' => Functions::valueKeyInArray($row, 'total_base_igv'),
                     'percentage_igv' => Functions::valueKeyInArray($row, 'porcentaje_igv'),
                     'total_igv' => Functions::valueKeyInArray($row, 'total_igv'), 
+                    'price_type_id' => Functions::valueKeyInArray($row, 'codigo_tipo_precio'),
+                    'internal_id' => $row['codigo_interno'],
+                    'description' => trim($row['descripcion']),
+                    'name' => Functions::valueKeyInArray($row, 'nombre'),
+                    'second_name' => Functions::valueKeyInArray($row, 'nombre_secundario'),
+                    'item_type_id' => Functions::valueKeyInArray($row, 'codigo_tipo_item', '01'),
+                    'item_code' => Functions::valueKeyInArray($row, 'codigo_producto_sunat'),
+                    'item_code_gs1' => Functions::valueKeyInArray($row, 'codigo_producto_gsl'),
+                    'unit_price' => Functions::valueKeyInArray($row, 'precio_unitario'),
+                    'input_unit_price_value' => Functions::valueKeyInArray($row, 'precio_unitario'),
                     'total_taxes' => Functions::valueKeyInArray($row, 'total_impuestos'),
                     'total_value' => Functions::valueKeyInArray($row, 'total_valor_item'), 
                     'total' => Functions::valueKeyInArray($row, 'total_item'),
+                    //data adicional para compatibilidad al registrar nv
+                    'system_isc_type_id' => null,
+                    'total_base_isc' => 0,
+                    'percentage_isc' => 0,
+                    'total_isc' => 0,
+                    'total_base_other_taxes' => 0,
+                    'percentage_other_taxes' => 0,
+                    'total_other_taxes' => 0,
+                    'total_plastic_bag_taxes' => 0,
+                    'input_unit_price_value' => 100,
+                    'total_discount' => 0,
+                    'total_charge' => 0,
+                    'attributes' => [],
+                    'charges' => [],
+                    'discounts' => [],
+                    'warehouse_id' => null,
+                    'name_product_pdf' => '',
+                    'record_id' => null,
+                    'IdLoteSelected' => null,
+                    'document_item_id' => null
                 ];
             }
 

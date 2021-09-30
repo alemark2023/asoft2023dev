@@ -30,6 +30,37 @@
                     </div>
                 </div>
  
+                <div class="col-md-12" v-if="document.items">
+                    <div style="margin:3px" class="table-responsive">
+                        <h5 class="separator-title">
+                            Productos
+                        </h5>
+                        <table class="table mt-2">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th class="text-center">Nombre</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(row, index) in document.items" :key="index">
+                                    <td class="text-center">{{ index + 1 }}</td>
+                                    <td class="text-center">{{row.item.description}}</td>
+                                    <td class="text-center">{{row.quantity}}</td>
+                                    <td class="series-table-actions text-right">
+                                        <template v-if="row.item.series_enabled">
+                                            <button class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="openDialogLots(index, row)">
+                                                <i class="el-icon-check"></i> Series
+                                            </button>
+                                        </template>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
   
             </div>
 
@@ -44,28 +75,22 @@
             </span>
         </el-dialog>
 
-        <!-- <document-options
-            :isContingency="false"
-            :recordId="documentNewId"
-            :showClose="true"
-            :showDialog.sync="showDialogDocumentOptions"
-        ></document-options>
-
-        <sale-note-options
-            :recordId="documentNewId"
-            :showClose="true"
-            :showDialog.sync="showDialogSaleNoteOptions"
-        ></sale-note-options> -->
+        <select-lots-form
+            :documentItemId="null"
+            :itemId="itemId"
+            :lots="lots"
+            :showDialog.sync="showDialogSelectLots"
+            @addRowSelectLot="addRowSelectLot">
+        </select-lots-form>
+         
     </div>
 </template>
 
-<script>
-// import DocumentOptions from "../../documents/partials/options.vue"
-// import SaleNoteOptions from "../../sale_notes/partials/options.vue"
-// import SeriesForm from "./series_form.vue"
+<script> 
+import SelectLotsForm from '../../documents/partials/lots.vue'
 
 export default {
-    // components: {DocumentOptions, SaleNoteOptions, SeriesForm},
+    components: {SelectLotsForm},
 
     props: [
         'showDialog',
@@ -79,24 +104,29 @@ export default {
             titleDialog: 'Generar nota de venta',
             loading: false,
             resource: "sale-notes",
-            resource_documents: "sale-notes",
             errors: {},
-            form: {},
             document: {},
-            document_types: [],
             all_series: [],
             series: [],
-            customers: [],
-            generate: false,
+            lots: [],
             loading_submit: false,
-            showDialogSaleNoteOptions: false,
+            showDialogSelectLots: false,
             documentNewId: null,
+            itemId: null,
         }
     },
-    created() {
-        this.initDocument()
+    async created() {
+        await this.initDocument()
     },
     methods: {   
+        openDialogLots(index, row){
+            this.showDialogSelectLots = true
+            this.lots = this.document.items[index].item.lots
+            this.itemId = row.item_id
+        },
+        addRowSelectLot(lots) {
+            this.lots = lots
+        },
         initDocument() {
 
             this.document = {
@@ -139,24 +169,25 @@ export default {
         },
         async submit() {
 
-            // let validate_items = await this.validateQuantityandSeries()
-            // if (!validate_items.success)
-            //     return this.$message.error(validate_items.message)
+            let validate_items = await this.validateQuantityandSeries()
+            if (!validate_items.success)
+                return this.$message.error(validate_items.message)
 
-
-            // this.loading_submit = true
+            this.loading_submit = true
             this.document.prefix = "NV"
-            this.resource_documents = "sale-notes"
+            this.document.order_id = this.orderId
 
-            this.$http
-                .post(`/${this.resource_documents}`, this.document)
+            await this.$http
+                .post(`/${this.resource}`, this.document)
                 .then((response) => {
                     if (response.data.success) {
 
                         this.documentNewId = response.data.data.id
-                        this.showDialogSaleNoteOptions = true
                         this.$eventHub.$emit("reloadData")
-                        this.resetDocument()
+                        this.$message.success('Transaccion finalizada correctamente')
+                        this.saveUpdateStatus()
+                        this.clickClose()
+
                     } else {
                         this.$message.error(response.data.message)
                     }
@@ -172,52 +203,27 @@ export default {
                     this.loading_submit = false
                 })
         },
+        saveUpdateStatus(){
+            this.$http.post(`/statusOrder/update`, { record: { id: this.orderId, status_order_id: 2} })
+        },
         async getTransformDataForOrder(){
 
             await this.$http
                 .post(`/${this.resource}/transform-data-order`, this.dataSaleNote)
                 .then((response) => {
-                    console.log(response)
-                    this.document = response.data.data
+                    // console.log(response)
+                    this.assignDocument(response.data.data)
                 })
         },
-        assignDocument() {
+        assignDocument(data_transform) {
 
-            //traeria un json con la data en ingles, solo para enviar a sale notes store
-            let record = this.dataSaleNote
-
-            // console.log(this.dataSaleNote)
-
-            // // buscar
-            // // customer_id
-            // // establishment_
-
-            // this.document.date_of_issue = record.fecha_de_emision
-            // this.document.time_of_issue = record.hora_de_emision
-            // this.document.currency_type_id = record.codigo_tipo_moneda
-             
-            // this.document.exchange_rate_sale = 1
-
-            // this.document.total_taxed = record.total_operaciones_gravadas
-            // this.document.total_exonerated = record.total_operaciones_exoneradas
-            // this.document.total_igv = record.total_igv
-            // this.document.total_taxes = record.total_impuestos
-            // this.document.total_value = record.total_valor
-            // this.document.total = record.total
-            // this.document.items = this.prepareItems(record.items)
+            // let record = this.dataSaleNote
+            this.document = data_transform
             
-            
-        },
-        prepareItems(items){
-            return items.map( (row) =>{
-                console.log(row)
-            })
-        },
+        }, 
         async create() {
             await this.getTransformDataForOrder()
             await this.getTables()
-            await this.getRecord()
-            await this.assignDocument()
         },
         async getTables(){
 
@@ -228,30 +234,7 @@ export default {
                     this.filterSeries()
                 })
 
-        },
-        async getRecord(){
-
-            // await this.$http
-            //             .get(`/${this.resource}/record2/${this.recordId}`)
-            //             .then((response) => {
-            //                 this.form = response.data.data
-            //                 this.document.payments =
-            //                     response.data.data.quotation.payments
-            //                 this.document.total = this.form.quotation.total
-            //                 this.document.currency_type_id = this.form.quotation.currency_type_id
-            //                 this.document.payment_condition_id = this.form.quotation.payment_condition_id
-            //                 if (this.document.payment_condition_id === undefined || this.document.payments.length > 0) {
-            //                     this.document.payment_condition_id = "01"
-            //                 }
-
-            //                 // console.log(this.form)
-            //                 // this.validateIdentityDocumentType()
-            //                 this.getCustomer()
-            //                 let type = this.type == "edit" ? "editada" : "registrada"
-            //                 this.titleDialog =
-            //                     `Cotización ${type}: ` + this.form.identifier
-            //             })
-        },  
+        }, 
         filterSeries() {
             this.document.series_id = null
             this.series = _.filter(this.all_series, {document_type_id: this.document.document_type_id})
@@ -265,28 +248,35 @@ export default {
         },
         clickClose() {
             this.$emit("update:showDialog", false)
-            this.initForm()
             this.resetDocument()
         },  
         async validateQuantityandSeries() {
+
             let error = 0
-            await this.form.quotation.items.forEach((element) => {
+
+            await this.document.items.forEach((element) => {
+
                 if (element.item.series_enabled) {
-                    const select_lots = _.filter(element.item.lots, {
-                        has_sale: true,
-                    }).length
-                    if (select_lots != element.quantity) error++
+
+                    let select_lots = _.filter(element.item.lots, {has_sale: true}).length
+                    if (select_lots != element.quantity) error ++
                 }
             })
-            if (error > 0)
+
+            if(error > 0) 
+            {
                 return {
                     success: false,
-                    message:
-                        "Las cantidades y series seleccionadas deben ser iguales.",
+                    message: 'Las cantidades y series seleccionadas deben ser iguales.',
                 }
-
-            return {success: true}
+            }
+                
+            return {
+                success: true
+            }
         },
+
     },
+
 }
 </script>

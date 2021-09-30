@@ -96,9 +96,22 @@
                 ></el-option>
               </el-select>
             </td>
-            <td class="text-center">{{row.number_document}}</td>
             <td class="text-center">
-              <el-button v-if="row.document_external_id" class="submit" type="success" icon="el-icon-tickets" @click.prevent="clickDownload(row.document_external_id)"></el-button>
+              <template v-if="row.document_type_id == '80'">
+                {{row.sale_note_number_full}}
+              </template>
+              <template v-else>
+                {{row.number_document}}
+              </template>
+            </td>
+            <td class="text-center">
+              <template v-if="row.document_type_id == '80'">
+                <el-button v-if="row.sale_note_id" class="submit" type="success" icon="el-icon-tickets" @click.prevent="clickOptions(row.sale_note_id)"></el-button>
+              </template>
+              <template v-else>
+                <el-button v-if="row.document_external_id" class="submit" type="success" icon="el-icon-tickets" @click.prevent="clickDownload(row.document_external_id)"></el-button>
+              </template>
+
             </td>
           </tr>
         </data-table>
@@ -218,6 +231,14 @@ export default {
   },
   computed: {},
   methods: {
+    clickOptions(recordId){
+
+      this.documentNewId = recordId
+      this.statusDocument.send = ""
+      this.resource_options = 'sale-notes'
+      this.showDialogOptions = true
+
+    },
     async clickDownload(row) {
       await this.$http.get(`/documents/search/externalId/${row}`).then((response) => {
         this.documentNewId = response.data.id
@@ -264,6 +285,7 @@ export default {
 
         if(record.purchase.codigo_tipo_documento == '80'){
 
+          if(record.has_sale_note) return this.$message.success("Ya existe una nota de venta")
           this.openDialogSaleNote(record.purchase)
           // console.log(record)
 
