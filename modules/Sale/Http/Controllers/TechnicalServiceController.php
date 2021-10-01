@@ -20,6 +20,7 @@
     use App\Models\Tenant\PaymentCondition;
     use App\Models\Tenant\Person;
     use App\Models\Tenant\Series;
+    use App\Models\Tenant\TechnicalServiceItem;
     use App\Models\Tenant\User;
     use App\Traits\OfflineTrait;
     use Exception;
@@ -29,7 +30,6 @@
     use Modules\Finance\Traits\FinanceTrait;
     use Modules\Sale\Http\Requests\TechnicalServiceRequest;
     use Modules\Sale\Http\Resources\TechnicalServiceCollection;
-    use Modules\Sale\Http\Resources\TechnicalServiceResource;
     use Modules\Sale\Models\TechnicalService;
     use Mpdf\Config\ConfigVariables;
     use Mpdf\Config\FontVariables;
@@ -233,13 +233,27 @@
 
         public function store(TechnicalServiceRequest $request)
         {
+
             DB::connection('tenant')->transaction(function () use ($request) {
 
                 $data = $this->mergeData($request);
+                $tc_id = ($request->has('id'))?$request->id:null;
 
                 $technical_service = TechnicalService::updateOrCreate(['id' => $request->input('id')], $data);
+                 $all_item = [];
                 foreach ($data['items'] as $row) {
-                    $technical_service->items()->create($row);
+                    /** @var TechnicalServiceItem $temp_item */
+                    $temp_item = $technical_service->items()->create($row);
+                    $all_item[] = $temp_item->id;
+
+                }
+                /* Elimina items del servicio */
+                if($tc_id != null) {
+                    $items = TechnicalServiceItem::where('technical_services_id',$tc_id)->wherenotin('id',$all_item)->get();
+                    /** @var TechnicalServiceItem $temp */
+                    foreach($items as $temp){
+                        $temp->delete();
+                    }
                 }
                 $this->technical_service = $technical_service;
                 $this->setFilename();
