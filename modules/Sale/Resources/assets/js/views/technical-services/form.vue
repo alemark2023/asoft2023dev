@@ -377,7 +377,7 @@
             </div>
             <div class="row">
                 <div class="col-12 text-right text-sm">
-                    Total de servicio tecnico {{ total }}
+                    Total de servicio tecnico {{  total.toLocaleString() }}
                 </div>
             </div>
             <div class="form-actions text-right mt-4">

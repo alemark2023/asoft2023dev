@@ -12,18 +12,18 @@ use App\Models\Tenant\Catalogs\AffectationIgvType;
 /**
  * App\Models\Tenant\DocumentItem
  *
- * @property-read AffectationIgvType $affectation_igv_type
- * @property-read \App\Models\Tenant\Document $document
- * @property-read mixed $additional_information
+ * @property AffectationIgvType $affectation_igv_type
+ * @property \App\Models\Tenant\Document $document
+ * @property mixed $additional_information
  * @property mixed $attributes
  * @property mixed $charges
  * @property mixed $discounts
  * @property mixed $item
- * @property-read \App\Models\Tenant\Item $m_item
- * @property-read PriceType $price_type
- * @property-read \App\Models\Tenant\Item $relation_item
- * @property-read SystemIscType $system_isc_type
- * @property-read Warehouse $warehouse
+ * @property \App\Models\Tenant\Item $m_item
+ * @property PriceType $price_type
+ * @property \App\Models\Tenant\Item $relation_item
+ * @property SystemIscType $system_isc_type
+ * @property Warehouse $warehouse
  * @method static \Illuminate\Database\Eloquent\Builder|DocumentItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DocumentItem newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DocumentItem query()
@@ -141,6 +141,7 @@ class DocumentItem extends ModelTenant
             $newKardex->push();
         }
     }
+
     public function getItemAttribute($value)
     {
         return (is_null($value))?null:(object) json_decode($value);

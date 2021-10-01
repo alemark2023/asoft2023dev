@@ -10,6 +10,7 @@
     use Carbon\Carbon;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
+    use Modules\Inventory\Models\Warehouse;
     use Modules\Sale\Models\TechnicalService;
 
     /**
@@ -43,7 +44,7 @@
      * @property string|null $attributes
      * @property string|null $discounts
      * @property string|null $charges
-     * @property string|null $additional_information
+     * @property mixed       $additional_information
      * @property int|null    $warehouse_id
      * @property string|null $name_product_pdf
      * @property Carbon|null $created_at
@@ -55,7 +56,6 @@
     {
         use UsesTenantConnection;
 
-        protected $perPage = 25;
 
         protected $casts = [
             'technical_services_id' => 'int',
@@ -89,7 +89,6 @@
             */
 
         ];
-
         protected $fillable = [
             'technical_services_id',
             'item_id',
@@ -122,6 +121,28 @@
             'warehouse_id',
             'name_product_pdf'
         ];
+
+        public static function boot()
+        {
+            parent::boot();
+            static::creating(function (self $item) {
+                $document = $item->document;
+                if ($document !== null && empty($item->warehouse_id)) {
+                    $warehouse = Warehouse::find($document->establishment_id);
+                    if ($warehouse !== null) {
+                        $item->warehouse_id = $document->establishment_id;
+                    }
+                }
+                if (is_array(($item->item))) {
+                    // debe ser string
+                    $item->item = json_encode($item->item);
+                }
+                if (is_array(($item->additional_information))) {
+                    // Debe ser string
+                    $item->additional_information = implode('|', $item->additional_information);
+                }
+            });
+        }
 
         /**
          * @return int|null
@@ -640,24 +661,6 @@
             return $this;
         }
 
-        /**
-         * @return string|null
-         */
-        public function getAdditionalInformation(): ?string
-        {
-            return $this->additional_information;
-        }
-
-        /**
-         * @param string|null $additional_information
-         *
-         * @return TechnicalServiceItem
-         */
-        public function setAdditionalInformation(?string $additional_information): TechnicalServiceItem
-        {
-            $this->additional_information = $additional_information;
-            return $this;
-        }
 
         /**
          * @return int|null
@@ -801,6 +804,7 @@
          */
         public function getAdditionalInformationAttribute($value)
         {
+            if (is_array($value)) $value = implode('|', $value);
             return explode('|', $value);
 
         }
