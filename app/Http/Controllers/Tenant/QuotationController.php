@@ -763,7 +763,7 @@ class QuotationController extends Controller
         $stylesheet = file_get_contents($path_css);
 
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
-        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+        // $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         if ($format_pdf != 'ticket') {
             if(config('tenant.pdf_template_footer')) {
@@ -776,11 +776,15 @@ class QuotationController extends Controller
                     $html_footer_legend = $template->pdfFooterLegend($base_template, $this->quotation);
                 }
 
+                $pdf->setAutoBottomMargin = 'stretch';
+
                 $pdf->SetHTMLFooter($html_footer_term_condition.$html_footer.$html_footer_legend);
             }
             //$html_footer = $template->pdfFooter();
             //$pdf->SetHTMLFooter($html_footer);
         }
+        
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         $this->uploadFile($filename, $pdf->output('', 'S'), 'quotation');
     }
