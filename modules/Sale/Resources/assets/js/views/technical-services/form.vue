@@ -687,6 +687,11 @@ export default {
 
         async ediItem(row, index) {
             row.indexi = index
+            // se evalua que sea numero. sino lo es sera cero
+            let val = parseFloat(row.unit_price)
+            if (isNaN(val)) val = 0;
+            // Valor de precio unitario, si no se ajusta, será NaN
+            row.input_unit_price_value = val
             this.recordItem = row
             this.showDialogAddItem = true
         },
