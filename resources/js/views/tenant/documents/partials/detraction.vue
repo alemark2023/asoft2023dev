@@ -141,7 +141,7 @@
 
 <script>
     export default {
-        props: ['showDialog', 'detraction','total', 'currencyTypeIdActive', 'operationTypeId', 'exchangeRateSale'],
+        props: ['showDialog', 'detraction','total', 'currencyTypeIdActive', 'operationTypeId', 'exchangeRateSale', 'isUpdateDocument'],
         data() {
             return {
                 headers: headers_token,
@@ -247,11 +247,36 @@
                     this.$message.error(response.message)
                 }
             },
-            create(){
+            async create(){
+                
                 this.$message.warning('Sujeta a detracción');
-                this.filterDetractionTypes()
+                await this.filterDetractionTypes()
+                await this.setDataUpdateDocument()
                 // console.log(this.$refs.select_payment.$el.getElementsByTagName('input')[0])
                 // this.$refs.select_payment.$el.getElementsByTagName('input')[0].value = "001"
+            },
+            setDataUpdateDocument(){
+
+                if(this.isUpdateDocument){
+
+                    this.payment_method_type = this.detraction.payment_method_id
+                    
+                    if(!this.form.temp_path && this.detraction.image_pay_constancy){
+                        this.form.imageUrl = `/storage/uploads/image_detractions/${this.detraction.image_pay_constancy}`
+                    }
+
+                    // if(this.operationTypeId == '1004'){
+                    //     if(this.detraction_types.length > 0) this.detraction.detraction_type_id = this.detraction_types[0].id
+                    // }
+
+                    let exist_detraction = _.find(this.detraction_types, {id : this.detraction.detraction_type_id})
+
+                    if(!exist_detraction){
+                        if(this.detraction_types.length > 0) this.detraction.detraction_type_id = this.detraction_types[0].id
+                    }
+
+                }
+
             },
             filterDetractionTypes(){
                 this.detraction_types = _.filter(this.all_detraction_types, {operation_type_id: this.operationTypeId})
