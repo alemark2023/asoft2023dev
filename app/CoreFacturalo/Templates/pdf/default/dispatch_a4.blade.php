@@ -93,7 +93,9 @@
     </tr>
     <tr>
         <td>Peso Bruto Total({{ $document->unit_type_id }}): {{ $document->total_weight }}</td>
+        @if($document->packages_number)
         <td>Número de Bultos: {{ $document->packages_number }}</td>
+        @endif
     </tr>
     <tr>
         <td>P.Partida: {{ $document->origin->location_id }} - {{ $document->origin->address }}</td>

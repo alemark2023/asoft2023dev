@@ -104,7 +104,8 @@
                 </cac:PartyName>
             </cac:CarrierParty>
             @endif
-            @if($document->driver)
+            {{-- inicio - habilitar cuando los tags sean obligatorios --}}
+            {{-- @if($document->driver)
             @php($driver = $document->driver)
             <cac:TransportMeans>
                 <cac:RoadTransport>
@@ -114,7 +115,23 @@
             <cac:DriverPerson>
                 <cbc:ID schemeID="{{ $driver->identity_document_type_id }}">{{ $driver->number }}</cbc:ID>
             </cac:DriverPerson>
+            @endif --}}
+            {{-- fin habilitar cuando los tags sean obligatorios --}}
+            {{-- inicio - deshabilitar cuando los tags sean obligatorios --}}
+            @if($document->license_plate)
+            <cac:TransportMeans>
+                <cac:RoadTransport>
+                    <cbc:LicensePlateID>{{ $document->license_plate }}</cbc:LicensePlateID>
+                </cac:RoadTransport>
+            </cac:TransportMeans>
             @endif
+            @if($document->driver)
+            @php($driver = $document->driver)
+            <cac:DriverPerson>
+                <cbc:ID schemeID="{{ $driver->identity_document_type_id }}">{{ $driver->number }}</cbc:ID>
+            </cac:DriverPerson>
+            @endif
+            {{-- fin deshabilitar cuando los tags sean obligatorios --}}
         </cac:ShipmentStage>
         <cac:Delivery>
             <cac:DeliveryAddress>

@@ -1174,7 +1174,7 @@ export default {
                 port_code: null,
                 unit_type_id: this.config.unit_type_id,
                 total_weight: 1,
-                packages_number: 1,
+                packages_number: 0,
                 container_number: null,
                 dispatcher: {
                     identity_document_type_id: null
