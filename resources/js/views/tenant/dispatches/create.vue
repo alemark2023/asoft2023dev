@@ -561,57 +561,63 @@
                                         >[+ Nuevo]</a>
                                     </label>
                                 </td>
-                                <td class="hidden-sm-down">
-                                    <!-- Selector para item -->
-                                    <div :class="{'has-danger': errors.items}"
-                                         class="form-group">
-                                        <el-select v-model="current_item"
-                                                   :loading="loading_search"
-                                                   :remote-method="searchRemoteItems"
-                                                   filterable
-                                                   remote
-                                                   @change="onChangeItem">
-                                            <el-option
-                                                v-for="option in items"
-                                                :key="option.id"
-                                                :label="option.full_description"
-                                                :value="option.id"></el-option>
-                                        </el-select>
-                                        <small v-if="errors.items"
-                                               class="form-control-feedback"
-                                               v-text="errors.items[0]"></small>
-                                    </div>
-                                    <template v-if="item">
-                                        <div v-if="item.lots_enabled && item.lots_group.length > 0"
-                                             class="col-12 mt-2">
-                                            <a class="text-center font-weight-bold text-info"
-                                               href="#"
-                                               @click.prevent="clickLotGroup">
-                                                [&#10004; Seleccionar lote]
-                                            </a>
+                                <td class="hidden-sm-down"
+                                    colspan="2">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <!-- Selector para item -->
+                                            <div :class="{'has-danger': errors.items}"
+                                                 class="form-group">
+                                                <el-select v-model="current_item"
+                                                           :loading="loading_search"
+                                                           :remote-method="searchRemoteItems"
+                                                           filterable
+                                                           remote
+                                                           ref="selectItem"
+                                                           @change="onChangeItem">
+                                                    <el-option
+                                                        v-for="option in items"
+                                                        :key="option.id"
+                                                        :label="option.full_description"
+                                                        :value="option.id"></el-option>
+                                                </el-select>
+                                                <small v-if="errors.items"
+                                                       class="form-control-feedback"
+                                                       v-text="errors.items[0]"></small>
+                                            </div>
+                                            <template v-if="item">
+                                                <div v-if="item.lots_enabled && item.lots_group.length > 0"
+                                                     class="col-12 mt-2">
+                                                    <a class="text-center font-weight-bold text-info"
+                                                       href="#"
+                                                       @click.prevent="clickLotGroup">
+                                                        [&#10004; Seleccionar lote]
+                                                    </a>
+                                                </div>
+                                            </template>
+                                            <!-- Selector para item -->
                                         </div>
-                                    </template>
-                                    <!-- Selector para item -->
-                                </td>
-                                <td class="text-right hidden-sm-down">
-                                    <!-- Aqui colocar cantidad -->
-                                    <div :class="{'has-danger': errors.quantity}"
-                                         class="form-group">
-                                        <!--
-                                        <label class="control-label">Cantidad</label>
-                                        -->
-                                        <el-input-number
-                                            v-model="quantity"
-                                            :max="99999999"
-                                            :min="0.01"
-                                            :precision="4"
-                                            :step="1"
-                                            placeholder="Cantidad"></el-input-number>
-                                        <small v-if="errors.quantity"
-                                               class="form-control-feedback"
-                                               v-text="errors.quantity[0]"></small>
+                                        <div class="col-4">
+                                            <!-- Aqui colocar cantidad -->
+                                            <div :class="{'has-danger': errors.quantity}"
+                                                 class="form-group">
+                                                <!--
+                                                <label class="control-label">Cantidad</label>
+                                                -->
+                                                <el-input-number
+                                                    v-model="quantity"
+                                                    :max="99999999"
+                                                    :min="min_qty"
+                                                    :precision="4"
+                                                    :step="1"
+                                                    placeholder="Cantidad"></el-input-number>
+                                                <small v-if="errors.quantity"
+                                                       class="form-control-feedback"
+                                                       v-text="errors.quantity[0]"></small>
+                                            </div>
+                                            <!-- Aqui colocar cantidad -->
+                                        </div>
                                     </div>
-                                    <!-- Aqui colocar cantidad -->
                                 </td>
                                 <td class="text-right hidden-sm-down">
                                     <!-- Agregar -->
@@ -749,7 +755,7 @@ export default {
             locations: [],
             series: [],
             current_item: null,
-            quantity: 0,
+            quantity: 1,
             errors: {
                 errors: {}
             },
@@ -918,7 +924,7 @@ export default {
             if ((this.current_item != null) && (this.quantity != null)) {
                 this.quantity = Math.abs(this.quantity)
                 if (isNaN(this.quantity)) {
-                    this.quantity = 0;
+                    this.quantity = 1;
                 }
                 const item = this.items.find((item) => item.id == this.current_item)
                 item.IdLoteSelected = this.IdLoteSelected;
@@ -928,7 +934,9 @@ export default {
                     quantity: this.quantity,
                 })
                 this.$store.commit('setItem', {})
-                return;
+                this.quantity = 1
+                this.focusDescription()
+                return null;
             }
 
             if (this.current_item == null) {
@@ -1466,7 +1474,10 @@ export default {
                 }
             })
             return {validate}
-        }
+        },
+        focusDescription() {
+                this.$refs.selectItem.$el.getElementsByTagName('input')[0].focus()
+        },
     }
 }
 </script>

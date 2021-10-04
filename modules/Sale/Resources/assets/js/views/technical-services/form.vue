@@ -377,7 +377,7 @@
             </div>
             <div class="row">
                 <div class="col-12 text-right text-sm">
-                    Total de servicio tecnico {{ total }}
+                    Total de servicio tecnico {{  total.toLocaleString() }}
                 </div>
             </div>
             <div class="form-actions text-right mt-4">
@@ -687,6 +687,11 @@ export default {
 
         async ediItem(row, index) {
             row.indexi = index
+            // se evalua que sea numero. sino lo es sera cero
+            let val = parseFloat(row.unit_price)
+            if (isNaN(val)) val = 0;
+            // Valor de precio unitario, si no se ajusta, será NaN
+            row.input_unit_price_value = val
             this.recordItem = row
             this.showDialogAddItem = true
         },
