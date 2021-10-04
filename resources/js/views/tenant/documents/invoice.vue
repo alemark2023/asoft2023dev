@@ -1759,6 +1759,8 @@ export default {
                 this.clickAddInitGuides();
             }
 
+            this.reloadDataCustomers(this.form.customer_id)
+
             this.establishment = data.establishment;
 
             this.changeDateOfIssue();
@@ -1790,9 +1792,9 @@ export default {
                         if (this.form.payments[0] !== undefined) {
                             this.form.payments[0].payment_destination_id = cash.id
                         } else {
-                            this.form.payments.push({
-                                payment_destination_id: cash.id,
-                            })
+                            // this.form.payments.push({
+                            //     payment_destination_id: cash.id, //genera error al editar cpe enviado desde api
+                            // })
 
                         }
                     } else {
