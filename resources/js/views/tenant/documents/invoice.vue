@@ -1270,6 +1270,7 @@
             :operation-type-id="form.operation_type_id"
             :showDialog.sync="showDialogDocumentDetraction"
             :total="form.total"
+            :isUpdateDocument="isUpdateDocument"
             @addDocumentDetraction="addDocumentDetraction"></document-detraction>
     </div>
 </template>
@@ -1752,10 +1753,13 @@ export default {
             this.form.payment_condition_id = (is_credit_installments) ? '03' : data.payment_condition_id;
             this.form.fee = data.fee;
             // this.form.fee = [];
+            this.prepareDataDetraction()
 
             if (!data.guides) {
                 this.clickAddInitGuides();
             }
+
+            this.reloadDataCustomers(this.form.customer_id)
 
             this.establishment = data.establishment;
 
@@ -1764,6 +1768,19 @@ export default {
             this.updateChangeDestinationSale();
             this.calculateTotal();
             // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+        },
+        async prepareDataDetraction(){
+
+            this.has_data_detraction = (this.form.detraction) ? true : false
+            
+            if(this.has_data_detraction){
+
+                let legend_value = (this.form.operation_type_id === '1001') ? 'Operación sujeta a detracción' : 'Operación Sujeta a Detracción - Servicios de Transporte - Carga'
+                let legend = await _.find(this.form.legends, {'code': '2006'})
+                if (!legend) this.form.legends.push({code: '2006', value: legend_value})
+
+            }
+
         },
         updateChangeDestinationSale() {
 
@@ -1775,9 +1792,9 @@ export default {
                         if (this.form.payments[0] !== undefined) {
                             this.form.payments[0].payment_destination_id = cash.id
                         } else {
-                            this.form.payments.push({
-                                payment_destination_id: cash.id,
-                            })
+                            // this.form.payments.push({
+                            //     payment_destination_id: cash.id, //genera error al editar cpe enviado desde api
+                            // })
 
                         }
                     } else {
