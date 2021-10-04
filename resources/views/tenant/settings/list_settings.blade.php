@@ -12,7 +12,7 @@
             <span>Dashboard</span>
         </li>
         <li>
-            <span class="text-muted">Reportes</span>
+            <span class="text-muted">Configuración</span>
         </li>
     </ol>
 </div>
