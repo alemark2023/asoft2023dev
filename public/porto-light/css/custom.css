@@ -477,16 +477,29 @@ html.fixed.sidebar-dark ul.nav-main li a:hover, html.fixed.sidebar-dark ul.nav-m
   box-shadow: none;
 }
 
-/* tema gris verde */
 .sidebar-gray ul.nav-main li .nav-children li:not(.nav-parent) > a,
 .sidebar-gray ul.nav-main li .nav-children li a,
 .sidebar-green ul.nav-main li .nav-children li:not(.nav-parent) > a,
-.sidebar-green ul.nav-main li .nav-children li a {
+.sidebar-green ul.nav-main li .nav-children li a,
+.sidebar-ligth-blue ul.nav-main li .nav-children li:not(.nav-parent) > a,
+.sidebar-ligth-blue ul.nav-main li .nav-children li a,
+.sidebar-warning ul.nav-main li .nav-children li:not(.nav-parent) > a,
+.sidebar-warning ul.nav-main li .nav-children li a {
   color: #4b4b4b !important;
 }
 
 .sidebar-gray .sidebar-left a::before,
-.sidebar-green .sidebar-left a::before {
+.sidebar-green .sidebar-left a::before,
+.sidebar-ligth-blue .sidebar-left a::before,
+.sidebar-warning .sidebar-left a::before {
   color: #4b4b4b !important;
   border-color: #4b4b4b !important;
+}
+
+html.fixed.sidebar-warning .sidebar-left a:hover,
+html.fixed.sidebar-gray .sidebar-left a:hover,
+html.fixed.sidebar-green .sidebar-left a:hover,
+html.fixed.sidebar-ligth-blue .sidebar-left a:hover {
+  background-color: #f5f5f5;
+  color: #4b4b4b !important;
 }
