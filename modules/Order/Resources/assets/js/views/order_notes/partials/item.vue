@@ -183,7 +183,7 @@
                     </div>
                     <template v-if="!is_client">
 
-                        <div v-if="form.item_unit_types.length > 0"
+                        <div v-if="item_unit_types.length > 0"
                              class="col-md-12">
                             <div class="table-responsive"
                                  style="margin:3px">
