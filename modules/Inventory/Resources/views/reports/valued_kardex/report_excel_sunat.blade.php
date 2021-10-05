@@ -193,7 +193,7 @@
 
         @endphp
 
-        @foreach ($records as $row)
+        @foreach ($records as $key => $row)
             <tr>
                 <td>
                     {{ $row['date_of_issue'] }}
@@ -223,11 +223,29 @@
                 </td>
 
                 {{-- SALIDAS --}}
+                
+                @php
+
+                    $output_unit_price = null; 
+
+                    if($row['type'] == 'output')
+                    {
+                        
+                        $x_balance_quantity =  $records[$key-1]['quantity'] * $records[$key-1]['factor'];
+                        $x_balance_total = $records[$key-1]['total'] * $records[$key-1]['factor'];
+                        $x_balance_cost = ($x_balance_quantity != 0) ? round($x_balance_total / $x_balance_quantity, 4) : null;
+                        $output_unit_price = $x_balance_cost;
+                        dd($x_balance_cost, $records[$key-1]['quantity'], $records[$key-1]['factor'], $records[$key-1]['total']);
+                    }
+
+                @endphp
+
                 <td>
                    {{ $row['output_quantity'] }}     
                 </td>
                 <td>
-                   {{ $row['output_unit_price'] }}     
+                   {{ $output_unit_price }}     
+                   {{-- {{ $row['output_unit_price'] }}      --}}
                 </td>
                 <td>
                    {{ $row['output_total'] }}     
