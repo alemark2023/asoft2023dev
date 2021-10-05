@@ -137,8 +137,9 @@
                         </div>
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.packages_number}" class="form-group">
-                                <label class="control-label">Número de paquetes<span
-                                    class="text-danger"> *</span></label>
+                                <label class="control-label">Número de paquetes
+                                    <!-- <span class="text-danger"> *</span> -->
+                                </label>
                                 <el-input-number v-model="form.packages_number" :max="9999999999" :min="0"
                                                  :precision="0"
                                                  :step="1"></el-input-number>
@@ -365,8 +366,9 @@
                         <div class="col-12">&nbsp;</div>
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors['driver.identity_document_type_id']}" class="form-group">
-                                <label class="control-label">Tipo Doc. Identidad<span
-                                    class="text-danger"> *</span></label>
+                                <label class="control-label">Tipo Doc. Identidad
+                                    <!-- <span class="text-danger"> *</span> -->
+                                </label>
                                 <el-select v-model="form.driver.identity_document_type_id" filterable>
                                     <el-option v-for="option in identityDocumentTypes" :key="option.id"
                                                :label="option.description" :value="option.id"></el-option>
@@ -377,7 +379,9 @@
                         </div>
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors['driver.number']}" class="form-group">
-                                <label class="control-label">Número<span class="text-danger"> *</span></label>
+                                <label class="control-label">Número
+                                    <!-- <span class="text-danger"> *</span> -->
+                                </label>
                                 <el-input v-model="form.driver.number" :maxlength="11"
 
                                           placeholder="Número..."></el-input>
@@ -387,8 +391,9 @@
                         </div>
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors.license_plate}" class="form-group">
-                                <label class="control-label">Número de placa del vehiculo<span
-                                    class="text-danger"> *</span></label>
+                                <label class="control-label">Número de placa del vehiculo
+                                    <!-- <span class="text-danger"> *</span> -->
+                                </label>
                                 <el-input v-model="form.license_plate" :maxlength="8"
                                           placeholder="Numero de placa del vehiculo..."></el-input>
                                 <small v-if="errors.license_plate" class="form-control-feedback"
