@@ -2029,7 +2029,7 @@ export default {
             }
 
             let amount = _.round(global_discount, 2)
-            let factor = _.round(amount / base, 4)
+            let factor = _.round(amount / base, 5)
 
             this.form.total_prepayment = _.round(sum_total_prepayment, 2)
             // this.form.total_prepayment = _.round(global_discount, 2)
