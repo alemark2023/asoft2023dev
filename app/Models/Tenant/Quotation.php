@@ -68,6 +68,7 @@ class Quotation extends ModelTenant
         'contact',
         'phone',
         'seller_id',
+        'total_igv_free',
     ];
 
     protected $casts = [
