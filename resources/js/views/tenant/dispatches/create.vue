@@ -192,7 +192,9 @@
                             <div :class="{'has-danger': errors.packages_number}"
                                  class="form-group">
                                 <label class="control-label">Número de
-                                                             paquetes<span class="text-danger"> *</span></label>
+                                                             paquetes
+                                                             <!-- <span class="text-danger"> *</span> -->
+                                </label>
                                 <el-input-number v-model="form.packages_number"
                                                  :max="9999999999"
                                                  :min="0"
@@ -469,7 +471,9 @@
                             <div :class="{'has-danger': errors['driver.identity_document_type_id']}"
                                  class="form-group">
                                 <label class="control-label">Tipo Doc.
-                                                             Identidad<span class="text-danger"> *</span></label>
+                                                             Identidad
+                                                             <!-- <span class="text-danger"> *</span> -->
+                                </label>
                                 <el-select v-model="form.driver.identity_document_type_id"
                                            filterable>
                                     <el-option v-for="option in identityDocumentTypes"
@@ -485,7 +489,9 @@
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors['driver.number']}"
                                  class="form-group">
-                                <label class="control-label">Número<span class="text-danger"> *</span></label>
+                                <label class="control-label">Número
+                                    <!-- <span class="text-danger"> *</span> -->
+                                </label>
                                 <el-input v-model="form.driver.number"
                                           :maxlength="11"
                                           placeholder="Número..."></el-input>
@@ -498,7 +504,9 @@
                             <div :class="{'has-danger': errors.license_plate}"
                                  class="form-group">
                                 <label class="control-label">Numero de placa del
-                                                             vehiculo<span class="text-danger"> *</span></label>
+                                                             vehiculo
+                                                             <!-- <span class="text-danger"> *</span> -->
+                                </label>
                                 <el-input v-model="form.license_plate"
                                           :maxlength="8"
                                           placeholder="Numero de placa del vehiculo..."></el-input>
@@ -1174,7 +1182,7 @@ export default {
                 port_code: null,
                 unit_type_id: this.config.unit_type_id,
                 total_weight: 1,
-                packages_number: 1,
+                packages_number: 0,
                 container_number: null,
                 dispatcher: {
                     identity_document_type_id: null

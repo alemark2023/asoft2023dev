@@ -255,7 +255,8 @@
                                         <td class="text-center">{{ row.price3 }}</td>
                                         <td class="text-center">Precio {{ row.price_default }}</td>
                                         <td class="series-table-actions text-right">
-                                            <button class="btn waves-effect waves-light btn-xs btn-success"
+                                            <button class="btn waves-effect waves-light btn-xs"
+                                                    :class="getSelectedClass(row)"
                                                     type="button"
                                                     @click.prevent="selectedPrice(row)">
                                                 <i class="el-icon-check"></i>
@@ -905,8 +906,9 @@ export default {
 
                     this.form.item.lots = this.recordItem.item.lots
                     this.lots = this.recordItem.item.lots
-
                 }
+                
+                this.setPresentationEditItem()
 
                 if (this.recordItem.item.name_product_pdf) {
                     this.form.name_product_pdf = this.recordItem.item.name_product_pdf
@@ -928,6 +930,14 @@ export default {
                 this.calculateQuantity()
             } else {
                 this.isUpdateWarehouseId = null
+            }
+
+        },
+        setPresentationEditItem(){
+
+            if(!_.isEmpty(this.recordItem.item.presentation)){
+                this.selectedPrice(this.recordItem.item.presentation) 
+                this.getSelectedClass(this.recordItem.item.presentation)
             }
 
         },
@@ -1231,25 +1241,53 @@ export default {
             this.form.unit_price_value = price;
             this.form.item.unit_type_id = this.item_unit_type.unit_type_id;
         },
-        selectedPrice(row) {
-            let valor = 0
-            switch (row.price_default) {
-                case 1:
-                    valor = row.price1
-                    break
-                case 2:
-                    valor = row.price2
-                    break
-                case 3:
-                    valor = row.price3
-                    break
+        getSelectedClass(row) {
+ 
+            if(this.isSelectedPrice(row)) return 'btn-success'
+            
+            return 'btn-secondary'
 
+        },
+        isSelectedPrice(item_unit_type){
+
+            if(!_.isEmpty(this.item_unit_type)){
+                return (this.item_unit_type.id === item_unit_type.id)
+            } 
+
+            return false
+        },
+        selectedPrice(row) {
+
+            if(this.isSelectedPrice(row)){
+
+                this.form.item_unit_type_id = null
+                this.item_unit_type = {}
+                this.form.unit_price = this.form.item.sale_unit_price
+                this.form.unit_price_value = this.form.item.sale_unit_price
+                this.form.item.unit_type_id = this.form.item.original_unit_type_id
+
+            }else{
+
+                let valor = 0
+                switch (row.price_default) {
+                    case 1:
+                        valor = row.price1
+                        break
+                    case 2:
+                        valor = row.price2
+                        break
+                    case 3:
+                        valor = row.price3
+                        break
+
+                }
+                this.form.item_unit_type_id = row.id
+                this.item_unit_type = row
+                this.form.unit_price = valor
+                this.form.unit_price_value = valor
+                this.form.item.unit_type_id = row.unit_type_id
             }
-            this.form.item_unit_type_id = row.id
-            this.item_unit_type = row
-            this.form.unit_price = valor
-            this.form.unit_price_value = valor
-            this.form.item.unit_type_id = row.unit_type_id
+
             this.calculateQuantity()
         },
         addRowLotGroup(id) {
