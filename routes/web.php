@@ -25,7 +25,7 @@ if ($hostname) {
             // Route::get('catalogs', 'Tenant\CatalogController@index')->name('tenant.catalogs.index');
             Route::get('list-reports', 'Tenant\SettingController@listReports');
             Route::get('list-extras', 'Tenant\SettingController@listExtras');
-            Route::get('list-settings', 'Tenant\SettingController@indexSettings')->name('tenant.general_configuration.index');
+            Route::get('list-settings', 'Tenant\SettingController@indexSettings');
             Route::get('list-banks', 'Tenant\SettingController@listBanks');
             Route::get('list-bank-accounts', 'Tenant\SettingController@listAccountBanks');
             Route::get('list-currencies', 'Tenant\SettingController@listCurrencies');
@@ -40,9 +40,9 @@ if ($hostname) {
             Route::get('list-vouchers-type', 'Tenant\SettingController@listVouchersType');
             Route::get('list-transfer-reason-types', 'Tenant\SettingController@listTransferReasonTypes');
 
-            Route::get('advanced', 'Tenant\AdvancedController@index')->name('tenant.advanced.index')->middleware('redirect.level');
+            Route::get('advanced', 'Tenant\AdvancedController@index')->name('tenant.advanced.index');
 
-            Route::get('tasks', 'Tenant\TaskController@index')->name('tenant.tasks.index')->middleware('redirect.level');
+            Route::get('tasks', 'Tenant\TaskController@index')->name('tenant.tasks.index');
             Route::post('tasks/commands', 'Tenant\TaskController@listsCommand');
             Route::post('tasks/tables', 'Tenant\TaskController@tables');
             Route::post('tasks', 'Tenant\TaskController@store');
@@ -67,7 +67,7 @@ if ($hostname) {
             Route::get('statusOrder/records', 'Tenant\StatusOrdersController@records');
 
             //Company
-            Route::get('companies/create', 'Tenant\CompanyController@create')->name('tenant.companies.create')->middleware('redirect.level');
+            Route::get('companies/create', 'Tenant\CompanyController@create')->name('tenant.companies.create');
             Route::get('companies/tables', 'Tenant\CompanyController@tables');
             Route::get('companies/record', 'Tenant\CompanyController@record');
             Route::post('companies', 'Tenant\CompanyController@store');
@@ -80,7 +80,7 @@ if ($hostname) {
             Route::delete('card_brands/{card_brand}', 'Tenant\CardBrandController@destroy');
 
             //Configurations
-            Route::get('configurations/sale-notes', 'Tenant\SaleNoteController@SetAdvanceConfiguration')->name('tenant.sale_notes.configuration')->middleware('redirect.level');
+            Route::get('configurations/sale-notes', 'Tenant\SaleNoteController@SetAdvanceConfiguration')->name('tenant.sale_notes.configuration');
             Route::post('configurations/sale-notes', 'Tenant\SaleNoteController@SaveSetAdvanceConfiguration');
             Route::get('configurations/addSeeder', 'Tenant\ConfigurationController@addSeeder');
             Route::get('configurations/preprinted/addSeeder', 'Tenant\ConfigurationController@addPreprintedSeeder');
@@ -521,7 +521,7 @@ if ($hostname) {
             Route::get('sale-notes/anulate/{id}', 'Tenant\SaleNoteController@anulate');
 
             Route::get('sale-notes/downloadExternal/{external_id}/{format?}', 'Tenant\SaleNoteController@downloadExternal');
-
+            
             Route::post('sale-notes/transform-data-order', 'Tenant\SaleNoteController@transformDataOrder');
 
             //POS
@@ -616,7 +616,7 @@ if ($hostname) {
             //formats PDF
             Route::get('templates', 'Tenant\FormatTemplateController@records');
             // Configuración del Login
-            Route::get('login-page', 'Tenant\LoginConfigurationController@index')->name('tenant.login_page')->middleware('redirect.level');
+            Route::get('login-page', 'Tenant\LoginConfigurationController@index')->name('tenant.login_page');
             Route::post('login-page/upload-bg-image', 'Tenant\LoginConfigurationController@uploadBgImage');
             Route::post('login-page/update', 'Tenant\LoginConfigurationController@update');
         });

@@ -4,12 +4,6 @@
 
     use App\Http\Controllers\Controller;
     use App\Models\Tenant\Configuration;
-    use App\Models\Tenant\User;
-    use Auth;
-    use Illuminate\Contracts\View\Factory;
-    use Illuminate\Foundation\Application;
-    use Illuminate\View\View;
-    use Modules\LevelAccess\Models\ModuleLevel;
 
     /**
      * Class SettingController
@@ -17,144 +11,116 @@
      * @package App\Http\Controllers\Tenant
      * @mixin Controller
      */
-    class SettingController extends Controller
-    {
+    class SettingController extends Controller {
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function listBanks()
-        {
+        public function listBanks() {
             return view('tenant.settings.list_banks');
         }
 
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function listAccountBanks()
-        {
+        public function listAccountBanks() {
             return view('tenant.settings.list_account_banks');
         }
 
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function listCurrencies()
-        {
+        public function listCurrencies() {
             return view('tenant.settings.list_currencies');
         }
 
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function listCards()
-        {
+        public function listCards() {
             return view('tenant.settings.list_cards');
         }
 
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function listPlatforms()
-        {
+        public function listPlatforms() {
             return view('tenant.settings.list_platforms');
         }
 
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function listAttributes()
-        {
+        public function listAttributes() {
             return view('tenant.settings.list_attributes');
         }
 
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function listDetractions()
-        {
+        public function listDetractions() {
             return view('tenant.settings.list_detractions');
         }
 
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function listUnits()
-        {
+        public function listUnits() {
             return view('tenant.settings.list_units');
         }
 
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function listPaymentMethods()
-        {
+        public function listPaymentMethods() {
             return view('tenant.settings.list_payment_methods');
         }
 
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function listIncomes()
-        {
+        public function listIncomes() {
             return view('tenant.settings.list_incomes');
         }
 
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function listPayments()
-        {
+        public function listPayments() {
             return view('tenant.settings.list_payments');
         }
 
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function listVouchersType()
-        {
+        public function listVouchersType() {
             return view('tenant.settings.list_vouchers_type');
         }
 
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function listReports()
-        {
+        public function listReports() {
             return view('tenant.reports.list');
         }
 
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function listTransferReasonTypes()
-        {
+        public function listTransferReasonTypes() {
             return view('tenant.settings.list_transfer_reason_types');
         }
 
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function indexSettings()
-        {
-            /** @var User $user */
-            $user = Auth::user();
-            $companyMenu = $user->levels->firstWhere('value', 'configuration_company');
-            $visualMenu = $user->levels->firstWhere('value', 'configuration_visual');
-            $advanceMenu = $user->levels->firstWhere('value', 'configuration_advance');
-
-            return view('tenant.settings.list_settings', compact(
-                'user',
-                'companyMenu',
-                'visualMenu',
-                'advanceMenu'
-            ));
+        public function indexSettings() {
+            return view('tenant.settings.list_settings');
         }
 
         /**
-         * @return Factory|Application|View
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
-        public function listExtras()
-        {
+        public function listExtras() {
             // vista blade no vue
             $configuration = Configuration::first();
             return view('tenant.settings.list_extras')->with('apk_url', $configuration->apk_url);
