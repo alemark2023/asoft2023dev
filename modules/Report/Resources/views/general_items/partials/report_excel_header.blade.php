@@ -27,6 +27,9 @@ $type = $type ?? 'sale';
 <th> TIPO DE CAMBIO</th>
 <th> UNIDAD DE MEDIDA</th>
 <th> CÓDIGO INTERNO</th>
+@if($document_type_id != '80' && $type == 'sale')
+    <th> OBSERVACIÓN</th>
+@endif
 <th> DESCRIPCIÓN</th>
 <th> CANTIDAD</th>
 <th> SERIES</th>
