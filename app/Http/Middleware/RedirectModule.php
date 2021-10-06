@@ -55,7 +55,7 @@
         private function getGroup($path, $module) {
 
             ///* Module Documents */
-
+            $group =  null;
             if ($path[0] == "documents") {
                 $group = "documents";
 
@@ -184,9 +184,14 @@
                 $group = "documentary-procedure";
             }elseif ($path[0] == "digemid") {
                 $group = "digemid";
-            } else {
+            }
+            else {
                 $group = null;
             }
+
+
+
+
 
             return $group;
         }

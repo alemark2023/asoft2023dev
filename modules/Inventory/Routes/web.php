@@ -186,7 +186,7 @@
 
                 Route::prefix('inventories')->group(function () {
 
-                    Route::get('configuration', 'InventoryConfigurationController@index')->name('tenant.inventories.configuration.index');
+                    Route::get('configuration', 'InventoryConfigurationController@index')->name('tenant.inventories.configuration.index')->middleware('redirect.level');
                     Route::get('configuration/record', 'InventoryConfigurationController@record');
                     Route::post('configuration', 'InventoryConfigurationController@store');
                 });
