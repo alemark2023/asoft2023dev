@@ -463,6 +463,7 @@
                     total_taxed: 0,
                     total_unaffected: 0,
                     total_exonerated: 0,
+                    total_igv_free: 0,
                     total_igv: 0,
                     total_base_isc: 0,
                     total_isc: 0,
@@ -533,6 +534,7 @@
                 this.calculateTotal()
             },
             calculateTotal() {
+                
                 let total_discount = 0
                 let total_charge = 0
                 let total_exportation = 0
@@ -543,6 +545,8 @@
                 let total_igv = 0
                 let total_value = 0
                 let total = 0
+                let total_igv_free = 0
+
                 this.form.items.forEach((row) => {
                     total_discount += parseFloat(row.total_discount)
                     total_charge += parseFloat(row.total_charge)
@@ -568,18 +572,21 @@
                     }
                     total_value += parseFloat(row.total_value)
                     
-                    if (['13', '14', '15'].includes(row.affectation_igv_type_id)) {
+                    if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
 
-                        let unit_value = row.total_value/row.quantity
+                        let unit_value = row.total_value / row.quantity
                         let total_value_partial = unit_value * row.quantity
                         row.total_taxes = row.total_value - total_value_partial
                         row.total_igv = total_value_partial * (row.percentage_igv / 100)
                         row.total_base_igv = total_value_partial
                         total_value -= row.total_value
+                        total_igv_free += row.total_igv
+
                     }
                     
                 });
 
+                this.form.total_igv_free = _.round(total_igv_free, 2)
                 this.form.total_exportation = _.round(total_exportation, 2)
                 this.form.total_taxed = _.round(total_taxed, 2)
                 this.form.total_exonerated = _.round(total_exonerated, 2)
