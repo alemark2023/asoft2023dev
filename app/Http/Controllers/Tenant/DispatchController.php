@@ -621,4 +621,25 @@ class DispatchController extends Controller
             'data' => $items,
         ], 200);
     }
+
+    /**
+     * Devuelve un conjuto de tipo de documento 9 y 31 para Guías
+     *
+     * @return DocumentType[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection
+     */
+    public function getDocumentTypeToDispatches(){
+        $doc_type = ['09', '31'];
+        $document_types_guide = DocumentType::whereIn('id',$doc_type )->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'active' => (bool) $row->active,
+                'short' => $row->short,
+                'description' => ucfirst(mb_strtolower(str_replace('REMITENTE ELECTRÓNICA','REMITENTE',$row->description))),
+            ];
+        });
+
+        return $document_types_guide;
+    }
+
+
 }

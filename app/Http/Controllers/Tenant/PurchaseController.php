@@ -492,6 +492,29 @@ class PurchaseController extends Controller
 
     }
 
+    /**
+     * Se utiliza para consultar los datos de compra para guias. Si updateGuide existe
+     * se utiliza para guardar los datos de guia.
+     *
+     * @param Request       $request
+     * @param Purchase|null $purchase
+     *
+     * @return array
+     */
+    public function processGuides(Request $request, Purchase $purchase = null){
+        if($request->has('updateGuide') && $request->has('guides')){
+            $guides = [];
+            foreach ($request->guides as $guide){
+                if(!empty($guide['number'])){
+                    $guides[] = $guide;
+                }
+            }
+            $purchase->setGuidesAttribute($guides) ;
+            $purchase->push();
+        }
+        return $purchase->getCollectionData();
+    }
+
     public function anular($id)
     {
         $obj =  Purchase::find($id);
