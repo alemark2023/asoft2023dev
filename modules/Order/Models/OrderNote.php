@@ -72,7 +72,8 @@ class OrderNote extends ModelTenant
         'filename',
         'shipping_address',
         'quotation_id',
-        'observation'
+        'observation',
+        'total_igv_free',
 
     ];
 
