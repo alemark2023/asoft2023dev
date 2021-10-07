@@ -492,6 +492,7 @@
                                                                             :clearable="false"
                                                                             format="dd/MM/yyyy"
                                                                             type="date"
+                                                                            :readonly="readonly_date_of_due"
                                                                             value-format="yyyy-MM-dd"></el-date-picker>
                                                                     </td>
                                                                     <td>
@@ -797,6 +798,7 @@
                                                                 :clearable="false"
                                                                 format="dd/MM/yyyy"
                                                                 type="date"
+                                                                :readonly="readonly_date_of_due"
                                                                 value-format="yyyy-MM-dd"></el-date-picker>
                                                         </td>
                                                         <td>
@@ -1930,15 +1932,19 @@ export default {
             let payment_method_type = _.find(this.payment_method_types, {'id': id});
 
             if (payment_method_type.number_days) {
-                this.form.date_of_due = moment().add(payment_method_type.number_days, 'days').format('YYYY-MM-DD')
+
+                this.form.date_of_due = moment(this.form.date_of_issue).add(payment_method_type.number_days, 'days').format('YYYY-MM-DD')
                 // this.form.payments = []
                 this.enabled_payments = false
                 this.readonly_date_of_due = true
                 this.form.payment_method_type_id = payment_method_type.id
 
-                let date = moment()
-                    .add(payment_method_type.number_days, 'days')
-                    .format('YYYY-MM-DD')
+                let date = moment(this.form.date_of_issue).add(payment_method_type.number_days, 'days').format('YYYY-MM-DD')
+                
+                // let date = moment()
+                //     .add(payment_method_type.number_days, 'days')
+                //     .format('YYYY-MM-DD')
+                    
                 if (this.form.fee !== undefined) {
                     for (let index = 0; index < this.form.fee.length; index++) {
                         this.form.fee[index].date = date;
@@ -3104,14 +3110,26 @@ export default {
                 this.form.customer_address_id = address.id;
             }*/
         },
+        initDataPaymentCondition01(){
+
+            this.readonly_date_of_due = false
+            this.enabled_payments = true
+            this.form.date_of_due = this.form.date_of_issue
+            this.form.payment_method_type_id = null
+
+        },
         changePaymentCondition() {
             this.form.fee = [];
             this.form.payments = [];
             if (this.form.payment_condition_id === '01') {
+
                 this.clickAddPayment();
+                this.initDataPaymentCondition01()
+
             }
             if (this.form.payment_condition_id === '02') {
                 this.clickAddFeeNew();
+                this.readonly_date_of_due = true
             }
             if (this.form.payment_condition_id === '03') {
                 this.clickAddFee();
@@ -3135,9 +3153,13 @@ export default {
             if (this.credit_payment_metod[0] !== undefined) {
                 first = this.credit_payment_metod[0];
             }
-            let date = moment()
-                .add(first.number_days, 'days')
-                .format('YYYY-MM-DD')
+
+            // let date = moment()
+            //     .add(first.number_days, 'days')
+            //     .format('YYYY-MM-DD')
+
+            let date = moment(this.form.date_of_issue).add(first.number_days, 'days').format('YYYY-MM-DD')
+
             this.form.date_of_due = date;
             this.form.fee.push({
                 id: null,
