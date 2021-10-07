@@ -501,6 +501,17 @@ export default {
         sale_note_id: null,
       };
     },
+    updateDataForSend(){
+
+      if(this.document.document_type_id === "80") {
+          this.document.prefix = "NV"
+          this.resource_documents = "sale-notes"
+      } else {
+          this.document.prefix = null
+          this.resource_documents = "documents"
+      }
+
+    },
     async onGoToInvoice() {
       this.onUpdateItemsWithExtras();
       this.onCalculateTotals();
@@ -509,13 +520,23 @@ export default {
       if (validate_payment_destination.error_by_item > 0) {
         return this.$message.error("El destino del pago es obligatorio");
       }
+
+      this.updateDataForSend()
       this.loading = true;
       this.$http
         .post(`/${this.resource_documents}`, this.document)
         .then((response) => {
           if (response.data.success) {
             this.documentNewId = response.data.data.id;
-            this.form_cash_document.document_id = response.data.data.id;
+            
+            if (this.document.document_type_id === "80") {
+              this.form_cash_document.sale_note_id = response.data.data.id
+                // this.showDialogSaleNoteOptions = true
+            } else {
+                // this.showDialogDocumentOptions = true
+              this.form_cash_document.document_id = response.data.data.id
+            }
+
             this.showDialogDocumentOptions = true;
             this.$emit("update:showDialog", false);
             this.saveCashDocument();
@@ -604,6 +625,7 @@ export default {
         customer: this.rent.customer,
         document_type_id: null,
         series_id: null,
+        prefix: null,
         establishment_id: this.warehouseId,
         number: "#",
         date_of_issue: moment().format("YYYY-MM-DD"),
