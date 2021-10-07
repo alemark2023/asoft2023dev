@@ -72,6 +72,7 @@ Vue.component('tenant-perceptions-form', require('./views/tenant/perceptions/for
 Vue.component('tenant-dispatches-index', require('./views/tenant/dispatches/index.vue'));
 Vue.component('tenant-dispatches-form', require('./views/tenant/dispatches/form.vue'));
 Vue.component('tenant-dispatches-create', require('./views/tenant/dispatches/create.vue'));
+Vue.component('tenant-guides-modal', require('./views/tenant/components/guides.vue'));
 Vue.component('tenant-purchases-index', require('./views/tenant/purchases/index.vue'));
 Vue.component('tenant-purchases-form', require('./views/tenant/purchases/form.vue'));
 Vue.component('tenant-purchases-edit', require('./views/tenant/purchases/form_edit.vue'));

@@ -337,10 +337,12 @@ if ($hostname) {
                 Route::post('/record/{id}/set-document-id', 'Tenant\DispatchController@setDocumentId');
                 Route::get('/client/{id}', 'Tenant\DispatchController@dispatchesByClient');
                 Route::post('/items', 'Tenant\DispatchController@getItemsFromDispatches');
+                Route::post('/getDocumentType', 'Tenant\DispatchController@getDocumentTypeToDispatches');
                 Route::get('/data_table', 'Tenant\DispatchController@data_table');
                 Route::get('/search/customers', 'Tenant\DispatchController@searchCustomers');
                 Route::get('/search/customer/{id}', 'Tenant\DispatchController@searchClientById');
             });
+
             Route::get('customers/list', 'Tenant\PersonController@clientsForGenerateCPE');
             Route::get('reports/consistency-documents', 'Tenant\ReportConsistencyDocumentController@index')->name('tenant.consistency-documents.index')->middleware('tenant.internal.mode');
             Route::post('reports/consistency-documents/lists', 'Tenant\ReportConsistencyDocumentController@lists');
@@ -429,6 +431,11 @@ if ($hostname) {
             Route::get('purchases/record/{document}', 'Tenant\PurchaseController@record');
             Route::get('purchases/edit/{id}', 'Tenant\PurchaseController@edit');
             Route::get('purchases/anular/{id}', 'Tenant\PurchaseController@anular');
+            Route::post('purchases/guide/{purchase}', 'Tenant\PurchaseController@processGuides');
+            Route::post('purchases/guide-file/upload', 'Tenant\PurchaseController@uploadAttached');
+            Route::post('purchases/guide-file/upload', 'Tenant\PurchaseController@uploadAttached');
+            Route::get('purchases/guides-file/download-file/{purchase}/{filename}', 'Tenant\PurchaseController@downloadGuide');
+            Route::post('purchases/save_guide/{purchase}', 'Tenant\PurchaseController@processGuides');
             Route::get('purchases/delete/{id}', 'Tenant\PurchaseController@delete');
             Route::post('purchases/import', 'Tenant\PurchaseController@import');
             // Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
@@ -521,7 +528,7 @@ if ($hostname) {
             Route::get('sale-notes/anulate/{id}', 'Tenant\SaleNoteController@anulate');
 
             Route::get('sale-notes/downloadExternal/{external_id}/{format?}', 'Tenant\SaleNoteController@downloadExternal');
-            
+
             Route::post('sale-notes/transform-data-order', 'Tenant\SaleNoteController@transformDataOrder');
 
             //POS

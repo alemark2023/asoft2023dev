@@ -3,6 +3,7 @@
     namespace App\Models\Tenant;
 
     use App\Http\Controllers\Tenant\DownloadController;
+    use App\Models\Tenant\GuideFile;
     use App\Models\Tenant\Catalogs\CurrencyType;
     use App\Models\Tenant\Catalogs\DocumentType;
     use Eloquent;
@@ -817,4 +818,12 @@
                     ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
     }
 
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function guide_files()
+        {
+            return $this->hasMany(GuideFile::class);
+        }
     }

@@ -2,6 +2,7 @@
 
 namespace App\Models\Tenant;
 
+use App\Models\Tenant\GuideFile;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use Illuminate\Support\Collection;
 use Modules\Order\Models\OrderNote;
@@ -370,4 +371,11 @@ class Quotation extends ModelTenant
             'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
         ];
     }
-}
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function guide_files()
+    {
+        return $this->hasMany(GuideFile::class);
+    }}
