@@ -30,6 +30,47 @@
                         <td>
                             <el-input v-model="guide.number"></el-input>
                         </td>
+                        <td>
+                            <template v-if="guide.filename">
+                                <button
+                                    type="button"
+                                    v-if="guide.filename && guide.live === undefined"
+                                    class="btn waves-effect waves-light btn-xs btn-primary"
+                                    @click.prevent="clickDownloadFile(guide.filename)">
+                                    <i class="fas fa-file-download"></i>
+                                </button>
+                                <div
+                                    v-if="guide.filename && guide.live == 1"
+                                >
+                                <span>
+                                    {{guide.filename}}
+                                </span>
+                                </div>
+                            </template>
+                            <template v-else>
+                                <el-upload
+
+                                    :action="`/${type}/guide-file/upload`"
+                                    :data="{'index': index}"
+                                    :file-list="fileList"
+                                    :headers="headers"
+                                    :limit="form.guides.length"
+                                    :multiple="false"
+                                    :on-remove="handleRemove"
+                                    :on-success="onSuccess"
+                                    :show-file-list="false"
+                                >
+                                    <el-button
+                                        slot="trigger"
+                                        type="primary"
+                                        @click="changeIndexFile(index)"
+                                    >
+                                        Seleccione un archivo
+                                    </el-button>
+
+                                </el-upload>
+                            </template>
+                        </td>
                         <td align="right">
                             <button class="btn waves-effect waves-light btn-xs btn-danger"
                                     type="button"
@@ -39,12 +80,16 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="3">
-                            <label class="control-label" v-if="!loading">
+                        <td colspan="4">
+                            <label v-if="!loading"
+                                   class="control-label">
                                 <a class=""
                                    href="#"
                                    @click.prevent="clickAddGuide"><i class="fa fa-plus font-weight-bold text-info"></i>
-                                    <span style="color: #777777">Agregar guía</span></a>
+                                    <span style="color: #777777">
+                                        Agregar guía
+                                    </span>
+                                </a>
 
                             </label>
                         </td>
@@ -110,10 +155,14 @@ export default {
     data() {
         return {
             // document_types_guide: [],
+            headers: headers_token,
+            index_file: null,
             loading: true,
             title: '',
+            fileList: [],
             form: {
                 guides: [{}],
+                id: null,
                 number: '',
                 document_type_description: '',
             }
@@ -131,6 +180,7 @@ export default {
             'loadDocumentTypesGuide',
         ]),
         getRecordGuide() {
+            this.fileList = [];
             this.form.guides = [];
             this.loading = true;
             this.$http.post(`/${this.type}/guide/${this.id}`)
@@ -140,6 +190,7 @@ export default {
                     if (this.form.guides === undefined) {
                         this.form.guides = [];
                     }
+
                 })
                 .finally(() => {
                     this.loading = false;
@@ -156,11 +207,17 @@ export default {
         },
         clickRemoveGuide(index) {
             this.form.guides.splice(index, 1)
+            this.fileList.splice(index, 1)
+        },
+        cleanFileList() {
+            this.fileList = []
         },
         saveGuides() {
             this.loading = true;
-                this.form.updateGuide = 1;
-            this.$http.post(`/${this.type}/guide/${this.id}`, this.form)
+             this.form.updateGuide = 1;
+
+
+            this.$http.post(`/${this.type}/guide/${this.id}`,  this.form)
                 .then((result) => {
                     this.onClose()
 
@@ -168,6 +225,7 @@ export default {
                 .finally(() => {
                     this.loading = false;
                 })
+
         },
         clickAddGuide() {
             this.form.guides.push({
@@ -180,7 +238,71 @@ export default {
             this.loading = false;
             this.form = {};
             this.form.guides = [];
+            this.fileList = [];
             this.$emit("update:show", false);
+
+        },
+        handleRemove(file, fileList) {
+
+            this.form.guides[this.index_file].filename = null
+            this.form.guides[this.index_file].temp_path = null
+            this.fileList = []
+            this.index_file = null
+
+        },
+        hasFile(index) {
+            if (this.fileList[index] !== undefined) {
+                if (this.fileList[index] !== null) {
+                    return true
+                }
+            }
+            return false
+        },
+        changeIndexFile(index) {
+            this.index_file = index
+        },
+        onSuccess(response, file, fileList) {
+
+            // console.log(response, file, fileList)
+            // this.fileList = fileList
+
+            if (this.index_file == null) this.index_file = this.fileList.length;
+            if (response.success) {
+                this.index_file = response.data.index
+                for (let i = 0; i < this.index_file; i++) {
+                    if (this.fileList[i] === undefined) this.fileList[i] = null;
+                }
+                this.fileList[this.index_file] = file;
+                let t = this.form.guides[this.index_file];
+                t.filename = response.data.filename
+                t.temp_path = response.data.temp_path
+                t.live = 1
+
+                this.form.guides[this.index_file] = t;
+                let guides = this.form.guides;
+                this.form.guides = [];
+                this.form.guides = guides;
+                this.hasFile(this.index_file)
+            } else {
+                this.cleanFileList()
+                this.$message.error(response.message)
+            }
+
+            // console.log(this.form.guides)
+
+        },
+        clickDownloadFile(filename) {
+            window.open(
+                `/${this.type}/guides-file/download-file/${this.id}/${filename}`,
+                "_blank"
+            );
+        },
+        onSubmit() {
+            console.error('onSubmit')
+
+        },
+        handleExceed() {
+            console.error('handleExceed')
 
         }
     }

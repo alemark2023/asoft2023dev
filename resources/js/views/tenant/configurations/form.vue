@@ -597,7 +597,7 @@
                                     </div>
 
 
-                                    
+
                                     <div class="col-md-6 mt-4">
                                         <label class="control-label">Habilitar permiso para editar CPE
                                             <el-tooltip
@@ -619,7 +619,7 @@
                                                    v-text="errors.permission_to_edit_cpe[0]"></small>
                                         </div>
                                     </div>
-                                    
+
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3"
@@ -834,7 +834,10 @@ import AllowanceCharge from './partials/allowance_charge.vue'
 import {mapActions, mapState} from "vuex";
 
 export default {
-    props: ['typeUser'],
+    props: [
+        'typeUser',
+        'configuration',
+    ],
     components: {TermsCondition, TermsConditionSale, AllowanceCharge},
     computed: {
         ...mapState([
@@ -861,6 +864,8 @@ export default {
         }
     },
     created() {
+        this.$store.commit('setConfiguration',this.configuration)
+        this.$store.commit('setTypeUser',this.typeUser)
         this.loadConfiguration()
         this.form = this.config;
     },

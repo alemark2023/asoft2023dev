@@ -432,6 +432,9 @@ if ($hostname) {
             Route::get('purchases/edit/{id}', 'Tenant\PurchaseController@edit');
             Route::get('purchases/anular/{id}', 'Tenant\PurchaseController@anular');
             Route::post('purchases/guide/{purchase}', 'Tenant\PurchaseController@processGuides');
+            Route::post('purchases/guide-file/upload', 'Tenant\PurchaseController@uploadAttached');
+            Route::post('purchases/guide-file/upload', 'Tenant\PurchaseController@uploadAttached');
+            Route::get('purchases/guides-file/download-file/{purchase}/{filename}', 'Tenant\PurchaseController@downloadGuide');
             Route::post('purchases/save_guide/{purchase}', 'Tenant\PurchaseController@processGuides');
             Route::get('purchases/delete/{id}', 'Tenant\PurchaseController@delete');
             Route::post('purchases/import', 'Tenant\PurchaseController@import');

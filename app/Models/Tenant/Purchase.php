@@ -2,10 +2,10 @@
 
 namespace App\Models\Tenant;
 
+use App\Models\Tenant\GuideFile;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
 use Carbon\Carbon;
-use Illuminate\Database\Query\Builder;
 use Modules\Purchase\Models\PurchaseOrder;
 use stdClass;
 
@@ -566,5 +566,14 @@ class Purchase extends ModelTenant
         /** @var stdClass $guide */
         return (array) $this->guides;
 
+    }
+
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function guide_files()
+    {
+        return $this->hasMany(GuideFile::class);
     }
 }

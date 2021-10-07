@@ -2,6 +2,7 @@
 
     namespace App\Models\Tenant;
 
+    use App\Models\Tenant\GuideFile;
     use App\Models\Tenant\Catalogs\CurrencyType;
     use Illuminate\Database\Eloquent\Collection;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -815,5 +816,13 @@
             $data['enabled_concurrency'] = (bool)$data['enabled_concurrency'];
 
             return $data;
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function guide_files()
+        {
+            return $this->hasMany(GuideFile::class);
         }
     }
