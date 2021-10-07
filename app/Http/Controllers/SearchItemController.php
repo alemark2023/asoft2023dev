@@ -111,8 +111,10 @@
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
             $input = self::setInputByRequest($request);
 
-            $item = Item:: whereIsActive();
+            // $item = Item:: whereIsActive();
+            $item = Item::query();
             $ItemToSearchBySeries = Item:: whereIsActive();
+            
             if ($service == false) {
                 $item->WhereNotService();
                 $ItemToSearchBySeries->WhereNotService();
@@ -177,7 +179,7 @@
                 }
             }
 
-            return $item->orderBy('description');
+            return $item->whereIsActive()->orderBy('description');
         }
 
         /**
