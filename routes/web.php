@@ -530,6 +530,7 @@ if ($hostname) {
             Route::get('sale-notes/downloadExternal/{external_id}/{format?}', 'Tenant\SaleNoteController@downloadExternal');
 
             Route::post('sale-notes/transform-data-order', 'Tenant\SaleNoteController@transformDataOrder');
+            Route::post('sale-notes/items-by-ids', 'Tenant\SaleNoteController@getItemsByIds');
 
             //POS
             Route::get('pos', 'Tenant\PosController@index')->name('tenant.pos.index');
