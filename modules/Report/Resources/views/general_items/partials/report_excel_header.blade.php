@@ -27,6 +27,10 @@ $type = $type ?? 'sale';
 <th> TIPO DE CAMBIO</th>
 <th> UNIDAD DE MEDIDA</th>
 <th> CÓDIGO INTERNO</th>
+@if($type == 'sale')
+    {{-- <th> OBSERVACIÓN</th> --}}
+    <th> DATOS DE REFERENCIA</th>
+@endif
 <th> DESCRIPCIÓN</th>
 <th> CANTIDAD</th>
 <th> SERIES</th>

@@ -118,6 +118,13 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
             {{$relation_item->internal_id}}
         @endif
     </td>
+    {{--TODO renombrar correctamente isSaleNote, deberia hacer referencia a nv, no a otros tipos de docs --}}
+    @if($type == 'sale')
+    <td class="celda">
+        {{-- {{ $document->additional_information ? implode(' | ', $document->additional_information) : '' }}  --}}
+        {{ $document->reference_data }} 
+    </td>
+    @endif
     <td class="celda">{{ $pack_prefix }}{{ $item->description }}</td>
     <td class="celda">{{ $qty }}</td>
     <td class="celda">{{ $series }}</td>

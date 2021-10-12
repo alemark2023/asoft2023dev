@@ -4,7 +4,7 @@
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
 
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
+    // $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
     $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
 
 @endphp
@@ -93,7 +93,9 @@
     </tr>
     <tr>
         <td>Peso Bruto Total({{ $document->unit_type_id }}): {{ $document->total_weight }}</td>
+        @if($document->packages_number)
         <td>Número de Bultos: {{ $document->packages_number }}</td>
+        @endif
     </tr>
     <tr>
         <td>P.Partida: {{ $document->origin->location_id }} - {{ $document->origin->address }}</td>
@@ -114,8 +116,12 @@
     </tr>
     <tbody>
     <tr>
+        @if($document->license_plate)
         <td>Número de placa del vehículo: {{ $document->license_plate }}</td>
+        @endif
+        @if($document->driver->number)
         <td>Conductor: {{ $document->driver->number }}</td>
+        @endif
     </tr>
     <tr>
         @if($document->secondary_license_plates)

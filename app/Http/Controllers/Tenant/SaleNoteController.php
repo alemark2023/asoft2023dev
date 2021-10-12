@@ -1676,6 +1676,13 @@ class SaleNoteController extends Controller
 
     }
 
+
+    /**
+     * Retorna arreglo para generar nota de venta desde ecommerce
+     *
+     * @param Request $request
+     * @return array
+     */
     public function transformDataOrder(Request $request){
 
         $data = SaleNoteHelper::transformForOrder($request->all());
@@ -1684,6 +1691,18 @@ class SaleNoteController extends Controller
             'data' => $data
         ];
         
+    }
+
+
+    /**
+     * Retorna items para generar json en checkout de hoteles
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function getItemsByIds(Request $request)
+    {
+        return SearchItemController::TransformToModalSaleNote(Item::whereIn('id', $request->ids)->get());
     }
 
 

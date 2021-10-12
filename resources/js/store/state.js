@@ -80,6 +80,7 @@ export default {
     form_pos: {},
     currencys: [],
     payment_method_types: [],
+    document_types_guide: [],
     warehouses: {},
     all_items: [],
     items: [],

@@ -2,6 +2,7 @@
 
 namespace Modules\Order\Models;
 
+use App\Models\Tenant\GuideFile;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\Quotation;
@@ -72,7 +73,8 @@ class OrderNote extends ModelTenant
         'filename',
         'shipping_address',
         'quotation_id',
-        'observation'
+        'observation',
+        'total_igv_free',
 
     ];
 
@@ -434,4 +436,11 @@ class OrderNote extends ModelTenant
         return Dispatch::where('reference_order_note_id', $this->id)->get();
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function guide_files()
+    {
+        return $this->hasMany(GuideFile::class);
+    }
 }

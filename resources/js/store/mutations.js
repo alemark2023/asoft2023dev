@@ -126,6 +126,10 @@ export default {
         if(payment_method_types === undefined ) payment_method_types = {};
         state.payment_method_types = payment_method_types
     },
+    setDocumentTypesGuide(state,document_types_guide) {
+        if(document_types_guide === undefined ) document_types_guide = {};
+        state.document_types_guide = document_types_guide
+    },
 
     setExtraColors(state, extra_colors) {
         if(extra_colors === undefined ) extra_colors = [];
