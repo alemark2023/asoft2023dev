@@ -108,11 +108,11 @@ class InventoryValuedKardex
         
         $all_record_items = ($purchase_items->merge($dispatch_items))->merge($document_items);
 
-        // dd(self::transformRecordItems($all_record_items));
+        // dd(self::getRecordsFromItems($all_record_items));
 
         return [
             'item' => $item,
-            'records' => self::transformRecordItems($all_record_items)
+            'records' => self::getRecordsFromItems($all_record_items)
         ];
 
     }
@@ -142,123 +142,263 @@ class InventoryValuedKardex
         return $data;
 
     }
-     
 
-    private static function transformRecordItems($collection)
+    /**
+     * Retorna arreglo ordenado que contiene informacion de los documentos asociados al item para poder realizar calculos en el reporte
+     */
+    private static function transformItems($collection)
+    { 
+        return $collection->transform(function($row, $key){
+                    return self::getTempData($row);
+                })
+                ->sortBy('date_of_issue')
+                ->sortBy('time_of_issue')
+                ->values()
+                ->all();
+    }
+     
+    private static function getRecordsFromItems($collection)
     {
 
-        return $collection->transform(function($record_item){
+        // dd($collection);
+        $new_collection = self::transformItems($collection);
+        // dd($new_collection);
 
-            $data = [];
-
-            if($record_item instanceof DocumentItem){
-
-                $document = $record_item->document;
-
-                $data = [
-                    'type' => 'output',
-                    'model_type' => 'document',
-                    'date_of_issue' => $document->date_of_issue->format('d-m-Y'),
-                    'document_type_id' => $document->document_type_id,
-                    'series' => $document->series,
-                    'number' => $document->number,
-                    'operation_type' => 'VENTA',
-                    'operation_type_code' => '01',
-                    'input_quantity' => null,
-                    'input_unit_price' => null,
-                    'input_total' => null,
-                    'output_quantity' => $record_item->quantity,
-                    'output_unit_price' => $record_item->unit_price,
-                    'output_total' => $record_item->total,
-
-                    'factor' => -1,
-                    'quantity' => $record_item->quantity,
-                    'total' => $record_item->total,
-                ];
+        $data = [];
+        $balance_quantity = 0;
+        $balance_total_cost = 0;
+        $balance_unit_cost = 0;
 
 
-            }else if($record_item instanceof PurchaseItem){
+        foreach ($new_collection as $key => $temp_data) {
 
-                $document = $record_item->purchase;
+            //buscar nota de credito y asignar valores, es necesario que se encuentre el doc relacionado 
+            // en el arreglo, ya que desde el mismo obtiene el doc y su costo promedio
 
-                $data = [
-                    'type' => 'input',
-                    'model_type' => 'purchase',
-                    'date_of_issue' => $document->date_of_issue->format('d-m-Y'),
-                    'document_type_id' => $document->document_type_id,
-                    'series' => $document->series,
-                    'number' => $document->number,
-                    'operation_type' => 'COMPRA',
-                    'operation_type_code' => '02',
-                    'input_quantity' => $record_item->quantity,
-                    'input_unit_price' => $record_item->unit_price,
-                    'input_total' => $record_item->total,
-                    'output_quantity' => null,
-                    'output_unit_price' => null,
-                    'output_total' => null,
+            if($temp_data['model_type'] == 'document' && $temp_data['document_type_id'] == '07'){
 
-                    'factor' => 1,
-                    'quantity' => $record_item->quantity,
-                    'total' => $record_item->total,
-                ];
+                $affected_document = collect($data)->first(function($row) use($temp_data){
+                    return $row['model_type'] == 'document' && in_array($row['document_type_id'], ['01', '03']) && $row['id'] === $temp_data['affected_document_id'];
+                });
 
-            }else if($record_item instanceof DispatchItem){
-
-                $type = ($record_item->dispatch->transfer_reason_type_id == '01') ? 'output' : 'input';
-                $document = $record_item->dispatch;
-
-
-                $input_quantity = null;
-                $input_unit_price = null;
-                $input_total = null;
-                $output_quantity = null;
-                $output_unit_price = null;
-                $output_total = null;
-                $operation_type = null;
-                
-                if($type == 'input'){
-                    
-                    $input_quantity =  $record_item->quantity;
-                    $input_unit_price =  $record_item->relation_item->purchase_unit_price;
-                    $input_total = $record_item->quantity * $record_item->relation_item->purchase_unit_price;
-                    $operation_type = 'COMPRA';
-                    $factor = 1;
-
-                }else{
-
-                    $output_quantity =  $record_item->quantity;
-                    $output_unit_price =  $record_item->relation_item->sale_unit_price;
-                    $output_total =  $record_item->quantity * $record_item->relation_item->sale_unit_price;
-                    $operation_type = 'VENTA';
-                    $factor = -1;
-
-                }
-                
-                $data = [
-                    'type' => $type,
-                    'model_type' => 'dispatch',
-                    'date_of_issue' => $document->date_of_issue->format('d-m-Y'),
-                    'document_type_id' => $document->document_type_id,
-                    'series' => $document->series,
-                    'number' => $document->number,
-                    'operation_type' => $operation_type,
-                    'operation_type_code' => $record_item->dispatch->transfer_reason_type_id,
-                    'input_quantity' =>  $input_quantity,
-                    'input_unit_price' => $input_unit_price,
-                    'input_total' => $input_total,
-                    'output_quantity' => $output_quantity,
-                    'output_unit_price' => $output_unit_price,
-                    'output_total' => $output_total,
-
-                    'factor' => $factor,
-                    'quantity' => $record_item->quantity,
-                    'total' => $output_total ?? $input_total,
-                ];
-
+                $temp_data['input_unit_price'] = $affected_document['output_unit_price'];
+                $temp_data['input_total'] = $temp_data['input_unit_price'] * $temp_data['input_quantity'];
+                $temp_data['total'] = $temp_data['input_unit_price'] * $temp_data['input_quantity'];
             }
 
-            return $data;
-        });
+
+            $balance_quantity +=  $temp_data['quantity'] * $temp_data['factor'];
+
+            //asignar valor acumulado del documento previo del grupo saldo - campo costo unitario 
+            if(isset($data[$key - 1]) && $temp_data['type'] == 'output')
+            {
+                $temp_data['output_unit_price'] = $data[$key - 1]['balance_unit_cost'];
+                $temp_data['output_total'] = $temp_data['output_unit_price'] * $temp_data['output_quantity'];
+            }
+
+            // valores iniciales para el grupo saldos
+            if($key == 0)
+            {
+                $balance_unit_cost = ($balance_quantity != 0) ? round($temp_data['total']  / $temp_data['quantity'] , 4) : null;
+                $balance_total_cost += $temp_data['total'] * $temp_data['factor'];
+
+            }else
+            {
+                // acumulado grupo saldo - columnas, total y costo unitario
+                $balance_total_cost += ($temp_data['type'] == 'input') ? $temp_data['total'] * $temp_data['factor'] : $temp_data['output_total'] * $temp_data['factor'];
+                $balance_unit_cost = ($balance_quantity != 0) ? round($balance_total_cost / $balance_quantity, 4) : null;
+            }
+            
+            //asignar valores acumulados
+            $temp_data['balance_quantity'] = $balance_quantity;
+            $temp_data['balance_unit_cost'] = $balance_unit_cost;
+            $temp_data['balance_total_cost'] = $balance_total_cost;
+
+            $data[$key] = $temp_data;
+
+        }
+
+        return $data;
+
     }
 
+    private static function getTempData($record_item)
+    {
+        
+        $temp_data = [];
+
+        if($record_item instanceof DocumentItem){
+
+            $document = $record_item->document;
+            $affected_document_id = null;
+
+            if($document->document_type_id == '07'){
+                $affected_document_id = $document->note->affected_document_id;
+                $type = 'input';
+            }else{
+                $type ='output';
+            }
+
+            $input_quantity = null;
+            $input_unit_price = null;
+            $input_total = null;
+            $output_quantity = null;
+            $output_unit_price = null;
+            $output_total = null;
+            $operation_type = null;
+            
+            if($type == 'input'){
+                
+                $input_quantity =  $record_item->quantity;
+                $input_unit_price =  $record_item->unit_price;
+                $input_total = $record_item->total;
+                $operation_type = 'DEVOLUCIÓN';
+                $operation_type_code = '05';
+                $factor = 1;
+
+            }else{
+
+                $output_quantity =  $record_item->quantity;
+                $output_unit_price =  $record_item->unit_price;
+                $output_total =  $record_item->total;
+                $operation_type = 'VENTA';
+                $factor = -1;
+                $operation_type_code = '01';
+
+            }
+            // dd($document);
+
+            $temp_data = [
+                'id' => $document->id,
+                'type' => $type,
+                // 'type' => 'output',
+                'model_type' => 'document',
+                'date_of_issue' => $document->date_of_issue->format('d-m-Y'),
+                'time_of_issue' => $document->time_of_issue,
+                'document_type_id' => $document->document_type_id,
+                'series' => $document->series,
+                'number' => $document->number,
+                'operation_type' => $operation_type,
+                'operation_type_code' => $operation_type_code,
+
+                'input_quantity' => $input_quantity,
+                'input_unit_price' => $input_unit_price,
+                'input_total' => $input_total,
+
+                'output_quantity' => $output_quantity,
+                'output_unit_price' => $output_unit_price,
+                'output_total' => $output_total,
+
+                'factor' => $factor,
+                'quantity' => $record_item->quantity,
+                'total' => $record_item->total,
+                
+                'balance_quantity' => 0,
+                'balance_unit_cost' => 0,
+                'balance_total_cost' => 0,
+
+                'affected_document_id' => $affected_document_id,
+            ];
+
+        }else if($record_item instanceof PurchaseItem){
+
+            $document = $record_item->purchase;
+
+            $temp_data = [
+                'id' => $document->id,
+                'type' => 'input',
+                'model_type' => 'purchase',
+                'date_of_issue' => $document->date_of_issue->format('d-m-Y'),
+                'time_of_issue' => $document->time_of_issue,
+                'document_type_id' => $document->document_type_id,
+                'series' => $document->series,
+                'number' => $document->number,
+                'operation_type' => 'COMPRA',
+                'operation_type_code' => '02',
+
+                'input_quantity' => $record_item->quantity,
+                'input_unit_price' => $record_item->unit_price,
+                'input_total' => $record_item->total,
+
+                'output_quantity' => null,
+                'output_unit_price' => null,
+                'output_total' => null,
+
+                'factor' => 1,
+                'quantity' => $record_item->quantity,
+                'total' => $record_item->total,
+                
+                'balance_quantity' => 0,
+                'balance_unit_cost' => 0,
+                'balance_total_cost' => 0,
+                'affected_document_id' => null,
+            ];
+
+        }else if($record_item instanceof DispatchItem){
+
+            $type = ($record_item->dispatch->transfer_reason_type_id == '01') ? 'output' : 'input';
+            $document = $record_item->dispatch;
+
+            $input_quantity = null;
+            $input_unit_price = null;
+            $input_total = null;
+            $output_quantity = null;
+            $output_unit_price = null;
+            $output_total = null;
+            $operation_type = null;
+            
+            if($type == 'input'){
+                
+                $input_quantity =  $record_item->quantity;
+                $input_unit_price =  $record_item->relation_item->purchase_unit_price;
+                $input_total = $record_item->quantity * $record_item->relation_item->purchase_unit_price;
+                $operation_type = 'COMPRA';
+                $factor = 1;
+
+            }else{
+
+                $output_quantity =  $record_item->quantity;
+                $output_unit_price =  $record_item->relation_item->sale_unit_price;
+                $output_total =  $record_item->quantity * $record_item->relation_item->sale_unit_price;
+                $operation_type = 'VENTA';
+                $factor = -1;
+
+            }
+            // dd($document);
+            $temp_data = [
+                'id' => $document->id,
+                'type' => $type,
+                'model_type' => 'dispatch',
+                'date_of_issue' => $document->date_of_issue->format('d-m-Y'),
+                'time_of_issue' => $document->time_of_issue,
+                'document_type_id' => $document->document_type_id,
+                'series' => $document->series,
+                'number' => $document->number,
+                'operation_type' => $operation_type,
+                'operation_type_code' => $record_item->dispatch->transfer_reason_type_id,
+
+                'input_quantity' =>  $input_quantity,
+                'input_unit_price' => $input_unit_price,
+                'input_total' => $input_total,
+
+                'output_quantity' => $output_quantity,
+                'output_unit_price' => $output_unit_price,
+                'output_total' => $output_total,
+
+                'factor' => $factor,
+                'quantity' => $record_item->quantity,
+                'total' => $output_total ?? $input_total,
+
+                'balance_quantity' => 0,
+                'balance_unit_cost' => 0,
+                'balance_total_cost' => 0,
+                'affected_document_id' => null,
+
+            ];
+
+        }
+
+        return $temp_data;
+    }
+ 
 }
