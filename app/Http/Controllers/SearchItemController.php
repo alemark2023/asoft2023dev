@@ -114,7 +114,7 @@
             // $item = Item:: whereIsActive();
             $item = Item::query();
             $ItemToSearchBySeries = Item:: whereIsActive();
-            
+
             if ($service == false) {
                 $item->WhereNotService();
                 $ItemToSearchBySeries->WhereNotService();
@@ -190,7 +190,10 @@
         public static function SetWarehouseToUser(&$item)
         {
             /** @var Item $item */
-             $item->whereWarehouse();
+            $configuration =  Configuration::first()-> isShowItemsOnlyUserStablishment();
+            if($configuration == true) {
+                $item->whereWarehouse();
+            }
 
         }
 

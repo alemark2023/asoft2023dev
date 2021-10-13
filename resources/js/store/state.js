@@ -74,6 +74,7 @@ export default {
         currency_types: [{}],
         affectation_igv_types_exonerated_unaffected: [{}],
         typeUser: '',
+        show_items_only_user_stablishment: false,
         show_pdf_name: false
 
     },

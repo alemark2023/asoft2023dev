@@ -15,6 +15,7 @@ use phpDocumentor\Reflection\Types\Boolean;
  * @package App\Models\Tenant
  * @mixin ModelTenant
  * @property bool $show_extra_info_to_item
+ * @property bool $show_items_only_user_stablishment
  * @method static Builder|Configuration newModelQuery()
  * @method static Builder|Configuration newQuery()
  * @method static Builder|Configuration query()
@@ -103,6 +104,7 @@ class Configuration extends ModelTenant
         'dispatches_address_text',
         'set_address_by_establishment',
         'permission_to_edit_cpe',
+        'show_items_only_user_stablishment',
     ];
 
     protected $casts = [
@@ -122,6 +124,7 @@ class Configuration extends ModelTenant
         'show_pdf_name' => 'boolean',
         'dispatches_address_text' => 'boolean',
         'set_address_by_establishment' => 'boolean',
+        'show_items_only_user_stablishment' => 'boolean',
         'permission_to_edit_cpe' => 'boolean',
     ];
 
@@ -461,6 +464,7 @@ class Configuration extends ModelTenant
             'active_warehouse_prices' => (bool)$this->active_warehouse_prices,
             'active_allowance_charge' => (bool)$this->active_allowance_charge,
             'dispatches_address_text' => $this->isDispatchesAddressText(),
+            'show_items_only_user_stablishment' => $this->isShowItemsOnlyUserStablishment(),
             'search_item_by_series' => (bool)$this->search_item_by_series,
             'change_free_affectation_igv' => (bool)$this->change_free_affectation_igv,
             'select_available_price_list' => (bool)$this->select_available_price_list,
@@ -635,6 +639,26 @@ class Configuration extends ModelTenant
     public function setDispatchesAddressText(bool $dispatches_address_text): Configuration
     {
         $this->dispatches_address_text = (bool) $dispatches_address_text;
+        return $this;
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function isShowItemsOnlyUserStablishment(): bool
+    {
+        return (bool)$this->show_items_only_user_stablishment;
+    }
+
+    /**
+     * @param bool $show_items_only_user_stablishment
+     *
+     * @return Company
+     */
+    public function setShowItemsOnlyUserStablishment(bool $show_items_only_user_stablishment): Configuration
+    {
+        $this->show_items_only_user_stablishment = (bool) $show_items_only_user_stablishment;
         return $this;
     }
 
