@@ -721,6 +721,8 @@ if ($hostname) {
             Route::post('configurations', 'System\ConfigurationController@store');
             Route::get('configurations/record', 'System\ConfigurationController@record');
             Route::get('information', 'System\ConfigurationController@InfoIndex')->name('system.information');
+            Route::get('status/memory', 'System\StatusController@memory')->name('system.status.memory');
+            Route::get('status/cpu', 'System\StatusController@cpu')->name('system.status.cpu');
             Route::get('configurations/apiruc', 'System\ConfigurationController@apiruc');
             Route::get('configurations/apkurl', 'System\ConfigurationController@apkurl');
 
