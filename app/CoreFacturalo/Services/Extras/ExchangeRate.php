@@ -24,12 +24,12 @@ class ExchangeRate
 
         try {
 
-            // "https://e-consulta.sunat.gob.pe/cl-at-ittipcam/tcS01Alias?mes={$month}&anho={$year}";
+            // $url = "https://e-consulta.sunat.gob.pe/cl-at-ittipcam/tcS01Alias?mes={$month}&anho={$year}";
 
             $curl = curl_init();
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://www.sunat.gob.pe',
+                CURLOPT_URL => 'https://www.sunat.gob.pe/a/txt/tipoCambio.txt',
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
