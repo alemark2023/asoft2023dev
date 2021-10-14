@@ -7,15 +7,15 @@ use App\Http\Controllers\Controller;
 
 class StatusController extends Controller
 {
-    public function memory()
+    public function memory($prefix = true)
     {
         // dd($this->getServerMemoryUsage(true));
         // Memory usage: 4.55 GiB / 23.91 GiB (19.013557664178%)
         $memUsage = $this->getServerMemoryUsage(false);
         $memory = [
-            'free' => $this->getNiceFileSize($memUsage["free"]),
-            'used' => $this->getNiceFileSize($memUsage["total"] - $memUsage["free"]),
-            'total' => $this->getNiceFileSize($memUsage["total"])
+            'free' => $this->getNiceFileSize($memUsage["free"], $prefix),
+            'used' => $this->getNiceFileSize($memUsage["total"] - $memUsage["free"], $prefix),
+            'total' => $this->getNiceFileSize($memUsage["total"], $prefix)
         ];
 
         return $memory;
@@ -33,7 +33,7 @@ class StatusController extends Controller
             $cmd = "wmic ComputerSystem get TotalPhysicalMemory";
             @exec($cmd, $outputTotalPhysicalMemory);
 
-            // Get free physical memory (this is in kibibytes!)
+            // Get free physical memory (this is in kbytes!)
             $cmd = "wmic OS get FreePhysicalMemory";
             @exec($cmd, $outputFreePhysicalMemory);
 
@@ -50,7 +50,7 @@ class StatusController extends Controller
                 foreach ($outputFreePhysicalMemory as $line) {
                     if ($line && preg_match("/^[0-9]+\$/", $line)) {
                         $memoryFree = $line;
-                        $memoryFree *= 1024;  // convert from kibibytes to bytes
+                        $memoryFree *= 1024;  // convert from kbytes to bytes
                         break;
                     }
                 }
@@ -80,7 +80,7 @@ class StatusController extends Controller
                             $memoryTotal = trim($statLineData[1]);
                             $memoryTotal = explode(" ", $memoryTotal);
                             $memoryTotal = $memoryTotal[0];
-                            $memoryTotal *= 1024;  // convert from kibibytes to bytes
+                            $memoryTotal *= 1024;  // convert from kbytes to bytes
                         }
 
                         // Free memory
@@ -88,7 +88,7 @@ class StatusController extends Controller
                             $memoryFree = trim($statLineData[1]);
                             $memoryFree = explode(" ", $memoryFree);
                             $memoryFree = $memoryFree[0];
-                            $memoryFree *= 1024;  // convert from kibibytes to bytes
+                            $memoryFree *= 1024;  // convert from kbytes to bytes
                         }
                     }
                 }
@@ -109,15 +109,15 @@ class StatusController extends Controller
         }
     }
 
-    public function getNiceFileSize($bytes, $binaryPrefix=true) {
-        if ($binaryPrefix) {
-            $unit=array('B','KiB','MiB','GiB','TiB','PiB');
+    public function getNiceFileSize($bytes, $prefix=true) {
+        if ($prefix) {
+            $unit=array('B','KB','MB','GB','TB','PB');
             if ($bytes==0) return '0 ' . $unit[0];
             return @round($bytes/pow(1024,($i=floor(log($bytes,1024)))),2) .' '. (isset($unit[$i]) ? $unit[$i] : 'B');
         } else {
-            $unit=array('B','KB','MB','GB','TB','PB');
+            // $unit=array('B','KiB','MiB','GiB','TiB','PiB');
             if ($bytes==0) return '0 ' . $unit[0];
-            return @round($bytes/pow(1000,($i=floor(log($bytes,1000)))),2) .' '. (isset($unit[$i]) ? $unit[$i] : 'B');
+            return @round($bytes/pow(1000,($i=floor(log($bytes,1000)))),2);
         }
     }
 
@@ -125,7 +125,7 @@ class StatusController extends Controller
     {
         $cpuLoad = $this->getServerLoad();
         $cpu = [
-            'cpu' => is_null($cpuLoad) ? 0 : $cpuLoad . "%"
+            'cpu' => is_null($cpuLoad) ? 0 : $cpuLoad
         ];
 
         return $cpu;
