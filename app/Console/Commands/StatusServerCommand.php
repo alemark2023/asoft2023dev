@@ -73,5 +73,6 @@ class StatusServerCommand extends Command
         $history->memory_free = $memory['free'];
         $history->memory_used = $memory['used'];
         $history->save();
+        sleep(15);
     }
 }
