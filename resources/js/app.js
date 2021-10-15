@@ -320,6 +320,7 @@ Vue.component('system-configuration-token', require('./views/system/configuratio
 
 // php info
 Vue.component('system-php-configuration', require('./views/system/configuration/php_info.vue'))
+Vue.component('system-server-status', require('./views/system/configuration/server_status.vue'))
 
 //Configuración global del login
 Vue.component('system-login-settings', require('./views/system/configuration/login.vue'))

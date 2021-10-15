@@ -4,6 +4,7 @@ namespace App\Http\Controllers\System;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\System\HistoryResource;
 
 class StatusController extends Controller
 {
@@ -227,5 +228,26 @@ class StatusController extends Controller
         }
 
         return $load;
+    }
+
+    //para graficas
+    public function history()
+    {
+        $alls = HistoryResource::take(30)->get();
+
+        $labels = [];
+        $cpu = [];
+        $memory = [];
+        foreach($alls as $row){
+            $labels[] = $row->created_at->format('H:i');
+            $cpu[] = $row->cpu_percent;
+            $memory[] = $row->memory_used;
+        }
+
+        return [
+            'labels' => $labels,
+            'cpu' => $cpu,
+            'memory' => $memory,
+        ];
     }
 }
