@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\System\HistoryResource;
 use App\Http\Controllers\System\StatusController;
+use Carbon\Carbon;
 
 class StatusServerCommand extends Command
 {
@@ -39,18 +40,27 @@ class StatusServerCommand extends Command
      */
     public function handle()
     {
-        $statusController = new StatusController();
-        $memory = $statusController->memory(false);
-        $cpu = $statusController->cpu();
 
         $this->info('The command was started');
 
-        $history = new HistoryResource();
-        $history->cpu_percent = $cpu['cpu'];
-        $history->memory_total = $memory['total'];
-        $history->memory_free = $memory['free'];
-        $history->memory_used = $memory['used'];
-        $history->save();
+        // se repite el guardado varias veces
+        $last = HistoryResource::orderBy('created_at', 'desc')->first();
+        $now = Carbon::now();
+        if($now->diffInMinutes($last->created_at))
+        {
+            $statusController = new StatusController();
+            $memory = $statusController->memory(false);
+            $cpu = $statusController->cpu();
+
+            $history = new HistoryResource();
+            $history->cpu_percent = $cpu['cpu'];
+            $history->memory_total = $memory['total'];
+            $history->memory_free = $memory['free'];
+            $history->memory_used = $memory['used'];
+            $history->save();
+        }
+
+
 
         $this->info("The command is finished");
     }
