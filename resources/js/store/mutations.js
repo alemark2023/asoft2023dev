@@ -96,6 +96,10 @@ export default {
         if(CatItemMoldCavity === undefined ) CatItemMoldCavity = [];
         state.CatItemMoldCavity = CatItemMoldCavity
     },
+    setCatItemSize(state, CatItemSize) {
+        if(CatItemSize === undefined ) CatItemSize = [];
+        state.CatItemSize = CatItemSize
+    },
     setCatItemMoldProperty(state, CatItemMoldProperty) {
         if(CatItemMoldProperty === undefined ) CatItemMoldProperty = [];
         state.CatItemMoldProperty = CatItemMoldProperty
@@ -138,6 +142,10 @@ export default {
     setExtraCatItemUnitsPerPackage(state, extra_CatItemUnitsPerPackage) {
         if(extra_CatItemUnitsPerPackage === undefined ) extra_CatItemUnitsPerPackage = [];
         state.extra_CatItemUnitsPerPackage = extra_CatItemUnitsPerPackage
+    },
+    setExtraCatItemSize(state, extra_CatItemSize) {
+        if(extra_CatItemSize === undefined ) extra_CatItemSize = [];
+        state.extra_CatItemSize = extra_CatItemSize
     },
     setExtraCatItemMoldProperty(state, extra_CatItemMoldProperty) {
         if(extra_CatItemMoldProperty === undefined ) extra_CatItemMoldProperty = [];

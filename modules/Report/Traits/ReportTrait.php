@@ -294,7 +294,7 @@ trait ReportTrait
      * @param string                              $str
      * @param \Illuminate\Support\Collection|null $ids
      *
-     * @return \App\Models\Tenant\Item
+     * @return Item
      */
     public function getItems($str = '', \Illuminate\Support\Collection  $ids = null){
 
@@ -321,15 +321,18 @@ trait ReportTrait
      */
     public function getDataTableItem($request) {
 
-        $items = Item::where('description','like', "%{$request->input}%")
-                        ->orWhere('internal_id','like', "%{$request->input}%")
-                        ->orderBy('description')
-                        ->get()->transform(function($row) {
-                            return [
-                                'id' => $row->id,
-                                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
-                            ];
-                        });
+        $items = Item::where('description', 'like', "%{$request->input}%")
+            ->orWhere('internal_id', 'like', "%{$request->input}%")
+            ->orderBy('description')
+            ->get()
+            ->transform(function ($row) {
+                /** @var Item $row */
+                return [
+                    'id' => $row->id,
+                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
+                'extra'=>$row->getExtraDataFields(),
+            ];
+        });
 
         return $items;
 

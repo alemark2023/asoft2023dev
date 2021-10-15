@@ -2,6 +2,7 @@
 
 namespace App\Models\Tenant;
 
+use App\Traits\AttributePerItems;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class DispatchItem extends ModelTenant
 {
+    use AttributePerItems;
     public $timestamps = false;
 
     protected $fillable = [

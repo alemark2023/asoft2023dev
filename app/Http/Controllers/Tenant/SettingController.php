@@ -100,7 +100,8 @@
          * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
         public function listReports() {
-            return view('tenant.reports.list');
+            $configuration = Configuration::first();
+            return view('tenant.reports.list',compact('configuration'));
         }
 
         /**

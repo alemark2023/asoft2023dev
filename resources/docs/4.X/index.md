@@ -7,3 +7,5 @@
     - [Plantilla personalizada](/{{route}}/{{version}}/plantilla-pdf-personalizada)
 - ## Validador
     - [Configuración SUNAT](/{{route}}/{{version}}/configuracion-nuevo-validador)
+- ## Atributos para items
+  - [Stock por atributos](/{{route}}/{{version}}/stock-por-atributos)

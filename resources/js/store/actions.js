@@ -20,6 +20,7 @@ export default {
         state.establishment = readStorageData('establishment', true);
         if (state.deb === undefined) state.deb = {};
         if (state.colors === undefined) state.colors = [];
+        if (state.CatItemSize === undefined) state.CatItemSize = [];
         if (state.CatItemMoldProperty === undefined) state.CatItemMoldProperty = [];
         if (state.CatItemUnitBusiness === undefined) state.CatItemUnitBusiness = [];
         if (state.CatItemStatus === undefined) state.CatItemStatus = [];
@@ -28,6 +29,7 @@ export default {
         if (state.CatItemUnitsPerPackage === undefined) state.CatItemUnitsPerPackage = [];
         if (state.CatItemMoldCavity === undefined) state.CatItemMoldCavity = [];
         if (state.extra_colors === undefined) state.extra_colors = [];
+        if (state.extra_CatItemSize === undefined) state.extra_CatItemSize = [];
         if (state.extra_CatItemUnitsPerPackage === undefined) state.extra_CatItemUnitsPerPackage = [];
         if (state.extra_CatItemMoldProperty === undefined) state.extra_CatItemMoldProperty = [];
         if (state.extra_CatItemUnitBusiness === undefined) state.extra_CatItemUnitBusiness = [];
@@ -61,6 +63,7 @@ export default {
     },
     clearExtraInfoItem() {
         state.extra_colors = [];
+        state.extra_CatItemSize = [];
         state.extra_CatItemUnitsPerPackage = [];
         state.extra_CatItemMoldProperty = [];
         state.extra_CatItemUnitBusiness = [];

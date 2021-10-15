@@ -5,11 +5,13 @@
     use App\Models\Tenant\Catalogs\AffectationIgvType;
     use App\Models\Tenant\Catalogs\PriceType;
     use App\Models\Tenant\Catalogs\SystemIscType;
+    use App\Traits\AttributePerItems;
     use Illuminate\Database\Eloquent\Collection;
     use Illuminate\Database\Eloquent\Model;
 
     class QuotationItem extends ModelTenant
     {
+        use AttributePerItems;
         public $timestamps = false;
         protected $with = ['affectation_igv_type', 'system_isc_type', 'price_type'];
         protected $fillable = [
@@ -113,6 +115,10 @@
         {
             return $this->belongsTo(Item::class, 'item_id');
         }
+        public function quotation()
+        {
+            return $this->belongsTo(Quotation::class, 'quotation_id');
+        }
 
         /**
          * Devuelve una estructura en conjunto para datos extra al momento de generar un pdf
@@ -132,6 +138,7 @@
             $CatItemPackageMeasurement = ($extra_string != null && property_exists($extra_string, 'CatItemPackageMeasurement')) ? $extra_string->CatItemPackageMeasurement : null;
             $CatItemStatus = ($extra_string != null && property_exists($extra_string, 'CatItemStatus')) ? $extra_string->CatItemStatus : null;
             $CatItemUnitBusiness = ($extra_string != null && property_exists($extra_string, 'CatItemUnitBusiness')) ? $extra_string->CatItemUnitBusiness : null;
+            $CatItemSize = ($extra_string != null && property_exists($extra_string, 'CatItemSize')) ? $extra_string->CatItemSize : null;
             $data = [
                 'colors' => (!empty($colors)) ? $colors : null,
                 'CatItemUnitsPerPackage' => (!empty($CatItemUnitsPerPackage)) ? $CatItemUnitsPerPackage : null,
@@ -141,6 +148,7 @@
                 'CatItemPackageMeasurement' => (!empty($CatItemPackageMeasurement)) ? $CatItemPackageMeasurement : null,
                 'CatItemStatus' => (!empty($CatItemStatus)) ? $CatItemStatus : null,
                 'CatItemUnitBusiness' => (!empty($CatItemUnitBusiness)) ? $CatItemUnitBusiness : null,
+                'CatItemSize' => (!empty($CatItemSize)) ? $CatItemSize : null,
             ];
             // Se añaden campos extra desde el item
             $itemModel = $this->getModelItem();

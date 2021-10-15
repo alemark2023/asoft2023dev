@@ -6,6 +6,7 @@ use App\Models\Tenant\Document;use App\Models\Tenant\DocumentItem;use App\Models
  * @var Company  $company
  */
 
+
 $debug = [];
 $company = isset($company) ? $company : new Company();
 $establishment = $document->establishment;

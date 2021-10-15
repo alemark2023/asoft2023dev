@@ -174,6 +174,7 @@
                 'CatItemMoldCavity' => (!empty($row['CatItemMoldCavity'])) ? $row['CatItemMoldCavity'] : [],
                 'CatItemPackageMeasurement' => (!empty($row['CatItemPackageMeasurement'])) ? $row['CatItemPackageMeasurement'] : [],
                 'CatItemStatus' => (!empty($row['CatItemStatus'])) ? $row['CatItemStatus'] : [],
+                'CatItemSize' => (!empty($row['CatItemSize'])) ? $row['CatItemSize'] : [],
                 'CatItemUnitBusiness' => (!empty($row['CatItemUnitBusiness'])) ? $row['CatItemUnitBusiness'] : [],
                 'warehouses' => (!empty($row['warehouses'])) ? $row['warehouses'] : [],
                 'item_unit_types' => (!empty($row['item_unit_types'])) ? $row['item_unit_types'] : [],
