@@ -7,6 +7,7 @@
     use App\Models\Tenant\Catalogs\AffectationIgvType;
     use App\Models\Tenant\Catalogs\PriceType;
     use App\Models\Tenant\Catalogs\SystemIscType;
+    use App\Traits\AttributePerItems;
     use Carbon\Carbon;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -54,6 +55,7 @@
      */
     class TechnicalServiceItem extends ModelTenant
     {
+        use AttributePerItems;
         use UsesTenantConnection;
 
 

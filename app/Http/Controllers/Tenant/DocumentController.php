@@ -32,6 +32,7 @@ use App\Models\Tenant\Catalogs\NoteDebitType;
 use App\Models\Tenant\Catalogs\OperationType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
+use App\Models\Tenant\CatItemSize;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Dispatch;
@@ -262,6 +263,7 @@ class DocumentController extends Controller
 
         /** Informacion adicional */
         $colors = collect([]);
+        $CatItemSize=$colors;
         $CatItemStatus=$colors;
         $CatItemUnitBusiness = $colors;
         $CatItemMoldCavity = $colors;
@@ -272,6 +274,7 @@ class DocumentController extends Controller
         if($configuration->isShowExtraInfoToItem()){
 
             $colors = CatColorsItem::all();
+            $CatItemSize= CatItemSize::all();
             $CatItemStatus= CatItemStatus::all();
             $CatItemUnitBusiness = CatItemUnitBusiness::all();
             $CatItemMoldCavity = CatItemMoldCavity::all();
@@ -296,6 +299,7 @@ class DocumentController extends Controller
             'attribute_types',
             'is_client',
             'colors',
+            'CatItemSize',
             'CatItemMoldCavity',
             'CatItemMoldProperty',
             'CatItemUnitBusiness',

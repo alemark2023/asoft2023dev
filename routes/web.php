@@ -627,6 +627,9 @@ if ($hostname) {
             Route::get('login-page', 'Tenant\LoginConfigurationController@index')->name('tenant.login_page');
             Route::post('login-page/upload-bg-image', 'Tenant\LoginConfigurationController@uploadBgImage');
             Route::post('login-page/update', 'Tenant\LoginConfigurationController@update');
+
+
+            Route::post('extra_info/items', 'Tenant\ExtraInfoController@getExtraDataForItems');
         });
     });
 } else {

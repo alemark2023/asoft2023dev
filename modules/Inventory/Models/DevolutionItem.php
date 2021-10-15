@@ -13,7 +13,7 @@ class DevolutionItem extends ModelTenant
         'devolution_id',
         'item_id',
         'item',
-        'quantity', 
+        'quantity',
     ];
 
     public function getItemAttribute($value)
@@ -29,6 +29,6 @@ class DevolutionItem extends ModelTenant
     public function devolution()
     {
         return $this->belongsTo(Devolution::class);
-    } 
+    }
 
 }
