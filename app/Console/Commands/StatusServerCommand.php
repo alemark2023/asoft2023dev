@@ -46,22 +46,32 @@ class StatusServerCommand extends Command
         // se repite el guardado varias veces
         $last = HistoryResource::orderBy('created_at', 'desc')->first();
         $now = Carbon::now();
-        if($now->diffInMinutes($last->created_at))
+        // valido si ya hay un registro en este minuto
+        if($last && $now->diffInMinutes($last->created_at))
         {
-            $statusController = new StatusController();
-            $memory = $statusController->memory(false);
-            $cpu = $statusController->cpu();
-
-            $history = new HistoryResource();
-            $history->cpu_percent = $cpu['cpu'];
-            $history->memory_total = $memory['total'];
-            $history->memory_free = $memory['free'];
-            $history->memory_used = $memory['used'];
-            $history->save();
+            $this->saveRecord();
+        } else {
+            if($last == null){
+                $this->saveRecord();
+            }
         }
 
 
 
         $this->info("The command is finished");
+    }
+
+    public function saveRecord()
+    {
+        $statusController = new StatusController();
+        $memory = $statusController->memory(false);
+        $cpu = $statusController->cpu();
+
+        $history = new HistoryResource();
+        $history->cpu_percent = $cpu['cpu'];
+        $history->memory_total = $memory['total'];
+        $history->memory_free = $memory['free'];
+        $history->memory_used = $memory['used'];
+        $history->save();
     }
 }
