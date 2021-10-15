@@ -898,32 +898,32 @@
             // if($this->contract_item_id != 0) { $model  = $this->contract_item; return $this->contract_item } else
             try {
                 if ($this->devolution_item_id != 0) {
-                    return $this->devolution_item->devolution;
+                    // return $this->devolution_item->devolution;
                 } elseif ($this->dispatch_item_id != 0) {
-                    return $this->dispatch_item->dispatch;
+                    // return $this->dispatch_item->dispatch;
                 } elseif ($this->document_item_id != 0) {
                     return $this->document_item->document;
                 } elseif ($this->order_form_item_id != 0) {
-                    return $this->order_form_item->order_form;
+                    // return $this->order_form_item->order_form;
                 } elseif ($this->order_note_item_id != 0) {
-                    return $this->order_note_item->order_note;
+                    // return $this->order_note_item->order_note;
                 } elseif ($this->purchase_item_id != 0) {
 
                     return $this->purchase_item->purchase;
                 } elseif ($this->purchase_order_item_id != 0) {
-                    return $this->purchase_order_item->purchase;
+                    // return $this->purchase_order_item->purchase;
                 } elseif ($this->purchase_quotation_item_id != 0) {
-                    return $this->purchase_quotation_item->purchase_quotation;
+                    // return $this->purchase_quotation_item->purchase_quotation;
                 } elseif ($this->quotation_item_id != 0) {
-                    return $this->quotation_item->quotation;
+                    // return $this->quotation_item->quotation;
                 } elseif ($this->sale_note_item_id != 0) {
                     return $this->sale_note_item->sale_note;
                 } elseif ($this->sale_opportunity_item_id != 0) {
-                    return $this->sale_opportunity_item->sale_opportunity;
+                    // return $this->sale_opportunity_item->sale_opportunity;
                 } elseif ($this->technical_service_item_id != 0) {
                     return $this->technical_service_item->technical_service;
                 } elseif ($this->fixed_asset_purchase_item_id != 0) {
-                    return $this->fixed_asset_purchase_item->fixed_asset_purchase;
+                    // return $this->fixed_asset_purchase_item->fixed_asset_purchase;
                 }
             } catch (ErrorException $e) {
                 // do nothing
