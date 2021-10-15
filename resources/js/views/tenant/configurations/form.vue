@@ -619,6 +619,27 @@
                                                    v-text="errors.permission_to_edit_cpe[0]"></small>
                                         </div>
                                     </div>
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Mostrar item de solo el almacen de usuario
+                                            <el-tooltip
+                                                class="item"
+                                                content="Se aplica el filtro de mostrar items con relacion al establecimiento del usuario."
+                                                effect="dark"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div :class="{'has-danger': errors.show_items_only_user_stablishment}"
+                                             class="form-group">
+                                            <el-switch v-model="form.show_items_only_user_stablishment"
+                                                       active-text="Si"
+                                                       inactive-text="No"
+                                                       @change="submit"></el-switch>
+                                            <small v-if="errors.show_items_only_user_stablishment"
+                                                   class="form-control-feedback"
+                                                   v-text="errors.show_items_only_user_stablishment[0]"></small>
+                                        </div>
+                                    </div>
 
                                 </div>
                             </el-tab-pane>
