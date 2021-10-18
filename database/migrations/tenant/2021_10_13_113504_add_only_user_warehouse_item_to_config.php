@@ -16,7 +16,7 @@ class AddOnlyUserWarehouseItemToConfig extends Migration
     {
         Schema::table('configurations', function (Blueprint $table) {
             //
-            $table->tinyInteger('show_items_only_user_stablishment')->default(0)->nullable()->comment('permite mostrar stock del alamcen de usuario');
+            $table->tinyInteger('show_items_only_user_stablishment')->default(1)->nullable()->comment('permite mostrar stock del alamcen de usuario');
         });
     }
 
