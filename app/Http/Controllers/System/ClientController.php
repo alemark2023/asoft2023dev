@@ -499,6 +499,7 @@ class ClientController extends Controller
             ['establishment_id' => 1, 'document_type_id' => '09', 'number' => 'T001'],
             ['establishment_id' => 1, 'document_type_id' => '40', 'number' => 'P001'],
             ['establishment_id' => 1, 'document_type_id' => '80', 'number' => 'NV01'],
+            ['establishment_id' => 1, 'document_type_id' => '04', 'number' => 'L001'],
         ]);
 
 

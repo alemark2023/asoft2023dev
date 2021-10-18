@@ -630,6 +630,12 @@ if ($hostname) {
 
 
             Route::post('extra_info/items', 'Tenant\ExtraInfoController@getExtraDataForItems');
+
+            //liquidacion de compra
+            Route::get('purchase-settlements', 'Tenant\PurchaseSettlementController@index')->name('tenant.purchase-settlements.index');
+            Route::get('purchase-settlements/columns', 'Tenant\PurchaseSettlementController@columns');
+            Route::get('purchase-settlements/records', 'Tenant\PurchaseSettlementController@records');
+
         });
     });
 } else {
