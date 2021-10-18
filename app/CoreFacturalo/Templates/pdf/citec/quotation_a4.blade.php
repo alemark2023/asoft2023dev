@@ -6,13 +6,7 @@
     $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
 
     $config = \App\Models\Tenant\Configuration::first();
-
-    $miimage = null;
-
-	if($config->getFormatsToTemplates() == "citec")
-    {
-        $miimage = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'citec'.DIRECTORY_SEPARATOR.'papel_membretado.jpg');
-    }
+	$miimage = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'citec'.DIRECTORY_SEPARATOR.'papel_membretado.jpg');
 
 
 
