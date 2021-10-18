@@ -851,4 +851,15 @@
             return $query;
         }
 
+        /**
+         * Devuelve el vendedor asociado, Si seller id es nulo, devolverá el usuario del campo user.
+         * @return User
+         */
+        public function getSellerData(){
+            if(!empty($this->seller_id)){
+                return $this->seller;
+            }
+            return $this->user;
+
+        }
     }

@@ -45,9 +45,8 @@
                     ->whereIn('document_type_id', ['01', '03', '08'])
                     ->whereBetween('date_of_issue', [$date_start, $date_end])
                     ->where('seller_id', $row->id)
-                    ->WhereEstablishmentId($establishment_id);
-
-                $documents = $documents->get();
+                    ->WhereEstablishmentId($establishment_id)
+                    ->get();
                 $sale_notes = SaleNote::
                 whereIn('state_type_id', ['01', '03', '05', '07', '13'])
                     ->whereBetween('date_of_issue', [$date_start, $date_end])
