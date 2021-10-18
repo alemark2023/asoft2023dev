@@ -34,7 +34,7 @@ trait ReportTrait
      * @param $request
      * @param $model
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function getRecords($request, $model)
     {
@@ -147,10 +147,9 @@ trait ReportTrait
              $data->where($column, $person_id);
         }
 
-        if($seller_id){
-            $data->where('user_id', $seller_id);
+        if((int) $seller_id != 0){
+            $data->where('seller_id', $seller_id);
         }
-
         if($state_type_id){
              $data->where('state_type_id', $state_type_id);
         }
