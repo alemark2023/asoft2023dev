@@ -10,6 +10,7 @@
     use Illuminate\Database\Eloquent\Relations\MorphMany;
     use Illuminate\Database\Query\Builder;
     use Modules\Item\Models\WebPlatform;
+    use Modules\Sale\Models\TechnicalService;
 
     /**
      * Class SaleNote
@@ -129,6 +130,7 @@
             'document_id',
             'seller_id',
             'order_id',
+            'technical_service_id',
         ];
 
         protected $casts = [
@@ -385,6 +387,14 @@
         public function order()
         {
             return $this->belongsTo(Order::class);
+        }
+        
+        /**
+         * @return BelongsTo
+         */
+        public function technical_service()
+        {
+            return $this->belongsTo(TechnicalService::class);
         }
 
         /**

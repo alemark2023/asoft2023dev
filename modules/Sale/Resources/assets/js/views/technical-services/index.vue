@@ -27,6 +27,7 @@
                         <th>Costo S.</th>
                         <th>Costo P.</th>
                         <th>Total</th>
+                        <th class="text-center">Documento</th>
                         <!-- <th>Pago adelantado</th> -->
                         <th></th>
                         <th>Saldo</th>
@@ -43,6 +44,7 @@
                         <td class="text-center">{{ row.cost }}</td>
                         <td class="text-center">{{ row.total }}</td>
                         <td class="text-center">{{ row.sum_total }}</td>
+                        <td class="text-center">{{ row.number_document_sale_note }}</td>
                         <!-- <td class="text-center">{{ row.prepayment }}</td> -->
                         <td class="text-right">
                             <button
@@ -63,14 +65,17 @@
                         </td>
 
                         <td class="text-right">
-                            <button type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickOptions(row.id)">
-                                Generar comprobante
-                            </button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickCreate(row.id)">Editar
-                            </button>
+                            <template v-if="!row.has_document_sale_note">
+                                <button type="button"
+                                        class="btn waves-effect waves-light btn-xs btn-info"
+                                        @click.prevent="clickOptions(row.id)" >
+                                    Generar comprobante
+                                </button>
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                        @click.prevent="clickCreate(row.id)">Editar
+                                </button>
+                            </template>
+
                             <template v-if="typeUser === 'admin'">
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
                                         @click.prevent="clickDelete(row.id)">Eliminar
