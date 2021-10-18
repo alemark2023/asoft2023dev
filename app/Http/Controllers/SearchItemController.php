@@ -926,15 +926,22 @@
          *
          * @return mixed
          */
-        public static function getItemToContract(Request $request, $id = 0)
+        public static function getItemToContract(Request $request = null, $id = 0)
         {
             $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
+            /*
             $items = Item::orderBy('description')->whereIsActive()
                 // ->with(['warehouses' => function($query) use($warehouse){
                 //     return $query->where('warehouse_id', $warehouse->id);
                 // }])
                 ->get();
+*/
+            $items_not_services = self::getNotServiceItem($request, $id);
+            $items_services = self::getServiceItem($request, $id);
+            $establishment_id = auth()->user()->establishment_id;
+            $items = $items_not_services->merge($items_services);
+
             return self::TransformModalToContract($items);
         }
 
