@@ -15,7 +15,7 @@ class ChangeDefaultShowItemsOnlyUserStablishment extends Migration
     {
         Schema::table('configurations', function (Blueprint $table) {
             //
-            $table->tinyInteger('show_items_only_user_stablishment')->default(1)->nullable()->change();
+            $table->unsignedInteger('show_items_only_user_stablishment')->default(1)->nullable()->change();
 
         });
     }
