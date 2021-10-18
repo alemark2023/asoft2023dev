@@ -30,6 +30,12 @@
                             data-toggle="dropdown"
                             aria-expanded="false"><i class="fa fa-money-bill-wave-alt"></i>
                         Reporte de Pagos <span class="caret"></span></button>
+                    <!-- validadores apiperu  -->
+                    <a href="#" @click.prevent="showDialogApiPeruDevValidate = true" v-if="view_apiperudev_validator_cpe"
+                       class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-check"></i> Validación masiva</a>
+                    <a href="#" @click.prevent="showDialogValidate = true" v-if="view_validator_cpe"
+                       class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-file"></i> Validar CPE</a>
+
                     <div class="dropdown-menu"
                          role="menu"
                          x-placement="bottom-start"

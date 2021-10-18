@@ -349,6 +349,7 @@ if ($hostname) {
 
             Route::post('options/delete_documents', 'Tenant\OptionController@deleteDocuments');
 
+            // apiperu no usa estas rutas - revisar
             Route::get('services/ruc/{number}', 'Tenant\Api\ServiceController@ruc');
             Route::get('services/dni/{number}', 'Tenant\Api\ServiceController@dni');
             Route::post('services/exchange_rate', 'Tenant\Api\ServiceController@exchange_rate');

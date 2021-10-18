@@ -58,6 +58,12 @@ if($current_hostname) {
                 Route::get('data_table', 'ValidateDocumentController@data_table');
                 Route::post('regularize', 'ValidateDocumentController@regularize');
 
+                // apiperu
+                // rutas de consulta de validacion desde listado de comprobantes
+                Route::get('validate_masivo','ValidateApiDocumentController@validate_masivo');
+                Route::get('validateDocumentstxt', 'ValidateApiDocumentController@validateDocumentsTxt');
+                Route::get('validatecount', 'ValidateApiDocumentController@countdocumennt');
+
             });
 
             Route::prefix('documents/regularize-shipping')->group(function() {
