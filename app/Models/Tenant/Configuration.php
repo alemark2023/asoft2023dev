@@ -663,5 +663,19 @@ class Configuration extends ModelTenant
     }
 
 
+    /**
+     * Devuelve el template actual para impresion, si no se encuentra el usuario o establecimiento devolvera el formato que esta en configuracion
+     * @return string
+     */
+    public function getFormatsToTemplates(){
+        $user =  \Auth::user();
+        if(!empty($user)) {
+            $establishment =$user->establishment;
+            if (!empty($establishment)) {
+                return $establishment->template_pdf;
+            }
+        }
+        return  $this->formats;
+    }
 
 }
