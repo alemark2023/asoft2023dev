@@ -20,6 +20,7 @@
     use Modules\BusinessTurn\Models\DocumentTransport;
     use Modules\Item\Models\WebPlatform;
     use Modules\Order\Models\OrderNote;
+    use Modules\Sale\Models\TechnicalService;
 
 
     /**
@@ -193,6 +194,7 @@
             'dispatch_id',
             'subtotal',
             'total_igv_free',
+            'technical_service_id',
         ];
 
         protected $casts = [
@@ -662,7 +664,14 @@
             return $this->belongsTo(OrderNote::class);
         }
 
-
+        /**
+         * @return BelongsTo
+         */
+        public function technical_service()
+        {
+            return $this->belongsTo(TechnicalService::class);
+        }
+        
         /**
          * @return BelongsTo
          */

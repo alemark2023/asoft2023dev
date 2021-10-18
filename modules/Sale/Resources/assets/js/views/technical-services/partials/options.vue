@@ -152,15 +152,15 @@
                               autosize
                               type="textarea"></el-input>
                 </div>
-                <div v-show="is_document_type_invoice && form.payments.length > 0"
+                <div
                      class="col-lg-12">
                     <table style="width: 100%">
                         <thead>
                         <tr>
-                            <th>M.Pago</th>
-                            <th>Destino</th>
-                            <th>Referencia</th>
-                            <th>Monto</th>
+                            <th v-if="form.payments.length>0">M.Pago</th>
+                            <th v-if="form.payments.length>0">Destino</th>
+                            <th v-if="form.payments.length>0">Referencia</th>
+                            <th v-if="form.payments.length>0">Monto</th>
                             <th style="width: 15px">
                                 <a class="text-center font-weight-bold text-center text-info"
                                    href="#"
@@ -214,7 +214,7 @@
                   class="dialog-footer">
                 <template v-if="showClose">
                     <el-button @click="clickClose">Cerrar</el-button>
-                    <el-button v-if="generate"
+                    <el-button v-if="generate && !form.has_document_sale_note"
                                :loading="loading_submit"
                                class="submit"
                                type="primary"
@@ -248,8 +248,8 @@
 
 <script>
 
-import DocumentOptions from "../../../../../../../../resources/js/views/tenant/documents/partials/options";
-import SaleNoteOptions from "../../../../../../../../resources/js/views/tenant/sale_notes/partials/options";
+import DocumentOptions from "@views/documents/partials/options";
+import SaleNoteOptions from "@views/sale_notes/partials/options";
 import queryString from 'query-string'
 
 // import DocumentOptions from "../../documents/partials/options.vue";
@@ -361,7 +361,12 @@ export default {
             };
         },
         async create() {
+            await this.getRecord()
+        },
+        async getRecord(){
+
             this.loading = true;
+
             await this.$http.get(`/generate-document/record/technical-services/${this.recordId}`)
                 .then((response) => {
                     this.record = response.data.data;
@@ -382,6 +387,8 @@ export default {
                     if (this.record.items !== undefined) {
                         this.form.items = this.record.items
                     }
+
+                    this.form.technical_service_id = this.recordId
 
                     this.form.items.push({
                         'id': null,
@@ -424,9 +431,14 @@ export default {
                     this.form.total_value = total_taxed;
                     this.form.total = total;
 
+                    this.form.payments = this.record.payments
+                    this.form.has_document_sale_note = this.record.has_document_sale_note
+
                     this.titleDialog = `Servicio de soporte técnico`;
                 });
+
             this.loading = false;
+
         },
         onPrepareAdditionalInformation(data) {
             let obs = null
@@ -559,6 +571,7 @@ export default {
                     format_pdf: "a4",
                 },
                 quotation_id: null,
+                technical_service_id: null,
                 is_receivable: false,
                 payments: [],
                 hotel: {},
@@ -580,7 +593,7 @@ export default {
 
             let error_by_item = 0
 
-            this.document.payments.forEach((item) => {
+            this.form.payments.forEach((item) => {
                 if (item.payment_destination_id == null) error_by_item++;
             })
 
@@ -592,11 +605,12 @@ export default {
         async submit() {
             // await this.assignDocument();
             //
-            // let validate_payment_destination = await this.validatePaymentDestination()
-            //
-            // if (validate_payment_destination.error_by_item > 0) {
-            //     return this.$message.error('El destino del pago es obligatorio');
-            // }
+            let validate_payment_destination = await this.validatePaymentDestination()
+            
+            if (validate_payment_destination.error_by_item > 0) {
+                return this.$message.error('El destino del pago es obligatorio');
+            }
+
             this.loading_submit = true;
             if (this.form.document_type_id === "nv") {
                 this.form.prefix = "NV";
@@ -624,8 +638,10 @@ export default {
                 await this.$http.post(`/generate-document`, this.form)
                 .then((response) => {
                     if (response.data.success) {
-                        console.log(response.data.data);
+                        // console.log(response.data.data);
                         this.documentNewId = response.data.data.id;
+
+                        this.getRecord()
                         // this.$http
                         //     .get(`/${this.resource}/changed/${this.form.id}`)
                         //     .then(() => {
