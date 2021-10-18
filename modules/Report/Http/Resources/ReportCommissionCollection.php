@@ -2,6 +2,7 @@
 
     namespace Modules\Report\Http\Resources;
 
+    use App\CoreFacturalo\Helpers\Functions\FunctionsHelper;
     use App\Models\Tenant\Document;
     use App\Models\Tenant\DocumentItem;
     use App\Models\Tenant\SaleNote;
@@ -26,14 +27,35 @@
              * @var Collection $data
              */
 
-            $data = $this->collection->transform(function ($row, $key) {
+            $data = $this->collection->transform(function ($row, $key) use ($request) {
                 /**
-                 * @var User                             $row
+                 * @var User                                                $row
                  * @var \Illuminate\Database\Eloquent\Collection|SaleNote[] $sale_notes
                  * @var \Illuminate\Database\Eloquent\Collection|Document[] $documents
                  */
-                $documents = $row->seller_documents;
-                $sale_notes = $row->seller_sale_notes;
+                $requestInner = $request->all();
+                $establishment_id = $requestInner['establishment_id'];
+
+                $date_start = $requestInner['date_start'];
+                $date_end = $requestInner['date_end'];
+                FunctionsHelper::setDateInPeriod($requestInner, $date_start, $date_end);
+
+                $documents = Document::
+                whereIn('state_type_id', ['01', '03', '05', '07', '13'])
+                    ->whereIn('document_type_id', ['01', '03', '08'])
+                    ->whereBetween('date_of_issue', [$date_start, $date_end])
+                    ->where('seller_id', $row->id)
+                    ->WhereEstablishmentId($establishment_id);
+
+                $documents = $documents->get();
+                $sale_notes = SaleNote::
+                whereIn('state_type_id', ['01', '03', '05', '07', '13'])
+                    ->whereBetween('date_of_issue', [$date_start, $date_end])
+                    ->where('seller_id', $row->id)
+                    ->WhereEstablishmentId($establishment_id)
+                    ->get();
+
+
                 $total_commision = 0;
                 $total_commision_document = 0;
                 $total_commision_sale_note = 0;
