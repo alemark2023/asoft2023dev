@@ -97,6 +97,7 @@
      * @method static \Illuminate\Database\Eloquent\Builder|Document whereRegularizeShipping()
      * @method static \Illuminate\Database\Eloquent\Builder|Document whereStateTypeAccepted()
      * @method static \Illuminate\Database\Eloquent\Builder|Document whereTypeUser()
+     * @method static \Illuminate\Database\Eloquent\Builder|Document WhereEstablishmentId()
      * @mixin Eloquent
      */
     class Document extends ModelTenant
@@ -671,7 +672,7 @@
         {
             return $this->belongsTo(TechnicalService::class);
         }
-        
+
         /**
          * @return BelongsTo
          */
@@ -834,5 +835,31 @@
         public function guide_files()
         {
             return $this->hasMany(GuideFile::class);
+        }
+
+        /**
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @param int                                   $establishment_id
+         *
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public function scopeWhereEstablishmentId(\Illuminate\Database\Eloquent\Builder $query,$establishment_id = 0){
+
+            if($establishment_id != 0){
+                $query->where('establishment_id', $establishment_id);
+            }
+            return $query;
+        }
+
+        /**
+         * Devuelve el vendedor asociado, Si seller id es nulo, devolverá el usuario del campo user.
+         * @return User
+         */
+        public function getSellerData(){
+            if(!empty($this->seller_id)){
+                return $this->seller;
+            }
+            return $this->user;
+
         }
     }

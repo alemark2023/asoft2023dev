@@ -54,6 +54,7 @@
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereNotChanged()
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereStateTypeAccepted()
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereTypeUser()
+     * @method static \Illuminate\Database\Eloquent\Builder|SaleNote WhereEstablishmentId()
      */
     class SaleNote extends ModelTenant
     {
@@ -388,7 +389,7 @@
         {
             return $this->belongsTo(Order::class);
         }
-        
+
         /**
          * @return BelongsTo
          */
@@ -834,5 +835,19 @@
         public function guide_files()
         {
             return $this->hasMany(GuideFile::class);
+        }
+
+        /**
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @param int                                   $establishment_id
+         *
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public function scopeWhereEstablishmentId(\Illuminate\Database\Eloquent\Builder $query,$establishment_id = 0){
+
+            if($establishment_id != 0){
+                $query->where('establishment_id', $establishment_id);
+            }
+            return $query;
         }
     }

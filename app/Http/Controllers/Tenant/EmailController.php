@@ -16,6 +16,8 @@
         protected $error;
         /** @var string|null */
         protected $email;
+        /** @var array */
+        protected $arrayEmail;
         /** @var int|null */
         protected $error_code;
         /** @var int|null */
@@ -57,6 +59,7 @@
         {
             $sendit = new self();
             $mail = explode(';', str_replace([',', ' '], [';', ''], $email));
+            $mails = [];
             $sendit
                 ->setType($type)
                 ->setId($id);
@@ -64,17 +67,16 @@
                 foreach ($mail as $email) {
                     $email = trim($email);
                     if (!empty($email)) {
-                        $sendit
-                            ->setEmail($email)
-                            ->SendAMail($mailable);
+                        $mails[] = $email;
                     }
                 }
+                $email= implode(';',$mails);
 
-            } else {
-                $sendit
-                    ->setEmail(str_replace([',', ' '], [';', ''], $email))
-                    ->SendAMail($mailable);
             }
+            $sendit
+                ->setArrayEmail(explode(';',$email))
+                // ->setEmail(str_replace([';', '  '], [', ', ' '], $email))
+                ->SendAMail($mailable);
 
 
             return true;
@@ -90,7 +92,7 @@
             Configuration::setConfigSmtpMail();
             $ret = true;
             try {
-                Mail::to($this->getEmail())->send($mailable);
+                Mail::to($this->getArrayEmail())->send($mailable);
                 $this->saveModel($ret);
             } catch (Swift_RfcComplianceException $e) {
                 $ret = false;
@@ -101,7 +103,6 @@
                     ->setLine(__LINE__);
                 $this->saveError();
                 $this->saveModel();
-
             } catch (Exception $e) {
                 $ret = false;
                 $this
@@ -124,6 +125,14 @@
         }
 
         /**
+         * @return array
+         */
+        public function getArrayEmail(): ?array
+        {
+            return $this->arrayEmail;
+        }
+
+        /**
          * @param string|null $email
          *
          * @return EmailController
@@ -131,6 +140,16 @@
         public function setEmail(?string $email): EmailController
         {
             $this->email = $email;
+            return $this;
+        }
+        /**
+         * @param  array $email
+         *
+         * @return EmailController
+         */
+        public function setArrayEmail( $email = []): EmailController
+        {
+            $this->arrayEmail = $email;
             return $this;
         }
 
@@ -148,7 +167,7 @@
             if (is_numeric($this->type)) {
                 $e
                     ->setModelByType($this->getType())
-                    ->setEmail($this->getEmail())
+                    ->setEmail(implode(',',$this->getArrayEmail()))
                     ->setSendit((bool)$sendit)
                     ->push();
 
