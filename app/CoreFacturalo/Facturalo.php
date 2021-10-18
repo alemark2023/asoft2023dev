@@ -37,6 +37,7 @@ use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\CoreFacturalo\WS\Validator\XmlErrorCodeProvider;
 use Modules\Inventory\Models\Warehouse;
 use App\CoreFacturalo\Requests\Inputs\Functions;
+use App\Models\Tenant\PurchaseSettlement;
 
 /**
  * Class Facturalo
@@ -162,6 +163,13 @@ class Facturalo
                     $document->documents()->create($row);
                 }
                 $this->document = Perception::find($document->id);
+                break;
+            case 'purchase_settlement':
+                $document = PurchaseSettlement::create($inputs);
+                foreach ($inputs['items'] as $row) {
+                    $document->items()->create($row);
+                }
+                $this->document = PurchaseSettlement::find($document->id);
                 break;
             default:
                 $document = Dispatch::create($inputs);
@@ -667,7 +675,7 @@ class Facturalo
         //Errors
         if(!is_numeric($code)){
 
-            if(in_array($this->type, ['retention', 'dispatch', 'perception'])){
+            if(in_array($this->type, ['retention', 'dispatch', 'perception', 'purchase_settlement'])){
                 throw new Exception("Code: {$code}; Description: {$message}");
             }
 
@@ -697,7 +705,7 @@ class Facturalo
         if((int)$code < 2000) {
             //Excepciones
 
-            if(in_array($this->type, ['retention', 'dispatch', 'perception'])){
+            if(in_array($this->type, ['retention', 'dispatch', 'perception', 'purchase_settlement'])){
             // if(in_array($this->type, ['retention', 'dispatch'])){
                 throw new Exception("Code: {$code}; Description: {$message}");
             }

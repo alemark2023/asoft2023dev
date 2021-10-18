@@ -48,6 +48,7 @@ class Functions
             'address' => $inputs['address'],
             'email' => $inputs['email'],
             'telephone' => $inputs['telephone'],
+            'address_type_id' => $inputs['address_type_id'],
         ]);
 
         return $person->id;
