@@ -16,14 +16,9 @@
 
     $config = \App\Models\Tenant\Configuration::first();
     $miimage = null;
-    if($config->formats == "citec")
+     if($config->getFormatsToTemplates() == "citec")
     {
         $miimage = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'citec'.DIRECTORY_SEPARATOR.'membrete.jpg');
-		/*
-		if(!file_exists($miimage)){
-			 $miimage = null;
-		}
-		*/
     }
 
 @endphp
