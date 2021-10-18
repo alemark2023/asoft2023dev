@@ -78,7 +78,7 @@
                 </td>
                 {{-- Condicion de pago --}}
                 <td class="align-top desc font-bold text-center">
-                    <strong>  {{ $condition  }} </strong>
+                    <strong>CONDICIÓN DE PAGO: </strong>{{ $condition  }}
                 </td>
                 @if ($document->guides)
                     <td class="font-bold align-top desc">GUIA:</td>
@@ -290,7 +290,7 @@
                     {{-- Detalles de pago --}}
                 @if(!empty($paymentDetailed))
                     @foreach($paymentDetailed as $detailed)
-                        <p><span class="font-bold">{{ isset($detailed['PAGOS'])?'Pagos:':'Cuotas:' }}</span></p><br>
+                        <p><span class="font-bold">{{ isset($paymentDetailed['PAGOS'])?'Pagos:':'Cuotas:' }}</span></p><br>
                         @foreach($detailed as $row)
                             {{ $row['description']  }} -
                             {{ $row['reference']  }}
