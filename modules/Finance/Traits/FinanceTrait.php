@@ -292,7 +292,10 @@
                 try {
                     $total_currency_type = $this->calculateTotalCurrencyType($row->payment->associated_record_payment, $row->payment->payment);
                 }catch (ErrorException $e) {
-                    $total_currency_type =$row->payment->payment;
+                    $total_currency_type = 0;
+                    if( $row->payment && $row->payment->payment ) {
+                        $total_currency_type = $row->payment->payment;
+                    }
                 }
                 return $total_currency_type - $total_credit_notes;
 
