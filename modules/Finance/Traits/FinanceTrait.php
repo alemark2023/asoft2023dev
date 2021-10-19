@@ -282,15 +282,21 @@
         {
             return $record->where('payment_type', $model)->sum(function ($row) {
 
+                // se dispara un error cuando no hay relacion de paymeny y associated_record_payment
                 try{
                     $total_credit_notes = ($row->instance_type == 'document') ? $this->getTotalCreditNotes($row->payment->associated_record_payment) : 0;
                 }catch (ErrorException $e){
-                    // se dispara un error cuando no hay relacion de paymeny y associated_record_payment
-                    // \Log::critical(__FILE__."::".__LINE__." El elemento ".$row->id." de tipo  ".get_class($row)." No encuentra pagos asociados");
                     $total_credit_notes = 0;
                 }
-                $total_currency_type = $this->calculateTotalCurrencyType($row->payment->associated_record_payment, $row->payment->payment);
 
+                try {
+                    $total_currency_type = $this->calculateTotalCurrencyType($row->payment->associated_record_payment, $row->payment->payment);
+                }catch (ErrorException $e) {
+                    $total_currency_type = 0;
+                    if( $row->payment && $row->payment->payment ) {
+                        $total_currency_type = $row->payment->payment;
+                    }
+                }
                 return $total_currency_type - $total_credit_notes;
 
             });
