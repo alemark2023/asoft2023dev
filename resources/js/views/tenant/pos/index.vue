@@ -393,7 +393,7 @@
                                                 <el-popover
                                                     placement="top"
                                                     title="Precios"
-                                                    width="240"
+                                                    width="370"
                                                     trigger="click"
                                                 >
                                                     <el-table
@@ -446,6 +446,12 @@
                                                             label="Unidad"
                                                             property="unit_type_id"
                                                         ></el-table-column>
+                                                        <el-table-column
+                                                            width="120"
+                                                            label="Descripción"
+                                                            property="description"
+                                                        ></el-table-column>
+
                                                         <el-table-column
                                                             width="80"
                                                             label=""

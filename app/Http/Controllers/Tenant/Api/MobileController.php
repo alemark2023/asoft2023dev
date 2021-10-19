@@ -361,6 +361,18 @@ class MobileController extends Controller
                                     'warehouse_id' => $row->warehouse_id,
                                 ];
                             }),
+                            'item_unit_types' => $row->item_unit_types->transform(function($row) {
+                                return [
+                                    'id' => $row->id,
+                                    'description' => $row->description,
+                                    'unit_type_id' => $row->unit_type_id,
+                                    'quantity_unit' => $row->quantity_unit,
+                                    'price1' => $row->price1,
+                                    'price2' => $row->price2,
+                                    'price3' => $row->price3,
+                                    'price_default' => $row->price_default,
+                                ];
+                            }),
                         ];
                     });
 
