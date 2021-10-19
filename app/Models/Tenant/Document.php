@@ -196,6 +196,7 @@
             'subtotal',
             'total_igv_free',
             'technical_service_id',
+            'pending_amount_detraction',
         ];
 
         protected $casts = [
