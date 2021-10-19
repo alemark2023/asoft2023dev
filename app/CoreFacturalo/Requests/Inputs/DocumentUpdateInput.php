@@ -134,6 +134,7 @@ class DocumentUpdateInput
 			'filename'                  => Functions::valueKeyInArray($inputs, 'filename'),
             'payment_condition_id'		=> key_exists('payment_condition_id', $inputs) ? $inputs['payment_condition_id'] : '01',
             'fee' 						=> Functions::valueKeyInArray($inputs, 'fee', []),
+            'pending_amount_detraction' => Functions::valueKeyInArray($inputs, 'pending_amount_detraction', 0),
 		];
 	}
 
