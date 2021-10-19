@@ -195,16 +195,44 @@ class DocumentTransform
     private static function detraction($inputs)
     {
         if(key_exists('detraccion', $inputs)) {
+
             $detraction = $inputs['detraccion'];
+
+            $origin_location_id = Functions::valueKeyInArray($detraction, 'ubigeo_origen') ? self::parseLocation($detraction['ubigeo_origen']) : null;
+            $delivery_location_id = Functions::valueKeyInArray($detraction, 'ubigeo_destino') ? self::parseLocation($detraction['ubigeo_destino']) : null;
+            
+            // dd($origin_location_id, $delivery_location_id);
+
             return [
                 'detraction_type_id' => $detraction['codigo_tipo_detraccion'],
                 'percentage' => $detraction['porcentaje'],
                 'amount' => $detraction['monto'],
                 'payment_method_id' => $detraction['codigo_metodo_pago'],
                 'bank_account' => $detraction['cuenta_bancaria'],
+
+                'trip_detail' => Functions::valueKeyInArray($detraction, 'detalle_viaje'),
+                'origin_address' => Functions::valueKeyInArray($detraction, 'direccion_origen'),
+                'delivery_address' => Functions::valueKeyInArray($detraction, 'direccion_destino'),
+                'origin_location_id' => $origin_location_id, 
+                'delivery_location_id' => $delivery_location_id,
+                'reference_value_payload' => Functions::valueKeyInArray($detraction, 'valor_referencial_carga_util'),
+                'reference_value_service' => Functions::valueKeyInArray($detraction, 'valor_referencial_servicio_transporte'),
+                'reference_value_effective_load' => Functions::valueKeyInArray($detraction, 'valor_referencia_carga_efectiva')
             ];
         }
         return null;
+    }
+    
+    private static function parseLocation($district_id)
+    {
+        $province_id = $district_id ? substr($district_id, 0 ,4) : null;
+        $department_id = $district_id ? substr($district_id, 0 ,2) : null;
+
+        return [
+            $department_id,
+            $province_id,
+            $district_id
+        ];
     }
 
     private static function perception($inputs)
