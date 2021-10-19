@@ -5,10 +5,11 @@
         :visible="showDialogTransfer"
         width="30%"
         @open="create">
+        <div v-loading="!fullLoad">
 
-        <div class="col-12 row">
+        <div
+             class="col-12 row">
 
-            <!-- Bancos -->
             <div class="col-4">
                 <label class="control-label">
                     Origen
@@ -21,20 +22,14 @@
                     </el-tooltip>
                 </label>
                 <el-select v-model="transfer_amount.from"
-                           clearable
+                           :disabled="!fullLoad"
                            filterable
+                           @change="setMaxAmount"
                 >
-                    <!--  @change="getBankAccounts" -->
-                    <el-option v-for="option in banks"
+                    <!-- Bancos -->
+                    <el-option v-for="option in tempFrom"
                                :key="option.id"
-                               :disabled="option.id === transfer_amount.to"
-                               :label="option.description"
-                               :value="option.id">
-
-                    </el-option>
-                    <el-option v-for="option in cashs"
-                               :key="option.id"
-                               :disabled="option.id === transfer_amount.to"
+                               :disabled="alreadyOnTo(option.id)"
                                :label="option.description"
                                :value="option.id">
 
@@ -43,7 +38,6 @@
 
                 </el-select>
             </div>
-            <!-- Cash -->
             <div class="col-4">
                 <label class="control-label">
                     Destino
@@ -56,23 +50,17 @@
                     </el-tooltip>
                 </label>
                 <el-select v-model="transfer_amount.to"
-                           clearable
+                           :disabled="!fullLoad"
                            filterable
                 >
-                    <el-option v-for="option in banks"
+                    <el-option v-for="option in tempTo"
                                :key="option.id"
-                               :disabled="option.id == transfer_amount.from"
+                               :disabled="alreadyOnFrom(option.id)"
                                :label="option.description"
                                :value="option.id">
 
                     </el-option>
-                    <el-option v-for="option in cashs"
-                               :key="option.id"
-                               :disabled="option.id == transfer_amount.from"
-                               :label="option.description"
-                               :value="option.id">
 
-                    </el-option>
                 </el-select>
             </div>
 
@@ -89,7 +77,9 @@
                 </label>
 
                 <el-input-number
+                    :disabled="!fullLoad"
                     v-model="transfer_amount.amount_transform"
+                    :max="maxTransfer"
                     :min="0"
                 >
 
@@ -112,6 +102,7 @@
             <div class="col-4">
                 <el-button
                     class="submit "
+                    :disabled="!fullLoad"
                     style="width: 100%;"
                     type="primary"
                     @click.prevent="transferAmount">
@@ -121,6 +112,7 @@
             </div>
 
 
+        </div>
         </div>
     </el-dialog>
 </template>
@@ -142,8 +134,14 @@ export default {
             titleDialog: "Transferencia entre cuentas",
             loading: false,
             resource: 'finances/balance',
+            maxTransfer: 99999,
+            tempFrom: [],
+            tempTo: [],
             banks: [],
             cashs: [],
+            fullLoad: false,
+            bankLoad: false,
+            cashLoad: false,
             transfer_amount: {
                 amount_transform: null,
                 from: null,
@@ -153,8 +151,6 @@ export default {
     },
     created() {
         this.loadConfiguration();
-        this.getBankAccounts();
-        this.getCashAccounts();
         this.clearForm()
     },
     methods: {
@@ -162,29 +158,86 @@ export default {
         ...mapActions([
             'loadConfiguration',
         ]),
+        alreadyOnTo(id){
+          return id == this.transfer_amount.to;
+        },
+        alreadyOnFrom(id){
+          return id == this.transfer_amount.from;
+        },
+        setMaxAmount() {
+            let max = this.maxTransfer;
+            let temporalBank = this.banks;
+            let temporalCash = this.cashs
+            let check = this.transfer_amount.from;
 
+            let tempB = temporalBank.find((item) => item.id === check);
+            if (tempB === undefined) {
+                tempB = temporalCash.find((item) => item.id === check);
+                // No es posible obtener el total de caja en este momento
+                max = 9999
+            } else {
+                max = parseFloat(tempB.balance)
+            }
+            if (isNaN(max)) {
+                max = 0;
+            }
+            if (max !== 0) {
+                this.maxTransfer = max
+            }
+        },
         clearForm() {
             this.transfer_amount.amount_transform = null;
             this.transfer_amount.from = null;
             this.transfer_amount.to = null;
 
+            this.tempFrom = [];
+            this.tempTo = [];
         },
 
         create() {
+            this.tempFrom = [];
+            this.tempTo = [];
             this.getBankAccounts();
             this.getCashAccounts();
         },
         getBankAccounts() {
+
+            this.bankLoad = false;
+            this.fullLoad = false;
             this.$http.post(`/${this.resource}/bank_accounts`, {}).then((resource) => {
                 let data = resource.data;
                 this.banks = data.banks
+
+                for (var j = 0; j < data.banks.length; j++){
+                    this.tempFrom.push(data.banks[j]);
+                    this.tempTo.push(data.banks[j]);
+                }
+            }).finally(() => {
+                this.bankLoad = true;
+                if (this.bankLoad && this.cashLoad) {
+                    this.fullLoad = true;
+                }
             })
+
         },
 
         getCashAccounts() {
+            this.cashLoad = false;
+            this.fullLoad = false;
+
             this.$http.post(`/${this.resource}/cash`, {}).then((resource) => {
                 let data = resource.data;
                 this.cashs = data.cash
+
+                for (var j = 0; j < data.cash.length; j++){
+                    this.tempFrom.push(data.cash[j]);
+                    this.tempTo.push(data.cash[j]);
+                }
+            }).finally(() => {
+                this.cashLoad = true;
+                if (this.bankLoad && this.cashLoad) {
+                    this.fullLoad = true;
+                }
             })
         },
         transferAmount() {
