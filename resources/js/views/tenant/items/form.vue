@@ -857,6 +857,7 @@ export default {
 
         ...mapState([
             'colors',
+            'CatItemSize',
             'CatItemUnitsPerPackage',
             'CatItemMoldProperty',
             'CatItemUnitBusiness',
@@ -945,6 +946,7 @@ export default {
                 // this.config = data.configuration
                 if(this.canShowExtraData){
                     this.$store.commit('setColors', data.colors);
+                    this.$store.commit('setCatItemSize', data.CatItemSize);
                     this.$store.commit('setCatItemUnitsPerPackage', data.CatItemUnitsPerPackage);
                     this.$store.commit('setCatItemStatus', data.CatItemStatus);
                     this.$store.commit('setCatItemMoldCavity', data.CatItemMoldCavity);

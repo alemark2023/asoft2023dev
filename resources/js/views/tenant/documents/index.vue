@@ -66,7 +66,7 @@
                     <tr slot="heading">
                         <th>#</th>
                         <th>SOAP</th>
-                        <th class="text-center">Fecha Emisión</th>
+                        <th class="text-center" style="min-width: 95px;">Emisión</th>
                         <th class="text-center"
                             v-if="columns.date_of_due.visible">Fecha Vencimiento
                         </th>
@@ -99,12 +99,9 @@
                         <th class="text-right">T.Igv</th>
                         <th class="text-right">Total</th>
                         <th class="text-center">Saldo</th>
-                        <th class="text-center">Orden de compra</th>
+                        <th class="text-center" style="min-width: 95px;">Orden de compra</th>
                         <th class="text-center"></th>
-                        <th class="text-center">Descargas</th>
-                        <!--<th class="text-center">Anulación</th>-->
-                        <th class="text-right"
-                            v-if="typeUser != 'integrator'">Acciones
+                        <th class="text-right" v-if="typeUser != 'integrator'">
                         </th>
                     <tr>
                     <tr slot-scope="{ index, row }"
@@ -245,13 +242,6 @@
                             <button type="button"
                                     style="min-width: 41px"
                                     class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                    @click.prevent="clickPayment(row.id)">Pagos
-                            </button>
-                        </td>
-                        <td class="text-center">
-                            <button type="button"
-                                    style="min-width: 41px"
-                                    class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickDownload(row.download_xml)"
                                     v-if="row.has_xml">XML
                             </button>
@@ -290,19 +280,19 @@
                                             Editar
                                         </a>
                                     </div>
-                                    <a class="dropdown-item"
+                                    <button class="dropdown-item"
                                             @click.prevent="clickResend(row.id)"
                                             v-if="row.btn_resend && !isClient">
                                         Reenviar
-                                    </a>
-                                    <a class="dropdown-item" @click.prevent="clickReStore(row.id)" v-if="row.btn_recreate_document">
+                                    </button>
+                                    <button class="dropdown-item" @click.prevent="clickReStore(row.id)" v-if="row.btn_recreate_document">
                                         Volver a recrear
-                                    </a>
-                                    <buttaon class="dropdown-item"
+                                    </button>
+                                    <button class="dropdown-item"
                                             @click.prevent="clickChangeToRegisteredStatus(row.id)"
                                             v-if="row.btn_change_to_registered_status">
                                         Cambiar a estado registrado
-                                    </buttaon>
+                                    </button>
                                     <a :href="`/${resource}/note/${row.id}`"
                                         class="dropdown-item"
                                         v-if="row.btn_note">
@@ -313,11 +303,11 @@
                                         v-if="row.btn_guide">
                                         Guía
                                     </a>
-                                    <a class="dropdown-item"
+                                    <button class="dropdown-item"
                                         @click.prevent="clickVoided(row.id)"
                                         v-if="row.btn_voided">
                                         Anular
-                                    </a>
+                                    </button>
                                     <a type="button"
                                             class="dropdown-item"
                                             @click.prevent="clickDeleteDocument(row.id)"
@@ -339,10 +329,15 @@
                                             @click.prevent="clickCDetraction(row.id)">
                                         C. Detracción
                                     </a>
-                                    <a class="dropdown-item"
+                                    <button class="dropdown-item"
                                             @click.prevent="clickOptions(row.id)">
                                         Opciones
-                                    </a>
+                                    </button>
+                                    <div class="dropdown-divider"></div>
+                                    <button class="dropdown-item"
+                                            @click.prevent="clickPayment(row.id)">
+                                        Pagos
+                                    </button>
                                 </div>
                             </div>
                             <!-- funciona pero con funciones para cada boton, parametro command -->

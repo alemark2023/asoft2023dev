@@ -48,6 +48,7 @@
         {
             /** @var \Illuminate\Database\Eloquent\Builder  $records */
             $records = $this->getRecords($request->all(), User::class);
+
             return new ReportCommissionCollection($records->paginate(config('tenant.items_per_page')));
         }
 
@@ -66,6 +67,12 @@
 
             $d_start = null;
             $d_end = null;
+            /** @todo: Eliminar periodo, fechas y cambiar por
+
+            $date_start = $request['date_start'];
+            $date_end = $request['date_end'];
+            \App\CoreFacturalo\Helpers\Functions\FunctionsHelper\FunctionsHelper::setDateInPeriod($request, $date_start, $date_end);
+             */
 
             switch ($period) {
                 case 'month':

@@ -34,7 +34,7 @@ trait ReportTrait
      * @param $request
      * @param $model
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function getRecords($request, $model)
     {
@@ -58,6 +58,12 @@ trait ReportTrait
         $d_start = null;
         $d_end = null;
 
+        /** @todo: Eliminar periodo, fechas y cambiar por
+
+        $date_start = $request['date_start'];
+        $date_end = $request['date_end'];
+        \App\CoreFacturalo\Helpers\Functions\FunctionsHelper\FunctionsHelper::setDateInPeriod($request, $date_start, $date_end);
+         */
         switch ($period) {
             case 'month':
                 $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
@@ -147,10 +153,9 @@ trait ReportTrait
              $data->where($column, $person_id);
         }
 
-        if($seller_id){
-            $data->where('user_id', $seller_id);
+        if((int) $seller_id != 0){
+            $data->where('seller_id', $seller_id);
         }
-
         if($state_type_id){
              $data->where('state_type_id', $state_type_id);
         }
@@ -294,7 +299,7 @@ trait ReportTrait
      * @param string                              $str
      * @param \Illuminate\Support\Collection|null $ids
      *
-     * @return \App\Models\Tenant\Item
+     * @return Item
      */
     public function getItems($str = '', \Illuminate\Support\Collection  $ids = null){
 
@@ -321,15 +326,18 @@ trait ReportTrait
      */
     public function getDataTableItem($request) {
 
-        $items = Item::where('description','like', "%{$request->input}%")
-                        ->orWhere('internal_id','like', "%{$request->input}%")
-                        ->orderBy('description')
-                        ->get()->transform(function($row) {
-                            return [
-                                'id' => $row->id,
-                                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
-                            ];
-                        });
+        $items = Item::where('description', 'like', "%{$request->input}%")
+            ->orWhere('internal_id', 'like', "%{$request->input}%")
+            ->orderBy('description')
+            ->get()
+            ->transform(function ($row) {
+                /** @var Item $row */
+                return [
+                    'id' => $row->id,
+                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
+                'extra'=>$row->getExtraDataFields(),
+            ];
+        });
 
         return $items;
 
@@ -392,6 +400,12 @@ trait ReportTrait
         $d_start = null;
         $d_end = null;
 
+        /** @todo: Eliminar periodo, fechas y cambiar por
+
+        $date_start = $request['date_start'];
+        $date_end = $request['date_end'];
+        \App\CoreFacturalo\Helpers\Functions\FunctionsHelper\FunctionsHelper::setDateInPeriod($request, $date_start, $date_end);
+         */
         switch ($period) {
             case 'month':
                 $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');

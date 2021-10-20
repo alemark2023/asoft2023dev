@@ -8,6 +8,7 @@ use App\Models\Tenant\Catalogs\District;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use App\Models\Tenant\Catalogs\Province;
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\Tenant\Catalogs\AddressType;
 
 
 /**
@@ -66,6 +67,7 @@ class Person extends ModelTenant
         'website',
         'credit_days',
         'optional_email',
+        'address_type_id',
     ];
 
     // protected static function boot()
@@ -133,6 +135,14 @@ class Person extends ModelTenant
         return $this->belongsTo(District::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function address_type()
+    {
+        return $this->belongsTo(AddressType::class);
+    }
+    
     /**
      * @param $query
      * @param $type

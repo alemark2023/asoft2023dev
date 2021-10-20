@@ -524,6 +524,7 @@
                         {{ ($path[0] === 'drivers')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'dispatchers')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'order-forms')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'purchase-settlements')?'nav-active nav-expanded':'' }}
 
                         ">
                         <a class="nav-link" href="#">
@@ -544,6 +545,11 @@
                             @if(in_array('advanced_perceptions', $vc_module_levels))
                             <li class="{{ ($path[0] === 'perceptions')?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.perceptions.index')}}">Percepciones</a>
+                            </li>
+                            @endif
+                            @if(in_array('advanced_purchase_settlements', $vc_module_levels))
+                            <li class="{{ ($path[0] === 'purchase-settlements')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.purchase-settlements.index')}}">Liquidaciones de compra</a>
                             </li>
                             @endif
                             @if(in_array('advanced_order_forms', $vc_module_levels))

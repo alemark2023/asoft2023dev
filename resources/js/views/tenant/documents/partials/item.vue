@@ -577,9 +577,11 @@ export default {
             'CatItemPackageMeasurement',
             'CatItemMoldCavity',
             'CatItemProductFamily',
+            'CatItemSize',
             'extra_colors',
             'extra_CatItemUnitsPerPackage',
             'extra_CatItemMoldProperty',
+            'extra_CatItemSize',
             'extra_CatItemUnitBusiness',
             'extra_CatItemStatus',
             'extra_CatItemPackageMeasurement',
@@ -681,6 +683,7 @@ export default {
                     this.$store.commit('setCatItemUnitBusiness', data.CatItemUnitBusiness);
                     this.$store.commit('setCatItemPackageMeasurement', data.CatItemPackageMeasurement);
                     this.$store.commit('setCatItemProductFamily', data.CatItemPackageMeasurement);
+                    this.$store.commit('setCatItemSize', data.CatItemSize);
                 }
                 this.$store.commit('setConfiguration', data.configuration);
                 this.filterItems()
@@ -907,7 +910,7 @@ export default {
                     this.form.item.lots = this.recordItem.item.lots
                     this.lots = this.recordItem.item.lots
                 }
-                
+
                 this.setPresentationEditItem()
 
                 if (this.recordItem.item.name_product_pdf) {
@@ -936,7 +939,7 @@ export default {
         setPresentationEditItem(){
 
             if(!_.isEmpty(this.recordItem.item.presentation)){
-                this.selectedPrice(this.recordItem.item.presentation) 
+                this.selectedPrice(this.recordItem.item.presentation)
                 this.getSelectedClass(this.recordItem.item.presentation)
             }
 
@@ -1242,9 +1245,9 @@ export default {
             this.form.item.unit_type_id = this.item_unit_type.unit_type_id;
         },
         getSelectedClass(row) {
- 
+
             if(this.isSelectedPrice(row)) return 'btn-success'
-            
+
             return 'btn-secondary'
 
         },
@@ -1252,7 +1255,7 @@ export default {
 
             if(!_.isEmpty(this.item_unit_type)){
                 return (this.item_unit_type.id === item_unit_type.id)
-            } 
+            }
 
             return false
         },
@@ -1321,6 +1324,7 @@ export default {
                 if (item.extra.CatItemPackageMeasurement === undefined) item.extra.CatItemPackageMeasurement = null;
                 if (item.extra.CatItemMoldCavity === undefined) item.extra.CatItemMoldCavity = null;
                 if (item.extra.CatItemProductFamily === undefined) item.extra.CatItemProductFamily = null;
+                if (item.extra.CatItemSize === undefined) item.extra.CatItemSize = null;
 
                 if (this.extra_temp !== undefined) {
                     item.extra = this.extra_temp;
@@ -1403,6 +1407,15 @@ export default {
                     }
                 })
                 this.$store.commit('setExtraCatItemProductFamily', temp)
+                temp = [];
+                this.CatItemSize.find(obj => {
+                    for (var i = 0, iLen = item.CatItemSize.length; i < iLen; i++) {
+                        if (item.CatItemSize[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemSize', temp)
                 temp = [];
                 this.CatItemMoldProperty.find(obj => {
                     for (var i = 0, iLen = item.CatItemMoldProperty.length; i < iLen; i++) {

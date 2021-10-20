@@ -25,6 +25,7 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\Tag;
 use App\Models\Tenant\Catalogs\UnitType;
+use App\Models\Tenant\CatItemSize;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment;
@@ -167,9 +168,11 @@ class ItemController extends Controller
         $CatItemUnitsPerPackage = $colors;
         $CatItemMoldProperty = $colors;
         $CatItemProductFamily= $colors;
+        $CatItemSize= $colors;
         if($configuration->isShowExtraInfoToItem()){
             $colors = CatColorsItem::all();
             $CatItemStatus= CatItemStatus::all();
+            $CatItemSize= CatItemSize::all();
             $CatItemUnitBusiness = CatItemUnitBusiness::all();
             $CatItemMoldCavity = CatItemMoldCavity::all();
             $CatItemPackageMeasurement = CatItemPackageMeasurement::all();
@@ -199,6 +202,7 @@ class ItemController extends Controller
             'brands',
             'configuration',
             'colors',
+            'CatItemSize',
             'CatItemMoldCavity',
             'CatItemMoldProperty',
             'CatItemUnitBusiness',
@@ -328,6 +332,9 @@ class ItemController extends Controller
             }
             if($request->has('CatItemProductFamily')){
                 $item->setItemProductFamily($request->CatItemProductFamily);
+            }
+            if($request->has('CatItemSize')){
+                $item->setItemSize($request->CatItemSize);
             }
             // Extra data
         }

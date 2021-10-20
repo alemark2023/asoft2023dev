@@ -10,6 +10,7 @@
     use Illuminate\Database\Eloquent\Relations\MorphMany;
     use Illuminate\Database\Query\Builder;
     use Modules\Item\Models\WebPlatform;
+    use Modules\Sale\Models\TechnicalService;
 
     /**
      * Class SaleNote
@@ -53,6 +54,7 @@
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereNotChanged()
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereStateTypeAccepted()
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereTypeUser()
+     * @method static \Illuminate\Database\Eloquent\Builder|SaleNote WhereEstablishmentId()
      */
     class SaleNote extends ModelTenant
     {
@@ -129,6 +131,7 @@
             'document_id',
             'seller_id',
             'order_id',
+            'technical_service_id',
         ];
 
         protected $casts = [
@@ -385,6 +388,14 @@
         public function order()
         {
             return $this->belongsTo(Order::class);
+        }
+
+        /**
+         * @return BelongsTo
+         */
+        public function technical_service()
+        {
+            return $this->belongsTo(TechnicalService::class);
         }
 
         /**
@@ -824,5 +835,19 @@
         public function guide_files()
         {
             return $this->hasMany(GuideFile::class);
+        }
+
+        /**
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @param int                                   $establishment_id
+         *
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public function scopeWhereEstablishmentId(\Illuminate\Database\Eloquent\Builder $query,$establishment_id = 0){
+
+            if($establishment_id != 0){
+                $query->where('establishment_id', $establishment_id);
+            }
+            return $query;
         }
     }

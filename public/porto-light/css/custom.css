@@ -503,3 +503,13 @@ html.fixed.sidebar-ligth-blue .sidebar-left a:hover {
   background-color: #f5f5f5;
   color: #4b4b4b !important;
 }
+
+.dropdown-menu .dropdown-item {
+  font-size: 0.8rem;
+}
+.dropdown-item:focus {
+  outline: 0px auto -webkit-focus-ring-color;
+}
+.dropdown-item {
+  padding: 0.1rem 1.5rem;
+}

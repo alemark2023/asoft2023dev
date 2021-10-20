@@ -20,6 +20,7 @@ Vue.use(ElementUI, { size: 'small' })
 Vue.prototype.$eventHub = new Vue()
 
 Vue.component('tenant-item-aditional-info-selector', require('./views/tenant/components/partials/item_extra_info.vue'));
+Vue.component('tenant-item-aditional-info-modal', require('./views/tenant/components/partials/modal_item_info_attributes.vue'));
 
 
 Vue.component('tenant-dashboard-index', require('../../modules/Dashboard/Resources/assets/js/views/index.vue'));
@@ -51,6 +52,8 @@ Vue.component('tenant-documents-invoice', require('./views/tenant/documents/invo
 Vue.component('tenant-documents-invoicetensu', require('./views/tenant/documents/invoicetensu.vue'));
 Vue.component('tenant-documents-note', require('./views/tenant/documents/note.vue'));
 
+// purchase-settlements
+Vue.component('tenant-purchase-settlements-index', require('./views/tenant/purchase-settlements/index.vue'));
 
 Vue.component('tenant-documents-items-list', require('./views/tenant/documents/partials/item.vue'));
 Vue.component('tenant-summaries-index', require('./views/tenant/summaries/index.vue'));
@@ -134,6 +137,8 @@ Vue.component('tenant-inventory-item-units-business', require('../../modules/Inv
 Vue.component('tenant-inventory-item-package-measurements', require('../../modules/Inventory/Resources/assets/js/extra_info/item_package_measurements/index.vue'));
 Vue.component('tenant-inventory-mold-cavities', require('../../modules/Inventory/Resources/assets/js/extra_info/item_mold_cavities/index.vue'));
 Vue.component('tenant-inventory-mold-property', require('../../modules/Inventory/Resources/assets/js/extra_info/item_mold_property/index.vue'));
+
+Vue.component('tenant-inventory-size-property', require('../../modules/Inventory/Resources/assets/js/extra_info/item_size/index.vue'));
 Vue.component('tenant-inventory-item-status', require('../../modules/Inventory/Resources/assets/js/extra_info/item_status/index.vue'));
 Vue.component('tenant-inventory-item-product-family', require('../../modules/Inventory/Resources/assets/js/extra_info/item_product_family/index.vue'));
 Vue.component('tenant-inventory-extra-info-list', require('../../modules/Inventory/Resources/assets/js/extra_info/index.vue'));
@@ -146,6 +151,8 @@ Vue.component('tenant-report-purchases-index', require('../../modules/Report/Res
 Vue.component('tenant-report-documents-index', require('../../modules/Report/Resources/assets/js/views/documents/index.vue'));
 Vue.component('tenant-report-customers-index', require('../../modules/Report/Resources/assets/js/views/customers/index.vue'));
 Vue.component('tenant-report-items-index', require('../../modules/Report/Resources/assets/js/views/items/index.vue'));
+Vue.component('tenant-report-items-extra-index', require('../../modules/Report/Resources/assets/js/views/items/index_extra.vue'));
+
 /** Reporte de guias */
 Vue.component('tenant-report-guide-index', require('../../modules/Report/Resources/assets/js/views/guide/index.vue'));
 Vue.component('tenant-report-sale_notes-index', require('../../modules/Report/Resources/assets/js/views/sale_notes/index.vue'));

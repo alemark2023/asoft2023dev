@@ -77,6 +77,7 @@ class DocumentUpdateInput
 			'purchase_order'            => $inputs['purchase_order'],
 			'quotation_id'              => Functions::valueKeyInArray($inputs, 'quotation_id'),
 			'sale_note_id'              => Functions::valueKeyInArray($inputs, 'sale_note_id'),
+            'technical_service_id'      => Functions::valueKeyInArray($inputs, 'technical_service_id'),
 			'exchange_rate_sale'        => $inputs['exchange_rate_sale'],
 			'total_prepayment'          => Functions::valueKeyInArray($inputs, 'total_prepayment', 0),
 			'total_discount'            => Functions::valueKeyInArray($inputs, 'total_discount', 0),
@@ -133,6 +134,7 @@ class DocumentUpdateInput
 			'filename'                  => Functions::valueKeyInArray($inputs, 'filename'),
             'payment_condition_id'		=> key_exists('payment_condition_id', $inputs) ? $inputs['payment_condition_id'] : '01',
             'fee' 						=> Functions::valueKeyInArray($inputs, 'fee', []),
+            'pending_amount_detraction' => Functions::valueKeyInArray($inputs, 'pending_amount_detraction', 0),
 		];
 	}
 

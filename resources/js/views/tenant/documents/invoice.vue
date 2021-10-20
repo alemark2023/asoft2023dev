@@ -320,7 +320,8 @@
                                                 <template v-if="form.detraction">
                                                     <tr v-if="form.detraction.amount > 0">
                                                         <td width="60%">M. DETRACCIÓN:</td>
-                                                        <td>{{ currency_type.symbol }} {{ form.detraction.amount }}</td>
+                                                        <td>S/ {{ form.detraction.amount }}</td>
+                                                        <!-- <td>{{ currency_type.symbol }} {{ form.detraction.amount }}</td> -->
                                                     </tr>
                                                 </template>
 
@@ -395,6 +396,15 @@
                                                         </el-select>
                                                     </td>
                                                 </tr>
+
+
+                                                <template v-if="form.detraction">
+                                                    <tr v-if="form.detraction.amount > 0 && form.pending_amount_detraction > 0">
+                                                        <td width="60%">M. PENDIENTE:</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.pending_amount_detraction }}</td>
+                                                    </tr>
+                                                </template>
+
 
                                                 <tr v-if="form.total > 0">
                                                     <!-- Metodos de pago -->
@@ -630,7 +640,7 @@
                                     <template v-if="form.detraction">
                                         <tr v-if="form.detraction.amount > 0">
                                             <td width="60%">M. DETRACCIÓN:</td>
-                                            <td>{{ currency_type.symbol }} {{ form.detraction.amount }}</td>
+                                            <td>S/ {{ form.detraction.amount }}</td>
                                         </tr>
                                     </template>
 
@@ -701,6 +711,13 @@
                                             </el-select>
                                         </td>
                                     </tr>
+
+                                    <template v-if="form.detraction">
+                                        <tr v-if="form.detraction.amount > 0 && form.pending_amount_detraction > 0">
+                                            <td width="60%">M. PENDIENTE:</td>
+                                            <td>{{ currency_type.symbol }} {{ form.pending_amount_detraction }}</td>
+                                        </tr>
+                                    </template>
 
                                     <tr v-if="form.total > 0">
                                         <!-- Metodos de pago -->
@@ -1774,7 +1791,7 @@ export default {
         async prepareDataDetraction(){
 
             this.has_data_detraction = (this.form.detraction) ? true : false
-            
+
             if(this.has_data_detraction){
 
                 let legend_value = (this.form.operation_type_id === '1001') ? 'Operación sujeta a detracción' : 'Operación Sujeta a Detracción - Servicios de Transporte - Carga'
@@ -1940,11 +1957,11 @@ export default {
                 this.form.payment_method_type_id = payment_method_type.id
 
                 let date = moment(this.form.date_of_issue).add(payment_method_type.number_days, 'days').format('YYYY-MM-DD')
-                
+
                 // let date = moment()
                 //     .add(payment_method_type.number_days, 'days')
                 //     .format('YYYY-MM-DD')
-                    
+
                 if (this.form.fee !== undefined) {
                     for (let index = 0; index < this.form.fee.length; index++) {
                         this.form.fee[index].date = date;
@@ -1999,6 +2016,8 @@ export default {
             this.form.detraction = detraction
             // this.has_data_detraction = (detraction.pay_constancy || detraction.detraction_type_id || detraction.payment_method_id || (detraction.amount && detraction.amount >0)) ? true:false
             this.has_data_detraction = (detraction) ? detraction.has_data_detraction : false
+
+            this.changeDetractionType()
         },
         clickAddItemInvoice() {
             this.recordItem = null
@@ -2317,6 +2336,7 @@ export default {
         },
         clickCancel(index) {
             this.form.payments.splice(index, 1);
+            this.calculatePayments()
         },
         async ediItem(row, index) {
             row.indexi = index
@@ -2405,7 +2425,8 @@ export default {
                 show_terms_condition: true,
                 terms_condition: '',
                 payment_condition_id: '01',
-                fee: []
+                fee: [],
+                pending_amount_detraction: 0
             }
 
             this.form_cash_document = {
@@ -2492,11 +2513,37 @@ export default {
                 this.form.detraction = {}
 
             }
+
+            this.setAmountDetractionToPayments()
         },
         async changeDetractionType() {
+
             if (this.form.detraction) {
-                this.form.detraction.amount = (this.form.currency_type_id == 'PEN') ? _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage) / 100), 2) : _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage) / 100), 2)
+                // this.form.detraction.amount = (this.form.currency_type_id == 'PEN') ? _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage) / 100), 2) : _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage) / 100), 2)
+
+                if(this.form.currency_type_id == 'PEN'){
+
+                    this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage) / 100), 2)
+                    this.form.pending_amount_detraction = this.form.total - this.form.detraction.amount
+
+                }else{
+
+                    this.form.detraction.amount = _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage) / 100), 2)
+                    this.form.pending_amount_detraction = _.round(this.form.total - (this.form.detraction.amount / this.form.exchange_rate_sale), 2)
+
+                }
+
+                this.setAmountDetractionToPayments()
+
             }
+        },
+        setAmountDetractionToPayments(){
+
+            // if(this.form.payments.length > 0){
+            //     // this.form.payments[0].payment = this.form.pending_amount_detraction
+            // }
+            this.calculatePayments()
+            this.calculateFee()
         },
         validateDetraction() {
 
@@ -2806,10 +2853,11 @@ export default {
         },
         setTotalDefaultPayment() {
 
-            if (this.form.payments.length > 0) {
+            // if (this.form.payments.length > 0) {
 
-                this.form.payments[0].payment = this.form.total
-            }
+            //     this.form.payments[0].payment = this.form.total
+            // }
+            this.calculatePayments()
         },
         changeTypeDiscount() {
             this.calculateTotal()
@@ -3181,7 +3229,9 @@ export default {
         },
         calculatePayments() {
             let payment_count = this.form.payments.length;
-            let total = this.form.total;
+            // let total = this.form.total;
+            let total = this.getTotal()
+
             let payment = 0;
             let amount = _.round(total / payment_count, 2);
             // console.log(amount);
@@ -3196,7 +3246,9 @@ export default {
         },
         calculateFee() {
             let fee_count = this.form.fee.length;
-            let total = this.form.total;
+            // let total = this.form.total;
+            let total = this.getTotal()
+
             let accumulated = 0;
             let amount = _.round(total / fee_count, 2);
             _.forEach(this.form.fee, row => {
@@ -3206,6 +3258,15 @@ export default {
                 }
                 row.amount = amount;
             })
+        },
+        getTotal(){
+
+            if(!_.isEmpty(this.form.detraction) && this.form.pending_amount_detraction > 0)
+            {
+                return this.form.pending_amount_detraction
+            }
+
+            return this.form.total
         },
         setDescriptionOfItem(item){
             return showNamePdfOfDescription(item,this.config.show_pdf_name)
