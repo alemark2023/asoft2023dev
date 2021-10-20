@@ -419,6 +419,7 @@
             },
             resetDocument(){
                 this.generate = (this.showGenerate) ? true:false
+                this.flag_generate = true
                 this.initDocument()
                 this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 this.changeDocumentType()
@@ -460,7 +461,7 @@
                             this.showDialogDocumentOptions = true;
                             this.$http.get(`/${this.resource}/changed/${this.form.id}`).then(() => {
                                 this.$eventHub.$emit('reloadData');
-                                this.flag_generate = false
+                                // this.flag_generate = false
                             });
                             this.resetDocument()
 
@@ -626,7 +627,7 @@
                 this.$emit('update:show', false)
                 this.initForm()
                 this.resetDocument()
-                this.flag_generate = true
+                // this.flag_generate = true
             },
             clickToPrint(){
                 window.open(`/downloads/saleNote/sale_note/${this.form.external_id}`, '_blank');
