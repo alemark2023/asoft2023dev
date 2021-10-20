@@ -57,7 +57,7 @@
         @if($company->logo)
             <td width="20%">
                 <div class="company_logo_box">
-                    <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 150px;">
+                    <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 250px;">
                 </div>
             </td>
         @else
@@ -309,7 +309,7 @@
                     @endif
                 </td>
                 <td class="p-1 text-right align-top desc cell-solid-rl">{{ number_format($row->unit_price, 2) }}</td>
-                <td class="p-1 text-right align-top desc cell-solid-rl">{{ number_format($row->total_value, 2) }}</td>
+                <td class="p-1 text-right align-top desc cell-solid-rl">{{ number_format($row->unit_value, 2) }}</td>
                 <td class="p-1 text-right align-top desc cell-solid-rl">{{ number_format($row->total, 2) }}</td>
             </tr>
 
