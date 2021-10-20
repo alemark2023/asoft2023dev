@@ -49,6 +49,7 @@ class DocumentTransform
             'total_value' => Functions::valueKeyInArray($totals, 'total_valor'),
             'subtotal' => (Functions::valueKeyInArray($totals, 'subtotal_venta')) ? $totals['subtotal_venta'] : $totals['total_venta'],
             'total' => Functions::valueKeyInArray($totals, 'total_venta'),
+            'pending_amount_detraction' => Functions::valueKeyInArray($totals, 'total_pendiente_detraccion'),
             'has_prepayment' => Functions::valueKeyInArray($inputs, 'pago_anticipado',0),
             'items' => self::items($inputs),
             'charges' => self::charges($inputs),
@@ -201,8 +202,6 @@ class DocumentTransform
             $origin_location_id = Functions::valueKeyInArray($detraction, 'ubigeo_origen') ? self::parseLocation($detraction['ubigeo_origen']) : null;
             $delivery_location_id = Functions::valueKeyInArray($detraction, 'ubigeo_destino') ? self::parseLocation($detraction['ubigeo_destino']) : null;
             
-            // dd($origin_location_id, $delivery_location_id);
-
             return [
                 'detraction_type_id' => $detraction['codigo_tipo_detraccion'],
                 'percentage' => $detraction['porcentaje'],

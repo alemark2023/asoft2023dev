@@ -197,18 +197,16 @@ class Functions
 
         if(!is_null($inputs['detraction']) && $inputs['operation_type_id'] == '1004')
         {
-            // dd($inputs);
             // validar ubigeo origen
-            self::validateRequiredDistrict($inputs['detraction']['origin_location_id'][2]);
+            self::validateRequiredDistrict($inputs['detraction']['origin_location_id'][2] ?? null);
 
             // validar ubigeo destino
-            self::validateRequiredDistrict($inputs['detraction']['delivery_location_id'][2]);
-
-            // dd($inputs['detraction']);
+            self::validateRequiredDistrict($inputs['detraction']['delivery_location_id'][2] ?? null);
 
         }
 
     }
+
 
     public static function validateRequiredDistrict($district_id) 
     {
