@@ -399,9 +399,9 @@
 
                                                 
                                                 <template v-if="form.detraction">
-                                                    <tr v-if="form.detraction.amount > 0 && form.pending_amount_detraction > 0">
+                                                    <tr v-if="form.detraction.amount > 0 && form.total_pending_payment > 0">
                                                         <td width="60%">M. PENDIENTE:</td>
-                                                        <td>{{ currency_type.symbol }} {{ form.pending_amount_detraction }}</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.total_pending_payment }}</td>
                                                     </tr>
                                                 </template>
 
@@ -713,9 +713,9 @@
                                     </tr>
 
                                     <template v-if="form.detraction">
-                                        <tr v-if="form.detraction.amount > 0 && form.pending_amount_detraction > 0">
+                                        <tr v-if="form.detraction.amount > 0 && form.total_pending_payment > 0">
                                             <td width="60%">M. PENDIENTE:</td>
-                                            <td>{{ currency_type.symbol }} {{ form.pending_amount_detraction }}</td>
+                                            <td>{{ currency_type.symbol }} {{ form.total_pending_payment }}</td>
                                         </tr>
                                     </template>
 
@@ -2426,7 +2426,7 @@ export default {
                 terms_condition: '',
                 payment_condition_id: '01',
                 fee: [],
-                pending_amount_detraction: 0
+                total_pending_payment: 0
             }
 
             this.form_cash_document = {
@@ -2524,12 +2524,12 @@ export default {
                 if(this.form.currency_type_id == 'PEN'){
 
                     this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage) / 100), 2)
-                    this.form.pending_amount_detraction = this.form.total - this.form.detraction.amount
+                    this.form.total_pending_payment = this.form.total - this.form.detraction.amount
 
                 }else{
 
                     this.form.detraction.amount = _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage) / 100), 2)
-                    this.form.pending_amount_detraction = _.round(this.form.total - (this.form.detraction.amount / this.form.exchange_rate_sale), 2)
+                    this.form.total_pending_payment = _.round(this.form.total - (this.form.detraction.amount / this.form.exchange_rate_sale), 2)
 
                 }
 
@@ -2540,7 +2540,7 @@ export default {
         setAmountDetractionToPayments(){
 
             // if(this.form.payments.length > 0){
-            //     // this.form.payments[0].payment = this.form.pending_amount_detraction
+            //     // this.form.payments[0].payment = this.form.total_pending_payment
             // }
             this.calculatePayments()
             this.calculateFee()
@@ -3261,9 +3261,9 @@ export default {
         },
         getTotal(){
            
-            if(!_.isEmpty(this.form.detraction) && this.form.pending_amount_detraction > 0)
+            if(!_.isEmpty(this.form.detraction) && this.form.total_pending_payment > 0)
             {
-                return this.form.pending_amount_detraction
+                return this.form.total_pending_payment
             }
 
             return this.form.total
