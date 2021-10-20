@@ -66,7 +66,7 @@
                     <tr slot="heading">
                         <th>#</th>
                         <th>SOAP</th>
-                        <th class="text-center">Fecha Emisión</th>
+                        <th class="text-center" style="min-width: 95px;">Emisión</th>
                         <th class="text-center"
                             v-if="columns.date_of_due.visible">Fecha Vencimiento
                         </th>
@@ -99,12 +99,9 @@
                         <th class="text-right">T.Igv</th>
                         <th class="text-right">Total</th>
                         <th class="text-center">Saldo</th>
-                        <th class="text-center">Orden de compra</th>
+                        <th class="text-center" style="min-width: 95px;">Orden de compra</th>
                         <th class="text-center"></th>
-                        <th class="text-center">Descargas</th>
-                        <!--<th class="text-center">Anulación</th>-->
-                        <th class="text-right"
-                            v-if="typeUser != 'integrator'">Acciones
+                        <th class="text-right" v-if="typeUser != 'integrator'">
                         </th>
                     <tr>
                     <tr slot-scope="{ index, row }"
@@ -245,13 +242,6 @@
                             <button type="button"
                                     style="min-width: 41px"
                                     class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                    @click.prevent="clickPayment(row.id)">Pagos
-                            </button>
-                        </td>
-                        <td class="text-center">
-                            <button type="button"
-                                    style="min-width: 41px"
-                                    class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickDownload(row.download_xml)"
                                     v-if="row.has_xml">XML
                             </button>
@@ -268,43 +258,109 @@
                                     v-if="row.has_cdr">CDR
                             </button>
                         </td>
-                        <!--<td class="text-center">-->
-                        <!--<button type="button" class="btn waves-effect waves-light btn-xs btn-danger"-->
-                        <!--@click.prevent="clickDownload(row.download_xml_voided)"-->
-                        <!--v-if="row.has_xml_voided">XML</button>-->
-                        <!--<button type="button" class="btn waves-effect waves-light btn-xs btn-danger"-->
-                        <!--@click.prevent="clickDownload(row.download_cdr_voided)"-->
-                        <!--v-if="row.has_cdr_voided">CDR</button>-->
-                        <!--<button type="button" class="btn waves-effect waves-light btn-xs btn-warning"-->
-                        <!--@click.prevent="clickTicket(row.voided.id, row.group_id)"-->
-                        <!--v-if="row.btn_ticket">Consultar</button>-->
-                        <!--</td>-->
 
                         <td class="text-right"
                             v-if="typeUser != 'integrator'">
+                            <div class="dropdown">
+                                <button class="btn btn-default btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <div v-if="configuration.permission_to_edit_cpe">
+                                        <a :href="`/documents/${row.id}/edit`"
+                                            class="dropdown-item"
+                                            v-if="row.state_type_id === '01' && userPermissionEditCpe && row.is_editable">
+                                            Editar
+                                        </a>
+                                    </div>
+                                    <div v-else>
+                                        <a :href="`/documents/${row.id}/edit`"
+                                            class="dropdown-item"
+                                            v-if="row.state_type_id === '01' && userId == row.user_id && row.is_editable">
+                                            Editar
+                                        </a>
+                                    </div>
+                                    <button class="dropdown-item"
+                                            @click.prevent="clickResend(row.id)"
+                                            v-if="row.btn_resend && !isClient">
+                                        Reenviar
+                                    </button>
+                                    <button class="dropdown-item" @click.prevent="clickReStore(row.id)" v-if="row.btn_recreate_document">
+                                        Volver a recrear
+                                    </button>
+                                    <button class="dropdown-item"
+                                            @click.prevent="clickChangeToRegisteredStatus(row.id)"
+                                            v-if="row.btn_change_to_registered_status">
+                                        Cambiar a estado registrado
+                                    </button>
+                                    <a :href="`/${resource}/note/${row.id}`"
+                                        class="dropdown-item"
+                                        v-if="row.btn_note">
+                                        Nota
+                                    </a>
+                                    <a :href="`/dispatches/create/${row.id}`"
+                                        class="dropdown-item"
+                                        v-if="row.btn_guide">
+                                        Guía
+                                    </a>
+                                    <button class="dropdown-item"
+                                        @click.prevent="clickVoided(row.id)"
+                                        v-if="row.btn_voided">
+                                        Anular
+                                    </button>
+                                    <a type="button"
+                                            class="dropdown-item"
+                                            @click.prevent="clickDeleteDocument(row.id)"
+                                            v-if="row.btn_delete_doc_type_03">
+                                        Eliminar
+                                    </a>
+                                    <a class="dropdown-item"
+                                            @click.prevent="clickSendOnline(row.id)"
+                                            v-if="isClient && !row.send_server">
+                                        Enviar Servidor
+                                    </a>
+                                    <a class="dropdown-item"
+                                            @click.prevent="clickCheckOnline(row.id)"
+                                            v-if="isClient && row.send_server && (row.state_type_id === '01' || row.state_type_id === '03')">
+                                        Consultar Servidor
+                                    </a>
+                                    <a v-if="row.btn_constancy_detraction"
+                                            class="dropdown-item"
+                                            @click.prevent="clickCDetraction(row.id)">
+                                        C. Detracción
+                                    </a>
+                                    <button class="dropdown-item"
+                                            @click.prevent="clickOptions(row.id)">
+                                        Opciones
+                                    </button>
+                                    <div class="dropdown-divider"></div>
+                                    <button class="dropdown-item"
+                                            @click.prevent="clickPayment(row.id)">
+                                        Pagos
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- funciona pero con funciones para cada boton, parametro command -->
+                            <!-- <el-dropdown trigger="click" size="small">
+                                <el-button size="mini" type="default" class="el-dropdown-selfdefine">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </el-button>
+                                <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item v-if="row.btn_recreate_document">Recrear</el-dropdown-item>
+                                    <el-dropdown-item>Action 2</el-dropdown-item>
+                                    <el-dropdown-item>Action 3</el-dropdown-item>
+                                    <el-dropdown-item>Action 4</el-dropdown-item>
+                                    <el-dropdown-item>Action 5</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown> -->
 
-                            <template v-if="configuration.permission_to_edit_cpe">
-                                <a :href="`/documents/${row.id}/edit`"
-                                    class="btn btn-success waves-effect waves-light btn-xs m-1__2"
-                                    v-if="row.state_type_id === '01' && userPermissionEditCpe && row.is_editable">
-                                    Editar
-                                </a>
-                            </template>
-                            <template v-else>
-                                <a :href="`/documents/${row.id}/edit`"
-                                    class="btn btn-success waves-effect waves-light btn-xs m-1__2"
-                                    v-if="row.state_type_id === '01' && userId == row.user_id && row.is_editable">
-                                    Editar
-                                </a>
-                            </template>
 
-                            <button type="button"
+                            <!-- <button type="button"
                                     class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
                                     @click.prevent="clickDeleteDocument(row.id)"
                                     v-if="row.btn_delete_doc_type_03">
                                 Eliminar
                             </button>
-
                             <button type="button"
                                     class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickChangeToRegisteredStatus(row.id)"
@@ -356,13 +412,12 @@
                                     @click.prevent="clickOptions(row.id)">
                                 Opciones
                             </button>
-
                             <button type="button"
                                     v-if="row.btn_constancy_detraction"
                                     class="btn waves-effect waves-light btn-xs btn-success m-1__2"
                                     @click.prevent="clickCDetraction(row.id)">
                                 C. Detracción
-                            </button>
+                            </button> -->
                         </td>
                     </tr>
                 </data-table>

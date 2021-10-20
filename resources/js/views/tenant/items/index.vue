@@ -141,7 +141,7 @@
                         </th>
                         <th class="text-center">Tiene Igv (Venta)</th>
                         <th class="text-center" v-if="columns.purchase_has_igv_description.visible">Tiene Igv (Compra)</th>
-                        <th class="text-right">Acciones</th>
+                        <th class="text-right"></th>
                     </tr>
 
                     <tr></tr>
@@ -245,62 +245,63 @@
                             {{ row.purchase_has_igv_description }}
                         </td>
                         <td class="text-right">
-                            <template v-if="typeUser === 'admin'">
-                                <button
-                                    type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickCreate(row.id)"
-                                >
-                                    Editar
+                            <div class="dropdown">
+                                <button class="btn btn-default btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
                                 </button>
-                                <button
-                                    type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-danger"
-                                    @click.prevent="clickDelete(row.id)"
-                                >
-                                    Eliminar
-                                </button>
-                                <button
-                                    type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-warning"
-                                    @click.prevent="duplicate(row.id)"
-                                >
-                                    Duplicar
-                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
-                                <button
-                                    type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-danger"
-                                    @click.prevent="clickDisable(row.id)"
-                                    v-if="row.active"
-                                >
-                                    Inhabilitar
-                                </button>
-                                <button
-                                    type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-primary"
-                                    @click.prevent="clickEnable(row.id)"
-                                    v-else
-                                >
-                                    Habilitar
-                                </button>
+                                    <template v-if="typeUser === 'admin'">
+                                        <button
+                                            class="dropdown-item"
+                                            @click.prevent="clickCreate(row.id)"
+                                        >
+                                            Editar
+                                        </button>
+                                        <button
+                                            class="dropdown-item"
+                                            @click.prevent="clickDelete(row.id)"
+                                        >
+                                            Eliminar
+                                        </button>
+                                        <button
+                                            class="dropdown-item"
+                                            @click.prevent="duplicate(row.id)"
+                                        >
+                                            Duplicar
+                                        </button>
 
-                                <button
-                                    type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-primary"
-                                    @click.prevent="clickBarcode(row)"
-                                >
-                                    Cod. Barras
-                                </button>
+                                        <button
+                                            class="dropdown-item"
+                                            @click.prevent="clickDisable(row.id)"
+                                            v-if="row.active"
+                                        >
+                                            Inhabilitar
+                                        </button>
+                                        <button
+                                            class="dropdown-item"
+                                            @click.prevent="clickEnable(row.id)"
+                                            v-else
+                                        >
+                                            Habilitar
+                                        </button>
 
-                                <button
-                                    type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-primary"
-                                    @click.prevent="clickPrintBarcode(row)"
-                                >
-                                    Etiquetas
-                                </button>
-                            </template>
+                                        <button
+                                            class="dropdown-item"
+                                            @click.prevent="clickBarcode(row)"
+                                        >
+                                            Cod. Barras
+                                        </button>
+
+                                        <button
+                                            class="dropdown-item"
+                                            @click.prevent="clickPrintBarcode(row)"
+                                        >
+                                            Etiquetas
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 </data-table>
