@@ -53,6 +53,53 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  * @method static Builder|Item whereTypeUser()
  * @method static Builder|Item whereWarehouse()
  * @property \Illuminate\Database\Eloquent\Collection|ItemMovementRelExtra[] $item_movement_rel_extras
+ * @property Account $account
+ * @property Brand $brand
+ * @property CatDigemid|null $cat_digemid
+ * @property Category $category
+ * @property CurrencyType $currency_type
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\DispatchItem[] $dispatch_items
+ * @property int|null $dispatch_items_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\DocumentItem[] $document_items
+ * @property int|null $document_items_count
+ * @property mixed $attributes
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemImage[] $images
+ * @property int|null $images_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\InventoryKardex[] $inventory_kardex
+ * @property int|null $inventory_kardex_count
+ * @property \Illuminate\Database\Eloquent\Collection|ItemLot[] $item_lots
+ * @property int|null $item_lots_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemMovementRelExtra[] $item_movement_rel_extra
+ * @property int|null $item_movement_rel_extra_count
+ * @property \App\Models\Tenant\ItemType $item_type
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemUnitType[] $item_unit_types
+ * @property int|null $item_unit_types_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Kardex[] $kardex
+ * @property int|null $kardex_count
+ * @property \Illuminate\Database\Eloquent\Collection|ItemLot[] $lots
+ * @property int|null $lots_count
+ * @property \Illuminate\Database\Eloquent\Collection|ItemLotsGroup[] $lots_group
+ * @property int|null $lots_group_count
+ * @property AffectationIgvType $purchase_affectation_igv_type
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\PurchaseItem[] $purchase_item
+ * @property int|null $purchase_item_count
+ * @property AffectationIgvType $sale_affectation_igv_type
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\SaleNoteItem[] $sale_note_items
+ * @property int|null $sale_note_items_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemSet[] $sets
+ * @property int|null $sets_count
+ * @property SystemIscType $system_isc_type
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemTag[] $tags
+ * @property int|null $tags_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\TechnicalServiceItem[] $technical_service_item
+ * @property int|null $technical_service_item_count
+ * @property UnitType $unit_type
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemWarehousePrice[] $warehousePrices
+ * @property int|null $warehouse_prices_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemWarehouse[] $warehouses
+ * @property int|null $warehouses_count
+ * @property WebPlatform $web_platform
+ * @method static Builder|Item whereFilterValuedKardexFormatSunat($params)
  */
 class Item extends ModelTenant
 {

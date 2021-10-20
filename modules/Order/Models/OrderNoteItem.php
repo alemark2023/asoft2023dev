@@ -8,15 +8,16 @@
     use App\Models\Tenant\Item;
     use App\Models\Tenant\ModelTenant;
     use App\Traits\AttributePerItems;
+    use Eloquent;
     use Illuminate\Database\Eloquent\Builder;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Modules\Inventory\Models\Warehouse;
 
+
     /**
-     * Class OrderNoteItem
+     * Modules\Order\Models\OrderNoteItem
      *
      * @package Modules\Order\Models
-     * @mixin ModelTenant
      * @property AffectationIgvType $affectation_igv_type
      * @property mixed              $attributes
      * @property mixed              $charges
@@ -30,9 +31,11 @@
      * @method static Builder|OrderNoteItem newModelQuery()
      * @method static Builder|OrderNoteItem newQuery()
      * @method static Builder|OrderNoteItem query()
-     * @method static Builder|OrderNoteItem whereDefaultState($params)
-     * @method static Builder|OrderNoteItem wherePendingState($params)
-     * @method static Builder|OrderNoteItem whereProcessedState($params)
+     * @method static Builder|OrderNoteItem whereDefaultState($params = [])
+     * @method static Builder|OrderNoteItem wherePendingState($params = [])
+     * @method static Builder|OrderNoteItem whereProcessedState($params = [])
+     * @mixin Eloquent
+     * @mixin ModelTenant
      */
     class OrderNoteItem extends ModelTenant
     {

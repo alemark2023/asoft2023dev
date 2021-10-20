@@ -14,47 +14,50 @@
     use App\Models\Tenant\SoapType;
     use App\Models\Tenant\StateType;
     use App\Models\Tenant\User;
+    use Eloquent;
     use Illuminate\Database\Eloquent\Builder;
+    use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Illuminate\Database\Eloquent\Relations\HasMany;
+    use Illuminate\Database\Eloquent\Relations\MorphMany;
     use Illuminate\Support\Collection;
     use Modules\Inventory\Models\InventoryKardex;
     use Modules\Item\Models\ItemLot;
 
+
     /**
-     * Class OrderNote
+     * Modules\Order\Models\OrderNote
      *
-     * @property                                                                                $quotation_id
      * @package Modules\Order\Models
      * @mixin ModelTenant
-     * @property CurrencyType                                                                   $currency_type
-     * @property \Illuminate\Database\Eloquent\Collection|Document[]                            $documents
-     * @property int|null                                                                       $documents_count
-     * @property mixed                                                                          $charges
-     * @property mixed                                                                          $customer
-     * @property mixed                                                                          $detraction
-     * @property mixed                                                                          $discounts
-     * @property mixed                                                                          $establishment
-     * @property mixed                                                                          $guides
-     * @property mixed                                                                          $identifier
-     * @property mixed                                                                          $legends
-     * @property mixed                                                                          $number_full
-     * @property mixed                                                                          $number_to_letter
-     * @property mixed                                                                          $perception
-     * @property mixed                                                                          $prepayments
-     * @property mixed                                                                          $related
-     * @property \Illuminate\Database\Eloquent\Collection|GuideFile[]                           $guide_files
-     * @property int|null                                                                       $guide_files_count
-     * @property \Illuminate\Database\Eloquent\Collection|InventoryKardex[]                     $inventory_kardex
-     * @property int|null                                                                       $inventory_kardex_count
-     * @property \Illuminate\Database\Eloquent\Collection|OrderNoteItem[]                       $items
-     * @property int|null                                                                       $items_count
-     * @property PaymentMethodType                                                              $payment_method_type
-     * @property Person                                                                         $person
-     * @property \Illuminate\Database\Eloquent\Collection|SaleNote[]                            $sale_notes
-     * @property int|null                                                                       $sale_notes_count
-     * @property SoapType                                                                       $soap_type
-     * @property StateType                                                                      $state_type
-     * @property User                                                                           $user
+     * @property CurrencyType                                               $currency_type
+     * @property \Illuminate\Database\Eloquent\Collection|Document[]        $documents
+     * @property int|null                                                   $documents_count
+     * @property mixed                                                      $charges
+     * @property mixed                                                      $customer
+     * @property mixed                                                      $detraction
+     * @property mixed                                                      $discounts
+     * @property mixed                                                      $establishment
+     * @property mixed                                                      $guides
+     * @property mixed                                                      $identifier
+     * @property mixed                                                      $legends
+     * @property mixed                                                      $number_full
+     * @property mixed                                                      $number_to_letter
+     * @property mixed                                                      $perception
+     * @property mixed                                                      $prepayments
+     * @property mixed                                                      $related
+     * @property \Illuminate\Database\Eloquent\Collection|GuideFile[]       $guide_files
+     * @property int|null                                                   $guide_files_count
+     * @property \Illuminate\Database\Eloquent\Collection|InventoryKardex[] $inventory_kardex
+     * @property int|null                                                   $inventory_kardex_count
+     * @property \Illuminate\Database\Eloquent\Collection|OrderNoteItem[]   $items
+     * @property int|null                                                   $items_count
+     * @property PaymentMethodType                                          $payment_method_type
+     * @property Person                                                     $person
+     * @property \Illuminate\Database\Eloquent\Collection|SaleNote[]        $sale_notes
+     * @property int|null                                                   $sale_notes_count
+     * @property SoapType                                                   $soap_type
+     * @property StateType                                                  $state_type
+     * @property User                                                       $user
      * @method static Builder|OrderNote newModelQuery()
      * @method static Builder|OrderNote newQuery()
      * @method static Builder|OrderNote query()
@@ -62,6 +65,8 @@
      * @method static Builder|OrderNote wherePendingState($params)
      * @method static Builder|OrderNote whereProcessedState($params)
      * @method static Builder|OrderNote whereTypeUser()
+     * @mixin Eloquent
+     * @mixin ModelTenant
      */
     class OrderNote extends ModelTenant
     {
@@ -240,53 +245,83 @@
             return $this->prefix . '-' . $this->id;
         }
 
+        /**
+         * @return BelongsTo
+         */
         public function user()
         {
             return $this->belongsTo(User::class);
         }
 
+        /**
+         * @return BelongsTo
+         */
         public function soap_type()
         {
             return $this->belongsTo(SoapType::class);
         }
 
+        /**
+         * @return BelongsTo
+         */
         public function state_type()
         {
             return $this->belongsTo(StateType::class);
         }
 
+        /**
+         * @return BelongsTo
+         */
         public function person()
         {
             return $this->belongsTo(Person::class, 'customer_id');
         }
 
 
+        /**
+         * @return BelongsTo
+         */
         public function currency_type()
         {
             return $this->belongsTo(CurrencyType::class, 'currency_type_id');
         }
 
+        /**
+         * @return HasMany
+         */
         public function items()
         {
             return $this->hasMany(OrderNoteItem::class);
         }
 
 
+        /**
+         * @return HasMany
+         */
         public function documents()
         {
             return $this->hasMany(Document::class);
         }
 
+        /**
+         * @return HasMany
+         */
         public function sale_notes()
         {
             return $this->hasMany(SaleNote::class);
         }
 
+        /**
+         * @return BelongsTo
+         */
         public function payment_method_type()
         {
             return $this->belongsTo(PaymentMethodType::class);
         }
 
+        /**
+         * @return mixed
+         */
         public function getNumberToLetterAttribute()
         {
             $legends = $this->legends;
@@ -294,6 +329,11 @@
             return $legend->value;
         }
 
+        /**
+         * @param Builder $query
+         *
+         * @return Builder|null
+         */
         public function scopeWhereTypeUser(Builder $query)
         {
             $user = auth()->user();
@@ -301,12 +341,21 @@
         }
 
 
+        /**
+         * @return MorphMany
+         */
         public function inventory_kardex()
         {
             return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
         }
 
 
+        /**
+         * @param Builder $query
+         * @param         $params
+         *
+         * @return Builder
+         */
         public function scopeWherePendingState(Builder $query, $params)
         {
 
@@ -323,6 +372,12 @@
         }
 
 
+        /**
+         * @param Builder $query
+         * @param         $params
+         *
+         * @return Builder
+         */
         public function scopeWhereProcessedState(Builder $query, $params)
         {
 
@@ -339,6 +394,12 @@
         }
 
 
+        /**
+         * @param Builder $query
+         * @param         $params
+         *
+         * @return Builder
+         */
         public function scopeWhereDefaultState(Builder $query, $params)
         {
 
