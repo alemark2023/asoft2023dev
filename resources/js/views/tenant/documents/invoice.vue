@@ -324,6 +324,13 @@
                                                         <!-- <td>{{ currency_type.symbol }} {{ form.detraction.amount }}</td> -->
                                                     </tr>
                                                 </template>
+                                                
+                                                <template v-if="form.retention">
+                                                    <tr v-if="form.retention.amount > 0">
+                                                        <td>M. RETENCIÓN ({{form.retention.percentage * 100}}%):</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.retention.amount }}</td>
+                                                    </tr>
+                                                </template>
 
                                                 <tr v-if="form.total_exportation > 0">
                                                     <td>OP.EXPORTACIÓN:</td>
@@ -398,9 +405,17 @@
                                                 </tr>
 
                                                 
-                                                <template v-if="form.detraction">
+                                                <!-- <template v-if="form.detraction">
                                                     <tr v-if="form.detraction.amount > 0 && form.total_pending_payment > 0">
                                                         <td width="60%">M. PENDIENTE:</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.total_pending_payment }}</td>
+                                                    </tr>
+                                                </template> -->
+                                                
+                                                <template v-if="form.detraction || form.retention">
+                                                    <tr v-if="form.total_pending_payment > 0">
+                                                    <!-- <tr v-if="form.detraction.amount > 0 && form.total_pending_payment > 0"> -->
+                                                        <td>M. PENDIENTE:</td>
                                                         <td>{{ currency_type.symbol }} {{ form.total_pending_payment }}</td>
                                                     </tr>
                                                 </template>
@@ -644,6 +659,13 @@
                                         </tr>
                                     </template>
 
+                                    <template v-if="form.retention">
+                                        <tr v-if="form.retention.amount > 0">
+                                            <td>M. RETENCIÓN ({{form.retention.percentage * 100}}%):</td>
+                                            <td>{{ currency_type.symbol }} {{ form.retention.amount }}</td>
+                                        </tr>
+                                    </template>
+
                                     <tr v-if="form.total_exportation > 0">
                                         <td>OP.EXPORTACIÓN:</td>
                                         <td>{{ currency_type.symbol }} {{ form.total_exportation }}</td>
@@ -712,9 +734,16 @@
                                         </td>
                                     </tr>
 
-                                    <template v-if="form.detraction">
+                                    <!-- <template v-if="form.detraction">
                                         <tr v-if="form.detraction.amount > 0 && form.total_pending_payment > 0">
                                             <td width="60%">M. PENDIENTE:</td>
+                                            <td>{{ currency_type.symbol }} {{ form.total_pending_payment }}</td>
+                                        </tr>
+                                    </template> -->
+
+                                    <template v-if="form.detraction || form.retention">
+                                        <tr v-if="form.total_pending_payment > 0">
+                                            <td>M. PENDIENTE:</td>
                                             <td>{{ currency_type.symbol }} {{ form.total_pending_payment }}</td>
                                         </tr>
                                     </template>
@@ -1079,6 +1108,17 @@
                                         </div>
                                     </div>
 
+                                    
+                                    <div class="col-12 py-2 px-0" v-if="show_has_retention">
+                                        <div class="row no-gutters">
+                                            <div class="col-10">¿Tiene retención de igv?</div>
+                                            <div class="col-2">
+                                                <el-switch v-model="form.has_retention"
+                                                           @change="changeRetention"></el-switch>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </template>
                             </div>
                             <el-collapse v-model="activePanel"
@@ -1421,6 +1461,7 @@ export default {
             payment_conditions: [],
             affectation_igv_types: [],
             total_discount_no_base: 0,
+            show_has_retention: true
         }
     },
     computed: {
@@ -1438,6 +1479,9 @@ export default {
         },
         isUpdateDocument: function () {
             return (this.documentId) ? true : false
+        },
+        isCreditPaymentCondition: function () {
+            return ['02', '03'].includes(this.form.payment_condition_id)
         },
     },
     async created() {
@@ -1771,8 +1815,11 @@ export default {
             let is_credit_installments = await _.find(data.fee, {payment_method_type_id: null})
             this.form.payment_condition_id = (is_credit_installments) ? '03' : data.payment_condition_id;
             this.form.fee = data.fee;
+            this.form.retention = data.retention
+
             // this.form.fee = [];
             this.prepareDataDetraction()
+            this.prepareDataRetention()
 
             if (!data.guides) {
                 this.clickAddInitGuides();
@@ -1787,6 +1834,15 @@ export default {
             this.updateChangeDestinationSale();
             this.calculateTotal();
             // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+        },
+        prepareDataRetention(){
+
+            this.form.has_retention = !_.isEmpty(this.form.retention)
+            
+            if(this.form.has_retention){
+                this.setTotalPendingAmountRetention(this.form.retention.amount)
+            }
+
         },
         async prepareDataDetraction(){
 
@@ -2426,7 +2482,9 @@ export default {
                 terms_condition: '',
                 payment_condition_id: '01',
                 fee: [],
-                total_pending_payment: 0
+                total_pending_payment: 0,
+                has_retention : false, 
+                retention: {},
             }
 
             this.form_cash_document = {
@@ -2453,6 +2511,38 @@ export default {
             this.enabled_payments = true
             this.readonly_date_of_due = false
             this.total_discount_no_base = 0
+
+        },
+        changeRetention(){
+
+            if(this.form.has_retention){
+
+                let base = this.form.total
+                let percentage = _.round(parseFloat(this.config.igv_retention_percentage) / 100, 5)
+                let amount = _.round(base * percentage, 2)
+
+                this.form.retention = {
+                    base: base, 
+                    code: '62', //Código de Retención del IGV
+                    amount: amount, 
+                    percentage: percentage
+                }
+
+                this.setTotalPendingAmountRetention(amount)
+
+            }else{
+
+                this.form.retention = {}
+                this.form.total_pending_payment = 0
+                this.calculateAmountToPayments()
+            }
+
+        },
+        setTotalPendingAmountRetention(amount){
+
+            //monto neto pendiente aplica si la condicion de pago es credito
+            this.form.total_pending_payment = ['02', '03'].includes(this.form.payment_condition_id) ? this.form.total - amount : 0
+            this.calculateAmountToPayments()
 
         },
         initInputPerson() {
@@ -2514,7 +2604,7 @@ export default {
 
             }
 
-            this.setAmountDetractionToPayments()
+            this.calculateAmountToPayments()
         },
         async changeDetractionType() {
 
@@ -2533,11 +2623,11 @@ export default {
 
                 }
 
-                this.setAmountDetractionToPayments()
+                this.calculateAmountToPayments()
 
             }
         },
-        setAmountDetractionToPayments(){
+        calculateAmountToPayments(){
 
             // if(this.form.payments.length > 0){
             //     // this.form.payments[0].payment = this.form.total_pending_payment
@@ -2608,8 +2698,11 @@ export default {
                 await this.filterCustomers()
                 // this.form.customer_id = (this.customers.length > 0) ? this.establishment.customer_id : null
                 let alt = _.find(this.customers, {'id': this.establishment.customer_id});
+                // console.log(alt)
+                
                 if (alt !== undefined) {
                     this.form.customer_id = this.establishment.customer_id
+                    this.validateCustomerRetention(alt.identity_document_type_id)
                 }
             }
         },
@@ -2828,6 +2921,10 @@ export default {
 
             if (['1001', '1004'].includes(this.form.operation_type_id))
                 this.changeDetractionType()
+
+            if(this.form.has_retention){
+                this.changeRetention()
+            }
 
             this.setTotalDefaultPayment()
             this.setPendingAmount()
@@ -3152,11 +3249,29 @@ export default {
                 })
             }
 
+            // retencion para clientes con ruc
+            this.validateCustomerRetention(customer.identity_document_type_id)
 
             /*if(this.customer_addresses.length > 0) {
                 let address = _.find(this.customer_addresses, {'main' : 1});
                 this.form.customer_address_id = address.id;
             }*/
+        },
+        validateCustomerRetention(identity_document_type_id){
+
+            if(identity_document_type_id != '6'){
+
+                if(this.form.has_retention){
+                    this.form.has_retention = false
+                    this.changeRetention()
+                }
+
+                this.show_has_retention = false
+
+            }else{
+                this.show_has_retention = true
+            }
+
         },
         initDataPaymentCondition01(){
 
@@ -3182,6 +3297,16 @@ export default {
             if (this.form.payment_condition_id === '03') {
                 this.clickAddFee();
             }
+
+            // if(this.isCreditPaymentCondition){
+                // this.changeRetention()
+            // }
+
+            if(!_.isEmpty(this.form.retention)){
+                this.setTotalPendingAmountRetention(this.form.retention.amount)
+            }
+
+
         },
         clickAddFee() {
             this.form.date_of_due = moment().format('YYYY-MM-DD');
@@ -3262,6 +3387,11 @@ export default {
         getTotal(){
            
             if(!_.isEmpty(this.form.detraction) && this.form.total_pending_payment > 0)
+            {
+                return this.form.total_pending_payment
+            }
+
+            if(!_.isEmpty(this.form.retention) && this.form.total_pending_payment > 0)
             {
                 return this.form.total_pending_payment
             }
