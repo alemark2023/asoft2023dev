@@ -193,6 +193,22 @@
                         ></small>
                     </div>
                 </div>
+                <div class="col-lg-6">
+                    <div
+                        :class="{ 'has-danger': errors.purchase_order }"
+                        class="form-group"
+                    >
+                        <label class="control-label">Orden de compra</label>
+                        <el-input
+                            v-model="document.purchase_order"
+                        ></el-input>
+                        <small
+                            v-if="errors.purchase_order"
+                            class="form-control-feedback"
+                            v-text="errors.purchase_order[0]"
+                        ></small>
+                    </div>
+                </div>
 
                 <br/>
                 <div class="col-lg-4">
@@ -339,8 +355,13 @@ import {exchangeRate} from "../../../mixins/functions";
 import moment from "moment";
 
 export default {
-    components: {DocumentOptions, SaleNoteOptions},
-    mixins: [exchangeRate],
+    components: {
+        DocumentOptions,
+        SaleNoteOptions
+    },
+    mixins: [
+        exchangeRate
+    ],
     props: [
         "showDialog",
         "recordId",
@@ -691,7 +712,7 @@ export default {
             let q = this.form.dispatch;
             this.document.establishment_id = q.establishment_id;
             this.document.time_of_issue = moment().format("HH:mm:ss");
-            this.document.purchase_order = null;
+            // this.document.purchase_order = null;
             this.document.total_prepayment = q.total_prepayment;
             this.document.total_charge = q.total_charge;
             this.document.total_discount = q.total_discount;
