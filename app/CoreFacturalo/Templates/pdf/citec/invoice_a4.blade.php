@@ -80,7 +80,7 @@
                 <td class="align-top desc font-bold text-center"
                     colspan="2"
                     width="30%"
-                    style="border: 1px solid black">
+                >
                     <table>
                         <tr>
                             <td
