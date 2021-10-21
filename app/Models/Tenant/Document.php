@@ -6,6 +6,7 @@
     use App\Models\Tenant\GuideFile;
     use App\Models\Tenant\Catalogs\CurrencyType;
     use App\Models\Tenant\Catalogs\DocumentType;
+    use App\Traits\SellerIdTrait;
     use Eloquent;
     use ErrorException;
     use Exception;
@@ -109,6 +110,8 @@
  */
     class Document extends ModelTenant
     {
+        use SellerIdTrait;
+
         protected $with = [
             'user',
             'soap_type',
@@ -122,7 +125,14 @@
             'payments',
             'fee'
         ];
+        public static function boot()
+        {
+            parent::boot();
+            static::creating(function (self $model) {
+                self::adjustSellerIdField($model);
+            });
 
+        }
         protected $fillable = [
             'user_id',
             'external_id',
@@ -357,7 +367,7 @@
         {
             $this->attributes['response_regularize_shipping'] = (is_null($value)) ? null : json_encode($value);
         }
-        
+
         public function getRetentionAttribute($value)
         {
             return (is_null($value)) ? null : (object)json_decode($value);

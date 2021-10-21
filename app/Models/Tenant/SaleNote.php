@@ -4,6 +4,7 @@
 
     use App\Models\Tenant\GuideFile;
     use App\Models\Tenant\Catalogs\CurrencyType;
+    use App\Traits\SellerIdTrait;
     use Illuminate\Database\Eloquent\Collection;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -58,6 +59,8 @@
      */
     class SaleNote extends ModelTenant
     {
+        use SellerIdTrait;
+
         protected $with = [
             'user',
             'soap_type',
@@ -140,6 +143,14 @@
             'due_date' => 'date',
         ];
 
+        public static function boot()
+        {
+            parent::boot();
+            static::creating(function (self $model) {
+                self::adjustSellerIdField($model);
+            });
+
+        }
         /**
          * Busca el ultimo numero basado en series y el prefijo.
          *
