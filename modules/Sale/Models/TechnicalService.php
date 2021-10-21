@@ -11,7 +11,7 @@
     use App\Models\Tenant\SoapType;
     use App\Models\Tenant\Person;
     use App\Models\Tenant\ModelTenant;
-    use App\Traits\SellerIdTrait;
+    // use App\Traits\SellerIdTrait;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Illuminate\Database\Eloquent\Relations\HasMany;
     use Carbon\Carbon;
@@ -86,7 +86,7 @@
     class TechnicalService extends ModelTenant
     {
         use UsesTenantConnection;
-        use SellerIdTrait;
+       // use SellerIdTrait;
 
 
         protected $perPage = 25;
@@ -194,7 +194,7 @@
                     $item->establishment_id = $item->user->establishment_id;
                 }
                 if(empty($item->currency_type_id)) $item->currency_type_id = 'PEN';
-                self::adjustSellerIdField($model);
+                //self::adjustSellerIdField($model);
             });
             static::retrieved(function (self $item) {
 
