@@ -355,6 +355,20 @@
             return $this->hasMany(OrderNoteItem::class);
         }
 
+        /**
+         * Devuleve la relacion de los items a traves de order_note_items
+         *
+         * No implplementado
+         *
+         * @return BelongsToMany
+         */
+
+        public function relation_item()
+        {
+            return $this->belongsToMany(Item::class, 'order_note_items')
+                ->withPivot('id', 'item', 'quantity', 'unit_value', 'affectation_igv_type_id', 'total_base_igv', 'percentage_igv', 'total_igv', 'system_isc_type_id', 'total_base_isc', 'percentage_isc', 'total_isc', 'total_base_other_taxes', 'percentage_other_taxes', 'total_other_taxes', 'total_plastic_bag_taxes', 'total_taxes', 'price_type_id', 'unit_price', 'total_value', 'total_charge', 'total_discount', 'total', 'attributes', 'discounts', 'charges', 'additional_information', 'warehouse_id', 'name_product_pdf');
+        }
+
 
         /**
          * @return HasMany

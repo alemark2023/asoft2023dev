@@ -112,6 +112,656 @@
             'additional_information',
             'name_product_pdf',
         ];
+        protected $casts = [
+            'order_note_id' => 'int',
+            'item_id' => 'int',
+            'quantity' => 'float',
+            'unit_value' => 'float',
+            'total_base_igv' => 'float',
+            'percentage_igv' => 'float',
+            'total_igv' => 'float',
+            'total_base_isc' => 'float',
+            'percentage_isc' => 'float',
+            'total_isc' => 'float',
+            'total_base_other_taxes' => 'float',
+            'percentage_other_taxes' => 'float',
+            'total_other_taxes' => 'float',
+            'total_plastic_bag_taxes' => 'float',
+            'total_taxes' => 'float',
+            'unit_price' => 'float',
+            'total_value' => 'float',
+            'total_charge' => 'float',
+            'total_discount' => 'float',
+            'total' => 'float',
+            'warehouse_id' => 'int'
+        ];
+
+        /**
+         * @return int
+         */
+        public function getOrderNoteId(): int
+        {
+            return (int)$this->order_note_id;
+        }
+
+        /**
+         * @param int $order_note_id
+         *
+         * @return OrderNoteItem
+         */
+        public function setOrderNoteId(?int $order_note_id): OrderNoteItem
+        {
+            $this->order_note_id = (int)$order_note_id;
+            return $this;
+        }
+
+        /**
+         * @return int
+         */
+        public function getItemId(): int
+        {
+            return (int)$this->item_id;
+        }
+
+        /**
+         * @param int $item_id
+         *
+         * @return OrderNoteItem
+         */
+        public function setItemId(?int $item_id): OrderNoteItem
+        {
+            $this->item_id = (int)$item_id;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getQuantity(): float
+        {
+            return (float)$this->quantity;
+        }
+
+        /**
+         * @param float $quantity
+         *
+         * @return OrderNoteItem
+         */
+        public function setQuantity(?float $quantity): OrderNoteItem
+        {
+            $this->quantity = (float)$quantity;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getUnitValue(): float
+        {
+            return (float)$this->unit_value;
+        }
+
+        /**
+         * @param float $unit_value
+         *
+         * @return OrderNoteItem
+         */
+        public function setUnitValue(?float $unit_value): OrderNoteItem
+        {
+            $this->unit_value = (float)$unit_value;
+            return $this;
+        }
+
+        /**
+         * @return string
+         */
+        public function getAffectationIgvTypeId(): string
+        {
+            return $this->affectation_igv_type_id;
+        }
+
+        /**
+         * @param string $affectation_igv_type_id
+         *
+         * @return OrderNoteItem
+         */
+        public function setAffectationIgvTypeId(string $affectation_igv_type_id): OrderNoteItem
+        {
+            $this->affectation_igv_type_id = $affectation_igv_type_id;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getTotalBaseIgv(): float
+        {
+            return (float)$this->total_base_igv;
+        }
+
+        /**
+         * @param float $total_base_igv
+         *
+         * @return OrderNoteItem
+         */
+        public function setTotalBaseIgv(?float $total_base_igv): OrderNoteItem
+        {
+            $this->total_base_igv = (float)$total_base_igv;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getPercentageIgv(): float
+        {
+            return (float )$this->percentage_igv;
+        }
+
+        /**
+         * @param float $percentage_igv
+         *
+         * @return OrderNoteItem
+         */
+        public function setPercentageIgv(?float $percentage_igv): OrderNoteItem
+        {
+            $this->percentage_igv = (float)$percentage_igv;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getTotalIgv(): float
+        {
+            return (float)$this->total_igv;
+        }
+
+        /**
+         * @param float $total_igv
+         *
+         * @return OrderNoteItem
+         */
+        public function setTotalIgv(?float $total_igv): OrderNoteItem
+        {
+            $this->total_igv = (float)$total_igv;
+            return $this;
+        }
+
+        /**
+         * @return string|null
+         */
+        public function getSystemIscTypeId(): ?string
+        {
+            return $this->system_isc_type_id;
+        }
+
+        /**
+         * @param string|null $system_isc_type_id
+         *
+         * @return OrderNoteItem
+         */
+        public function setSystemIscTypeId(?string $system_isc_type_id): OrderNoteItem
+        {
+            $this->system_isc_type_id = $system_isc_type_id;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getTotalBaseIsc(): float
+        {
+            return (float)$this->total_base_isc;
+        }
+
+        /**
+         * @param float $total_base_isc
+         *
+         * @return OrderNoteItem
+         */
+        public function setTotalBaseIsc(?float $total_base_isc): OrderNoteItem
+        {
+            $this->total_base_isc = (float)$total_base_isc;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getPercentageIsc(): float
+        {
+            return (float)$this->percentage_isc;
+        }
+
+        /**
+         * @param float $percentage_isc
+         *
+         * @return OrderNoteItem
+         */
+        public function setPercentageIsc(?float $percentage_isc): OrderNoteItem
+        {
+            $this->percentage_isc = (float)$percentage_isc;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getTotalIsc(): float
+        {
+            return (float)$this->total_isc;
+        }
+
+        /**
+         * @param float $total_isc
+         *
+         * @return OrderNoteItem
+         */
+        public function setTotalIsc(?float $total_isc): OrderNoteItem
+        {
+            $this->total_isc = (float)$total_isc;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getTotalBaseOtherTaxes(): float
+        {
+            return (float)$this->total_base_other_taxes;
+        }
+
+        /**
+         * @param float $total_base_other_taxes
+         *
+         * @return OrderNoteItem
+         */
+        public function setTotalBaseOtherTaxes(?float $total_base_other_taxes): OrderNoteItem
+        {
+            $this->total_base_other_taxes = (float)$total_base_other_taxes;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getPercentageOtherTaxes(): float
+        {
+            return (float)$this->percentage_other_taxes;
+        }
+
+        /**
+         * @param float $percentage_other_taxes
+         *
+         * @return OrderNoteItem
+         */
+        public function setPercentageOtherTaxes(?float $percentage_other_taxes): OrderNoteItem
+        {
+            $this->percentage_other_taxes = (float)$percentage_other_taxes;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getTotalOtherTaxes(): float
+        {
+            return (float)$this->total_other_taxes;
+        }
+
+        /**
+         * @param float $total_other_taxes
+         *
+         * @return OrderNoteItem
+         */
+        public function setTotalOtherTaxes(?float $total_other_taxes): OrderNoteItem
+        {
+            $this->total_other_taxes = (float)$total_other_taxes;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getTotalTaxes(): float
+        {
+            return (float)$this->total_taxes;
+        }
+
+        /**
+         * @param float $total_taxes
+         *
+         * @return OrderNoteItem
+         */
+        public function setTotalTaxes(?float $total_taxes): OrderNoteItem
+        {
+            $this->total_taxes = (float)$total_taxes;
+            return $this;
+        }
+
+        /**
+         * @return string
+         */
+        public function getPriceTypeId(): string
+        {
+            return $this->price_type_id;
+        }
+
+        /**
+         * @param string $price_type_id
+         *
+         * @return OrderNoteItem
+         */
+        public function setPriceTypeId(string $price_type_id): OrderNoteItem
+        {
+            $this->price_type_id = $price_type_id;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getUnitPrice(): float
+        {
+            return (float)$this->unit_price;
+        }
+
+        /**
+         * @param float $unit_price
+         *
+         * @return OrderNoteItem
+         */
+        public function setUnitPrice(?float $unit_price): OrderNoteItem
+        {
+            $this->unit_price = (float)$unit_price;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getTotalValue(): float
+        {
+            return (float)$this->total_value;
+        }
+
+        /**
+         * @param float $total_value
+         *
+         * @return OrderNoteItem
+         */
+        public function setTotalValue(?float $total_value): OrderNoteItem
+        {
+            $this->total_value = (float)$total_value;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getTotalCharge(): float
+        {
+            return (float)$this->total_charge;
+        }
+
+        /**
+         * @param float $total_charge
+         *
+         * @return OrderNoteItem
+         */
+        public function setTotalCharge(?float $total_charge): OrderNoteItem
+        {
+            $this->total_charge = (float)$total_charge;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getTotalDiscount(): float
+        {
+            return (float)$this->total_discount;
+        }
+
+        /**
+         * @param float $total_discount
+         *
+         * @return OrderNoteItem
+         */
+        public function setTotalDiscount(?float $total_discount): OrderNoteItem
+        {
+            $this->total_discount = (float)$total_discount;
+            return $this;
+        }
+
+        /**
+         * @return float
+         */
+        public function getTotal(): float
+        {
+            return (float)$this->total;
+        }
+
+        /**
+         * @param float $total
+         *
+         * @return OrderNoteItem
+         */
+        public function setTotal(?float $total): OrderNoteItem
+        {
+            $this->total = (float)$total;
+            return $this;
+        }
+
+        /**
+         * @return int|null
+         */
+        public function getWarehouseId(): ?int
+        {
+            return (int)$this->warehouse_id;
+        }
+
+        /**
+         * @param int|null $warehouse_id
+         *
+         * @return OrderNoteItem
+         */
+        public function setWarehouseId(?int $warehouse_id): OrderNoteItem
+        {
+            $this->warehouse_id = (int)$warehouse_id;
+            return $this;
+        }
+
+        /**
+         * @return OrderNote
+         */
+        public function getOrderNote(): OrderNote
+        {
+            return $this->order_note;
+        }
+
+        /**
+         * @param OrderNote $order_note
+         *
+         * @return OrderNoteItem
+         */
+        public function setOrderNote(OrderNote $order_note): OrderNoteItem
+        {
+            $this->order_note = $order_note;
+            return $this;
+        }
+
+        /**
+         * @return Warehouse|null
+         */
+        public function getWarehouse(): ?Warehouse
+        {
+            return $this->warehouse;
+        }
+
+        /**
+         * @param Warehouse|null $warehouse
+         *
+         * @return OrderNoteItem
+         */
+        public function setWarehouse(?Warehouse $warehouse): OrderNoteItem
+        {
+            $this->warehouse = $warehouse;
+            return $this;
+        }
+
+        /**
+         * @return AffectationIgvType
+         */
+        public function getAffectationIgvType(): AffectationIgvType
+        {
+            return $this->affectation_igv_type;
+        }
+
+        /**
+         * @param AffectationIgvType $affectation_igv_type
+         *
+         * @return OrderNoteItem
+         */
+        public function setAffectationIgvType(AffectationIgvType $affectation_igv_type): OrderNoteItem
+        {
+            $this->affectation_igv_type = $affectation_igv_type;
+            return $this;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getAttributes()
+        {
+            return $this->attributes;
+        }
+
+        /**
+         * @param mixed $attributes
+         *
+         * @return OrderNoteItem
+         */
+        public function setAttributes($attributes)
+        {
+            $this->attributes = $attributes;
+            return $this;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getCharges()
+        {
+            return $this->charges;
+        }
+
+        /**
+         * @param mixed $charges
+         *
+         * @return OrderNoteItem
+         */
+        public function setCharges($charges)
+        {
+            $this->charges = $charges;
+            return $this;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getDiscounts()
+        {
+            return $this->discounts;
+        }
+
+        /**
+         * @param mixed $discounts
+         *
+         * @return OrderNoteItem
+         */
+        public function setDiscounts($discounts)
+        {
+            $this->discounts = $discounts;
+            return $this;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getItem()
+        {
+            return $this->item;
+        }
+
+        /**
+         * @param mixed $item
+         *
+         * @return OrderNoteItem
+         */
+        public function setItem($item)
+        {
+            $this->item = $item;
+            return $this;
+        }
+
+        /**
+         * @return PriceType
+         */
+        public function getPriceType(): PriceType
+        {
+            return $this->price_type;
+        }
+
+        /**
+         * @param PriceType $price_type
+         *
+         * @return OrderNoteItem
+         */
+        public function setPriceType(PriceType $price_type): OrderNoteItem
+        {
+            $this->price_type = $price_type;
+            return $this;
+        }
+
+        /**
+         * @return Item
+         */
+        public function getRelationItem(): Item
+        {
+            return $this->relation_item;
+        }
+
+        /**
+         * @param Item $relation_item
+         *
+         * @return OrderNoteItem
+         */
+        public function setRelationItem(Item $relation_item): OrderNoteItem
+        {
+            $this->relation_item = $relation_item;
+            return $this;
+        }
+
+        /**
+         * @return SystemIscType
+         */
+        public function getSystemIscType(): SystemIscType
+        {
+            return $this->system_isc_type;
+        }
+
+        /**
+         * @param SystemIscType $system_isc_type
+         *
+         * @return OrderNoteItem
+         */
+        public function setSystemIscType(SystemIscType $system_isc_type): OrderNoteItem
+        {
+            $this->system_isc_type = $system_isc_type;
+            return $this;
+        }
 
         public function getItemAttribute($value)
         {
