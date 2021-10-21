@@ -3,6 +3,7 @@
     namespace App\CoreFacturalo\Helpers\Template;
 
 
+    use App\Models\Tenant\Dispatch;
     use App\Models\Tenant\Document;
     use App\Models\Tenant\DocumentFee;
     use App\Models\Tenant\DocumentPayment;
@@ -74,6 +75,39 @@
                 }
 
             }
+            return $data;
+        }
+
+        /**
+         * Devuelve las guias de un documento, Primero las guias que esten escritas y luego las guias relacionadas
+         *
+         * @param Document $document
+         *
+         * @return array
+         */
+        public static function getGuides(Document $document)
+        {
+            $data = [];
+            foreach ($document->guides as $guide) {
+                $type = '';
+                if (isset($guide->document_type_description)) {
+                    $type = $guide->document_type_description;
+                } else {
+                    if ($guide->document_type_id) {
+                        $type = $guide->document_type_id;
+                    }
+                }
+                if (!isset($data[$type])) $data[$type] = [];
+                $data[$type][] = $guide;
+            }
+            $type = 'model';
+            if ($document->dispatch) {
+                /** @var Dispatch $dispatch */
+                $dispatch = $document->dispatch;
+                if (!isset($data[$type])) $data[$type] = [];
+                $data[$type][] = $dispatch->series . "-" . $dispatch->number;
+            }
+
             return $data;
         }
 
