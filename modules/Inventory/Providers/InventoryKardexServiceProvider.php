@@ -319,19 +319,75 @@ class InventoryKardexServiceProvider extends ServiceProvider
      */
     private function order_note() {
 
-        OrderNoteItem::created(function ($order_note_item) {
+        OrderNoteItem::created(function (OrderNoteItem $order_note_item) {
+            /** @todo bloque repetido, buscar colocar en funcion */
+            $item = $order_note_item->item;
+            $document = $order_note_item->order_note;
+            $warehouse_id = $order_note_item->warehouse_id;
 
-            $presentationQuantity = (!empty($order_note_item->item->presentation)) ? $order_note_item->item->presentation->quantity_unit : 1;
-
+            $presentationQuantity = $item->presentation->quantity_unit ?? 1;
             // $warehouse = $this->findWarehouse($order_note_item->order_note->establishment_id);
-            $warehouse = ($order_note_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($order_note_item->warehouse_id)->establishment_id) : $this->findWarehouse($order_note_item->order_note->establishment_id);
+            // $warehouse = ($warehouse_id) ? $this->findWarehouse($this->findWarehouseById($warehouse_id)->establishment_id) : $this->findWarehouse($order_note_item->order_note->establishment_id);
+            $item_id =$order_note_item->item_id;
+            // $factor = 1;
+            // Factor proviende de Document.
+             $factor = ($document->document_type_id  && $document->document_type_id === '07') ? 1 : -1;
 
-            $this->createInventoryKardex($order_note_item->order_note, $order_note_item->item_id, (-1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
-            $this->updateStock($order_note_item->item_id, (-1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
+            if (!$item->is_set) {
+                $presentationQuantity = $item->presentation->quantity_unit ?? 1;
+                $quanty = ($factor * ($order_note_item->quantity * $presentationQuantity));
 
-            if(isset($order_note_item->item->lots) )
+                $warehouse = ($warehouse_id) ?
+                    $this->findWarehouse($this->findWarehouseById($warehouse_id)->establishment_id) :
+                    $this->findWarehouse();
+                //$this->createInventory($item_id, $factor * $order_note_item->quantity, $warehouse->id);
+                $this->createInventoryKardex($document, $item_id, $quanty, $warehouse->id);
+                if (!$document->sale_note_id && !$document->order_note_id && !$document->dispatch_id) {
+                    $this->updateStock($item_id, ($quanty), $warehouse->id);
+                } else {
+                    if ($document->dispatch) {
+                        if (!$document->dispatch->transfer_reason_type->discount_stock) {
+                            $this->updateStock($item_id, ($quanty), $warehouse->id);
+                        }
+                    }
+                }
+
+            } else {
+
+                $item = Item::findOrFail($item_id);
+                foreach ($item->sets as $it) {
+                    /** @var Item $ind_item */
+
+                    $ind_item = $it->individual_item;
+                    $item_id = $ind_item->id;
+                    $item_set_quantity = ($it->quantity) ?: 1;
+                    $presentationQuantity = 1;
+
+                    $warehouse = $this->findWarehouse();
+                    $quanty = $factor * ($order_note_item->quantity * $presentationQuantity * $item_set_quantity);
+
+                    $this->createInventoryKardex($document, $item_id, ($quanty), $warehouse->id);
+
+                    if (!$document->sale_note_id && !$document->order_note_id && !$document->dispatch_id) {
+                        $this->updateStock($item_id, ($quanty), $warehouse->id);
+                    } else {
+                        if ($document->dispatch) {
+                            if (!$document->dispatch->transfer_reason_type->discount_stock) {
+                                $this->updateStock($item_id, ($quanty), $warehouse->id);
+                            }
+                        }
+                    }
+
+                }
+            }
+
+
+            // $this->createInventoryKardex($order_note_item->order_note, $order_note_item->item_id, (-1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
+            // $this->updateStock($order_note_item->item_id, (-1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
+
+            if(isset($item->lots) )
             {
-                foreach ($order_note_item->item->lots as $it) {
+                foreach ($item->lots as $it) {
 
                     if($it->has_sale == true)
                     {
