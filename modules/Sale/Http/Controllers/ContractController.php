@@ -186,8 +186,8 @@ class ContractController extends Controller
 
     public function item_tables() {
 
-         // $items = $this->table('items');
-         $items = SearchItemController::getItemToContract();
+        $items = $this->table('items');
+        // $items = SearchItemController::getItemToContract();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();

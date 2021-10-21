@@ -24,6 +24,27 @@
                             </el-select> -->
 
 
+
+                            <template  id="select-append">
+                                <el-input id="custom-input">
+                                    <el-select
+                                        v-model="form.item_id" @change="changeItem"
+                                        filterable
+                                        placeholder="Buscar"
+                                        popper-class="el-select-items"
+                                        ref="selectSearchNormal"
+                                        @focus="focusSelectItem"
+                                        slot="prepend"
+                                        id="select-width">
+
+                                        <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                    </el-select>
+                                    <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" >
+                                        <el-button @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
+                                    </el-tooltip>
+                                </el-input>
+                            </template>
+                            <!--
                             <template id="select-append">
                                 <el-input id="custom-input">
                                     <el-select
@@ -66,6 +87,7 @@
                                     </el-tooltip>
                                 </el-input>
                             </template>
+                            -->
 
                             <small v-if="errors.item_id"
                                    class="form-control-feedback"
@@ -446,7 +468,6 @@ export default {
         })
     },
     computed: {
-
         ...mapState([
             'config',
         ]),
