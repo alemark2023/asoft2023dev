@@ -11,6 +11,10 @@ use App\Models\Tenant\Kardex;
 use Illuminate\Support\ServiceProvider;
 use App\Traits\KardexTrait;
 
+
+/**
+ * Se debe tener en cuenta este provider para llevar el control de Kardex
+ */
 class KardexServiceProvider extends ServiceProvider
 {
     use KardexTrait;
@@ -29,9 +33,12 @@ class KardexServiceProvider extends ServiceProvider
 
     }
 
+    /**
+     * Cuando se realiza una venta
+     */
     private function sale()
     {
-        DocumentItem::created(function ($document_item) {
+        DocumentItem::created(function (DocumentItem $document_item) {
             $document = Document::whereIn('document_type_id',['01','03'])->find($document_item->document_id);
             if($document){
 
@@ -47,9 +54,12 @@ class KardexServiceProvider extends ServiceProvider
         });
     }
 
+    /**
+     *Cuando se realiza una compra
+     */
     private function purchase()
     {
-        PurchaseItem::created(function ($purchase_item) {
+        PurchaseItem::created(function (PurchaseItem $purchase_item) {
 
             $kardex = $this->saveKardex('purchase', $purchase_item->item_id, $purchase_item->purchase_id, $purchase_item->quantity, 'purchase');
 
@@ -58,9 +68,12 @@ class KardexServiceProvider extends ServiceProvider
         });
     }
 
+    /**
+     * Cuando se realiza una nota de compra
+     */
     private function sale_note()
     {
-        SaleNoteItem::created(function ($sale_note_item) {
+        SaleNoteItem::created(function (SaleNoteItem $sale_note_item) {
 
             $kardex = $this->saveKardex('sale', $sale_note_item->item_id, $sale_note_item->sale_note_id, $sale_note_item->quantity, 'sale_note');
 
@@ -69,9 +82,12 @@ class KardexServiceProvider extends ServiceProvider
         });
     }
 
+    /**
+     * Cuando se guarda un item
+     */
     private function save_item(){
 
-        Item::created(function ($item) {
+        Item::created(function (Item $item) {
 
             $stock = ($item->stock) ? $item->stock : 0;
             $kardex = $this->saveKardex(null, $item->id, null, $stock, null);
