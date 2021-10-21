@@ -105,6 +105,7 @@ class Configuration extends ModelTenant
         'set_address_by_establishment',
         'permission_to_edit_cpe',
         'show_items_only_user_stablishment',
+        'igv_retention_percentage',
     ];
 
     protected $casts = [
@@ -473,6 +474,7 @@ class Configuration extends ModelTenant
             'group_items_generate_document' => $this->group_items_generate_document,
             'set_address_by_establishment' => $this->set_address_by_establishment,
             'permission_to_edit_cpe' => $this->permission_to_edit_cpe,
+            'igv_retention_percentage' => $this->igv_retention_percentage,
             'currency_type_id' => $this->getCurrencyTypeId(),
             'currency_types' => $currency,
             'affectation_igv_types_exonerated_unaffected' => Item::AffectationIgvTypesExoneratedUnaffected(),

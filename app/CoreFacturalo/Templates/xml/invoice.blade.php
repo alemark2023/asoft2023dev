@@ -246,6 +246,16 @@
         <cbc:BaseAmount currencyID="PEN">{{ $perception->base }}</cbc:BaseAmount>
     </cac:AllowanceCharge>
     @endif
+    @if($document->retention)
+    @php($retention = $document->retention)
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode>{{ $retention->code }}</cbc:AllowanceChargeReasonCode>
+        <cbc:MultiplierFactorNumeric>{{ $retention->percentage }}</cbc:MultiplierFactorNumeric>
+        <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{ $retention->amount }}</cbc:Amount>
+        <cbc:BaseAmount currencyID="{{ $document->currency_type_id }}">{{ $retention->base }}</cbc:BaseAmount>
+    </cac:AllowanceCharge>
+    @endif
     <cac:TaxTotal>
         <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_taxes }}</cbc:TaxAmount>
         @if($document->total_isc > 0)

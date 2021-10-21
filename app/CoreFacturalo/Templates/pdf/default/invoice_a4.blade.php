@@ -224,6 +224,32 @@
 
 </table>
 
+
+@if ($document->retention)
+    <table class="full-width mt-3">
+        <tr>
+            <td colspan="3">
+                <strong>Información de la retención</strong>
+            </td>
+        </tr>
+        <tr>
+            <td width="120px">Base imponible</td>
+            <td width="8px">:</td>
+            <td>{{ $document->currency_type->symbol}} {{ $document->retention->base }}</td>
+
+            <td width="80px">Porcentaje</td>
+            <td width="8px">:</td>
+            <td>{{ $document->retention->percentage * 100 }}%</td>
+        </tr>
+        <tr>
+            <td width="120px">Monto</td>
+            <td width="8px">:</td>
+            <td>{{ $document->currency_type->symbol}} {{ $document->retention->amount }}</td>
+        </tr>
+    </table>
+@endif
+
+
 @if ($document->guides)
 <br/>
 <table>

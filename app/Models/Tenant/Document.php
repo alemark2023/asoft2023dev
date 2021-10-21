@@ -203,7 +203,9 @@
             'subtotal',
             'total_igv_free',
             'technical_service_id',
-            'pending_amount_detraction',
+            // 'pending_amount_detraction',
+            'total_pending_payment', //usado para detracciones - retenciones
+            'retention',
         ];
 
         protected $casts = [
@@ -354,6 +356,16 @@
         public function setResponseRegularizeShippingAttribute($value)
         {
             $this->attributes['response_regularize_shipping'] = (is_null($value)) ? null : json_encode($value);
+        }
+        
+        public function getRetentionAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+
+        public function setRetentionAttribute($value)
+        {
+            $this->attributes['retention'] = (is_null($value)) ? null : json_encode($value);
         }
 
         public function getAdditionalInformationAttribute($value)
