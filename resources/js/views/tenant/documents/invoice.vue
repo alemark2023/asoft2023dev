@@ -1847,7 +1847,7 @@ export default {
         async prepareDataDetraction(){
 
             this.has_data_detraction = (this.form.detraction) ? true : false
-            
+
             if(this.has_data_detraction){
 
                 let legend_value = (this.form.operation_type_id === '1001') ? 'Operación sujeta a detracción' : 'Operación Sujeta a Detracción - Servicios de Transporte - Carga'
@@ -2013,11 +2013,11 @@ export default {
                 this.form.payment_method_type_id = payment_method_type.id
 
                 let date = moment(this.form.date_of_issue).add(payment_method_type.number_days, 'days').format('YYYY-MM-DD')
-                
+
                 // let date = moment()
                 //     .add(payment_method_type.number_days, 'days')
                 //     .format('YYYY-MM-DD')
-                    
+
                 if (this.form.fee !== undefined) {
                     for (let index = 0; index < this.form.fee.length; index++) {
                         this.form.fee[index].date = date;
@@ -2610,7 +2610,7 @@ export default {
 
             if (this.form.detraction) {
                 // this.form.detraction.amount = (this.form.currency_type_id == 'PEN') ? _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage) / 100), 2) : _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage) / 100), 2)
-                
+
                 if(this.form.currency_type_id == 'PEN'){
 
                     this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage) / 100), 2)
