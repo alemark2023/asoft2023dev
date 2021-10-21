@@ -4,6 +4,7 @@ namespace App\Models\Tenant;
 
 use App\Models\Tenant\GuideFile;
 use App\Models\Tenant\Catalogs\CurrencyType;
+use App\Traits\SellerIdTrait;
 use Illuminate\Support\Collection;
 use Modules\Order\Models\OrderNote;
 use Modules\Sale\Models\SaleOpportunity;
@@ -12,6 +13,8 @@ use Modules\Sale\Models\Contract;
 
 class Quotation extends ModelTenant
 {
+    use SellerIdTrait;
+
     protected $with = ['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments'];
 
     protected $fillable = [
@@ -72,6 +75,14 @@ class Quotation extends ModelTenant
         'total_igv_free',
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function (self $model) {
+            self::adjustSellerIdField($model);
+        });
+
+    }
     protected $casts = [
         'date_of_issue' => 'date',
         // 'date_of_due' => 'date',

@@ -154,7 +154,11 @@ trait ReportTrait
         }
 
         if((int) $seller_id != 0){
-            $data->where('seller_id', $seller_id);
+            $data->where('user_id', $seller_id);
+            // @todo Se debe ajustar el valor de las tablas en seller_id a user_id si esta vacio
+            // antes de poder realizar el filtro
+
+            // $data->where('seller_id', $seller_id);
         }
         if($state_type_id){
              $data->where('state_type_id', $state_type_id);

@@ -39,11 +39,11 @@
                 self::adsjustItemMovementTable($model, 'deleted');
             });
             static::updated(function ($model) {
-                Log::debug(__FILE__."::" .__LINE__ . " esto en updated adsjustItemMovementTable " . $model->id . " / " . get_class($model));
+               // Log::debug(__FILE__."::" .__LINE__ . " esto en updated adsjustItemMovementTable " . $model->id . " / " . get_class($model));
                  self::adsjustItemMovementTable($model, 'updated');
             });
             static::created(function ($model) {
-                Log::debug(__FILE__."::" .__LINE__ . " esto en created adsjustItemMovementTable " . $model->id . " / " . get_class($model));
+                //Log::debug(__FILE__."::" .__LINE__ . " esto en created adsjustItemMovementTable " . $model->id . " / " . get_class($model));
                 self::adsjustItemMovementTable($model, 'created');
             });
             static::saved(function ($model) {
@@ -373,12 +373,14 @@
         public static function LogInfo($linea, $elemento)
         {
 
+            /*
             if (is_object($elemento)) {
                 Log::debug(" \n" . $linea . "\n" . var_export($elemento, true));
             } else {
                 Log::debug(" \n" . $linea . "\n$elemento");
 
             }
+            */
         }
 
     }

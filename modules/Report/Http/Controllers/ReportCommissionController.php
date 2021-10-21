@@ -119,13 +119,17 @@
                     ->whereIn('document_type_id', ['01', '03', '08'])
                     ->whereBetween('date_of_issue', [$date_start, $date_end]);
                 if($seller_id != 0){
-                    $q->where('seller_id', $seller_id);
+                    // @todo #1081
+                    $q->where('user_id', $seller_id);
+                    // $q->where('seller_id', $seller_id);
                 }
             }, 'sale_notes' => function ($z) use ($date_start, $date_end, $seller_id) {
                 $z->whereIn('state_type_id', ['01', '03', '05', '07', '13'])
                     ->whereBetween('date_of_issue', [$date_start, $date_end]);
                 if($seller_id != 0) {
-                    $z->where('seller_id', $seller_id);
+                    // @todo #1081
+                    $z->where('user_id', $seller_id);
+                    // $z->where('seller_id', $seller_id);
                 }
                 }]);
             if ($establishment_id) {
