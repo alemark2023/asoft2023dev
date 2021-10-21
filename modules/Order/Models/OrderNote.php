@@ -14,9 +14,11 @@
     use App\Models\Tenant\SoapType;
     use App\Models\Tenant\StateType;
     use App\Models\Tenant\User;
+    use Carbon\Carbon;
     use Eloquent;
     use Illuminate\Database\Eloquent\Builder;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
+    use Illuminate\Database\Eloquent\Relations\BelongsToMany;
     use Illuminate\Database\Eloquent\Relations\HasMany;
     use Illuminate\Database\Eloquent\Relations\MorphMany;
     use Illuminate\Support\Collection;
@@ -29,6 +31,44 @@
      *
      * @package Modules\Order\Models
      * @mixin ModelTenant
+     * @property int                                                        $id
+     * @property int                                                        $user_id
+     * @property string                                                     $external_id
+     * @property int                                                        $establishment_id
+     * @property string                                                     $soap_type_id
+     * @property string                                                     $state_type_id
+     * @property string                                                     $prefix
+     * @property Carbon                                                     $date_of_issue
+     * @property Carbon                                                     $time_of_issue
+     * @property Carbon|null                                                $date_of_due
+     * @property Carbon|null                                                $delivery_date
+     * @property int                                                        $customer_id
+     * @property string|null                                                $shipping_address
+     * @property string                                                     $currency_type_id
+     * @property string|null                                                $payment_method_type_id
+     * @property float                                                      $exchange_rate_sale
+     * @property float                                                      $total_prepayment
+     * @property float                                                      $total_charge
+     * @property float                                                      $total_discount
+     * @property float                                                      $total_exportation
+     * @property float                                                      $total_free
+     * @property float                                                      $total_taxed
+     * @property float                                                      $total_unaffected
+     * @property float                                                      $total_exonerated
+     * @property float                                                      $total_igv
+     * @property float                                                      $total_igv_free
+     * @property float                                                      $total_base_isc
+     * @property float                                                      $total_isc
+     * @property float                                                      $total_base_other_taxes
+     * @property float                                                      $total_other_taxes
+     * @property float                                                      $total_taxes
+     * @property float                                                      $total_value
+     * @property float                                                      $total
+     * @property string|null                                                $filename
+     * @property string|null                                                $observation
+     * @property Carbon|null                                                $created_at
+     * @property Carbon|null                                                $updated_at
+     * @property int|null                                                   $quotation_id
      * @property CurrencyType                                               $currency_type
      * @property \Illuminate\Database\Eloquent\Collection|Document[]        $documents
      * @property int|null                                                   $documents_count
@@ -133,6 +173,27 @@
             'date_of_due' => 'date',
             'delivery_date' => 'date',
             'quotation_id' => 'int',
+            'user_id' => 'int',
+            'establishment_id' => 'int',
+            'customer_id' => 'int',
+            'exchange_rate_sale' => 'float',
+            'total_prepayment' => 'float',
+            'total_charge' => 'float',
+            'total_discount' => 'float',
+            'total_exportation' => 'float',
+            'total_free' => 'float',
+            'total_taxed' => 'float',
+            'total_unaffected' => 'float',
+            'total_exonerated' => 'float',
+            'total_igv' => 'float',
+            'total_igv_free' => 'float',
+            'total_base_isc' => 'float',
+            'total_isc' => 'float',
+            'total_base_other_taxes' => 'float',
+            'total_other_taxes' => 'float',
+            'total_taxes' => 'float',
+            'total_value' => 'float',
+            'total' => 'float',
         ];
 
         public function getEstablishmentAttribute($value)
@@ -540,7 +601,7 @@
          */
         public function setQuotationId(?int $quotation_id): OrderNote
         {
-            $this->quotation_id = $quotation_id;
+            $this->quotation_id = (int) $quotation_id;
             return $this;
         }
 

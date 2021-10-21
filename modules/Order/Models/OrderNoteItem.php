@@ -18,16 +18,43 @@
      * Modules\Order\Models\OrderNoteItem
      *
      * @package Modules\Order\Models
+     * @property int                $id
+     * @property int                $order_note_id
+     * @property int                $item_id
+     * @property float              $quantity
+     * @property float              $unit_value
+     * @property string             $affectation_igv_type_id
+     * @property float              $total_base_igv
+     * @property float              $percentage_igv
+     * @property float              $total_igv
+     * @property string|null        $system_isc_type_id
+     * @property float              $total_base_isc
+     * @property float              $percentage_isc
+     * @property float              $total_isc
+     * @property float              $total_base_other_taxes
+     * @property float              $percentage_other_taxes
+     * @property float              $total_other_taxes
+     * @property float|null         $total_plastic_bag_taxes
+     * @property float              $total_taxes
+     * @property string             $price_type_id
+     * @property float              $unit_price
+     * @property float              $total_value
+     * @property float              $total_charge
+     * @property float              $total_discount
+     * @property float              $total
+     * @property string|null        $additional_information
+     * @property int|null           $warehouse_id
+     * @property string|null        $name_product_pdf
+     * @property OrderNote          $order_note
+     * @property Warehouse|null     $warehouse
      * @property AffectationIgvType $affectation_igv_type
      * @property mixed              $attributes
      * @property mixed              $charges
      * @property mixed              $discounts
      * @property mixed              $item
-     * @property OrderNote          $order_note
      * @property PriceType          $price_type
      * @property Item               $relation_item
      * @property SystemIscType      $system_isc_type
-     * @property Warehouse          $warehouse
      * @method static Builder|OrderNoteItem newModelQuery()
      * @method static Builder|OrderNoteItem newQuery()
      * @method static Builder|OrderNoteItem query()
@@ -83,7 +110,7 @@
             'warehouse_id',
             'total_plastic_bag_taxes',
             'additional_information',
-            'name_product_pdf'
+            'name_product_pdf',
         ];
 
         public function getItemAttribute($value)
@@ -248,7 +275,7 @@
          */
         public function getTotalPlasticBagTaxes(): float
         {
-            return $this->total_plastic_bag_taxes;
+            return (float)$this->total_plastic_bag_taxes;
         }
 
         /**
@@ -256,9 +283,9 @@
          *
          * @return OrderNoteItem
          */
-        public function setTotalPlasticBagTaxes(float $total_plastic_bag_taxes): OrderNoteItem
+        public function setTotalPlasticBagTaxes(?float $total_plastic_bag_taxes): OrderNoteItem
         {
-            $this->total_plastic_bag_taxes = $total_plastic_bag_taxes;
+            $this->total_plastic_bag_taxes = (float)$total_plastic_bag_taxes;
             return $this;
         }
 
