@@ -246,7 +246,7 @@
         }
 
         /**
-         * @return BelongsTo
+         * @return \Illuminate\Database\Eloquent\Relations\HasOne
          */
         public function generate_document()
         {

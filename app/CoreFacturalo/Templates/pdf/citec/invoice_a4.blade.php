@@ -77,8 +77,25 @@
                     {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
                 </td>
                 {{-- Condicion de pago --}}
-                <td class="align-top desc font-bold text-center">
-                    <strong>CONDICIÓN DE PAGO: </strong>{{ $condition  }}
+                <td class="align-top desc font-bold text-center"
+                    colspan="2"
+                    width="30%"
+                    style="border: 1px solid black">
+                    <table>
+                        <tr>
+                            <td
+                                width="50%"
+                                class="align-top desc font-bold text-left">CONDICIÓN DE PAGO:
+                            </td>
+
+                            <td
+                                width="50%"
+                                class="align-bottom desc text-left">
+                                {{ $condition  }}
+                            </td>
+                        </tr>
+                    </table>
+
                 </td>
                 @if ($document->guides)
                     <td class="font-bold align-top desc">GUIA:</td>
