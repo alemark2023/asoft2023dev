@@ -78,7 +78,17 @@
                 </td>
                 {{-- Condicion de pago --}}
                 <td class="align-top desc font-bold text-center">
-                    <strong>CONDICIÓN DE PAGO: </strong>{{ $condition  }}
+                    <table>
+                        <tr>
+
+                            <td class="align-top desc font-bold">CONDICIÓN DE PAGO:</td>
+
+                        <td class="align-top desc text-center">
+                            {{ $condition  }}
+                        </td>
+                        </tr>
+                    </table>
+
                 </td>
                 @if ($document->guides)
                     <td class="font-bold align-top desc">GUIA:</td>
