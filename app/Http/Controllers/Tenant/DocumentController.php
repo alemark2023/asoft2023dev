@@ -85,7 +85,17 @@ class DocumentController extends Controller
         $import_documents_second = config('tenant.import_documents_second_format');
         $configuration = Configuration::getPublicConfig();
 
-        return view('tenant.documents.index', compact('is_client','import_documents','import_documents_second','configuration'));
+	// apiperu
+	// se valida cual api usar para validacion desde el listado de comprobantes
+        $view_apiperudev_validator_cpe = env('APIPERUDEV_VALIDATOR_CPE', true);
+        $view_validator_cpe = env('VALIDATOR_CPE', false);
+
+        return view('tenant.documents.index',
+            compact('is_client','import_documents',
+                'import_documents_second',
+                'configuration',
+                'view_apiperudev_validator_cpe',
+                'view_validator_cpe'));
     }
 
     public function columns()

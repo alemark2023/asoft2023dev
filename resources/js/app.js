@@ -294,7 +294,8 @@ Vue.component('tenant-documentary-requirements', require('@viewsModuleDocumentar
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));
 
-Vue.component('x-input-service', require('./components/InputService.vue'));
+Vue.component('x-input-service', require('../../modules/ApiPeruDev/Resources/assets/js/components/InputService.vue')); // apiperu - porque cambiar el input si tiene el mismo contenido?
+// Vue.component('x-input-service', require('./components/InputService.vue'));
 
 Vue.component('tenant-items-ecommerce-index', require('./views/tenant/items_ecommerce/index.vue'));
 Vue.component('tenant-ecommerce-cart', require('./views/tenant/ecommerce/cart_dropdown.vue'));
