@@ -343,7 +343,9 @@
                 if(isset($params['sellers'])) {
                     $sellers = json_decode($params['sellers']);
                     if (count($sellers) > 0) {
-                        $q->whereIn('seller_id', $sellers);
+                        // @todo #1081
+                        $q->whereIn('user_id', $sellers);
+                        // $q->whereIn('seller_id', $sellers);
                     }
                 }
             })
