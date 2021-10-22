@@ -19,6 +19,7 @@ use Hyn\Tenancy\Environment;
 use Hyn\Tenancy\Models\Hostname;
 use Hyn\Tenancy\Models\Website;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
@@ -236,37 +237,50 @@ class ClientController extends Controller
 
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return array
+     */
     public function update(Request $request)
     {
-        $smtp_host = ($request->has('smtp_host'))?$request->smtp_host:null;
-        $smtp_password = ($request->has('smtp_password'))?$request->smtp_password:null;
-        $smtp_port = ($request->has('smtp_port'))?$request->smtp_port:null;
-        $smtp_user = ($request->has('smtp_user'))?$request->smtp_user:null;
-        $smtp_encryption = ($request->has('smtp_encryption'))?$request->smtp_encryption:null;
-        try
-        {
+        /**
+         * @var Collection $valueModules
+         * @var Collection $valueLevels
+         */
+        $user_id = 1;
+        $array_modules = [];
+        $array_levels = [];
+
+
+        $smtp_host = ($request->has('smtp_host')) ? $request->smtp_host : null;
+        $smtp_password = ($request->has('smtp_password')) ? $request->smtp_password : null;
+        $smtp_port = ($request->has('smtp_port')) ? $request->smtp_port : null;
+        $smtp_user = ($request->has('smtp_user')) ? $request->smtp_user : null;
+        $smtp_encryption = ($request->has('smtp_encryption')) ? $request->smtp_encryption : null;
+        try {
 
             $temp_path = $request->input('temp_path');
 
             $name_certificate = $request->input('certificate');
 
-            if($temp_path){
+            if ($temp_path) {
 
                 try {
                     $password = $request->input('password_certificate');
                     $pfx = file_get_contents($temp_path);
                     $pem = GenerateCertificate::typePEM($pfx, $password);
-                    $name = 'certificate_'.$request->input('number').'.pem';
-                    if(!file_exists(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'))) {
-                        mkdir(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'));
+                    $name = 'certificate_' . $request->input('number') . '.pem';
+                    if (!file_exists(storage_path('app' . DIRECTORY_SEPARATOR . 'certificates'))) {
+                        mkdir(storage_path('app' . DIRECTORY_SEPARATOR . 'certificates'));
                     }
-                    file_put_contents(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'.DIRECTORY_SEPARATOR.$name), $pem);
+                    file_put_contents(storage_path('app' . DIRECTORY_SEPARATOR . 'certificates' . DIRECTORY_SEPARATOR . $name), $pem);
                     $name_certificate = $name;
 
                 } catch (Exception $e) {
                     return [
                         'success' => false,
-                        'message' =>  $e->getMessage()
+                        'message' => $e->getMessage()
                     ];
                 }
             }
@@ -278,9 +292,9 @@ class ClientController extends Controller
                 ->setSmtpHost($smtp_host)
                 ->setSmtpPort($smtp_port)
                 ->setSmtpUser($smtp_user)
-            //    ->setSmtpPassword($smtp_password)
+                //    ->setSmtpPassword($smtp_password)
                 ->setSmtpEncryption($smtp_encryption);
-            if(!empty($smtp_password)){
+            if (!empty($smtp_password)) {
                 $client->setSmtpPassword($smtp_password);
             }
             $client->plan_id = $request->plan_id;
@@ -293,60 +307,100 @@ class ClientController extends Controller
             $clientData = [
                 'plan' => json_encode($plan),
                 'config_system_env' => $request->config_system_env,
-                'limit_documents' =>  $plan->limit_documents,
-                'smtp_host'=>$client->smtp_host,
-                'smtp_port'=>$client->smtp_port,
-                'smtp_user'=>$client->smtp_user,
-                'smtp_password'=>$client->smtp_password,
-                'smtp_encryption'=>$client->smtp_encryption,
+                'limit_documents' => $plan->limit_documents,
+                'smtp_host' => $client->smtp_host,
+                'smtp_port' => $client->smtp_port,
+                'smtp_user' => $client->smtp_user,
+                'smtp_password' => $client->smtp_password,
+                'smtp_encryption' => $client->smtp_encryption,
             ];
-            if(empty($client->smtp_password)) unset($clientData['smtp_password']);
-            DB::connection('tenant')->table('configurations')->where('id', 1)
+            if (empty($client->smtp_password)) unset($clientData['smtp_password']);
+            DB::connection('tenant')
+                ->table('configurations')
+                ->where('id', 1)
                 ->update($clientData);
 
-            DB::connection('tenant')->table('companies')->where('id', 1)->update([
-                'soap_type_id' => $request->soap_type_id,
-                'soap_send_id'=> $request->soap_send_id,
-                'soap_username'=> $request->soap_username,
-                'soap_password'=> $request->soap_password,
-                'soap_url'=> $request->soap_url,
-                'certificate' => $name_certificate
-            ]);
+            DB::connection('tenant')
+                ->table('companies')
+                ->where('id', 1)
+                ->update([
+                    'soap_type_id' => $request->soap_type_id,
+                    'soap_send_id' => $request->soap_send_id,
+                    'soap_username' => $request->soap_username,
+                    'soap_password' => $request->soap_password,
+                    'soap_url' => $request->soap_url,
+                    'certificate' => $name_certificate
+                ]);
 
 
             //modules
-            DB::connection('tenant')->table('module_user')->where('user_id', 1)->delete();
-            DB::connection('tenant')->table('module_level_user')->where('user_id', 1)->delete();
+            DB::connection('tenant')
+                ->table('module_user')
+                ->where('user_id', $user_id)
+                ->delete();
+            DB::connection('tenant')
+                ->table('module_level_user')
+                ->where('user_id', $user_id)
+                ->delete();
 
-            $array_modules = [];
-            $array_levels = [];
-            $user_id = 1;
-            foreach ($request->modules as $module) {
-                array_push($array_modules, [
-                    'module_id' => $module,
-                    'user_id' => $user_id
-                ]);
-            }
-            foreach ($request->levels as $level) {
-                array_push($array_levels, [
-                    'module_level_id' => $level,
-                    'user_id' => $user_id
-                ]);
-            }
-            DB::connection('tenant')->table('module_user')->insert($array_modules);
-            DB::connection('tenant')->table('module_level_user')->insert($array_levels);
+            // Obtenemos los value de las tablas
+            $valueModules = DB::connection('system')
+                ->table('modules')
+                ->wherein('id', $request->modules)
+                ->get()
+                ->pluck('value');
+            $valueLevels = DB::connection('system')
+                ->table('module_levels')
+                ->wherein('id', $request->levels)
+                ->get()
+                ->pluck('value');
+
+            // Obtenemos el modelo del modulo, asi se obtendrá el id del elemento
+            DB::connection('tenant')
+                ->table('modules')
+                ->wherein('value', $valueModules)
+                ->select(
+                    'id as module_id',
+                    DB::raw(" CONCAT($user_id) as user_id")
+                )
+                ->get()
+                ->transform(function($module)use(&$array_modules){
+                    $array_modules[] = (array)$module;
+                });
+            DB::connection('tenant')
+                ->table('module_levels')
+                ->wherein('value', $valueLevels)
+                ->select(
+                    'id as module_level_id',
+                    DB::raw(" CONCAT($user_id) as user_id")
+                )
+                ->get()
+                ->transform(function($level)use(&$array_levels){
+                    $array_levels[] = (array)$level;
+                });
+
+            // Se actualiza las tablas de permisos
+            DB::connection('tenant')
+                ->table('module_user')
+                ->insert($array_modules);
+            DB::connection('tenant')
+                ->table('module_level_user')
+                ->insert($array_levels);
 
             // Actualiza el modulo de farmacia.
-            $config = (array)DB::connection('tenant')->table('configurations')->first();
+            $config = (array)DB::connection('tenant')
+                ->table('configurations')
+                ->first();
             $config['is_pharmacy'] = (self::EnablePharmacy($user_id)) ? 1 : 0;
-            DB::connection('tenant')->table('configurations')->update($config);
+            DB::connection('tenant')
+                ->table('configurations')
+                ->update($config);
             return [
                 'success' => true,
                 'message' => 'Cliente Actualizado satisfactoriamente'
             ];
 
-        }catch(Exception $e)
-        {
+        } catch (Exception $e) {
             return [
                 'success' => false,
                 'message' => $e->getMessage()
