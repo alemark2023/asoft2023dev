@@ -531,6 +531,7 @@
                     let total_val = 0
                     let total = 0
                     let percentage_igv = 18
+                    let nombre_producto_pdf = item.promotion_id ? item.description : null
 
                     if (item.sale_affectation_igv_type_id === '10') {
 
@@ -561,7 +562,9 @@
                             "total_igv": total_igv,
                             "total_impuestos": total_igv,
                             "total_valor_item": total_val,
-                            "total_item": total
+                            "total_item": total,
+                            "actualizar_descripcion": false,
+                            "nombre_producto_pdf": nombre_producto_pdf
                         }
 
                     }
@@ -595,7 +598,9 @@
                             "total_igv": 0,
                             "total_impuestos": 0,
                             "total_valor_item": total_val,
-                            "total_item": total
+                            "total_item": total,
+                            "actualizar_descripcion": false,
+                            "nombre_producto_pdf": nombre_producto_pdf
                         }
 
                     }
