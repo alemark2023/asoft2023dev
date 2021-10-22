@@ -383,7 +383,6 @@ class InventoryValuedKardex
                 }
 
                 $factor = -1;
-                // dd($operation_type, $record_item->dispatch);
 
             }
             // dd($document);
