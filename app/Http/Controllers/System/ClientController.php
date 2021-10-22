@@ -146,18 +146,46 @@ class ClientController extends Controller
         $tenancy = app(Environment::class);
         $tenancy->tenant($client->hostname->website);
 
-        $modules = DB::connection('tenant')->table('modules')->where('order_menu', '<', 14)->select('id');
-        $apps = DB::connection('tenant')->table('modules')->where('order_menu', '>', 13)->select('id');
+        $modules = DB::connection('tenant')
+            ->table('modules')
+            ->where('order_menu', '<', 14)
+            ->select('id');
+        // Apps
+        $apps = DB::connection('tenant')
+            ->table('modules')
+            ->where('order_menu', '>', 13)
+            ->select('id');
 
-        $client->modules = DB::connection('tenant')->table('module_user')->where('user_id', 1)->whereIn('module_id', $modules)->get()->pluck('module_id')->toArray();
-        $client->apps = DB::connection('tenant')->table('module_user')->where('user_id', 1)->whereIn('module_id', $apps)->get()->pluck('module_id')->toArray();
-        $client->levels = DB::connection('tenant')->table('module_level_user')->where('user_id', 1)->get()->pluck('module_level_id')->toArray();
+        $client->modules = DB::connection('tenant')
+            ->table('module_user')
+            ->where('user_id', 1)
+            ->whereIn('module_id', $modules)
+            ->get()
+            ->pluck('module_id')
+            ->toArray();
+        $client->apps = DB::connection('tenant')
+            ->table('module_user')
+            ->where('user_id', 1)
+            ->whereIn('module_id', $apps)
+            ->get()
+            ->pluck('module_id')
+            ->toArray();
+        $client->levels = DB::connection('tenant')
+            ->table('module_level_user')
+            ->where('user_id', 1)
+            ->get()
+            ->pluck('module_level_id')
+            ->toArray();
 
-        $config =  DB::connection('tenant')->table('configurations')->first();
+        $config = DB::connection('tenant')
+            ->table('configurations')
+            ->first();
 
         $client->config_system_env = $config->config_system_env;
 
-        $company =  DB::connection('tenant')->table('companies')->first();
+        $company = DB::connection('tenant')
+            ->table('companies')
+            ->first();
 
         $client->soap_send_id = $company->soap_send_id;
         $client->soap_type_id = $company->soap_type_id;
