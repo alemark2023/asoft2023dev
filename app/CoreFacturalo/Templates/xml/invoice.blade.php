@@ -459,19 +459,19 @@
         <cac:Delivery>
             <cac:DeliveryTerms>
                 <cbc:ID>01</cbc:ID>
-                <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{$document->detraction->reference_value_service}}</cbc:Amount>
+                <cbc:Amount currencyID="PEN">{{$document->detraction->reference_value_service}}</cbc:Amount>
             </cac:DeliveryTerms>
         </cac:Delivery>
         <cac:Delivery>
             <cac:DeliveryTerms>
                 <cbc:ID>02</cbc:ID>
-                <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{$document->detraction->reference_value_effective_load}}</cbc:Amount>
+                <cbc:Amount currencyID="PEN">{{$document->detraction->reference_value_effective_load}}</cbc:Amount>
             </cac:DeliveryTerms>
         </cac:Delivery>
         <cac:Delivery>
             <cac:DeliveryTerms>
                 <cbc:ID>03</cbc:ID>
-                <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{$document->detraction->reference_value_payload}}</cbc:Amount>
+                <cbc:Amount currencyID="PEN">{{$document->detraction->reference_value_payload}}</cbc:Amount>
             </cac:DeliveryTerms>
         </cac:Delivery>
         <cac:Delivery>
