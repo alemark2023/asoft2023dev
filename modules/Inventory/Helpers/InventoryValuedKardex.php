@@ -108,6 +108,7 @@ class InventoryValuedKardex
         
         $all_record_items = ($purchase_items->merge($dispatch_items))->merge($document_items);
 
+        // dd(($all_record_items));
         // dd(self::getRecordsFromItems($all_record_items));
 
         return [
@@ -336,7 +337,10 @@ class InventoryValuedKardex
 
         }else if($record_item instanceof DispatchItem){
 
-            $type = ($record_item->dispatch->transfer_reason_type_id == '01') ? 'output' : 'input';
+
+            $type = (in_array($record_item->dispatch->transfer_reason_type_id, ['01', '04', '13'])) ? 'output' : 'input';
+
+            // $type = ($record_item->dispatch->transfer_reason_type_id == '01') ? 'output' : 'input';
             $document = $record_item->dispatch;
 
             $input_quantity = null;
@@ -353,6 +357,7 @@ class InventoryValuedKardex
                 $input_unit_price =  $record_item->relation_item->purchase_unit_price;
                 $input_total = $record_item->quantity * $record_item->relation_item->purchase_unit_price;
                 $operation_type = 'COMPRA';
+                $operation_type_code = $record_item->dispatch->transfer_reason_type_id;
                 $factor = 1;
 
             }else{
@@ -360,8 +365,25 @@ class InventoryValuedKardex
                 $output_quantity =  $record_item->quantity;
                 $output_unit_price =  $record_item->relation_item->sale_unit_price;
                 $output_total =  $record_item->quantity * $record_item->relation_item->sale_unit_price;
-                $operation_type = 'VENTA';
+
+                $operation_type = null;
+                $operation_type_code = null;
+
+                if($document->transfer_reason_type_id == '04'){
+                    $operation_type = $document->transfer_reason_type->description;
+                    $operation_type_code = '11';
+
+                }elseif($document->transfer_reason_type_id == '13'){
+                    $operation_type = $document->transfer_reason_description ?? $document->transfer_reason_type->description;
+                    $operation_type_code = '99';
+
+                }else{
+                    $operation_type = 'VENTA';
+                    $operation_type_code = $record_item->dispatch->transfer_reason_type_id;
+                }
+
                 $factor = -1;
+                // dd($operation_type, $record_item->dispatch);
 
             }
             // dd($document);
@@ -375,8 +397,8 @@ class InventoryValuedKardex
                 'series' => $document->series,
                 'number' => $document->number,
                 'operation_type' => $operation_type,
-                'operation_type_code' => $record_item->dispatch->transfer_reason_type_id,
-
+                'operation_type_code' => $operation_type_code,
+                // 'operation_type_code' => $record_item->dispatch->transfer_reason_type_id,
                 'input_quantity' =>  $input_quantity,
                 'input_unit_price' => $input_unit_price,
                 'input_total' => $input_total,

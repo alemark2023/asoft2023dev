@@ -459,7 +459,7 @@
          */
         public function scopeWhereValuedKardexFormatSunat($query, $params)
         {
-            return $query->whereIn('transfer_reason_type_id', ['01', '02'])
+            return $query->whereIn('transfer_reason_type_id', ['01', '02', '04', '13'])
                 ->whereStateTypeAccepted()
                 ->whereTypeUser()
                 ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
