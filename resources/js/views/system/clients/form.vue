@@ -743,7 +743,6 @@ export default {
                         preAppSelecteds.push(c.id);
                     });
                 });
-
                 setTimeout(() => {
                     this.$refs.tree.setCheckedKeys(preSelecteds);
                     this.$refs.Apptree.setCheckedKeys(preAppSelecteds);
@@ -774,6 +773,7 @@ export default {
                                 }
                             })
                         });
+
                         this.apps.map(m => {
                             if (preSelectedsApps.includes(m.id)) {
                                 preAppSelecteds.push(m.id);
@@ -785,6 +785,8 @@ export default {
                                 }
                             })
                         });
+
+
                         setTimeout(() => {
                             this.$refs.tree.setCheckedKeys(preSelecteds);
                             this.$refs.Apptree.setCheckedKeys(preAppSelecteds);
