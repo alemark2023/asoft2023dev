@@ -189,7 +189,8 @@ class DocumentUpdateInput
 					'charges'                 => self::charges($row),
 					'warehouse_id'            => Functions::valueKeyInArray($row, 'warehouse_id'),
 					'additional_information'  => Functions::valueKeyInArray($row, 'additional_information'),
-					'name_product_pdf'        => Functions::valueKeyInArray($row, 'name_product_pdf')
+					'name_product_pdf'        => Functions::valueKeyInArray($row, 'name_product_pdf'),
+					'update_description'      => Functions::valueKeyInArray($row, 'update_description', false)
 				];
 			}
 

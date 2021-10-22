@@ -127,6 +127,8 @@ class DocumentTransform
                     'charges' => self::charges($row),
                     'additional_information' => Functions::valueKeyInArray($row, 'informacion_adicional'),
                     'lots' => Functions::valueKeyInArray($row, 'lots', []),
+                    'update_description' => Functions::valueKeyInArray($row, 'actualizar_descripcion', true), //variable para determinar si se actualiza la descripcion del item cuando se envia desde api
+                    'name_product_pdf' => Functions::valueKeyInArray($row, 'nombre_producto_pdf'),
                 ];
             }
 
