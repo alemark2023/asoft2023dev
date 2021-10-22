@@ -23,6 +23,8 @@ use App\Http\Controllers\Tenant\Api\ServiceController;
 use Illuminate\Support\Facades\Validator;
 use Modules\Inventory\Models\InventoryConfiguration;
 use App\Http\Resources\Tenant\OrderCollection;
+use App\Models\Tenant\Promotion;
+
 
 class EcommerceController extends Controller
 {
@@ -51,17 +53,27 @@ class EcommerceController extends Controller
       return view('ecommerce::index', ['dataPaginate' => $dataPaginate, 'configuration' => $configuration->stock_control]);
     }
 
-    public function item($id)
+    public function getDescriptionWithPromotion($item, $promotion_id)
+    {
+        $promotion = Promotion::findOrFail($promotion_id);
+
+        return "{$item->description} - {$promotion->name}";
+    }
+
+    public function item($id, $promotion_id = null)
     {
         $row = Item::find($id);
         $exchange_rate_sale = $this->getExchangeRateSale();
         $sale_unit_price = ($row->has_igv) ? $row->sale_unit_price : $row->sale_unit_price*1.18;
 
+        $description = $promotion_id ? $this->getDescriptionWithPromotion($row, $promotion_id) : $row->description;
+
         $record = (object)[
             'id' => $row->id,
             'internal_id' => $row->internal_id,
             'unit_type_id' => $row->unit_type_id,
-            'description' => $row->description,
+            'description' => $description,
+            // 'description' => $row->description,
             'technical_specifications' => $row->technical_specifications,
             'name' => $row->name,
             'second_name' => $row->second_name,
@@ -76,7 +88,8 @@ class EcommerceController extends Controller
             'image_small' => $row->image_small,
             'tags' => $row->tags->pluck('tag_id')->toArray(),
             'images' => $row->images,
-            'attributes' => $row->attributes ? $row->attributes : []
+            'attributes' => $row->attributes ? $row->attributes : [],
+            'promotion_id' => $promotion_id,
         ];
 
         return view('ecommerce::items.record', compact('record'));

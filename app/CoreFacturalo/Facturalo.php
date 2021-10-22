@@ -372,6 +372,7 @@ class Facturalo
             $quantity_rows     = count($this->document->items) + $was_deducted_prepayment;
             $document_payments     = count($this->document->payments);
             $document_transport     = ($this->document->transport) ? 30 : 0;
+            $document_retention     = ($this->document->retention) ? 10 : 0;
 
             $extra_by_item_additional_information = 0;
             $extra_by_item_description = 0;
@@ -433,7 +434,8 @@ class Facturalo
                     $quotation_id+
                     $extra_by_item_additional_information+
                     $height_legend+
-                    $document_transport
+                    $document_transport+
+                    $document_retention
                 ],
                 'margin_top' => 0,
                 'margin_right' => 1,

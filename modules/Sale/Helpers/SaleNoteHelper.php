@@ -75,6 +75,9 @@ class SaleNoteHelper
                 
                 $record_items = Item::where('internal_id', $row['codigo_interno'])->take(1)->get(); //necesario para transformar la coleccion y preparar el item
                 $data_item = (SearchItemController::TransformToModalSaleNote($record_items))->first();
+
+                //Se usa cuando se genera nv desde ecommerce - producto promoción
+                $name_product_pdf = isset($row['nombre_producto_pdf']) ? ($row['nombre_producto_pdf'] ?? null) : null;
                 
                 $items[] = [
                     'item_id' => $data_item['id'],
@@ -108,17 +111,17 @@ class SaleNoteHelper
                     'percentage_other_taxes' => 0,
                     'total_other_taxes' => 0,
                     'total_plastic_bag_taxes' => 0,
-                    'input_unit_price_value' => 100,
+                    'input_unit_price_value' => 0,
                     'total_discount' => 0,
                     'total_charge' => 0,
                     'attributes' => [],
                     'charges' => [],
                     'discounts' => [],
                     'warehouse_id' => null,
-                    'name_product_pdf' => '',
                     'record_id' => null,
                     'IdLoteSelected' => null,
-                    'document_item_id' => null
+                    'document_item_id' => null,
+                    'name_product_pdf' => $name_product_pdf,
                 ];
             }
 

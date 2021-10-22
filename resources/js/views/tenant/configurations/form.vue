@@ -216,6 +216,35 @@
                                                 v-text="errors.currency_type_id[0]"></small>
                                         </div>
                                     </div>
+
+                                    
+                                    <div v-if="typeUser != 'integrator'"
+                                         class="col-md-4 mt-4">
+                                        <label class="control-label">
+                                            Porcentaje retención IGV
+                                            
+                                            <el-tooltip
+                                                class="item"
+                                                content="Disponible Nuevo CPE"
+                                                effect="dark"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+
+                                        </label>
+                                        <div :class="{'has-danger': errors.igv_retention_percentage}"
+                                             class="form-group">
+                                            <el-input-number v-model="form.igv_retention_percentage"
+                                                             :min="0.01"
+                                                             :max="999"
+                                                             @change="submit"></el-input-number>
+                                            <small v-if="errors.igv_retention_percentage"
+                                                   class="form-control-feedback"
+                                                   v-text="errors.igv_retention_percentage[0]"></small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2"></div>
+
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3"

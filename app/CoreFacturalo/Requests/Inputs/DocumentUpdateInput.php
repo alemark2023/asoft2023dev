@@ -108,6 +108,7 @@ class DocumentUpdateInput
 			'related'                   => self::related($inputs),
 			'perception'                => self::perception($inputs),
 			'detraction'                => self::detraction($inputs),
+            'retention' 				=> self::retention($inputs),
 			'invoice'                   => $invoice,
 			'note'                      => $note,
 			'hotel'                     => self::hotel($inputs),
@@ -188,7 +189,8 @@ class DocumentUpdateInput
 					'charges'                 => self::charges($row),
 					'warehouse_id'            => Functions::valueKeyInArray($row, 'warehouse_id'),
 					'additional_information'  => Functions::valueKeyInArray($row, 'additional_information'),
-					'name_product_pdf'        => Functions::valueKeyInArray($row, 'name_product_pdf')
+					'name_product_pdf'        => Functions::valueKeyInArray($row, 'name_product_pdf'),
+					'update_description'      => Functions::valueKeyInArray($row, 'update_description', false)
 				];
 			}
 
@@ -524,4 +526,31 @@ class DocumentUpdateInput
 			],
 		];
 	}
+
+	
+    private static function retention($inputs)
+    {
+
+        if (array_key_exists('retention', $inputs)) {
+
+            if ($inputs['retention']) {
+
+                $retention = $inputs['retention'];
+                $code = $retention['code'];
+                $percentage = $retention['percentage'];
+                $amount = $retention['amount'];
+                $base = $retention['base'];
+
+                return [
+                    'code' => $code,
+                    'percentage' => $percentage,
+                    'amount' => $amount,
+                    'base' => $base,
+                ];
+            }
+        }
+
+        return null;
+    }
+	
 }

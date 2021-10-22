@@ -49,12 +49,14 @@ class DocumentTransform
             'total_value' => Functions::valueKeyInArray($totals, 'total_valor'),
             'subtotal' => (Functions::valueKeyInArray($totals, 'subtotal_venta')) ? $totals['subtotal_venta'] : $totals['total_venta'],
             'total' => Functions::valueKeyInArray($totals, 'total_venta'),
-            'pending_amount_detraction' => Functions::valueKeyInArray($totals, 'total_pendiente_detraccion'),
+            'total_pending_payment' => Functions::valueKeyInArray($totals, 'total_pendiente_pago'),
+            // 'pending_amount_detraction' => Functions::valueKeyInArray($totals, 'total_pendiente_detraccion'),
             'has_prepayment' => Functions::valueKeyInArray($inputs, 'pago_anticipado',0),
             'items' => self::items($inputs),
             'charges' => self::charges($inputs),
             'discounts' => self::discounts($inputs),
             'detraction' => self::detraction($inputs),
+            'retention' => self::retention($inputs),
             'perception' => self::perception($inputs),
             'prepayments' => self::prepayments($inputs),
             'guides' => self::guides($inputs),
@@ -125,6 +127,8 @@ class DocumentTransform
                     'charges' => self::charges($row),
                     'additional_information' => Functions::valueKeyInArray($row, 'informacion_adicional'),
                     'lots' => Functions::valueKeyInArray($row, 'lots', []),
+                    'update_description' => Functions::valueKeyInArray($row, 'actualizar_descripcion', true), //variable para determinar si se actualiza la descripcion del item cuando se envia desde api
+                    'name_product_pdf' => Functions::valueKeyInArray($row, 'nombre_producto_pdf'),
                 ];
             }
 
@@ -248,6 +252,26 @@ class DocumentTransform
         }
         return null;
     }
+    
+    private static function retention($inputs)
+    {
+        // dd($inputs);
+        if(key_exists('retencion', $inputs)) {
+
+            $retention = $inputs['retencion'];
+
+            return [
+                'code' => $retention['codigo'],
+                'percentage' => $retention['porcentaje'],
+                'amount' => $retention['monto'],
+                'base' => $retention['base'],
+            ];
+
+        }
+
+        return null;
+    }
+    
 
     private static function prepayments($inputs)
     {

@@ -246,7 +246,7 @@
         }
 
         /**
-         * @return BelongsTo
+         * @return \Illuminate\Database\Eloquent\Relations\HasOne
          */
         public function generate_document()
         {
@@ -302,6 +302,10 @@
         }
 
         /**
+         * Se usa en la relacion con el inventario kardex en modules/Inventory/Traits/InventoryTrait.php.
+         * Tambien se debe tener en cuenta modules/Inventory/Providers/InventoryKardexServiceProvider.php y
+         * app/Providers/KardexServiceProvider.php para la correcta gestion de kardex
+         *
          * @return MorphMany
          */
         public function inventory_kardex()
@@ -455,7 +459,7 @@
          */
         public function scopeWhereValuedKardexFormatSunat($query, $params)
         {
-            return $query->whereIn('transfer_reason_type_id', ['01', '02'])
+            return $query->whereIn('transfer_reason_type_id', ['01', '02', '04', '13'])
                 ->whereStateTypeAccepted()
                 ->whereTypeUser()
                 ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);

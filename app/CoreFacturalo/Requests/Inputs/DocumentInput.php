@@ -120,6 +120,7 @@ class DocumentInput
             'related' => self::related($inputs),
             'perception' => self::perception($inputs),
             'detraction' => self::detraction($inputs),
+            'retention' => self::retention($inputs),
             'invoice' => $invoice,
             'note' => $note,
             'hotel' => self::hotel($inputs),
@@ -139,7 +140,8 @@ class DocumentInput
             'payment_condition_id' => key_exists('payment_condition_id', $inputs) ? $inputs['payment_condition_id'] : '01',
             'fee' => Functions::valueKeyInArray($inputs, 'fee', []),
             'is_editable' => true,
-            'pending_amount_detraction' => Functions::valueKeyInArray($inputs, 'pending_amount_detraction', 0),
+            'total_pending_payment' => Functions::valueKeyInArray($inputs, 'total_pending_payment', 0),
+            // 'pending_amount_detraction' => Functions::valueKeyInArray($inputs, 'pending_amount_detraction', 0),
         ];
     }
 
@@ -197,7 +199,8 @@ class DocumentInput
                     'charges' => self::charges($row),
                     'warehouse_id' => Functions::valueKeyInArray($row, 'warehouse_id'),
                     'additional_information' => Functions::valueKeyInArray($row, 'additional_information'),
-                    'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf')
+                    'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf'),
+                    'update_description' => Functions::valueKeyInArray($row, 'update_description', false),
                 ];
                 Item::SaveExtraDataToRequest($arayItem,$row);
                 $items[] = $arayItem;
@@ -381,6 +384,31 @@ class DocumentInput
                 ];
             }
         }
+        return null;
+    }
+    
+    private static function retention($inputs)
+    {
+
+        if (array_key_exists('retention', $inputs)) {
+
+            if ($inputs['retention']) {
+
+                $retention = $inputs['retention'];
+                $code = $retention['code'];
+                $percentage = $retention['percentage'];
+                $amount = $retention['amount'];
+                $base = $retention['base'];
+
+                return [
+                    'code' => $code,
+                    'percentage' => $percentage,
+                    'amount' => $amount,
+                    'base' => $base,
+                ];
+            }
+        }
+
         return null;
     }
 

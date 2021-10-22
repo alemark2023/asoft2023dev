@@ -10,6 +10,14 @@ use Illuminate\Database\Eloquent\Builder;
  *
  * @package App\Models\Tenant
  * @mixin ModelTenant
+ * @property \App\Models\Tenant\Dispatch $dispatch
+ * @property mixed $item
+ * property \App\Models\Tenant\Item $relation_item
+ * @method static Builder|DispatchItem joinDispatch()
+ * @method static Builder|DispatchItem joinItem()
+ * @method static Builder|DispatchItem newModelQuery()
+ * @method static Builder|DispatchItem newQuery()
+ * @method static Builder|DispatchItem query()
  */
 class DispatchItem extends ModelTenant
 {

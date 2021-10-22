@@ -91,9 +91,14 @@ class Functions
 
         }else{
             
-            $item->update([
-                'description' => $inputs['description'],
-            ]);
+            $update_description = isset($inputs['update_description']) ? $inputs['update_description'] : false;
+
+            if($update_description)
+            {
+                $item->update([
+                    'description' => $inputs['description'],
+                ]);
+            }
             
         }
 

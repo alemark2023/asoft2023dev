@@ -23,6 +23,7 @@ class DocumentController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $fact = DB::connection('tenant')->transaction(function () use ($request) {
             $facturalo = new Facturalo();
             $facturalo->save($request->all());

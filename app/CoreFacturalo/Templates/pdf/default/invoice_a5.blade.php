@@ -196,17 +196,19 @@
 @endif
 
 @if ($document->reference_guides)
-<br/>
-<strong>Guias de remisión</strong>
-<table>
-    @foreach($document->reference_guides as $guide)
-        <tr>
-            <td>{{ $guide->series }}</td>
-            <td>-</td>
-            <td>{{ $guide->number }}</td>
-        </tr>
-    @endforeach
-</table>
+    @if (count($document->reference_guides) > 0)
+    <br/>
+    <strong>Guias de remisión</strong>
+    <table>
+        @foreach($document->reference_guides as $guide)
+            <tr>
+                <td>{{ $guide->series }}</td>
+                <td>-</td>
+                <td>{{ $guide->number }}</td>
+            </tr>
+        @endforeach
+    </table>
+    @endif
 @endif
 
 
@@ -513,6 +515,16 @@
                     </p>
                 @endforeach
             @endif
+
+            @if ($document->retention)
+                <p><strong>Información de la retención</strong></p>
+                <p>
+                    Base imponible: {{ $document->currency_type->symbol}} {{ $document->retention->base }} / 
+                    Porcentaje: {{ $document->retention->percentage * 100 }}% /
+                    Monto: {{ $document->currency_type->symbol}} {{ $document->retention->amount }}
+                </p>
+            @endif
+
         </td>
         <td width="35%" class="text-right">
             <img src="data:image/png;base64, {{ $document->qr }}" style="margin-right: -10px;" width="16%"/>
