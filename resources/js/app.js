@@ -338,6 +338,9 @@ Vue.component('tenant-login-page', require('./views/tenant/login/index.vue'))
 /** Modulo DIGEMID **/
 Vue.component('tenant-digemid-index', require('../../modules/Digemid/Resources/assets/js/view/index.vue'));
 
+/** Modulo Suscripcion **/
+Vue.component('tenant-suscription-client-index', require('../../modules/Suscription/Resources/assets/js/clients/index.vue'));
+
 import moment from 'moment';
 
 Vue.mixin({
