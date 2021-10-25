@@ -201,6 +201,9 @@ export default {
     setWarehouses(state, warehouses) {
         state.warehouses = warehouses
     },
+    setResource(state, resource) {
+        state.resource = resource
+    },
     sethasGlobalIgv(state, hasGlobalIgv) {
         if(hasGlobalIgv === undefined) hasGlobalIgv = false;
         state.hasGlobalIgv = hasGlobalIgv

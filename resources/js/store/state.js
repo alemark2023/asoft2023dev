@@ -2,6 +2,7 @@ export default {
     deb: {},
     userType: '',
     showColorDialog: false,
+    resource: '',
     hasGlobalIgv: false,
     loading_submit: false,
     color: {},
