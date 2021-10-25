@@ -15,23 +15,8 @@
                             :class="{'has-danger': errors.number}"
                             class="form-group">
                             <label class="control-label">RUC</label>
-<<<<<<< HEAD
                             <!-- <el-input :disabled="form.is_update" v-model="form.number" :maxlength="11" dusk="number">
                                 <el-button :disabled="form.is_update" type="primary" slot="append" :loading="loading_search" icon="el-icon-search" @click.prevent="searchSunat">
-=======
-                            <el-input
-                                v-model="form.number"
-                                :disabled="form.is_update"
-                                :maxlength="11"
-                                dusk="number">
-                                <el-button
-                                    slot="append"
-                                    :disabled="form.is_update"
-                                    :loading="loading_search"
-                                    icon="el-icon-search"
-                                    type="primary"
-                                    @click.prevent="searchSunat">
->>>>>>> afd448b9cc3da166c5873d08c8a72cbd9f33b9e8
                                     SUNAT
                                 </el-button>
                             </el-input> -->
@@ -890,7 +875,10 @@ export default {
             } else {
                 this.$message.error(response.message)
             }
-        }
+        },
+        searchNumber(data) {
+            this.form.name = data.name;
+        },
     }
 }
 </script>
