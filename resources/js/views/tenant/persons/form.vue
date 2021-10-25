@@ -893,16 +893,16 @@ export default {
             this.searchServiceNumberByType()
         },
         searchNumber(data) {
-            this.form.name = (this.form.identity_document_type_id === '1') ? data.nombre_completo : data.nombre_o_razon_social;
-            this.form.trade_name = (this.form.identity_document_type_id === '6') ? data.nombre_o_razon_social : '';
+            //cambios apiperu
+            this.form.name = data.name;
+            this.form.trade_name = data.trade_name;
             this.form.location_id = data.ubigeo;
-            this.form.address = data.direccion;
-            this.form.department_id = (data.ubigeo) ? (data.ubigeo[0] != '-' ? data.ubigeo[0] : null) : null;
-            this.form.province_id = (data.ubigeo) ? (data.ubigeo[1] != '-' ? data.ubigeo[1] : null) : null;
-            this.form.district_id = (data.ubigeo) ? (data.ubigeo[2] != '-' ? data.ubigeo[2] : null) : null;
-            this.form.condition = data.condicion;
-            this.form.state = data.estado;
-
+            this.form.address = data.address;
+            this.form.department_id = data.department_id;
+            this.form.province_id = data.province_id;
+            this.form.district_id = data.district_id;
+            this.form.condition = data.condition;
+            this.form.state = data.state;
             this.filterProvinces()
             this.filterDistricts()
 //                this.form.addresses[0].telephone = data.telefono;
