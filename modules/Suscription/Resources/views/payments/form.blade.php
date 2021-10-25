@@ -9,5 +9,6 @@
      ></tenant-contracts-form>
      --}}
 
-    DEMO
+- En desarrollo -
+
 @endsection

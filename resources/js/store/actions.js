@@ -46,6 +46,7 @@ export default {
         if (state.exchange_rate === undefined) state.exchange_rate = 1;
         if (state.item === undefined) state.item = {};
         if(state.document_types_guide === undefined ) state.document_types_guide = {};
+        if(state.resource === undefined ) state.resource = '';
         // Previenete limite de almacen exedido
         /*
         5MB per app per browser. According to the HTML5 spec, this limit can be increased by the user when needed;

@@ -17,6 +17,13 @@
                         Route::get('/', 'SuscriptionController@clients_index')
                             ->name('tenant.suscription.client.index')
                             ->middleware(['redirect.level']);
+
+                        Route::get('/columns', 'SuscriptionController@clientColumns');
+                        Route::post('/records', 'SuscriptionController@clientRecords');
+                        Route::post('/tables', 'SuscriptionController@clientTables');
+                        Route::post('/record', 'SuscriptionController@clientRecord');
+
+
                     });
                     /**
                      * suscription/service
@@ -25,13 +32,19 @@
                         Route::get('/', 'SuscriptionController@services_index')
                             ->name('tenant.suscription.service.index')
                             ->middleware(['redirect.level']);
+
+
+                        Route::get('/columns', 'SuscriptionController@serviceColumns');
+                        Route::post('/records', 'SuscriptionController@serviceRecords');
+                        Route::post('/tables', 'SuscriptionController@serviceTables');
+                        Route::post('/record', 'SuscriptionController@serviceRecord');
                     });
                     /**
-                     * suscription/products
+                     * suscription/payments
                      */
-                    Route::prefix('products')->group(function () {
-                        Route::get('/', 'SuscriptionController@products_index')
-                            ->name('tenant.suscription.products.index')
+                    Route::prefix('payments')->group(function () {
+                        Route::get('/', 'SuscriptionController@payments_index')
+                            ->name('tenant.suscription.payments.index')
                             ->middleware(['redirect.level']);
                     });
                     /**

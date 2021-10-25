@@ -4,6 +4,6 @@
 
 {{--    <tenant-contracts-index :type-user="{{json_encode(Auth::user()->type)}}"></tenant-contracts-index>--}}
 
-    DEMO
+    - En desarrollo -
 
 @endsection

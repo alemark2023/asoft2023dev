@@ -67,8 +67,8 @@
 
             ];
             $data [] = [
-                'value' => 'suscription_app_products',
-                'description' => 'Productos',
+                'value' => 'suscription_app_payments',
+                'description' => 'Pagos',
                 'module_id' => $module_id,
 
             ];

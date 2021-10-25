@@ -1146,7 +1146,7 @@
                         <li class=" nav-parent {{ ($path[0] === 'suscription') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link"
                                href="#">
-                                <i class="fa fas fa-ambulance"
+                                <i class="fa fas fa-calendar-check"
                                    aria-hidden="true"></i>
                                 <span>Suscripción</span>
                             </a>
@@ -1168,14 +1168,9 @@
                                         </a>
                                     </li>
                                 @endif
-                                @if(in_array('suscription_app_products', $vc_module_levels))
-                                    <li class="{{ (($path[0] === 'suscription') && ($path[1] === 'products')) ? 'nav-active' : '' }}">
-                                        <a class="nav-link"
-                                           href="{{ route('tenant.suscription.products.index') }}">
-                                            Productos
-                                        </a>
-                                    </li>
-                                @endif
+                                    {{--
+                                    // @todo Debe gestionarser
+
                                 @if(in_array('suscription_app_plans', $vc_module_levels))
                                     <li class="{{ (($path[0] === 'suscription') && ($path[1] === 'plans')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
@@ -1184,6 +1179,15 @@
                                         </a>
                                     </li>
                                 @endif
+                                   @if(in_array('suscription_app_products', $vc_module_levels))
+                                    <li class="{{ (($path[0] === 'suscription') && ($path[1] === 'payments')) ? 'nav-active' : '' }}">
+                                        <a class="nav-link"
+                                           href="{{ route('tenant.suscription.payments.index') }}">
+                                            Productos
+                                        </a>
+                                    </li>
+                                @endif
+                                --}}
                             </ul>
                         </li>
                     @endif

@@ -255,8 +255,8 @@
                     $group = "suscription_app_client";
                 } elseif ($secondLevel == 'service') {
                     $group = "suscription_app_service";
-                } elseif ($secondLevel == 'products') {
-                    $group = "suscription_app_products";
+                } elseif ($secondLevel == 'payments') {
+                    $group = "suscription_app_payments";
                 } elseif ($secondLevel == 'plans') {
                     $group = "suscription_app_plans";
                 }
@@ -329,8 +329,8 @@
                     return redirect()->route('tenant.suscription.client.index');
                 case  "suscription_app_service":
                     return redirect()->route('tenant.suscription.service.index');
-                case  "suscription_app_products":
-                    return redirect()->route('tenant.suscription.products.index');
+                case  "suscription_app_payments":
+                    return redirect()->route('tenant.suscription.payments.index');
                 case  "suscription_app_plans":
                     return redirect()->route('tenant.suscription.plans.index');
                 default;

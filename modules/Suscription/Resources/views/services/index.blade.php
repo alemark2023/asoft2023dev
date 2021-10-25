@@ -2,8 +2,10 @@
 
 @section('content')
 
-{{--    <tenant-contracts-index :type-user="{{json_encode(Auth::user()->type)}}"></tenant-contracts-index>--}}
 
-    DEMO
+    <tenant-suscription-service-index
+        :configuration="{{\App\Models\Tenant\Configuration::getPublicConfig()}}"
+    ></tenant-suscription-service-index>
+
 
 @endsection
