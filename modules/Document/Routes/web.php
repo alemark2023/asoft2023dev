@@ -43,7 +43,7 @@ if($current_hostname) {
 
             Route::prefix('series-configurations')->group(function() {
 
-                Route::get('', 'SeriesConfigurationController@index')->name('tenant.series_configurations.index');
+                Route::get('', 'SeriesConfigurationController@index')->name('tenant.series_configurations.index')->middleware('redirect.level');
                 Route::get('records', 'SeriesConfigurationController@records');
                 Route::get('tables', 'SeriesConfigurationController@tables');
                 Route::post('', 'SeriesConfigurationController@store');

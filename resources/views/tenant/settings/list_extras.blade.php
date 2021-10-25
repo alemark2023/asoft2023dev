@@ -18,7 +18,7 @@
     </div>
 
     <div class="row">
-        <div class="col-6 col-md-2">
+        <div class="col-sm-12 col-md-6 col-lg-2">
             <section class="card mb-2">
                 <header class="card-header bg-{{in_array('hotels', $vc_modules) ? 'primary' : 'dark'}}">
                     <div class="card-header-icon">
@@ -40,7 +40,7 @@
                 </div>
             </section>
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-sm-12 col-md-6 col-lg-2">
             <section class="card mb-2">
                 <header class="card-header bg-{{in_array('documentary-procedure', $vc_modules) ? 'primary' : 'dark'}}">
                     <div class="card-header-icon">
@@ -61,7 +61,7 @@
                 </div>
             </section>
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-sm-12 col-md-6 col-lg-2">
             <section class="card mb-2">
                 <header class="card-header bg-{{in_array('digemid', $vc_modules) ? 'primary' : 'dark'}}">
                     <div class="card-header-icon">
@@ -84,7 +84,7 @@
                 </div>
             </section>
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-sm-12 col-md-6 col-lg-2">
             <section class="card mb-2">
                 <header class="card-header bg-success">
                     <div class="card-header-icon">
@@ -104,7 +104,24 @@
                 </div>
             </section>
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-sm-12 col-md-6 col-lg-2">
+            <section class="card mb-2">
+                <header class="card-header bg-secondary">
+                    <div class="card-header-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </header>
+                <div class="card-body text-center">
+                    <h3 class="font-weight-semibold mt-3 text-center">Suscripciones</h3>
+                    <p class="text-center">Gestiona matriculas educativas, suscripción de servicios, entre otros..</p>
+                    <span class="badge badge-info">
+                    Próximamente
+                </span>
+                    <br>
+                </div>
+            </section>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-2">
             <section class="card mb-2">
                 <header class="card-header bg-secondary">
                     <div class="card-header-icon">
@@ -121,7 +138,7 @@
                 </div>
             </section>
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-sm-12 col-md-6 col-lg-2">
             <section class="card mb-2">
                 <header class="card-header bg-secondary">
                     <div class="card-header-icon">
