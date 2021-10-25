@@ -324,4 +324,19 @@ function showNamePdfOfDescription(item, show_pdf_name) {
     return item.description
 }
 
-export {calculateRowItem, getUniqueArray, showNamePdfOfDescription}
+function sumAmountDiscountsNoBaseByItem(row) {
+    
+    let sum_discount_no_base = 0
+
+    if (row.discounts) {
+        // if(row.discounts.length > 0){
+        sum_discount_no_base = _.sumBy(row.discounts, function (discount) {
+            return (discount.discount_type_id == '01') ? discount.amount : 0
+        })
+        // }
+    }
+
+    return sum_discount_no_base
+}
+
+export {calculateRowItem, getUniqueArray, showNamePdfOfDescription, sumAmountDiscountsNoBaseByItem}
