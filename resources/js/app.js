@@ -342,6 +342,8 @@ Vue.component('tenant-digemid-index', require('../../modules/Digemid/Resources/a
 /** Modulo Suscripcion **/
 Vue.component('tenant-suscription-client-index', require('../../modules/Suscription/Resources/assets/js/clients/index.vue'));
 Vue.component('tenant-suscription-service-index', require('../../modules/Suscription/Resources/assets/js/services/index.vue'));
+// Vue.component('tenant-suscription-plans-index',
+// require('../../modules/Suscription/Resources/assets/js/services/index.vue'));
 
 import moment from 'moment';
 

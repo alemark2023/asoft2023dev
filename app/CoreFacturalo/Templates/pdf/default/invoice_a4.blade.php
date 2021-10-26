@@ -295,7 +295,7 @@
         <td width="120px">M. PASAJERO</td>
         <td width="8px">:</td>
         <td>{{ $transport->passenger_manifest }}</td>
-    </tr> 
+    </tr>
     <tr>
         <td width="120px">F. INICIO</td>
         <td width="8px">:</td>
@@ -687,17 +687,13 @@
     </tr>
 </table>
 @php
-    if($document->payment_condition_id === '01') {
-        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '10')->first();
-    }else{
-        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
-    }
+    $paymentCondition = \App\CoreFacturalo\Helpers\Template\TemplateHelper::getDocumentPaymentCondition($document);
 @endphp
 {{-- Condicion de pago  Crédito / Contado --}}
 <table class="full-width">
     <tr>
         <td>
-            <strong>CONDICIÓN DE PAGO: {{ $paymentCondition->description }} </strong>
+            <strong>CONDICIÓN DE PAGO: {{ $paymentCondition }} </strong>
         </td>
     </tr>
 </table>
