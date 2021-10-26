@@ -431,7 +431,7 @@
             <td colspan="6" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
-        
+
         @if($document->total_charge > 0)
             @php
                 $total_factor = 0;
@@ -519,7 +519,7 @@
             @if ($document->retention)
                 <p><strong>Información de la retención</strong></p>
                 <p>
-                    Base imponible: {{ $document->currency_type->symbol}} {{ $document->retention->base }} / 
+                    Base imponible: {{ $document->currency_type->symbol}} {{ $document->retention->base }} /
                     Porcentaje: {{ $document->retention->percentage * 100 }}% /
                     Monto: {{ $document->currency_type->symbol}} {{ $document->retention->amount }}
                 </p>
@@ -536,17 +536,14 @@
 
 
 @php
-    if($document->payment_condition_id === '01') {
-        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '10')->first();
-    }else{
-        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
-    }
+    $paymentCondition = \App\CoreFacturalo\Helpers\Template\TemplateHelper::getDocumentPaymentCondition($document);
+
 @endphp
 {{-- Condicion de pago  Crédito / Contado --}}
 <table class="full-width">
     <tr>
         <td>
-            <strong>CONDICIÓN DE PAGO: {{ $paymentCondition->description }} </strong>
+            <strong>CONDICIÓN DE PAGO: {{ $paymentCondition }} </strong>
         </td>
     </tr>
 </table>

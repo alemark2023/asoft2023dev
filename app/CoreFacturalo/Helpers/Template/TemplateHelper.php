@@ -22,7 +22,8 @@
          * @return string|null
          * @example
          *          <?php
-         *          $condition = \App\CoreFacturalo\Helpers\Template\TemplateHelper::getDocumentPaymentCondition($document);
+         *          $condition =
+         *          \App\CoreFacturalo\Helpers\Template\TemplateHelper::getDocumentPaymentCondition($document);
          *          ?>
          *          {{ $condition  }}
          *
@@ -30,7 +31,12 @@
         public static function getDocumentPaymentCondition(Document $document)
         {
             // Condicion de pago  Crédito / Contado
-            return $document->payment_condition->name;
+            if ($document) {
+                if ($document->payment_condition) {
+                    return $document->payment_condition->name;
+                }
+            }
+            return '-';
             /** @var   PaymentCondition $paymentCondition */
             $paymentCondition = ($document->payment_condition_id === '01') ?
                 PaymentCondition::where('id', '10')->first() :
