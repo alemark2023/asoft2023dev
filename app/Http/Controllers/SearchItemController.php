@@ -512,7 +512,7 @@
 
                 $temp =   [
                     'id' => $row->id,
-                    'sale_unit_price' => round($row->sale_unit_price, 2),
+                    'sale_unit_price' => round($row->sale_unit_price, 6),
                     'purchase_unit_price' => $row->purchase_unit_price,
                     'unit_type_id' => $row->unit_type_id,
                     'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
