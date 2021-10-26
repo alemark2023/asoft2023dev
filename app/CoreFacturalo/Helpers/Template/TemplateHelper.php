@@ -7,7 +7,7 @@
     use App\Models\Tenant\Document;
     use App\Models\Tenant\DocumentFee;
     use App\Models\Tenant\DocumentPayment;
-    use App\Models\Tenant\PaymentMethodType;
+    use App\Models\Tenant\PaymentCondition;
 
     class TemplateHelper
     {
@@ -20,16 +20,23 @@
          * @param Document $document
          *
          * @return string|null
+         * @example
+         *          <?php
+         *          $condition = \App\CoreFacturalo\Helpers\Template\TemplateHelper::getDocumentPaymentCondition($document);
+         *          ?>
+         *          {{ $condition  }}
+         *
          */
         public static function getDocumentPaymentCondition(Document $document)
         {
             // Condicion de pago  Crédito / Contado
-            /** @var   PaymentMethodType $paymentCondition */
+            return $document->payment_condition->name;
+            /** @var   PaymentCondition $paymentCondition */
             $paymentCondition = ($document->payment_condition_id === '01') ?
-                PaymentMethodType::where('id', '10')->first() :
-                PaymentMethodType::where('id', '09')->first();
+                PaymentCondition::where('id', '10')->first() :
+                PaymentCondition::where('id', '09')->first();
 
-            return $paymentCondition->description;
+            return $paymentCondition->name;
         }
 
 
@@ -84,30 +91,54 @@
          * @param Document $document
          *
          * @return array
+         * @example
+         *         <?php
+         * @php
+         *     $guias = \App\CoreFacturalo\Helpers\Template\TemplateHelper::getGuides($document);
+         * @endphp
+         * @if(!empty($guias))
+         *     <td class="font-sm" width="100px">
+         *     <strong>Guía de Remisión</strong>
+         *     </td>
+         *     <td class="font-sm" width="8px">:</td>
+         *     <td class="font-sm" colspan="4">
+         * @foreach ($guias as $guides)
+         * @foreach($guides as $index => $item)
+         *     {{ $item }}<br>
+         * @endforeach
+         * @endforeach
+         *     </td>
+         * @endif
+         *     ?>
          */
         public static function getGuides(Document $document)
         {
             $data = [];
-            foreach ($document->guides as $guide) {
-                $type = '';
-                if (isset($guide->document_type_description)) {
-                    $type = $guide->document_type_description;
-                } else {
-                    if ($guide->document_type_id) {
-                        $type = $guide->document_type_id;
+
+            if ($document->guides != null) {
+                foreach ($document->guides as $guide) {
+                    $type = '';
+                    if (isset($guide->document_type_description)) {
+                        $type = $guide->document_type_description;
+                    } else {
+                        if ($guide->document_type_id) {
+                            $type = $guide->document_type_id;
+                        }
                     }
+                    if ( !isset($data[$type])) $data[$type] = [];
+                    $data[$type][] = $guide->document_type_description . ": " . $guide->number;
                 }
-                if (!isset($data[$type])) $data[$type] = [];
-                $data[$type][] = $guide;
             }
+
             $type = 'model';
             if ($document->dispatch) {
                 /** @var Dispatch $dispatch */
                 $dispatch = $document->dispatch;
-                if (!isset($data[$type])) $data[$type] = [];
+                if ( !isset($data[$type])) $data[$type] = [];
                 $data[$type][] = $dispatch->series . "-" . $dispatch->number;
-            }
 
+
+            }
             return $data;
         }
 
