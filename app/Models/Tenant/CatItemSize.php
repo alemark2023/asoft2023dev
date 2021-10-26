@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * Created by Reliese Model.
+
      */
 
     namespace App\Models\Tenant;
@@ -68,5 +68,4 @@
             return $this;
         }
 
-
-    }
+           }

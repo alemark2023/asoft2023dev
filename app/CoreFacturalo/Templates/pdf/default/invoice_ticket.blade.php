@@ -216,9 +216,9 @@
 
     @endif
 
-    
+
     @if ($document->retention)
-        <br>    
+        <br>
         <tr>
             <td colspan="2">
                 <p class="desc"><strong>Información de la retención</strong></p>
@@ -301,7 +301,7 @@
     $origin_district = Modules\Order\Services\AddressFullService::getDescription($origin_district_id[2]);
     $destinatation_district = Modules\Order\Services\AddressFullService::getDescription($destinatation_district_id[2]);
 @endphp
- 
+
 
 <table class="full-width mt-3">
     <tr>
@@ -341,7 +341,7 @@
         <td><p class="desc">D. Origen:</p></td>
         <td><p class="desc">{{ $transport->origin_address }}</p></td>
     </tr>
-   
+
     <tr>
         <td><p class="desc">U. Destino:</p></td>
         <td><p class="desc">{{ $destinatation_district }}</p></td>
@@ -350,7 +350,7 @@
         <td><p class="desc">D. Destino:</p></td>
         <td><p class="desc">{{ $transport->destinatation_address }}</p></td>
     </tr>
-    
+
 </table>
 @endif
 
@@ -521,7 +521,7 @@
             <td colspan="4" class="text-right font-bold desc">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold desc">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
-        
+
         @if($document->total_charge > 0)
             @php
                 $total_factor = 0;
@@ -618,16 +618,13 @@
         </tr>
     @endif
     @php
-        if($document->payment_condition_id === '01') {
-            $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '10')->first();
-        }else{
-            $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
-        }
+        $paymentCondition = \App\CoreFacturalo\Helpers\Template\TemplateHelper::getDocumentPaymentCondition($document);
+
     @endphp
     {{-- Condicion de pago  Crédito / Contado --}}
     <tr>
         <td class="desc pt-5">
-            <strong>CONDICIÓN DE PAGO: {{ $paymentCondition->description }} </strong>
+            <strong>CONDICIÓN DE PAGO: {{ $paymentCondition }} </strong>
         </td>
     </tr>
 

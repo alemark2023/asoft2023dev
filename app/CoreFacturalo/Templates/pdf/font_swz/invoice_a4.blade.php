@@ -303,11 +303,7 @@
     </tbody>
 </table>
 @php
-    if($document->payment_condition_id === '01') {
-        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '10')->first();
-    }else{
-        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
-    }
+    $paymentCondition = \App\CoreFacturalo\Helpers\Template\TemplateHelper::getDocumentPaymentCondition($document);
 @endphp
 <table class="full-width">
     <tr>
@@ -315,7 +311,7 @@
             <p style="text-transform: uppercase;">
                 CONDICIÓN DE PAGO:
                 <strong>
-                    {{ $paymentCondition->description  }}
+                    {{ $paymentCondition  }}
                 </strong>
             </p>
         </td>
