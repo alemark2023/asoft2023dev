@@ -1,5 +1,5 @@
 <template>
-    <div class="card mb-0">
+    <div class="card mb-0" v-loading="loading">
         <div class="card-header bg-info">
             Nueva Nota ({{ document.series }}-{{ document.number }})
         </div>
@@ -34,7 +34,7 @@
                             <template v-if="form.document_type_id === '08'">
                                 <div class="form-group" :class="{'has-danger': errors['note.note_debit_type_id']}">
                                     <label class="control-label">Tipo nota de débito</label>
-                                    <el-select v-model="form.note_credit_or_debit_type_id">
+                                    <el-select v-model="form.note_credit_or_debit_type_id" @change="changeNoteDebitType">
                                         <el-option v-for="option in note_debit_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                     </el-select>
                                     <small class="form-control-feedback" v-if="errors['note.note_debit_type_id']" v-text="errors['note.note_debit_type_id'][0]"></small>
@@ -171,68 +171,61 @@
                                 <h3 class="text-right" v-if="form.total > 0"><b>TOTAL A PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
                             </template>
                         </div>
+                        <div class="col-md-8"></div>
                         
-                        <div class="col-md-12">
+                        <div class="col-md-4">
+                            <!-- Crédito -->
+                            <template v-if="form.payment_condition_id === '02' && isCreditNoteAndType13">
+                                <table v-if="form.fee.length>0"
+                                        class="text-left"
+                                        width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-left"
+                                            style="width: 100px">Fecha
+                                        </th>
+                                        <th class="text-left"
+                                            style="width: 100px">Monto
+                                        </th>
+                                        <th style="width: 30px"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr v-for="(row, index) in form.fee"
+                                        :key="index">
+                                        <td>
+                                            <el-date-picker v-model="row.date"
+                                                            :clearable="false"
+                                                            format="dd/MM/yyyy"
+                                                            type="date"
+                                                            value-format="yyyy-MM-dd"></el-date-picker>
+                                        </td>
+                                        <td>
+                                            <el-input v-model="row.amount"></el-input>
+                                        </td>
+                                        <td class="text-center">
+                                            <button v-if="index > 0"
+                                                    class="btn waves-effect waves-light btn-xs btn-danger"
+                                                    type="button"
+                                                    @click.prevent="clickRemoveFee(index)">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5">
+                                            <label class="control-label">
+                                                <a class=""
+                                                    href="#"
+                                                    @click.prevent="clickAddFee"><i class="fa fa-plus font-weight-bold text-info"></i>
+                                                    <span style="color: #777777">Agregar cuota</span></a>
 
-                            <tr v-if="isCreditNoteAndType13">
-
-                                <!-- Metodos de pago -->
-                                <td class="p-0"
-                                    colspan="2">
-                                    <!-- Crédito con cuotas -->
-                                    <div v-if="form.payment_condition_id === '02'">
-                                        <table v-if="form.fee.length>0"
-                                                class="text-left"
-                                                width="100%">
-                                            <thead>
-                                            <tr>
-                                                <th class="text-left"
-                                                    style="width: 100px">Fecha
-                                                </th>
-                                                <th class="text-left"
-                                                    style="width: 100px">Monto
-                                                </th>
-                                                <th style="width: 30px"></th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr v-for="(row, index) in form.fee"
-                                                :key="index">
-                                                <td>
-                                                    <el-date-picker v-model="row.date"
-                                                                    :clearable="false"
-                                                                    format="dd/MM/yyyy"
-                                                                    type="date"
-                                                                    value-format="yyyy-MM-dd"></el-date-picker>
-                                                </td>
-                                                <td>
-                                                    <el-input v-model="row.amount"></el-input>
-                                                </td>
-                                                <td class="text-center">
-                                                    <button v-if="index > 0"
-                                                            class="btn waves-effect waves-light btn-xs btn-danger"
-                                                            type="button"
-                                                            @click.prevent="clickRemoveFee(index)">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="5">
-                                                    <label class="control-label">
-                                                        <a class=""
-                                                            href="#"
-                                                            @click.prevent="clickAddFee"><i class="fa fa-plus font-weight-bold text-info"></i>
-                                                            <span style="color: #777777">Agregar cuota</span></a>
-
-                                                    </label>
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </td>
-                            </tr>
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -285,6 +278,7 @@
                 showDialogAddItem: false,
                 showDialogOptions: false,
                 loading_submit: false,
+                loading: false,
                 resource: 'documents',
                 errors: {},
                 form: {},
@@ -421,9 +415,17 @@
                     row.amount = amount;
                 })
             },
+            changeNoteDebitType(){
+            },
             changeNoteCreditType(){
-                
+
                 if(this.isCreditNoteAndType13){
+
+                    //si la condicion de pago del cpe relacionado es diferente de credito, no es posible usar el tipo de nota = 13
+                    if(this.document_affected.payment_condition_id !== '02'){
+                        this.form.note_credit_or_debit_type_id = null
+                        return this.$message.error('Para el tipo de nota de crédito seleccionada, el comprobante relacionado debe ser al crédito');
+                    }
 
                     this.form.payment_condition_id = '02'
 
@@ -436,21 +438,24 @@
 
                 }else{
 
-                    // si se seleccionó el tipo de nota 13, se deberá reiniciar la data
-                    if(this.selected_credit_note_type_13) this.initData()
+                    this.initData()
                 
                 }
 
             },
-            async initData() {
+            async initData(){
 
-                this.form.payment_condition_id = null
-                this.form.fee = []
-                await this.getNote()
-                await this.initFormCreditNoteAndType13()
-                this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
-                this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
-                this.form.series_id = (this.series.length > 0)?this.series[0].id:null
+                // si se seleccionó el tipo de nota 13, se deberá reiniciar la data
+                if(this.selected_credit_note_type_13){
+
+                    this.form.payment_condition_id = null
+                    this.form.fee = []
+                    await this.getNote()
+                    await this.initFormCreditNoteAndType13()
+                    // this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
+                    // this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
+                    // this.form.series_id = (this.series.length > 0)?this.series[0].id:null
+                }
 
             },
             async initFormCreditNoteAndType13() {
@@ -458,11 +463,11 @@
                 this.errors = {}
 
                 this.form.establishment_id= this.document.establishment_id
-                this.form.document_type_id= null
-                this.form.series_id= null
+                // this.form.document_type_id= null
+                // this.form.series_id= null
                 this.form.number = '#'
-                this.form.date_of_issue= moment().format('YYYY-MM-DD')
-                this.form.time_of_issue= moment().format('HH:mm:ss')
+                // this.form.date_of_issue= moment().format('YYYY-MM-DD')
+                // this.form.time_of_issue= moment().format('HH:mm:ss')
                 this.form.customer_id= this.document.customer_id
                 this.form.currency_type_id= this.document.currency_type_id
                 this.form.purchase_order= null
@@ -490,7 +495,7 @@
                 this.form.actions= {
                     format_pdf: 'a4'
                 }
-                this.form.operation_type_id= null
+                // this.form.operation_type_id= null
                 this.form.hotel= {}
                 this.form.charges= this.document.charges ? Object.values(this.document.charges) : null
                 this.form.payment_condition_id = null
@@ -587,12 +592,16 @@
                 this.changeDocumentType()
                 this.changeDateOfIssue()
             },
-            getNote(){
-                this.$http.get(`/${this.resource}/note/record/${this.form.affected_document_id}`)
+            async getNote(){
+                this.loading = true
+                await this.$http.get(`/${this.resource}/note/record/${this.form.affected_document_id}`)
                     .then(response => {
                         // console.log(response)
                         this.document = response.data
                         // this.getHasDocuments()
+                    })
+                    .then(()=>{
+                        this.loading = false
                     })
             },
             getHasDocuments(){
@@ -638,7 +647,8 @@
 
                 this.form.series_id = (this.series.length > 0)?this.series[0].id:null
 
-                // this.changeNoteCreditType()
+                this.initData()
+
             },
             changeDateOfIssue() {
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
