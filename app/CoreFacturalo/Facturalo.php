@@ -118,6 +118,7 @@ class Facturalo
                     $document->items()->create($row);
                 }
                 $document->note()->create($inputs['note']);
+                if($this->type === 'credit') $this->saveFee($document, $inputs['fee']);
                 $this->document = Document::find($document->id);
                 break;
             case 'invoice':
