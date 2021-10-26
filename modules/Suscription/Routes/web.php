@@ -14,14 +14,14 @@
                      * suscription/client
                      */
                     Route::prefix('client')->group(function () {
-                        Route::get('/', 'ClientSuscriptionController@clients_index')
+                        Route::get('/', 'SuscriptionController@clients_index')
                             ->name('tenant.suscription.client.index')
                             ->middleware(['redirect.level']);
 
-                        Route::get('/columns', 'ClientSuscriptionController@clientColumns');
-                        Route::post('/records', 'ClientSuscriptionController@clientRecords');
-                        Route::post('/tables', 'ClientSuscriptionController@clientTables');
-                        Route::post('/record', 'ClientSuscriptionController@clientRecord');
+                        Route::get('/columns', 'SuscriptionController@clientColumns');
+                        Route::post('/records', 'SuscriptionController@clientRecords');
+                        Route::post('/tables', 'SuscriptionController@clientTables');
+                        Route::post('/record', 'SuscriptionController@clientRecord');
 
 
                     });
@@ -29,15 +29,15 @@
                      * suscription/service
                      */
                     Route::prefix('service')->group(function () {
-                        Route::get('/', 'ServiceSuscriptionController@services_index')
+                        Route::get('/', 'SuscriptionController@services_index')
                             ->name('tenant.suscription.service.index')
                             ->middleware(['redirect.level']);
 
 
-                        Route::get('/columns', 'ServiceSuscriptionController@serviceColumns');
-                        Route::post('/records', 'ServiceSuscriptionController@serviceRecords');
-                        Route::post('/tables', 'ServiceSuscriptionController@serviceTables');
-                        Route::post('/record', 'ServiceSuscriptionController@serviceRecord');
+                        Route::get('/columns', 'SuscriptionController@serviceColumns');
+                        Route::post('/records', 'SuscriptionController@serviceRecords');
+                        Route::post('/tables', 'SuscriptionController@serviceTables');
+                        Route::post('/record', 'SuscriptionController@serviceRecord');
                     });
                     /**
                      * suscription/payments
