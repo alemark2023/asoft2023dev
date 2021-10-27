@@ -74,12 +74,7 @@ export const functions = {
 export const exchangeRate = {
     methods: {
         async searchExchangeRateByDate(exchange_rate_date) {
-            // asignar valor si no tiene
-            // verificar si hay respuesta de una url o no y asignar valor final en caso de error en ambas consultas
-            let response = await this.$http.get(`/services/exchange_rate/${exchange_rate_date}`)
-            if (!response.data.sale) {
-                    let response = await this.$http.get(`/service/exchange/${exchange_rate_date}`) // apiperu cambia la url
-            }
+            let response = await this.$http.get(`/services/exchange/${exchange_rate_date}`)
             return parseFloat(response.data.sale)
         }
     }

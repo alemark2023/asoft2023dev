@@ -137,6 +137,8 @@ class ServiceData
         $exchange = ExchangeRate::query()->where('date', $date)->first();
         if($exchange) {
             return [
+                'date' => $date,
+                'purchase' => $exchange->purchase,
                 'sale' => $exchange->sale
             ];
         }
@@ -160,10 +162,14 @@ class ServiceData
             ]);
 
             return [
+                'date' => $data['fecha_busqueda'],
+                'purchase' => $data['compra'],
                 'sale' => $data['venta']
             ];
         }
         return [
+            'date' => $date,
+            'purchase' => 1,
             'sale' => 1,
         ];
     }
