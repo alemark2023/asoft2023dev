@@ -8,37 +8,90 @@
     use App\Models\Tenant\Catalogs\District;
     use App\Models\Tenant\Catalogs\IdentityDocumentType;
     use App\Models\Tenant\Catalogs\Province;
+    use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
+    use Illuminate\Database\Eloquent\Collection;
+    use Modules\DocumentaryProcedure\Models\DocumentaryFile;
+    use Modules\Expense\Models\Expense;
+    use Modules\Order\Models\OrderForm;
+    use Modules\Order\Models\OrderNote;
+    use Modules\Purchase\Models\FixedAssetPurchase;
+    use Modules\Purchase\Models\PurchaseOrder;
+    use Modules\Sale\Models\Contract;
+    use Modules\Sale\Models\SaleOpportunity;
+    use Modules\Sale\Models\TechnicalService;
 
 
     /**
-     * Class Person
+     * App\Models\Tenant\Person
      *
-     * @package App\Models\Tenant
-     * @mixin ModelTenant
-     * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\PersonAddress[] $addresses
-     * @property-read int|null                                                                    $addresses_count
-     * @property-read Country                                                                     $country
-     * @property-read Department                                                                  $department
-     * @property-read District                                                                    $district
-     * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Document[]      $documents
-     * @property-read int|null                                                                    $documents_count
-     * @property-read mixed                                                                       $address_full
-     * @property mixed                                                                            $contact
-     * @property-read IdentityDocumentType
-     *                $identity_document_type
-     * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\PersonAddress[] $more_address
-     * @property-read int|null                                                                    $more_address_count
-     * @property-read \App\Models\Tenant\PersonType                                               $person_type
-     * @property-read Province                                                                    $province
+     * @property-read AddressType                     $address_type
+     * @property-read Collection|PersonAddress[]      $addresses
+     * @property-read int|null                        $addresses_count
+     * @property-read Collection|Contract[]           $contracts_where_customer
+     * @property-read int|null                        $contracts_where_customer_count
+     * @property-read Country                         $country
+     * @property-read Department                      $department
+     * @property-read Collection|Dispatch[]           $dispatches_where_customer
+     * @property-read int|null                        $dispatches_where_customer_count
+     * @property-read District                        $district
+     * @property-read Collection|DocumentaryFile[]    $documentary_files
+     * @property-read int|null                        $documentary_files_count
+     * @property-read Collection|Document[]           $documents
+     * @property-read int|null                        $documents_count
+     * @property-read Collection|Document[]           $documents_where_customer
+     * @property-read int|null                        $documents_where_customer_count
+     * @property-read Collection|Expense[]            $expenses_where_supplier
+     * @property-read int|null                        $expenses_where_supplier_count
+     * @property-read Collection|FixedAssetPurchase[] $fixed_asset_purchases_where_customer
+     * @property-read int|null                        $fixed_asset_purchases_where_customer_count
+     * @property-read Collection|FixedAssetPurchase[] $fixed_asset_purchases_where_supplier
+     * @property-read int|null                        $fixed_asset_purchases_where_supplier_count
+     * @property-read mixed                           $address_full
+     * @property mixed                                $contact
+     * @property-read IdentityDocumentType            $identity_document_type
+     * @property-read Collection|PersonAddress[]      $more_address
+     * @property-read int|null                        $more_address_count
+     * @property-read Collection|OrderForm[]          $order_forms_where_customer
+     * @property-read int|null                        $order_forms_where_customer_count
+     * @property-read Collection|OrderNote[]          $order_notes_where_customer
+     * @property-read int|null                        $order_notes_where_customer_count
+     * @property-read Collection|Perception[]         $perceptions_where_customer
+     * @property-read int|null                        $perceptions_where_customer_count
+     * @property-read Collection|PersonAddress[]      $person_addresses
+     * @property-read int|null                        $person_addresses_count
+     * @property-read PersonType                      $person_type
+     * @property-read Province                        $province
+     * @property-read Collection|PurchaseOrder[]      $purchase_orders_where_supplier
+     * @property-read int|null                        $purchase_orders_where_supplier_count
+     * @property-read Collection|PurchaseSettlement[] $purchase_settlements_where_supplier
+     * @property-read int|null                        $purchase_settlements_where_supplier_count
+     * @property-read Collection|Purchase[]           $purchases_where_customer
+     * @property-read int|null                        $purchases_where_customer_count
+     * @property-read Collection|Purchase[]           $purchases_where_supplier
+     * @property-read int|null                        $purchases_where_supplier_count
+     * @property-read Collection|Quotation[]          $quotations_where_customer
+     * @property-read int|null                        $quotations_where_customer_count
+     * @property-read Collection|Retention[]          $retentions_where_supplier
+     * @property-read int|null                        $retentions_where_supplier_count
+     * @property-read Collection|SaleNote[]           $sale_notes_where_customer
+     * @property-read int|null                        $sale_notes_where_customer_count
+     * @property-read Collection|SaleOpportunity[]    $sale_opportunities_where_customer
+     * @property-read int|null                        $sale_opportunities_where_customer_count
+     * @property-read Collection|TechnicalService[]   $technical_services_where_customer
+     * @property-read int|null                        $technical_services_where_customer_count
      * @method static Builder|Person newModelQuery()
      * @method static Builder|Person newQuery()
      * @method static Builder|Person query()
      * @method static Builder|Person whereIsEnabled()
      * @method static Builder|Person whereType($type)
+     * @mixin ModelTenant
+     * @mixin \Eloquent
      */
     class Person extends ModelTenant
     {
+        use UsesTenantConnection;
+
         protected $table = 'persons';
         protected $with = [
             'identity_document_type',
@@ -47,34 +100,45 @@
             'province',
             'district'
         ];
+        protected $casts = [
+            'perception_agent' => 'bool',
+            'person_type_id' => 'int',
+            'percentage_perception' => 'float',
+            'enabled' => 'bool',
+            'status' => 'int',
+            'credit_days' => 'int',
+            'parent_id' => 'int'
+        ];
         protected $fillable = [
             'type',
             'identity_document_type_id',
             'number',
             'name',
             'trade_name',
+            'internal_code',
             'country_id',
             'department_id',
             'province_id',
             'district_id',
+            'address_type_id',
             'address',
+            'condition',
+            'state',
             'email',
             'telephone',
             'perception_agent',
-            'state',
-            'condition',
-            'percentage_perception',
             'person_type_id',
-            'comment',
-            'enabled',
             'contact',
-            'internal_code',
-            'observation',
-            'zone',
+            'comment',
+            'percentage_perception',
+            'enabled',
             'website',
+            'zone',
+            'observation',
             'credit_days',
             'optional_email',
-            'address_type_id',
+            'status',
+            'parent_id'
         ];
 
         // protected static function boot()
@@ -85,6 +149,14 @@
         //         $builder->where('status', 1);
         //     });
         // }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function person_addresses()
+        {
+            return $this->hasMany(PersonAddress::class);
+        }
 
         /**
          * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -106,6 +178,14 @@
          * @return \Illuminate\Database\Eloquent\Relations\HasMany
          */
         public function documents()
+        {
+            return $this->hasMany(Document::class, 'customer_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function documents_where_customer()
         {
             return $this->hasMany(Document::class, 'customer_id');
         }
@@ -188,6 +268,30 @@
         }
 
         /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function contracts_where_customer()
+        {
+            return $this->hasMany(Contract::class, 'customer_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function dispatches_where_customer()
+        {
+            return $this->hasMany(Dispatch::class, 'customer_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function documentary_files()
+        {
+            return $this->hasMany(DocumentaryFile::class);
+        }
+
+        /**
          * @param $query
          *
          * @return mixed
@@ -195,6 +299,127 @@
         public function scopeWhereIsEnabled($query)
         {
             return $query->where('enabled', true);
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function expenses_where_supplier()
+        {
+            return $this->hasMany(Expense::class, 'supplier_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function fixed_asset_purchases_where_customer()
+        {
+            return $this->hasMany(FixedAssetPurchase::class, 'customer_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function fixed_asset_purchases_where_supplier()
+        {
+            return $this->hasMany(FixedAssetPurchase::class, 'supplier_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function order_forms_where_customer()
+        {
+            return $this->hasMany(OrderForm::class, 'customer_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function order_notes_where_customer()
+        {
+            return $this->hasMany(OrderNote::class, 'customer_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function perceptions_where_customer()
+        {
+            return $this->hasMany(Perception::class, 'customer_id');
+        }
+
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function purchase_orders_where_supplier()
+        {
+            return $this->hasMany(PurchaseOrder::class, 'supplier_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function purchase_settlements_where_supplier()
+        {
+            return $this->hasMany(PurchaseSettlement::class, 'supplier_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function purchases_where_customer()
+        {
+            return $this->hasMany(Purchase::class, 'customer_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function purchases_where_supplier()
+        {
+            return $this->hasMany(Purchase::class, 'supplier_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function quotations_where_customer()
+        {
+            return $this->hasMany(Quotation::class, 'customer_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function retentions_where_supplier()
+        {
+            return $this->hasMany(Retention::class, 'supplier_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function sale_notes_where_customer()
+        {
+            return $this->hasMany(SaleNote::class, 'customer_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function sale_opportunities_where_customer()
+        {
+            return $this->hasMany(SaleOpportunity::class, 'customer_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function technical_services_where_customer()
+        {
+            return $this->hasMany(TechnicalService::class, 'customer_id');
         }
 
         public function getContactAttribute($value)
