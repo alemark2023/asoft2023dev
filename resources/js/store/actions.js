@@ -52,6 +52,8 @@ export default {
         if(state.affectation_igv_types === undefined ) state.affectation_igv_types = [];
         if(state.unit_types === undefined ) state.unit_types = [];
         if(state.item_search_extra_parameters === undefined ) state.item_search_extra_parameters = {};
+        if(state.person === undefined ) state.person = {};
+        if(state.parentPerson === undefined ) state.parentPerson = {};
 
         // Previenete limite de almacen exedido
         /*

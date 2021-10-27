@@ -59,8 +59,9 @@
      * @property-read Collection|Perception[]         $perceptions_where_customer
      * @property-read int|null                        $perceptions_where_customer_count
      * @property-read Collection|PersonAddress[]      $person_addresses
-     * @property int|null                             $person_id
+     * @property int|null                             $parent_id
      * @property-read \App\Models\Tenant\Person       $parent_person
+     * @property-read \App\Models\Tenant\Person       $children_person
      * @property-read int|null                        $person_addresses_count
      * @property-read PersonType                      $person_type
      * @property-read Province                        $province
@@ -153,11 +154,23 @@
         // }
 
         /**
-         * @return \Illuminate\Database\Eloquent\Relations\HasOne
+         * Devuelve un conjunto de hijos basado en parent_id
+         *
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function children_person()
+        {
+            return $this->hasMany(Person::class, 'parent_id');
+        }
+        /**
+         * Devuelve el padre basado en parent_id
+         *
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
          */
         public function parent_person()
         {
-            return $this->hasOne(Person::class, 'parent_id');
+            return $this->belongsTo(Person::class, 'parent_id');
+
         }
 
         /**
@@ -445,9 +458,12 @@
         /**
          * Retorna un standar de nomenclatura para el modelo
          *
+         * @param bool $withFullAddress
+         * @param bool $childrens
+         *
          * @return array
          */
-        public function getCollectionData($withFullAddress = false)
+        public function getCollectionData($withFullAddress = false, $childrens = false)
         {
 
             $addresses = $this->addresses;
@@ -505,10 +521,25 @@
                 'contact' => $this->contact,
                 'comment' => $this->comment,
                 'addresses' => $addresses,
+                'parent_id' => $this->parent_id,
                 'credit_days' => (int)$this->credit_days,
                 'optional_email' => $optional_mail,
                 'optional_email_send' => implode(',', $optional_mail_send),
+                'childrens' => [],
             ];
+            if($childrens == true){
+                $child = $this->children_person->transform(function($row){
+                    return $row->getCollectionData();
+                });
+                $data['childrens'] = $child;
+                $parent = null;
+                if($this->parent_person) {
+                    $parent = $this->parent_person->getCollectionData();
+                }
+                $data['parent'] = $parent;
+
+            }
+
             return $data;
         }
 
@@ -615,19 +646,19 @@
         /**
          * @return int|null
          */
-        public function getPersonId(): ?int
+        public function getParentId(): ?int
         {
-            return (int)$this->person_id;
+            return (int)$this->parent_id;
         }
 
         /**
-         * @param int|null $person_id
+         * @param int|null $parent_id
          *
          * @return Person
          */
-        public function setPersonId(?int $person_id): Person
+        public function setParentId(?int $parent_id): Person
         {
-            $this->person_id = (int)$person_id;
+            $this->parent_id = (int)$parent_id;
             return $this;
         }
     }

@@ -6,6 +6,8 @@ export default {
     hasGlobalIgv: false,
     loading_submit: false,
     color: {},
+    person: {},
+    parentPerson: {},
     exchange_rate_sale: 1,
     exchange_rate: 1,
     currency_types: [],

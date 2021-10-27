@@ -2,7 +2,7 @@
     <el-dialog :close-on-click-modal="false"
                :title="titleDialog"
                :visible="showDialog"
-               append-to-body
+               :append-to-body="true"
                @close="close"
                @open="create"
                @opened="opened">
@@ -558,14 +558,24 @@
 </template>
 
 <script>
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 import {serviceNumber} from '../../../mixins/functions'
 
 export default {
     mixins: [serviceNumber],
-    props: ['showDialog', 'type', 'recordId', 'external', 'document_type_id', 'input_person'],
+    props: [
+        'showDialog',
+        'type',
+        'recordId',
+        'external',
+        'document_type_id',
+        'input_person',
+        'parentId',
+    ],
     data() {
         return {
+            parent: null,
             loading_submit: false,
             titleDialog: null,
             titleTabDialog: null,
@@ -591,6 +601,8 @@ export default {
         }
     },
     async created() {
+
+        this.loadConfiguration()
         await this.initForm()
         await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
@@ -608,6 +620,11 @@ export default {
 
     },
     computed: {
+        ...mapState([
+            'config',
+            'person',
+            'parentPerson',
+        ]),
         maxLength: function () {
             if (this.form.identity_document_type_id === '6') {
                 return 11
@@ -618,6 +635,9 @@ export default {
         },
     },
     methods: {
+        ...mapActions([
+            'loadConfiguration',
+        ]),
         initForm() {
             this.errors = {}
             this.form = {
@@ -666,6 +686,15 @@ export default {
         },
         create() {
             // console.log(this.input_person)
+            this.parent = 0;
+            if(this.parentId !== undefined){
+                this.parent = this.parentId;
+            }
+            /*
+
+            'person',
+            'parentPerson',
+            */
             if (this.external) {
                 if (this.document_type_id === '01') {
                     this.form.identity_document_type_id = '6'
@@ -689,6 +718,7 @@ export default {
                 this.titleTabDialog = 'Datos del proveedor';
                 this.typeDialog = 'Tipo de proveedor'
             }
+
             if (this.recordId) {
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
@@ -844,7 +874,7 @@ export default {
             }
 
             this.loading_submit = true
-
+            this.form.parent_id = parseInt(this.parent);
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
                     if (response.data.success) {
@@ -858,6 +888,7 @@ export default {
                     } else {
                         this.$message.error(response.data.message)
                     }
+
                 })
                 .catch(error => {
                     if (error.response.status === 422) {
@@ -866,7 +897,7 @@ export default {
                         console.log(error)
                     }
                 })
-                .then(() => {
+                .finally(() => {
                     this.loading_submit = false
                 })
         },

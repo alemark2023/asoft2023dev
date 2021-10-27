@@ -32,9 +32,8 @@
 
         public function clientRecord(Request $request)
         {
-            $record = new PersonResource(Person::findOrFail($request->person));
-
-            return $record;
+            $person = Person::findOrFail($request->person);
+            return ['data'=>$person->getCollectionData(true,true)];
         }
 
         public function clientRecords(Request $request)

@@ -216,6 +216,14 @@ export default {
         if(item_search_extra_parameters === undefined) item_search_extra_parameters = {};
         state.item_search_extra_parameters = item_search_extra_parameters
     },
+    setPerson(state, person) {
+        if(person === undefined) person = {};
+        state.person = person
+    },
+    setParentPerson(state, parentPerson) {
+        if(parentPerson === undefined) parentPerson = {};
+        state.person = parentPerson
+    },
     sethasGlobalIgv(state, hasGlobalIgv) {
         if(hasGlobalIgv === undefined) hasGlobalIgv = false;
         state.hasGlobalIgv = hasGlobalIgv

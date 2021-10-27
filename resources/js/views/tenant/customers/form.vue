@@ -187,11 +187,17 @@ import {serviceNumber} from '../../../mixins/functions'
 
 export default {
     mixins: [serviceNumber],
-    props: ['showDialog', 'recordId', 'external'],
+    props: [
+        'showDialog',
+        'recordId',
+        'external',
+        'parentId',
+    ],
     data() {
         return {
             loading_submit: false,
             titleDialog: null,
+            parent: null,
             resource: 'customers',
             errors: {},
             form: {},
@@ -242,9 +248,15 @@ export default {
                 telephone: null,
                 email: null,
                 more_address: [],
+                parent_id: this.parent
             }
         },
         create() {
+            this.parent = 0;
+            if(this.parentId !== undefined){
+                this.parent = this.parentId;
+
+            }
             this.titleDialog = (this.recordId) ? 'Editar Cliente' : 'Nuevo Cliente'
             if (this.recordId) {
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
