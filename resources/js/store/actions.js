@@ -46,7 +46,12 @@ export default {
         if (state.exchange_rate === undefined) state.exchange_rate = 1;
         if (state.item === undefined) state.item = {};
         if(state.document_types_guide === undefined ) state.document_types_guide = {};
+        if(state.form_data === undefined ) state.form_data = {};
         if(state.resource === undefined ) state.resource = '';
+        if(state.periods === undefined ) state.periods = [];
+        if(state.affectation_igv_types === undefined ) state.affectation_igv_types = [];
+        if(state.unit_types === undefined ) state.unit_types = [];
+
         // Previenete limite de almacen exedido
         /*
         5MB per app per browser. According to the HTML5 spec, this limit can be increased by the user when needed;
@@ -62,6 +67,7 @@ export default {
         localStorage.removeItem('warehouses');
         localStorage.removeItem('all_items');
     },
+    clearFormData(){ state.form_data = {};},
     clearExtraInfoItem() {
         state.extra_colors = [];
         state.extra_CatItemSize = [];

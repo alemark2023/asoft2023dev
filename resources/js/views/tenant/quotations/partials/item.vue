@@ -3,6 +3,7 @@
                :title="titleDialog"
                :visible="showDialog"
                top="7vh"
+               :append-to-body="true"
                @close="close"
                @open="create">
         <form autocomplete="off"

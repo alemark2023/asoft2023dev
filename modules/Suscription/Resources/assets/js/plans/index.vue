@@ -1,182 +1,186 @@
 <template>
-    <div v-loading="loading_submit">
-        <div class="row ">
-            <div class="col-md-12 col-lg-12 col-xl-12 ">
-                <div class="row" v-if="applyFilter">
-                    <div class="col-lg-4 col-md-4 col-sm-12 pb-2">
-                        <div class="d-flex">
-                            <div style="width:100px">
-                                Filtrar por:
-                            </div>
-                            <el-select
-                                v-model="search.column"
-                                placeholder="Select"
-                                @change="changeClearInput"
-                            >
-                                <el-option
-                                    v-for="(label, key) in columns"
-                                    :key="key"
-                                    :value="key"
-                                    :label="label"
-                                ></el-option>
-                            </el-select>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-4 col-sm-12 pb-2">
-                        <template
-                            v-if="
-                                search.column === 'date_of_issue' ||
-                                    search.column === 'date_of_due' ||
-                                    search.column === 'date_of_payment' ||
-                                    search.column === 'delivery_date'
-                            "
-                        >
-                            <el-date-picker
-                                v-model="search.value"
-                                type="date"
-                                style="width: 100%;"
-                                placeholder="Buscar"
-                                value-format="yyyy-MM-dd"
-                                @change="getRecords"
-                            >
-                            </el-date-picker>
-                        </template>
-                        <template v-else>
-                            <el-input
-                                placeholder="Buscar"
-                                v-model="search.value"
-                                style="width: 100%;"
-                                prefix-icon="el-icon-search"
-                                @input="getRecords"
-                            >
-                            </el-input>
-                        </template>
-                    </div>
-                </div>
+    <div>
+        <div class="page-header pr-0">
+            <h2>
+                <a href="/dashboard">
+                    <i class="fas fa-tachometer-alt">
+                    </i>
+                </a>
+            </h2>
+            <ol class="breadcrumbs">
+                <li class="active">
+                    <span>
+                        Planes
+                    </span>
+                </li>
+            </ol>
+            <div class="right-wrapper pull-right">
+                <button class="btn btn-custom btn-sm  mt-2 mr-2"
+                        type="button"
+                        @click.prevent="clickShowPlan()">
+                    <i class="fa fa-plus-circle">
+                    </i>
+                    Nuevo
+                </button>
+            </div>
+        </div>
+        <div class="card mb-0">
+            <div class="card-header bg-info">
+                <h3 class="my-0">
+                    Listado de planes
+                </h3>
+            </div>
+            <div class="card-body">
+                <data-table>
+                    <tr slot="heading">
+                        <th>
+                            #
+                        </th>
+                        <th class="text-center">
+                            Periodo
+                        </th>
+                        <th class="text-center">
+                            Nombre
+                        </th>
+                        <th class="text-center">
+                            Descripción
+                        </th>
+                        <!--
+
+                         <th class="text-center">
+                             Total
+                         </th>
+                          -->
+                        <th class="text-right">
+                            Acciones
+                        </th>
+                    <tr>
+                    <tr slot-scope="{ index, row }">
+                        <td>
+                            {{ index }}
+                        </td>
+                        <td class="text-center">
+                            {{ row.period }}
+                        </td>
+                        <td class="text-left">
+                            {{ row.name }}
+                        </td>
+                        <td class="text-left">
+                            {{ row.description }}
+                        </td>
+                    <!--
+                        <td class="text-right">
+                            {{ row.total }}
+                        </td>
+                    -->
+                        <td class="text-right">
+                            <button
+                                class="btn waves-effect waves-light btn-xs btn-info"
+                                type="button"
+                                @click.prevent="clickShowPlan(row)">
+                                Editar
+                            </button>
+                            <!--
+                            <button
+                                class="btn waves-effect waves-light btn-xs btn-danger"
+                                type="button"
+                                @click.prevent="clickDelete(row.id)">
+                                Eliminar
+                            </button>
+                            -->
+                        </td>
+                    </tr>
+                </data-table>
             </div>
 
-            <div class="col-md-12">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <slot name="heading"></slot>
-                        </thead>
-                        <tbody>
-                            <slot
-                                v-for="(row, index) in records"
-                                :row="row"
-                                :index="customIndex(index)"
-                            ></slot>
-                        </tbody>
-                    </table>
-                    <div>
-                        <el-pagination
-                            @current-change="getRecords"
-                            layout="total, prev, pager, next"
-                            :total="pagination.total"
-                            :current-page.sync="pagination.current_page"
-                            :page-size="pagination.per_page"
-                        >
-                        </el-pagination>
-                    </div>
-                </div>
-            </div>
+            <customers-form
+                :showDialog.sync="showDialog">
+            </customers-form>
         </div>
     </div>
 </template>
 
 <script>
-import queryString from "query-string";
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+
+import CustomersForm from './form.vue'
+import DataTable from '../components/SuscriptionsDataTable.vue'
+import {deletable} from '../../../../../../resources/js/mixins/deletable'
+import {exchangeRate} from "../../../../../../resources/js/mixins/functions";
 
 export default {
-    props: {
-        productType: {
-            type: String,
-            required: false,
-            default: ''
-        },
-        resource: String,
-        applyFilter: {
-            type: Boolean,
-            default: true,
-            required: false
-        },
-        pharmacy: Boolean,
+    props: [
+        'configuration',
+        'date'
+    ],
+    mixins: [
+        deletable,
+        exchangeRate
+    ],
+    components: {
+        CustomersForm,
+        DataTable
     },
     data() {
         return {
-            search: {
-                column: null,
-                value: null
-            },
-            columns: [],
-            records: [],
-            pagination: {},
-            loading_submit: false,
-            fromPharmacy: false,
-        };
+            showDialog: false,
+        }
+    },
+    computed: {
+        ...mapState([
+            'config',
+            'resource',
+            'form_data',
+            'exchange_rate',
+            'periods',
+            'affectation_igv_types',
+            'unit_types'
+        ]),
     },
     created() {
-        if(this.pharmacy !== undefined && this.pharmacy === true){
-            this.fromPharmacy = true;
-        }
-        this.$eventHub.$on("reloadData", () => {
-            this.getRecords();
+        this.loadConfiguration()
+
+        this.$store.commit('setConfiguration', this.configuration)
+        this.$store.commit('setResource', 'plans')
+        this.$store.commit('setFormData', {})
+        this.searchExchangeRateByDate(this.date).then(response => {
+            this.$store.commit('setExchangeRate', response)
+            // this.form.exchange_rate_sale = this.exchange_rate
+
         });
-        this.$root.$refs.DataTable = this;
-    },
-    async mounted() {
-        let column_resource = _.split(this.resource, "/");
-        await this.$http
-            .get(`/${_.head(column_resource)}/columns`)
-            .then(response => {
-                this.columns = response.data;
-                this.search.column = _.head(Object.keys(this.columns));
-            });
-        await this.getRecords();
+        this.getCommonData();
+
     },
     methods: {
-        customIndex(index) {
-            return (
-                this.pagination.per_page * (this.pagination.current_page - 1) +
-                index +
-                1
-            );
+        ...mapActions([
+            'loadConfiguration',
+            'clearFormData',
+        ]),
+        getCommonData(){
+            this.$http.post('CommonData',{})
+            .then((response)=>{
+                this.$store.commit('setCurrencyTypes',response.data.currency_types)
+                this.$store.commit('setAffectationIgvTypes',response.data.affectation_igv_types)
+                this.$store.commit('setUnitTypes',response.data.unit_types)
+            })
         },
-        getRecords() {
-            this.loading_submit = true;
-            return this.$http
-                .get(`/${this.resource}/records?${this.getQueryParameters()}`)
-                .then(response => {
-                    this.records = response.data.data;
-                    this.pagination = response.data.meta;
-                    this.pagination.per_page = parseInt(
-                        response.data.meta.per_page
-                    );
-                })
-                .catch(error => {})
-                .then(() => {
-                    this.loading_submit = false;
-                });
+
+
+
+
+        clickShowPlan(row){
+            this.clearFormData();
+            this.$store.commit('setFormData', row)
+            this.showDialog = true
+
         },
-        getQueryParameters() {
-            if (this.productType == 'ZZ') {
-                this.search.type = 'ZZ';
-            }
-            return queryString.stringify({
-                page: this.pagination.current_page,
-                limit: this.limit,
-                isPharmacy:this.fromPharmacy,
-                ...this.search
-            });
-        },
-        changeClearInput() {
-            this.search.value = "";
-            this.getRecords();
-        },
-        getSearch() {
-            return this.search;
+
+        clickDelete(id) {
+            console.log('no debe hacer nada')
+            this.destroy(`/${this.resource}/${id}`).then(() =>
+                this.$eventHub.$emit('reloadData')
+            )
         }
     }
-};
+}
 </script>

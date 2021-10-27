@@ -9,6 +9,8 @@ export default {
     exchange_rate_sale: 1,
     exchange_rate: 1,
     currency_types: [],
+    affectation_igv_types: [],
+    unit_types: [],
     mold: {},
     config: {
         id: 0,
@@ -94,6 +96,8 @@ export default {
     records: [],
     colors: [],
     molds: [],
+    periods: [],
+    form_data:{},
     CatItemMoldProperty: [],
     CatItemUnitBusiness: [],
     CatItemStatus: [],

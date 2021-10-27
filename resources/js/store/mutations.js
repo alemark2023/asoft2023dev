@@ -121,6 +121,14 @@ export default {
         if(debug === undefined ) debug = {};
         state.deb = debug
     },
+    setFormData(state,form_data) {
+        if(form_data === undefined ) form_data = {};
+        state.form_data = form_data
+    },
+    setPeriods(state,periods) {
+        if(periods === undefined ) periods = [];
+        state.periods = periods
+    },
     setFromPos(state,form_pos) {
         if(form_pos === undefined ) form_pos = {};
         writeLocal('form_pos', JSON.stringify(form_pos))
@@ -215,6 +223,14 @@ export default {
     setCurrencyTypes(state, currency_types) {
         if(currency_types === undefined) currency_types = [];
         state.currency_types = currency_types
+    },
+    setAffectationIgvTypes(state, affectation_igv_types) {
+        if(affectation_igv_types === undefined) affectation_igv_types = [];
+        state.affectation_igv_types = affectation_igv_types
+    },
+    setUnitTypes(state, unit_types) {
+        if(unit_types === undefined) unit_types = [];
+        state.unit_types = unit_types
     },
     setAllItems(state, all_items) {
         if(state.all_items !== undefined) {

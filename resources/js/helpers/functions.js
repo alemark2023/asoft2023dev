@@ -325,7 +325,7 @@ function showNamePdfOfDescription(item, show_pdf_name) {
 }
 
 function sumAmountDiscountsNoBaseByItem(row) {
-    
+
     let sum_discount_no_base = 0
 
     if (row.discounts) {
@@ -339,4 +339,9 @@ function sumAmountDiscountsNoBaseByItem(row) {
     return sum_discount_no_base
 }
 
-export {calculateRowItem, getUniqueArray, showNamePdfOfDescription, sumAmountDiscountsNoBaseByItem}
+function FormatUnitPriceRow(unit_price){
+    return _.round(unit_price, 6)
+    // return unit_price.toFixed(6)
+}
+
+export {calculateRowItem, getUniqueArray, showNamePdfOfDescription, sumAmountDiscountsNoBaseByItem, FormatUnitPriceRow}
