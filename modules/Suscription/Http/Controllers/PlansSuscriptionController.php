@@ -118,9 +118,6 @@
          */
         public function store(PlanSuscriptionRequest $request)
         {
-            //
-            $e = $request->all();
-
             $id = null;
             if ($request->has('id')) $id = (int)$request->id;
             $period = CatPeriod::where('period', 'Y')->first();
@@ -131,7 +128,13 @@
             }
             $plan = SuscriptionPlan::firstOrNew(['id' => $id], []);
             $plan->fill($request->all());
+            // Elimina todos los items anteriores
+            foreach ($plan->items as $item)
+            {
+                $item->delete();
+            }
             $items = $request->items;
+            // In serta todos los nuevos items
             foreach ($items as $item){
                 $plan->items()->create($item);
             }

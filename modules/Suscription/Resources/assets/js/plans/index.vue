@@ -134,11 +134,14 @@ export default {
             'exchange_rate',
             'periods',
             'affectation_igv_types',
+            'item_search_extra_parameters',
             'unit_types'
         ]),
     },
     created() {
         this.loadConfiguration()
+
+        this.$store.commit('setItemSearchExtraParameters',{'only_service':1});
 
         this.$store.commit('setConfiguration', this.configuration)
         this.$store.commit('setResource', 'plans')

@@ -10,7 +10,9 @@
             <el-tabs v-model="tabActive">
                 <el-tab-pane class
                              name="first">
-                    <span slot="label">Datos del plan</span>
+                    <span slot="label">
+                        Datos del plan
+                    </span>
                     <div class="form-body">
 
                         <div class="row">
@@ -33,24 +35,6 @@
                             </div>
                             <div class="col-md-6">
                                 <div
-                                    :class="{'has-danger': errors.description}"
-                                    class="form-group">
-                                    <label class="control-label">
-                                        Descripcion
-                                    </label>
-                                    <el-input
-                                        v-model="form_data.description"
-                                    ></el-input>
-                                    <small
-                                        v-if="errors.description"
-                                        class="form-control-feedback"
-                                        v-text="errors.description[0]">
-                                    </small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div
                                     :class="{'has-danger': errors.periods}"
                                     class="form-group">
                                     <label class="control-label">
@@ -70,6 +54,24 @@
                                         v-if="errors.periods"
                                         class="form-control-feedback"
                                         v-text="errors.periods[0]">
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div
+                                    :class="{'has-danger': errors.description}"
+                                    class="form-group">
+                                    <label class="control-label">
+                                        Descripcion
+                                    </label>
+                                    <el-input
+                                        v-model="form_data.description"
+                                    ></el-input>
+                                    <small
+                                        v-if="errors.description"
+                                        class="form-control-feedback"
+                                        v-text="errors.description[0]">
                                     </small>
                                 </div>
                             </div>
@@ -104,7 +106,7 @@
                                                 <th></th>
                                             </tr>
                                             </thead>
-                                            <tbody v-if="fakeForm.items !== undefined && fakeForm.items.length > 0" >
+                                            <tbody v-if="fakeForm.items !== undefined && fakeForm.items.length > 0">
                                             <tr v-for="(row, index) in fakeForm.items"
                                                 :key="index">
                                                 <td>{{ index + 1 }}</td>
@@ -147,7 +149,7 @@
                                         </table>
                                     </div>
                                 </div>
-                                <div class="col-lg-12 col-md-6 d-flex align-items-end">
+                                <div class="col-12  text-center">
                                     <div class="form-group">
                                         <button class="btn waves-effect waves-light btn-primary"
                                                 type="button"
@@ -155,34 +157,38 @@
                                         </button>
                                     </div>
                                 </div>
-
-                                <div class="col-md-8 mt-3">
-
-                                </div>
-
-                                <div class="col-md-4">
+                                <div class="col-xlg-push-8 col-4 text-right">
                                     <p v-if="fakeForm.total_exportation > 0"
-                                       class="text-right">OP.EXPORTACIÓN: {{ currency_type.symbol }}
-                                                          {{ fakeForm.total_exportation }}</p>
+                                       class="text-right">
+                                        OP.EXPORTACIÓN: {{ currency_type.symbol }} {{ fakeForm.total_exportation }}
+                                    </p>
                                     <p v-if="fakeForm.total_free > 0"
-                                       class="text-right">OP.GRATUITAS: {{ currency_type.symbol }}
-                                                          {{ fakeForm.total_free }}</p>
+                                       class="text-right">
+                                        OP.GRATUITAS: {{ currency_type.symbol }} {{ fakeForm.total_free }}
+                                    </p>
                                     <p v-if="fakeForm.total_unaffected > 0"
-                                       class="text-right">OP.INAFECTAS: {{ currency_type.symbol }}
-                                                          {{ fakeForm.total_unaffected }}</p>
+                                       class="text-right">
+                                        OP.INAFECTAS: {{ currency_type.symbol }} {{ fakeForm.total_unaffected }}
+                                    </p>
                                     <p v-if="fakeForm.total_exonerated > 0"
-                                       class="text-right">OP.EXONERADAS: {{ currency_type.symbol }}
-                                                          {{ fakeForm.total_exonerated }}</p>
+                                       class="text-right">
+                                        OP.EXONERADAS: {{ currency_type.symbol }} {{ fakeForm.total_exonerated }}
+                                    </p>
                                     <p v-if="fakeForm.total_taxed > 0"
-                                       class="text-right">OP.GRAVADA: {{ currency_type.symbol }}
-                                                          {{ fakeForm.total_taxed }}</p>
+                                       class="text-right">
+                                        OP.GRAVADA: {{ currency_type.symbol }} {{ fakeForm.total_taxed }}
+                                    </p>
                                     <p v-if="fakeForm.total_igv > 0"
-                                       class="text-right">IGV: {{ currency_type.symbol }} {{
-                                            fakeForm.total_igv
-                                                          }}</p>
+                                       class="text-right">
+                                        IGV: {{ currency_type.symbol }} {{ fakeForm.total_igv }}
+                                    </p>
                                     <h3 v-if="fakeForm.total > 0"
-                                        class="text-right"><b>TOTAL A PAGAR: </b>{{ currency_type.symbol }}
-                                                                                 {{ fakeForm.total }}</h3>
+                                        class="text-right">
+                                        <b>
+                                            TOTAL DEL PLAN:
+                                        </b>
+                                        {{ currency_type.symbol }} {{ fakeForm.total }}
+                                    </h3>
                                 </div>
                             </div>
 
@@ -215,7 +221,7 @@
             :recordItem="recordItem"
             :showDialog.sync="showDialogAddItem"
             :typeUser="config.typeUser"
-
+            :displayDiscount="false"
             @add="addRow"
         >
 
@@ -333,7 +339,7 @@ export default {
             if (this.form_data === undefined) {
                 this.clearForm();
             }
-            this.titleDialog = (this.form_data.id) ? 'Editar Cliente' : 'Nuevo Cliente'
+            this.titleDialog = (this.form_data.id) ? 'Editar Plan' : 'Nuevo Plan'
             if (this.form_data.items === undefined) this.form_data.items = [];
             if (this.fakeForm.currency_type_id === undefined) this.fakeForm.currency_type_id = this.config.currency_type_id;
             this.fakeForm = this.form_data
