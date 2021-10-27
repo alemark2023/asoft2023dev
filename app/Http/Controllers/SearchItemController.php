@@ -123,9 +123,9 @@
                     ->whereNotIsSet();
                 $ItemToSearchBySeries->WhereService()
                     ->whereNotIsSet();
-
-
             }
+
+
             $item->with('warehousePrices');
             $ItemToSearchBySeries->with('warehousePrices');
 
@@ -565,6 +565,20 @@
         {
             $items_not_services = self::getNotServiceItem($request, $id);
             $items_services = self::getServiceItem($request, $id);
+
+            $onlyService = false;
+            if(
+                ($request !== null  && $request->has('only_service') && (bool)$request->only_service == true) ||
+                (isset($_GET['only_service']) && $_GET['only_service'] == 1)
+            ){
+            // Si la busqueda tiene only_service DEBE BUSCAR SOLO SERVICIOS
+                $onlyService = true;
+            }
+
+            if($onlyService == true) {
+                return self::TransformToModal($items_services);
+
+            }
             return self::TransformToModal($items_not_services->merge($items_services));
         }
 

@@ -212,6 +212,10 @@ export default {
     setResource(state, resource) {
         state.resource = resource
     },
+    setItemSearchExtraParameters(state, item_search_extra_parameters) {
+        if(item_search_extra_parameters === undefined) item_search_extra_parameters = {};
+        state.item_search_extra_parameters = item_search_extra_parameters
+    },
     sethasGlobalIgv(state, hasGlobalIgv) {
         if(hasGlobalIgv === undefined) hasGlobalIgv = false;
         state.hasGlobalIgv = hasGlobalIgv

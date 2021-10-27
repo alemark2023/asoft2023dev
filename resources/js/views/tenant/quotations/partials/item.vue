@@ -120,6 +120,7 @@
                                 <br>
                             </template>
                             <el-checkbox v-model="form.has_plastic_bag_taxes"
+                                         v-if="showDiscounts"
                                          :disabled="isEditItemNote">Impuesto a la
                                                                     Bolsa Plástica
                             </el-checkbox>
@@ -238,10 +239,10 @@
                         </div>
                     </div>
                     <div class="clearfix"></div>
-                    <div class="col-md-12 mt-3">
+                    <div class="col-md-12 mt-3" v-if="showDiscounts">
                         <label class="control-label">Atributo extra (visible en PDF)</label>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6"  v-if="showDiscounts">
                         <div :class="{'has-danger': errors.extra_attr_name}"
                              class="form-group">
                             <el-input v-model="form.extra_attr_name"></el-input>
@@ -250,7 +251,7 @@
                                    v-text="errors.extra_attr_name[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6"  v-if="showDiscounts">
                         <div :class="{'has-danger': errors.extra_attr_value}"
                              class="form-group">
                             <el-input v-model="form.extra_attr_value"></el-input>
@@ -320,7 +321,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12 mt-2">
+                        <div class="col-md-12 mt-2" v-if="showDiscounts">
                             <el-collapse v-model="activePanel">
                                 <el-collapse-item :disabled="recordItem != null"
                                                   name="1"
@@ -536,6 +537,7 @@ export default {
         'exchangeRateSale',
         'typeUser',
         'configuration',
+        'displayDiscount',
     ],
     components: {
         itemForm,
@@ -544,6 +546,7 @@ export default {
     },
     data() {
         return {
+            showDiscounts: true,
             extra_temp: undefined,
             operationTypeId: null,
             isEditItemNote: false,
@@ -593,6 +596,14 @@ export default {
         this.loadConfiguration()
         this.$store.commit('setConfiguration', this.configuration)
         this.initForm()
+        if(this.displayDiscount !== undefined){
+            if(this.displayDiscount == true){
+                this.showDiscounts = true;
+            }else{
+                this.showDiscounts = false;
+
+            }
+        }
 
     },
     mounted() {
@@ -609,6 +620,7 @@ export default {
     computed: {
         ...mapState([
             'config',
+            'item_search_extra_parameters',
         ]),
         showLots() {
             // if (
@@ -676,7 +688,15 @@ export default {
             return ItemOptionDescription(item)
         },
         getTables() {
-            this.$http.get(`/${this.resource}/item/tables`).then(response => {
+
+            let params = {};
+            if(this.item_search_extra_parameters !== undefined){
+                if(this.item_search_extra_parameters.only_service !== undefined){
+                    params.only_service = 1;
+                }
+            }
+
+            this.$http.get(`/${this.resource}/item/tables`, {params}).then(response => {
                 let data = response.data
                 this.all_items = data.items
                 this.operation_types = data.operation_types
@@ -749,9 +769,14 @@ export default {
         async searchRemoteItems(input) {
             if (input.length > 2) {
                 this.loading_search = true
-                const params = {
+                let params = {
                     'input': input,
                     'search_by_barcode': this.search_item_by_barcode ? 1 : 0
+                }
+                if(this.item_search_extra_parameters !== undefined){
+                    if(this.item_search_extra_parameters.only_service !== undefined){
+                        params.only_service = 1;
+                    }
                 }
                 await this.$http.get(`/${this.resource}/search-items/`, {params})
                     .then(response => {
@@ -1164,10 +1189,16 @@ export default {
             return this.errors
         },
         async reloadDataItems(item_id) {
+            let params = {};
+            if(this.item_search_extra_parameters !== undefined){
+                if(this.item_search_extra_parameters.only_service !== undefined){
+                    params.only_service = 1;
+                }
+            }
 
             if (!item_id) {
 
-                await this.$http.get(`/${this.resource}/table/items`).then((response) => {
+                await this.$http.get(`/${this.resource}/table/items`,{params}).then((response) => {
                     this.items = response.data
                     this.form.item_id = item_id
                     // if(item_id) this.changeItem()

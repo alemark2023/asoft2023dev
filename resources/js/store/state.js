@@ -11,6 +11,7 @@ export default {
     currency_types: [],
     affectation_igv_types: [],
     unit_types: [],
+    item_search_extra_parameters: {},
     mold: {},
     config: {
         id: 0,
