@@ -135,6 +135,7 @@
             'seller_id',
             'order_id',
             'technical_service_id',
+            'subtotal',
         ];
 
         protected $casts = [
