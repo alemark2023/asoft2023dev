@@ -59,6 +59,8 @@
      * @property-read Collection|Perception[]         $perceptions_where_customer
      * @property-read int|null                        $perceptions_where_customer_count
      * @property-read Collection|PersonAddress[]      $person_addresses
+     * @property int|null                             $person_id
+     * @property-read \App\Models\Tenant\Person       $parent_person
      * @property-read int|null                        $person_addresses_count
      * @property-read PersonType                      $person_type
      * @property-read Province                        $province
@@ -149,6 +151,14 @@
         //         $builder->where('status', 1);
         //     });
         // }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasOne
+         */
+        public function parent_person()
+        {
+            return $this->hasOne(Person::class, 'parent_id');
+        }
 
         /**
          * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -602,5 +612,22 @@
             return $this;
         }
 
+        /**
+         * @return int|null
+         */
+        public function getPersonId(): ?int
+        {
+            return (int)$this->person_id;
+        }
 
+        /**
+         * @param int|null $person_id
+         *
+         * @return Person
+         */
+        public function setPersonId(?int $person_id): Person
+        {
+            $this->person_id = (int)$person_id;
+            return $this;
+        }
     }
