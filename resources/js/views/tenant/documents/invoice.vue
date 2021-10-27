@@ -2503,7 +2503,7 @@ export default {
             this.$eventHub.$emit('eventInitForm')
 
             this.initInputPerson()
-
+            
             if (!this.config.restrict_receipt_date) {
                 this.datEmision = {}
             }
@@ -2707,6 +2707,8 @@ export default {
             }
         },
         changeDocumentType() {
+
+            this.validateDateOfIssue()
             this.filterSeries();
             this.cleanCustomer();
             this.filterCustomers();
@@ -2714,14 +2716,34 @@ export default {
         cleanCustomer() {
             this.form.customer_id = null
         },
-        changeDateOfIssue() {
+        dateValidError(){
+            
+            this.$message.error('No puede seleccionar una fecha menor a 6 días.');
+            this.dateValid = false
+
+        },
+        validateDateOfIssue(){
+
             let minDate = moment().subtract(7, 'days')
-            if (moment(this.form.date_of_issue) < minDate && this.config.restrict_receipt_date) {
-                this.$message.error('No puede seleccionar una fecha menor a 6 días.');
-                this.dateValid = false
+
+            // validar fecha de factura sin considerar configuracion
+            if (moment(this.form.date_of_issue) < minDate && this.form.document_type_id === '01') {
+
+                this.dateValidError()
+            }
+            else if (moment(this.form.date_of_issue) < minDate && this.config.restrict_receipt_date) {
+
+                this.dateValidError()
+
             } else {
                 this.dateValid = true
             }
+
+        },
+        changeDateOfIssue() {
+
+            this.validateDateOfIssue()
+
             this.form.date_of_due = this.form.date_of_issue
             // if (! this.isUpdate) {
             this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
