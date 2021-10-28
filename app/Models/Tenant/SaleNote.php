@@ -2,7 +2,6 @@
 
     namespace App\Models\Tenant;
 
-    use App\Models\Tenant\GuideFile;
     use App\Models\Tenant\Catalogs\CurrencyType;
     use App\Traits\SellerIdTrait;
     use Illuminate\Database\Eloquent\Collection;
@@ -152,6 +151,7 @@
             });
 
         }
+
         /**
          * Busca el ultimo numero basado en series y el prefijo.
          *
@@ -171,7 +171,7 @@
                 ->orderBy('number', 'desc')
                 ->first();
             $return = 0;
-            if (!empty($sn)) {
+            if ( !empty($sn)) {
                 $return += $sn->number;
             }
             return $return + 1;
@@ -501,19 +501,19 @@
             // se guarda el id del documento en el NV
             /** @var Collection $documents */
             $documents = $this->documents;
-            if (!empty($document_id) && $documents->count() < 1) {
+            if ( !empty($document_id) && $documents->count() < 1) {
                 $documents = Document::where('id', $document_id)->get();
             }
             $total_documents = $documents->count();
 
             $btn_generate = ($total_documents > 0) ? false : true;
             $btn_payments = ($total_documents > 0) ? false : true;
-            $due_date = (!empty($this->due_date)) ? $this->due_date->format('Y-m-d') : null;
+            $due_date = ( !empty($this->due_date)) ? $this->due_date->format('Y-m-d') : null;
 
             $this->seller_id = $this->user_id;
             $this->payments = $this->getTransformPayments();
             $message_text = '';
-            if (!empty($this->number_full) && !empty($this->external_id)) {
+            if ( !empty($this->number_full) && !empty($this->external_id)) {
                 $message_text = "Su comprobante de nota de venta {$this->number_full} ha sido generado correctamente, puede revisarlo en el siguiente enlace: " .
                     url('') . "/sale-notes/print/{$this->external_id}/a4" . '';
             }
@@ -859,9 +859,10 @@
          *
          * @return \Illuminate\Database\Eloquent\Builder
          */
-        public function scopeWhereEstablishmentId(\Illuminate\Database\Eloquent\Builder $query,$establishment_id = 0){
+        public function scopeWhereEstablishmentId(\Illuminate\Database\Eloquent\Builder $query, $establishment_id = 0)
+        {
 
-            if($establishment_id != 0){
+            if ($establishment_id != 0) {
                 $query->where('establishment_id', $establishment_id);
             }
             return $query;
