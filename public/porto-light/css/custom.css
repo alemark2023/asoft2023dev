@@ -513,3 +513,7 @@ html.fixed.sidebar-ligth-blue .sidebar-left a:hover {
 .dropdown-item {
   padding: 0.1rem 1.5rem;
 }
+
+.custom-mt-button{
+  margin-top: 1.9rem !important;
+}

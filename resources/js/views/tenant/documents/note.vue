@@ -111,6 +111,47 @@
                                 <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                             </div>
                         </div>
+                        <div class="col-md-4 custom-mt-button" v-if="isCreditNote && hasDiscounts">
+                            <div class="form-group">
+                                <el-popover
+                                    placement="right"
+                                    width="700"
+                                    trigger="click"> 
+                                    
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Descripción</th>
+                                                    <th>Cantidad</th>
+                                                    <th>P. Unitario</th>
+                                                    <th>Descuento</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(row, index) in document_affected.items" :key="index">
+                                                    <td>{{ index + 1 }}</td>
+                                                    <td>{{ row.item.description }}</td>
+                                                    <td>{{ row.quantity }}</td>
+                                                    <td>{{ row.unit_price }}</td>
+                                                    <td>{{ row.total_discount }}</td>
+                                                    <td>{{ row.total }}</td> 
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="6"><b>Descuento: </b> {{ document_affected.total_discount }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="6"><b>Total cpe: </b> {{ document_affected.total }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <el-button slot="reference" type="success"> <i class="fa fa-eye"></i> Documento relacionado</el-button>
+                                </el-popover>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-lg-2 col-md-6 d-flex align-items-end pt-2">
@@ -298,6 +339,7 @@
                 affected_documents: [],
                 temp_total:0,
                 selected_credit_note_type_13: false,
+                apply_change_has_discounts: false
             }
         },
         created() {
@@ -334,6 +376,12 @@
             isCreditNoteAndType13: function () {
                 return (this.form.document_type_id === '07' && this.form.note_credit_or_debit_type_id === '13')
             },
+            hasDiscounts: function () {
+                return (parseFloat(this.document_affected.total_discount) > 0)
+            },
+            isCreditNote: function () {
+                return (this.form.document_type_id === '07')
+            },
         }, 
         methods: {
             onPrepareIndividualItem(data) {
@@ -351,7 +399,8 @@
 
                     i.unit_price_value = 0;
                     i.input_unit_price_value = 0;
-                    i.discounts = (i.discounts) ? Object.values(i.discounts) : []
+                    i.discounts = [] //no existe tags en xml para descuentos
+                    // i.discounts = (i.discounts) ? Object.values(i.discounts) : []
                     i.charges = i.charges || [];
                     i.attributes = i.attributes || [];
                     i.item.id = i.item_id;
@@ -378,6 +427,11 @@
             async recalculateItems() {
                 
                 let items = []
+
+                //si el cpe relacionado tiene descuentos, se asigna los items para que pueda recalcular a monto 0
+                if(this.hasDiscounts && this.form.items.length == 0){
+                    this.form.items = this.document.items
+                }
                 
                 await this.onPrepareItems(this.form.items).forEach((row) => {
                     items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
@@ -448,13 +502,22 @@
                 // si se seleccionó el tipo de nota 13, se deberá reiniciar la data
                 if(this.selected_credit_note_type_13){
 
-                    this.form.payment_condition_id = null
-                    this.form.fee = []
-                    await this.getNote()
-                    await this.initFormCreditNoteAndType13()
-                    // this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
-                    // this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
-                    // this.form.series_id = (this.series.length > 0)?this.series[0].id:null
+                    //si no tiene descuento, se puede inicializar la data, caso contrario los items se deben agregar manualmente
+                    if(!this.hasDiscounts){
+
+                        this.form.payment_condition_id = null
+                        this.form.fee = []
+                        await this.getNote()
+                        await this.initFormCreditNoteAndType13()
+                        // this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
+                        // this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
+                        // this.form.series_id = (this.series.length > 0)?this.series[0].id:null
+
+                    }else{
+                        this.form.items = []
+                        this.form.fee = []
+                    }
+
                 }
 
             },
@@ -474,7 +537,7 @@
                 this.form.exchange_rate_sale= this.document.exchange_rate_sale
                 this.form.total_prepayment =this.document.total_prepayment
                 this.form.total_charge= this.document.total_charge
-                this.form.total_discount= this.document.total_discount
+                // this.form.total_discount= this.document.total_discount
                 this.form.total_exportation= this.document.total_exportation
                 this.form.total_free= this.document.total_free
                 this.form.total_taxed= this.document.total_taxed
@@ -511,6 +574,9 @@
 
             },
             async initForm() {
+
+                // console.log(this.hasDiscounts)
+
                 this.errors = {}
                 this.form = {
                     establishment_id: this.document.establishment_id,
@@ -525,7 +591,7 @@
                     exchange_rate_sale: 0,
                     total_prepayment:this.document.total_prepayment,
                     total_charge: this.document.total_charge,
-                    total_discount: this.document.total_discount,
+                    // total_discount: this.document.total_discount,
                     total_exportation: this.document.total_exportation,
                     total_free: this.document.total_free,
                     total_taxed: this.document.total_taxed,
@@ -563,6 +629,25 @@
 
                 this.temp_total = this.form.total
                 this.selected_credit_note_type_13 = false
+                this.apply_change_has_discounts = false
+
+            },
+            validateHasDiscounts(){
+
+                if(this.isCreditNote && this.hasDiscounts){
+
+                    this.$message.error('El comprobante relacionado tiene descuentos, debe agregar los productos');
+                    this.form.items = []
+                    this.calculateTotal()
+                    this.apply_change_has_discounts = true
+
+                }else{
+                    //inicializar data cuando se haya aplicado modificacion a los items por descuento
+                    if(this.apply_change_has_discounts){
+                        this.initFormCreditNoteAndType13()
+                        // console.log("app")
+                    }
+                }
 
             },
             clickAddItemNote(){
@@ -648,6 +733,7 @@
                 this.form.series_id = (this.series.length > 0)?this.series[0].id:null
 
                 this.initData()
+                this.validateHasDiscounts()
 
             },
             changeDateOfIssue() {
@@ -726,9 +812,14 @@
                 this.form.total = _.round(total, 2) + this.form.total_plastic_bag_taxes
 
             },
-            submit() {
+            async submit() {
+
+                if(this.isCreditNote && this.hasDiscounts && this.form.total > this.document.total){
+                    return this.$message.error(`El monto total de la nota de credito debe ser menor o igual al monto del documento relacionado (${this.document.total})`)
+                }
+
                 this.loading_submit = true
-                this.$http.post(`/${this.resource}`, this.form)
+                await this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {
                             this.resetForm()
