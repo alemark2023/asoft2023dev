@@ -63,6 +63,8 @@ use Modules\Item\Http\Requests\BrandRequest;
 use Modules\Item\Http\Requests\CategoryRequest;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
+use Html2Text\Html2Text;
+
 
 class DocumentController extends Controller
 {
@@ -513,6 +515,22 @@ class DocumentController extends Controller
 
     public function store(DocumentRequest $request)
     {
+
+        // foreach ($request->items as $item) {
+
+        //     // dd(strlen($item['name_product_xml']));
+        //     if($item['name_product_xml']){
+        //         if(strlen($item['name_product_xml']) > 500){
+        //             return [
+        //                 'success' => false,
+        //                 'message' => "El campo Nombre producto en PDF/XML no puede superar los 500 caracteres - Producto/Servicio: {$item['item']['description']}"
+        //             ];
+        //         }
+        //     }
+
+        // }
+        // dd($request->all());
+
         $res = $this->storeWithData($request->all());
         $document_id = $res['data']['id'];
         $this->associateDispatchesToDocument($request, $document_id);
