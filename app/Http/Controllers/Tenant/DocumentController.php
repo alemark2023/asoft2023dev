@@ -63,6 +63,8 @@ use Modules\Item\Http\Requests\BrandRequest;
 use Modules\Item\Http\Requests\CategoryRequest;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
+use Html2Text\Html2Text;
+
 
 class DocumentController extends Controller
 {
@@ -513,6 +515,9 @@ class DocumentController extends Controller
 
     public function store(DocumentRequest $request)
     {
+        $validate = $this->validateDocument($request);
+        if(!$validate['success']) return $validate;
+
         $res = $this->storeWithData($request->all());
         $document_id = $res['data']['id'];
         $this->associateDispatchesToDocument($request, $document_id);
@@ -520,6 +525,38 @@ class DocumentController extends Controller
 
         return $res;
     }
+
+    
+    /**
+     * Validaciones previas al proceso de facturacion
+     *
+     * @param array $request
+     * @return array
+     */
+    public function validateDocument($request)
+    {
+
+        // validar nombre de producto pdf en xml - items
+        foreach ($request->items as $item) {
+
+            if($item['name_product_xml']){
+                // validar error 2027 sunat
+                if(mb_strlen($item['name_product_xml']) > 500){
+                    return [
+                        'success' => false,
+                        'message' => "El campo Nombre producto en PDF/XML no puede superar los 500 caracteres - Producto/Servicio: {$item['item']['description']}"
+                    ];
+                }
+            }
+        }
+
+        return [
+            'success' => true,
+            'message' => ''
+        ];
+
+    }
+
 
     /**
      * @param array $data
@@ -624,6 +661,10 @@ class DocumentController extends Controller
      */
     public function update(DocumentUpdateRequest $request, $id)
     {
+        
+        $validate = $this->validateDocument($request);
+        if(!$validate['success']) return $validate;
+
         $fact = DB::connection('tenant')->transaction(function () use ($request, $id) {
             $facturalo = new Facturalo();
             $facturalo->update($request->all(), $id);

@@ -78,7 +78,8 @@
             'total_plastic_bag_taxes',
             'warehouse_id',
             'name_product_pdf',
-            'additional_information'
+            'additional_information',
+            'name_product_xml',
         ];
 
         public static function boot()

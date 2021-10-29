@@ -568,7 +568,11 @@
             @endif
         </cac:TaxTotal>
         <cac:Item>
+            @if($row->name_product_xml)
+            <cbc:Description><![CDATA[{{ $row->name_product_xml }}]]></cbc:Description>
+            @else
             <cbc:Description><![CDATA[{{ $row->item->description }}]]></cbc:Description>
+            @endif
             @if($row->item->internal_id)
             <cac:SellersItemIdentification>
                 <cbc:ID>{{ $row->item->internal_id }}</cbc:ID>
