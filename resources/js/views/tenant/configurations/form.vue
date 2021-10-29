@@ -44,7 +44,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <!-- sunat ha dado de baja estos servidores -->
+                                <!-- <div class="row">
                                     <div v-if="typeUser != 'integrator'"
                                          class="col-md-6 mt-4">
                                         <label class="control-label">Envío de comprobantes a servidor alterno de
@@ -60,7 +61,7 @@
                                                    v-text="errors.sunat_alternate_server[0]"></small>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                             </el-tab-pane>
                             <el-tab-pane class="mb-3"
                                          name="second">
@@ -217,12 +218,12 @@
                                         </div>
                                     </div>
 
-                                    
+
                                     <div v-if="typeUser != 'integrator'"
                                          class="col-md-4 mt-4">
                                         <label class="control-label">
                                             Porcentaje retención IGV
-                                            
+
                                             <el-tooltip
                                                 class="item"
                                                 content="Disponible Nuevo CPE"
