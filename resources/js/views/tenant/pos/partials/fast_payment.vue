@@ -1,132 +1,12 @@
 <template>
-    <div v-loading="loading_submit"
-         class="row col-lg-12 m-0 p-0">
+    <div class="row col-lg-12 m-0 p-0">
         <Keypress :key-code="113"
                   key-event="keyup"
                   @success="handleFn113"/>
 
-        <div class="col-lg-4 col-md-6 bg-white m-0 p-0"
-             style="height: calc(100vh - 110px)">
-            <div class="h-60 bg-white"
-                 style="overflow-y: auto">
-
-                <div class="row pl-3 pt-3 border-bottom m-0 p-0 bg-white">
-                    <div class="col-12 px-0">
-                        <h4 class="font-weight-semibold m-0 text-secondary">{{ customer.description }}</h4>
-                    </div>
-                </div>
-
-                <template v-for="(item,index) in form.items">
-                    <div :key="index"
-                         class="row py-1 border-bottom m-0 p-0 bg-white">
-                        <div class="col-2 p-r-0 m-l-2">
-                            <h5 class="font-weight-semibold m-0 text-secondary">{{ item.quantity }}</h5>
-
-                        </div>
-                        <div class="col-6 px-0">
-                            <h5 class="font-weight-semibold m-0 m-b-0 text-secondary">{{ item.item.description }}</h5>
-                            <!-- <p class="m-b-0">Descripción del producto</p> -->
-                            <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
-                        </div>
-                        <div class="col-4 p-l-0">
-                            <!-- <p class="font-weight-semibold m-b-0">{{currencyTypeActive.symbol}} 240.00</p> -->
-                            <h5 class="font-weight-semibold m-0 text-right text-secondary">
-                                {{ currencyTypeActive.symbol }} {{ item.total }}</h5>
-                        </div>
-                    </div>
-                </template>
-
-
-            </div>
-            <div class="h-40 bg-info"
-                 style="overflow-y: auto">
-                <template v-if="form.total_plastic_bag_taxes > 0">
-                    <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
-                        <div class="col-sm-6 py-1">
-                            <p class="font-weight-semibold mb-0">SUBTOTAL</p>
-                        </div>
-                        <div class="col-sm-6 py-1 text-right">
-                            <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }} {{
-                                    form.total_taxed
-                                                                 }}</p>
-                        </div>
-                    </div>
-                    <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
-                        <div class="col-sm-6 py-1">
-                            <p class="font-weight-semibold mb-0">IGV</p>
-                        </div>
-                        <div class="col-sm-6 py-1 text-right">
-                            <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
-                                                                 {{ form.total_igv }}</p>
-                        </div>
-                    </div>
-                    <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
-                        <div class="col-sm-6 py-1">
-                            <p class="font-weight-semibold mb-0">ICBPER</p>
-                        </div>
-                        <div class="col-sm-6 py-1 text-right">
-                            <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
-                                                                 {{ form.total_plastic_bag_taxes }}</p>
-                        </div>
-                    </div>
-                </template>
-                <template v-else>
-                    <div class="row m-0 p-0 bg-white h-25 d-flex align-items-center">
-                        <div class="col-sm-6 py-1">
-                            <p class="font-weight-semibold mb-0">SUBTOTAL</p>
-                        </div>
-                        <div class="col-sm-6 py-1 text-right">
-                            <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }} {{
-                                    form.total_taxed
-                                                                 }}</p>
-                        </div>
-                    </div>
-                    <div class="row m-0 p-0 bg-white h-25 d-flex align-items-center">
-                        <div class="col-sm-6 py-1">
-                            <p class="font-weight-semibold mb-0">IGV</p>
-                        </div>
-                        <div class="col-sm-6 py-1 text-right">
-                            <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
-                                                                 {{ form.total_igv }}</p>
-                        </div>
-                    </div>
-                </template>
-
-                <!-- <div class="row m-0 p-0 bg-white">
-                    <div class="col-sm-6 py-1">
-                        <p class="font-weight-semibold mb-0">DESCUENTO</p>
-                    </div>
-                    <div class="col-sm-6 py-1 text-right">
-                        <p class="font-weight-semibold mb-0">{{currencyTypeActive.symbol}} 4.00</p>
-                    </div>
-                </div> -->
-                <div class="row m-0 p-0 h-25 d-flex align-items-center">
-                    <div class="col-sm-6 py-2">
-                        <p class="font-weight-semibold mb-0 text-white">TOTAL</p>
-                    </div>
-                    <div class="col-sm-6 py-2 text-right">
-                        <h4 class="font-weight-semibold mb-0 text-white">{{ currencyTypeActive.symbol }} {{form.total}}</h4>
-                    </div>
-                </div>
-                <div class="row m-0 p-0 h-25 d-flex align-items-center bg-white">
-                    <div class="col-lg-6">
-                        <button :disabled="button_payment"
-                                class="btn btn-block btn-primary"
-                                @click="clickPayment">PAGAR
-                        </button>
-                    </div>
-                    <div class="col-lg-6">
-                        <button class="btn btn-block btn-danger"
-                                @click="clickCancel">CANCELAR
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-8 col-md-6 px-4 pt-3 hyo">
-            <div class="row d-flex justify-content-center pt-2">
-                <div class="col-lg-6 col-md-6 ">
-
+        <div class="col-12">
+            <div class="row">
+                <div class="col-3">
                     <el-radio-group v-model="form.document_type_id"
                                     size="small"
                                     @change="filterSeries">
@@ -135,9 +15,7 @@
                         <el-radio-button label="80">N. VENTA</el-radio-button>
                     </el-radio-group>
                 </div>
-
-                <div class="col-lg-2 col-md-2">
-
+                <div class="col-3">
                     <el-select v-model="form.series_id"
                                class="c-width">
                         <el-option v-for="option in series"
@@ -147,231 +25,189 @@
                         </el-option>
                     </el-select>
                 </div>
-                <div class="col-lg-2 col-md-2">
-
-                    <button class="btn btn-sm btn-block btn-primary"
-                            @click="back"><i class="fas fa-angle-left"></i> Regresar
-                    </button>
-
-                </div>
-
-
-                <div class="col-lg-8">
-                    <div class="card card-default">
-
-                        <div class="card-body text-center">
-                            <p class="my-0"><small>Monto a cobrar</small></p>
-                            <!-- <template v-if="enabled_discount && form.total_payable_amount">
-                                <h1 class="mb-2 mt-0">{{ currencyTypeActive.symbol }} {{ form.total_payable_amount }}</h1>
-                            </template>
-                            <template v-else> -->
-                                <h1 class="mb-2 mt-0">{{ currencyTypeActive.symbol }} {{ form.total }}</h1>
-                            <!-- </template> -->
-                        </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label class="control-label">Ingrese monto</label>
+                        <el-input ref="enter_amount"
+                                    v-model="enter_amount"
+                                    @input="enterAmount()"
+                                    @keyup.enter.native="keyupEnterAmount()">
+                            <template slot="prepend">{{ currencyTypeActive.symbol }}</template>
+                        </el-input>
                     </div>
                 </div>
-                <div class="col-lg-8">
-                    <div class="card card-default">
-
-                        <div class="card-body text-center">
-
-                            <div class="row col-lg-12">
-                                <div class="col-lg-6">
-                                    <div class="form-group">
-                                        <label class="control-label">Ingrese monto</label>
-                                        <el-input ref="enter_amount"
-                                                  v-model="enter_amount"
-                                                  @input="enterAmount()"
-                                                  @keyup.enter.native="keyupEnterAmount()">
-                                            <template slot="prepend">{{ currencyTypeActive.symbol }}</template>
-                                        </el-input>
-
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-6">
-                                    <div :class="{'has-danger': difference < 0}"
-                                         class="form-group">
-                                        <label class="control-label"
-                                               v-text="(difference <0) ? 'Faltante' :'Vuelto'"></label>
-                                        <!-- <el-input v-model="difference" :disabled="true">
-                                            <template slot="prepend">{{currencyTypeActive.symbol}}</template>
-                                        </el-input> -->
-                                        <h4 class="control-label font-weight-semibold m-0 text-center m-b-0">
-                                            {{ currencyTypeActive.symbol }} {{ difference }}</h4>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
+                <div class="col-6">
+                    <div :class="{'has-danger': difference < 0}"
+                            class="form-group">
+                        <label class="control-label"
+                                v-text="(difference <0) ? 'Faltante' :'Vuelto'"></label>
+                        <!-- <el-input v-model="difference" :disabled="true">
+                            <template slot="prepend">{{currencyTypeActive.symbol}}</template>
+                        </el-input> -->
+                        <h4 class="control-label font-weight-semibold m-0 text-center m-b-0">
+                            {{ currencyTypeActive.symbol }} {{ difference }}</h4>
                     </div>
                 </div>
-
-                <div class="col-lg-8">
-                    <div class="card card-default">
-
-                        <div class="card-body text-center">
-
-                            <div class="row col-lg-12">
-                                <div class="col-lg-6">
-                                    <div class="form-group">
-                                        <h2>
-                                            <el-switch v-model="enabled_discount"
-                                                       active-text="Aplicar descuento"
-                                                       class="control-label font-weight-semibold m-0 text-center m-b-0"
-                                                       @change="changeEnabledDiscount"></el-switch>
-                                        </h2>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="form-group">
-                                        <label class="control-label">Monto descuento</label>
-                                        <el-input v-model="discount_amount"
-                                                  :disabled="!enabled_discount"
-                                                  @input="inputDiscountAmount()">
-                                            <template slot="prepend">{{ currencyTypeActive.symbol }}</template>
-                                        </el-input>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div v-if="businessTurns.active"
-                                 class="row col-md-12 col-lg-12">
-                                <div class="col-md-6 col-lg-6"></div>
-                                <div class="col-md-6 col-lg-6">
-                                    <div class="form-group">
-                                        <label class="control-label">N° Placa</label>
-                                        <el-input v-model="form.plate_number"
-                                                  type="textarea"></el-input>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <h2>
+                            <el-switch v-model="enabled_discount"
+                                        active-text="Aplicar descuento"
+                                        class="control-label font-weight-semibold m-0 text-center m-b-0"
+                                        @change="changeEnabledDiscount"></el-switch>
+                        </h2>
                     </div>
                 </div>
-                <div class="col-lg-8">
-                    <div class="card card-default">
-                        <div class="card-body">
-                            <!-- <p class="text-center">Método de Pago</p> -->
-                            <div class="input-group mb-3">
-                                <div class="col-lg-12 m-bottom">
-                                    <div class="row">
-
-                                        <div class="col-lg-6">
-                                            <h5><strong>Pagos agregados </strong></h5>
-                                        </div>
-                                        <div class="col-lg-1">
-                                        </div>
-                                        <div class="col-lg-5">
-                                            <button class="btn btn-sm btn-block btn-primary"
-                                                    @click="clickAddPayment()"><i class="fas fa-plus"></i> Agregar
-                                            </button>
-
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-12 m-bottom">
-                                    <div class="row">
-                                        <template v-for="(pay,index) in form.payments">
-                                            <div :key="pay.id"
-                                                 class="col-lg-1">
-                                                <label>{{ index + 1 }}.-</label>
-                                            </div>
-                                            <div :key="pay.id"
-                                                 class="col-lg-6">
-                                                <label>{{ getDescriptionPaymentMethodType(pay.payment_method_type_id) }}</label>
-                                            </div>
-                                            <div :key="pay.id"
-                                                 class="col-lg-5">
-                                                <label><strong>{{ currencyTypeActive.symbol }}
-                                                               {{ pay.payment }}</strong> </label>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </div>
-                                <!-- <div class="col-lg-12 m-bottom">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <label class="control-label" >Método de Pago</label>
-
-                                            <el-select v-model="form_payment.payment_method_type_id" @change="changePaymentMethodType">
-                                                    <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                            </el-select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12 m-bottom" v-if="has_card">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <label class="control-label" >Tarjeta
-                                            <a class="text-info" @click.prevent="showDialogNewCardBrand = true" href="#">[+ Nueva]</a>
-                                            </label>
-                                            <el-select v-model="form_payment.card_brand_id">
-                                                    <el-option v-for="option in cards_brand" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                            </el-select>
-
-                                        </div>
-
-                                    </div>
-                                </div>
-                                <div class="col-lg-12 m-bottom" >
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <label class="control-label"  >Referencia</label>
-                                            <el-input v-model="form_payment.reference" >
-                                            </el-input>
-                                        </div>
-                                    </div>
-                                </div>-->
-                                <div v-if="form_payment.payment_method_type_id=='01'"
-                                     class="col-lg-12">
-                                    <div class="row">
-                                        <div class="col-lg-3">
-                                            <button class="btn btn-block btn-secondary"
-                                                    @click="setAmountCash(10)">{{ currencyTypeActive.symbol }}10
-                                            </button>
-                                        </div>
-                                        <div class="col-lg-3">
-                                            <button class="btn btn-block btn-secondary"
-                                                    @click="setAmountCash(20)">{{ currencyTypeActive.symbol }}20
-                                            </button>
-                                        </div>
-                                        <div class="col-lg-3">
-                                            <button class="btn btn-block btn-secondary"
-                                                    @click="setAmountCash(50)">{{ currencyTypeActive.symbol }}50
-                                            </button>
-                                        </div>
-                                        <div class="col-lg-3">
-                                            <button class="btn btn-block btn-secondary"
-                                                    @click="setAmountCash(100)">{{ currencyTypeActive.symbol }}100
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label class="control-label">Monto descuento</label>
+                        <el-input v-model="discount_amount"
+                                    :disabled="!enabled_discount"
+                                    @input="inputDiscountAmount()">
+                            <template slot="prepend">{{ currencyTypeActive.symbol }}</template>
+                        </el-input>
                     </div>
                 </div>
-                <div class="col-lg-8">
-                    <div class="card card-default">
-                        <div class="card-body text-center">
-                            <div class="row col-lg-12">
-                                <div class="col-md-12 col-lg-12">
-                                    <div class="form-group">
-                                        <label class="control-label">Datos de referencia</label>
-                                        <el-input v-model="form.reference_data"
-                                                  type="textarea"></el-input>
-                                    </div>
-                                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div v-if="businessTurns.active" class="row col-md-12 col-lg-12">
+                        <div class="col-md-6 col-lg-6"></div>
+                        <div class="col-md-6 col-lg-6">
+                            <div class="form-group">
+                                <label class="control-label">N° Placa</label>
+                                <el-input v-model="form.plate_number" type="textarea"></el-input>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="input-group mb-3">
+                    <div class="col-lg-12 m-bottom">
+                        <div class="row">
+
+                            <div class="col-lg-6">
+                                <h5><strong>Pagos agregados </strong></h5>
+                            </div>
+                            <div class="col-lg-1">
+                            </div>
+                            <div class="col-lg-5">
+                                <button class="btn btn-sm btn-block btn-primary"
+                                        @click="clickAddPayment()"><i class="fas fa-plus"></i> Agregar
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12 m-bottom">
+                        <div class="row">
+                            <template v-for="(pay,index) in form.payments">
+                                <div :key="pay.id"
+                                        class="col-lg-1">
+                                    <label>{{ index + 1 }}.-</label>
+                                </div>
+                                <div :key="pay.id"
+                                        class="col-lg-6">
+                                    <label>{{ getDescriptionPaymentMethodType(pay.payment_method_type_id) }}</label>
+                                </div>
+                                <div :key="pay.id"
+                                        class="col-lg-5">
+                                    <label><strong>{{ currencyTypeActive.symbol }}
+                                                    {{ pay.payment }}</strong> </label>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row">
+
+            </div>
+            <div>
+                <div>
+                    <template v-if="form.total_plastic_bag_taxes > 0">
+                        <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
+                            <div class="col-sm-6 py-1">
+                                <p class="font-weight-semibold mb-0">SUBTOTAL</p>
+                            </div>
+                            <div class="col-sm-6 py-1 text-right">
+                                <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }} {{
+                                        form.total_taxed
+                                                                    }}</p>
+                            </div>
+                        </div>
+                        <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
+                            <div class="col-sm-6 py-1">
+                                <p class="font-weight-semibold mb-0">IGV</p>
+                            </div>
+                            <div class="col-sm-6 py-1 text-right">
+                                <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
+                                                                    {{ form.total_igv }}</p>
+                            </div>
+                        </div>
+                        <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
+                            <div class="col-sm-6 py-1">
+                                <p class="font-weight-semibold mb-0">ICBPER</p>
+                            </div>
+                            <div class="col-sm-6 py-1 text-right">
+                                <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
+                                                                    {{ form.total_plastic_bag_taxes }}</p>
+                            </div>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <div class="row m-0 p-0 bg-white h-25 d-flex align-items-center">
+                            <div class="col-sm-6 py-1">
+                                <p class="font-weight-semibold mb-0">SUBTOTAL</p>
+                            </div>
+                            <div class="col-sm-6 py-1 text-right">
+                                <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }} {{
+                                        form.total_taxed
+                                                                    }}</p>
+                            </div>
+                        </div>
+                        <div class="row m-0 p-0 bg-white h-25 d-flex align-items-center">
+                            <div class="col-sm-6 py-1">
+                                <p class="font-weight-semibold mb-0">IGV</p>
+                            </div>
+                            <div class="col-sm-6 py-1 text-right">
+                                <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
+                                                                    {{ form.total_igv }}</p>
+                            </div>
+                        </div>
+                    </template>
+                    <div class="row m-0 p-0 h-25 d-flex align-items-center">
+                        <div class="col-sm-6 py-2">
+                            <p class="font-weight-semibold mb-0 text-white">TOTAL</p>
+                        </div>
+                        <div class="col-sm-6 py-2 text-right">
+                            <h4 class="font-weight-semibold mb-0 text-white">{{ currencyTypeActive.symbol }} {{form.total}}</h4>
+                        </div>
+                    </div>
+                    <div class="row m-0 p-0 h-25 d-flex align-items-center bg-white">
+                        <div class="col-lg-6">
+                            <button :disabled="button_payment"
+                                    class="btn btn-block btn-primary"
+                                    @click="clickPayment">PAGAR
+                            </button>
+                        </div>
+                        <div class="col-lg-6">
+                            <button class="btn btn-block btn-danger"
+                                    @click="clickCancel">CANCELAR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
         <options-form
             :recordId="documentNewId"
             :resource="resource_options"

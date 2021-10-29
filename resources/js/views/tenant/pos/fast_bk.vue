@@ -393,7 +393,7 @@
                                                 <el-popover
                                                     placement="top"
                                                     title="Precios"
-                                                    width="370"
+                                                    width="240"
                                                     trigger="click"
                                                 >
                                                     <el-table
@@ -446,12 +446,6 @@
                                                             label="Unidad"
                                                             property="unit_type_id"
                                                         ></el-table-column>
-                                                        <el-table-column
-                                                            width="120"
-                                                            label="Descripción"
-                                                            property="description"
-                                                        ></el-table-column>
-
                                                         <el-table-column
                                                             width="80"
                                                             label=""
@@ -527,151 +521,175 @@
                 class="col-lg-4 col-md-6 bg-white m-0 p-0"
                 style="height: calc(100vh - 110px)"
             >
-                <div class="h-75 bg-light" style="overflow-y: auto">
-                    <div class="row py-3 border-bottom m-0 p-0">
-                        <div class="col-8">
-                            <el-select
-                                ref="select_person"
-                                v-model="form.customer_id"
-                                filterable
-                                placeholder="Cliente"
-                                @change="changeCustomer"
-                                @keyup.native="keyupCustomer"
-                                @keyup.enter.native="keyupEnterCustomer"
-                                @focus="focusClienteSelect = true"
-                                @blur="focusClienteSelect = false"
-                            >
-                                <el-option
-                                    v-for="option in all_customers"
-                                    :key="option.id"
-                                    :label="option.description"
-                                    :value="option.id"
-                                ></el-option>
-                            </el-select>
+                <div class="h-50 bg-light" style="overflow-y: auto">
+                    <div class="h-40" style="overflow-y: auto">
+                        <div class="row pt-3 border-bottom m-0 p-0">
+                            <div class="col-lg-8 col-md-8">
+                                <el-radio-group v-model="form.document_type_id" size="small" @change="filterSeries">
+                                    <el-radio-button label="01"><span style="font-size: 10px;">FACTURA</span></el-radio-button>
+                                    <el-radio-button label="03"><span style="font-size: 10px;">BOLETA</span></el-radio-button>
+                                    <el-radio-button label="80"><span style="font-size: 10px;">N. VENTA</span></el-radio-button>
+                                </el-radio-group>
+                            </div>
+                            <div class="col-lg-4 col-md-4">
+                                <el-select v-model="form.series_id" class="c-width">
+                                    <el-option   v-for="option in series" :key="option.id" :label="option.number" :value="option.id">
+                                    </el-option>
+                                </el-select>
+                            </div>
                         </div>
-                        <div class="col-4">
-                            <div class="btn-group d-flex" role="group">
-                                <a
-                                    class="btn btn-sm btn-default w-100"
-                                    @click.prevent="showDialogNewPerson = true"
+                        <div class="row py-3 border-bottom m-0 p-0">
+                            <div class="col-8">
+                                <el-select
+                                    ref="select_person"
+                                    v-model="form.customer_id"
+                                    filterable
+                                    placeholder="Cliente"
+                                    @change="changeCustomer"
+                                    @keyup.native="keyupCustomer"
+                                    @keyup.enter.native="keyupEnterCustomer"
+                                    @focus="focusClienteSelect = true"
+                                    @blur="focusClienteSelect = false"
                                 >
-                                    <i class="fas fa-plus fa-wf"></i>
-                                </a>
-                                <a
-                                    class="btn btn-sm btn-default w-100"
-                                    @click="clickDeleteCustomer"
-                                >
-                                    <i class="fas fa-trash fa-wf"></i>
-                                </a>
-                                <a
-                                    class="btn btn-sm btn-default w-100"
-                                    @click="selectCurrencyType"
-                                >
-                                    <template
-                                        v-if="form.currency_type_id == 'PEN'"
+                                    <el-option
+                                        v-for="option in all_customers"
+                                        :key="option.id"
+                                        :label="option.description"
+                                        :value="option.id"
+                                    ></el-option>
+                                </el-select>
+                            </div>
+                            <div class="col-4">
+                                <div class="btn-group d-flex" role="group">
+                                    <a
+                                        class="btn btn-sm btn-default w-100"
+                                        @click.prevent="showDialogNewPerson = true"
                                     >
-                                        <strong>S/</strong>
-                                    </template>
-                                    <template v-else>
-                                        <strong>$</strong>
-                                    </template>
-                                    <!-- <i class="fa fa-usd" aria-hidden="true"></i> -->
-                                </a>
+                                        <i class="fas fa-plus fa-wf"></i>
+                                    </a>
+                                    <a
+                                        class="btn btn-sm btn-default w-100"
+                                        @click="clickDeleteCustomer"
+                                    >
+                                        <i class="fas fa-trash fa-wf"></i>
+                                    </a>
+                                    <a
+                                        class="btn btn-sm btn-default w-100"
+                                        @click="selectCurrencyType"
+                                    >
+                                        <template
+                                            v-if="form.currency_type_id == 'PEN'"
+                                        >
+                                            <strong>S/</strong>
+                                        </template>
+                                        <template v-else>
+                                            <strong>$</strong>
+                                        </template>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row py-1 border-bottom m-0 p-0">
-                        <div class="col-12">
-                            <table class="table table-sm table-borderless mb-0 pos-list-items">
-                                <template v-for="(item, index) in form.items">
-                                    <tr :key="index">
-                                        <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
-                                            {{ item.unit_type_id }}
-                                        </td>
-                                        <td style="width: 80px; vertical-align: top">
-                                            <el-input v-model="item.item.aux_quantity"
-                                                      @input="clickAddItem(item, index, true)"
-                                                      @keyup.enter.native="keyupEnterQuantity"></el-input>
-                                            <!-- <el-input
-                                                v-model="item.item.aux_quantity"
-                                                :readonly="
-                                                    item.item.calculate_quantity
-                                                "
-                                                class
-                                                @input="
-                                                    clickAddItem(
-                                                        item,
-                                                        index,
-                                                        true
-                                                    )
-                                                "
-                                                @keyup.enter.native="
-                                                    keyupEnterQuantity
-                                                "
-                                            ></el-input> -->
-                                            <!-- <el-input-number v-model="item.item.aux_quantity" @change="clickAddItem(item,index,true)" :min="1" :max="10"></el-input-number> -->
-                                        </td>
-                                        <td>
-                                            <p class="item-description">
-                                                {{ item.item.description }}
-                                            </p>
-                                            <small>
-                                                {{ nameSets(item.item_id) }}
-                                            </small>
-                                            <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
-                                        </td>
-                                        <!-- <td>
-                      <p class="font-weight-semibold m-0 text-center">{{currency_type.symbol}}</p>
-                    </td>
-                    <td width="30%">
-                      <p class="font-weight-semibold m-0 text-center">
-                        <el-input
-                          v-model="item.item.unit_price"
-                          @blur="blurCalculateQuantity2(index)"
-                        >
-                        </el-input>
-                      </p>
-                    </td> -->
-
-                                        <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
-<!--                                            <p-->
-<!--                                                class="font-weight-semibold m-0 text-center"-->
-<!--                                            >-->
+                    <div class="h-60" style="overflow-y: auto">
+                        <div class="row py-1 border-bottom m-0 p-0">
+                            <div class="col-12">
+                                <table class="table table-sm table-borderless mb-0 pos-list-items">
+                                    <template v-for="(item, index) in form.items">
+                                        <tr :key="index">
+                                            <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
+                                                {{ item.unit_type_id }}
+                                            </td>
+                                            <td style="width: 80px; vertical-align: top">
+                                                <el-input v-model="item.item.aux_quantity"
+                                                          @input="clickAddItem(item, index, true)"
+                                                          @keyup.enter.native="keyupEnterQuantity"></el-input>
+                                            </td>
+                                            <td>
+                                                <p class="item-description">
+                                                    {{ item.item.description }}
+                                                </p>
+                                                <small>
+                                                    {{ nameSets(item.item_id) }}
+                                                </small>
+                                            </td>
+                                            <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
                                                 {{ currency_type.symbol }}
-<!--                                            </p>-->
-                                        </td>
-                                        <td style="width: 80px; vertical-align: top">
-<!--                                            <p class="font-weight-semibold m-0 text-center">-->
-                                                <!-- {{currency_type.symbol}} {{item.total}} -->
-                                            <template v-if="edit_unit_price">
-                                                <el-input
-                                                    v-model="item.total"
-                                                    @input="calculateQuantity(index)"
-                                                    @blur="blurCalculateQuantity(index)"
-                                                    :readonly="!item.item.calculate_quantity">
-                                                    <!--                                                     <template slot="prepend">{{ currency_type.symbol }}</template>-->
-                                                </el-input>
-                                            </template>
-                                            <template v-else>
-                                                {{ item.total }}
-                                            </template>
-<!--                                            </p>-->
-                                        </td>
-                                        <td class="text-right" style="width: 36px; padding-left: 0; padding-right: 0; vertical-align: top">
-                                            <a class="btn btn-sm btn-default" @click="clickDeleteItem(index)">
-                                                <i class="fas fa-trash fa-wf"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </table>
+                                            </td>
+                                            <td style="width: 80px; vertical-align: top">
+                                                <template v-if="edit_unit_price">
+                                                    <el-input
+                                                        v-model="item.total"
+                                                        @input="calculateQuantity(index)"
+                                                        @blur="blurCalculateQuantity(index)"
+                                                        :readonly="!item.item.calculate_quantity">
+                                                    </el-input>
+                                                </template>
+                                                <template v-else>
+                                                    {{ item.total }}
+                                                </template>
+                                            </td>
+                                            <td class="text-right" style="width: 36px; padding-left: 0; padding-right: 0; vertical-align: top">
+                                                <a class="btn btn-sm btn-default" @click="clickDeleteItem(index)">
+                                                    <i class="fas fa-trash fa-wf"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="h-25 bg-light" style="overflow-y: auto">
-                    <div
-                        class="row border-top bg-light m-0 p-0 h-50 d-flex align-items-right pr-5 pt-2"
-                    >
+                <div class="h-50 bg-light" style="overflow-y: auto">
+                    <!-- <div class="h-80" style="overflow-y: auto">
+                        <div class="row py-3 m-0 p-0">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <h2><el-switch @change="changeEnabledDiscount" v-model="enabled_discount" class="control-label font-weight-semibold m-0 text-center m-b-0" active-text="Descuento"></el-switch></h2>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="control-label">Monto</label>
+                                    <el-input v-model="discount_amount" @input="inputDiscountAmount()" :disabled="!enabled_discount">
+                                        <template slot="prepend">{{currency_type.symbol}}</template>
+                                    </el-input>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="control-label">Ingrese monto</label>
+                                    <el-input v-model="enter_amount" @keyup.enter.native="keyupEnterAmount()" @input="enterAmount()" ref="enter_amount">
+                                        <template slot="prepend">{{currency_type.symbol}}</template>
+                                    </el-input>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group" :class="{'has-danger': difference < 0}">
+                                    <label class="control-label" v-text="(difference <0) ? 'Faltante' :'Vuelto'"></label>
+                                    <h4 class="control-label font-weight-semibold m-0 text-center m-b-0">{{currency_type.symbol}} {{difference}}</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row m-0 p-0">
+                            <div class="col-lg-12" v-if="form_payment.payment_method_type_id=='01'">
+                                <div class="row no-gutters">
+                                    <div class="col-lg-3 px-1">
+                                        <button class="btn btn-block btn-secondary" @click="setAmountCash(10)">{{currency_type.symbol}}10</button>
+                                    </div>
+                                    <div class="col-lg-3 px-1">
+                                        <button class="btn btn-block btn-secondary" @click="setAmountCash(20)" >{{currency_type.symbol}}20</button>
+                                    </div>
+                                    <div class="col-lg-3 px-1">
+                                        <button class="btn btn-block btn-secondary" @click="setAmountCash(50)"  >{{currency_type.symbol}}50</button>
+                                    </div>
+                                    <div class="col-lg-3 px-1">
+                                        <button class="btn btn-block btn-secondary"  @click="setAmountCash(100)" >{{currency_type.symbol}}100</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div
                             class="col-md-12"
                             style="display: flex; flex-direction: column; align-items: flex-end;"
@@ -754,36 +772,18 @@
                             </table>
                         </div>
                     </div>
-                    <div
-                        class="row text-white m-0 p-0 h-50 d-flex align-items-center"
-                        @click="clickPayment"
-                        v-bind:class="[
-                            form.total > 0 ? 'bg-info pointer' : 'bg-dark'
-                        ]"
-                    >
+                    <div class="row h-20 text-white py-2 m-0 p-0 d-flex align-items-center align-items-end" @click="clickPayment" v-bind:class="[form.total > 0 ? 'bg-info pointer' : 'bg-dark']">
                         <div class="col-6 text-center">
-                            <i class="fas fa-chevron-circle-right fa fw h5"></i>
-                            <span class="font-weight-semibold h5">PAGO</span>
+                            <span class="font-weight-semibold h5">PAGAR</span>
                         </div>
                         <div class="col-6 text-center">
                             <h5 class="font-weight-semibold h5">
                                 {{ currency_type.symbol }} {{ form.total }}
                             </h5>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
-
-            <fast-payment
-                :is_payment.sync="is_payment"
-                :form="form"
-                :currency-type-id-active="form.currency_type_id"
-                :currency-type-active="currency_type"
-                :exchange-rate-sale="form.exchange_rate_sale"
-                :customer="customer"
-                :soapCompany="soapCompany"
-                :businessTurns="businessTurns"
-            ></fast-payment>
 
             <person-form
                 :showDialog.sync="showDialogNewPerson"
@@ -798,6 +798,16 @@
                 :external="true"
             ></item-form>
         </div>
+        <fast-payment
+            :is_payment.sync="is_payment"
+            :form="form"
+            :currency-type-id-active="form.currency_type_id"
+            :currency-type-active="currency_type"
+            :exchange-rate-sale="form.exchange_rate_sale"
+            :customer="customer"
+            :soapCompany="soapCompany"
+            :businessTurns="businessTurns"
+        ></fast-payment>
 
         <history-sales-form
             :showDialog.sync="showDialogHistorySales"
@@ -817,12 +827,6 @@
             :item_unit_types="[]"
         >
         </warehouses-detail>
-
-        <item-unit-types
-            :showDialog.sync="showDialogItemUnitTypes"
-            :itemUnitTypes="itemUnitTypes"
-        >
-        </item-unit-types>
     </div>
 </template>
 <style>
@@ -889,11 +893,27 @@
 .el-input-group__append {
     padding: 0 10px !important;
 }
+.ws-flotante{
+    display: none;
+}
+.h-20 {
+  height: 20% !important;
+}
+.h-40 {
+  height: 40% !important;
+}
+.h-60 {
+  height: 60% !important;
+}
+.h-80 {
+  height: 80% !important;
+}
 </style>
 
 <script>
 import Keypress from "vue-keypress";
 import {calculateRowItem} from "../../../helpers/functions";
+import PaymentForm from "./partials/payment.vue";
 import FastPayment from "./partials/fast_payment.vue";
 import ItemForm from "./partials/form.vue";
 import {functions, exchangeRate} from "../../../mixins/functions";
@@ -903,18 +923,17 @@ import PersonForm from "../persons/form.vue";
 import WarehousesDetail from "../items/partials/warehouses.vue";
 import queryString from "query-string";
 import TableItems from "./partials/table.vue";
-import ItemUnitTypes from "./partials/item_unit_types.vue";
 
 export default {
     props: ["configuration", "soapCompany", "businessTurns", "typeUser"],
     components: {
         FastPayment,
+        PaymentForm,
         ItemForm,
         HistorySalesForm,
         HistoryPurchasesForm,
         PersonForm,
         WarehousesDetail,
-        ItemUnitTypes,
         Keypress,
         TableItems
     },
@@ -923,7 +942,6 @@ export default {
     data() {
         return {
             place: "cat",
-            showDialogItemUnitTypes: false,
             history_item_id: null,
             search_item_by_barcode: false,
             warehousesDetail: [],
@@ -957,12 +975,19 @@ export default {
             pagination: {},
             category_selected: "",
             focusClienteSelect: false,
-            itemUnitTypes: []
+            //fusionpayment
+            series: [],
+            enabled_discount: false,
+            discount_amount:0,
+            difference: 0,
+            enter_amount: 0,
+            form_payment:{},
         };
     },
     async created() {
         await this.initForm();
         await this.getTables();
+        this.initFormPayment();
         this.events();
 
         await this.getFormPosLocalStorage();
@@ -1043,21 +1068,9 @@ export default {
             }
 
             if (this.items.length == 1) {
-
-                if(this.items[0].unit_type.length > 0 && this.configuration.select_available_price_list){
-
-                    // console.log(this.configuration.select_available_price_list)
-                    this.itemUnitTypes = this.items[0].unit_type
-                    this.showDialogItemUnitTypes = true
-
-                }else{
-
-                    this.clickAddItem(this.items[0], 0);
-                    this.filterItems();
-                    this.cleanInput();
-                }
-
-
+                this.clickAddItem(this.items[0], 0);
+                this.filterItems();
+                this.cleanInput();
             } else {
                 this.$message.warning(
                     "No puede añadir directamente el producto al listado, hay más de uno ubicado en la búsqueda"
@@ -1370,21 +1383,6 @@ export default {
                 this.getTables();
                 this.setFormPosLocalStorage();
             });
-
-            await this.$eventHub.$on("enterSelectItemUnitType", (unit_type) => {
-                this.selectItemUnitType(unit_type)
-            });
-
-
-        },
-        selectItemUnitType(unit_type){
-
-            this.setPriceItem(unit_type, 0)
-            this.clickAddItem(this.items[0], 0)
-            this.filterItems()
-            this.cleanInput()
-            this.initFocus()
-
         },
         initForm() {
             this.form = {
@@ -1416,7 +1414,6 @@ export default {
                 total_taxes: 0,
                 total_value: 0,
                 total: 0,
-                subtotal: 0,
                 operation_type_id: "0101",
                 date_of_due: moment().format("YYYY-MM-DD"),
                 items: [],
@@ -1466,12 +1463,6 @@ export default {
             };
         },
         async clickPayment() {
-
-            if(!this.form.subtotal){
-                //fix para agregar subtotal si no existe prop en json almacenado en local storage
-                this.form.subtotal = this.form.total
-            }
-
             let flag = 0;
             this.form.items.forEach(row => {
                 if (row.aux_quantity < 0 || row.total < 0 || isNaN(row.total)) {
@@ -1511,7 +1502,7 @@ export default {
                 unit_type_id: item.unit_type_id
             });
 
-            // console.log(exist_item)
+            console.log(exist_item)
 
             let pos = this.form.items.indexOf(exist_item);
             let response = null;
@@ -1738,7 +1729,6 @@ export default {
             this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
             // this.form.total = _.round(total, 2);
             this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
-            this.form.subtotal = this.form.total
 
         },
         changeDateOfIssue() {
@@ -1806,11 +1796,8 @@ export default {
                 await this.$http
                     .get(`/${this.resource}/search_items_cat?${parameters}`)
                     .then(response => {
-
-                        this.all_items = response.data.data;
-
                         if (response.data.data.length > 0) {
-                            // this.all_items = response.data.data;
+                            this.all_items = response.data.data;
                             this.filterItems();
                             this.pagination = response.data.meta;
                             this.pagination.per_page = parseInt(
@@ -1889,14 +1876,14 @@ export default {
                 this.items = this.all_items;
             } else {
                 this.items = this.all_items.map(i => {
-                    // console.log(i.description);
+                    console.log(i.description);
                     // if (i.brand) {
                     //     var desc = `${i.description} - ${i.brand}`;
                     //     if(i.description != desc){
                     //         i.description = `${i.description} - ${i.brand}`;
                     //     }
                     // }
-                    // console.log(i.description);
+                    console.log(i.description);
                     return i;
                 });
             }
@@ -1978,7 +1965,60 @@ export default {
             if(item.description === undefined) return 0;
             if(item.description == null) return 0;
             return item.description.length;
-        }
+        },
+        //fusionpayment
+        filterSeries() {
+            // this.form.series_id = null
+            // this.series = _.filter(this.all_series, {'document_type_id': this.form.document_type_id });
+            // this.form.series_id = (this.series.length > 0)?this.series[0].id:null
+
+            // if(!this.form.series_id)
+            // {
+            //    return this.$message.warning('El establecimiento no tiene series disponibles para el comprobante');
+            // }
+        },
+        changeEnabledDiscount(){
+            if(!this.enabled_discount){
+                this.discount_amount = 0
+                this.deleteDiscountGlobal()
+                this.reCalculateTotal()
+            }
+        },
+        initFormPayment() {
+
+            this.difference = -this.form.total
+            this.form_payment = {
+                id: null,
+                date_of_payment: moment().format('YYYY-MM-DD'),
+                payment_method_type_id: '01',
+                reference: null,
+                card_brand_id:null,
+                document_id:null,
+                sale_note_id:null,
+                payment: this.form.total,
+            }
+
+            this.form_cash_document = {
+                document_id:null,
+                sale_note_id:null
+            }
+
+        },
+        setAmountCash(amount) {
+            let row = _.last(this.payments, {'payment_method_type_id': '01'})
+            row.payment = parseFloat(row.payment) + parseFloat(amount)
+            // console.log(row.payment)
+
+            this.form.payments = this.payments
+            let acum_payment = 0
+
+            this.form.payments.forEach((item) => {
+                acum_payment += parseFloat(item.payment)
+            })
+
+            this.setAmount(acum_payment)
+
+        },
     }
 };
 </script>
