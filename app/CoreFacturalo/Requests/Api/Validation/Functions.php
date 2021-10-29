@@ -10,6 +10,7 @@ use App\Models\Tenant\Person;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\Catalogs\District;
 use Exception;
+use App\Models\Tenant\Configuration;
 
 class Functions
 {
@@ -47,6 +48,7 @@ class Functions
             'address' => $inputs['address'],
             'email' => $inputs['email'],
             'telephone' => $inputs['telephone'],
+            'address_type_id' => $inputs['address_type_id'],
         ]);
 
         return $person->id;
@@ -67,7 +69,9 @@ class Functions
     {
         $item = Item::where('internal_id', $inputs['internal_id'])
             ->first();
+
         if (!$item) {
+
             $item = new Item();
             $item->internal_id = $inputs['internal_id'];
             $item->description = $inputs['description'];
@@ -82,10 +86,28 @@ class Functions
             $item->sale_affectation_igv_type_id = $inputs['affectation_igv_type_id'];
             $item->purchase_affectation_igv_type_id = $inputs['affectation_igv_type_id'];
             $item->stock = 0;
+            $item->amount_plastic_bag_taxes = self::getAmountPlasticBagTaxes();
             $item->save();
+
+        }else{
+            
+            $update_description = isset($inputs['update_description']) ? $inputs['update_description'] : false;
+
+            if($update_description)
+            {
+                $item->update([
+                    'description' => $inputs['description'],
+                ]);
+            }
+            
         }
 
         return $item->id;
+    }
+
+    public static function getAmountPlasticBagTaxes()
+    {
+        return Configuration::select('amount_plastic_bag_taxes')->first()->amount_plastic_bag_taxes;
     }
 
     public static function item2($inputs) {
@@ -173,5 +195,33 @@ class Functions
             }
         }
     }
+
+
+    public static function validateDetraction($inputs) 
+    {
+
+        if(!is_null($inputs['detraction']) && $inputs['operation_type_id'] == '1004')
+        {
+            // validar ubigeo origen
+            self::validateRequiredDistrict($inputs['detraction']['origin_location_id'][2] ?? null);
+
+            // validar ubigeo destino
+            self::validateRequiredDistrict($inputs['detraction']['delivery_location_id'][2] ?? null);
+
+        }
+
+    }
+
+
+    public static function validateRequiredDistrict($district_id) 
+    {
+        if (is_null($district_id)) throw new Exception("El campo ubigeo es obligatorio");
+
+        if (strlen($district_id) !== 6) throw new Exception("El campo ubigeo debe contener 6 dígitos");
+
+        $exist_district = District::select('id')->find($district_id);
+        if (!$exist_district) throw new Exception("El código ubigeo es incorrecto");
+    }
+
 
 }

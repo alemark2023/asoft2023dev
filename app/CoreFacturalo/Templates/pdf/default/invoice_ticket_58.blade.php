@@ -201,6 +201,27 @@
 
     @endif
 
+    @if ($document->retention)
+        <br>    
+        <tr>
+            <td colspan="2">
+                <p class="desc"><strong>Información de la retención</strong></p>
+            </td>
+        </tr>
+        <tr>
+            <td><p class="desc">Base imponible: </p></td>
+            <td><p class="desc">{{ $document->currency_type->symbol}} {{ $document->retention->base }} </p></td>
+        </tr>
+        <tr>
+            <td><p class="desc">Porcentaje:</p></td>
+            <td><p class="desc">{{ $document->retention->percentage * 100 }}%</p></td>
+        </tr>
+        <tr>
+            <td><p class="desc">Monto:</p></td>
+            <td><p class="desc">{{ $document->currency_type->symbol}} {{ $document->retention->amount }}</p></td>
+        </tr>
+    @endif
+
     @if ($document->purchase_order)
         <tr>
             <td><p class="desc">Orden de Compra:</p></td>
@@ -365,8 +386,8 @@
         @endif
          @if($document->total_discount > 0)
             <tr>
-                <td colspan="5" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
+                <td colspan="4" class="text-right font-bold desc">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold desc">{{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
         @if($document->total_plastic_bag_taxes > 0)

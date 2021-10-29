@@ -21,6 +21,7 @@
                 </div>
             </td>
             <td width="25%" class="border-box py-4 px-2 text-center">
+                <h5>{{ 'RUC '.$company->number }}</h5>
                 <h5 class="text-center">COTIZACIÓN</h5>
                 <h3 class="text-center">{{ $tittle }}</h3>
             </td>
@@ -194,7 +195,7 @@
             </td>
             <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left">
-                {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
+                @if($row->item->name_product_pdf ?? false) {!!$row->item->name_product_pdf ?? ''!!} @else {!!$row->item->description!!} @endif @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>

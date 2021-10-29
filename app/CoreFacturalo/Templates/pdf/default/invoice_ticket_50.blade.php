@@ -202,6 +202,27 @@
 
     @endif
 
+    @if ($document->retention)
+        <br>    
+        <tr>
+            <td colspan="2">
+                <p class="desc-9"><strong>Información de la retención</strong></p>
+            </td>
+        </tr>
+        <tr>
+            <td><p class="desc-9">Base imponible: </p></td>
+            <td><p class="desc-9">{{ $document->currency_type->symbol}} {{ $document->retention->base }} </p></td>
+        </tr>
+        <tr>
+            <td><p class="desc-9">Porcentaje:</p></td>
+            <td><p class="desc-9">{{ $document->retention->percentage * 100 }}%</p></td>
+        </tr>
+        <tr>
+            <td><p class="desc-9">Monto:</p></td>
+            <td><p class="desc-9">{{ $document->currency_type->symbol}} {{ $document->retention->amount }}</p></td>
+        </tr>
+    @endif
+
     @if ($document->purchase_order)
         <tr>
             <td><p class="desc-9">Orden de Compra:</p></td>

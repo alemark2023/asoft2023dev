@@ -266,7 +266,7 @@
                 
                 <td class="text-center">
 
-                  <el-tooltip class="item" effect="dark" content="Comprobantes pendientes de envío" placement="top-start">
+                  <el-tooltip class="item" effect="dark" content="Comprobantes enviados / por enviar" placement="top-start">
                     <el-badge class="item" :value="row.document_not_sent">
                       <i class="far fa-bell text-secondary"></i>
                     </el-badge>
@@ -278,6 +278,12 @@
                     </el-badge>
                   </el-tooltip>
                   
+                  <el-tooltip class="item" effect="dark" content="Comprobantes por anular" placement="top-start">
+                    <el-badge class="item  ml-4" :value="row.document_to_be_canceled">
+                      <i class="fas fa-exclamation-circle text-secondary"></i>
+                    </el-badge>
+                  </el-tooltip>
+
                 </td>
                   <td>
                       <template v-if="row.start_billing_cycle">

@@ -8,6 +8,7 @@ use App\Models\Tenant\Catalogs\District;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use App\Models\Tenant\Catalogs\Province;
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\Tenant\Catalogs\AddressType;
 
 
 /**
@@ -65,6 +66,8 @@ class Person extends ModelTenant
         'zone',
         'website',
         'credit_days',
+        'optional_email',
+        'address_type_id',
     ];
 
     // protected static function boot()
@@ -132,6 +135,14 @@ class Person extends ModelTenant
         return $this->belongsTo(District::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function address_type()
+    {
+        return $this->belongsTo(AddressType::class);
+    }
+    
     /**
      * @param $query
      * @param $type
@@ -206,6 +217,18 @@ class Person extends ModelTenant
         if($this->person_type !== null){
             $person_type_descripton = $this->person_type->description;
         }
+        $optional_mail = $this->getOptionalEmailArray();
+        $optional_mail_send = [];
+        if(!empty($this->email)) {
+            $optional_mail_send[] = $this->email;
+        }
+        $total_optional_mail =  count($optional_mail);
+        for($i = 0; $i < $total_optional_mail;$i++){
+            $temp =  trim($optional_mail[$i]['email']) ;
+            if(!empty($temp) && $temp != $this->email) {
+                $optional_mail_send[] = $temp;
+            }
+        }
         $data = [
             'id' => $this->id,
             'description' => $this->number.' - '.$this->name,
@@ -240,6 +263,8 @@ class Person extends ModelTenant
             'comment' => $this->comment,
             'addresses' => $addresses,
             'credit_days' => (int)$this->credit_days,
+            'optional_email' => $optional_mail,
+            'optional_email_send' => implode(',',$optional_mail_send),
         ];
         return $data;
     }
@@ -298,6 +323,49 @@ class Person extends ModelTenant
     public function setWebsite(string $website)
     : Person {
         $this->website = $website;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOptionalEmail(): ?string
+    {
+        return $this->optional_email;
+    }
+
+    /**
+     * @param string|null $optional_email
+     *
+     * @return Person
+     */
+    public function setOptionalEmail(?string $optional_email): Person
+    {
+        $this->optional_email = $optional_email;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptionalEmailArray(): array
+    {
+        $data = unserialize($this->optional_email);
+        if($data === false){
+            $data = [];
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param array $optional_email_array
+     *
+     * @return Person
+     */
+    public function setOptionalEmailArray(array $optional_email_array = []): Person
+    {
+        $this->optional_email = serialize($optional_email_array);
         return $this;
     }
 

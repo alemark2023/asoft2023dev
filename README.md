@@ -52,9 +52,9 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 
 ## API
 
-[Descargar colección para Postman](https://drive.google.com/file/d/1VByS3yzjyb5XlkNqZ-RpOJL6yOKgtL7q/view?usp=sharing "Clic")<br>
+[Descargar colección para Postman](https://drive.google.com/file/d/1NKNUZX9mFc6q2IQHHUgcX9QqH2mMVZB5/view?usp=sharing "Clic")<br>
 [Documentación - Ver json con respuestas](https://docs.google.com/document/d/1QO3H2nhV6dubGFc-IOrXY1X1hobmKkSmutfrtKbelTw/edit "Clic")<br>
-[Documentación - Ver ejemplos para Lenguajes](https://documenter.getpostman.com/view/1431398/TzJx8bqc#intro "Clic")<br>
+[Documentación - Ver ejemplos para Lenguajes](https://documenter.getpostman.com/view/1431398/U16onhgw "Clic")<br>
 
 ## Pruebas online
 

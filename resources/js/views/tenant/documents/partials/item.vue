@@ -1,6 +1,7 @@
 <template>
     <el-dialog :close-on-click-modal="false" :title="titleDialog" :visible="showDialog" top="7vh" @close="close"
-               @open="create">
+               @open="create"
+               :append-to-body="true">
         <form autocomplete="off" @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
@@ -254,7 +255,8 @@
                                         <td class="text-center">{{ row.price3 }}</td>
                                         <td class="text-center">Precio {{ row.price_default }}</td>
                                         <td class="series-table-actions text-right">
-                                            <button class="btn waves-effect waves-light btn-xs btn-success"
+                                            <button class="btn waves-effect waves-light btn-xs"
+                                                    :class="getSelectedClass(row)"
                                                     type="button"
                                                     @click.prevent="selectedPrice(row)">
                                                 <i class="el-icon-check"></i>
@@ -266,7 +268,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12 mt-2">
+                        <div class="col-md-12 mt-2" v-if="showDiscounts">
                             <el-collapse v-model="activePanel">
                                 <el-collapse-item :disabled="recordItem != null"
                                                   name="1" title="+ Agregar Descuentos/Cargos/Atributos especiales">
@@ -395,12 +397,35 @@
                     </template>
                 </div>
             </div>
-            <div class="form-actions text-right pt-2">
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Mostrar en cel -->
+
+            <div class="row hidden-md-up form-actions text-center">
+                <div class="col-12">
+                &nbsp;
+                </div>
+                <div class="col-6">
+                    <el-button class="form-control" @click.prevent="close()">Cerrar</el-button>
+                </div>
+                <div class="col-6">
+                    <el-button v-if="form.item_id" class="add form-control btn btn-primary" native-type="submit" type="primary">
+                        {{ titleAction }}
+                    </el-button>
+                </div>
+            </div>
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Mostrar en cel -->
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Ocultar en cel -->
+
+            <div class="form-actions text-right pt-2  hidden-sm-down">
                 <el-button @click.prevent="close()">Cerrar</el-button>
                 <el-button v-if="form.item_id" class="add" native-type="submit" type="primary">
                     {{ titleAction }}
                 </el-button>
             </div>
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Ocultar en cel -->
         </form>
         <item-form :external="true"
                    :showDialog.sync="showDialogNewItem"></item-form>
@@ -462,7 +487,8 @@ export default {
         'isEditItemNote',
         'configuration',
         'documentTypeId',
-        'noteCreditOrDebitTypeId'
+        'noteCreditOrDebitTypeId',
+        'displayDiscount',
     ],
     components: {
         ItemForm,
@@ -473,6 +499,7 @@ export default {
     },
     data() {
         return {
+            showDiscounts: true,
             extra_temp: undefined,
             can_add_new_product: false,
             loading_search: false,
@@ -520,6 +547,14 @@ export default {
         this.loadConfiguration()
         this.$store.commit('setConfiguration', this.configuration)
         this.initForm()
+        if(this.displayDiscount !== undefined){
+            if(this.displayDiscount == true){
+                this.showDiscounts = true;
+            }else{
+                this.showDiscounts = false;
+
+            }
+        }
     },
     mounted() {
         this.getTables()
@@ -542,9 +577,11 @@ export default {
             'CatItemPackageMeasurement',
             'CatItemMoldCavity',
             'CatItemProductFamily',
+            'CatItemSize',
             'extra_colors',
             'extra_CatItemUnitsPerPackage',
             'extra_CatItemMoldProperty',
+            'extra_CatItemSize',
             'extra_CatItemUnitBusiness',
             'extra_CatItemStatus',
             'extra_CatItemPackageMeasurement',
@@ -607,6 +644,18 @@ export default {
             'loadConfiguration',
             'clearExtraInfoItem',
         ]),
+        hasAttributes(){
+            if(
+                this.form.item !== undefined &&
+                this.form.item.attributes !== undefined &&
+                this.form.item.attributes !== null &&
+                this.form.item.attributes.length > 0
+            ){
+                return true
+            }
+
+            return false;
+        },
         ItemSlotTooltipView(item) {
             return ItemSlotTooltip(item);
         },
@@ -634,6 +683,7 @@ export default {
                     this.$store.commit('setCatItemUnitBusiness', data.CatItemUnitBusiness);
                     this.$store.commit('setCatItemPackageMeasurement', data.CatItemPackageMeasurement);
                     this.$store.commit('setCatItemProductFamily', data.CatItemPackageMeasurement);
+                    this.$store.commit('setCatItemSize', data.CatItemSize);
                 }
                 this.$store.commit('setConfiguration', data.configuration);
                 this.filterItems()
@@ -842,6 +892,7 @@ export default {
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
 
+
                 if (this.isEditItemNote) {
                     this.form.item.currency_type_id = this.currencyTypeIdActive
                     this.form.item.currency_type_symbol = (this.currencyTypeIdActive == 'PEN') ? 'S/' : '$'
@@ -854,7 +905,13 @@ export default {
                         this.lots = this.form.item.lots
                     }
 
+                }else{
+
+                    this.form.item.lots = this.recordItem.item.lots
+                    this.lots = this.recordItem.item.lots
                 }
+
+                this.setPresentationEditItem()
 
                 if (this.recordItem.item.name_product_pdf) {
                     this.form.name_product_pdf = this.recordItem.item.name_product_pdf
@@ -876,6 +933,14 @@ export default {
                 this.calculateQuantity()
             } else {
                 this.isUpdateWarehouseId = null
+            }
+
+        },
+        setPresentationEditItem(){
+
+            if(!_.isEmpty(this.recordItem.item.presentation)){
+                this.selectedPrice(this.recordItem.item.presentation)
+                this.getSelectedClass(this.recordItem.item.presentation)
             }
 
         },
@@ -993,11 +1058,7 @@ export default {
             this.cleanTotalItem();
             this.showListStock = true
 
-            if(
-                this.form.item !== undefined &&
-                this.form.item.attributes !== undefined &&
-                this.form.item.attributes.length > 0
-            ) {
+            if(this.hasAttributes()) {
                     const contex = this
                     this.form.item.attributes.forEach((row) => {
 
@@ -1183,25 +1244,53 @@ export default {
             this.form.unit_price_value = price;
             this.form.item.unit_type_id = this.item_unit_type.unit_type_id;
         },
-        selectedPrice(row) {
-            let valor = 0
-            switch (row.price_default) {
-                case 1:
-                    valor = row.price1
-                    break
-                case 2:
-                    valor = row.price2
-                    break
-                case 3:
-                    valor = row.price3
-                    break
+        getSelectedClass(row) {
 
+            if(this.isSelectedPrice(row)) return 'btn-success'
+
+            return 'btn-secondary'
+
+        },
+        isSelectedPrice(item_unit_type){
+
+            if(!_.isEmpty(this.item_unit_type)){
+                return (this.item_unit_type.id === item_unit_type.id)
             }
-            this.form.item_unit_type_id = row.id
-            this.item_unit_type = row
-            this.form.unit_price = valor
-            this.form.unit_price_value = valor
-            this.form.item.unit_type_id = row.unit_type_id
+
+            return false
+        },
+        selectedPrice(row) {
+
+            if(this.isSelectedPrice(row)){
+
+                this.form.item_unit_type_id = null
+                this.item_unit_type = {}
+                this.form.unit_price = this.form.item.sale_unit_price
+                this.form.unit_price_value = this.form.item.sale_unit_price
+                this.form.item.unit_type_id = this.form.item.original_unit_type_id
+
+            }else{
+
+                let valor = 0
+                switch (row.price_default) {
+                    case 1:
+                        valor = row.price1
+                        break
+                    case 2:
+                        valor = row.price2
+                        break
+                    case 3:
+                        valor = row.price3
+                        break
+
+                }
+                this.form.item_unit_type_id = row.id
+                this.item_unit_type = row
+                this.form.unit_price = valor
+                this.form.unit_price_value = valor
+                this.form.item.unit_type_id = row.unit_type_id
+            }
+
             this.calculateQuantity()
         },
         addRowLotGroup(id) {
@@ -1235,6 +1324,7 @@ export default {
                 if (item.extra.CatItemPackageMeasurement === undefined) item.extra.CatItemPackageMeasurement = null;
                 if (item.extra.CatItemMoldCavity === undefined) item.extra.CatItemMoldCavity = null;
                 if (item.extra.CatItemProductFamily === undefined) item.extra.CatItemProductFamily = null;
+                if (item.extra.CatItemSize === undefined) item.extra.CatItemSize = null;
 
                 if (this.extra_temp !== undefined) {
                     item.extra = this.extra_temp;
@@ -1317,6 +1407,15 @@ export default {
                     }
                 })
                 this.$store.commit('setExtraCatItemProductFamily', temp)
+                temp = [];
+                this.CatItemSize.find(obj => {
+                    for (var i = 0, iLen = item.CatItemSize.length; i < iLen; i++) {
+                        if (item.CatItemSize[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemSize', temp)
                 temp = [];
                 this.CatItemMoldProperty.find(obj => {
                     for (var i = 0, iLen = item.CatItemMoldProperty.length; i < iLen; i++) {

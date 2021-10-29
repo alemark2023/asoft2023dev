@@ -31,6 +31,8 @@ class Company extends ModelTenant
         'operation_amazonia',
         'img_firm',
         'cod_digemid',
+        'integrated_query_client_id',
+        'integrated_query_client_secret',
     ];
 
     /**
@@ -59,4 +61,25 @@ class Company extends ModelTenant
     {
         return Company::first();
     }
+
+    /**
+     * @return string|null
+     */
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+
+    /**
+     * @param string|null $logo
+     *
+     * @return Company
+     */
+    public function setLogo(?string $logo): Company
+    {
+        $this->logo = $logo;
+        return $this;
+    }
+
+
 }

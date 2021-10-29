@@ -2,6 +2,7 @@
 
 namespace Modules\Inventory\Http\Controllers;
 
+use App\Http\Controllers\SearchItemController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Establishment;
@@ -23,7 +24,7 @@ use Modules\Inventory\Models\DevolutionItem;
 use Modules\Inventory\Http\Resources\DevolutionCollection;
 use Modules\Inventory\Http\Resources\DevolutionResource;
 use Modules\Inventory\Http\Requests\DevolutionRequest;
-use App\Models\Tenant\Configuration; 
+use App\Models\Tenant\Configuration;
 
 
 class DevolutionController extends Controller
@@ -61,7 +62,7 @@ class DevolutionController extends Controller
 
         return new DevolutionCollection($records->paginate(config('tenant.items_per_page')));
     }
- 
+
     public function tables() {
 
         $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();
@@ -70,12 +71,12 @@ class DevolutionController extends Controller
 
         return compact('establishments', 'devolution_reasons', 'company');
     }
- 
+
 
     public function item_tables() {
 
-        $items = $this->table('items');
-        
+        // $items = $this->table('items');
+        $items = SearchItemController::getItemsToDocuments();
         return compact('items');
     }
 
@@ -105,7 +106,7 @@ class DevolutionController extends Controller
             $this->devolution =  Devolution::create($data);
 
             foreach ($data['items'] as $row) {
-                
+
                 $this->devolution->items()->create([
                     'item_id' => $row['item_id'],
                     'item' => [
@@ -133,7 +134,7 @@ class DevolutionController extends Controller
             ],
         ];
     }
- 
+
     private static function lots($row)
     {
         if(isset($row['item']['lots']))
@@ -178,9 +179,9 @@ class DevolutionController extends Controller
 
     public function searchItems(Request $request)
     {
-        
+
         $query_items = Item::where('description','like', "%{$request->input}%")
-                            ->orWhere('internal_id','like', "%{$request->input}%") 
+                            ->orWhere('internal_id','like', "%{$request->input}%")
                             ->whereWarehouse()
                             ->whereNotIsSet()
                             ->whereIsActive()
@@ -204,7 +205,7 @@ class DevolutionController extends Controller
                         'checked'  => false
                     ];
                 }),
-                'lots' => [], 
+                'lots' => [],
                 'lots_enabled' => (bool) $row->lots_enabled,
                 'series_enabled' => (bool) $row->series_enabled,
 
@@ -218,12 +219,12 @@ class DevolutionController extends Controller
 
     public function table($table)
     {
-        switch ($table) { 
+        switch ($table) {
 
             case 'items':
 
                 $items = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
-    
+
                 return collect($items)->transform(function($row){
 
                     return [
@@ -241,10 +242,10 @@ class DevolutionController extends Controller
                                 'checked'  => false
                             ];
                         }),
-                        'lots' => [], 
+                        'lots' => [],
                         'lots_enabled' => (bool) $row->lots_enabled,
                         'series_enabled' => (bool) $row->series_enabled,
-    
+
                     ];
                 });
 
@@ -255,7 +256,7 @@ class DevolutionController extends Controller
                 break;
         }
     }
- 
+
 
     public function download($external_id, $format) {
 
@@ -266,7 +267,7 @@ class DevolutionController extends Controller
         return $this->downloadStorage($devolution->filename, 'devolution');
     }
 
- 
+
     public function createPdf($devolution = null, $format_pdf = null, $filename = null) {
 
         ini_set("pcre.backtrack_limit", "5000000");
@@ -279,7 +280,7 @@ class DevolutionController extends Controller
 
         // $base_template = config('tenant.pdf_template');
         $base_template = Configuration::first()->formats;
-        
+
         $html = $template->pdf($base_template, "devolution", $company, $document, $format_pdf);
 
         $pdf_font_regular = config('tenant.pdf_name_regular');
@@ -333,5 +334,5 @@ class DevolutionController extends Controller
     public function uploadFile($filename, $file_content, $file_type) {
         $this->uploadStorage($filename, $file_content, $file_type);
     }
- 
+
 }

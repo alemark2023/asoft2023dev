@@ -392,7 +392,28 @@
                     </template>
                 </div>
             </div>
-            <div class="form-actions text-right pt-2">
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Mostrar en cel -->
+
+            <div class="row hidden-md-up form-actions text-center">
+                <div class="col-12">
+                &nbsp;
+                </div>
+                <div class="col-6">
+                    <el-button class="form-control" @click.prevent="close()">Cerrar</el-button>
+                </div>
+                <div class="col-6">
+                    <el-button v-if="form.item_id" class="add form-control btn btn-primary" native-type="submit" type="primary">
+                        Agregar
+                    </el-button>
+                </div>
+            </div>
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Mostrar en cel -->
+            <!-- @todo: Mejorar evitando duplicar codigo -->
+            <!-- Ocultar en cel -->
+
+            <div class="form-actions text-right pt-2  hidden-sm-down">
                 <el-button @click.prevent="close()">Cerrar</el-button>
                 <el-button v-if="form.item_id" class="add" native-type="submit" type="primary">
                     Agregar
@@ -580,6 +601,18 @@ export default {
         ...mapActions([
             'loadConfiguration',
         ]),
+        hasAttributes(){
+            if(
+                this.form.item !== undefined &&
+                this.form.item.attributes !== undefined &&
+                this.form.item.attributes !== null &&
+                this.form.item.attributes.length > 0
+            ){
+                return true
+            }
+
+            return false;
+        },
         ItemSlotTooltipView(item) {
             return ItemSlotTooltip(item);
         },
@@ -952,11 +985,7 @@ export default {
             this.cleanTotalItem();
             this.showListStock = true
 
-            if(
-                this.form.item !== undefined &&
-                this.form.item.attributes !== undefined &&
-                this.form.item.attributes.length > 0
-            ) {
+            if(this.hasAttributes()) {
                 const contex = this
                 this.form.item.attributes.forEach((row) => {
 

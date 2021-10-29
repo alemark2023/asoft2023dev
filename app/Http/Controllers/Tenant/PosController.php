@@ -131,8 +131,17 @@ class PosController extends Controller
         $items = $this->table('items');
 
         $categories = Category::all();
-
-        return compact('items', 'customers','affectation_igv_types','establishment','user','currency_types', 'categories');
+        $payment_method_types= PaymentMethodType::getPaymentMethodTypes();
+        return compact(
+            'items',
+            'customers',
+            'affectation_igv_types',
+            'establishment',
+            'user',
+            'currency_types',
+            'payment_method_types',
+            'categories'
+        );
 
     }
 
@@ -377,6 +386,9 @@ class PosController extends Controller
                 $query->where($whereExtra);
             });
         }
+
+        $item->whereIsActive();
+        
     }
 
     /**
@@ -389,7 +401,7 @@ class PosController extends Controller
     public function search_items_cat(Request $request)
     {
         $item = Item::whereWarehouse()
-            ->whereIsActive()
+            // ->whereIsActive()
             ->where('series_enabled', 0);
 
         self::FilterItem($item, $request);

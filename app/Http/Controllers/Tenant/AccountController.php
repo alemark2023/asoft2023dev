@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers\Tenant;
 
-use App\Http\Controllers\Controller; 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\System\Client;
 use App\Models\System\Plan;
@@ -9,9 +9,6 @@ use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\AccountPayment;
 use App\Models\System\ClientPayment;
-
-
-
 use App\Http\Resources\Tenant\AccountPaymentCollection;
 use Culqi\Culqi;
 use Culqi\CulqiException;
@@ -54,7 +51,7 @@ class AccountController extends Controller
     {
         $records = AccountPayment::all();
         return new AccountPaymentCollection($records);
-        
+
     }
 
     public function updatePlan(Request $request)
@@ -88,7 +85,7 @@ class AccountController extends Controller
 
     public function paymentCulqui(Request $request)
     {
-        
+
 
             $configuration = ConfigurationAdmin::first();
             $token_private_culqui = $configuration->token_private_culqui;
@@ -100,9 +97,9 @@ class AccountController extends Controller
                     'message' =>  'token private culqi no defined'
                 ];
             }
-           
+
             $user = auth()->user();
-    
+
             $SECRET_API_KEY = $token_private_culqui;
             $culqi = new Culqi(array('api_key' => $SECRET_API_KEY));
 
@@ -114,7 +111,7 @@ class AccountController extends Controller
                         "amount" => $request->precio,
                         "currency_code" => "PEN",
                         "email" => $request->email,
-                        "description" =>  $request->producto, 
+                        "description" =>  $request->producto,
                         "source_id" => $request->token,
                         "installments" => $request->installments
                       )
@@ -135,7 +132,7 @@ class AccountController extends Controller
 
             $account_payment = AccountPayment::find($request->id_payment_account);
             $account_payment->state = 1; // 1 ees pagado, 2 es pendiente
-            $account_payment->date_of_payment_real = date('Y-m-d'); 
+            $account_payment->date_of_payment_real = date('Y-m-d');
             $account_payment->save();
 
 
@@ -143,28 +140,44 @@ class AccountController extends Controller
             $system_client_payment->state = 1;
             $system_client_payment->save();
 
-    
+
             $customer_email = $request->email;
             $document = new stdClass;
             $document->client = $user->name;
             $document->product = $request->producto;
             $document->total = $request->precio_culqi;
             $document->items = json_decode($request->items, true);
+            $email = $customer_email;
+            $mailable =new CulqiEmail($document);
+            $id =  $document->id;
+            $model = __FILE__."::".__LINE__;
+            $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+            /*
             Configuration::setConfigSmtpMail();
+        $array_email = explode(',', $customer_email);
+        if (count($array_email) > 1) {
+            foreach ($array_email as $email_to) {
+                $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                    Mail::to($email_to)->send(new CulqiEmail($document));
+                }
+            }
+        } else {
             Mail::to($customer_email)->send(new CulqiEmail($document));
-    
+        }*/
+
             return [
                 'success' => true,
                 'culqui' => $charge,
                 'message' => 'Pago efectuado correctamente'
             ];
     }
-          
-    
 
-   
 
-    
 
-    
+
+
+
+
+
 }

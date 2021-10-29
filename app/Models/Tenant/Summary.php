@@ -31,11 +31,16 @@ class Summary extends ModelTenant
         'has_ticket',
         'has_cdr',
         'soap_shipping_response',
+        'unknown_error_status_response',
+        'manually_regularized',
+        'error_manually_regularized',
     ];
 
     protected $casts = [
         'date_of_issue' => 'date',
         'date_of_reference' => 'date',
+        'unknown_error_status_response' => 'boolean',
+        'manually_regularized' => 'boolean',
     ];
 
     /**
@@ -112,6 +117,16 @@ class Summary extends ModelTenant
         $this->attributes['soap_shipping_response'] = (is_null($value))?null:json_encode($value);
     }
 
+    public function getErrorManuallyRegularizedAttribute($value)
+    {
+        return (is_null($value))?null:(object) json_decode($value);
+    }
+
+    public function setErrorManuallyRegularizedAttribute($value)
+    {
+        $this->attributes['error_manually_regularized'] = (is_null($value))?null:json_encode($value);
+    }
+    
     /**
      * Devuelve la clase Facturalo con los elementos cargados
      *

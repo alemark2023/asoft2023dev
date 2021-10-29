@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant\Api;
 
+use App\Http\Controllers\Tenant\EmailController;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Tenant\Item;
@@ -104,7 +105,7 @@ class MobileController extends Controller
         $items = Item::with(['brand', 'category'])
                     ->whereWarehouse()
                     ->whereHasInternalId()
-                    ->whereNotIsSet()
+                    // ->whereNotIsSet()
                     ->whereIsActive()
                     ->orderBy('description')
                     ->take(20)
@@ -166,7 +167,7 @@ class MobileController extends Controller
     public function getPaymentmethod(){
 
         $payment_method_type = PaymentMethodType::all();
-        $payment_destinations = $this->getPaymentDestinations(); 
+        $payment_destinations = $this->getPaymentDestinations();
         return compact( 'payment_method_type','payment_destinations');
     }
 
@@ -177,8 +178,24 @@ class MobileController extends Controller
         $document = Document::find($request->id);
         $customer_email = $request->email;
 
+        $email = $customer_email;
+        $mailable =new DocumentEmail($company, $document);
+        $id =  $request->id;
+        $sendIt = EmailController::SendMail($email, $mailable, $id, 1);
+        /*
         Configuration::setConfigSmtpMail();
-        Mail::to($customer_email)->send(new DocumentEmail($company, $document));
+        $array_email = explode(',', $customer_email);
+        if (count($array_email) > 1) {
+            foreach ($array_email as $email_to) {
+                $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                    Mail::to($email_to)->send(new DocumentEmail($company, $document));
+                }
+            }
+        } else {
+            Mail::to($customer_email)->send(new DocumentEmail($company, $document));
+        }
+        */
 
         return [
             'success' => true,
@@ -306,7 +323,7 @@ class MobileController extends Controller
                     ->orWhere('internal_id', 'like', "%{$request->input}%")
                     ->whereHasInternalId()
                     ->whereWarehouse()
-                    ->whereNotIsSet()
+                    // ->whereNotIsSet()
                     ->whereIsActive()
                     ->orderBy('description')
                     ->get()
@@ -322,7 +339,7 @@ class MobileController extends Controller
                             'description' => $row->description,
                             'currency_type_id' => $row->currency_type_id,
                             'internal_id' => $row->internal_id,
-                            'item_code' => $row->item_code,
+                            'item_code' => $row->item_code ?? '',
                             'currency_type_symbol' => $row->currency_type->symbol,
                             'sale_unit_price' => number_format( $row->sale_unit_price, 2),
                             'purchase_unit_price' => $row->purchase_unit_price,
@@ -333,15 +350,28 @@ class MobileController extends Controller
                             'has_igv' => (bool) $row->has_igv,
                             'is_set' => (bool) $row->is_set,
                             'aux_quantity' => 1,
-                    'brand' => $row->brand->name,
-                    'category' => $row->brand->name,
-                    'stock' => $row->unit_type_id!='ZZ' ? ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock : '0',
-                    'image' => $row->image != "imagen-no-disponible.jpg" ? url("/storage/uploads/items/" . $row->image) : url("/logo/" . $row->image),
+                            'barcode' => $row->barcode ?? '',
+                            'brand' => optional($row->brand)->name,
+                            'category' => optional($row->category)->name,
+                            'stock' => $row->unit_type_id!='ZZ' ? ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock : '0',
+                            'image' => $row->image != "imagen-no-disponible.jpg" ? url("/storage/uploads/items/" . $row->image) : url("/logo/" . $row->image),
                             'warehouses' => collect($row->warehouses)->transform(function($row) {
                                 return [
                                     'warehouse_description' => $row->warehouse->description,
                                     'stock' => $row->stock,
                                     'warehouse_id' => $row->warehouse_id,
+                                ];
+                            }),
+                            'item_unit_types' => $row->item_unit_types->transform(function($row) {
+                                return [
+                                    'id' => $row->id,
+                                    'description' => $row->description,
+                                    'unit_type_id' => $row->unit_type_id,
+                                    'quantity_unit' => $row->quantity_unit,
+                                    'price1' => $row->price1,
+                                    'price2' => $row->price2,
+                                    'price3' => $row->price3,
+                                    'price_default' => $row->price_default,
                                 ];
                             }),
                         ];

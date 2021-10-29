@@ -2,6 +2,7 @@
 
 namespace App\CoreFacturalo;
 
+use App\Http\Controllers\Tenant\EmailController;
 use Exception;
 use Mpdf\Mpdf;
 use Mpdf\HTMLParserMode;
@@ -36,6 +37,7 @@ use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\CoreFacturalo\WS\Validator\XmlErrorCodeProvider;
 use Modules\Inventory\Models\Warehouse;
 use App\CoreFacturalo\Requests\Inputs\Functions;
+use App\Models\Tenant\PurchaseSettlement;
 
 /**
  * Class Facturalo
@@ -116,6 +118,7 @@ class Facturalo
                     $document->items()->create($row);
                 }
                 $document->note()->create($inputs['note']);
+                if($this->type === 'credit') $this->saveFee($document, $inputs['fee']);
                 $this->document = Document::find($document->id);
                 break;
             case 'invoice':
@@ -162,6 +165,13 @@ class Facturalo
                 }
                 $this->document = Perception::find($document->id);
                 break;
+            case 'purchase_settlement':
+                $document = PurchaseSettlement::create($inputs);
+                foreach ($inputs['items'] as $row) {
+                    $document->items()->create($row);
+                }
+                $this->document = PurchaseSettlement::find($document->id);
+                break;
             default:
                 $document = Dispatch::create($inputs);
                 foreach ($inputs['items'] as $row) {
@@ -182,8 +192,24 @@ class Facturalo
             $company = $this->company;
             $document = $this->document;
             $email = ($this->document->customer) ? $this->document->customer->email : $this->document->supplier->email;
+            $mailable =new DocumentEmail($company, $document);
+            $id =  $document->id;
+            $model = __FILE__.";;".__LINE__;
+            $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+            /*
             Configuration::setConfigSmtpMail();
-            Mail::to($email)->send(new DocumentEmail($company, $document));
+            $array_email = explode(',', $email);
+            if (count($array_email) > 1) {
+                foreach ($array_email as $email_to) {
+                    $email_to = trim($email_to);
+                if(!empty($email_to)) {
+                        Mail::to($email_to)->send(new DocumentEmail($company, $document));
+                    }
+                }
+            } else {
+                Mail::to($email)->send(new DocumentEmail($company, $document));
+            }
+            */
 
         }
     }
@@ -347,6 +373,7 @@ class Facturalo
             $quantity_rows     = count($this->document->items) + $was_deducted_prepayment;
             $document_payments     = count($this->document->payments);
             $document_transport     = ($this->document->transport) ? 30 : 0;
+            $document_retention     = ($this->document->retention) ? 10 : 0;
 
             $extra_by_item_additional_information = 0;
             $extra_by_item_description = 0;
@@ -408,7 +435,8 @@ class Facturalo
                     $quotation_id+
                     $extra_by_item_additional_information+
                     $height_legend+
-                    $document_transport
+                    $document_transport+
+                    $document_retention
                 ],
                 'margin_top' => 0,
                 'margin_right' => 1,
@@ -649,8 +677,8 @@ class Facturalo
     {
         //Errors
         if(!is_numeric($code)){
-            
-            if(in_array($this->type, ['retention', 'dispatch', 'perception'])){
+
+            if(in_array($this->type, ['retention', 'dispatch', 'perception', 'purchase_settlement'])){
                 throw new Exception("Code: {$code}; Description: {$message}");
             }
 
@@ -661,7 +689,7 @@ class Facturalo
         // if($code === 'ERROR_CDR') {
         //     return;
         // }
-        
+
         // if($code === 'HTTP') {
         //     // $message = 'La SUNAT no responde a su solicitud, vuelva a intentarlo.';
 
@@ -680,7 +708,7 @@ class Facturalo
         if((int)$code < 2000) {
             //Excepciones
 
-            if(in_array($this->type, ['retention', 'dispatch', 'perception'])){
+            if(in_array($this->type, ['retention', 'dispatch', 'perception', 'purchase_settlement'])){
             // if(in_array($this->type, ['retention', 'dispatch'])){
                 throw new Exception("Code: {$code}; Description: {$message}");
             }
@@ -753,7 +781,7 @@ class Facturalo
         $extService->setCodeProvider(new XmlErrorCodeProvider());
         $res = $extService->getStatus($ticket);
         if(!$res->isSuccess()) {
-            throw new Exception("Code: {$res->getError()->getCode()}; Description: {$res->getError()->getMessage()}");
+            throw new Exception("Code: {$res->getError()->getCode()}; Description: {$res->getError()->getMessage()}", 511); //custom exception code
         } else {
             $cdrResponse = $res->getCdrResponse();
             $this->uploadFile($res->getCdrZip(), 'cdr');

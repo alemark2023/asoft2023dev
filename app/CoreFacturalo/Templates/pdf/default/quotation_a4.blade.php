@@ -155,7 +155,8 @@
     @if ($document->description)
         <tr>
             <td width="15%" class="align-top">Observación: </td>
-            <td width="85%">{{ $document->description }}</td>
+            <td width="85%">{!! str_replace("\n", "<br/>", $document->description) !!}</td>
+            {{-- <td width="85%">{{ $document->description }}</td> --}}
         </tr>
     @endif
 </table>
@@ -211,11 +212,7 @@
             </td>
             <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left">
-                @if($row->item->name_product_pdf ?? false)
-                    {!!$row->item->name_product_pdf ?? ''!!}
-                @else
-                    {!!$row->item->description!!}
-                @endif
+                  @if($row->item->name_product_pdf ?? false) {!!$row->item->name_product_pdf ?? ''!!} @else {!!$row->item->description!!} @endif
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
