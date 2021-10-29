@@ -3182,7 +3182,7 @@ export default {
                 this.form.payments = []
             }
 
-            // this.loading_submit = true
+            this.loading_submit = true
             let path = `/${this.resource}`;
             if (this.isUpdate) {
                 path = `/${this.resource}/${this.form.id}/update`;

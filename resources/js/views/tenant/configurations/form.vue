@@ -244,6 +244,28 @@
                                         </div>
                                     </div>
                                     <div class="col-md-2"></div>
+                                    
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Nombre producto PDF para XML
+                                            <el-tooltip
+                                                class="item"
+                                                content="Registra el campo nombre producto pdf en el XML - Disponible Nuevo CPE (Facturas/Boletas)"
+                                                effect="dark"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div :class="{'has-danger': errors.name_product_pdf_to_xml}"
+                                             class="form-group">
+                                            <el-switch v-model="form.name_product_pdf_to_xml"
+                                                       active-text="Si"
+                                                       inactive-text="No"
+                                                       @change="submit"></el-switch>
+                                            <small v-if="errors.name_product_pdf_to_xml"
+                                                   class="form-control-feedback"
+                                                   v-text="errors.name_product_pdf_to_xml[0]"></small>
+                                        </div>
+                                    </div>
 
                                 </div>
                             </el-tab-pane>
@@ -1010,6 +1032,7 @@ export default {
                 enabled_global_igv_to_purchase: this.config.enabled_global_igv_to_purchase,
                 set_address_by_establishment: false,
                 permission_to_edit_cpe: false,
+                name_product_pdf_to_xml:false,
             };
         },
         UpdateFormPurchase(e) {

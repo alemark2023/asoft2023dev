@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Modules\Offline\Models\OfflineConfiguration;
 use Html2Text\Html2Text;
+use App\Models\Tenant\Configuration;
 
 class DocumentInput
 {
@@ -201,7 +202,7 @@ class DocumentInput
                     'warehouse_id' => Functions::valueKeyInArray($row, 'warehouse_id'),
                     'additional_information' => Functions::valueKeyInArray($row, 'additional_information'),
                     'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf'),
-                    'name_product_xml' => Functions::valueKeyInArray($row, 'name_product_pdf') ? self::getNameProductXml($row) : null,
+                    'name_product_xml' => Functions::valueKeyInArray($row, 'name_product_pdf') ? self::getNameProductXml($row, $inputs) : null,
                     'update_description' => Functions::valueKeyInArray($row, 'update_description', false),
                 ];
                 Item::SaveExtraDataToRequest($arayItem,$row);
@@ -213,15 +214,29 @@ class DocumentInput
     }
     
     /**
-     * Devuelve el nombre producto pdf en texto plano, para ser usado en el xml
+     * Devuelve el nombre producto pdf en texto plano para ser usado en el xml
      *
      * @param  array $row
      * @return string
      */
-    private static function getNameProductXml($row)
+    public static function getNameProductXml($row, $inputs)
     {
-        return (new Html2Text($row['name_product_pdf']))->getText();
+
+        if(in_array($inputs['document_type_id'], ['01', '03'])){
+
+            // validar configuracion
+            $configuration = Configuration::select('name_product_pdf_to_xml')->firstOrFail();
+    
+            if($configuration->name_product_pdf_to_xml)
+            {
+                return trim((new Html2Text($row['name_product_pdf']))->getText());
+            }
+
+        }
+
+        return null;
     }
+
 
     private static function lots($row)
     {
