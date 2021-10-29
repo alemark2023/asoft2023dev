@@ -33,6 +33,9 @@ $type = $type ?? 'sale';
 @endif
 <th> DESCRIPCIÓN</th>
 <th> CANTIDAD</th>
+@if($type == 'sale')
+    <th> MÉTODO DE PAGO </th>
+@endif
 <th> SERIES</th>
 @if($type == 'sale')
     <th> MODELO</th>
