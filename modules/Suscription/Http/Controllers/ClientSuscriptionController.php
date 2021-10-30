@@ -2,9 +2,11 @@
 
     namespace Modules\Suscription\Http\Controllers;
 
+    use App\Http\Controllers\SearchCustomerController;
     use App\Http\Controllers\Tenant\PersonController;
     use App\Http\Requests\Tenant\PersonRequest;
-    use App\Http\Resources\Tenant\PersonCollection;
+
+    use Modules\Suscription\Http\Resources\PersonCollection;
     use App\Http\Resources\Tenant\PersonResource;
     use App\Models\System\Configuration;
     use App\Models\Tenant\Catalogs\Country;
@@ -21,32 +23,29 @@
         /**
          * @return string[]
          */
-        public function clientColumns()
+        public function Columns()
         {
             return [
                 'name' => 'Nombre',
                 'number' => 'Número',
-                'document_type' => 'Tipo de documento'
+                'document_type' => 'Tipo de documento',
+                'childrens' => 'Nombre de hijos',
             ];
         }
 
-        public function clientRecord(Request $request)
+        public function Record(Request $request)
         {
-            $person = Person::findOrFail($request->person);
-            return ['data'=>$person->getCollectionData(true,true)];
+            $records = SearchCustomerController::getCustomersToSuscriptionList($request,$request->person)->firstOrFail();
+            return ['data'=>$records->getCollectionData(true,true)];
         }
 
-        public function clientRecords(Request $request)
+        public function Records(Request $request)
         {
-            $type = 'customers';
-            $records = Person::where($request->column, 'like', "%{$request->value}%")
-                // ->where('type', $type)
-                ->orderBy('name');
-
+            $records = SearchCustomerController::getCustomersToSuscriptionList($request);
             return new PersonCollection($records->paginate(config('tenant.items_per_page')));
         }
 
-        public function clientTables()
+        public function Tables()
         {
 
             $countries = Country::whereActive()->orderByDescription()->get();
@@ -57,7 +56,7 @@
             $person_types = PersonType::get();
             $locations = $this->getLocationCascade();
             $configuration = Configuration::first();
-            $api_service_token = $configuration->token_apiruc == 'false' ? config('configuration.api_service_token') : $configuration->token_apiruc;
+            $api_service_token = $configuration->token_apiruc === 'false' ? config('configuration.api_service_token') : $configuration->token_apiruc;
 
             return compact('countries', 'departments', 'provinces', 'districts', 'identity_document_types', 'locations', 'person_types', 'api_service_token');
         }
@@ -68,7 +67,7 @@
          *
          * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\View\View
          */
-        public function clients_index()
+        public function index()
         {
             return view('suscription::clients.index');
         }
@@ -107,15 +106,6 @@
             return view('suscription::edit');
         }
 
-        /**
-         * Display a listing of the resource.
-         *
-         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\View\View
-         */
-        public function index()
-        {
-            return view('suscription::index');
-        }
 
         /**
          * Show the specified resource.
@@ -143,11 +133,17 @@
             //
             $personController = new PersonController();
             $data  =  $personController->store($request);
-            if(isset($data['id'])){
-                $person = Person::find($data['id']);
-                // @todo añadir hijos?
+            $childrens = $request->childrens;
+            $demo = [];
+            foreach($childrens as $child ){
+                $child['parent_id']=$data['id'];
+                $childRequest = new PersonRequest();
+                $childRequest->merge($child);
+                $demo [] = $personController->store($childRequest);
+
 
             }
+            $data[] = $demo;
             return $data;
 
         }

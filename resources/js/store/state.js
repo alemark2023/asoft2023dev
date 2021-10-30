@@ -136,6 +136,13 @@ export default {
     customers: [],
     customer_addresses: [],
     workers: [],
+    countries: [],
+    all_departments: [],
+    all_provinces: [],
+    all_districts: [],
+    identity_document_types: [],
+    locations: [],
+    person_types: [],
     company: {
         logo: '',
         name: '',

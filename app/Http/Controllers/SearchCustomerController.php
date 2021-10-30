@@ -149,4 +149,42 @@
             return $data;
         }
 
+        /**
+         * @param \Illuminate\Http\Request|null $request
+         * @param int|null                      $id
+         *
+         * @return \App\Models\Tenant\Person|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
+         */
+        public static function getCustomersToSuscriptionList(Request $request = null, ?int $id = 0){
+            $person = Person::query();
+            $person->with('addresses');
+            $orderColum = 'name';
+            $children = false;
+            if($request!= null){
+                if($request->has('column') && !empty($request->column)){
+                    $orderColum = $request->column;
+                }
+                if($orderColum == 'childrens'){
+                    $children = true;
+                    $orderColum = 'name';
+                }
+                if($request->has('column') && !empty($request->column)){
+                    $search = $request->value;
+                    $person->where($orderColum, 'like', "%$search%");
+                }
+            }
+            if($id != 0){
+                $person->where('id',$id);
+            }
+            if($children == true){
+                $person = Person::whereIn('id',$person->get()->pluck('id'));
+            }
+
+            return $person
+                ->whereType('customers')
+                ->whereIsEnabled()
+                ->orderBy($orderColum);
+
+        }
+
     }

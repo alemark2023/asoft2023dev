@@ -14,14 +14,13 @@
                      * suscription/client
                      */
                     Route::prefix('client')->group(function () {
-                        Route::get('/', 'ClientSuscriptionController@clients_index')
-                            ->name('tenant.suscription.client.index')
-                            ->middleware(['redirect.level']);
+                        Route::get('/', 'ClientSuscriptionController@index') ->name('tenant.suscription.client.index') ->middleware(['redirect.level']);
+                        Route::post('/', 'ClientSuscriptionController@store');
 
-                        Route::get('/columns', 'ClientSuscriptionController@clientColumns');
-                        Route::post('/records', 'ClientSuscriptionController@clientRecords');
-                        Route::post('/tables', 'ClientSuscriptionController@clientTables');
-                        Route::post('/record', 'ClientSuscriptionController@clientRecord');
+                        Route::get('/columns', 'ClientSuscriptionController@Columns');
+                        Route::post('/records', 'ClientSuscriptionController@Records');
+                        Route::post('/tables', 'ClientSuscriptionController@Tables');
+                        Route::post('/record', 'ClientSuscriptionController@Record');
 
 
                     });

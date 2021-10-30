@@ -10,7 +10,9 @@
             <el-tabs v-model="tabActive">
                 <el-tab-pane class
                              name="first">
-                    <span slot="label">Datos del cliente</span>
+                    <span slot="label">
+                        Datos del cliente
+                    </span>
                     <div class="form-body">
 
                         <div class="row">
@@ -295,6 +297,14 @@
                                     </table>
                                 </div>
                             </div>
+                            <div class="col-12  text-center">
+                                <div class="form-group">
+                                    <button class="btn waves-effect waves-light btn-primary"
+                                            type="button"
+                                            @click="clickAddItem">+ Agregar Hijo
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -316,16 +326,17 @@
             </div>
         </form>
 
-        <tenant-person-form
+        <person-form
             :parentId="form.id"
-            :showDialog.sync="showDialogChildren"
             :recordId="recordIdChildren"
-            :type="'customers'"
             :reload-data="getData"
+            :showDialog.sync="showDialogChildren"
+            :type="'customers'"
+            @add="addRow"
 
         >
 
-        </tenant-person-form>
+        </person-form>
     </el-dialog>
 
 </template>
@@ -333,10 +344,13 @@
 <script>
 
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
-
+import PersonForm from "./person.vue"
 import {serviceNumber} from '../../../../../../resources/js/mixins/functions'
 
 export default {
+    components: {
+        PersonForm
+    },
     mixins: [
         serviceNumber
     ],
@@ -416,7 +430,7 @@ export default {
                 email: null,
                 more_address: [],
             }
-            this.$store.commit('setParentPerson', this.form )
+            this.$store.commit('setParentPerson', this.form)
 
         },
         create() {
@@ -428,7 +442,7 @@ export default {
                 this.getData()
             }
         },
-        getData(){
+        getData() {
 
             this.$http
                 .post(`/suscription/${this.resource}/record`, {
@@ -436,7 +450,7 @@ export default {
                 })
                 .then(response => {
                     this.form = response.data.data
-                    this.$store.commit('setParentPerson',response.data.data)
+                    this.$store.commit('setParentPerson', response.data.data)
                     this.filterProvinces()
                     this.filterDistricts()
                 })
@@ -476,18 +490,46 @@ export default {
         searchCustomer() {
             this.searchServiceNumberByType()
         },
-        ediItem(row,index) {
+        clickAddItem() {
+            this.$store.commit('setPerson', {})
+
+            this.recordItem = null;
+            this.showDialogChildren = true;
+        },
+        ediItem(row, index) {
             row.indexi = index
-            this.$store.commit('setPerson',row)
+            this.$store.commit('setPerson', row)
 
             this.recordIdChildren = row.id
             this.showDialogChildren = true
 
         },
         clickRemoveItem(index) {
-            this.fakeForm.items.splice(index, 1)
+            this.form.items.splice(index, s1)
+
+        },
+        addRow(data){
+            this.form.childrens.push(data)
+            console.error(data)
+            this.$store.commit('setPerson', {})
 
         }
-    }
+        /*
+        addRow(row) {
+            /* Extraido de resources/js/views/tenant/quotations/form.vue * /
+                    if (this.recordItem) {
+                this.fakeForm.items[this.recordItem.indexi] = row
+                this.recordItem = null
+
+            } else {
+                this.fakeForm.items.push(JSON.parse(JSON.stringify(row)));
+            }
+            this.$store.commit('setFormData', this.fakeForm)
+
+            this.calculateTotal();
+            this.$store.commit('setFormData', this.fakeForm)
+            },
+            */
+}
 }
 </script>

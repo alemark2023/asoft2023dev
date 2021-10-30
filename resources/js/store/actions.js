@@ -55,9 +55,15 @@ export default {
         if (state.unit_types === undefined) state.unit_types = [];
         if (state.item_search_extra_parameters === undefined) state.item_search_extra_parameters = {};
         if (state.person === undefined) state.person = {};
-        if (state.all_customers === undefined) state.all_customers = [];
         if (state.customers === undefined) state.customers = [];
-        if (state.customer === undefined) state.customer = {};
+
+        if (state.countries === undefined) state.countries = [];
+        if (state.all_departments === undefined) state.all_departments = [];
+        if (state.all_provinces === undefined) state.all_provinces = [];
+        if (state.all_districts === undefined) state.all_districts = [];
+        if (state.identity_document_types === undefined) state.identity_document_types = [];
+        if (state.locations === undefined) state.locations = [];
+        if (state.person_types === undefined) state.person_types = [];
 
 
 

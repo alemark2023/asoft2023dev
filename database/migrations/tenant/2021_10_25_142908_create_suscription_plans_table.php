@@ -162,6 +162,7 @@
                 'active' => 1,
             ];*/
 
+
             $catPeriods[] = [
                 'Id' => count($catPeriods) + 1,
                 'period' => 'M',
@@ -182,10 +183,14 @@
 
             $suscriptionPlans[] = [
                 'Id' => count($suscriptionPlans) + 1,
-                'cat_period_id' => $idyear,
+                'cat_period_id' => 1,
                 'name' => 'Matricula Escolar',
                 'description' => 'Demostración de matricula escolar',
                 'total' => 1,
+                'payment_method_type_id' => '01',
+                'currency_type_id' => 'PEN',
+                'quantity_period' => 12,
+
             ];
             DB::table('suscription_plans')->insert($suscriptionPlans);
 

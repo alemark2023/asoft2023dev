@@ -260,9 +260,24 @@ export default {
         state.affectation_igv_types = affectation_igv_types
     },
     setUnitTypes(state, unit_types) {
-        if (unit_types === undefined) unit_types = [];
-        state.unit_types = unit_types
+        state.unit_types = (unit_types === undefined) ?[]: unit_types
     },
+    setCountries(state,countries){ state.countries = (countries === undefined) ?[]: countries },
+    setAllDepartments(state,all_departments){ state.all_departments = (all_departments === undefined) ?[]: all_departments },
+    setAllProvinces(state,all_provinces){ state.all_provinces = (all_provinces === undefined) ?[]: all_provinces },
+    setAllDistricts(state,all_districts){ state.all_districts = (all_districts === undefined) ?[]: all_districts },
+    setIdentityDocumentTypes(state,identity_document_types){ state.identity_document_types = (identity_document_types === undefined) ?[]: identity_document_types },
+    setLocations(state,locations){ state.locations = (locations === undefined) ?[]: locations },
+    setPersonTypes(state,person_types){ state.person_types = (person_types === undefined) ?[]: person_types },
+
+
+
+
+
+
+
+
+
     setAllItems(state, all_items) {
         if (state.all_items !== undefined) {
             let temp_item = [state.all_items, ...all_items]

@@ -58,6 +58,7 @@
                         </td>
                         <td class="text-right">
                             <button
+                                v-if="row.parent_id < 1"
                                 class="btn waves-effect waves-light btn-xs btn-info"
                                 type="button"
                                 @click.prevent="clickCreate(row.id)">
@@ -112,12 +113,23 @@ export default {
         ...mapState([
             'config',
             'resource',
+            /*
+            'countries',
+            'all_departments',
+            'all_provinces',
+            'all_districts',
+            'identity_document_types',
+            'locations',
+            */
         ]),
     },
     created() {
         this.loadConfiguration()
         this.$store.commit('setConfiguration', this.configuration)
         this.$store.commit('setResource', 'client')
+
+        this.getCommonData()
+        // this.getPersonData()
 
     },
     methods: {
@@ -129,11 +141,38 @@ export default {
             this.showDialog = true
         },
         clickDelete(id) {
-            console.log('no debe hacer nada')
             this.destroy(`/${this.resource}/${id}`).then(() =>
                 this.$eventHub.$emit('reloadData')
             )
-        }
+        },
+        getCommonData() {
+            this.$http.post('CommonData', {})
+                .then((response) => {
+                    this.$store.commit('setCurrencyTypes', response.data.currency_types)
+                    this.$store.commit('setAffectationIgvTypes', response.data.affectation_igv_types)
+                    this.$store.commit('setUnitTypes', response.data.unit_types)
+                    this.$store.commit('setPaymentMethodTypes', response.data.payments_credit)
+                })
+        },
+
+        getPersonData() {
+           this.$http.post(`/suscription/${this.resource}/tables`)
+            .then(response => {
+                this.api_service_token = response.data.api_service_token
+                // console.log(this.api_service_token)
+
+                this.$store.commit('setCountries',response.data.countrie);
+                this.$store.commit('setAllDepartments',response.data.departments);
+                this.$store.commit('setAllProvinces',response.data.provinces);
+                this.$store.commit('setAllDistricts',response.data.districts);
+                this.$store.commit('setIdentityDocumentTypes',response.data.identity_document_types);
+                this.$store.commit('setLocations',response.data.locations);
+                this.$store.commit('setPersonTypes',response.data.person_types);
+
+
+            })
+        },
+
     }
 }
 </script>
