@@ -132,9 +132,6 @@
         {
             //
             $personController = new PersonController();
-// @todo cambiar el modal de cliente
-$request->merge(['addresses'=>[]]);
-// dd($request->all());
 
             $data  =  $personController->store($request);
             $childrens = $request->childrens;
