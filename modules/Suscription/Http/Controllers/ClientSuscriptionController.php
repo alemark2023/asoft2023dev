@@ -132,11 +132,17 @@
         {
             //
             $personController = new PersonController();
+// @todo cambiar el modal de cliente
+$request->merge(['addresses'=>[]]);
+// dd($request->all());
+
             $data  =  $personController->store($request);
             $childrens = $request->childrens;
+
             $demo = [];
             foreach($childrens as $child ){
                 $child['parent_id']=$data['id'];
+                $child['addresses']=$request->input('addresses');
                 $childRequest = new PersonRequest();
                 $childRequest->merge($child);
                 $demo [] = $personController->store($childRequest);

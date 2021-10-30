@@ -508,28 +508,12 @@ export default {
             this.form.items.splice(index, s1)
 
         },
-        addRow(data){
+        addRow(data) {
+            if (this.form.childrens === undefined) this.form.childrens = []
             this.form.childrens.push(data)
-            console.error(data)
             this.$store.commit('setPerson', {})
 
         }
-        /*
-        addRow(row) {
-            /* Extraido de resources/js/views/tenant/quotations/form.vue * /
-                    if (this.recordItem) {
-                this.fakeForm.items[this.recordItem.indexi] = row
-                this.recordItem = null
-
-            } else {
-                this.fakeForm.items.push(JSON.parse(JSON.stringify(row)));
-            }
-            this.$store.commit('setFormData', this.fakeForm)
-
-            this.calculateTotal();
-            this.$store.commit('setFormData', this.fakeForm)
-            },
-            */
-}
+    }
 }
 </script>
