@@ -138,9 +138,10 @@
                                 <p class="font-weight-semibold mb-0">SUBTOTAL</p>
                             </div>
                             <div class="col-sm-6 py-1 text-right">
-                                <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }} {{
-                                        form.total_taxed
-                                                                    }}</p>
+                                <p class="font-weight-semibold mb-0">
+                                    {{ currencyTypeActive.symbol }}
+                                    {{ form.total_taxed }}
+                                </p>
                             </div>
                         </div>
                         <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
@@ -148,8 +149,10 @@
                                 <p class="font-weight-semibold mb-0">IGV</p>
                             </div>
                             <div class="col-sm-6 py-1 text-right">
-                                <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
-                                                                    {{ form.total_igv }}</p>
+                                <p class="font-weight-semibold mb-0">
+                                    {{ currencyTypeActive.symbol }}
+                                    {{ form.total_igv }}
+                                </p>
                             </div>
                         </div>
                         <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
@@ -157,8 +160,10 @@
                                 <p class="font-weight-semibold mb-0">ICBPER</p>
                             </div>
                             <div class="col-sm-6 py-1 text-right">
-                                <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
-                                                                    {{ form.total_plastic_bag_taxes }}</p>
+                                <p class="font-weight-semibold mb-0">
+                                    {{ currencyTypeActive.symbol }}
+                                    {{ form.total_plastic_bag_taxes }}
+                                </p>
                             </div>
                         </div>
                     </template>
@@ -168,9 +173,9 @@
                                 <p class="font-weight-semibold mb-0">SUBTOTAL</p>
                             </div>
                             <div class="col-sm-6 py-1 text-right">
-                                <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }} {{
-                                        form.total_taxed
-                                                                    }}</p>
+                                <p class="font-weight-semibold mb-0">
+                                    {{ currencyTypeActive.symbol }} {{form.total_taxed}}
+                                </p>
                             </div>
                         </div>
                         <div class="row m-0 p-0 bg-white h-25 d-flex align-items-center">
@@ -178,8 +183,9 @@
                                 <p class="font-weight-semibold mb-0">IGV</p>
                             </div>
                             <div class="col-sm-6 py-1 text-right">
-                                <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
-                                                                    {{ form.total_igv }}</p>
+                                <p class="font-weight-semibold mb-0">
+                                    {{ currencyTypeActive.symbol }}{{ form.total_igv }}
+                                </p>
                             </div>
                         </div>
                     </template>
@@ -207,7 +213,6 @@
                 </div>
             </div>
         </div>
-
         <options-form
             :recordId="documentNewId"
             :resource="resource_options"
@@ -315,6 +320,8 @@ export default {
             this.payments = payments
 
         })
+
+        this.events();
 
         await this.setInitialAmount()
 
@@ -693,7 +700,29 @@ export default {
             this.loading_submit = false
             this.cleanLocalStoragePayment()
             this.$eventHub.$emit('cancelSale')
+            console.info('cli cancel fas_payment')
 
+        },
+        async events() {
+            await this.$eventHub.$on("cancelSale", () => {
+                console.info('aquiss');
+                this.initLStoPayment()
+                this.getTables()
+                this.initFormPayment()
+                this.inputAmount()
+                this.form.payments = []
+                this.$eventHub.$on('reloadDataCardBrands', (card_brand_id) => {
+                    this.reloadDataCardBrands(card_brand_id)
+                })
+
+                this.$eventHub.$on('localSPayments', (payments) => {
+                    this.payments = payments
+                });
+
+                this.setInitialAmount()
+
+                this.getFormPosLocalStorage()
+            });
         },
         cleanLocalStoragePayment() {
 

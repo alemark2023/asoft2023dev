@@ -151,6 +151,7 @@
 
                 await this.initForm()
                 await this.$eventHub.$emit('cancelSale')
+                this.$emit('update:showDialog', false)
 
             },
             initForm() {

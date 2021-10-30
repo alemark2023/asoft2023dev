@@ -889,6 +889,10 @@
 .el-input-group__append {
     padding: 0 10px !important;
 }
+
+.ws-flotante {
+    display: none;
+}
 </style>
 
 <script>
@@ -970,6 +974,8 @@ export default {
         this.customer = await this.getLocalStorageIndex("customer");
 
         await this.selectDefaultCustomer();
+
+        this.form.establishment_id = this.establishment.id;
     },
 
     computed: {
@@ -1129,6 +1135,7 @@ export default {
                 this.initDateTimeIssue();
                 // this.calculateTotal()
             }
+            let amount = localStorage.setItem('amount', JSON.stringify(this.form.total))
         },
         initDateTimeIssue() {
             this.form.date_of_issue = moment().format("YYYY-MM-DD");
@@ -1349,6 +1356,7 @@ export default {
                 this.$nextTick(() => {
                     this.initFocus();
                 });
+                this.form.establishment_id = this.establishment.id;
             });
 
             // await this.$eventHub.$on("indexInitFocus", () => {
@@ -1375,6 +1383,7 @@ export default {
                 this.selectItemUnitType(unit_type)
             });
 
+            this.form.establishment_id = this.establishment.id;
 
         },
         selectItemUnitType(unit_type){
