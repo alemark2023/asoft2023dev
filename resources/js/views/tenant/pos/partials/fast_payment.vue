@@ -6,18 +6,15 @@
 
         <div class="col-12">
             <div class="row">
-                <div class="col-3">
-                    <el-radio-group v-model="form.document_type_id"
-                                    size="small"
-                                    @change="filterSeries">
+                <div class="col-6">
+                    <el-radio-group v-model="form.document_type_id" size="small" @change="filterSeries">
                         <el-radio-button label="01">FACTURA</el-radio-button>
                         <el-radio-button label="03">BOLETA</el-radio-button>
                         <el-radio-button label="80">N. VENTA</el-radio-button>
                     </el-radio-group>
                 </div>
-                <div class="col-3">
-                    <el-select v-model="form.series_id"
-                               class="c-width">
+                <div class="col-2 px-0">
+                    <el-select v-model="form.series_id" class="c-width" style="height: 30px;">
                         <el-option v-for="option in series"
                                    :key="option.id"
                                    :label="option.number"
@@ -25,20 +22,26 @@
                         </el-option>
                     </el-select>
                 </div>
+                <div class="col-3">
+                    <el-switch v-model="enabled_discount"
+                                        active-text="Descuento"
+                                        class="control-label font-weight-semibold m-0 text-center m-b-0"
+                                        @change="changeEnabledDiscount"></el-switch>
+                </div>
             </div>
-            <div class="row">
-                <div class="col-6">
+            <div class="row d-flex align-items-end">
+                <div class="col-4">
                     <div class="form-group">
                         <label class="control-label">Ingrese monto</label>
                         <el-input ref="enter_amount"
                                     v-model="enter_amount"
                                     @input="enterAmount()"
                                     @keyup.enter.native="keyupEnterAmount()">
-                            <template slot="prepend">{{ currencyTypeActive.symbol }}</template>
+                            <template slot="prepend" style="px-1">{{ currencyTypeActive.symbol }}</template>
                         </el-input>
                     </div>
                 </div>
-                <div class="col-6">
+                <div class="col-3">
                     <div :class="{'has-danger': difference < 0}"
                             class="form-group">
                         <label class="control-label"
@@ -50,19 +53,31 @@
                             {{ currencyTypeActive.symbol }} {{ difference }}</h4>
                     </div>
                 </div>
+                <div class="col-5">
+                    <button class="btn btn-sm btn-block btn-primary" @click="clickAddPayment()">
+                        Agregar Pagos
+                    </button>
+                </div>
             </div>
             <div class="row">
-                <div class="col-lg-6">
-                    <div class="form-group">
-                        <h2>
-                            <el-switch v-model="enabled_discount"
-                                        active-text="Aplicar descuento"
-                                        class="control-label font-weight-semibold m-0 text-center m-b-0"
-                                        @change="changeEnabledDiscount"></el-switch>
-                        </h2>
+                <template v-for="(pay,index) in form.payments">
+                    <div :key="pay.id"
+                            class="col-lg-1">
+                        <label>{{ index + 1 }}.-</label>
                     </div>
-                </div>
-                <div class="col-lg-6">
+                    <div :key="pay.id"
+                            class="col-lg-6">
+                        <label>{{ getDescriptionPaymentMethodType(pay.payment_method_type_id) }}</label>
+                    </div>
+                    <div :key="pay.id"
+                            class="col-lg-5">
+                        <label><strong>{{ currencyTypeActive.symbol }}
+                                        {{ pay.payment }}</strong> </label>
+                    </div>
+                </template>
+            </div>
+            <div class="row" v-if="enabled_discount">
+                <div class="col-12">
                     <div class="form-group">
                         <label class="control-label">Monto descuento</label>
                         <el-input v-model="discount_amount"
@@ -85,50 +100,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="input-group mb-3">
-                    <div class="col-lg-12 m-bottom">
-                        <div class="row">
-
-                            <div class="col-lg-6">
-                                <h5><strong>Pagos agregados </strong></h5>
-                            </div>
-                            <div class="col-lg-1">
-                            </div>
-                            <div class="col-lg-5">
-                                <button class="btn btn-sm btn-block btn-primary"
-                                        @click="clickAddPayment()"><i class="fas fa-plus"></i> Agregar
-                                </button>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-12 m-bottom">
-                        <div class="row">
-                            <template v-for="(pay,index) in form.payments">
-                                <div :key="pay.id"
-                                        class="col-lg-1">
-                                    <label>{{ index + 1 }}.-</label>
-                                </div>
-                                <div :key="pay.id"
-                                        class="col-lg-6">
-                                    <label>{{ getDescriptionPaymentMethodType(pay.payment_method_type_id) }}</label>
-                                </div>
-                                <div :key="pay.id"
-                                        class="col-lg-5">
-                                    <label><strong>{{ currencyTypeActive.symbol }}
-                                                    {{ pay.payment }}</strong> </label>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="row">
-
             </div>
             <div>
                 <div>
@@ -191,10 +162,10 @@
                     </template>
                     <div class="row m-0 p-0 h-25 d-flex align-items-center">
                         <div class="col-sm-6 py-2">
-                            <p class="font-weight-semibold mb-0 text-white">TOTAL</p>
+                            <p class="font-weight-semibold mb-0">TOTAL</p>
                         </div>
                         <div class="col-sm-6 py-2 text-right">
-                            <h4 class="font-weight-semibold mb-0 text-white">{{ currencyTypeActive.symbol }} {{form.total}}</h4>
+                            <h4 class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }} {{form.total}}</h4>
                         </div>
                     </div>
                     <div class="row m-0 p-0 h-25 d-flex align-items-center bg-white">
@@ -257,6 +228,16 @@
 
 .h-60 {
     height: 60% !important;
+}
+
+.el-input-group__prepend {
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.el-radio-button--small .el-radio-button__inner {
+    padding: 9px 6px;
+    font-size: 10px;
 }
 </style>
 

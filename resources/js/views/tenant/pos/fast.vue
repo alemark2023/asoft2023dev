@@ -8,11 +8,6 @@
             />
             <!-- <Keypress key-event="keyup" :key-code="113" @success="handleFn113" /> -->
 
-            <!-- <h2 class="text-sm">POS</h2>
-      <div class="right-wrapper pull-right">
-        <h2 class="text-sm pr-5">T/C 3.321</h2>
-        <h2 class="text-sm">{{user.name}}</h2>
-      </div> -->
             <div class="col-md-4">
                 <!-- <h2 class="text-sm">POS</h2> -->
                 <h2>
@@ -107,7 +102,7 @@
             class="row col-lg-12 m-0 p-0"
             v-loading="loading"
         >
-            <div class="col-lg-8 col-md-6 px-4 hyo">
+            <div class="col-lg-7 col-md-6 px-4 hyo">
                 <template v-if="!search_item_by_barcode">
                     <el-input
                         v-show="
@@ -524,10 +519,10 @@
                 </div>
             </div>
             <div
-                class="col-lg-4 col-md-6 bg-white m-0 p-0"
+                class="col-lg-5 col-md-6 bg-white m-0 p-0"
                 style="height: calc(100vh - 110px)"
             >
-                <div class="h-75 bg-light" style="overflow-y: auto">
+                <div class="h-50 bg-light" style="overflow-y: auto">
                     <div class="row py-3 border-bottom m-0 p-0">
                         <div class="col-8">
                             <el-select
@@ -668,122 +663,23 @@
                         </div>
                     </div>
                 </div>
-                <div class="h-25 bg-light" style="overflow-y: auto">
-                    <div
-                        class="row border-top bg-light m-0 p-0 h-50 d-flex align-items-right pr-5 pt-2"
-                    >
-                        <div
-                            class="col-md-12"
-                            style="display: flex; flex-direction: column; align-items: flex-end;"
-                        >
-                            <table>
-                                <tr
-                                    v-if="form.total_exonerated > 0"
-                                    class="font-weight-semibold  m-0"
-                                >
-                                    <td class="font-weight-semibold">
-                                        OP.EXONERADAS
-                                    </td>
-                                    <td class="font-weight-semibold">:</td>
-                                    <td class="text-right text-blue">
-                                        {{ currency_type.symbol }}
-                                        {{ form.total_exonerated }}
-                                    </td>
-                                </tr>
-                                <tr
-                                    v-if="form.total_free > 0"
-                                    class="font-weight-semibold  m-0"
-                                >
-                                    <td class="font-weight-semibold">
-                                        OP.GRATUITAS
-                                    </td>
-                                    <td class="font-weight-semibold">:</td>
-                                    <td class="text-right text-blue">
-                                        {{ currency_type.symbol }}
-                                        {{ form.total_free }}
-                                    </td>
-                                </tr>
-                                <tr
-                                    v-if="form.total_unaffected > 0"
-                                    class="font-weight-semibold  m-0"
-                                >
-                                    <td class="font-weight-semibold">
-                                        OP.INAFECTAS
-                                    </td>
-                                    <td class="font-weight-semibold">:</td>
-                                    <td class="text-right text-blue">
-                                        {{ currency_type.symbol }}
-                                        {{ form.total_unaffected }}
-                                    </td>
-                                </tr>
-                                <tr
-                                    v-if="form.total_taxed > 0"
-                                    class="font-weight-semibold  m-0"
-                                >
-                                    <td class="font-weight-semibold">
-                                        OP.GRAVADA
-                                    </td>
-                                    <td class="font-weight-semibold">:</td>
-                                    <td class="text-right text-blue">
-                                        {{ currency_type.symbol }}
-                                        {{ form.total_taxed }}
-                                    </td>
-                                </tr>
-                                <tr
-                                    v-if="form.total_igv > 0"
-                                    class="font-weight-semibold  m-0"
-                                >
-                                    <td class="font-weight-semibold">IGV</td>
-                                    <td class="font-weight-semibold">:</td>
-                                    <td class="text-right text-blue">
-                                        {{ currency_type.symbol }}
-                                        {{ form.total_igv }}
-                                    </td>
-                                </tr>
-                                <tr
-                                    v-if="form.total_plastic_bag_taxes > 0"
-                                    class="font-weight-semibold  m-0"
-                                >
-                                    <td class="font-weight-semibold">ICBPER</td>
-                                    <td class="font-weight-semibold">:</td>
-                                    <td class="text-right text-blue">
-                                        {{ currency_type.symbol }}
-                                        {{ form.total_plastic_bag_taxes }}
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div
-                        class="row text-white m-0 p-0 h-50 d-flex align-items-center"
-                        @click="clickPayment"
-                        v-bind:class="[
-                            form.total > 0 ? 'bg-info pointer' : 'bg-dark'
-                        ]"
-                    >
-                        <div class="col-6 text-center">
-                            <i class="fas fa-chevron-circle-right fa fw h5"></i>
-                            <span class="font-weight-semibold h5">PAGO</span>
-                        </div>
-                        <div class="col-6 text-center">
-                            <h5 class="font-weight-semibold h5">
-                                {{ currency_type.symbol }} {{ form.total }}
-                            </h5>
-                        </div>
+                <div class="h-50 bg-light" style="overflow-y: auto">
+                    <div class="row m-0 p-0 d-flex align-items-center">
+                        <fast-payment
+                            :is_payment.sync="is_payment"
+                            :form="form"
+                            :currency-type-id-active="form.currency_type_id"
+                            :currency-type-active="currency_type"
+                            :exchange-rate-sale="form.exchange_rate_sale"
+                            :customer="customer"
+                            :soapCompany="soapCompany"
+                            :businessTurns="businessTurns"
+                        ></fast-payment>
                     </div>
                 </div>
             </div>
 
-            <fast-payment
-                :is_payment.sync="is_payment"
-                :form="form"
-                :currency-type-id-active="form.currency_type_id"
-                :currency-type-active="currency_type"
-                :exchange-rate-sale="form.exchange_rate_sale"
-                :customer="customer"
-                :soapCompany="soapCompany"
-                :businessTurns="businessTurns"
-            ></fast-payment>
+
 
             <person-form
                 :showDialog.sync="showDialogNewPerson"
