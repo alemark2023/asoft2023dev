@@ -64,6 +64,23 @@
 
                     });
 
+                    /**
+                     * suscription/payments
+                     */
+                    Route::prefix('payments')->group(function () {
+                        Route::get('/', 'PaymentsSuscriptionController@index')
+                            ->name('tenant.suscription.payments.index')
+                            ->middleware(['redirect.level']);
+                        Route::post('/', 'PaymentsSuscriptionController@store');
+
+                        Route::get('/columns', 'PaymentsSuscriptionController@Columns');
+                        Route::post('/records', 'PaymentsSuscriptionController@Records');
+                        Route::post('/tables', 'PaymentsSuscriptionController@Tables');
+                        Route::post('/record', 'PaymentsSuscriptionController@Record');
+                        Route::post('/search/customers', 'PaymentsSuscriptionController@searchCustomer');
+
+                    });
+
 
                     Route::post('CommonData','SuscriptionController@Tables');
                 });

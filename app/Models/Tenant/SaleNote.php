@@ -4,50 +4,116 @@
 
     use App\Models\Tenant\Catalogs\CurrencyType;
     use App\Traits\SellerIdTrait;
+    use Carbon\Carbon;
+    use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Collection;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Illuminate\Database\Eloquent\Relations\HasMany;
     use Illuminate\Database\Eloquent\Relations\MorphMany;
     use Illuminate\Database\Query\Builder;
     use Modules\Item\Models\WebPlatform;
+    use Modules\Order\Models\OrderNote;
     use Modules\Sale\Models\TechnicalService;
 
     /**
      * Class SaleNote
      *
-     * @package App\Models\Tenant
+     * @package App\Models\Tenant\
      * @mixin ModelTenant
-     * @property CurrencyType                 $currency_type
-     * @property Collection|Document[]        $documents
-     * @property int|null                     $documents_count
-     * @property Establishment                $establishment
-     * @property mixed                        $charges
-     * @property mixed                        $customer
-     * @property mixed                        $detraction
-     * @property mixed                        $discounts
-     * @property mixed                        $guides
-     * @property mixed                        $identifier
-     * @property mixed                        $legends
-     * @property string                       $number_full
-     * @property mixed                        $number_to_letter
-     * @property mixed                        $perception
-     * @property mixed                        $prepayments
-     * @property mixed                        $related
-     * @property Collection|InventoryKardex[] $inventory_kardex
-     * @property int|null                     $inventory_kardex_count
-     * @property Collection|SaleNoteItem[]    $items
-     * @property int|null                     $items_count
-     * @property Collection|Kardex[]          $kardex
-     * @property int|null                     $kardex_count
-     * @property PaymentMethodType            $payment_method_type
-     * @property Collection|SaleNotePayment[] $payments
-     * @property int|null                     $payments_count
-     * @property Person                       $person
-     * @property Quotation                    $quotation
-     * @property SoapType                     $soap_type
-     * @property StateType                    $state_type
-     * @property User                         $user
-     * @property User                         $seller
+     * @property CurrencyType                                   $currency_type
+     * @property Collection|Document[]                          $documents
+     * @property int|null                                       $documents_count
+     * @property Establishment                                  $establishment
+     * @property mixed                                          $charges
+     * @property mixed                                          $customer
+     * @property mixed                                          $detraction
+     * @property mixed                                          $discounts
+     * @property mixed                                          $guides
+     * @property mixed                                          $identifier
+     * @property mixed                                          $legends
+     * @property string                                         $number_full
+     * @property mixed                                          $number_to_letter
+     * @property mixed                                          $perception
+     * @property mixed                                          $prepayments
+     * @property mixed                                          $related
+     * @property Collection|InventoryKardex[]                   $inventory_kardex
+     * @property int|null                                       $inventory_kardex_count
+     * @property Collection|SaleNoteItem[]                      $items
+     * @property int|null                                       $items_count
+     * @property Collection|Kardex[]                            $kardex
+     * @property int|null                                       $kardex_count
+     * @property PaymentMethodType                              $payment_method_type
+     * @property Collection|SaleNotePayment[]                   $payments
+     * @property int|null                                       $payments_count
+     * @property Person                                         $person
+     * @property Quotation                                      $quotation
+     * @property SoapType                                       $soap_type
+     * @property StateType                                      $state_type
+     * @property User                                           $user
+     * @property User                                           $seller
+     * @property int                                            $id
+     * @property int                                            $user_id
+     * @property string                                         $external_id
+     * @property int                                            $establishment_id
+     * @property string                                         $soap_type_id
+     * @property string                                         $state_type_id
+     * @property string                                         $prefix
+     * @property string|null                                    $series
+     * @property int|null                                       $number
+     * @property Carbon                                         $date_of_issue
+     * @property Carbon                                         $time_of_issue
+     * @property int                                            $customer_id
+     * @property string                                         $currency_type_id
+     * @property string|null                                    $payment_method_type_id
+     * @property float                                          $exchange_rate_sale
+     * @property bool                                           $apply_concurrency
+     * @property bool                                           $enabled_concurrency
+     * @property Carbon|null                                    $automatic_date_of_issue
+     * @property int|null                                       $quantity_period
+     * @property string|null                                    $type_period
+     * @property float                                          $total_prepayment
+     * @property float                                          $total_charge
+     * @property float                                          $total_discount
+     * @property float                                          $total_exportation
+     * @property float                                          $total_free
+     * @property float                                          $total_taxed
+     * @property float                                          $total_unaffected
+     * @property float                                          $total_exonerated
+     * @property float                                          $total_igv
+     * @property float                                          $total_base_isc
+     * @property float                                          $total_isc
+     * @property float                                          $total_base_other_taxes
+     * @property float                                          $total_other_taxes
+     * @property float                                          $total_plastic_bag_taxes
+     * @property float                                          $total_taxes
+     * @property float                                          $total_value
+     * @property float                                          $total
+     * @property string|null                                    $additional_information
+     * @property string|null                                    $filename
+     * @property int|null                                       $quotation_id
+     * @property int|null                                       $order_note_id
+     * @property int|null                                       $technical_service_id
+     * @property int|null                                       $order_id
+     * @property bool                                           $total_canceled
+     * @property bool                                           $changed
+     * @property bool                                           $paid
+     * @property string|null                                    $license_plate
+     * @property string|null                                    $plate_number
+     * @property string|null                                    $reference_data
+     * @property string|null                                    $observation
+     * @property string|null                                    $purchase_order
+     * @property int|null                                       $document_id
+     * @property int|null                                       $user_rel_suscription_plan_id
+     * @property Carbon|null                                    $due_date
+     * @property Carbon|null                                    $created_at
+     * @property Carbon|null                                    $updated_at
+     * @property int|null                                       $seller_id
+     * @property Order|null                                     $order
+     * @property OrderNote|null                                 $order_note
+     * @property TechnicalService|null                          $technical_service
+     * @property Collection|CashDocument[]                      $cash_documents
+     * @property Collection|Kardex[]                            $kardexes
+     * @property Collection|SaleNotePayment[]                   $sale_note_payments
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote query()
@@ -55,9 +121,16 @@
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereStateTypeAccepted()
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereTypeUser()
      * @method static \Illuminate\Database\Eloquent\Builder|SaleNote WhereEstablishmentId()
+     * @property-read int|null                                  $cash_documents_count
+     * @property-read Collection|\App\Models\Tenant\GuideFile[] $guide_files
+     * @property-read int|null                                  $guide_files_count
+     * @property-read int|null                                  $kardexes_count
+     * @property-read int|null                                  $sale_note_payments_count
+     * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereEstablishmentId($establishment_id = 0)
      */
     class SaleNote extends ModelTenant
     {
+        use UsesTenantConnection;
         use SellerIdTrait;
 
         protected $with = [
@@ -134,10 +207,47 @@
             'seller_id',
             'order_id',
             'technical_service_id',
+            // 'changed',
+            'user_rel_suscription_plan_id',
             'subtotal',
         ];
 
         protected $casts = [
+            'user_id' => 'int',
+            'establishment_id' => 'int',
+            'number' => 'int',
+            'customer_id' => 'int',
+            'exchange_rate_sale' => 'float',
+            'apply_concurrency' => 'bool',
+            'enabled_concurrency' => 'bool',
+            'quantity_period' => 'int',
+            'total_prepayment' => 'float',
+            'total_charge' => 'float',
+            'total_discount' => 'float',
+            'total_exportation' => 'float',
+            'total_free' => 'float',
+            'total_taxed' => 'float',
+            'total_unaffected' => 'float',
+            'total_exonerated' => 'float',
+            'total_igv' => 'float',
+            'total_base_isc' => 'float',
+            'total_isc' => 'float',
+            'total_base_other_taxes' => 'float',
+            'total_other_taxes' => 'float',
+            'total_plastic_bag_taxes' => 'float',
+            'total_taxes' => 'float',
+            'total_value' => 'float',
+            'total' => 'float',
+            'quotation_id' => 'int',
+            'order_note_id' => 'int',
+            'technical_service_id' => 'int',
+            'order_id' => 'int',
+            'total_canceled' => 'bool',
+            // 'changed' => 'bool',
+            'paid' => 'bool',
+            'document_id' => 'int',
+            'user_rel_suscription_plan_id' => 'int',
+            'seller_id' => 'int',
             'date_of_issue' => 'date',
             'automatic_date_of_issue' => 'date',
             'due_date' => 'date',
@@ -175,6 +285,14 @@
                 $return += $sn->number;
             }
             return $return + 1;
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+         */
+        public function customer()
+        {
+            return $this->belongsTo(Person::class, 'customer_id');
         }
 
         /**
@@ -866,5 +984,41 @@
                 $query->where('establishment_id', $establishment_id);
             }
             return $query;
+        }
+
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+         */
+        public function order_note()
+        {
+            return $this->belongsTo(OrderNote::class);
+        }
+
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function cash_documents()
+        {
+            return $this->hasMany(CashDocument::class);
+        }
+
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function kardexes()
+        {
+            return $this->hasMany(Kardex::class);
+        }
+
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function sale_note_payments()
+        {
+            return $this->hasMany(SaleNotePayment::class);
         }
     }

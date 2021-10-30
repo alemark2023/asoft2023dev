@@ -64,7 +64,7 @@
                         </thead>
                         <tbody>
                         <slot
-                            v-for="(row, index) in records"
+                            v-for="(row, index) in table_data"
                             :index="customIndex(index)"
                             :row="row"
                         ></slot>
@@ -119,10 +119,12 @@ export default {
         };
     },
     created() {
+        this.loadConfiguration();
         if (this.pharmacy !== undefined && this.pharmacy === true) {
             this.fromPharmacy = true;
         }
         this.$eventHub.$on("reloadData", () => {
+            console.log('Dispara reloadData')
             this.getRecords();
         });
         this.$root.$refs.DataTable = this;
@@ -130,7 +132,6 @@ export default {
     async mounted() {
         let column_resource = _.split(this.resource, "/");
         let url = _.head(column_resource);
-        console.error(url)
         await this.$http
             .get(`/suscription/${url}/columns`)
             .then(response => {
@@ -149,11 +150,11 @@ export default {
         getRecords() {
             this.loading_submit = true;
             let url = `/suscription/${this.resource}/records`;
-            console.error(url)
             return this.$http
                 .post(url,this.getQueryParameters())
                 .then(response => {
                     this.records = response.data.data;
+                    this.$store.commit('setTableData',this.records)
                     this.pagination = response.data.meta;
                     this.pagination.per_page = parseInt(
                         response.data.meta.per_page
@@ -194,6 +195,7 @@ export default {
     computed: {
         ...mapState([
             'config',
+            'table_data',
             'resource',
         ]),
     },

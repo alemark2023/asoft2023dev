@@ -10,7 +10,7 @@
             <ol class="breadcrumbs">
                 <li class="active">
                     <span>
-                        Planes
+                        Suscripciones
                     </span>
                 </li>
             </ol>
@@ -27,7 +27,7 @@
         <div class="card mb-0">
             <div class="card-header bg-info">
                 <h3 class="my-0">
-                    Listado de planes
+                    Listado de suscripciones
                 </h3>
             </div>
             <div class="card-body">
@@ -37,16 +37,16 @@
                             #
                         </th>
                         <th class="text-center">
-                            Periodo
+                            Padre
                         </th>
                         <th class="text-center">
-                            Cant. Veces
+                            Hijo
                         </th>
                         <th class="text-center">
-                            Nombre
+                            Cant.Periodo/Ciclo
                         </th>
                         <th class="text-center">
-                            Descripción
+                            Total (cant * total)
                         </th>
                         <!--
 
@@ -63,16 +63,16 @@
                             {{ index }}
                         </td>
                         <td class="text-center">
-                            {{ row.period }}
+                            {{ row.parent_customer.description }}
                         </td>
-                        <td class="text-center">
+                        <td class="text-left">
+                            {{ row.children_customer.description }}
+                        </td>
+                        <td class="text-left">
                             {{ row.quantity_period }}
                         </td>
                         <td class="text-left">
-                            {{ row.name }}
-                        </td>
-                        <td class="text-left">
-                            {{ row.description }}
+                            {{ row.quantity_period * row.total }}
                         </td>
                         <!--
                             <td class="text-right">
@@ -99,11 +99,9 @@
                 </data-table>
             </div>
 
-            <plans-form
-                :showDialog.sync="showDialog"
-                @reload-data="sendReload"
-            >
-            </plans-form>
+            <customers-form
+                :showDialog.sync="showDialog">
+            </customers-form>
         </div>
     </div>
 </template>
@@ -111,7 +109,7 @@
 <script>
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
-import PlansForm from './form.vue'
+import CustomersForm from './form.vue'
 import DataTable from '../components/SuscriptionsDataTable.vue'
 import {deletable} from '../../../../../../resources/js/mixins/deletable'
 import {exchangeRate} from "../../../../../../resources/js/mixins/functions";
@@ -126,7 +124,7 @@ export default {
         exchangeRate
     ],
     components: {
-        PlansForm,
+        CustomersForm,
         DataTable
     },
     data() {
@@ -145,22 +143,27 @@ export default {
             'item_search_extra_parameters',
             'unit_types',
             'payment_method_types',
+            'customers',
+            'customer_addresses',
+            'all_customers',
         ]),
     },
     created() {
         this.loadConfiguration()
 
         this.$store.commit('setItemSearchExtraParameters', {'only_service': 1});
-
         this.$store.commit('setConfiguration', this.configuration)
-        this.$store.commit('setResource', 'plans')
+        this.$store.commit('setResource', 'payments')
         this.$store.commit('setFormData', {})
+        this.$store.commit('setCustomers', [])
+        this.getCommonData();
+        this.getSuscriptionData();
         this.searchExchangeRateByDate(this.date).then(response => {
             this.$store.commit('setExchangeRate', response)
             // this.form.exchange_rate_sale = this.exchange_rate
 
         });
-        this.getCommonData();
+
 
     },
     methods: {
@@ -178,10 +181,18 @@ export default {
                 })
         },
 
-
-        sendReload() {
-            this.$eventHub.$emit('reloadData')
+        getSuscriptionData() {
+            this.$http
+                .post(`/suscription/${this.resource}/tables`, {})
+                .then(response => {
+                    let customers =  response.data.customers;
+                    this.$store.commit('setPeriods', response.data.periods)
+                    this.$store.commit('setCustomers',customers)
+                    this.$store.commit('setAllCustomers',customers)
+                    this.$store.commit('setPlans', response.data.plans)
+                })
         },
+
 
         clickShowPlan(row) {
             this.clearFormData();

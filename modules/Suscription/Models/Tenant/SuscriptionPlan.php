@@ -5,7 +5,6 @@
 
     namespace Modules\Suscription\Models\Tenant;
 
-
     use App\Models\Tenant\Catalogs\CurrencyType;
     use App\Models\Tenant\ModelTenant;
     use App\Models\Tenant\User;
@@ -17,53 +16,56 @@
     use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
     /**
-     * Class SuscriptionPlan
-     *
-     * @property int                                 $id
-     * @property int|null                            $cat_period_id
-     * @property string                              $name
-     * @property string|null                         $currency_type_id
-     * @property string|null                         $payment_method_type_id
-     * @property float|null                          $exchange_rate_sale
-     * @property float|null                          $total_prepayment
-     * @property float|null                          $total_charge
-     * @property float|null                          $total_discount
-     * @property float|null                          $total_exportation
-     * @property float|null                          $total_free
-     * @property float|null                          $total_taxed
-     * @property float|null                          $total_unaffected
-     * @property float|null                          $total_exonerated
-     * @property float|null                          $total_igv
-     * @property float|null                          $total_igv_free
-     * @property float|null                          $total_base_isc
-     * @property float|null                          $total_isc
-     * @property float|null                          $total_base_other_taxes
-     * @property float|null                          $total_other_taxes
-     * @property float|null                          $total_taxes
-     * @property float|null                          $total_value
-     * @property string|null                         $charges
-     * @property string|null                         $discounts
-     * @property string|null                         $prepayments
-     * @property string|null                         $related
-     * @property string|null                         $perception
-     * @property string|null                         $detraction
-     * @property string|null                         $legends
-     * @property string|null                         $terms_condition
-     * @property string                              $description
-     * @property float|null                          $total
-     * @property Carbon|null                         $created_at
-     * @property Carbon|null                         $updated_at
-     * @property CatPeriod|null                      $cat_period
-     * @property Collection|ItemRelSuscriptionPlan[] $items
-     * @property Collection|User[]                   $users
-     * @package App\Models\Tenant\ModelTenant
-     * @property-read int|null                       $items_count
-     * @property-read int|null                       $users_count
-     * @method static Builder|SuscriptionPlan newModelQuery()
-     * @method static Builder|SuscriptionPlan newQuery()
-     * @method static Builder|SuscriptionPlan query()
-     * @mixin \Eloquent
-     */
+ * Class SuscriptionPlan
+ *
+ * @property int                                 $id
+ * @property int|null                            $cat_period_id
+ * @property int|null                            $quantity_period
+ * @property string                              $name
+ * @property string|null                         $currency_type_id
+ * @property string|null                         $payment_method_type_id
+ * @property float|null                          $exchange_rate_sale
+ * @property float|null                          $total_prepayment
+ * @property float|null                          $total_charge
+ * @property float|null                          $total_discount
+ * @property float|null                          $total_exportation
+ * @property float|null                          $total_free
+ * @property float|null                          $total_taxed
+ * @property float|null                          $total_unaffected
+ * @property float|null                          $total_exonerated
+ * @property float|null                          $total_igv
+ * @property float|null                          $total_igv_free
+ * @property float|null                          $total_base_isc
+ * @property float|null                          $total_isc
+ * @property float|null                          $total_base_other_taxes
+ * @property float|null                          $total_other_taxes
+ * @property float|null                          $total_taxes
+ * @property float|null                          $total_value
+ * @property string|null                         $charges
+ * @property string|null                         $attributes
+ * @property string|null                         $discounts
+ * @property string|null                         $prepayments
+ * @property string|null                         $related
+ * @property string|null                         $perception
+ * @property string|null                         $detraction
+ * @property string|null                         $legends
+ * @property string|null                         $terms_condition
+ * @property string                              $description
+ * @property float|null                          $total
+ * @property Carbon|null                         $created_at
+ * @property Carbon|null                         $updated_at
+ * @property CatPeriod|null                      $cat_period
+ * @property Collection|ItemRelSuscriptionPlan[] $items
+ * @property Collection|User[]                   $users
+ * @property-read int|null                       $items_count
+ * @property-read int|null                       $users_count
+ * @method static Builder|SuscriptionPlan newModelQuery()
+ * @method static Builder|SuscriptionPlan newQuery()
+ * @method static Builder|SuscriptionPlan query()
+ * @mixin \Eloquent
+ * @package App\Models\Tenant\ModelTenant
+ * @property-read CurrencyType                   $currency_type
+ */
     class SuscriptionPlan extends ModelTenant
     {
         use UsesTenantConnection;
@@ -71,6 +73,7 @@
         protected $perPage = 25;
 
         protected $casts = [
+            'quantity_period' => 'int',
             'cat_period_id' => 'int',
             'exchange_rate_sale' => 'float',
             'total_prepayment' => 'float',
@@ -93,6 +96,7 @@
         ];
 
         protected $fillable = [
+            'quantity_period',
             'cat_period_id',
             'name',
             'currency_type_id',
@@ -291,6 +295,26 @@
             return $this;
         }
 
+
+        /**
+         * @return int|null
+         */
+        public function getQuantityPeriod(): ?int
+        {
+            return $this->quantity_period;
+        }
+
+        /**
+         * @param int|null $quantity_period
+         *
+         * @return SuscriptionPlan
+         */
+        public function setQuantityPeriod(?int $quantity_period): SuscriptionPlan
+        {
+            $this->quantity_period = $quantity_period;
+            return $this;
+        }
+
         /**
          * @return \Modules\Suscription\Models\Tenant\CatPeriod
          */
@@ -408,10 +432,10 @@
         {
 
 
-            $currencyType  = $this->currency_type;
-            if(empty($this->currency_type_id) ) $currencyType = CurrencyType::find('PEN');
+            $currencyType = $this->currency_type;
+            if (empty($this->currency_type_id)) $currencyType = CurrencyType::find('PEN');
 
-            $items = $this->items->transform(function ($item) use($currencyType) {
+            $items = $this->items->transform(function ($item) use ($currencyType) {
                 return $item->getCollectionData($currencyType);
             });
             $data = [
@@ -423,12 +447,13 @@
                 'period' => $this->cat_period->name,
                 'currency_type' => $currencyType,
                 'periods' => $this->cat_period->period,
+
             ];
             $data = array_merge($data, $this->toArray());
             return $data;
         }
 
-        public function currency_type(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+        public function currency_type(): BelongsTo
         {
             return $this->belongsTo(CurrencyType::class, 'currency_type_id');
         }

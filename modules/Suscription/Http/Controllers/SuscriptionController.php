@@ -10,6 +10,7 @@
     use App\Models\Tenant\Catalogs\Province;
     use App\Models\Tenant\Catalogs\UnitType;
     use App\Models\Tenant\Configuration;
+    use App\Models\Tenant\PaymentMethodType;
     use App\Models\Tenant\PersonType;
     use Modules\Suscription\Http\Resources\SuscriptionPlansCollection;
     use App\Models\Tenant\Catalogs\Department;
@@ -222,8 +223,21 @@
             $currency_types = CurrencyType::whereActive()->orderByDescription()->get();
             $affectation_igv_types = AffectationIgvType::whereActive()->get();
 
-            return compact('unit_types', 'currency_types', 'affectation_igv_types',
-                'countries', 'departments', 'provinces', 'districts', 'identity_document_types', 'locations', 'person_types', 'api_service_token');
+            $payments_credit =PaymentMethodType::select('id')->NonCredit()->get()->toArray();
+            $payments_credit = PaymentMethodType:: getPaymentMethodTypes( $payments_credit);
+
+            return compact('unit_types',
+                'currency_types',
+                'affectation_igv_types',
+                'countries',
+                'departments',
+                'provinces',
+                'districts',
+                'identity_document_types',
+                'locations',
+                 'person_types',
+                'payments_credit',
+                'api_service_token');
         }
 
 

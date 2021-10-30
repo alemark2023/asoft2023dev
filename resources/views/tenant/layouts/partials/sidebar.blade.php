@@ -1176,19 +1176,15 @@
                                             </a>
                                         </li>
                                     @endif
-                                        {{--
-                                    // @todo Debe gestionarser
 
-
-                                   @if(in_array('suscription_app_products', $vc_module_levels))
+                                   @if(in_array('suscription_app_payments', $vc_module_levels))
                                     <li class="{{ (($path[0] === 'suscription') && ($path[1] === 'payments')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
                                            href="{{ route('tenant.suscription.payments.index') }}">
-                                            Productos
+                                            Suscripciones
                                         </a>
                                     </li>
                                 @endif
-                                --}}
                             </ul>
                         </li>
                     @endif

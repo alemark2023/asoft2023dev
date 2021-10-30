@@ -16,7 +16,7 @@
                     <div class="form-body">
 
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div
                                     :class="{'has-danger': errors.name}"
                                     class="form-group">
@@ -33,12 +33,29 @@
                                     </small>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
+                                <div
+                                    :class="{'has-danger': errors.quantity_period}"
+                                    class="form-group">
+                                    <label class="control-label">
+                                        Cantidad de Periodos
+                                    </label>
+                                    <el-input
+                                        v-model="form_data.quantity_period"
+                                    ></el-input>
+                                    <small
+                                        v-if="errors.quantity_period"
+                                        class="form-control-feedback"
+                                        v-text="errors.quantity_period[0]">
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
                                 <div
                                     :class="{'has-danger': errors.periods}"
                                     class="form-group">
                                     <label class="control-label">
-                                        Periodos
+                                        Tipo de Periodos
                                     </label>
                                     <el-select
                                         v-model="form_data.periods"
@@ -54,6 +71,30 @@
                                         v-if="errors.periods"
                                         class="form-control-feedback"
                                         v-text="errors.periods[0]">
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div
+                                    :class="{'has-danger': errors.payment_method_type_id}"
+                                    class="form-group">
+                                    <label class="control-label">
+                                        Método de pago
+                                    </label>
+
+                                    <el-select
+                                        v-model="form_data.payment_method_type_id"
+                                        filterable>
+                                        <el-option
+                                            v-for="option in payment_method_types"
+                                            :key="option.id" :value="option.id" :label="option.description"
+                                        >
+                                        </el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.payment_method_type_id"
+                                        class="form-control-feedback"
+                                        v-text="errors.payment_method_type_id[0]">
                                     </small>
                                 </div>
                             </div>
@@ -157,7 +198,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="col-xlg-push-8 col-4 text-right">
+                                <div class="col-xlg-push-6 col-6 text-right">
                                     <p v-if="fakeForm.total_exportation > 0"
                                        class="text-right">
                                         OP.EXPORTACIÓN: {{ currency_type.symbol }} {{ fakeForm.total_exportation }}
@@ -189,6 +230,13 @@
                                         </b>
                                         {{ currency_type.symbol }} {{ fakeForm.total }}
                                     </h3>
+                                </div>
+                                <div class="col-12"  v-if="errors.items">
+                                    <small
+                                        v-if="errors.items"
+                                        class="form-control-feedback"
+                                        v-text="errors.items[0]">
+                                    </small>
                                 </div>
                             </div>
 
@@ -299,13 +347,15 @@ export default {
             'exchange_rate',
             'currency_types',
             'affectation_igv_types',
-            'unit_types'
+            'unit_types',
+            'payment_method_types',
         ]),
     },
     methods: {
         ...mapActions([
             'loadConfiguration',
             'clearFormData',
+            'EmitEvent',
         ]),
 
         getCommonData(){
@@ -314,6 +364,7 @@ export default {
                     this.$store.commit('setCurrencyTypes',response.data.currency_types)
                     this.$store.commit('setAffectationIgvTypes',response.data.affectation_igv_types)
                     this.$store.commit('setUnitTypes',response.data.unit_types)
+                    this.$store.commit('setPaymentMethodTypes', response.data.payments_credit)
                 })
             .then(()=>{
                 // console.error(this.currency_type);
@@ -356,6 +407,8 @@ export default {
                         person: this.form_data.id,
                     })
                     .then(response => {
+                        this.$store.commit('setFormData', response.data.data)
+
                         // this.form = response.data.data
                         // this.filterProvinces()
                         // this.filterDistricts()
@@ -365,12 +418,16 @@ export default {
 
         submit() {
             this.loading_submit = true
-            this.$http.post(`/suscription/${this.resource}`, this.form_data)
+            let data = this.form_data;
+            console.dir(data)
+            this.$http.post(`/suscription/${this.resource}`, data)
                 .then(response => {
                     this.$eventHub.$emit('reloadData')
+                    // this.EmitEvent('reloadData')
                     this.close()
                 })
                 .catch(error => {
+                    console.error(error)
                     if (error.response.status === 422) {
                         this.errors = error.response.data
                     } else {
@@ -378,6 +435,7 @@ export default {
                     }
                 })
                 .finally(() => {
+                    console.error("eto")
                     this.loading_submit = false
                 })
         },

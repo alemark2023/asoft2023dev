@@ -2,14 +2,16 @@
 
     namespace Modules\Suscription\Http\Controllers;
 
+    use App\Http\Controllers\SearchCustomerController;
     use Illuminate\Http\Request;
-    use Modules\Suscription\Http\Requests\PlanSuscriptionRequest;
-    use Modules\Suscription\Http\Resources\SuscriptionPlansCollection;
-    use Modules\Suscription\Http\Resources\SuscriptionPlansResource;
+    use Modules\Suscription\Http\Requests\PaymentsSuscriptionRequest;
+    use Modules\Suscription\Http\Resources\UserRelSuscriptionPlansCollection;
+    use Modules\Suscription\Http\Resources\UserRelSuscriptionPlansResource;
     use Modules\Suscription\Models\Tenant\CatPeriod;
     use Modules\Suscription\Models\Tenant\SuscriptionPlan;
+    use Modules\Suscription\Models\Tenant\UserRelSuscriptionPlan;
 
-    class PlansSuscriptionController extends SuscriptionController
+    class PaymentsSuscriptionController extends SuscriptionController
     {
         public function Columns()
         {
@@ -24,28 +26,37 @@
         public function Record(Request $request)
         {
 
-            return new SuscriptionPlansResource(SuscriptionPlan::findOrFail($request->person));
+            return new UserRelSuscriptionPlansResource(UserRelSuscriptionPlan::findOrFail($request->person));
         }
 
         public function Records(Request $request)
         {
-            $records = SuscriptionPlan::query();
+            $records = UserRelSuscriptionPlan::query();
             if ($request->has('column') && !empty($request->column)) {
                 $records->where($request->column, 'like', "%{$request->value}%");
             }
             /** @var \Illuminate\Database\Query\Builder $records */
-            $records->orderBy('name');
+            // $records->orderBy('name');
             // ->where('type', $type)
-            return new SuscriptionPlansCollection($records->paginate(config('tenant.items_per_page')));
+            return new UserRelSuscriptionPlansCollection($records->paginate(config('tenant.items_per_page')));
         }
 
         public function Tables()
         {
 
+            $customers = SearchCustomerController::getSuscriptionCustomers();
             $periods = CatPeriod::where('active', 1)->get();
+            $plans = SuscriptionPlan::where('id', '!=', 0)
+                ->get()
+                ->transform(function ($row) {
+                    return $row->getCollectionData();
+                });
 
             return compact(
-                'periods'
+                'periods',
+                'customers',
+                'plans'
+
             );
 
         }
@@ -81,7 +92,7 @@
          */
         public function index()
         {
-            return view('suscription::plans.index');
+            return view('suscription::payments.index');
         }
 
         /**
@@ -96,15 +107,23 @@
             return view('suscription::show');
         }
 
+        public function searchCustomer(Request $request)
+        {
+            $customers = SearchCustomerController::getSuscriptionCustomers($request);
+
+            return ['customers' => $customers];
+
+        }
+
         /**
          * Update the specified resource in storage.
          *
-         * @param PlanSuscriptionRequest $request
-         * @param int                    $id
+         * @param PaymentsSuscriptionRequest $request
+         * @param int                        $id
          *
          * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\View\View
          */
-        public function update(PlanSuscriptionRequest $request, $id)
+        public function update(PaymentsSuscriptionRequest $request, $id)
         {
             //
         }
@@ -112,40 +131,19 @@
         /**
          * Store a newly created resource in storage.
          *
-         * @param PlanSuscriptionRequest $request
+         * @param PaymentsSuscriptionRequest $request
          *
-         * @return \Modules\Suscription\Http\Resources\SuscriptionPlansResource
+         * @return \Modules\Suscription\Http\Resources\UserRelSuscriptionPlansResource
          */
-        public function store(PlanSuscriptionRequest $request)
+        public function store(PaymentsSuscriptionRequest $request)
         {
             $id = null;
-            $requestItems = $request->items;
             if ($request->has('id')) $id = (int)$request->id;
-            $period = CatPeriod::where('period', 'Y')->first();
-            if ($request->has('periods')) {
-                if (CatPeriod::where('period', $request->periods)->first() != null) {
-                    $period = CatPeriod::where('period', $request->periods)->first();
-                }
-            }
-            $plan = SuscriptionPlan::firstOrNew(['id' => $id], $request->all());
-
+            $plan = UserRelSuscriptionPlan::firstOrNew(['id' => $id], []);
             $plan->fill($request->all());
-            $plan->setName($request->name)
-                ->setDescription($request->description)
-                ->setCatPeriod($period)
-                ->push();
-            foreach ($plan->items as $i) {
-                $i->delete();
-            }
-            // Elimina todos los items anteriores
-            // Inserta todos los nuevos items
-            foreach ($requestItems as $item) {
-                $plan->items()->create($item);
 
-            }
-
-
-            return new SuscriptionPlansResource($plan);
+            $plan->push();
+            return new UserRelSuscriptionPlansResource($plan);
 
         }
 

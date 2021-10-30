@@ -11,6 +11,8 @@ export default {
     exchange_rate_sale: 1,
     exchange_rate: 1,
     currency_types: [],
+    table_data: [],
+
     affectation_igv_types: [],
     unit_types: [],
     item_search_extra_parameters: {},
@@ -126,7 +128,13 @@ export default {
     actions: [],
     offices: [],
     documentTypes: [],
+    all_customers: [],
+    plans: [],
+    customer: {},
+    parent_customer: {},
+    children_customer: {},
     customers: [],
+    customer_addresses: [],
     workers: [],
     company: {
         logo: '',
