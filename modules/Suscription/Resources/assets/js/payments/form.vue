@@ -151,51 +151,55 @@
                             Lista de items
                             -->
 
-                                <div class="col-12" v-if="form.items !== undefined && form.items.length > 0">
-                                    <div class="col-md-12">
-                                        <div class="table-responsive">
-                                            <table class="table">
-                                                <thead>
-                                                <tr>
-                                                    <th class="font-weight-bold">Descripción</th>
-                                                    <th class="text-right font-weight-bold">Valor Unitario</th>
-                                                    <th class="text-right font-weight-bold">Precio Unitario</th>
-                                                    <th class="text-right font-weight-bold">Subtotal</th>
-                                                    <!--<th class="text-right font-weight-bold">Cargo</th>-->
-                                                    <th class="text-right font-weight-bold">Total</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody >
-                                                <tr v-for="(row, index) in form.items"
-                                                    :key="index">
-                                                    <td>
-                                                        {{ setDescriptionOfItem(row.item) }}
-                                                        {{
-                                                            row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''
-                                                        }}<br/><small>{{ row.affectation_igv_type.description }}</small>
-                                                    </td>
-                                                    <td class="text-right">{{ getSymbol(currency_type) }}
-                                                                           {{ getFormatUnitPriceRow(row.unit_value) }}
-                                                    </td>
-                                                    <td class="text-right">{{  getSymbol(currency_type) }}
-                                                                           {{ getFormatUnitPriceRow(row.unit_price) }}
-                                                    </td>
+                            <div v-if="form.items !== undefined && form.items.length > 0"
+                                 class="col-12">
+                                <div class="col-md-12">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th class="font-weight-bold">Descripción</th>
+                                                <th class="text-right font-weight-bold">Valor Unitario</th>
+                                                <th class="text-right font-weight-bold">Precio Unitario</th>
+                                                <th class="text-right font-weight-bold">Subtotal</th>
+                                                <!--<th class="text-right font-weight-bold">Cargo</th>-->
+                                                <th class="text-right font-weight-bold">Total</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr v-for="(row, index) in form.items"
+                                                :key="index">
+                                                <td>
+                                                    {{ setDescriptionOfItem(row.item) }}
+                                                    {{
+                                                        row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''
+                                                    }}<br/><small>{{ row.affectation_igv_type.description }}</small>
+                                                </td>
+                                                <td class="text-right">{{ getSymbol(currency_type) }}
+                                                                       {{ getFormatUnitPriceRow(row.unit_value) }}
+                                                </td>
+                                                <td class="text-right">{{ getSymbol(currency_type) }}
+                                                                       {{ getFormatUnitPriceRow(row.unit_price) }}
+                                                </td>
 
-                                                    <td class="text-right">{{  getSymbol(currency_type) }}
-                                                                           {{ row.total_value }}
-                                                    </td>
-                                                    <!--<td class="text-right">{{  getSymbol(currency_type) }} {{ row.total_charge }}</td>-->
-                                                    <td class="text-right">{{  getSymbol(currency_type) }} {{ row.total }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="9"></td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                                <td class="text-right">{{ getSymbol(currency_type) }}
+                                                                       {{ row.total_value }}
+                                                </td>
+                                                <!--<td class="text-right">{{  getSymbol(currency_type) }} {{ row.total_charge }}</td>-->
+                                                <td class="text-right">{{ getSymbol(currency_type) }} {{
+                                                        row.total
+                                                                       }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="9"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
-
                                 </div>
+
+                            </div>
 
                         </div>
                     </div>
@@ -284,6 +288,7 @@ export default {
     ],
     props: [
         'showDialog',
+        'suscriptionId',
     ],
     data() {
         return {
@@ -308,23 +313,23 @@ export default {
                 name: null,
                 description: null,
                 period: null,
-                currency_type_id : null,
+                currency_type_id: null,
                 items: [],
-                start_date : moment().format('YYYY-MM-DD'),
-                total_igv_free: 0 ,
-                total_exportation: 0 ,
-                total_taxed: 0 ,
-                total_exonerated: 0 ,
-                total_unaffected: 0 ,
-                total_free: 0 ,
-                total_igv: 0 ,
-                total_value: 0 ,
-                total_taxes: 0 ,
-                total: 0 ,
-                payments:[],
+                start_date: moment().format('YYYY-MM-DD'),
+                total_igv_free: 0,
+                total_exportation: 0,
+                total_taxed: 0,
+                total_exonerated: 0,
+                total_unaffected: 0,
+                total_free: 0,
+                total_igv: 0,
+                total_value: 0,
+                total_taxes: 0,
+                total: 0,
+                payments: [],
                 document_type_id: "01",
-                children_customer_id:null,
-                parent_customer_id:null,
+                children_customer_id: null,
+                parent_customer_id: null,
             },
             input_person: {},
             input_person_children: {},
@@ -335,8 +340,8 @@ export default {
     created() {
         this.loadConfiguration();
         this.$store.commit('setPlans', [])
-
         this.initForm()
+
         this.$http
             .post(`/suscription/${this.resource}/tables`, {})
             .then(response => {
@@ -352,7 +357,7 @@ export default {
             'config',
             'resource',
             'periods',
-            'form_data',
+            // 'form_data',
             'exchange_rate',
             'currency_types',
             'customers',
@@ -381,94 +386,99 @@ export default {
                 })
                 .then(() => {
                     // console.error(this.currency_type);
-                    this.changeCurrencyType()
+                    // this.changeCurrencyType()
                 })
         },
+
         clearForm() {
-            let form = {
+            this.form = {
                 id: null,
                 cat_period_id: null,
                 name: null,
                 description: null,
                 period: null,
-
-
-                currency_type_id : this.config.currency_type_id,
+                currency_type_id: this.config.currency_type_id,
                 items: [],
-                start_date : moment().format('YYYY-MM-DD'),
-                total_igv_free: 0 ,
-                total_exportation: 0 ,
-                total_taxed: 0 ,
-                total_exonerated: 0 ,
-                total_unaffected: 0 ,
-                total_free: 0 ,
-                total_igv: 0 ,
-                total_value: 0 ,
-                total_taxes: 0 ,
-                total: 0 ,
-                payments:[],
+                start_date: moment().format('YYYY-MM-DD'),
+                total_igv_free: 0,
+                total_exportation: 0,
+                total_taxed: 0,
+                total_exonerated: 0,
+                total_unaffected: 0,
+                total_free: 0,
+                total_igv: 0,
+                total_value: 0,
+                total_taxes: 0,
+                total: 0,
+                payments: [],
                 document_type_id: "01",
-                children_customer_id:null,
-                parent_customer_id:null,
+                children_customer_id: null,
+                parent_customer_id: null,
             }
-            this.form = form;
             this.$store.commit('setCustomer', {})
             this.$store.commit('setParentCustomer', {})
             this.$store.commit('setChildrenCustomer', {})
 
         },
         initForm() {
-            this.tabActive = 'first'
-            this.errors = {}
-
-
-            if (this.form === undefined) {
-                this.clearForm();
-            }
-            this.titleDialog = (this.form.id) ? 'Editar suscripcion' : 'Nueva suscripcion'
+            this.clearForm();
+            this.$emit('clearSuscriptionId', null)
             if (this.form.items === undefined) this.form.items = [];
             if (this.form.currency_type_id === undefined) this.form.currency_type_id = this.config.currency_type_id;
-
-            this.changeCurrencyType()
 
 
         },
         create() {
-            this.tabActive = "first"
-            this.initForm()
-            if (this.form_data.id) {
+            this.tabActive = 'first'
+            this.errors = {}
+            if (this.suscriptionId) {
                 this.$http
                     .post(`/suscription/${this.resource}/record`, {
-                        person: this.form_data.id,
+                        person: this.suscriptionId,
                     })
                     .then(response => {
-                        this.form = response.data.data
+                        this.$emit('clearSuscriptionId', null)
+                            this.form = response.data.data
                         this.$store.commit('setFormData', {})
                         let cs = this.customers;
-                        if(cs === null) { cs = []}
+                        if (cs === null) {
+                            cs = []
+                        }
 
 
-                        let parent =  response.data.data.parent_customer;
-                        let child =  response.data.data.children_customer;
+                        let parent = response.data.data.parent_customer;
+                        let child = response.data.data.children_customer;
                         let customers = _.find(cs, {'id': parent.id});
-                        if(customers === undefined){
+                        if (customers === undefined) {
                             cs.push(parent)
                         }
                         customers = _.find(cs, {'id': child.id});
-                        if(customers === undefined){
+                        if (customers === undefined) {
                             cs.push(child)
                         }
 
                         // esponse.data.dat
                         this.$store.commit('setCustomers', cs)
                         this.$store.commit('setParentCustomer', parent)
-                        this.$store.commit('setChildrenCustomer',child)
+                        this.$store.commit('setChildrenCustomer', child)
 
                         // this.form = response.data.data
                         // this.filterProvinces()
                         // this.filterDistricts()
                     })
+                    .then(() => {
+                        this.changeCurrencyType()
+                    })
+                .finally(()=>{            this.$emit('clearSuscriptionId', null)
+                })
+            } else {
+                this.clearForm()
+                this.form.id = this.suscriptionId
+                this.changeCurrencyType()
+
             }
+            this.titleDialog = (this.form.id) ? 'Editar suscripcion' : 'Nueva suscripcion'
+
         },
 
         submit() {
@@ -505,6 +515,7 @@ export default {
         },
         close() {
             this.$emit('update:showDialog', false)
+            this.$emit('clearSuscriptionId', null)
             this.clearForm();
             this.clearFormData();
             this.$store.commit('setFormData', {})
@@ -529,7 +540,6 @@ export default {
             ) {
                 this.form.start_date = moment().format('YYYY-MM-DD');
             }
-
             this.calculateTotal();
 
         },
@@ -550,23 +560,27 @@ export default {
 
         changeCurrencyType() {
             let currencyT = this.config.currency_type_id;
-            if (this.form.currency_type_id !== undefined) {
+            if (this.form !== undefined && this.form.currency_type_id !== undefined) {
                 currencyT = this.form.currency_type_id;
             }
-            if (currencyT === null) {
+
+            if (this.form !== undefined && currencyT === null) {
                 currencyT = this.config.currency_type_id;
                 this.form.currency_type_id = this.config.currency_type_id;
             }
-            // console.error(currencyT);
-            // console.dir(this.form.currency_type_id);
             this.currency_type = _.find(this.currency_types, {'id': currencyT})
-            // console.dir(this.currency_type);
-            // console.log('TIPO ')
-
             let items = []
-            this.form.items.forEach((row) => {
-                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
-            });
+
+            if (this.form !== undefined &&
+                this.form.items !== undefined &&
+                this.form.items !== null) {
+                let citems = this.form.items;
+            Object.keys(citems).forEach(key => {
+                    let row = citems[key] // value of the current key
+                    items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+                })
+            }
+
             this.form.items = items
             this.calculateTotal()
         },
@@ -583,7 +597,8 @@ export default {
             let total_value = 0
             let total = 0
             let total_igv_free = 0
-
+            console.error('affectation_igv_type_id')
+            console.error('affectation_igv_type_id')
             this.form.items.forEach((row) => {
                 total_discount += parseFloat(row.total_discount)
                 total_charge += parseFloat(row.total_charge)
@@ -641,7 +656,6 @@ export default {
         },
 
         setTotalDefaultPayment() {
-
             if (this.form.payments !== undefined && this.form.payments.length > 0) {
 
                 this.form.payments[0].payment = this.form.total
@@ -768,7 +782,7 @@ export default {
                     // es hijo
                     this.form.children_customer_id = this.form.parent_customer_id
                     this.form.parent_customer_id = customer.parent_id;
-                        customer.parent.childrens.push(customer)
+                    customer.parent.childrens.push(customer)
                     if (_.find(customers, {'id': customer.parent.id}) === undefined) {
                         customers.push(customer.parent)
                     }
@@ -777,7 +791,7 @@ export default {
                     this.$store.commit('setChildrenCustomer', customer)
                 }
                 this.$store.commit('setCustomer', this.parent_customer)
-                if(parseInt(this.form.children_customer_id) == 0) this.form.children_customer_id = null;
+                if (parseInt(this.form.children_customer_id) == 0) this.form.children_customer_id = null;
                 if (this.form.children_customer_id != null) {
                     this.changeCustomerChild(1)
                 }
@@ -788,7 +802,7 @@ export default {
             if (fromFunction == 1) {
                 customer = this.children_customer
             }
-            if(customer === undefined){
+            if (customer === undefined) {
                 // si no se consigue el hijo en los customer, entonces se busca en los datos del padre
                 customer = _.find(this.parent_customer.childrens, {'id': this.form.children_customer_id});
             }
@@ -810,25 +824,25 @@ export default {
             this.form.start_date = moment().format('YYYY-MM-DD');
             let plan = _.find(this.plans, {'id': this.form.suscription_plan_id});
             this.form.items = [];
-            this.form.total_charge =0;
-            this.form.total_discount =0;
-            this.form.total_exportation =0;
-            this.form.total_free =0;
-            this.form.total_taxed =0;
-            this.form.total_unaffected =0;
-            this.form.total_exonerated =0;
-            this.form.total_igv =0;
-            this.form.total_igv_free =0;
-            this.form.total_base_isc =0;
-            this.form.total_isc =0;
-            this.form.total_base_other_taxes =0;
-            this.form.total_other_taxes =0;
-            this.form.total_taxes =0;
-            this.form.total_value =0;
-            this.form.total =0;
-            if(plan !== undefined && plan.items !== undefined && plan.items.length > 0){
+            this.form.total_charge = 0;
+            this.form.total_discount = 0;
+            this.form.total_exportation = 0;
+            this.form.total_free = 0;
+            this.form.total_taxed = 0;
+            this.form.total_unaffected = 0;
+            this.form.total_exonerated = 0;
+            this.form.total_igv = 0;
+            this.form.total_igv_free = 0;
+            this.form.total_base_isc = 0;
+            this.form.total_isc = 0;
+            this.form.total_base_other_taxes = 0;
+            this.form.total_other_taxes = 0;
+            this.form.total_taxes = 0;
+            this.form.total_value = 0;
+            this.form.total = 0;
+            if (plan !== undefined && plan.items !== undefined && plan.items.length > 0) {
                 this.form.items = plan.items;
-                    this.form.total_prepayment = plan.total_prepayment
+                this.form.total_prepayment = plan.total_prepayment
                 this.form.total_charge = plan.total_charge
                 this.form.total_discount = plan.total_discount
                 this.form.total_exportation = plan.total_exportation
@@ -850,9 +864,9 @@ export default {
 
             this.changeStartDate();
         },
-        getSymbol(currency_type){
-            if(currency_type !== undefined &&
-                currency_type.symbol !== undefined){
+        getSymbol(currency_type) {
+            if (currency_type !== undefined &&
+                currency_type.symbol !== undefined) {
                 return currency_type.symbol;
             }
 

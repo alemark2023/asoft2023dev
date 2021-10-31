@@ -99,7 +99,7 @@
                 </data-table>
             </div>
    <customers-form
-            @clearSuscriptionId="clearSuscriptionId"
+            @clearSuscriptionId="clearsuscriptionid"
             :suscriptionId="suscriptionId"
                 :showDialog.sync="showDialog">
             </customers-form>
@@ -215,7 +215,7 @@ export default {
                 this.$eventHub.$emit('reloadData')
             )
         },
-        clearSuscriptionId(data){
+        clearsuscriptionid(data){
             this.suscriptionId = null;
         }
     }
