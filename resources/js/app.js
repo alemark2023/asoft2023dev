@@ -45,6 +45,8 @@ Vue.component('tenant-bank_accounts-index', require('./views/tenant/bank_account
 Vue.component('tenant-items-index', require('./views/tenant/items/index.vue'));
 Vue.component('tenant-persons-index', require('./views/tenant/persons/index.vue'));
 // Vue.component('tenant-customers-index', require('./views/tenant/customers/index.vue'));
+ Vue.component('tenant-person-form', require('./views/tenant/persons/form.vue'));
+
 // Vue.component('tenant-suppliers-index', require('./views/tenant/suppliers/index.vue'));
 Vue.component('tenant-users-form', require('./views/tenant/users/form.vue'));
 Vue.component('tenant-documents-index', require('./views/tenant/documents/index.vue'));
@@ -99,7 +101,7 @@ Vue.component('tenant-contingencies-index', require('./views/tenant/contingencie
 Vue.component('tenant-quotations-index', require('./views/tenant/quotations/index.vue'));
 Vue.component('tenant-quotations-form', require('./views/tenant/quotations/form.vue'));
 Vue.component('tenant-quotations-edit', require('./views/tenant/quotations/form_edit.vue'));
-
+Vue.component('tenant-quotations-item-form', require('./views/tenant/quotations/partials/item.vue'));
 
 Vue.component('tenant-sale-notes-index', require('./views/tenant/sale_notes/index.vue'));
 Vue.component('tenant-sale-notes-form', require('./views/tenant/sale_notes/form.vue'));
@@ -341,9 +343,8 @@ Vue.component('tenant-digemid-index', require('../../modules/Digemid/Resources/a
 
 /** Modulo Suscripcion **/
 Vue.component('tenant-suscription-client-index', require('../../modules/Suscription/Resources/assets/js/clients/index.vue'));
-Vue.component('tenant-suscription-service-index', require('../../modules/Suscription/Resources/assets/js/services/index.vue'));
-// Vue.component('tenant-suscription-plans-index',
-// require('../../modules/Suscription/Resources/assets/js/services/index.vue'));
+Vue.component('tenant-suscription-plans-index', require('../../modules/Suscription/Resources/assets/js/plans/index.vue'));
+Vue.component('tenant-suscription-payments-index', require('../../modules/Suscription/Resources/assets/js/payments/index.vue'));
 
 import moment from 'moment';
 

@@ -1,8 +1,8 @@
 <template>
-    <el-dialog :close-on-click-modal="false"
+    <el-dialog :append-to-body="true"
+               :close-on-click-modal="false"
                :title="titleDialog"
                :visible="showDialog"
-               :append-to-body="true"
                @close="close"
                @open="create"
                @opened="opened">
@@ -94,41 +94,7 @@
                                            v-text="errors.trade_name[0]"></small>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- <div class="row" v-if="type === 'customers'">
-                            <div class="col-md-4">
-                                <div class="form-group" :class="{'has-danger': errors.person_type_id}">
-                                    <label class="control-label">Tipo de cliente</label>
-                                    <el-select v-model="form.person_type_id" filterable  >
-                                        <el-option v-for="option in person_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                    </el-select>
-                                    <small class="form-control-feedback" v-if="errors.person_type_id" v-text="errors.person_type_id[0]"></small>
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="form-group"  >
-                                    <label class="control-label">Comentario</label>
-                                    <el-input v-model="form.comment"></el-input>
-                                </div>
-                            </div>
-                        </div> -->
-
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div :class="{'has-danger': errors.credit_days}"
-                                     class="form-group">
-                                    <label class="control-label">Dias de crédito</label>
-                                    <el-input-number
-                                        v-model="form.credit_days"
-                                        :controls="false"
-                                        :min="0"
-                                        :precision="0"></el-input-number>
-                                    <small v-if="errors.credit_days"
-                                           class="form-control-feedback"
-                                           v-text="errors.credit_days[0]"></small>
-                                </div>
-                            </div>
                             <div class="col-md-3">
                                 <div :class="{'has-danger': errors.internal_code}"
                                      class="form-group">
@@ -139,63 +105,83 @@
                                            v-text="errors.internal_code[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div :class="{'has-danger': errors.person_type_id}"
-                                     class="form-group">
-                                    <label class="control-label">
-                                        {{ typeDialog }}
-                                    </label>
-                                    <el-select v-model="form.person_type_id"
-                                               clearable
-                                               filterable>
-                                        <el-option v-for="option in person_types"
-                                                   :key="option.id"
-                                                   :label="option.description"
-                                                   :value="option.id"></el-option>
-                                    </el-select>
-                                    <small v-if="errors.person_type_id"
-                                           class="form-control-feedback"
-                                           v-text="errors.person_type_id[0]"></small>
-                                </div>
-                            </div>
-                            <div v-if="form.state"
-                                 class="col-md-6">
-                                <div class="form-group">
-                                    <label class="control-label">Estado del Contribuyente</label>
-                                    <template v-if="form.state == 'ACTIVO'">
-                                        <el-alert :closable="false"
-                                                  :title="`${form.state}`"
-                                                  show-icon
-                                                  type="success"></el-alert>
-                                    </template>
-                                    <template v-else>
-                                        <el-alert :closable="false"
-                                                  :title="`${form.state}`"
-                                                  show-icon
-                                                  type="error"></el-alert>
-                                    </template>
-                                </div>
+                        </div>
 
-                            </div>
-                            <div v-if="form.condition"
-                                 class="col-md-6">
-                                <div class="form-group">
-                                    <label class="control-label">Condición del Contribuyente</label>
-                                    <template v-if="form.condition == 'HABIDO'">
-                                        <el-alert :closable="false"
-                                                  :title="`${form.condition}`"
-                                                  show-icon
-                                                  type="success"></el-alert>
-                                    </template>
-                                    <template v-else>
-                                        <el-alert :closable="false"
-                                                  :title="`${form.condition}`"
-                                                  show-icon
-                                                  type="error"></el-alert>
-                                    </template>
-                                </div>
+                        <!--
+                        <div class="row">
+<div class="col-md-3">
+      <div :class="{'has-danger': errors.credit_days}"
+           class="form-group">
+          <label class="control-label">Dias de crédito</label>
+          <el-input-number
+              v-model="form.credit_days"
+              :controls="false"
+              :min="0"
+              :precision="0"></el-input-number>
+          <small v-if="errors.credit_days"
+                 class="form-control-feedback"
+                 v-text="errors.credit_days[0]"></small>
+      </div>
+  </div>
+  <div class="col-md-4">
+      <div :class="{'has-danger': errors.person_type_id}"
+           class="form-group">
+          <label class="control-label">
+              {{ typeDialog }}
+          </label>
+          <el-select v-model="form.person_type_id"
+                     clearable
+                     filterable>
+              <el-option v-for="option in person_types"
+                         :key="option.id"
+                         :label="option.description"
+                         :value="option.id"></el-option>
+          </el-select>
+          <small v-if="errors.person_type_id"
+                 class="form-control-feedback"
+                 v-text="errors.person_type_id[0]"></small>
+      </div>
+  </div>
 
-                            </div>
+  <div v-if="form.state"
+       class="col-md-6">
+      <div class="form-group">
+          <label class="control-label">Estado del Contribuyente</label>
+          <template v-if="form.state == 'ACTIVO'">
+              <el-alert :closable="false"
+                        :title="`${form.state}`"
+                        show-icon
+                        type="success"></el-alert>
+          </template>
+          <template v-else>
+              <el-alert :closable="false"
+                        :title="`${form.state}`"
+                        show-icon
+                        type="error"></el-alert>
+          </template>
+      </div>
+
+  </div>
+  <div v-if="form.condition"
+       class="col-md-6">
+      <div class="form-group">
+          <label class="control-label">Condición del Contribuyente</label>
+          <template v-if="form.condition == 'HABIDO'">
+              <el-alert :closable="false"
+                        :title="`${form.condition}`"
+                        show-icon
+                        type="success"></el-alert>
+          </template>
+          <template v-else>
+              <el-alert :closable="false"
+                        :title="`${form.condition}`"
+                        show-icon
+                        type="error"></el-alert>
+          </template>
+      </div>
+
+  </div>
+
                         </div>
                         <div v-if="type === 'suppliers'"
                              class="row mt-2">
@@ -219,14 +205,13 @@
                                 </div>
                             </div>
                         </div>
+                        -->
                     </el-tab-pane>
-
+                    <!--
                     <el-tab-pane class
                                  name="second">
                         <span slot="label">Dirección</span>
                         <div class="row">
-                            <!-- País -->
-
                             <div class="col-md-3">
                                 <div :class="{'has-danger': errors.country_id}"
                                      class="form-group">
@@ -244,7 +229,6 @@
                                            v-text="errors.country_id[0]"></small>
                                 </div>
                             </div>
-                            <!-- Departamento -->
                             <div class="col-md-3">
                                 <div :class="{'has-danger': errors.department_id}"
                                      class="form-group">
@@ -264,7 +248,6 @@
                                            v-text="errors.department_id[0]"></small>
                                 </div>
                             </div>
-                            <!-- Provincia -->
                             <div class="col-md-3">
                                 <div :class="{'has-danger': errors.province_id}"
                                      class="form-group">
@@ -284,7 +267,6 @@
                                            v-text="errors.province_id[0]"></small>
                                 </div>
                             </div>
-                            <!-- Distrito -->
                             <div class="col-md-3">
                                 <div :class="{'has-danger': errors.province_id}"
                                      class="form-group">
@@ -303,7 +285,6 @@
                                            v-text="errors.district_id[0]"></small>
                                 </div>
                             </div>
-                            <!-- Direccion -->
                             <div class="col-md-12">
                                 <div :class="{'has-danger': errors.address}"
                                      class="form-group">
@@ -317,7 +298,6 @@
                             </div>
                         </div>
                         <div class="row">
-                            <!-- Telefono -->
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.telephone}"
                                      class="form-group">
@@ -329,7 +309,6 @@
                                            v-text="errors.telephone[0]"></small>
                                 </div>
                             </div>
-                            <!-- Correo electronico contacto -->
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.email}"
                                      class="form-group">
@@ -341,8 +320,6 @@
                                            v-text="errors.email[0]"></small>
                                 </div>
                             </div>
-
-                            <!-- Correos electronicos alterno -->
                             <div class="col-6">
                                 <div
                                     class="form-group">
@@ -389,7 +366,6 @@
                                            v-text="errors.email[0]"></small>
                                 </div>
                             </div>
-                            <!-- Correos electronicos alterno -->
                         </div>
                         <div class="row m-t-10">
                             <div class="col-md-12 text-center">
@@ -483,6 +459,7 @@
                         <span slot="label">Otros Datos</span>
                         <div class="row ">
                             <div class="col-12">
+
                                 <h4>Contacto</h4>
                             </div>
                             <div class="col-md-6">
@@ -507,7 +484,6 @@
                             </div>
                         </div>
                         <div class="row">
-                            <!--Zona -->
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.zone }"
                                      class="form-group">
@@ -518,7 +494,6 @@
                                            v-text="errors.zone[0]"></small>
                                 </div>
                             </div>
-                            <!--SitioWeb -->
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.website }"
                                      class="form-group">
@@ -529,7 +504,6 @@
                                            v-text="errors.website[0]"></small>
                                 </div>
                             </div>
-                            <!--Observaciones -->
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.observation }"
                                      class="form-group">
@@ -540,10 +514,9 @@
                                            v-text="errors.observation[0]"></small>
                                 </div>
                             </div>
-                            <!--ID Días Crédito -->
-
                         </div>
                     </el-tab-pane>
+                    -->
                 </el-tabs>
             </div>
             <div class="form-actions text-right mt-4">
@@ -560,27 +533,34 @@
 <script>
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
-import {serviceNumber} from '../../../mixins/functions'
+import {serviceNumber} from '../../../../../../resources/js/mixins/functions'
 
 export default {
-    mixins: [serviceNumber],
+    mixins: [
+        serviceNumber
+    ],
     props: [
         'showDialog',
         'type',
         'recordId',
         'external',
-        'document_type_id',
         'input_person',
         'parentId',
+
+
+        /*
+
+        */
     ],
     data() {
         return {
+            document_type_id: "1",
             parent: null,
             loading_submit: false,
             titleDialog: null,
             titleTabDialog: null,
             typeDialog: null,
-            resource: 'persons',
+            // resource: 'persons',
             errors: {},
             api_service_token: false,
             form: {
@@ -588,40 +568,53 @@ export default {
             },
             temp_optional_email: [],
             temp_email: null,
+            provinces: [],
+            districts: [],
+            activeName: 'first',
+
+
             countries: [],
             all_departments: [],
             all_provinces: [],
             all_districts: [],
-            provinces: [],
-            districts: [],
-            locations: [],
             person_types: [],
             identity_document_types: [],
-            activeName: 'first'
+            locations: [],
         }
     },
     async created() {
 
         this.loadConfiguration()
         await this.initForm()
-        await this.$http.get(`/${this.resource}/tables`)
+        await this.$http.post(`/suscription/${this.resource}/tables`)
             .then(response => {
                 this.api_service_token = response.data.api_service_token
                 // console.log(this.api_service_token)
+                /*
+                this.$store.commit('setCountries', response.data.countries);
+                this.$store.commit('setAllDepartments', response.data.departments);
+                this.$store.commit('setAllProvinces', response.data.provinces);
+                this.$store.commit('setAllDistricts', response.data.districts);
+                this.$store.commit('setIdentityDocumentTypes', response.data.identity_document_types);
+                this.$store.commit('setLocations', response.data.locations);
+                this.$store.commit('setPersonTypes', response.data.person_types);
+                */
 
                 this.countries = response.data.countries
-                this.all_departments = response.data.departments;
-                this.all_provinces = response.data.provinces;
-                this.all_districts = response.data.districts;
-                this.identity_document_types = response.data.identity_document_types;
-                this.locations = response.data.locations;
-                this.person_types = response.data.person_types;
+                this.all_departments = response.data.departments
+                this.all_provinces = response.data.provinces
+                this.all_districts = response.data.districts
+                this.person_types = response.data.person_types
+                this.identity_document_types= response.data.identity_document_types
+                this.locations = response.data.locations
+
             })
 
     },
     computed: {
         ...mapState([
             'config',
+            'resource',
             'person',
             'parentPerson',
         ]),
@@ -644,7 +637,7 @@ export default {
                 id: null,
                 type: this.type,
                 credit_days: 0,
-                identity_document_type_id: '6',
+                identity_document_type_id: '1',
                 number: '',
                 name: null,
                 trade_name: null,
@@ -686,8 +679,10 @@ export default {
         },
         create() {
             // console.log(this.input_person)
+            this.changeIdentityDocType();
+            this.activeName='first'
             this.parent = 0;
-            if(this.parentId !== undefined){
+            if (this.parentId !== undefined) {
                 this.parent = this.parentId;
             }
             /*
@@ -709,9 +704,9 @@ export default {
                 }
             }
             if (this.type === 'customers') {
-                this.titleDialog = (this.recordId) ? 'Editar Cliente' : 'Nuevo Cliente'
-                this.titleTabDialog = 'Datos de Cliente';
-                this.typeDialog = 'Tipo de cliente'
+                this.titleDialog = (this.recordId) ? 'Editar hijo' : 'Nuevo hijo'
+                this.titleTabDialog = 'Datos de hijo';
+                this.typeDialog = 'Tipo de hijo'
             }
             if (this.type === 'suppliers') {
                 this.titleDialog = (this.recordId) ? 'Editar Proveedor' : 'Nuevo Proveedor'
@@ -720,7 +715,10 @@ export default {
             }
 
             if (this.recordId) {
-                this.$http.get(`/${this.resource}/record/${this.recordId}`)
+                let param = {
+                    person: this.recordId,
+                }
+                this.$http.post(`/suscription/${this.resource}/record`, param)
                     .then(response => {
                         this.form = response.data.data
                         if (response.data.data.contact == null) {
@@ -875,6 +873,12 @@ export default {
 
             this.loading_submit = true
             this.form.parent_id = parseInt(this.parent);
+            // emitir, no guardar
+            this.$store.commit('setPerson', this.form)
+            this.$emit('add', this.form);
+            this.loading_submit = true
+            this.close()
+            return null;
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
                     if (response.data.success) {
@@ -924,16 +928,16 @@ export default {
             this.searchServiceNumberByType()
         },
         searchNumber(data) {
-            //cambios apiperu
-            this.form.name = data.name;
-            this.form.trade_name = data.trade_name;
+            this.form.name = (this.form.identity_document_type_id === '1') ? data.nombre_completo : data.nombre_o_razon_social;
+            this.form.trade_name = (this.form.identity_document_type_id === '6') ? data.nombre_o_razon_social : '';
             this.form.location_id = data.ubigeo;
-            this.form.address = data.address;
-            this.form.department_id = data.department_id;
-            this.form.province_id = data.province_id;
-            this.form.district_id = data.district_id;
-            this.form.condition = data.condition;
-            this.form.state = data.state;
+            this.form.address = data.direccion;
+            this.form.department_id = (data.ubigeo) ? (data.ubigeo[0] != '-' ? data.ubigeo[0] : null) : null;
+            this.form.province_id = (data.ubigeo) ? (data.ubigeo[1] != '-' ? data.ubigeo[1] : null) : null;
+            this.form.district_id = (data.ubigeo) ? (data.ubigeo[2] != '-' ? data.ubigeo[2] : null) : null;
+            this.form.condition = data.condicion;
+            this.form.state = data.estado;
+
             this.filterProvinces()
             this.filterDistricts()
 //                this.form.addresses[0].telephone = data.telefono;

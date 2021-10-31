@@ -2,8 +2,12 @@
 
 @section('content')
 
-{{--    <tenant-contracts-index :type-user="{{json_encode(Auth::user()->type)}}"></tenant-contracts-index>--}}
-- En desarrollo -
+    <tenant-suscription-plans-index
+        :configuration="{{\App\Models\Tenant\Configuration::getPublicConfig()}}"
+        :date="'{{Carbon\Carbon::now()->format('Y-m-d')}}'"
+    ></tenant-suscription-plans-index>
+
+
 
 
 @endsection

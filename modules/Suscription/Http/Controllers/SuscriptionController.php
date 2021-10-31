@@ -2,68 +2,50 @@
 
     namespace Modules\Suscription\Http\Controllers;
 
-    use App\Http\Resources\Tenant\ItemCollection;
-    use App\Http\Resources\Tenant\PersonCollection;
-    use App\Http\Resources\Tenant\PersonResource;
-    use App\Models\System\Configuration;
+    use App\Models\Tenant\Catalogs\AffectationIgvType;
     use App\Models\Tenant\Catalogs\Country;
-    use App\Models\Tenant\Catalogs\Department;
+    use App\Models\Tenant\Catalogs\CurrencyType;
     use App\Models\Tenant\Catalogs\District;
     use App\Models\Tenant\Catalogs\IdentityDocumentType;
     use App\Models\Tenant\Catalogs\Province;
-    use App\Models\Tenant\Item;
-    use App\Models\Tenant\Person;
+    use App\Models\Tenant\Catalogs\UnitType;
+    use App\Models\Tenant\Configuration;
+    use App\Models\Tenant\PaymentMethodType;
     use App\Models\Tenant\PersonType;
+    use Modules\Suscription\Http\Resources\SuscriptionPlansCollection;
+    use App\Models\Tenant\Catalogs\Department;
+    use App\Models\Tenant\Item;
     use Illuminate\Http\Request;
-    use Illuminate\Http\Response;
     use Illuminate\Routing\Controller;
+    use Modules\Suscription\Models\Tenant\SuscriptionPlan;
 
     class SuscriptionController extends Controller
     {
         /**
          * Display a listing of the resource.
          *
-         * @return Response
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\View\View
          */
         public function index()
         {
             return view('suscription::index');
         }
 
-        /**
-         * Display a listing of the resource.
-         *
-         * @return Response
-         */
-        public function clients_index()
-        {
-            return view('suscription::clients.index');
-        }
 
         /**
          * Display a listing of the resource.
          *
-         * @return Response
-         */
-        public function services_index()
-        {
-            return view('suscription::services.index');
-        }
-
-        /**
-         * Display a listing of the resource.
-         *
-         * @return Response
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\View\View
          */
         public function payments_index()
         {
-            return view('suscription::payments.index');
+            return view('subscription::payments.index');
         }
 
         /**
          * Display a listing of the resource.
          *
-         * @return Response
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\View\View
          */
         public function plans_index()
         {
@@ -73,31 +55,20 @@
         /**
          * Show the form for creating a new resource.
          *
-         * @return Response
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\View\View
          */
         public function create()
         {
             return view('suscription::create');
         }
 
-        /**
-         * Store a newly created resource in storage.
-         *
-         * @param Request $request
-         *
-         * @return Response
-         */
-        public function store(Request $request)
-        {
-            //
-        }
 
         /**
          * Show the specified resource.
          *
          * @param int $id
          *
-         * @return Response
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\View\View
          */
         public function show($id)
         {
@@ -109,32 +80,21 @@
          *
          * @param int $id
          *
-         * @return Response
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\View\View
          */
         public function edit($id)
         {
             return view('suscription::edit');
         }
 
-        /**
-         * Update the specified resource in storage.
-         *
-         * @param Request $request
-         * @param int     $id
-         *
-         * @return Response
-         */
-        public function update(Request $request, $id)
-        {
-            //
-        }
+
 
         /**
          * Remove the specified resource from storage.
          *
          * @param int $id
          *
-         * @return Response
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\View\View
          */
         public function destroy($id)
         {
@@ -143,45 +103,45 @@
 
 
         /**
-         * @return string[]
+         * @param \Illuminate\Http\Request $request
+         *
+         * @return \Illuminate\Database\Eloquent\Builder
          */
-        public function clientColumns()
+        public function getServiceRecords(Request $request)
         {
-            return [
-                'name' => 'Nombre',
-                'number' => 'Número',
-                'document_type' => 'Tipo de documento'
-            ];
+
+            $records = Item::whereTypeUser()->whereNotIsSet()->whereService();
+            switch ($request->column) {
+                case 'brand':
+                    $records->whereHas('brand', function ($q) use ($request) {
+                        $q->where('name', 'like', "%{$request->value}%");
+                    });
+                    break;
+                case 'active':
+                    $records->whereIsActive();
+                    break;
+
+                case 'inactive':
+                    $records->whereIsNotActive();
+                    break;
+
+                default:
+                    if ($request->has('column')) {
+                        $filter = 'id';
+                        if ($request->column != 'index') $filter = $request->column;
+                        $records->where($filter, 'like', "%{$request->value}%");
+                    }
+                    break;
+            }
+            $filter = 'description';
+
+            if ($request->has('column') && $request->column != 'index') {
+                $filter = $request->column;
+
+            }
+            return $records->orderBy($filter);
+
         }
-
-        public function clientRecords(Request $request)
-        {
-            $type = 'customers';
-            $records = Person::where($request->column, 'like', "%{$request->value}%")
-                // ->where('type', $type)
-                ->orderBy('name');
-
-            return new PersonCollection($records->paginate(config('tenant.items_per_page')));
-        }
-
-
-        public function clientTables()
-        {
-            $countries = Country::whereActive()->orderByDescription()->get();
-            $departments = Department::whereActive()->orderByDescription()->get();
-            $provinces = Province::whereActive()->orderByDescription()->get();
-            $districts = District::whereActive()->orderByDescription()->get();
-            $identity_document_types = IdentityDocumentType::whereActive()->get();
-            $person_types = PersonType::get();
-            $locations = $this->getLocationCascade();
-            $configuration = Configuration::first();
-            $api_service_token = $configuration->token_apiruc == 'false' ? config('configuration.api_service_token') : $configuration->token_apiruc;
-
-            return compact('countries', 'departments', 'provinces', 'districts', 'identity_document_types', 'locations', 'person_types', 'api_service_token');
-        }
-
-
-        // @todo Cambio a item
 
         /**
          * Devuelve un array para Privincia, distrito
@@ -218,92 +178,38 @@
             return $locations;
         }
 
-        // @todo Cambio a item
 
-        public function serviceColumns()
+
+        public function plansColumns()
         {
             return [
-                // 'name' => 'Nombre',
-                // 'number' => 'Número',
-                // 'document_type' => 'Tipo de documento'
-
-                // 'index' => "#",
-                'internal_id' => "Cód. Interno",
-                'unit_type_id' => "Unidad",
-                'name' => "Nombre",
-                'description' => "Descripción",
-                'model' => "Modelo",
-                'brand' => "Marca",
-                // 'item_code' => "Cód. SUNAT",
-                'stock' => "Stock",
-                'purchase_unit_price' => "P.Unitario (Venta)",
-                'purchase_has_igv_description' => "P.Unitario (Compra)",
-                'has_igv_description' => "Tiene Igv (Venta)",
-// '' =>"Tiene Igv (Compra)",
+                'cat_period_id' => 'Periodos',
+                'name' => 'Descripción',
+                'description' => 'Nombre',
             ];
+
         }
 
-
-        // @todo Cambio a item
-
-        public function serviceRecords(Request $request)
+        public function plansRecord(Request $request)
         {
 
-            $records = $this->getServiceRecords($request);
-
-            return new ItemCollection($records->paginate(config('tenant.items_per_page')));
+            $record = new SuscriptionPlansCollection(SuscriptionPlan::findOrFail($request->person));
+            return $record;
         }
 
-        /**
-         * @param \Illuminate\Http\Request $request
-         *
-         * @return \Illuminate\Database\Eloquent\Builder
-         */
-        public function getServiceRecords(Request $request){
-
-            $records = Item::whereTypeUser()->whereNotIsSet();
-            switch ($request->column) {
-                case 'brand':
-                    $records->whereHas('brand',function($q) use($request){
-                        $q->where('name', 'like', "%{$request->value}%");
-                    });
-                    break;
-                case 'active':
-                    $records->whereIsActive();
-                    break;
-
-                case 'inactive':
-                    $records->whereIsNotActive();
-                    break;
-
-                default:
-                    if($request->has('column')) {
-                        $filter = 'id';
-                        if($request->column != 'index') $filter = $request->column;
-                        $records->where($filter, 'like', "%{$request->value}%");
-                    }
-                    break;
-            }
-            $records->whereService();
-            $filter = 'description';
-
-            if($request->has('column')) {
-                // $filter = 'id';
-
-                if($request->column != 'index') {
-                    $filter = $request->column;
-                }
-
-            }
-            return                 $records->orderBy($filter);
-            ;
-
-        }
-
-        // @todo Cambio a item
-
-        public function serviceTables()
+        public function plansRecords(Request $request)
         {
+            $type = 'customers';
+            $records = SuscriptionPlan::where($request->column, 'like', "%{$request->value}%")
+                // ->where('type', $type)
+                ->orderBy('name');
+
+            return new SuscriptionPlansCollection($records->paginate(config('tenant.items_per_page')));
+        }
+
+        public function Tables()
+        {
+
             $countries = Country::whereActive()->orderByDescription()->get();
             $departments = Department::whereActive()->orderByDescription()->get();
             $provinces = Province::whereActive()->orderByDescription()->get();
@@ -313,22 +219,26 @@
             $locations = $this->getLocationCascade();
             $configuration = Configuration::first();
             $api_service_token = $configuration->token_apiruc == 'false' ? config('configuration.api_service_token') : $configuration->token_apiruc;
+            $unit_types = UnitType::whereActive()->orderByDescription()->get();
+            $currency_types = CurrencyType::whereActive()->orderByDescription()->get();
+            $affectation_igv_types = AffectationIgvType::whereActive()->get();
 
-            return compact('countries', 'departments', 'provinces', 'districts', 'identity_document_types', 'locations', 'person_types', 'api_service_token');
+            $payments_credit =PaymentMethodType::select('id')->NonCredit()->get()->toArray();
+            $payments_credit = PaymentMethodType:: getPaymentMethodTypes( $payments_credit);
+
+            return compact('unit_types',
+                'currency_types',
+                'affectation_igv_types',
+                'countries',
+                'departments',
+                'provinces',
+                'districts',
+                'identity_document_types',
+                'locations',
+                 'person_types',
+                'payments_credit',
+                'api_service_token');
         }
 
-        public function serviceRecord(Request $request)
-        {
-            $record = new PersonResource(Person::findOrFail($request->person));
-
-            return $record;
-        }
-
-        public function clientRecord(Request $request)
-        {
-            $record = new PersonResource(Person::findOrFail($request->person));
-
-            return $record;
-        }
 
     }

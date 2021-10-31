@@ -45,14 +45,42 @@ export default {
         if (state.exchange_rate_sale === undefined) state.exchange_rate_sale = 1;
         if (state.exchange_rate === undefined) state.exchange_rate = 1;
         if (state.item === undefined) state.item = {};
-        if(state.document_types_guide === undefined ) state.document_types_guide = {};
-        if(state.resource === undefined ) state.resource = '';
+        if (state.document_types_guide === undefined) state.document_types_guide = {};
+        if (state.form_data === undefined) state.form_data = {};
+        if (state.resource === undefined) state.resource = '';
+        if (state.periods === undefined) state.periods = [];
+        if (state.affectation_igv_types === undefined) state.affectation_igv_types = [];
+        if (state.table_data === undefined) state.table_data = [];
+
+        if (state.unit_types === undefined) state.unit_types = [];
+        if (state.item_search_extra_parameters === undefined) state.item_search_extra_parameters = {};
+        if (state.person === undefined) state.person = {};
+        if (state.customers === undefined) state.customers = [];
+
+        if (state.countries === undefined) state.countries = [];
+        if (state.all_departments === undefined) state.all_departments = [];
+        if (state.all_provinces === undefined) state.all_provinces = [];
+        if (state.all_districts === undefined) state.all_districts = [];
+        if (state.identity_document_types === undefined) state.identity_document_types = [];
+        if (state.locations === undefined) state.locations = [];
+        if (state.person_types === undefined) state.person_types = [];
+
+
+
+
+        if (state.parent_customer === undefined) state.parent_customer = {};
+        if (state.children_customer === undefined) state.children_customer = {};
+
+        if (state.customer_addresses === undefined) state.customer_addresses = [];
+        if (state.parentPerson === undefined) state.parentPerson = {};
+
         // Previenete limite de almacen exedido
         /*
         5MB per app per browser. According to the HTML5 spec, this limit can be increased by the user when needed;
          however, only a few browsers support this
          */
         // alternativa posible sessionStorage
+        /*
         localStorage.removeItem('customers');
         localStorage.removeItem('offices');
         localStorage.removeItem('files');
@@ -61,6 +89,14 @@ export default {
         localStorage.removeItem('workers');
         localStorage.removeItem('warehouses');
         localStorage.removeItem('all_items');
+        */
+    },
+    EmitEvent(event, payload) {
+        //  this.$eventHub.$emit(event,payload)
+
+    },
+    clearFormData() {
+        state.form_data = {};
     },
     clearExtraInfoItem() {
         state.extra_colors = [];
