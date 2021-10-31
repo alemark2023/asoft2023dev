@@ -98,8 +98,9 @@
                     </tr>
                 </data-table>
             </div>
-
-            <customers-form
+   <customers-form
+            @clearSuscriptionId="clearSuscriptionId"
+            :suscriptionId="suscriptionId"
                 :showDialog.sync="showDialog">
             </customers-form>
         </div>
@@ -129,6 +130,7 @@ export default {
     },
     data() {
         return {
+            suscriptionId: null,
             showDialog: false,
         }
     },
@@ -195,7 +197,13 @@ export default {
 
 
         clickShowPlan(row) {
+
             this.clearFormData();
+            this.suscriptionId = null
+            if(row !== undefined && row.id !== null) {
+                this.suscriptionId = row.id
+            }
+
             this.$store.commit('setFormData', row)
             this.showDialog = true
 
@@ -206,6 +214,9 @@ export default {
             this.destroy(`/${this.resource}/${id}`).then(() =>
                 this.$eventHub.$emit('reloadData')
             )
+        },
+        clearSuscriptionId(data){
+            this.suscriptionId = null;
         }
     }
 }
