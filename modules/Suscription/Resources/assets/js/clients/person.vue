@@ -876,7 +876,6 @@ export default {
             // emitir, no guardar
             this.$store.commit('setPerson', this.form)
             this.$emit('add', this.form);
-            this.loading_submit = true
             this.close()
             return null;
             await this.$http.post(`/${this.resource}`, this.form)
@@ -920,6 +919,7 @@ export default {
 
         },
         close() {
+            this.loading_submit = false;
             this.$eventHub.$emit('initInputPerson')
             this.$emit('update:showDialog', false)
             this.initForm()
