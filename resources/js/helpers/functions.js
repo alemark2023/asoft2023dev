@@ -312,7 +312,8 @@ function showNamePdfOfDescription(item, show_pdf_name) {
     if (show_pdf_name !== undefined &&
         show_pdf_name === true &&
         item !== undefined &&
-        item.name_product_pdf !== undefined
+        item.name_product_pdf !== undefined &&
+        item.name_product_pdf !== null
     ) {
         let temn = item.name_product_pdf;
         temn = temn.substring(3)

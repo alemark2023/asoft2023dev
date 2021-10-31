@@ -306,6 +306,8 @@ export default {
             //all_districts: [],
             provinces: [],
             districts: [],
+            customer: {},
+            customers: [],
             recordItem: null,
             form: {
                 id: null,
@@ -346,7 +348,8 @@ export default {
             .post(`/suscription/${this.resource}/tables`, {})
             .then(response => {
                 this.$store.commit('setPeriods', response.data.periods)
-                this.$store.commit('setCustomers', response.data.customers)
+                // this.$store.commit('setCustomers', response.data.customers)
+                this.customers =response.data.customers
                 this.$store.commit('setAllCustomers', response.data.customers)
                 this.$store.commit('setPlans', response.data.plans)
             })
@@ -360,12 +363,12 @@ export default {
             // 'form_data',
             'exchange_rate',
             'currency_types',
-            'customers',
+            // 'customers',
             'customer_addresses',
             'all_customers',
             'affectation_igv_types',
             'unit_types',
-            'customer',
+            // 'customer',
             'parent_customer',
             'plans',
             'children_customer',
@@ -415,7 +418,8 @@ export default {
                 children_customer_id: null,
                 parent_customer_id: null,
             }
-            this.$store.commit('setCustomer', {})
+            // this.$store.commit('setCustomer', {})
+            this.customer  = {};
             this.$store.commit('setParentCustomer', {})
             this.$store.commit('setChildrenCustomer', {})
 
@@ -444,21 +448,28 @@ export default {
                         if (cs === null) {
                             cs = []
                         }
+                        console.dir(this.form)
 
-
-                        let parent = response.data.data.parent_customer;
-                        let child = response.data.data.children_customer;
-                        let customers = _.find(cs, {'id': parent.id});
-                        if (customers === undefined) {
-                            cs.push(parent)
+                        let parent = this.form.parent_customer;
+                        let child = this.form.children_customer;
+                        let customers = undefined;
+                        if(parent !== undefined) {
+                            customers = _.find(cs, {'id': parent.id});
+                            if (customers === undefined) {
+                                cs.push(parent)
+                            }
                         }
-                        customers = _.find(cs, {'id': child.id});
-                        if (customers === undefined) {
-                            cs.push(child)
+                        if(child !== undefined) {
+                            customers = _.find(cs, {'id': child.id});
+                            if (customers === undefined ) {
+                                cs.push(child)
+                            }
                         }
 
                         // esponse.data.dat
-                        this.$store.commit('setCustomers', cs)
+                        // this.$store.commit('setCustomers', cs)
+                        this.customers = cs
+
                         this.$store.commit('setParentCustomer', parent)
                         this.$store.commit('setChildrenCustomer', child)
 
@@ -597,8 +608,6 @@ export default {
             let total_value = 0
             let total = 0
             let total_igv_free = 0
-            console.error('affectation_igv_type_id')
-            console.error('affectation_igv_type_id')
             this.form.items.forEach((row) => {
                 total_discount += parseFloat(row.total_discount)
                 total_charge += parseFloat(row.total_charge)
@@ -681,7 +690,9 @@ export default {
                 this.$http
                     .post(`/suscription/${this.resource}/search/customers`, parameters)
                     .then(response => {
-                        this.$store.commit('setCustomers', response.data.customers)
+                        // this.$store.commit('setCustomers', response.data.customers)
+                        this.customers = response.data.customers
+
                         this.loading_search = false
                         this.input_person.number = null
                         if (this.customers.length == 0) {
@@ -763,37 +774,55 @@ export default {
                 customers = this.all_customers
             }
 
-            this.$store.commit('setCustomers', customers)
+            // this.$store.commit('setCustomers', customers)
+            this.customers = customers
+
 
         },
         changeCustomer() {
             //  this.$store.commit('setCustomersAddresses', [])
             this.$store.commit('setParentCustomer', {})
             this.$store.commit('setChildrenCustomer', {})
-            this.$store.commit('setCustomer', {})
+            // this.$store.commit('setCustomer', {})
+            this.customer  = {};
+
             this.form.children_customer_id = null;
             let customers = this.customers;
             let customer = _.find(customers, {'id': this.form.parent_customer_id});
             if (customer !== undefined) {
+                customer.parent_id = parseInt(customer.parent_id);
+                if(isNaN(customer.parent_id)) customer.parent_id =0;
                 if (parseInt(customer.parent_id) == 0) {
                     // es padre
                     this.$store.commit('setParentCustomer', customer)
                 } else {
                     // es hijo
-                    this.form.children_customer_id = this.form.parent_customer_id
-                    this.form.parent_customer_id = customer.parent_id;
-                    customer.parent.childrens.push(customer)
-                    if (_.find(customers, {'id': customer.parent.id}) === undefined) {
-                        customers.push(customer.parent)
+                    let parent = customer.parent;
+                    let parent_id = parent.id;
+
+                    let children = customer;
+                    let chidren_id = customer.id
+
+                        parent.childrens = [];
+                        parent.childrens.push(children)
+
+
+                    if ((parent_id > 0)&& _.find(this.customers, {'id': parent_id}) === undefined) {
+                        this.customers.push(parent)
                     }
-                    this.$store.commit('setCustomers', customers)
-                    this.$store.commit('setParentCustomer', customer.parent)
-                    this.$store.commit('setChildrenCustomer', customer)
+                    this.form.parent_customer_id= parent_id
+                    this.form.children_customer_id = chidren_id
+
+                    this.customer  = {};
+                    this.customers = customers;
+                    this.$store.commit('setParentCustomer', parent)
+                    this.$store.commit('setChildrenCustomer', children)
                 }
-                this.$store.commit('setCustomer', this.parent_customer)
+                // this.$store.commit('setCustomer', this.parent_customer)
                 if (parseInt(this.form.children_customer_id) == 0) this.form.children_customer_id = null;
                 if (this.form.children_customer_id != null) {
                     this.changeCustomerChild(1)
+                    // this.changeCustomer()
                 }
             }
         },
@@ -816,7 +845,7 @@ export default {
             if (customerF.parent !== undefined)
                 customerF.parent = {};
             customerEnd.childrens.push(customerF)
-            this.$store.commit('setCustomer', customer)
+            // this.$store.commit('setCustomer', customer)
 
         },
         changePlan() {

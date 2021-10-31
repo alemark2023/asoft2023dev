@@ -367,7 +367,6 @@ export default {
                     this.$store.commit('setPaymentMethodTypes', response.data.payments_credit)
                 })
             .then(()=>{
-                // console.error(this.currency_type);
                 this.changeCurrencyType()
             })
         },
@@ -419,7 +418,7 @@ export default {
         submit() {
             this.loading_submit = true
             let data = this.form_data;
-            console.dir(data)
+            // console.dir(data)
             this.$http.post(`/suscription/${this.resource}`, data)
                 .then(response => {
                     this.$eventHub.$emit('reloadData')
@@ -435,7 +434,6 @@ export default {
                     }
                 })
                 .finally(() => {
-                    console.error("eto")
                     this.loading_submit = false
                 })
         },
@@ -485,11 +483,7 @@ export default {
                 currencyT = this.config.currency_type_id;
                 this.fakeForm.currency_type_id = this.config.currency_type_id;
             }
-            // console.error(currencyT);
-            // console.dir(this.fakeForm.currency_type_id);
             this.currency_type = _.find(this.currency_types, {'id': currencyT})
-            // console.dir(this.currency_type);
-            // console.log('TIPO ')
 
             let items = []
             this.form_data.items.forEach((row) => {
