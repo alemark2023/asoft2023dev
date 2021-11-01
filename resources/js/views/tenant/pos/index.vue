@@ -741,6 +741,17 @@
                                     </td>
                                 </tr>
                                 <tr
+                                    v-if="form.total_isc > 0"
+                                    class="font-weight-semibold  m-0"
+                                >
+                                    <td class="font-weight-semibold">ISC</td>
+                                    <td class="font-weight-semibold">:</td>
+                                    <td class="text-right text-blue">
+                                        {{ currency_type.symbol }}
+                                        {{ form.total_isc }}
+                                    </td>
+                                </tr>
+                                <tr
                                     v-if="form.total_plastic_bag_taxes > 0"
                                     class="font-weight-semibold  m-0"
                                 >
@@ -1605,6 +1616,12 @@ export default {
 
                 exist_item.has_plastic_bag_taxes = exist_item.item.has_plastic_bag_taxes;
 
+                
+                //asignar variables isc
+                exist_item.has_isc = exist_item.item.has_isc
+                exist_item.percentage_isc = exist_item.item.percentage_isc
+                exist_item.system_isc_type_id = exist_item.item.system_isc_type_id
+
                 this.row = calculateRowItem(
                     exist_item,
                     this.form.currency_type_id,
@@ -1653,6 +1670,11 @@ export default {
                     this.affectation_igv_types,
                     {id: this.form_item.affectation_igv_type_id}
                 );
+
+                //asignar variables isc
+                this.form_item.has_isc = this.form_item.item.has_isc
+                this.form_item.percentage_isc = this.form_item.item.percentage_isc
+                this.form_item.system_isc_type_id = this.form_item.item.system_isc_type_id
 
                 // console.log(this.form_item)
                 this.row = calculateRowItem(
@@ -1725,8 +1747,11 @@ export default {
             let total_value = 0;
             let total = 0;
             let total_plastic_bag_taxes = 0
+            let total_base_isc = 0
+            let total_isc = 0
 
             this.form.items.forEach(row => {
+
                 total_discount += parseFloat(row.total_discount);
                 total_charge += parseFloat(row.total_charge);
 
@@ -1760,7 +1785,15 @@ export default {
                 total_value += parseFloat(row.total_value);
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
+                // isc
+                total_isc += parseFloat(row.total_isc)
+                total_base_isc += parseFloat(row.total_base_isc)
+
             });
+
+            // isc
+            this.form.total_base_isc = _.round(total_base_isc, 2)
+            this.form.total_isc = _.round(total_isc, 2)
 
             this.form.total_exportation = _.round(total_exportation, 2);
             this.form.total_exonerated = _.round(total_exonerated, 2);
@@ -1774,7 +1807,11 @@ export default {
             this.form.total_free = _.round(total_free, 2);
             this.form.total_igv = _.round(total_igv, 2);
             this.form.total_value = _.round(total_value, 2);
-            this.form.total_taxes = _.round(total_igv, 2);
+            // this.form.total_taxes = _.round(total_igv, 2);
+
+            //impuestos (isc + igv)
+            this.form.total_taxes = _.round(total_igv + total_isc, 2);
+
             this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
             // this.form.total = _.round(total, 2);
             this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)

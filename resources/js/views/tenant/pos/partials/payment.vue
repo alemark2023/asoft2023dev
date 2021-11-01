@@ -60,6 +60,15 @@
                                                                  {{ form.total_igv }}</p>
                         </div>
                     </div>
+                    <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center" v-if="form.total_isc > 0">
+                        <div class="col-sm-6 py-1">
+                            <p class="font-weight-semibold mb-0">ISC</p>
+                        </div>
+                        <div class="col-sm-6 py-1 text-right">
+                            <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
+                                                                 {{ form.total_isc }}</p>
+                        </div>
+                    </div>
                     <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
                         <div class="col-sm-6 py-1">
                             <p class="font-weight-semibold mb-0">ICBPER</p>
@@ -88,6 +97,15 @@
                         <div class="col-sm-6 py-1 text-right">
                             <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
                                                                  {{ form.total_igv }}</p>
+                        </div>
+                    </div>
+                    <div class="row m-0 p-0 bg-white h-25 d-flex align-items-center" v-if="form.total_isc > 0">
+                        <div class="col-sm-6 py-1">
+                            <p class="font-weight-semibold mb-0">ISC</p>
+                        </div>
+                        <div class="col-sm-6 py-1 text-right">
+                            <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
+                                                                 {{ form.total_isc }}</p>
                         </div>
                     </div>
                 </template>
