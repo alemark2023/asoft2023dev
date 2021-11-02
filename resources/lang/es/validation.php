@@ -285,6 +285,9 @@ return [
 		'dispatches_id'                            => 'guías',
 		'hostname_id'                              => 'cliente',
 		'license_plate'           => 'N° placa',
+		'system_isc_type_id'           => 'tipo de sistema ISC',
+		'has_isc'           => 'incluye ISC',
+		'percentage_isc'           => 'porcentaje ISC',
 
 	],
 ];

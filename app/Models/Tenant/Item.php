@@ -937,6 +937,9 @@ class Item extends ModelTenant
             'change_free_affectation_igv'     => false,
             'original_affectation_igv_type_id'     => $this->sale_affectation_igv_type_id,
 
+            'has_isc' => (bool)$this->has_isc,
+            'system_isc_type_id' => $this->system_isc_type_id,
+            'percentage_isc' => $this->percentage_isc,
         ];
 
         return $data;
