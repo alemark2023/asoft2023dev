@@ -38,23 +38,29 @@ class ServiceData
         if($response['success']) {
             $data = $response['data'];
             if($type === 'dni') {
+                $department_id = '';
+                $province_id = null;
+                $district_id = null;
+                $address = null;
                 if(key_exists('source', $response) && $response['source'] === 'apiperu.dev') {
-                    $department_id = $data['domicilio_ubigeo'][0];
-                    $province_id = $data['domicilio_ubigeo'][1];
-                    $district_id = $data['domicilio_ubigeo'][2];
-                    $domicilio_direccion = $data['domicilio_direccion'];
+                    if(strlen($data['ubigeo_sunat']))  {
+                        $department_id = $data['ubigeo'][0];
+                        $province_id = $data['ubigeo'][1];
+                        $district_id = $data['ubigeo'][2];
+                        $address = $data['direccion'];
+                    }
                 } else {
                     $department_id = $data['ubigeo'][0];
                     $province_id = $data['ubigeo'][1];
                     $district_id = $data['ubigeo'][2];
-                    $domicilio_direccion = $data['direccion'];
+                    $address = $data['direccion'];
                 }
 
                 $res_data = [
                     'name' => $data['nombre_completo'],
                     'trade_name' => '',
                     'location_id' => $district_id,
-                    'address' => $domicilio_direccion,
+                    'address' => $address,
                     'department_id' => $department_id,
                     'province_id' => $province_id,
                     'district_id' => $district_id,
@@ -69,31 +75,22 @@ class ServiceData
                 $province_id = null;
                 $district_id = null;
                 if(key_exists('source', $response) && $response['source'] === 'apiperu.dev') {
-                    $trade_name = key_exists('nombre_comercial', $data)?$data['nombre_comercial']:'';
-                    if($data['direccion'] !== '') {
-                        $address = $data['direccion'];
+                    if(strlen($data['ubigeo_sunat']))  {
                         $department_id = $data['ubigeo'][0];
                         $province_id = $data['ubigeo'][1];
                         $district_id = $data['ubigeo'][2];
-                    } else {
-                        if($data['domicilio_direccion'] !== '') {
-                            $address = $data['domicilio_direccion'];
-                            $department_id = $data['domicilio_ubigeo'][0];
-                            $province_id = $data['domicilio_ubigeo'][1];
-                            $district_id = $data['domicilio_ubigeo'][2];
-                        }
+                        $address = $data['direccion'];
                     }
                 } else {
-                    $trade_name = $data['nombre_o_razon_social'];
-                    $address = $data['direccion'];
                     $department_id = $data['ubigeo'][0];
                     $province_id = $data['ubigeo'][1];
                     $district_id = $data['ubigeo'][2];
+                    $address = $data['direccion'];
                 }
 
                 $res_data = [
                     'name' => $data['nombre_o_razon_social'],
-                    'trade_name' => $trade_name,
+                    'trade_name' => '',
                     'address' => $address,
                     'department_id' => $department_id,
                     'province_id' => $province_id,

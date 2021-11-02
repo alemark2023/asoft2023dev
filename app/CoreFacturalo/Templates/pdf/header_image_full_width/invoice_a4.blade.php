@@ -263,8 +263,13 @@
                     @foreach($document->items as $row)
                         @if($row->attributes)
                             @foreach($row->attributes as $attr)
+                                @php $actual = $attr @endphp
                                 @if($attr->description == "Numero de Placa")
-                                    {{ $attr->value }} -
+                                    @if (!$loop->first && $attr->value != $actual->value)
+                                        {{ $attr->value }} {{ !$loop->first ?'-':''}}
+                                    @else
+                                        {{ $attr->value }}
+                                    @endif
                                 @endif
                             @endforeach
                         @endif
@@ -385,7 +390,9 @@
 
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
-                        <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
+                        @if ($attr->description != "Numero de Placa")
+                            <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
+                        @endif
                     @endforeach
                 @endif
                 @if($row->discounts)
