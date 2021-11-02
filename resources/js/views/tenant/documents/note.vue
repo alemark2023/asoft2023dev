@@ -203,6 +203,7 @@
                             <p class="text-right" v-if="form.total_exonerated > 0">OP.EXONERADAS: {{ currency_type.symbol }} {{ form.total_exonerated }}</p>
                             <p class="text-right" v-if="form.total_taxed > 0">OP.GRAVADA: {{ currency_type.symbol }} {{ form.total_taxed }}</p>
                             <p class="text-right" v-if="form.total_igv > 0">IGV: {{ currency_type.symbol }} {{ form.total_igv }}</p>
+                            <p class="text-right" v-if="form.total_isc > 0">ISC: {{ currency_type.symbol }} {{ form.total_isc }}</p>
                             <p class="text-right" v-if="form.total_charge > 0">OTROS CARGOS: {{ currency_type.symbol }} {{ form.total_charge }}</p>
 
                             <template v-if="isCreditNoteAndType13">
@@ -774,6 +775,9 @@
                 let total_value = 0
                 let total = 0
                 let total_plastic_bag_taxes = 0
+                let total_base_isc = 0
+                let total_isc = 0
+
                 this.form.items.forEach((row) => {
                     total_discount += parseFloat(row.total_discount)
                     total_charge += parseFloat(row.total_charge)
@@ -797,7 +801,16 @@
                     total_igv += parseFloat(row.total_igv)
                     total += parseFloat(row.total)
                     total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
+                    
+                    // isc
+                    total_isc += parseFloat(row.total_isc)
+                    total_base_isc += parseFloat(row.total_base_isc)
+
                 });
+
+                // isc
+                this.form.total_base_isc = _.round(total_base_isc, 2)
+                this.form.total_isc = _.round(total_isc, 2)
 
                 this.form.total_exportation = _.round(total_exportation, 2)
                 this.form.total_taxed = _.round(total_taxed, 2)
@@ -806,7 +819,11 @@
                 this.form.total_free = _.round(total_free, 2)
                 this.form.total_igv = _.round(total_igv, 2)
                 this.form.total_value = _.round(total_value, 2)
-                this.form.total_taxes = _.round(total_igv, 2)
+                // this.form.total_taxes = _.round(total_igv, 2)
+                
+                //impuestos (isc + igv)
+                this.form.total_taxes = _.round(total_igv + total_isc, 2);
+
                 this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
                 // this.form.total = _.round(total, 2)
                 this.form.total = _.round(total, 2) + this.form.total_plastic_bag_taxes

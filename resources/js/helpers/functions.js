@@ -230,7 +230,30 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     row.total_taxes = _.round(total_taxes, 2)
     row.total = _.round(total, 2)
 
+    
+    //procedimiento para agregar isc
+    if(has_isc){
+        
+        // console.log("apply isc")
+        row.total_base_isc = total_value //total valor antes de aplicar isc
+        // row.total_base_isc = total_value_partial //total valor antes de aplicar isc
+        row.total_isc = _.round(row.total_base_isc * (row.percentage_isc / 100), 2)
+        row.total_base_igv += row.total_isc  //calcular nueva base incrementando el valor actual + isc
+        row.total_igv = row.total_base_igv * (percentage_igv / 100)
 
+        //asignar nuevo total impuestos, si tiene descuentos se usa total_taxes para calcular el precio unitario
+        total_taxes = row.total_igv + row.total_isc 
+        row.total_taxes = total_taxes
+
+        row.total = row.total_value + row.total_taxes
+        
+        //calcular nuevo precio unitario
+        row.unit_price = _.round(row.total / row.quantity, 6)
+    }
+    //procedimiento para agregar isc
+
+
+    // descuentos, se modifica precio unitario y total descuentos
     if (row.discounts.length > 0) {
 
         let sum_discount_no_base = 0
@@ -242,6 +265,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         })
 
         //obs 4287
+        // monto dscto que no afecta a la base segun fila 180, hoja factura2_0 excel validaciones (20210902)
         row.unit_price = (total_value + total_taxes - sum_discount_no_base) / row.quantity
 
         //obs 4288
@@ -256,6 +280,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         let total_discounts = sum_discount_no_base + sum_discount_base;
         row.total_discount = _.round(total_discounts, 2)
     }
+    // descuentos
 
 
     if (row.affectation_igv_type.free) {
@@ -269,21 +294,6 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     if (row_old.has_plastic_bag_taxes) {
         row.total_plastic_bag_taxes = _.round(row.quantity * row.item.amount_plastic_bag_taxes, 1)
     }
-
-    //procedimiento para agregar isc
-    if(has_isc){
-
-        row.total_base_isc = total_value_partial //total valor antes de aplicar isc
-        row.total_isc = _.round(row.total_base_isc * (row.percentage_isc / 100), 2)
-        row.total_base_igv += row.total_isc  //calcular nueva base incrementando el valor actual + isc
-        row.total_igv = row.total_base_igv * (percentage_igv / 100)
-        row.total_taxes = row.total_igv + row.total_isc //total impuestos
-        row.total = row.total_value + row.total_taxes
-        row.unit_price = _.round(row.total / row.quantity, 6) //calcular nuevo precio unitario
-        
-    }
-    //procedimiento para agregar isc
-
 
     // console.log(row)
     return row

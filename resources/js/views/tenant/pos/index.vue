@@ -1915,7 +1915,7 @@ export default {
                 await this.$http
                     .get(`/${this.resource}/search_items?${parameters}`)
                     .then(response => {
-                        console.log("buah");
+                        // console.log("buah");
                         this.items = response.data.items;
                         this.enabledSearchItemsBarcode();
                         this.loading = false;

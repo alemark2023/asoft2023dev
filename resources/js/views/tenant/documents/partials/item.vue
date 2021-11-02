@@ -1058,6 +1058,13 @@ export default {
             this.cleanTotalItem();
             this.showListStock = true
 
+            
+            //asignar variables isc
+            this.form.has_isc = this.form.item.has_isc
+            this.form.percentage_isc = this.form.item.percentage_isc
+            this.form.system_isc_type_id = this.form.item.system_isc_type_id
+
+
             if(this.hasAttributes()) {
                     const contex = this
                     this.form.item.attributes.forEach((row) => {
