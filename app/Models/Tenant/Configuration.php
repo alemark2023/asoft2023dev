@@ -654,6 +654,7 @@ class Configuration extends ModelTenant
      */
     public function isShowItemsOnlyUserStablishment(): bool
     {
+        return false;
         return (bool)$this->show_items_only_user_stablishment;
     }
 
@@ -665,6 +666,7 @@ class Configuration extends ModelTenant
     public function setShowItemsOnlyUserStablishment(bool $show_items_only_user_stablishment): Configuration
     {
         $this->show_items_only_user_stablishment = (bool) $show_items_only_user_stablishment;
+        $this->show_items_only_user_stablishment = false;
         return $this;
     }
 
