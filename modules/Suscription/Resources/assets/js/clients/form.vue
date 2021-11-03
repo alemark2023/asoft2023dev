@@ -65,7 +65,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div :class="{'has-danger': errors.name}"
                                  class="form-group">
                                 <label class="control-label">Nombre <span class="text-danger">*</span></label>
@@ -76,7 +76,7 @@
                                        v-text="errors.name[0]"></small>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div :class="{'has-danger': errors.trade_name}"
                                  class="form-group">
                                 <label class="control-label">Nombre comercial</label>
@@ -86,8 +86,22 @@
                                        class="form-control-feedback"
                                        v-text="errors.trade_name[0]"></small>
                             </div>
+
                         </div>
+
+                        <div class="col-md-4">
+                            <div :class="{'has-danger': errors.internal_code}"
+                                 class="form-group">
+                                <label class="control-label">Código interno</label>
+                                <el-input v-model="form.internal_code"></el-input>
+                                <small v-if="errors.internal_code"
+                                       class="form-control-feedback"
+                                       v-text="errors.internal_code[0]"></small>
+                            </div>
+                        </div>
+
                     </div>
+                    <!--
                     <div class="row" v-if="type === 'customers'">
                         <div class="col-md-4">
                             <div class="form-group" :class="{'has-danger': errors.person_type_id}">
@@ -105,8 +119,11 @@
                             </div>
                         </div>
                     </div>
+                    -->
 
+                    <!--
                     <div class="row">
+
                         <div class="col-md-3">
                             <div :class="{'has-danger': errors.credit_days}"
                                  class="form-group">
@@ -121,17 +138,7 @@
                                        v-text="errors.credit_days[0]"></small>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div :class="{'has-danger': errors.internal_code}"
-                                 class="form-group">
-                                <label class="control-label">Código interno</label>
-                                <el-input v-model="form.internal_code"></el-input>
-                                <small v-if="errors.internal_code"
-                                       class="form-control-feedback"
-                                       v-text="errors.internal_code[0]"></small>
-                            </div>
-                        </div>
-                        <!--
+
                         <div class="col-md-4">
                             <div :class="{'has-danger': errors.person_type_id}"
                                  class="form-group">
@@ -151,7 +158,7 @@
                                        v-text="errors.person_type_id[0]"></small>
                             </div>
                         </div>
-                        -->
+
                         <div v-if="form.state"
                              class="col-md-6">
                             <div class="form-group">
@@ -191,6 +198,7 @@
 
                         </div>
                     </div>
+
                     <div v-if="type === 'suppliers'"
                          class="row mt-2">
                         <div class="col-md-6 center-el-checkbox">
@@ -213,6 +221,7 @@
                             </div>
                         </div>
                     </div>
+                    -->
                 </el-tab-pane>
 
                 <el-tab-pane class
@@ -974,6 +983,21 @@ export default {
         ...mapActions([
             'loadConfiguration',
         ]),
+        getContact(){
+            if(this.form.contact=== undefined|| this.form.contact=== null){
+                this.form.contact = {
+                    full_name:'',
+                    phone:'',
+                }
+            }
+            if(this.form.contact.full_name === undefined||this.form.contact.full_name === null){
+                this.form.contact.full_name = '';
+            }
+            if(this.form.contact.phone === undefined||this.form.contact.phone === null){
+                this.form.contact.phone = '';
+            }
+
+                },
         initForm() {
             this.tabActive = 'first'
             this.errors = {}
@@ -1025,6 +1049,7 @@ export default {
                 })
                 .then(response => {
                     this.form = response.data.data
+                    this.getContact()
                     this.$store.commit('setParentPerson', response.data.data)
                     this.filterProvinces()
                     this.filterDistricts()
@@ -1094,10 +1119,23 @@ export default {
         },
         addRow(data) {
             if (this.form.childrens === undefined) this.form.childrens = []
-            this.form.childrens.push(data)
+            let child = data, hasChild = false;
+
+            let index = null;
+            if (data.indexi !== undefined) {
+                index = data.indexi
+            }
+
+            if (index !== null) {
+                this.form.childrens[index] = data
+            } else {
+                this.form.childrens.push(data)
+            }
+
+
             this.$store.commit('setPerson', {})
 
-       },
+        },
         setDataDefaultCustomer() {
 
             if (this.form.identity_document_type_id == '0') {

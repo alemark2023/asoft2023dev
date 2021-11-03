@@ -1690,7 +1690,7 @@ class SaleNoteController extends Controller
         return [
             'data' => $data
         ];
-        
+
     }
 
 

@@ -124,7 +124,7 @@ export default {
             this.fromPharmacy = true;
         }
         this.$eventHub.$on("reloadData", () => {
-            console.log('Dispara reloadData')
+            //  console.log('Dispara reloadData')
             this.getRecords();
         });
         this.$root.$refs.DataTable = this;

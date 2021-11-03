@@ -12,7 +12,7 @@
                 <el-tab-pane class
                              name="first">
                     <span slot="label">
-                        Datos de la suscripcion
+                        Datos de la matrícula
                     </span>
                     <div class="form-body">
 
@@ -296,6 +296,7 @@ export default {
             loading_submit: false,
             showDialogAddItem: false,
             end_date: null,
+            defaultStartDate: null,
             titleDialog: null,
             errors: {},
             tabActive: 'first',
@@ -386,10 +387,13 @@ export default {
                     this.$store.commit('setCurrencyTypes', response.data.currency_types)
                     this.$store.commit('setAffectationIgvTypes', response.data.affectation_igv_types)
                     this.$store.commit('setUnitTypes', response.data.unit_types)
+                    this.defaultStartDate = response.data.startDate;
                 })
                 .then(() => {
                     // console.error(this.currency_type);
                     // this.changeCurrencyType()
+                    this.form.start_date = this.defaultStartDate
+                    this.changeStartDate()
                 })
         },
 
@@ -418,7 +422,8 @@ export default {
                 children_customer_id: null,
                 parent_customer_id: null,
             }
-            // this.$store.commit('setCustomer', {})
+            this.form.start_date = this.defaultStartDate
+            this.changeStartDate()
             this.customer  = {};
             this.$store.commit('setParentCustomer', {})
             this.$store.commit('setChildrenCustomer', {})
@@ -433,7 +438,8 @@ export default {
 
         },
         create() {
-            this.tabActive = 'first'
+            this.getCommonData()
+                this.tabActive = 'first'
             this.errors = {}
             if (this.suscriptionId) {
                 this.$http
@@ -448,7 +454,7 @@ export default {
                         if (cs === null) {
                             cs = []
                         }
-                        console.dir(this.form)
+                        //console.dir(this.form)
 
                         let parent = this.form.parent_customer;
                         let child = this.form.children_customer;
@@ -488,7 +494,8 @@ export default {
                 this.changeCurrencyType()
 
             }
-            this.titleDialog = (this.form.id) ? 'Editar suscripcion' : 'Nueva suscripcion'
+            this.changeStartDate()
+            this.titleDialog = (this.form.id) ? 'Editar matrícula' : 'Nueva matrícula'
 
         },
 
@@ -549,7 +556,8 @@ export default {
                 this.form.start_date === undefined ||
                 this.form.start_date === null
             ) {
-                this.form.start_date = moment().format('YYYY-MM-DD');
+                this.form.start_date = this.defaultStartDate
+                this.changeStartDate()
             }
             this.calculateTotal();
 
@@ -850,7 +858,8 @@ export default {
         },
         changePlan() {
 
-            this.form.start_date = moment().format('YYYY-MM-DD');
+            // this.form.start_date = moment().format('YYYY-MM-DD');
+            this.form.start_date = this.defaultStartDate
             let plan = _.find(this.plans, {'id': this.form.suscription_plan_id});
             this.form.items = [];
             this.form.total_charge = 0;

@@ -1160,6 +1160,9 @@
                                         </a>
                                     </li>
                                 @endif
+                                {{--
+                                @todo suscription_app_service borrar de modulo de permisos admin y cliente
+
                                 @if(in_array('suscription_app_service', $vc_module_levels))
                                     <li class="{{ (($path[0] === 'suscription') && ($path[1] === 'service')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
@@ -1168,6 +1171,7 @@
                                         </a>
                                     </li>
                                 @endif
+                                    --}}
                                     @if(in_array('suscription_app_plans', $vc_module_levels))
                                         <li class="{{ (($path[0] === 'suscription') && ($path[1] === 'plans')) ? 'nav-active' : '' }}">
                                             <a class="nav-link"
@@ -1181,7 +1185,7 @@
                                     <li class="{{ (($path[0] === 'suscription') && ($path[1] === 'payments')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
                                            href="{{ route('tenant.suscription.payments.index') }}">
-                                            Suscripciones
+                                            Matrículas
                                         </a>
                                     </li>
                                 @endif

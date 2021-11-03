@@ -39,6 +39,7 @@
                         Route::post('/record', 'ServiceSuscriptionController@Record');
                         */
                     });
+                    // items/export/barcode/last
                     /**
                      * suscription/payments
                      */
@@ -60,6 +61,8 @@
                         Route::post('/records', 'PlansSuscriptionController@Records');
                         Route::post('/tables', 'PlansSuscriptionController@Tables');
                         Route::post('/record', 'PlansSuscriptionController@Record');
+
+                        Route::delete('/{id}', 'PlansSuscriptionController@destroy');
 
                     });
 
