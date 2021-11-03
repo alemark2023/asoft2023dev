@@ -6,9 +6,16 @@
     namespace Modules\Suscription\Models\Tenant;
 
 
+    use App\Http\Controllers\Tenant\SaleNoteController;
+    use App\Http\Requests\Tenant\SaleNoteRequest;
+    use App\Models\Tenant\Establishment;
+    use App\Models\Tenant\ExchangeRate;
     use App\Models\Tenant\ModelTenant;
     use App\Models\Tenant\Person;
+    use App\Models\Tenant\SaleNote;
+    use App\Models\Tenant\Series;
     use App\Models\Tenant\User;
+    use Auth;
     use Carbon\Carbon;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
@@ -184,13 +191,169 @@
             });
         }
 
+        public function getExchangeRate()
+        {
+            if (empty($this->exchange_rate_sale)) {
+                $date = Carbon::now()->format('Y-m-d');
+                $rate = ExchangeRate::where([
+                    'date' => $date
+                ])->first();
+                if ( !empty($rate)) return $rate->sale;
+                return 0;
+            }
+            return $this->exchange_rate_sale;
+        }
+        public static function setSaleNote(self $plan)
+        {
+            $qtyPeriods = (int)$plan->getQuantityPeriod();
+            if ($qtyPeriods < 1) return null;
+            $notas = $plan->sale_notes;
+            // Solo se toma en cuenta cuando no tiene notas de venta.
+             if (strlen($notas) > 2) return null;
+
+            $typerPeriod = $plan->getCatPeriod();
+
+            $parent = $plan->parent_customer;
+            $child = $plan->children_customer;
+            $parent->child = $child;
+            $customer = $parent;
+            Carbon::setLocale('es');
+
+            /** @var \Illuminate\Support\Carbon $start_date */
+            $start_date = $plan->start_date;
+
+            $user = Auth::user();
+            $stablisment = Establishment::where('id', '!=', 0)->first();
+            if ( !empty($user)) {
+                $stablisment = $user->establishment;
+
+            }
+
+            $serie = Series::where([
+                'establishment_id' => $stablisment->id,
+                'document_type_id' => '80',
+            ])->first();
+            $ids = [];
+            $time_of_issue = Carbon::now()->format('H:m:s');
+            setlocale(LC_ALL, 'Spanish_Peru');
+            for ($i = 1; $i <= $qtyPeriods; $i++) {
+                if ($typerPeriod->period == 'Y') {
+                    $date = $start_date->addYear();
+                }else{
+                    $date = $start_date->addMonth();
+
+                }
+                $due_date = $date;
+                $payments = [];
+                $items = json_decode(json_encode($plan->items), true);
+                $item = [];
+                foreach ($items as $it ) {
+                    $time = $date->formatLocalized('%B');;
+                    if (isset($it['name_product_pdf'])) {
+                        if ( !empty($item['name_product_pdf'])) {
+                            $it['name_product_pdf'] .= " - $time" ;
+                        } else {
+                            $it['name_product_pdf'] = $it['item']['description'] . " - $time" ;
+                        }
+                    }else{
+                        $it['name_product_pdf'] = $it['item']['description'] . " - $time";
+
+                    }
+                    $item[] = $it;
+
+                }
+                $iut = $item;
+                $data = [
+                    'customer_id' => $plan->parent_customer_id,
+                    'exchange_rate_sale' => $plan->getExchangeRate(),
+                    'currency_type_id' => $plan->currency_type_id,
+                    'date_of_issue' => $date->format('Y-m-d'),
+                    'series_id' => $serie->id,
+                    "payments"=> $payments,
+
+                    "prefix" => "NV",
+                    "items" =>$item,
+
+                    "establishment_id" => $stablisment->id,
+                    'due_date' => $due_date->format('Y-m-d'),
+                    'time_of_issue' =>$time_of_issue,
+
+
+                    "total_prepayment" => $plan->total_prepayment,
+                    "total_charge" => $plan->total_charge,
+                    "total_discount" => $plan->total_discount,
+                    "total_free" => $plan->total_free,
+                    "total_exportation" => $plan->total_exportation,
+                    "total_taxed" => $plan->total_taxed,
+                    "total_unaffected" => $plan->total_unaffected,
+                    "total_exonerated" => $plan->total_exonerated,
+
+
+                    "total_igv" => $plan->total_igv,
+                    "total_base_isc" => $plan->total_base_isc,
+                    "total_isc" => $plan->total_isc,
+                    "total_base_other_taxes" => $plan->total_base_other_taxes,
+                    "total_other_taxes" => $plan->total_other_taxes,
+                    "total_taxes" => $plan->total_taxes,
+                    "total_value" => $plan->total_value,
+                    // "subtotal" => $plan->subtotal,
+                    "total" => $plan->total,
+                    "operation_type_id" => null,
+
+
+                    "charges" => $plan->charges,
+                    "discounts" => $plan->discounts,
+                    "attributes" => $plan->attributes,
+                    "guides" => [],
+                    'user_rel_suscription_plan_id' => $plan->id,
+                    'prepayments' => $plan->prepayments,
+
+
+                ];
+                $request = new SaleNoteRequest();
+                $request->merge($data);
+
+                // app/Http/Controllers/Tenant/SaleNoteController.php store
+                $saleNoteController = new SaleNoteController();
+                $saleNoteSaved = $saleNoteController->store($request);
+                if(isset($saleNoteSaved['data']) && isset($saleNoteSaved['data']['id'])){
+                    $ids[] = (int)$saleNoteSaved['data']['id'];
+                }
+                /* return [
+                'success' => true,
+                'data' => [
+                    'id' => $this->sale_note->id,
+                ],
+            ];*/
+            }
+            return $ids;
+
+
+        }
+
+        /**
+         * @return int|null
+         */
+        public function getQuantityPeriod(): ?int
+        {
+            return $this->quantity_period;
+        }
+
+        /**
+         * @return \Modules\Suscription\Models\Tenant\CatPeriod|null
+         */
+        public function getCatPeriod(): ?CatPeriod
+        {
+            return $this->cat_period;
+        }
+
         public function getCollectionData()
         {
             $data = $this->toArray();
+            $data['plan'] = $this->suscription_plan->getCollectionData();
 
             return $data;
         }
-
 
         public function getCustomerAttribute($value)
         {
@@ -230,15 +393,6 @@
         public function setItemsAttribute($value)
         {
             $this->attributes['items'] = json_encode($value ?? []);
-        }
-
-
-        /**
-         * @return \Modules\Suscription\Models\Tenant\CatPeriod|null
-         */
-        public function getCatPeriod(): ?CatPeriod
-        {
-            return $this->cat_period;
         }
 
         /**
@@ -288,14 +442,6 @@
         {
             $this->user = $user;
             return $this;
-        }
-
-        /**
-         * @return int|null
-         */
-        public function getQuantityPeriod(): ?int
-        {
-            return $this->quantity_period;
         }
 
         /**
@@ -461,7 +607,6 @@
             return $this;
         }
 
-
         /**
          * @return bool
          */
@@ -469,7 +614,6 @@
         {
             return $this->apply_concurrency;
         }
-
 
         /**
          * @param bool $apply_concurrency
@@ -509,7 +653,6 @@
             return $this->children_customer_id;
         }
 
-
         /**
          * @return int|null
          */
@@ -525,7 +668,6 @@
         {
             return $this->customer_id;
         }
-
 
         /**
          * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -608,7 +750,6 @@
             return $this;
         }
 
-
         /**
          * @return bool
          */
@@ -666,6 +807,5 @@
             $this->start_date = $start_date;
             return $this;
         }
-
 
     }
