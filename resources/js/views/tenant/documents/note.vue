@@ -359,7 +359,7 @@
 
                     this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
-                    this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
+                    // this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
 
                     this.changeDocumentType()
                     this.changeDateOfIssue()
@@ -614,7 +614,8 @@
                     actions: {
                         format_pdf: 'a4'
                     },
-                    operation_type_id: null,
+                    // operation_type_id: null,
+                    operation_type_id: this.document.invoice.operation_type_id, //se asigna el t. operacion del documento relacionado para filtrar en form item el tipo de afectacion
                     hotel: {},
                     charges: this.document.charges ? Object.values(this.document.charges) : null,
                     payment_condition_id : null,
@@ -673,7 +674,7 @@
                 await this.getNote()
                 await this.getHasDocuments()
                 await this.initForm()
-                this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
+                // this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
                 this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 this.changeDocumentType()
                 this.changeDateOfIssue()
