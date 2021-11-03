@@ -245,7 +245,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-2"></div>
-                                    
+
                                     <div class="col-md-6 mt-4">
                                         <label class="control-label">Nombre producto PDF para XML
                                             <el-tooltip
@@ -671,6 +671,7 @@
                                                    v-text="errors.permission_to_edit_cpe[0]"></small>
                                         </div>
                                     </div>
+                                    <!--
                                     <div class="col-md-6 mt-4">
                                         <label class="control-label">Mostrar item de solo el almacen de usuario
                                             <el-tooltip
@@ -692,6 +693,7 @@
                                                    v-text="errors.show_items_only_user_stablishment[0]"></small>
                                         </div>
                                     </div>
+                                    -->
 
                                 </div>
                             </el-tab-pane>
