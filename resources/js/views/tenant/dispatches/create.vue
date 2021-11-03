@@ -548,7 +548,8 @@
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ row.unit_type_id }}</td>
                                 <td>{{ row.description }}</td>
-                                <td class="text-right">{{ row.quantity }}</td>
+                                <td class="text-right">{{ getFormatQuantity(row.quantity) }}</td>
+                                <!-- <td class="text-right">{{ row.quantity }}</td> -->
                                 <td class="text-right">
                                     <button class="btn waves-effect waves-light btn-xs btn-danger"
                                             type="button"
@@ -731,7 +732,8 @@ export default {
             showDialogNewItem: false,
             IdLoteSelected: false,
             showDialogLots: false,
-            min_qty: 0.1,
+            min_qty: 0.0001,
+            // min_qty: 0.1,
             showDialogOptions: false,
             showDialogNewPerson: false,
             identityDocumentTypes: [],
@@ -866,6 +868,9 @@ export default {
         })
     },
     methods: {
+        getFormatQuantity(quantity){
+            return _.round(quantity, 4)
+        },
         ...mapActions([
             'loadItems',
             'loadConfiguration',
