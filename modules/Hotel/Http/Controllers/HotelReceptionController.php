@@ -28,30 +28,34 @@ class HotelReceptionController extends Controller
 		return view('hotel::rooms.reception', compact('rooms', 'floors', 'roomStatus'));
 	}
 
-	private function getRooms()
-	{
-		$rooms = HotelRoom::with('category', 'floor', 'rates');
+    /**
+     * Devuelve informacion de cuartos disponibles
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection|\Modules\Hotel\Models\HotelRoom[]
+     */
+    private function getRooms()
+    {
+        $rooms = HotelRoom::with('category', 'floor', 'rates');
 
-		if (request('hotel_floor_id')) {
-			$rooms = $rooms->where('hotel_floor_id', request('hotel_floor_id'));
-		}
-		if (request('status')) {
-			$rooms = $rooms->where('status', request('status'));
-		}
+        if (request('hotel_floor_id')) {
+            $rooms->where('hotel_floor_id', request('hotel_floor_id'));
+        }
+        if (request('status')) {
+            $rooms->where('status', request('status'));
+        }
 
-		$rooms = $rooms->get()->each(function ($room) {
-			if ($room->status === 'OCUPADO') {
-				$rent = HotelRent::where('hotel_room_id', $room->id)
-					->orderBy('id', 'DESC')
-					->first();
-				$room->rent = $rent;
-			} else {
-				$room->rent = [];
-			}
+        $rooms->orderBy('name');
+        return $rooms->get()->each(function ($room) {
+            if ($room->status === 'OCUPADO') {
+                $rent = HotelRent::where('hotel_room_id', $room->id)
+                    ->orderBy('id', 'DESC')
+                    ->first();
+                $room->rent = $rent;
+            } else {
+                $room->rent = [];
+            }
 
-			return $room;
-		});
-
-		return $rooms;
-	}
+            return $room;
+        });
+    }
 }
