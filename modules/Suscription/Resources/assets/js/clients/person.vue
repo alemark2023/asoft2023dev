@@ -36,7 +36,10 @@
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.number}"
                                      class="form-group">
-                                    <label class="control-label">Número <span class="text-danger">*</span></label>
+                                    <label class="control-label">
+                                        Número
+                                        <span class="text-danger">*</span>
+                                        </label>
 
                                     <div v-if="api_service_token != false">
                                         <x-input-service v-model="form.number"
@@ -612,6 +615,12 @@ export default {
                 this.identity_document_types = response.data.identity_document_types
                 this.locations = response.data.locations
 
+            }) .finally(()=>{
+                if(this.api_service_token === false){
+                    if(this.config.api_service_token !== undefined){
+                        this.api_service_token = this.config.api_service_token
+                    }
+                }
             })
 
     },

@@ -617,6 +617,13 @@ export default {
                 this.locations = response.data.locations;
                 this.person_types = response.data.person_types;
             })
+        .finally(()=>{
+            if(this.api_service_token === false){
+                if(this.config.api_service_token !== undefined){
+                    this.api_service_token = this.config.api_service_token
+                }
+            }
+        })
 
     },
     computed: {

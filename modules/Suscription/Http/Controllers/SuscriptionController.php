@@ -188,8 +188,10 @@
             $identity_document_types = IdentityDocumentType::whereActive()->get();
             $person_types = PersonType::get();
             $locations = $this->getLocationCascade();
-            $configuration = Configuration::first();
-            $api_service_token = $configuration->token_apiruc == 'false' ? config('configuration.api_service_token') : $configuration->token_apiruc;
+            // $configuration = Configuration::first();
+            // $api_service_token = $configuration->token_apiruc == 'false' ? config('configuration.api_service_token') : $configuration->token_apiruc;
+            $api_service_token = \App\Models\Tenant\Configuration::getApiServiceToken();
+
             $unit_types = UnitType::whereActive()->orderByDescription()->get();
             $currency_types = CurrencyType::whereActive()->orderByDescription()->get();
             $affectation_igv_types = AffectationIgvType::whereActive()->get();
