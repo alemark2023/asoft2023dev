@@ -13,13 +13,15 @@
                 <h3 class="my-0">Vista general recepción</h3>
             </div>
             <div class="card-body">
-                <div class="d-flex justify-content-lg-between">
-                    <div style="max-width: 120px">
+                <div class="row">
+                    <!-- piso -->
+                    <div class="col-md-3 col-sm-12 pb-2">
                         <el-select
                             v-model="hotel_floor_id"
                             :disabled="loading"
                             clearable
                             placeholder="Piso"
+                            @change="searchRooms"
                         >
                             <el-option
                                 v-for="f in floors"
@@ -30,19 +32,35 @@
                             </el-option>
                         </el-select>
                     </div>
-                    <el-button-group>
-                        <el-button
-                            v-for="st in roomStatus"
-                            :key="st"
-                            :class="onGetColorStatus(st)"
-                            :disabled="loading"
-                            class="btn btn-sm"
-                            size="mini"
-                            @click="onFilterByStatus(st)"
-                        >{{ st }}
-                        </el-button
+                    <!-- Campo de busqueda -->
+                    <div class="col-md-5 col-sm-12 pb-2">
+                        <el-input
+                            v-model="hotel_name_room"
+                            clearable
+                            placeholder="Buscar por nombre de habitacion"
+                            prefix-icon="el-icon-search"
+                            style="width: 100%;"
+                            @input="searchRooms"
                         >
-                    </el-button-group>
+                        </el-input>
+                    </div>
+                    <!-- botones de status -->
+                    <div class="col-md-4 col-sm-12 pb-2">
+                        <el-button-group
+                        >
+                            <el-button
+                                v-for="st in roomStatus"
+                                :key="st"
+                                :class="onGetColorStatus(st)"
+                                :disabled="loading"
+                                class="btn btn-sm"
+                                size="mini"
+                                @click="onFilterByStatus(st)"
+                            >{{ st }}
+                            </el-button
+                            >
+                        </el-button-group>
+                    </div>
                 </div>
                 <hr/>
                 <div class="row">
@@ -149,6 +167,7 @@ export default {
     data() {
         return {
             hotel_floor_id: "",
+            hotel_name_room: null,
             loading: false,
             items: [],
             room: null,
@@ -158,11 +177,13 @@ export default {
     mounted() {
         this.items = this.rooms;
     },
+    /*
     watch: {
         hotel_floor_id() {
             this.onFilterByStatus();
         },
     },
+    */
     methods: {
         onFinalizeClean(room) {
             const text = `Está a punto de terminar la limpieza de la habitación ${room.name}`;
@@ -215,7 +236,34 @@ export default {
                 this.openModalRoomRates = true;
             }
         },
+        searchRooms() {
+            this.loading = true;
+            let form = {
+                hotel_status_room: this.hotel_status_room,
+                hotel_name_room: this.hotel_name_room,
+                hotel_floor_id: this.hotel_floor_id,
+
+            }
+            this.$http
+                .post("/hotels/reception/search", form)
+                .then((response) => {
+                    // console.error(response.data)
+                    this.items = response.data.rooms;
+
+                })
+                .finally(() => {
+                    this.loading = false;
+                })
+        },
         onFilterByStatus(status = "") {
+            // Si se presiona dos veces la misma opcion, se cancelaria
+            if(this.hotel_status_room == status){
+                this.hotel_status_room = null
+            }else {
+                this.hotel_status_room = status
+            }
+            this.searchRooms()
+            return null;
             this.loading = true;
             const params = {
                 status,

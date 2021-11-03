@@ -39,17 +39,19 @@ if ($hostname) {
 
                 Route::prefix('reception')->group(function () {
                     /**
-                    'reception'
-                    'reception/tables'
-                    'reception/tables/customers'
-                    'reception/{roomId}/rent'
-                    'reception/{roomId}/rent/store'
-                    'reception/{id}/rent/products'
-                    'reception/{id}/rent/products/store'
-                    'reception/{id}/rent/checkout'
-                    'reception/{id}/rent/finalized'
+                    hotels/reception
+                    hotels/reception/search/
+                    hotels/reception/tables
+                    hotels/reception/tables/customers
+                    hotels/reception/{roomId}/rent
+                    hotels/reception/{roomId}/rent/store
+                    hotels/reception/{id}/rent/products
+                    hotels/reception/{id}/rent/products/store
+                    hotels/reception/{id}/rent/checkout
+                    hotels/reception/{id}/rent/finalized
                      */
                     Route::get('', 'HotelReceptionController@index');
+                    Route::post('/search', 'HotelReceptionController@searchRooms');
                     Route::get('/tables', 'HotelRentController@tables');
                     Route::get('/tables/customers', 'HotelRentController@searchCustomers');
                     Route::get('/{roomId}/rent', 'HotelRentController@rent');
