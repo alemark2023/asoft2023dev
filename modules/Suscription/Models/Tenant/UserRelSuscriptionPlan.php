@@ -237,6 +237,7 @@
             $time_of_issue = Carbon::now()->format('H:m:s');
             setlocale(LC_ALL, 'Spanish_Peru');
             for ($i = 1; $i <= $qtyPeriods; $i++) {
+                $date_of_issue = $start_date;
                 if ($typerPeriod->period == 'Y') {
                     $date = $start_date->addYear();
                 }else{
@@ -269,7 +270,7 @@
                     'customer' => $customer,
                     'exchange_rate_sale' => $plan->getExchangeRate(),
                     'currency_type_id' => $plan->currency_type_id,
-                    'date_of_issue' => $date->format('Y-m-d'),
+                    'date_of_issue' => $date_of_issue->format('Y-m-d'),
                     'series_id' => $serie->id,
                     "payments"=> $payments,
 
