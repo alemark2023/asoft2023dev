@@ -139,7 +139,7 @@
                 </div>
             </div>
         </div>
-        <document-form-item
+        <tenant-documents-items-list
             :configuration="configuration"
             :editNameProduct="configuration.edit_name_product"
             :exchange-rate-sale="0"
@@ -150,16 +150,16 @@
             currency-type-id-active="PEN"
             operation-type-id="0101"
             @add="onAddItem"
-        ></document-form-item>
+        ></tenant-documents-items-list>
     </div>
 </template>
 
 <script>
-import DocumentFormItem from "../../../../../../../resources/js/views/tenant/documents/partials/item.vue";
+// import DocumentFormItem from "../../../../../../../resources/js/views/tenant/documents/partials/item.vue";
 
 export default {
     components: {
-        DocumentFormItem,
+        // DocumentFormItem,
     },
     props: {
         rent: {
