@@ -87,8 +87,7 @@ class HotelRentController extends Controller
 		], 200);
 	}
 
-	public function showFormAddProduct($rentId)
-	{
+	public function showFormAddProduct($rentId){
 		$rent = HotelRent::with('room')
 			->findOrFail($rentId);
 
@@ -103,6 +102,7 @@ class HotelRentController extends Controller
 
 	public function addProductsToRoom(HotelRentItemRequest $request, $rentId)
 	{
+        $idInRequest = [];
 		foreach ($request->products as $product) {
 			$item = HotelRentItem::where('hotel_rent_id', $rentId)
 				->where('item_id', $product['item_id'])
@@ -116,8 +116,15 @@ class HotelRentController extends Controller
 			$item->item = $product;
 			$item->payment_status = $product['payment_status'];
 			$item->save();
+            $idInRequest[] = $item->id;
 		}
 
+        // Borrar los items que no esten asignados con PRO
+        $rent = HotelRent::find($rentId);
+        $itemsToDelete =$rent->items->where('type','PRO')->whereNotIn('id',$idInRequest);
+        foreach($itemsToDelete as $deleteable){
+            $deleteable->delete();
+        }
 		return response()->json([
 			'success' => true,
 			'message' => 'Información actualizada.'

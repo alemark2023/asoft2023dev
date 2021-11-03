@@ -80,7 +80,7 @@
                     .catch(error => {
                         console.log(error.response)
                     })
-                    .then(() => {
+                    .finally(() => {
                         this.loading = false
                     })
             }
