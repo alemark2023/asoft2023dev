@@ -259,12 +259,14 @@
                         $it['name_product_pdf'] = $it['item']['description'] . " - $time";
 
                     }
+                    $it['item']['name_product_pdf'] = $it['name_product_pdf'] ;
                     $item[] = $it;
 
                 }
                 $iut = $item;
                 $data = [
                     'customer_id' => $plan->parent_customer_id,
+                    'customer' => $customer,
                     'exchange_rate_sale' => $plan->getExchangeRate(),
                     'currency_type_id' => $plan->currency_type_id,
                     'date_of_issue' => $date->format('Y-m-d'),
@@ -318,7 +320,14 @@
                 $saleNoteSaved = $saleNoteController->store($request);
                 if(isset($saleNoteSaved['data']) && isset($saleNoteSaved['data']['id'])){
                     $ids[] = (int)$saleNoteSaved['data']['id'];
+                    $updateCustomerSaleNote = SaleNote::find((int)$saleNoteSaved['data']['id']);
+                    // $updateCustomerSaleNote->customer = $parent;
+                    $currentCustomer = $updateCustomerSaleNote->customer;
+                    $currentCustomer->children = $child;
+                    $updateCustomerSaleNote->customer = $currentCustomer;
+                    $updateCustomerSaleNote->push();
                 }
+
                 /* return [
                 'success' => true,
                 'data' => [
