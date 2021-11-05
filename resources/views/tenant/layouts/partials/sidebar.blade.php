@@ -1151,7 +1151,7 @@
                                 <span>Suscripción</span>
                             </a>
                             <ul class="nav nav-children">
-                                @if(in_array('suscription_app_client', $vc_module_levels))
+{{--                                @if(in_array('suscription_app_client', $vc_module_levels))--}}
                                     <li class="{{ (($path[0] === 'suscription') && ($path[1] === 'client')) ? 'nav-active' : '' }}">
 
                                         <a class="nav-link"
@@ -1159,7 +1159,7 @@
                                             Cliente
                                         </a>
                                     </li>
-                                @endif
+{{--                                @endif--}}
                                 {{--
                                 @todo suscription_app_service borrar de modulo de permisos admin y cliente
 
@@ -1172,23 +1172,31 @@
                                     </li>
                                 @endif
                                     --}}
-                                    @if(in_array('suscription_app_plans', $vc_module_levels))
+{{--                                    @if(in_array('suscription_app_plans', $vc_module_levels))--}}
                                         <li class="{{ (($path[0] === 'suscription') && ($path[1] === 'plans')) ? 'nav-active' : '' }}">
                                             <a class="nav-link"
                                                href="{{ route('tenant.suscription.plans.index') }}">
                                                 Planes
                                             </a>
                                         </li>
-                                    @endif
+{{--                                    @endif--}}
 
-                                   @if(in_array('suscription_app_payments', $vc_module_levels))
+{{--                                   @if(in_array('suscription_app_payments', $vc_module_levels))--}}
                                     <li class="{{ (($path[0] === 'suscription') && ($path[1] === 'payments')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
                                            href="{{ route('tenant.suscription.payments.index') }}">
                                             Matrículas
                                         </a>
                                     </li>
-                                @endif
+{{--                                @endif--}}
+{{--                                   @if(in_array('suscription_app_payments', $vc_module_levels))--}}
+                                    <li class="{{ (($path[0] === 'suscription') && ($path[1] === 'payment_receipt')) ? 'nav-active' : '' }}">
+                                        <a class="nav-link"
+                                           href="{{ route('tenant.suscription.payment_receipt.index') }}">
+                                            Recibos de pago
+                                        </a>
+                                    </li>
+{{--                                @endif--}}
                             </ul>
                         </li>
                     @endif
