@@ -6,7 +6,9 @@
     $current_hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
     if ($current_hostname) {
-        Route::domain($current_hostname->fqdn)->group(function () {
+        Route::domain($current_hostname->fqdn)
+            ->middleware(['redirect.level'])
+            ->group(function () {
             Route::middleware(['auth', 'locked.tenant'])
                 ->prefix('suscription')
                 ->group(function () {
@@ -14,7 +16,9 @@
                      * suscription/client
                      */
                     Route::prefix('client')->group(function () {
-                        Route::get('/', 'ClientSuscriptionController@index') ->name('tenant.suscription.client.index') ->middleware(['redirect.level']);
+                        Route::get('/', 'ClientSuscriptionController@index') ->name('tenant.suscription.client.index')
+                            ->middleware(['redirect.level'])
+                        ;
                         Route::post('/', 'ClientSuscriptionController@store');
 
                         Route::get('/columns', 'ClientSuscriptionController@Columns');
@@ -82,9 +86,18 @@
                         Route::post('/search/customers', 'PaymentsSuscriptionController@searchCustomer');
 
                     });
+                    /**
+                     * suscription/payment_receipt
+                     */
+                    Route::prefix('payment_receipt')->group(function () {
+                        Route::get('/', 'PaymentReceiptSuscriptionController@index')
+                            ->name('tenant.suscription.payment_receipt.index');
+
+                    });
 
 
                     Route::post('CommonData','SuscriptionController@Tables');
                 });
-        });
+        })
+        ;
     }
