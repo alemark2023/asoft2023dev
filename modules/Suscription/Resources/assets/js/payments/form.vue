@@ -22,8 +22,7 @@
                             <div :class="{'has-danger': errors.parent_customer_id}"
                                  class="form-group col-6 ">
                                 <label class="control-label">
-
-                                    Cliente
+                                    Padre
                                     <!--
                                     <a href="#"
                                        @click.prevent="showDialogNewPerson = true">
@@ -33,12 +32,12 @@
                                 </label>
                                 <el-select v-model="form.parent_customer_id"
                                            :loading="loading_search"
-                                           :remote-method="searchRemoteCustomers"
+                                           :remote-method="searchRemoteParent"
                                            class="border-left rounded-left border-info"
                                            dusk="parent_customer_id"
                                            filterable
-                                           placeholder="Escriba el nombre o número de documento del cliente"
-                                           popper-class="el-select-customers"
+                                           placeholder="Escriba el nombre o número de documento del padre"
+                                           popper-class="el-select-parent"
                                            remote
                                            @change="changeCustomer"
                                            @keyup.enter.native="keyupCustomer">
@@ -55,11 +54,9 @@
 
                             </div>
                             <!-- Hijo -->
-                            <div v-if="
-                                (parent_customer !== undefined && parent_customer.childrens !== undefined &&  parent_customer.childrens.length > 0) ||
-                                (children_customer.parent_id !== undefined && children_customer.parent_id != 0) "
-                                 :class="{'has-danger': errors.children_customer_id} "
-                                 class="form-group col-6 "
+                            <div
+                                :class="{'has-danger': errors.children_customer_id} "
+                                class="form-group col-6 "
                             >
                                 <label class="control-label">
                                     Seleccione el hijo
@@ -72,17 +69,18 @@
                                 </label>
                                 <el-select v-model="form.children_customer_id"
                                            :loading="loading_search"
+                                           :remote-method="searchRemoteChildren"
 
                                            class="border-left rounded-left border-info"
                                            dusk="children_customer_id"
                                            filterable
-                                           placeholder="Escriba el nombre o número de documento del cliente"
-                                           popper-class="el-select-customers"
+                                           placeholder="Escriba el nombre o número de documento del hijo"
+                                           popper-class="el-select-children"
                                            remote
                                            @change="changeCustomerChild"
                                            @keyup.enter.native="keyupCustomerChild">
 
-                                    <el-option v-for="option in parent_customer.childrens"
+                                    <el-option v-for="option in childrens"
                                                :key="option.id"
                                                :label="option.description"
                                                :value="option.id"></el-option>
@@ -309,6 +307,7 @@ export default {
             districts: [],
             customer: {},
             customers: [],
+            childrens: [],
             recordItem: null,
             form: {
                 id: null,
@@ -350,7 +349,7 @@ export default {
             .then(response => {
                 this.$store.commit('setPeriods', response.data.periods)
                 // this.$store.commit('setCustomers', response.data.customers)
-                this.customers =response.data.customers
+                this.customers = response.data.customers
                 this.$store.commit('setAllCustomers', response.data.customers)
                 this.$store.commit('setPlans', response.data.plans)
             })
@@ -424,7 +423,7 @@ export default {
             }
             this.form.start_date = this.defaultStartDate
             this.changeStartDate()
-            this.customer  = {};
+            this.customer = {};
             this.$store.commit('setParentCustomer', {})
             this.$store.commit('setChildrenCustomer', {})
 
@@ -439,7 +438,7 @@ export default {
         },
         create() {
             this.getCommonData()
-                this.tabActive = 'first'
+            this.tabActive = 'first'
             this.errors = {}
             if (this.suscriptionId) {
                 this.$http
@@ -448,7 +447,7 @@ export default {
                     })
                     .then(response => {
                         this.$emit('clearSuscriptionId', null)
-                            this.form = response.data.data
+                        this.form = response.data.data
                         this.$store.commit('setFormData', {})
                         let cs = this.customers;
                         if (cs === null) {
@@ -459,15 +458,15 @@ export default {
                         let parent = this.form.parent_customer;
                         let child = this.form.children_customer;
                         let customers = undefined;
-                        if(parent !== undefined) {
+                        if (parent !== undefined) {
                             customers = _.find(cs, {'id': parent.id});
                             if (customers === undefined) {
                                 cs.push(parent)
                             }
                         }
-                        if(child !== undefined) {
+                        if (child !== undefined) {
                             customers = _.find(cs, {'id': child.id});
-                            if (customers === undefined ) {
+                            if (customers === undefined) {
                                 cs.push(child)
                             }
                         }
@@ -486,8 +485,9 @@ export default {
                     .then(() => {
                         this.changeCurrencyType()
                     })
-                .finally(()=>{            this.$emit('clearSuscriptionId', null)
-                })
+                    .finally(() => {
+                        this.$emit('clearSuscriptionId', null)
+                    })
             } else {
                 this.clearForm()
                 this.form.id = this.suscriptionId
@@ -594,7 +594,7 @@ export default {
                 this.form.items !== undefined &&
                 this.form.items !== null) {
                 let citems = this.form.items;
-            Object.keys(citems).forEach(key => {
+                Object.keys(citems).forEach(key => {
                     let row = citems[key] // value of the current key
                     items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
                 })
@@ -685,8 +685,8 @@ export default {
         setDescriptionOfItem(item) {
             return showNamePdfOfDescription(item, this.config.show_pdf_name)
         },
-        // Busqueda de clientes basada en resources/js/views/tenant/documents/invoice.vue
-        searchRemoteCustomers(input) {
+
+        searchRemtePerson(input, type) {
 
             if (input.length > 0) {
                 this.loading_search = true
@@ -694,12 +694,36 @@ export default {
                     input: input,
                     document_type_id: this.form.document_type_id,
                     operation_type_id: this.form.operation_type_id,
+                    type: type,
                 }
                 this.$http
                     .post(`/suscription/${this.resource}/search/customers`, parameters)
                     .then(response => {
                         // this.$store.commit('setCustomers', response.data.customers)
-                        this.customers = response.data.customers
+                        if (type == 'children') {
+                            this.childrens = response.data.customers
+                        } else {
+                            this.customers = response.data.customers
+                            this.childrens = [];
+                        }
+                        if (type == 'children') {
+                            // buscar al padre en customer, si no se encuentra, añadirlo
+                            let cCustomer = this.customers;
+                            let cChildrens = this.childrens;
+                            let searchParent = undefined
+                            Object.keys(cChildrens).forEach(key => {
+                                let row = cChildrens[key]
+                                if (row.parent !== undefined) {
+                                    if (row.parent !== null) {
+                                        let partentC = row.parent
+                                        searchParent = _.find(cCustomer, {'id': partentC.id})
+                                        if (searchParent !== undefined) {
+                                            this.customer.push(partentC)
+                                        }
+                                    }
+                                }
+                            })
+                        }
 
                         this.loading_search = false
                         this.input_person.number = null
@@ -712,6 +736,14 @@ export default {
                 this.filterCustomers()
                 this.input_person.number = null
             }
+        },
+        // Busqueda de clientes basada en resources/js/views/tenant/documents/invoice.vue
+        searchRemoteParent(input) {
+            this.searchRemtePerson(input, 'parent')
+
+        },
+        searchRemoteChildren(input) {
+            this.searchRemtePerson(input, 'children')
 
         },
         keyupCustomer() {
@@ -792,68 +824,52 @@ export default {
             this.$store.commit('setParentCustomer', {})
             this.$store.commit('setChildrenCustomer', {})
             // this.$store.commit('setCustomer', {})
-            this.customer  = {};
+            this.customer = {};
+            this.childrens = [];
 
             this.form.children_customer_id = null;
             let customers = this.customers;
             let customer = _.find(customers, {'id': this.form.parent_customer_id});
             if (customer !== undefined) {
                 customer.parent_id = parseInt(customer.parent_id);
-                if(isNaN(customer.parent_id)) customer.parent_id =0;
+                if (isNaN(customer.parent_id)) customer.parent_id = 0;
                 if (parseInt(customer.parent_id) == 0) {
-                    // es padre
                     this.$store.commit('setParentCustomer', customer)
-                } else {
-                    // es hijo
-                    let parent = customer.parent;
-                    let parent_id = parent.id;
-
-                    let children = customer;
-                    let chidren_id = customer.id
-
-                        parent.childrens = [];
-                        parent.childrens.push(children)
-
-
-                    if ((parent_id > 0)&& _.find(this.customers, {'id': parent_id}) === undefined) {
-                        this.customers.push(parent)
+                }
+                if (customer.childrens !== undefined) {
+                    if (customer.childrens !== null) {
+                        let child = customer.childrens
+                        Object.keys(child).forEach(key => {
+                            let row = child[key] // value of the current key
+                            if(row.id !== null ) {
+                                this.childrens.push(row)
+                            }
+                        })
+                        // this.childrens = customer.childrens
                     }
-                    this.form.parent_customer_id= parent_id
-                    this.form.children_customer_id = chidren_id
-
-                    this.customer  = {};
-                    this.customers = customers;
-                    this.$store.commit('setParentCustomer', parent)
-                    this.$store.commit('setChildrenCustomer', children)
                 }
                 // this.$store.commit('setCustomer', this.parent_customer)
-                if (parseInt(this.form.children_customer_id) == 0) this.form.children_customer_id = null;
-                if (this.form.children_customer_id != null) {
-                    this.changeCustomerChild(1)
-                    // this.changeCustomer()
-                }
             }
         },
-        changeCustomerChild(fromFunction) {
-            let customer = _.find(this.customers, {'id': this.form.children_customer_id});
-            if (fromFunction == 1) {
-                customer = this.children_customer
-            }
+        changeCustomerChild() {
+            let customer = _.find(this.childrens, {'id': this.form.children_customer_id});
             if (customer === undefined) {
                 // si no se consigue el hijo en los customer, entonces se busca en los datos del padre
                 customer = _.find(this.parent_customer.childrens, {'id': this.form.children_customer_id});
             }
             this.$store.commit('setChildrenCustomer', customer)
             // Se asegura que el hijo tenga un solo padre y el padre tenga solo 1 hijo
-            let customerEnd = this.parent_customer;
-            customerEnd.childrens = [];
-            let customerF = this.children_customer;
-            if (customerF.childrens !== undefined)
-                customerF.childrens = [];
-            if (customerF.parent !== undefined)
-                customerF.parent = {};
-            customerEnd.childrens.push(customerF)
-            // this.$store.commit('setCustomer', customer)
+
+            if(this.form.parent_customer_id === null) {
+                let parent = _.find(this.customers, {'id': customer.parent.id});
+                if (parent === undefined) {
+                    this.customers.push(customer.parent)
+                }
+                if (this.form.parent_customer_id != customer.parent.id) {
+                    this.form.parent_customer_id = customer.parent.id;
+                }
+            }
+
 
         },
         changePlan() {

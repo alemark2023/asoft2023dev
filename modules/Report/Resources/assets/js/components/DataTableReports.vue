@@ -5,6 +5,30 @@
             <div class="col-md-12 col-lg-12 col-xl-12 ">
 
                 <div class="row mt-2">
+                    <div class="col-md-2 form-group">
+                        <label class="control-label">Tipo de usuario</label>
+                        <el-select v-model="form.user_type"
+                                   clearable
+                                   @change="ChangedSalesnote">
+                            <el-option key="CREADOR"
+                                       label="Registrado por"
+                                       value="CREADOR"></el-option>
+                            <el-option v-show="form.document_type_id !== '80'"
+                                       key="VENDEDOR"
+                                       label="Vendedor asignado"
+                                       value="VENDEDOR"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label class="control-label">{{ form.user_type === 'CREADOR' ? 'Usuario' : 'Vendedor' }}</label>
+                        <el-select v-model="form.user_id"
+                                   clearable>
+                            <el-option v-for="user in users"
+                                       :key="user.id"
+                                       :label="user.name"
+                                       :value="user.id"></el-option>
+                        </el-select>
+                    </div>
                     <div class="col-md-3">
                         <label class="control-label">Periodo</label>
                         <el-select v-model="form.period"
@@ -321,6 +345,7 @@ export default {
             establishments: [],
             web_platforms: [],
             state_types: [],
+            users: [],
             form: {},
             pickerOptionsDates: {
                 disabledDate: (time) => {
@@ -356,6 +381,9 @@ export default {
                 this.state_types = response.data.state_types
                 this.web_platforms = response.data.web_platforms
                 // this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
+                if(response.data.users !== undefined) {
+                    this.users = response.data.users;
+                }
             });
 
 
@@ -366,6 +394,12 @@ export default {
 
     },
     methods: {
+
+        ChangedSalesnote(){
+            if(this.form.document_type_id == '80' && this.form.user_type != null ){
+                this.form.user_type = 'CREADOR';
+            }
+        },
         changePersons() {
             // this.form.type_person = this.resource === 'reports/sales' ? 'customers':'suppliers'
         },
@@ -500,7 +534,9 @@ export default {
                 seller_id: null,
                 state_type_id: null,
                 include_categories: false,
-                guides: null
+                guides: null,
+                user_type: '',
+                user_id: '',
             }
 
         },

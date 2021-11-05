@@ -35,8 +35,9 @@ class ReportDocumentController extends Controller
                 'name' => $row->description
             ];
         });
+        $users = $this->getUsers();
 
-        return compact('document_types','establishments','persons', 'sellers');
+        return compact('document_types','establishments','persons', 'sellers', 'users');
     }
 
 
