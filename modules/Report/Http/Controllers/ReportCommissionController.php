@@ -31,6 +31,7 @@
                     'name' => $row->description
                 ];
             });
+
             $sellers = $this->getSellers();
 
 
@@ -56,17 +57,18 @@
         public function getRecords($request, $model)
         {
 
-            $document_type_id = $request['document_type_id'];
             $establishment_id = $request['establishment_id'];
             $period = $request['period'];
             $date_start = $request['date_start'];
             $date_end = $request['date_end'];
             $month_start = $request['month_start'];
             $month_end = $request['month_end'];
-            $seller_id = $request['seller_id'] ?? 0;
+            $user_type = $request['user_type'];
+            $user_seller_id = $request['user_seller_id'] ?? null;
 
             $d_start = null;
             $d_end = null;
+
             /** @todo: Eliminar periodo, fechas y cambiar por
 
             $date_start = $request['date_start'];
@@ -93,7 +95,7 @@
                     break;
             }
 
-            $records = $this->data($document_type_id, $establishment_id, $d_start, $d_end, $model, $seller_id);
+            $records = $this->data($establishment_id, $d_start, $d_end, $model, $user_seller_id, $user_type);
 
             return $records;
 
@@ -101,42 +103,28 @@
 
 
         /**
-         * @param     $document_type_id
          * @param     $establishment_id
          * @param     $date_start
          * @param     $date_end
          * @param     $model
-         * @param int $seller_id
+         * @param int $user_seller_id
+         * @param string $user_type
          *
          * @return Builder
          */
-        private function data($document_type_id, $establishment_id, $date_start, $date_end, $model, $seller_id = 0)
+        private function data($establishment_id, $date_start, $date_end, $model, $user_seller_id, $user_type)
         {
 
             /** @var Builder $data */
-            $data = $model::with(['documents' => function ($q) use ($date_start, $date_end, $seller_id) {
-                $q->whereIn('state_type_id', ['01', '03', '05', '07', '13'])
-                    ->whereIn('document_type_id', ['01', '03', '08'])
-                    ->whereBetween('date_of_issue', [$date_start, $date_end]);
-                if($seller_id != 0){
-                    // @todo #1081
-                    $q->where('user_id', $seller_id);
-                    // $q->where('seller_id', $seller_id);
-                }
-            }, 'sale_notes' => function ($z) use ($date_start, $date_end, $seller_id) {
-                $z->whereIn('state_type_id', ['01', '03', '05', '07', '13'])
-                    ->whereBetween('date_of_issue', [$date_start, $date_end]);
-                if($seller_id != 0) {
-                    // @todo #1081
-                    $z->where('user_id', $seller_id);
-                    // $z->where('seller_id', $seller_id);
-                }
-                }]);
+            
+            $data = $model::query();
+
             if ($establishment_id) {
                 $data = $data->where('establishment_id', $establishment_id);
             }
-            if($model == (User::class) && $seller_id != 0){
-                $data->where('id',$seller_id);
+
+            if($user_seller_id){
+                $data->where('id', $user_seller_id);
             }
 
             return $data->latest()->whereTypeUser();
@@ -151,7 +139,7 @@
             $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
             $records = $this->getRecords($request->all(), User::class)->get();
 
-            $pdf = PDF::loadView('report::commissions.report_pdf', compact("records", "company", "establishment"));
+            $pdf = PDF::loadView('report::commissions.report_pdf', compact("records", "company", "establishment", "request"));
 
             $filename = 'Reporte_Comision_Vendedor_' . date('YmdHis');
 
@@ -171,6 +159,7 @@
                 ->records($records)
                 ->company($company)
                 ->establishment($establishment)
+                ->request($request)
                 ->download('Reporte_Comision_Vendedor' . Carbon::now() . '.xlsx');
 
         }

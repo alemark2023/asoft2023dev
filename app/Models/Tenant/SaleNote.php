@@ -1021,4 +1021,36 @@
         {
             return $this->hasMany(SaleNotePayment::class);
         }
+        
+
+        /**
+         *
+         * Filtros para reportes de comisiones
+         * Usado en:
+         * Modules\Report\Http\Controllers\ReportCommissionController
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @param $date_start
+         * @param $date_end
+         * @param $establishment_id
+         * @param $user_type
+         * @param $user_seller_id
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public function scopeWhereFilterCommission($query, $date_start, $date_end, $establishment_id, $user_type, $user_seller_id, $row_user_id){
+
+            $query->whereStateTypeAccepted()
+                    ->whereBetween('date_of_issue', [$date_start, $date_end])
+                    ->whereEstablishmentId($establishment_id);
+
+            if($user_seller_id){
+                $query->where($user_type, $user_seller_id);
+            }else{
+                $query->where($user_type, $row_user_id);
+            }
+
+            return $query;
+        }
+
+
     }
