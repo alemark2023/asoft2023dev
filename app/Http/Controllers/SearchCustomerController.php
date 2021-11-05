@@ -136,9 +136,6 @@
                              $q->where('parent_id',  "0");
                          }
                     });
-                }else{
-                    // Buscará solo padres
-                    $person->where('parent_id',  "0");
 
                 }
 
@@ -156,6 +153,10 @@
                         $person->whereIn('identity_document_type_id', $identity_document_type_id);
                     }
                 }
+            }else{
+                // Buscará solo padres por defecto
+                $person->where('parent_id',  "0");
+
             }
             /*
             dd([
