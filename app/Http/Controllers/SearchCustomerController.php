@@ -136,7 +136,9 @@
                              $q->where('parent_id',  "0");
                          }
                     });
-
+                }else{
+                    // Buscará solo padres
+                    $person->where('parent_id',  "0");
 
                 }
 
