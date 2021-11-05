@@ -131,10 +131,25 @@
                             </tr>
                             </tfoot>
                         </table>
+
                         <div v-if="errors.products"
                              class="form-control-feedback">
                             {{ errors.products[0] }}
                         </div>
+                        <div v-if="this.products.length>0 && form.products.length  < 1"
+                             class="pull-right">
+                            <el-button
+                                :disabled="loading"
+                                :loading="loading"
+                                class="btn-block"
+                                type="primary"
+                                @click="onTotalDeleteProduct"
+                            >
+                                <i class="fa fa-save"></i>
+                                <span class="ml-2">Guardar</span>
+                            </el-button>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -222,6 +237,22 @@ export default {
                 })
                 .catch((error) => this.axiosError(error))
                 .finally(() => (this.loading = false));
+        },
+        onTotalDeleteProduct() {
+            this.$confirm(
+                "¿Estás seguro de eliminar todos los productos?",
+                "Cuidado",
+                {
+                    confirmButtonText: "Si",
+                    cancelButtonText: "No",
+                    type: "warning",
+                }
+            )
+                .then(() => {
+                    this.onSubmit()
+                })
+                .catch(() => {
+                });
         },
         onDeleteProduct(product) {
             this.$confirm(

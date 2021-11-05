@@ -55,6 +55,9 @@ trait ReportTrait
         $web_platform = FunctionController::InArray($request, 'web_platform_id',0);
 
 
+
+
+
         $d_start = null;
         $d_end = null;
 
@@ -96,6 +99,19 @@ trait ReportTrait
             $guides,
             $web_platform);
 
+        $user_type = FunctionController::InArray($request, 'user_type');
+        // En la practica, es el mismo que seller_id
+        $user_id = FunctionController::InArray($request, 'user_id');
+        if(
+            !empty($user_type)&& !empty($user_id)
+        ){
+            if($user_type == 'CREADOR'){
+                $records->where('user_id', $user_id);
+            }elseif($user_type == 'VENDEDOR'){
+                // Vendedor asignado
+                $records->where('seller_id', $user_id);
+            }
+        }
         return $records;
 
     }
