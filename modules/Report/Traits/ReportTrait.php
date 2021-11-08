@@ -135,6 +135,7 @@ trait ReportTrait
         $web_platform = null
     ) {
         $web_platform = (int)$web_platform;
+        $document_type_id = ($document_type_id == 'null')?null:$document_type_id;
         if($model !== PurchaseItem::class) {
             $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])
                 ->latest()
