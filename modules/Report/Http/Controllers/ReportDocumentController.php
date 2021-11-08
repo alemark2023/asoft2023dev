@@ -99,6 +99,7 @@ class ReportDocumentController extends Controller
             ->filters($filters)
             ->categories($categories)
             ->categories_services($categories_services);
+        // return $documentExport->view();
         return $documentExport->download('Reporte_Ventas_'.Carbon::now().'.xlsx');
 
     }
