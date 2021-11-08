@@ -34,8 +34,18 @@ class ReportSaleConsolidatedController extends Controller
         $document_types = $this->getCIDocumentTypes();
         $establishment_id = $this->getEstablishment();
         $series = $this->getSeries($document_types);
+        $users = $this->getUsers();
 
-        return compact('persons', 'date_range_types', 'order_state_types', 'sellers', 'document_types', 'series', 'establishment_id');
+        return compact(
+             'users',
+             'persons',
+             'date_range_types',
+             'order_state_types',
+             'sellers',
+             'document_types',
+             'series',
+             'establishment_id'
+        );
     }
 
 
@@ -98,6 +108,7 @@ class ReportSaleConsolidatedController extends Controller
             $sale_note_items = SaleNoteItem::whereDefaultDocumentType($request);
             $data = $document_items->union($sale_note_items);
         }
+
 
         return $data;
 
