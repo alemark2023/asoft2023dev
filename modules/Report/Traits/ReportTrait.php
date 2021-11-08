@@ -16,6 +16,7 @@ use App\Models\Tenant\User;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
 use Modules\Item\Models\WebPlatform;
@@ -99,20 +100,7 @@ trait ReportTrait
             $guides,
             $web_platform);
 
-        $user_type = FunctionController::InArray($request, 'user_type');
-        // En la practica, es el mismo que seller_id
-        $user_id = FunctionController::InArray($request, 'user_id');
-        if(
-            !empty($user_type)&& !empty($user_id)
-        ){
-            if($user_type == 'CREADOR'){
-                $records->where('user_id', $user_id);
-            }elseif($user_type == 'VENDEDOR'){
-                // Vendedor asignado
-                $records->where('seller_id', $user_id);
-            }
-        }
-        return $records;
+           return $records;
 
     }
 
@@ -158,7 +146,23 @@ trait ReportTrait
         if ($document_type_id && $establishment_id) {
             $data->where([['establishment_id', $establishment_id], ['document_type_id', $document_type_id]]);
         } elseif ($document_type_id) {
-            $data->where('document_type_id', 'like', '%'.$document_type_id.'%');
+            if (in_array($document_type_id, [
+                '01',
+                '03',
+                '07',
+                '08',
+                '"01"',
+                '"03"',
+                '"07"',
+                '"08"',
+            ], true)
+            ) {
+                // En unas vistas esta consultando "01" en vez 01
+                $document_type_id = str_replace('"','',$document_type_id);
+                $data->where('document_type_id', $document_type_id);
+            }else{
+                $data->where('document_type_id', 'like', '%'.$document_type_id.'%');
+            }
         } elseif ($establishment_id) {
             $data->where('establishment_id', 'like', '%'.$establishment_id.'%');
         }
@@ -169,13 +173,43 @@ trait ReportTrait
              $data->where($column, $person_id);
         }
 
-        if((int) $seller_id != 0){
-            $data->where('user_id', $seller_id);
-            // @todo Se debe ajustar el valor de las tablas en seller_id a user_id si esta vacio
-            // antes de poder realizar el filtro
+        /**
+         * Con este filtro se ajsuta reportes por campo user_id y seller_id para modulos que no lo tengan, esto es
+         * si el envio de la peticion tiene user_type y user_id se considera qomo parte del filtro de creador/vendedor
+         *
+         * @var \Illuminate\Http\Request $rquest
+         */
+        $request = request();
+        $userType = ($request !== null && $request->has('user_type') && !empty($request->user_type)) ? $request->user_type : null;
+        $userId = ($request !== null && $request->has('user_id') && !empty($request->user_id)) ? $request->user_id : null;
 
+        if (
+            !empty($userType) &&
+            !empty($userId)
+        ) {
+            $column = null;
+            if ($userType == 'CREADOR') {
+                // Quien realiza el documento
+                $column = 'user_id';
+            } elseif ($userType == 'VENDEDOR') {
+                // Vendedor asignado
+                $column = 'seller_id';
+            }
+            if (Str::startsWith($userId, '[')) {
+                // Si comienza con [ es un array serialziado por json.
+                $usersId = json_decode($userId);
+                if (count($usersId) > 0) {
+                    $data->whereIn($column, $usersId);
+                }
+            } else {
+                $data->where($column, $userId);
+            }
+        } elseif ((int)$seller_id != 0) {
+            $data->where('user_id', $seller_id);
             // $data->where('seller_id', $seller_id);
+
         }
+
         if($state_type_id){
              $data->where('state_type_id', $state_type_id);
         }

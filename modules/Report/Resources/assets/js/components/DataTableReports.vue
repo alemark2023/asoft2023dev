@@ -5,30 +5,7 @@
             <div class="col-md-12 col-lg-12 col-xl-12 ">
 
                 <div class="row mt-2">
-                    <div class="col-md-2 form-group">
-                        <label class="control-label">Tipo de usuario</label>
-                        <el-select v-model="form.user_type"
-                                   clearable
-                                   @change="ChangedSalesnote">
-                            <el-option key="CREADOR"
-                                       label="Registrado por"
-                                       value="CREADOR"></el-option>
-                            <el-option v-show="form.document_type_id !== '80'"
-                                       key="VENDEDOR"
-                                       label="Vendedor asignado"
-                                       value="VENDEDOR"></el-option>
-                        </el-select>
-                    </div>
-                    <div class="col-md-2 form-group">
-                        <label class="control-label">{{ form.user_type === 'CREADOR' ? 'Usuario' : 'Vendedor' }}</label>
-                        <el-select v-model="form.user_id"
-                                   clearable>
-                            <el-option v-for="user in users"
-                                       :key="user.id"
-                                       :label="user.name"
-                                       :value="user.id"></el-option>
-                        </el-select>
-                    </div>
+
                     <div class="col-md-3">
                         <label class="control-label">Periodo</label>
                         <el-select v-model="form.period"
@@ -143,29 +120,62 @@
                         </div>
                     </div>
 
-                    <div v-if="applyCustomer"
-                         :class="(
+                    <template v-if="users.length  < 1">
+                        <div v-if="applyCustomer"
+                             :class="(
                              resource == 'reports/commissions' ||
                              resource == 'reports/sales' ||
                              resource == 'reports/purchases') ? 'col-lg-4 col-md-4':'col-lg-3 col-md-3'">
-                        <div class="form-group">
-                            <label class="control-label">
-                                Usuarios
-                            </label>
+                            <div class="form-group">
+                                <label class="control-label">
+                                    Usuarios
+                                </label>
 
-                            <el-select v-model="form.seller_id"
+                                <el-select v-model="form.seller_id"
+                                           clearable
+                                           filterable
+                                           placeholder="Nombre usuario"
+                                           popper-class="el-select-customers">
+                                    <el-option v-for="option in sellers"
+                                               :key="option.id"
+                                               :label="option.name"
+                                               :value="option.id"></el-option>
+                                </el-select>
+
+                            </div>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <div class="col-md-2 form-group">
+                            <label class="control-label">Tipo de usuario</label>
+                            <el-select v-model="form.user_type"
+                                       clearable
+                                       @change="ChangedSalesnote">
+                                <el-option key="CREADOR"
+                                           label="Registrado por"
+                                           value="CREADOR"></el-option>
+                                <el-option v-show="form.document_type_id !== '80'"
+                                           key="VENDEDOR"
+                                           label="Vendedor asignado"
+                                           value="VENDEDOR"></el-option>
+                            </el-select>
+                        </div>
+                        <div class="col-md-2 form-group">
+                            <label class="control-label">{{
+                                    form.user_type === 'CREADOR' ? 'Usuario' : 'Vendedor'
+                                                         }}</label>
+                            <el-select v-model="form.user_id"
                                        clearable
                                        filterable
-                                       placeholder="Nombre usuario"
-                                       popper-class="el-select-customers">
-                                <el-option v-for="option in sellers"
-                                           :key="option.id"
-                                           :label="option.name"
-                                           :value="option.id"></el-option>
+                                       multiple>
+                                <el-option v-for="user in users"
+                                           :key="user.id"
+                                           :label="user.name"
+                                           :value="user.id"></el-option>
                             </el-select>
-
                         </div>
-                    </div>
+                    </template>
+
 
                     <div v-if="resource == 'reports/sales' || resource === 'reports/sale-notes'"
                          class="col-lg-3 col-md-3">
@@ -346,7 +356,11 @@ export default {
             web_platforms: [],
             state_types: [],
             users: [],
-            form: {},
+            form: {
+                document_type_id: null,
+                user_type: null,
+                user_id: [],
+            },
             pickerOptionsDates: {
                 disabledDate: (time) => {
                     time = moment(time).format('YYYY-MM-DD')
@@ -399,6 +413,10 @@ export default {
             if(this.form.document_type_id == '80' && this.form.user_type != null ){
                 this.form.user_type = 'CREADOR';
             }
+
+            this.form.person_id = null
+            this.form.user_id = [];
+            this.$eventHub.$emit('changeFilterColumn', 'seller')
         },
         changePersons() {
             // this.form.type_person = this.resource === 'reports/sales' ? 'customers':'suppliers'
@@ -517,8 +535,11 @@ export default {
             let query = queryString.stringify({
                 ...this.form
             });
-            window.open(`/${this.resource}/${type}/?${query}`, '_blank');
+            delete(query.user_id)
+
+            window.open(`/${this.resource}/${type}/?${query}&user_id=${JSON.stringify(this.form.user_id)}`, '_blank');
         },
+
         initForm() {
 
             this.form = {
@@ -535,8 +556,8 @@ export default {
                 state_type_id: null,
                 include_categories: false,
                 guides: null,
-                user_type: '',
-                user_id: '',
+                user_type: null,
+                user_id: [],
             }
 
         },
@@ -578,11 +599,17 @@ export default {
 
         },
         getQueryParameters() {
-            return queryString.stringify({
+            let parameters = queryString.stringify({
                 page: this.pagination.current_page,
                 limit: this.limit,
                 ...this.form
             })
+
+            delete(parameters.user_id)
+            delete(parameters.document_type_id)
+
+            return `${parameters}&user_id=${JSON.stringify(this.form.user_id)}&document_type_id=${JSON.stringify(this.form.document_type_id)}`
+
         },
 
         changeDisabledDates() {
