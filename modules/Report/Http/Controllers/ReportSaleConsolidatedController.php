@@ -162,12 +162,14 @@ class ReportSaleConsolidatedController extends Controller
         $params = $request->all();
         $filename = 'Reporte_Consolidado_Items_Ventas_'.date('YmdHis');
 
-        return (new SaleConsolidatedExport)
-                ->records($records)
-                ->company($company)
-                ->establishment($establishment)
-                ->params($params)
-                ->download($filename.'.xlsx');
+        $saleConsolidatedExport = new SaleConsolidatedExport();
+        $saleConsolidatedExport
+            ->records($records)
+            ->company($company)
+            ->establishment($establishment)
+            ->params($params);
+        // return  $saleConsolidatedExport->view();
+        return $saleConsolidatedExport->download($filename.'.xlsx');
 
     }
 

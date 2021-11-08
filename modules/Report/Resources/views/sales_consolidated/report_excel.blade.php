@@ -75,7 +75,7 @@
                         <p><strong>Usuario: </strong>{{$reportService->getUserName($params['seller_id'])}}</p>
                     </td>
                     @endif  --}}
-                    @if($params['sellers'])
+                    @if(isset($params['sellers']))
                         @php
                             $sellers = json_decode($params['sellers']);
                         @endphp
@@ -87,7 +87,29 @@
                             @endforeach
                             </p>
                         </td>
-                        @endif 
+                        @endif
+                    @elseif( isset($params['user_type']) && isset($params['user_id']) )
+                        @php
+                            $sellers = \App\CoreFacturalo\Helpers\Template\ReportHelper::getSellersFromRequest( $params['user_type'] , $params['user_id'] );
+                            // user_id   Creador del documento
+                            // seller_id Usuario Asignado
+
+                        @endphp
+                        @if(count($sellers) > 0)
+                            <td>
+                                <p>
+                                    <strong>Usuario(s): </strong>
+                                    {{-- Creador --}}
+                                    @if(isset($sellers['user_id']))
+                                        @foreach ($sellers['user_id'] as $seller) - {{ $seller }} @endforeach
+                                    @endif
+                                    {{-- Asignado --}}
+                                    @if(isset($sellers['seller_id']))
+                                        @foreach ($sellers['seller_id'] as $seller) - {{ $seller }} @endforeach
+                                    @endif
+                                </p>
+                            </td>
+                        @endif
                     @endif
 
 

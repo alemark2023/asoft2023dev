@@ -536,8 +536,9 @@ export default {
                 ...this.form
             });
             delete(query.user_id)
+            delete(query.document_type_id)
 
-            window.open(`/${this.resource}/${type}/?${query}&user_id=${JSON.stringify(this.form.user_id)}`, '_blank');
+            window.open(`/${this.resource}/${type}/?${query}&user_id=${JSON.stringify(this.form.user_id)}&document_type_id=${JSON.stringify(this.form.document_type_id)}`, '_blank');
         },
 
         initForm() {
