@@ -279,29 +279,63 @@
                               :row="row"></slot>
                         </tbody>
                         <tfoot v-if="resource == 'reports/sales' || resource == 'reports/purchases' || resource == 'reports/fixed-asset-purchases'">
-                        <tr>
-                            <td :colspan="(resource == 'reports/sales') ? 10:8"></td>
-                            <td><strong>Totales PEN</strong></td>
-                            <td>{{ totals.acum_total_exonerated }}</td>
-                            <td>{{ totals.acum_total_unaffected }}</td>
-                            <td>{{ totals.acum_total_free }}</td>
 
-                            <td>{{ totals.acum_total_taxed }}</td>
-                            <td>{{ totals.acum_total_igv }}</td>
-                            <td>{{ totals.acum_total }}</td>
-                        </tr>
-                        <tr>
-                            <td :colspan="(resource == 'reports/sales') ? 10:8"></td>
-                            <td><strong>Totales USD</strong></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <template v-if="resource == 'reports/sales'">
+                                <tr>
+                                    <td :colspan="12"></td>
+                                    <td v-if="visibleColumns.guides.visible"></td>
+                                    <td v-if="visibleColumns.options.visible"></td>
+                                    <td v-if="visibleColumns.web_platforms.visible"></td>
+                                    <td><strong>Totales PEN</strong></td>
+                                    <td>{{ totals.acum_total_exonerated }}</td>
+                                    <td>{{ totals.acum_total_unaffected }}</td>
+                                    <td>{{ totals.acum_total_free }}</td>
 
-                            <td>{{ totals.acum_total_taxed_usd }}</td>
-                            <td>{{ totals.acum_total_igv_usd }}</td>
-                            <td>{{ totals.acum_total_usd }}</td>
+                                    <td>{{ totals.acum_total_taxed }}</td>
+                                    <td>{{ totals.acum_total_igv }}</td>
+                                    <td v-if="visibleColumns.total_isc.visible"></td>
+                                    <td>{{ totals.acum_total }}</td>
+                                </tr>
+                                <tr>
+                                    <td :colspan="12"></td>
+                                    <td v-if="visibleColumns.guides.visible"></td>
+                                    <td v-if="visibleColumns.options.visible"></td>
+                                    <td v-if="visibleColumns.web_platforms.visible"></td>
+                                    <td><strong>Totales USD</strong></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{ totals.acum_total_taxed_usd }}</td>
+                                    <td>{{ totals.acum_total_igv_usd }}</td>
+                                    <td v-if="visibleColumns.total_isc.visible"></td>
+                                    <td>{{ totals.acum_total_usd }}</td>
+                                </tr>
 
-                        </tr>
+                            </template>
+                            <template v-else>
+                                <tr>
+                                    <td colspan="8"></td>
+                                    <td><strong>Totales PEN</strong></td>
+                                    <td>{{ totals.acum_total_exonerated }}</td>
+                                    <td>{{ totals.acum_total_unaffected }}</td>
+                                    <td>{{ totals.acum_total_free }}</td>
+
+                                    <td>{{ totals.acum_total_taxed }}</td>
+                                    <td>{{ totals.acum_total_igv }}</td>
+                                    <td>{{ totals.acum_total }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="8"></td>
+                                    <td><strong>Totales USD</strong></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+
+                                    <td>{{ totals.acum_total_taxed_usd }}</td>
+                                    <td>{{ totals.acum_total_igv_usd }}</td>
+                                    <td>{{ totals.acum_total_usd }}</td>
+                                </tr>
+                            </template>
                         </tfoot>
                     </table>
                     <div>
@@ -336,7 +370,8 @@ export default {
             type: Boolean,
             required: false,
             default: false
-        }
+        },
+        visibleColumns: Object
     },
     data() {
         return {
