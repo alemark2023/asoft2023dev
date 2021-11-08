@@ -2,18 +2,15 @@
 
     namespace Modules\Report\Http\Controllers;
 
-    use App\Models\Tenant\Catalogs\DocumentType;
     use App\Http\Controllers\Controller;
-    use Barryvdh\DomPDF\Facade as PDF;
-    use Illuminate\Database\Eloquent\Builder;
-    use Modules\Report\Exports\CommissionExport;
-    use Illuminate\Http\Request;
-    use App\Models\Tenant\Establishment;
-    use App\Models\Tenant\SaleNote;
-    use App\Models\Tenant\User;
-    use App\Models\Tenant\Document;
     use App\Models\Tenant\Company;
+    use App\Models\Tenant\Establishment;
+    use App\Models\Tenant\User;
+    use Barryvdh\DomPDF\Facade as PDF;
     use Carbon\Carbon;
+    use Illuminate\Database\Eloquent\Builder;
+    use Illuminate\Http\Request;
+    use Modules\Report\Exports\CommissionExport;
     use Modules\Report\Http\Resources\ReportCommissionCollection;
 
     class ReportCommissionController extends Controller
@@ -116,7 +113,7 @@
         {
 
             /** @var Builder $data */
-            
+
             $data = $model::query();
 
             if ($establishment_id) {
@@ -155,12 +152,14 @@
 
             $records = $this->getRecords($request->all(), User::class)->get();
 
-            return (new CommissionExport())
+            $commissionExport = new CommissionExport();
+            $commissionExport
                 ->records($records)
                 ->company($company)
                 ->establishment($establishment)
-                ->request($request)
-                ->download('Reporte_Comision_Vendedor' . Carbon::now() . '.xlsx');
+                ->request($request);
+            // return $commissionExport->view();
+            return $commissionExport->download('Reporte_Comision_Vendedor' . Carbon::now() . '.xlsx');
 
         }
     }
