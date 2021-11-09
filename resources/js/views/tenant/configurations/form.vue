@@ -412,7 +412,7 @@
                                             <el-switch v-model="form.default_document_type_03"
                                                        active-text="Si"
                                                        inactive-text="No"
-                                                       @change="submit"></el-switch>
+                                                       @change="changeDefaultDocumentType03"></el-switch>
                                             <small v-if="errors.default_document_type_03"
                                                    class="form-control-feedback"
                                                    v-text="errors.default_document_type_03[0]"></small>
@@ -671,6 +671,50 @@
                                                    v-text="errors.permission_to_edit_cpe[0]"></small>
                                         </div>
                                     </div>
+
+                                    
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Seleccionar nota de venta por defecto
+                                            <el-tooltip class="item"
+                                                        content="Disponible POS"
+                                                        effect="dark"
+                                                        placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div :class="{'has-danger': errors.default_document_type_80}"
+                                             class="form-group">
+                                            <el-switch v-model="form.default_document_type_80"
+                                                       active-text="Si"
+                                                       inactive-text="No"
+                                                       @change="changeDefaultDocumentType80"></el-switch>
+                                            <small v-if="errors.default_document_type_80"
+                                                   class="form-control-feedback"
+                                                   v-text="errors.default_document_type_80[0]"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Habilitar busqueda con escáner de código de barras
+                                            <el-tooltip class="item"
+                                                        content="Disponible POS"
+                                                        effect="dark"
+                                                        placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div :class="{'has-danger': errors.search_item_by_barcode}"
+                                             class="form-group">
+                                            <el-switch v-model="form.search_item_by_barcode"
+                                                       active-text="Si"
+                                                       inactive-text="No"
+                                                       @change="submit"></el-switch>
+                                            <small v-if="errors.search_item_by_barcode"
+                                                   class="form-control-feedback"
+                                                   v-text="errors.search_item_by_barcode[0]"></small>
+                                        </div>
+                                    </div>
+                                    
                                     <!--
                                     <div class="col-md-6 mt-4">
                                         <label class="control-label">Mostrar item de solo el almacen de usuario
@@ -1013,6 +1057,8 @@ export default {
                 header_image: null,
                 legend_footer: false,
                 default_document_type_03: false,
+                default_document_type_80: false,
+                search_item_by_barcode: false,
                 destination_sale: false,
                 quotation_allow_seller_generate_sale: false,
                 allow_edit_unit_price_to_seller: false,
@@ -1042,6 +1088,21 @@ export default {
             //Añadir la variable para cada item en compra. No es posible pasar elemento form por vuex
             this.form.enabled_global_igv_to_purchase = this.config.enabled_global_igv_to_purchase
             this.submit();
+        },
+        changeDefaultDocumentType03(){
+
+            if(this.form.default_document_type_03){
+                this.form.default_document_type_80 = false
+            }
+            this.submit()
+
+        },
+        changeDefaultDocumentType80(){
+
+            if(this.form.default_document_type_80){
+                this.form.default_document_type_03 = false
+            }
+            this.submit()
         },
         submit() {
             this.loading_submit = true;

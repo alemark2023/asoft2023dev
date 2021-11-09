@@ -107,6 +107,8 @@ class Configuration extends ModelTenant
         'show_items_only_user_stablishment',
         'igv_retention_percentage',
         'name_product_pdf_to_xml',
+        'default_document_type_80',
+        'search_item_by_barcode',
     ];
 
     protected $casts = [
@@ -129,6 +131,8 @@ class Configuration extends ModelTenant
         'show_items_only_user_stablishment' => 'boolean',
         'permission_to_edit_cpe' => 'boolean',
         'name_product_pdf_to_xml' => 'boolean',
+        'default_document_type_80' => 'boolean',
+        'search_item_by_barcode' => 'boolean',
     ];
 
 
@@ -477,6 +481,8 @@ class Configuration extends ModelTenant
             'set_address_by_establishment' => $this->set_address_by_establishment,
             'permission_to_edit_cpe' => $this->permission_to_edit_cpe,
             'name_product_pdf_to_xml' => $this->name_product_pdf_to_xml,
+            'default_document_type_80' => $this->default_document_type_80,
+            'search_item_by_barcode' => $this->search_item_by_barcode,
             'igv_retention_percentage' => $this->igv_retention_percentage,
             'currency_type_id' => $this->getCurrencyTypeId(),
             'currency_types' => $currency,

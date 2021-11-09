@@ -1021,6 +1021,8 @@ export default {
         }
 
         await this.selectDefaultCustomer();
+        await this.enabledSearchItemByBarcode()
+
     },
 
     computed: {
@@ -1066,6 +1068,12 @@ export default {
         }
     },
     methods: {
+        enabledSearchItemByBarcode(){
+
+            if (this.configuration.search_item_by_barcode) {
+                this.search_item_by_barcode = true
+            }
+        },
         keyupEnterQuantity() {
             this.initFocus();
         },
@@ -1355,7 +1363,11 @@ export default {
             });
             this.customer = customer;
 
-            if (this.configuration.default_document_type_03) {
+            if (this.configuration.default_document_type_80) {
+
+                this.form.document_type_id = "80"
+
+            }else if (this.configuration.default_document_type_03) {
                 this.form.document_type_id = "03";
             } else {
                 this.form.document_type_id =
