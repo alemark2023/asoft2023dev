@@ -414,6 +414,10 @@
                     {!!$row->item->description!!}
                 @endif
 
+                @if($row->total_isc > 0)
+                    <br/>ISC : {{ $row->total_isc }} ({{ $row->percentage_isc }}%)
+                @endif
+                
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
 
                 @foreach($row->additional_information as $information)
@@ -521,6 +525,13 @@
             <td colspan="4" class="text-right font-bold desc">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold desc">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
+        
+        @if($document->total_isc > 0)
+        <tr>
+            <td colspan="4" class="text-right font-bold desc">ISC: {{ $document->currency_type->symbol }}</td>
+            <td class="text-right font-bold desc">{{ number_format($document->total_isc, 2) }}</td>
+        </tr>
+        @endif
 
         @if($document->total_charge > 0)
             @php

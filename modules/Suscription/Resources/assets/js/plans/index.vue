@@ -86,14 +86,15 @@
                                 @click.prevent="clickShowPlan(row)">
                                 Editar
                             </button>
-                            <!--
+
                             <button
+                                v-if="!row.hasSuscription"
                                 class="btn waves-effect waves-light btn-xs btn-danger"
                                 type="button"
                                 @click.prevent="clickDelete(row.id)">
                                 Eliminar
                             </button>
-                            -->
+
                         </td>
                     </tr>
                 </data-table>
@@ -154,7 +155,10 @@ export default {
 
         this.$store.commit('setConfiguration', this.configuration)
         this.$store.commit('setResource', 'plans')
-        this.$store.commit('setFormData', {})
+        this.$store.commit('setFormData', {
+            periods: 'M',
+            quantity_period: 12,
+        })
         this.searchExchangeRateByDate(this.date).then(response => {
             this.$store.commit('setExchangeRate', response)
             // this.form.exchange_rate_sale = this.exchange_rate
@@ -191,8 +195,7 @@ export default {
         },
 
         clickDelete(id) {
-            console.log('no debe hacer nada')
-            this.destroy(`/${this.resource}/${id}`).then(() =>
+            this.destroy(`/suscription/${this.resource}/${id}`).then(() =>
                 this.$eventHub.$emit('reloadData')
             )
         }

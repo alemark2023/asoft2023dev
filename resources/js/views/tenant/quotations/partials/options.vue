@@ -56,7 +56,28 @@
                     <!--<small class="form-control-feedback" v-if="errors.customer_email" v-text="errors.customer_email[0]"></small> -->
                 </div>
             </div>
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <el-input v-model="form.customer_telephone">
+                        <template slot="prepend">+51</template>
+                        <el-button slot="append"
+                                   @click="clickSendWhatsapp">Enviar
+                            <el-tooltip class="item"
+                                        content="Se recomienta tener abierta la sesión de Whatsapp web"
+                                        effect="dark"
+                                        placement="top-start">
+                                <i class="fab fa-whatsapp"></i>
+                            </el-tooltip>
+                        </el-button>
+                    </el-input>
+                    <small v-if="errors.customer_telephone"
+                           class="form-control-feedback"
+                           v-text="errors.customer_telephone[0]"></small>
+                </div>
+            </div>
+
             <br/>
+
             <div v-if="typeUser == 'admin'" class="row">
                 <div v-show="!showGenerate" class="col-md-9">
                     <div class="form-group">
@@ -467,6 +488,13 @@ export default {
         this.clickAddPayment();
     },
     methods: {
+        clickSendWhatsapp() {
+
+            if (!this.form.customer_telephone) {
+                return this.$message.error('El número es obligatorio')
+            }
+            window.open(`https://wa.me/51${this.form.customer_telephone}?text=${this.form.message_text}`, '_blank');
+        },
         changePaymentCondition() {
             this.document.fee = [];
             this.document.payments = [];

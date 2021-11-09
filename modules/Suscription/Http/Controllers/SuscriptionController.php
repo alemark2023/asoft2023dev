@@ -5,18 +5,19 @@
     use App\Models\Tenant\Catalogs\AffectationIgvType;
     use App\Models\Tenant\Catalogs\Country;
     use App\Models\Tenant\Catalogs\CurrencyType;
+    use App\Models\Tenant\Catalogs\Department;
     use App\Models\Tenant\Catalogs\District;
     use App\Models\Tenant\Catalogs\IdentityDocumentType;
     use App\Models\Tenant\Catalogs\Province;
     use App\Models\Tenant\Catalogs\UnitType;
     use App\Models\Tenant\Configuration;
+    use App\Models\Tenant\Item;
     use App\Models\Tenant\PaymentMethodType;
     use App\Models\Tenant\PersonType;
-    use Modules\Suscription\Http\Resources\SuscriptionPlansCollection;
-    use App\Models\Tenant\Catalogs\Department;
-    use App\Models\Tenant\Item;
+    use Carbon\Carbon;
     use Illuminate\Http\Request;
     use Illuminate\Routing\Controller;
+    use Modules\Suscription\Http\Resources\SuscriptionPlansCollection;
     use Modules\Suscription\Models\Tenant\SuscriptionPlan;
 
     class SuscriptionController extends Controller
@@ -88,7 +89,6 @@
         }
 
 
-
         /**
          * Remove the specified resource from storage.
          *
@@ -98,7 +98,15 @@
          */
         public function destroy($id)
         {
-            //
+
+            $record = SuscriptionPlan::findOrFail($id);
+            $record->delete();
+
+            return [
+                'success' => true,
+                'message' => 'Matrícula eliminada con éxito'
+            ];
+
         }
 
 
@@ -143,43 +151,6 @@
 
         }
 
-        /**
-         * Devuelve un array para Privincia, distrito
-         *
-         * @return array
-         */
-        public function getLocationCascade()
-        {
-            $locations = [];
-            $departments = Department::where('active', true)->get();
-            foreach ($departments as $department) {
-                $children_provinces = [];
-                foreach ($department->provinces as $province) {
-                    $children_districts = [];
-                    foreach ($province->districts as $district) {
-                        $children_districts[] = [
-                            'value' => $district->id,
-                            'label' => $district->id . " - " . $district->description
-                        ];
-                    }
-                    $children_provinces[] = [
-                        'value' => $province->id,
-                        'label' => $province->description,
-                        'children' => $children_districts
-                    ];
-                }
-                $locations[] = [
-                    'value' => $department->id,
-                    'label' => $department->description,
-                    'children' => $children_provinces
-                ];
-            }
-
-            return $locations;
-        }
-
-
-
         public function plansColumns()
         {
             return [
@@ -217,27 +188,66 @@
             $identity_document_types = IdentityDocumentType::whereActive()->get();
             $person_types = PersonType::get();
             $locations = $this->getLocationCascade();
-            $configuration = Configuration::first();
-            $api_service_token = $configuration->token_apiruc == 'false' ? config('configuration.api_service_token') : $configuration->token_apiruc;
+            // $configuration = Configuration::first();
+            // $api_service_token = $configuration->token_apiruc == 'false' ? config('configuration.api_service_token') : $configuration->token_apiruc;
+            $api_service_token = \App\Models\Tenant\Configuration::getApiServiceToken();
+
             $unit_types = UnitType::whereActive()->orderByDescription()->get();
             $currency_types = CurrencyType::whereActive()->orderByDescription()->get();
             $affectation_igv_types = AffectationIgvType::whereActive()->get();
 
-            $payments_credit =PaymentMethodType::select('id')->NonCredit()->get()->toArray();
-            $payments_credit = PaymentMethodType:: getPaymentMethodTypes( $payments_credit);
+            $payments_credit = PaymentMethodType::select('id')->NonCredit()->get()->toArray();
+            $payments_credit = PaymentMethodType:: getPaymentMethodTypes($payments_credit);
+            $startDate = Carbon::createFromFormat('Y-m-d','2022-01-01')->format('Y-m-d');
 
             return compact('unit_types',
                 'currency_types',
                 'affectation_igv_types',
+                'startDate',
                 'countries',
                 'departments',
                 'provinces',
                 'districts',
                 'identity_document_types',
                 'locations',
-                 'person_types',
+                'person_types',
                 'payments_credit',
                 'api_service_token');
+        }
+
+        /**
+         * Devuelve un array para Privincia, distrito
+         *
+         * @return array
+         */
+        public function getLocationCascade()
+        {
+            $locations = [];
+            $departments = Department::where('active', true)->get();
+            foreach ($departments as $department) {
+                $children_provinces = [];
+                foreach ($department->provinces as $province) {
+                    $children_districts = [];
+                    foreach ($province->districts as $district) {
+                        $children_districts[] = [
+                            'value' => $district->id,
+                            'label' => $district->id . " - " . $district->description
+                        ];
+                    }
+                    $children_provinces[] = [
+                        'value' => $province->id,
+                        'label' => $province->description,
+                        'children' => $children_districts
+                    ];
+                }
+                $locations[] = [
+                    'value' => $department->id,
+                    'label' => $department->description,
+                    'children' => $children_provinces
+                ];
+            }
+
+            return $locations;
         }
 
 

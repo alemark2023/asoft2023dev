@@ -27,7 +27,7 @@
         <div class="card mb-0">
             <div class="card-header bg-info">
                 <h3 class="my-0">
-                    Listado de suscripciones
+                    Listado de matrículas
                 </h3>
             </div>
             <div class="card-body">
@@ -41,6 +41,9 @@
                         </th>
                         <th class="text-center">
                             Hijo
+                        </th>
+                        <th class="text-center">
+                            Plan
                         </th>
                         <th class="text-center">
                             Cant.Periodo/Ciclo
@@ -67,6 +70,9 @@
                         </td>
                         <td class="text-left">
                             {{ row.children_customer.description }}
+                        </td>
+                        <td class="text-left">
+                            {{ row.plan.name }}
                         </td>
                         <td class="text-left">
                             {{ row.quantity_period }}

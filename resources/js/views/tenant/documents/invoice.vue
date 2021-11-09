@@ -361,6 +361,10 @@
                                                     <td>IGV:</td>
                                                     <td>{{ currency_type.symbol }} {{ form.total_igv }}</td>
                                                 </tr>
+                                                <tr v-if="form.total_isc > 0">
+                                                    <td>ISC:</td>
+                                                    <td>{{ currency_type.symbol }} {{ form.total_isc }}</td>
+                                                </tr>
                                                 <tr v-if="form.total_plastic_bag_taxes > 0">
                                                     <td>ICBPER:</td>
                                                     <td>{{ currency_type.symbol }} {{
@@ -693,6 +697,10 @@
                                     <tr v-if="form.total_igv > 0">
                                         <td>IGV:</td>
                                         <td>{{ currency_type.symbol }} {{ form.total_igv }}</td>
+                                    </tr>
+                                    <tr v-if="form.total_isc > 0">
+                                        <td>ISC:</td>
+                                        <td>{{ currency_type.symbol }} {{ form.total_isc }}</td>
                                     </tr>
                                     <tr v-if="form.total_plastic_bag_taxes > 0">
                                         <td>ICBPER:</td>
@@ -2841,6 +2849,8 @@ export default {
             this.total_discount_no_base = 0
 
             let total_igv_free = 0
+            let total_base_isc = 0
+            let total_isc = 0
 
             // let total_free_igv = 0
 
@@ -2916,8 +2926,14 @@ export default {
                 //sum discount no base
                 this.total_discount_no_base += this.sumDiscountsNoBaseByItem(row)
 
+                // isc
+                total_isc += parseFloat(row.total_isc)
+                total_base_isc += parseFloat(row.total_base_isc)
             });
 
+            // isc
+            this.form.total_base_isc = _.round(total_base_isc, 2)
+            this.form.total_isc = _.round(total_isc, 2)
 
             this.form.total_igv_free = _.round(total_igv_free, 2)
             this.form.total_discount = _.round(total_discount, 2)
@@ -2929,7 +2945,11 @@ export default {
             // this.form.total_igv = _.round(total_igv + total_free_igv, 2)
             this.form.total_igv = _.round(total_igv, 2)
             this.form.total_value = _.round(total_value, 2)
-            this.form.total_taxes = _.round(total_igv, 2)
+            // this.form.total_taxes = _.round(total_igv, 2)
+            
+            //impuestos (isc + igv)
+            this.form.total_taxes = _.round(total_igv + total_isc, 2);
+
             this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
             // this.form.total = _.round(total, 2)
             this.form.subtotal = _.round(total + this.form.total_plastic_bag_taxes, 2)

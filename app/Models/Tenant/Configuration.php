@@ -485,6 +485,7 @@ class Configuration extends ModelTenant
             'unit_type_id'=>$unit_type_id,
             'enabled_global_igv_to_purchase'=>$this->isEnabledGlobalIgvToPurchase(),
             'show_pdf_name'=>$this->isShowPdfName(),
+            'api_service_token'=>self::getApiServiceToken(),
             'user'=>[
                 'serie'=>$serie,
                 'document_id'=>$document_id,
@@ -653,6 +654,7 @@ class Configuration extends ModelTenant
      */
     public function isShowItemsOnlyUserStablishment(): bool
     {
+        return false;
         return (bool)$this->show_items_only_user_stablishment;
     }
 
@@ -664,6 +666,7 @@ class Configuration extends ModelTenant
     public function setShowItemsOnlyUserStablishment(bool $show_items_only_user_stablishment): Configuration
     {
         $this->show_items_only_user_stablishment = (bool) $show_items_only_user_stablishment;
+        $this->show_items_only_user_stablishment = false;
         return $this;
     }
 
@@ -683,4 +686,15 @@ class Configuration extends ModelTenant
         return  $this->formats;
     }
 
+    /**
+     * Devuele el token de apiperu desde configuracion del sistema
+     * @return \Illuminate\Config\Repository|\Illuminate\Foundation\Application|mixed
+     */
+    public static function getApiServiceToken(){
+        $api_service_token = \App\Models\System\Configuration::getApiServiceToken();
+        // $api_service_token = $configuration->token_apiruc =! '' ? $configuration->token_apiruc : config('configuration.api_service_token');
+        // $api_service_token = $configuration->token_apiruc === 'false' ? config('configuration.api_service_token') : $configuration->token_apiruc;
+
+        return $api_service_token;
+    }
 }

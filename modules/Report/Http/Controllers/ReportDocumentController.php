@@ -35,8 +35,9 @@ class ReportDocumentController extends Controller
                 'name' => $row->description
             ];
         });
+        $users = $this->getUsers();
 
-        return compact('document_types','establishments','persons', 'sellers');
+        return compact('document_types','establishments','persons', 'sellers', 'users');
     }
 
 
@@ -98,6 +99,7 @@ class ReportDocumentController extends Controller
             ->filters($filters)
             ->categories($categories)
             ->categories_services($categories_services);
+        // return $documentExport->view();
         return $documentExport->download('Reporte_Ventas_'.Carbon::now().'.xlsx');
 
     }

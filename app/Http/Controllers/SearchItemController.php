@@ -190,10 +190,12 @@
         public static function SetWarehouseToUser(&$item)
         {
             /** @var Item $item */
-            $configuration =  Configuration::first()-> isShowItemsOnlyUserStablishment();
-            if($configuration == true) {
+            // En este caso, se desestima esta configuracion ya que debe filtrase por el almacen del usuario
+            // dejando sin efecto por el issue #1046
+         //   $configuration =  Configuration::first()-> isShowItemsOnlyUserStablishment();
+         //   if($configuration == true) {
                 $item->whereWarehouse();
-            }
+         //   }
 
         }
 

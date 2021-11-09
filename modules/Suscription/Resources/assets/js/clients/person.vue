@@ -36,7 +36,10 @@
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.number}"
                                      class="form-group">
-                                    <label class="control-label">Número <span class="text-danger">*</span></label>
+                                    <label class="control-label">
+                                        Número
+                                        <span class="text-danger">*</span>
+                                        </label>
 
                                     <div v-if="api_service_token != false">
                                         <x-input-service v-model="form.number"
@@ -83,10 +86,13 @@
                                            v-text="errors.name[0]"></small>
                                 </div>
                             </div>
+
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.trade_name}"
                                      class="form-group">
-                                    <label class="control-label">Nombre comercial</label>
+                                    <label class="control-label">
+                                        Grado
+                                    </label>
                                     <el-input v-model="form.trade_name"
                                               dusk="trade_name"></el-input>
                                     <small v-if="errors.trade_name"
@@ -568,6 +574,7 @@ export default {
             },
             temp_optional_email: [],
             temp_email: null,
+            indexitem: null,
             provinces: [],
             districts: [],
             activeName: 'first',
@@ -605,9 +612,15 @@ export default {
                 this.all_provinces = response.data.provinces
                 this.all_districts = response.data.districts
                 this.person_types = response.data.person_types
-                this.identity_document_types= response.data.identity_document_types
+                this.identity_document_types = response.data.identity_document_types
                 this.locations = response.data.locations
 
+            }) .finally(()=>{
+                if(this.api_service_token === false){
+                    if(this.config.api_service_token !== undefined){
+                        this.api_service_token = this.config.api_service_token
+                    }
+                }
             })
 
     },
@@ -632,6 +645,7 @@ export default {
             'loadConfiguration',
         ]),
         initForm() {
+            this.indexitem = null
             this.errors = {}
             this.form = {
                 id: null,
@@ -679,8 +693,20 @@ export default {
         },
         create() {
             // console.log(this.input_person)
+
+            this.indexitem = null
+            if (this.person) {
+                let index = this.person.indexi;
+                if (isNaN(index) !== true) {
+                    this.indexitem = index;
+                }
+            }
+            if (this.indexitem == null) {
+                delete (this.indexitem)
+            }
+
             this.changeIdentityDocType();
-            this.activeName='first'
+            this.activeName = 'first'
             this.parent = 0;
             if (this.parentId !== undefined) {
                 this.parent = this.parentId;
@@ -721,6 +747,9 @@ export default {
                 this.$http.post(`/suscription/${this.resource}/record`, param)
                     .then(response => {
                         this.form = response.data.data
+                        if (this.person && this.person.indexi !== null) {
+                            this.form.indexi = this.person.indexi;
+                        }
                         if (response.data.data.contact == null) {
                             this.form.contact = {
                                 full_name: null,
@@ -874,6 +903,14 @@ export default {
             this.loading_submit = true
             this.form.parent_id = parseInt(this.parent);
             // emitir, no guardar
+            if (this.person && this.person.indexi) {
+                this.form.indexi = this.person.indexi;
+            }
+
+            if (this.indexitem !== null) {
+                this.form.indexi = this.indexitem
+                delete (this.indexitem)
+            }
             this.$store.commit('setPerson', this.form)
             this.$emit('add', this.form);
             this.close()

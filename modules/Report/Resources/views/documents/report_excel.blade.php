@@ -149,6 +149,7 @@ function getLocationData($value)
                                 <th>Total Gravado</th>
                                 <th>Descuento total</th>
                                 <th>Total IGV</th>
+                                <th>Total ISC</th>
                                 <th>Total</th>
 
                                 @foreach ($categories as $category)
@@ -242,6 +243,7 @@ function getLocationData($value)
                                     <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_taxed}}</td>
                                     <td class="celda">{{$value->total_discount}}</td>
                                     <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_igv}}</td>
+                                    <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_isc}}</td>
                                     <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
 
                                 @else
@@ -252,6 +254,7 @@ function getLocationData($value)
                                     <td class="celda">{{ (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_taxed}}</td>
                                     <td class="celda">{{ (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_discount}}</td>
                                     <td class="celda">{{ (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_igv}}</td>
+                                    <td class="celda">{{ (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_isc}}</td>
                                     <td class="celda">{{ (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total}}</td>
 
                                 @endif
@@ -395,6 +398,7 @@ function getLocationData($value)
                                 <td>{{$acum_total_taxed}}</td>
                                 <td></td>
                                 <td>{{$acum_total_igv}}</td>
+                                <td></td>
                                 <td>{{$acum_total}}</td>
                             </tr>
                             <tr>
@@ -406,6 +410,7 @@ function getLocationData($value)
                                 <td>{{$acum_total_taxed_usd}}</td>
                                 <td></td>
                                 <td>{{$acum_total_igv_usd}}</td>
+                                <td></td>
                                 <td>{{$acum_total_usd}}</td>
                             </tr>
                         </tbody>

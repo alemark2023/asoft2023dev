@@ -60,6 +60,15 @@
                                                                  {{ form.total_igv }}</p>
                         </div>
                     </div>
+                    <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center" v-if="form.total_isc > 0">
+                        <div class="col-sm-6 py-1">
+                            <p class="font-weight-semibold mb-0">ISC</p>
+                        </div>
+                        <div class="col-sm-6 py-1 text-right">
+                            <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
+                                                                 {{ form.total_isc }}</p>
+                        </div>
+                    </div>
                     <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
                         <div class="col-sm-6 py-1">
                             <p class="font-weight-semibold mb-0">ICBPER</p>
@@ -88,6 +97,15 @@
                         <div class="col-sm-6 py-1 text-right">
                             <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
                                                                  {{ form.total_igv }}</p>
+                        </div>
+                    </div>
+                    <div class="row m-0 p-0 bg-white h-25 d-flex align-items-center" v-if="form.total_isc > 0">
+                        <div class="col-sm-6 py-1">
+                            <p class="font-weight-semibold mb-0">ISC</p>
+                        </div>
+                        <div class="col-sm-6 py-1 text-right">
+                            <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
+                                                                 {{ form.total_isc }}</p>
                         </div>
                     </div>
                 </template>
@@ -607,6 +625,8 @@ export default {
             let total_value = 0
             let total = 0
             let total_plastic_bag_taxes = 0
+            let total_base_isc = 0
+            let total_isc = 0
 
             this.form.items.forEach((row) => {
                 total_discount += parseFloat(row.total_discount)
@@ -633,7 +653,16 @@ export default {
                 }
                 total_value += parseFloat(row.total_value)
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
+                
+                // isc
+                total_isc += parseFloat(row.total_isc)
+                total_base_isc += parseFloat(row.total_base_isc)
+
             });
+
+            // isc
+            this.form.total_base_isc = _.round(total_base_isc, 2)
+            this.form.total_isc = _.round(total_isc, 2)
 
             this.form.total_exportation = _.round(total_exportation, 2)
             this.form.total_taxed = _.round(total_taxed, 2)
@@ -642,7 +671,11 @@ export default {
             this.form.total_free = _.round(total_free, 2)
             this.form.total_igv = _.round(total_igv, 2)
             this.form.total_value = _.round(total_value, 2)
-            this.form.total_taxes = _.round(total_igv, 2)
+            // this.form.total_taxes = _.round(total_igv, 2)
+            
+            //impuestos (isc + igv)
+            this.form.total_taxes = _.round(total_igv + total_isc, 2);
+
             this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
             // this.form.total = _.round(total, 2)
             this.form.subtotal = _.round(total + this.form.total_plastic_bag_taxes, 2)
