@@ -829,7 +829,7 @@
                 //         'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
                 //     ];
                 // })->values(),
-                'series_enabled' => (bool)$resource->series_enabled,
+                'series_enabled' => (bool)(($resource!= null)?$resource->series_enabled:false),
             ];
 
             return $data_lots;
