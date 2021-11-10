@@ -31,6 +31,8 @@
      * @property bool                           $editable
      * @property bool                           $deletable
      * @property string|null                    $start_date
+     * @property string|null                    $grade
+     * @property string|null                    $section
      * @property Carbon|null                    $created_at
      * @property Carbon|null                    $updated_at
      * @property CatPeriod|null                 $cat_period
@@ -150,8 +152,8 @@
             'children_customer',
             'apply_concurrency',
             'enabled_concurrency',
-
-
+            'grade',
+            'section',
             'total',
             'currency_type_id',
             'payment_method_type_id',
@@ -209,7 +211,7 @@
             if ($qtyPeriods < 1) return null;
             $notas = $plan->sale_notes;
             // Solo se toma en cuenta cuando no tiene notas de venta.
-             if (strlen($notas) > 2) return null;
+             // if (strlen($notas) > 2) return null;
 
             $typerPeriod = $plan->getCatPeriod();
 
@@ -217,7 +219,10 @@
             $child = $plan->children_customer;
             $parent->child = $child;
             $customer = $parent;
+
             Carbon::setLocale('es');
+            Carbon::setLocale('Spanish_Peru');
+            setlocale(LC_ALL, 'Spanish_Peru');
 
             /** @var \Illuminate\Support\Carbon $start_date */
             $start_date = $plan->start_date;
@@ -235,7 +240,6 @@
             ])->first();
             $ids = [];
             $time_of_issue = Carbon::now()->format('H:m:s');
-            setlocale(LC_ALL, 'Spanish_Peru');
             for ($i = 1; $i <= $qtyPeriods; $i++) {
                 $date_of_issue = $start_date;
                 if ($typerPeriod->period == 'Y') {
@@ -272,6 +276,8 @@
                     'currency_type_id' => $plan->currency_type_id,
                     'date_of_issue' => $date_of_issue->format('Y-m-d'),
                     'series_id' => $serie->id,
+                    "grade"=> $plan->grade,
+                    "section"=> $plan->section,
                     "payments"=> $payments,
 
                     "prefix" => "NV",
@@ -817,5 +823,44 @@
             $this->start_date = $start_date;
             return $this;
         }
+
+        /**
+         * @return string|null
+         */
+        public function getGrade(): ?string
+        {
+            return $this->grade;
+        }
+
+        /**
+         * @param string|null $grade
+         *
+         * @return UserRelSuscriptionPlan
+         */
+        public function setGrade(?string $grade): UserRelSuscriptionPlan
+        {
+            $this->grade = $grade;
+            return $this;
+        }
+
+        /**
+         * @return string|null
+         */
+        public function getSection(): ?string
+        {
+            return $this->section;
+        }
+
+        /**
+         * @param string|null $section
+         *
+         * @return UserRelSuscriptionPlan
+         */
+        public function setSection(?string $section): UserRelSuscriptionPlan
+        {
+            $this->section = $section;
+            return $this;
+        }
+
 
     }

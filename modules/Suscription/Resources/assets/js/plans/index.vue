@@ -189,6 +189,10 @@ export default {
 
         clickShowPlan(row) {
             this.clearFormData();
+            if (row === undefined) row = {};
+            if(row.quantity_period === undefined) row.quantity_period = 12;
+            if(row.periods === undefined) row.periods = 'M';
+
             this.$store.commit('setFormData', row)
             this.showDialog = true
 

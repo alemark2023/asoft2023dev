@@ -28,109 +28,111 @@
 
 
     /**
- * App\Models\Tenant\Document
- *
- * @property EloquentCollection|Note[]            $affected_documents
- * @property int|null                             $affected_documents_count
- * @property EloquentCollection|DocumentFee[]     $fee
- * @property int|null                             $fee_count
- * @property mixed                                $additional_information
- * @property mixed                                $charges
- * @property mixed                                $company
- * @property mixed                                $customer
- * @property mixed                                $data_json
- * @property mixed                                $detraction
- * @property mixed                                $discounts
- * @property mixed                                $download_external_cdr
- * @property mixed                                $download_external_pdf
- * @property mixed                                $download_external_xml
- * @property mixed                                $establishment
- * @property mixed                                $guides
- * @property mixed                                $is_editable
- * @property mixed                                $legends
- * @property mixed                                $number_full
- * @property mixed                                $number_to_letter
- * @property mixed                                $perception
- * @property mixed                                $prepayments
- * @property string|null                          $payment_condition_id
- * @property string|null                          $payment_method_type_id
- * @property string|null                          $purchase_order
- * @property string|null                          $plate_number
- * @property int|null                             $quotation_id
- * @property int|null                             $sale_note_id
- * @property int|null                             $user_rel_suscription_plan_id
- * @property int|null                             $technical_service_id
- * @property int|null                             $order_note_id
- * @property int|null                             $dispatch_id
- * @property int|null                             $seller_id
- * @property float                                $exchange_rate_sale
- * @property Carbon|null                          $automatic_date_of_issue
- * @property string|null                          $type_period
- * @property int|null                             $quantity_period
- * @property bool                                 $enabled_concurrency
- * @property bool                                 $apply_concurrency
- * @property mixed                                $related
- * @property mixed                                $response_regularize_shipping
- * @property mixed                                $soap_shipping_response
- * @property DocumentHotel|null                   $hotel
- * @property EloquentCollection|InventoryKardex[] $inventory_kardex
- * @property int|null                             $inventory_kardex_count
- * @property Invoice|null                         $invoice
- * @property EloquentCollection|Kardex[]          $kardex
- * @property int|null                             $kardex_count
- * @property Note|null                            $note
- * @property EloquentCollection|DocumentPayment[] $payments
- * @property int|null                             $payments_count
- * @property Person                               $person
- * @property EloquentCollection|Dispatch[]        $reference_guides
- * @property int|null                             $reference_guides_count
- * @property SummaryDocument|null                 $summary_document
- * @property DocumentTransport|null               $transport
- * @property CurrencyType                         $currency_type
- * @property DocumentType                         $document_type
- * @property Group                                $group
- * @property OrderNote                            $order_note
- * @property Quotation                            $quotation
- * @property SaleNote                             $sale_note
- * @property User                                 $seller
- * @property SoapType                             $soap_type
- * @property StateType                            $state_type
- * @property User                                 $user
- * @property EloquentCollection|Cash[]            $cashes
- * @property Collection|Dispatch[]                $dispatches
- * @property Collection|DocumentFee[]             $document_fees
- * @property Collection|DocumentHotel[]           $document_hotels
- * @property EloquentCollection|DocumentItem[]    $items
- * @property int|null                             $items_count
- * @property Dispatch|null                        $dispatch
- * @property EloquentCollection|GuideFile[]       $guide_files
- * @property int|null                             $guide_files_count
- * @property PaymentCondition|null                $payment_condition
- * @property PaymentMethodType                    $payment_method_type
- * @property TechnicalService|null                $technical_service
- * @property Collection|DocumentPayment[]         $document_payments
- * @property Collection|DocumentTransport[]       $document_transports
- * @property Collection|Invoice[]                 $invoices
- * @property Collection|Kardex[]                  $kardexes
- * @property Collection|Note[]                    $notes_where_affected_document
- * @property Collection|Note[]                    $notes
- * @property Collection|Summary[]                 $summaries
- * @property Collection|Voided[]                  $voideds
- * @method static EloquentBuilder|Document newModelQuery()
- * @method static EloquentBuilder|Document newQuery()
- * @method static EloquentBuilder|Document query()
- * @method static EloquentBuilder|Document whereAffectationTypePrepayment($type)
- * @method static EloquentBuilder|Document whereHasPrepayment()
- * @method static EloquentBuilder|Document whereNotSent()
- * @method static EloquentBuilder|Document whereRegularizeShipping()
- * @method static EloquentBuilder|Document whereStateTypeAccepted()
- * @method static EloquentBuilder|Document whereTypeUser()
- * @method static EloquentBuilder|Document WhereEstablishmentId()
- * @mixin Eloquent
- * @method static EloquentBuilder|Document whereValuedKardexFormatSunat($params)
- * @property mixed                                $retention
- * @method static EloquentBuilder|Document whereEstablishmentId($establishment_id = 0)
- */
+     * App\Models\Tenant\Document
+     *
+     * @property EloquentCollection|Note[]            $affected_documents
+     * @property int|null                             $affected_documents_count
+     * @property EloquentCollection|DocumentFee[]     $fee
+     * @property string|null                          $grade
+     * @property string|null                          $section
+     * @property int|null                             $fee_count
+     * @property mixed                                $additional_information
+     * @property mixed                                $charges
+     * @property mixed                                $company
+     * @property mixed                                $customer
+     * @property mixed                                $data_json
+     * @property mixed                                $detraction
+     * @property mixed                                $discounts
+     * @property mixed                                $download_external_cdr
+     * @property mixed                                $download_external_pdf
+     * @property mixed                                $download_external_xml
+     * @property mixed                                $establishment
+     * @property mixed                                $guides
+     * @property mixed                                $is_editable
+     * @property mixed                                $legends
+     * @property mixed                                $number_full
+     * @property mixed                                $number_to_letter
+     * @property mixed                                $perception
+     * @property mixed                                $prepayments
+     * @property string|null                          $payment_condition_id
+     * @property string|null                          $payment_method_type_id
+     * @property string|null                          $purchase_order
+     * @property string|null                          $plate_number
+     * @property int|null                             $quotation_id
+     * @property int|null                             $sale_note_id
+     * @property int|null                             $user_rel_suscription_plan_id
+     * @property int|null                             $technical_service_id
+     * @property int|null                             $order_note_id
+     * @property int|null                             $dispatch_id
+     * @property int|null                             $seller_id
+     * @property float                                $exchange_rate_sale
+     * @property Carbon|null                          $automatic_date_of_issue
+     * @property string|null                          $type_period
+     * @property int|null                             $quantity_period
+     * @property bool                                 $enabled_concurrency
+     * @property bool                                 $apply_concurrency
+     * @property mixed                                $related
+     * @property mixed                                $response_regularize_shipping
+     * @property mixed                                $soap_shipping_response
+     * @property DocumentHotel|null                   $hotel
+     * @property EloquentCollection|InventoryKardex[] $inventory_kardex
+     * @property int|null                             $inventory_kardex_count
+     * @property Invoice|null                         $invoice
+     * @property EloquentCollection|Kardex[]          $kardex
+     * @property int|null                             $kardex_count
+     * @property Note|null                            $note
+     * @property EloquentCollection|DocumentPayment[] $payments
+     * @property int|null                             $payments_count
+     * @property Person                               $person
+     * @property EloquentCollection|Dispatch[]        $reference_guides
+     * @property int|null                             $reference_guides_count
+     * @property SummaryDocument|null                 $summary_document
+     * @property DocumentTransport|null               $transport
+     * @property CurrencyType                         $currency_type
+     * @property DocumentType                         $document_type
+     * @property Group                                $group
+     * @property OrderNote                            $order_note
+     * @property Quotation                            $quotation
+     * @property SaleNote                             $sale_note
+     * @property User                                 $seller
+     * @property SoapType                             $soap_type
+     * @property StateType                            $state_type
+     * @property User                                 $user
+     * @property EloquentCollection|Cash[]            $cashes
+     * @property Collection|Dispatch[]                $dispatches
+     * @property Collection|DocumentFee[]             $document_fees
+     * @property Collection|DocumentHotel[]           $document_hotels
+     * @property EloquentCollection|DocumentItem[]    $items
+     * @property int|null                             $items_count
+     * @property Dispatch|null                        $dispatch
+     * @property EloquentCollection|GuideFile[]       $guide_files
+     * @property int|null                             $guide_files_count
+     * @property PaymentCondition|null                $payment_condition
+     * @property PaymentMethodType                    $payment_method_type
+     * @property TechnicalService|null                $technical_service
+     * @property Collection|DocumentPayment[]         $document_payments
+     * @property Collection|DocumentTransport[]       $document_transports
+     * @property Collection|Invoice[]                 $invoices
+     * @property Collection|Kardex[]                  $kardexes
+     * @property Collection|Note[]                    $notes_where_affected_document
+     * @property Collection|Note[]                    $notes
+     * @property Collection|Summary[]                 $summaries
+     * @property Collection|Voided[]                  $voideds
+     * @method static EloquentBuilder|Document newModelQuery()
+     * @method static EloquentBuilder|Document newQuery()
+     * @method static EloquentBuilder|Document query()
+     * @method static EloquentBuilder|Document whereAffectationTypePrepayment($type)
+     * @method static EloquentBuilder|Document whereHasPrepayment()
+     * @method static EloquentBuilder|Document whereNotSent()
+     * @method static EloquentBuilder|Document whereRegularizeShipping()
+     * @method static EloquentBuilder|Document whereStateTypeAccepted()
+     * @method static EloquentBuilder|Document whereTypeUser()
+     * @method static EloquentBuilder|Document WhereEstablishmentId()
+     * @mixin Eloquent
+     * @method static EloquentBuilder|Document whereValuedKardexFormatSunat($params)
+     * @property mixed                                $retention
+     * @method static EloquentBuilder|Document whereEstablishmentId($establishment_id = 0)
+     */
     class Document extends ModelTenant
     {
         use UsesTenantConnection;
@@ -167,6 +169,8 @@
             'customer',
             'currency_type_id',
             'purchase_order',
+            'grade',
+            'section',
             'quotation_id',
             'exchange_rate_sale',
             'total_prepayment',
@@ -976,6 +980,44 @@
         public function getTotalByDocumentType()
         {
             return $this->document_type_id === '07' ? $this->total * -1 : $this->total;
+        }
+
+        /**
+         * @return string|null
+         */
+        public function getGrade(): ?string
+        {
+            return $this->grade;
+        }
+
+        /**
+         * @param string|null $grade
+         *
+         * @return Document
+         */
+        public function setGrade(?string $grade): Document
+        {
+            $this->grade = $grade;
+            return $this;
+        }
+
+        /**
+         * @return string|null
+         */
+        public function getSection(): ?string
+        {
+            return $this->section;
+        }
+
+        /**
+         * @param string|null $section
+         *
+         * @return Document
+         */
+        public function setSection(?string $section): Document
+        {
+            $this->section = $section;
+            return $this;
         }
 
 

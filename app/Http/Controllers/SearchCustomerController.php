@@ -185,10 +185,11 @@
         /**
          * @param \Illuminate\Http\Request|null $request
          * @param int|null                      $id
+         * @param bool                      $onlyParent
          *
          * @return \App\Models\Tenant\Person|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
          */
-        public static function getCustomersToSuscriptionList(Request $request = null, ?int $id = 0){
+        public static function getCustomersToSuscriptionList(Request $request = null, ?int $id = 0, $onlyParent = true){
             $person = Person::query();
             $person->with('addresses');
             $orderColum = 'name';
@@ -213,6 +214,9 @@
                 $person = Person::whereIn('id',$person->get()->pluck('id'));
             }
 
+            if($onlyParent == true && $id == 0){
+                $person->where('parent_id',0);
+            }
             return $person
                 ->whereType('customers')
                 ->whereIsEnabled()

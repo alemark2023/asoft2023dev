@@ -31,6 +31,7 @@
                                     -->
                                 </label>
                                 <el-select v-model="form.parent_customer_id"
+                                           :disabled = '!is_editable'
                                            :loading="loading_search"
                                            :remote-method="searchRemoteParent"
                                            class="border-left rounded-left border-info"
@@ -71,6 +72,7 @@
                                            :loading="loading_search"
                                            :remote-method="searchRemoteChildren"
 
+                                           :disabled = '!is_editable'
                                            class="border-left rounded-left border-info"
                                            dusk="children_customer_id"
                                            filterable
@@ -91,7 +93,34 @@
                                        v-text="errors.children_customer_id[0]"></small>
 
                             </div>
-
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.grade}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Grado
+                                    </label>
+                                    <el-input v-model="form.grade"
+                                              :disabled = '!is_editable'
+                                              dusk="trade_name"></el-input>
+                                    <small v-if="errors.grade"
+                                           class="form-control-feedback"
+                                           v-text="errors.grade[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.section}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Sección
+                                    </label>
+                                    <el-input v-model="form.section"
+                                              :disabled = '!is_editable'
+                                              dusk="trade_name"></el-input>
+                                    <small v-if="errors.section"
+                                           class="form-control-feedback"
+                                           v-text="errors.section[0]"></small>
+                                </div>
+                            </div>
                             <!-- Plan -->
                             <div :class="{'has-danger': errors.suscription_plan_id}"
                                  class="form-group col-6 ">
@@ -99,6 +128,7 @@
                                     Seleccione el plan
                                 </label>
                                 <el-select v-model="form.suscription_plan_id"
+                                           :disabled = '!is_editable'
                                            :clearable="false"
                                            class="border-left rounded-left border-info"
                                            dusk="suscription_plan_id"
@@ -111,7 +141,7 @@
 
                                     <el-option v-for="option in plans"
                                                :key="option.id"
-                                               :label="option.description"
+                                               :label="option.name + ' - ' +option.description"
                                                :value="option.id"></el-option>
 
                                 </el-select>
@@ -126,6 +156,7 @@
                                     Fecha de inicio
                                 </label>
                                 <el-date-picker v-model="form.start_date"
+                                                :disabled = '!is_editable'
                                                 :clearable="false"
                                                 format="dd/MM/yyyy"
                                                 type="date"
@@ -290,6 +321,7 @@ export default {
     ],
     data() {
         return {
+            is_editable: true,
             loading_search: false,
             loading_submit: false,
             showDialogAddItem: false,
@@ -315,6 +347,8 @@ export default {
                 name: null,
                 description: null,
                 period: null,
+                grade:null,
+                section:null,
                 currency_type_id: null,
                 items: [],
                 start_date: moment().format('YYYY-MM-DD'),
@@ -406,6 +440,8 @@ export default {
                 currency_type_id: this.config.currency_type_id,
                 items: [],
                 start_date: moment().format('YYYY-MM-DD'),
+                grade:null,
+                section:null,
                 total_igv_free: 0,
                 total_exportation: 0,
                 total_taxed: 0,
@@ -438,6 +474,7 @@ export default {
         },
         create() {
             this.getCommonData()
+            this.is_editable = false;
             this.tabActive = 'first'
             this.errors = {}
             if (this.suscriptionId) {
@@ -453,6 +490,10 @@ export default {
                         if (cs === null) {
                             cs = []
                         }
+                        let ch = this.childrens;
+                        if (ch === null) {
+                            ch = []
+                        }
                         //console.dir(this.form)
 
                         let parent = this.form.parent_customer;
@@ -465,15 +506,16 @@ export default {
                             }
                         }
                         if (child !== undefined) {
-                            customers = _.find(cs, {'id': child.id});
+                            customers = _.find(ch, {'id': child.id});
                             if (customers === undefined) {
-                                cs.push(child)
+                                ch.push(child)
                             }
                         }
 
                         // esponse.data.dat
                         // this.$store.commit('setCustomers', cs)
                         this.customers = cs
+                        this.childrens = ch
 
                         this.$store.commit('setParentCustomer', parent)
                         this.$store.commit('setChildrenCustomer', child)
@@ -486,13 +528,14 @@ export default {
                         this.changeCurrencyType()
                     })
                     .finally(() => {
-                        this.$emit('clearSuscriptionId', null)
+                        this.titleDialog = (this.form.id) ? 'Editar matrícula' : 'Nueva matrícula'
+                            this.$emit('clearSuscriptionId', null)
                     })
             } else {
                 this.clearForm()
                 this.form.id = this.suscriptionId
                 this.changeCurrencyType()
-
+                this.is_editable = true;
             }
             this.changeStartDate()
             this.titleDialog = (this.form.id) ? 'Editar matrícula' : 'Nueva matrícula'

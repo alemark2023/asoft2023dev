@@ -21,6 +21,7 @@
                                     <el-select v-model="form.identity_document_type_id"
                                                dusk="identity_document_type_id"
                                                filterable
+                                               :disabled="loading_data"
                                                popper-class="el-select-identity_document_type"
                                                @change="changeIdentityDocType">
                                         <el-option v-for="option in identity_document_types"
@@ -54,6 +55,7 @@
                                                 v-if="form.identity_document_type_id === '6' || form.identity_document_type_id === '1'">
                                                 <el-button slot="append"
                                                            :loading="loading_search"
+                                                           :disabled="loading_data"
                                                            icon="el-icon-search"
                                                            type="primary"
                                                            @click.prevent="searchCustomer">
@@ -80,12 +82,14 @@
                                      class="form-group">
                                     <label class="control-label">Nombre <span class="text-danger">*</span></label>
                                     <el-input v-model="form.name"
+                                              :disabled="loading_data"
                                               dusk="name"></el-input>
                                     <small v-if="errors.name"
                                            class="form-control-feedback"
                                            v-text="errors.name[0]"></small>
                                 </div>
                             </div>
+                            <!--
 
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.trade_name}"
@@ -100,12 +104,15 @@
                                            v-text="errors.trade_name[0]"></small>
                                 </div>
                             </div>
+                            -->
 
                             <div class="col-md-3">
                                 <div :class="{'has-danger': errors.internal_code}"
                                      class="form-group">
                                     <label class="control-label">Código interno</label>
-                                    <el-input v-model="form.internal_code"></el-input>
+                                    <el-input
+                                        :disabled="loading_data"
+                                        v-model="form.internal_code"></el-input>
                                     <small v-if="errors.internal_code"
                                            class="form-control-feedback"
                                            v-text="errors.internal_code[0]"></small>
@@ -528,6 +535,7 @@
             <div class="form-actions text-right mt-4">
                 <el-button @click.prevent="close()">Cancelar</el-button>
                 <el-button :loading="loading_submit"
+                           :disabled="loading_data"
                            native-type="submit"
                            type="primary">Guardar
                 </el-button>
@@ -563,6 +571,7 @@ export default {
             document_type_id: "1",
             parent: null,
             loading_submit: false,
+            loading_data: false,
             titleDialog: null,
             titleTabDialog: null,
             typeDialog: null,
@@ -693,7 +702,7 @@ export default {
         },
         create() {
             // console.log(this.input_person)
-
+this.loading_data = true;
             this.indexitem = null
             if (this.person) {
                 let index = this.person.indexi;
@@ -746,7 +755,11 @@ export default {
                 }
                 this.$http.post(`/suscription/${this.resource}/record`, param)
                     .then(response => {
-                        this.form = response.data.data
+                        this.form = {
+                            ...response.data.data,
+                            ...this.person,
+
+                        };
                         if (this.person && this.person.indexi !== null) {
                             this.form.indexi = this.person.indexi;
                         }
@@ -762,6 +775,12 @@ export default {
                     this.updateEmail()
 
                 })
+                .finally(()=>{
+                    this.loading_data = false;
+                })
+            }else{
+                this.loading_data = false;
+
             }
         },
         clickAddAddress() {

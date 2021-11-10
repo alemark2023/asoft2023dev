@@ -10,6 +10,8 @@
                @open="create">
         <form autocomplete="off"
               @submit.prevent="submit">
+
+
             <el-tabs v-model="activeName">
                 <el-tab-pane class
                              name="first">
@@ -409,20 +411,21 @@
 
                         <div class="col-md-3">
                             <div :class="{'has-danger': errors.has_isc}"
-                                    class="form-group">
-                                <el-checkbox v-model="form.has_isc" @change="changeIsc">Incluye ISC
+                                 class="form-group">
+                                <el-checkbox v-model="form.has_isc"
+                                             @change="changeIsc">Incluye ISC
                                 </el-checkbox>
                                 <br>
                                 <small v-if="errors.has_isc"
-                                        class="form-control-feedback"
-                                        v-text="errors.has_isc[0]"></small>
+                                       class="form-control-feedback"
+                                       v-text="errors.has_isc[0]"></small>
                             </div>
                         </div>
 
                         <template v-if="form.has_isc">
                             <div class="col-md-3">
                                 <div :class="{'has-danger': errors.system_isc_type_id}"
-                                    class="form-group">
+                                     class="form-group">
                                     <label class="control-label">Tipo de sistema ISC</label>
                                     <el-select
                                         v-model="form.system_isc_type_id"
@@ -440,11 +443,11 @@
                                         v-text="errors.system_isc_type_id[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-3">
                                 <div :class="{'has-danger': errors.percentage_isc}"
-                                    class="form-group">
-                                    <label class="control-label">Porcentaje ISC</label> 
+                                     class="form-group">
+                                    <label class="control-label">Porcentaje ISC</label>
                                     <el-input v-model="form.percentage_isc"></el-input>
                                     <small
                                         v-if="errors.percentage_isc"
@@ -458,6 +461,7 @@
                 </el-tab-pane>
 
                 <el-tab-pane class
+                             v-if="!isService"
                              name="second">
                     <span slot="label">Almacenes</span>
                     <div class="row">
@@ -491,6 +495,8 @@
                     </div>
                 </el-tab-pane>
                 <el-tab-pane class
+                             v-if="!isService"
+
                              name="third">
                     <span slot="label">Presentaciones</span>
                     <div class="row">
@@ -790,6 +796,7 @@
                     </div>
                 </el-tab-pane>
                 <el-tab-pane class
+                             v-if="!isService"
                              name="five">
                     <span slot="label">Compra</span>
                     <div class="row">
@@ -855,11 +862,12 @@
                     </div>
                 </el-tab-pane>
 
-                <el-tab-pane class v-if="canShowExtraData"
+                <el-tab-pane v-if="canShowExtraData"
+                             class
                              name="last">
                     <span slot="label">Informacion Adicional</span>
                     <extra-info
-                    :form.sync="form"
+                        :form.sync="form"
                     ></extra-info>
                 </el-tab-pane>
             </el-tabs>
@@ -915,8 +923,25 @@ export default {
             'CatItemProductFamily',
             'config',
         ]),
-        canShowExtraData: function(){
-            if(this.config && this.config.show_extra_info_to_item  !== undefined){
+        isService: function () {
+            // Tener en cuenta que solo oculta las pestañas para tipo servicio.
+            if (this.form !== undefined) {
+                // Es servicio por selección
+                if (this.form.unit_type_id !== undefined && this.form.unit_type_id === 'ZZ') {
+                    if (
+                        this.activeName == 'second' ||
+                        this.activeName == 'third' ||
+                        this.activeName == 'five'
+                    ) {
+                        this.activeName = 'first';
+                    }
+                    return true;
+                }
+            }
+            return false;
+        },
+        canShowExtraData: function () {
+            if (this.config && this.config.show_extra_info_to_item !== undefined) {
                 return this.config.show_extra_info_to_item;
             }
             return false;
@@ -992,7 +1017,7 @@ export default {
                 this.brands = data.brands
                 this.attribute_types = data.attribute_types
                 // this.config = data.configuration
-                if(this.canShowExtraData){
+                if (this.canShowExtraData) {
                     this.$store.commit('setColors', data.colors);
                     this.$store.commit('setCatItemSize', data.CatItemSize);
                     this.$store.commit('setCatItemUnitsPerPackage', data.CatItemUnitsPerPackage);
@@ -1040,9 +1065,9 @@ export default {
                 this.loadConfiguration()
             })
         },
-        changeIsc(){
+        changeIsc() {
 
-            if(!this.form.has_isc){
+            if (!this.form.has_isc) {
                 this.form.system_isc_type_id = null
                 this.form.percentage_isc = 0
             }
@@ -1137,7 +1162,7 @@ export default {
                 this.errors = {}
             this.form = {
                 id: null,
-                colors:[],
+                colors: [],
                 item_type_id: '01',
                 internal_id: null,
                 item_code: null,

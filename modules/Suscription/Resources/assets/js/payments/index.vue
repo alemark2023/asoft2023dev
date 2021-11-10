@@ -46,6 +46,12 @@
                             Plan
                         </th>
                         <th class="text-center">
+                            Grado
+                        </th>
+                        <th class="text-center">
+                            Sección
+                        </th>
+                        <th class="text-center">
                             Cant.Periodo/Ciclo
                         </th>
                         <th class="text-center">
@@ -74,6 +80,8 @@
                         <td class="text-left">
                             {{ row.plan.name }}
                         </td>
+                        <td class="text-left"> {{ row.grade }} </td>
+                        <td class="text-left"> {{ row.section }} </td>
                         <td class="text-left">
                             {{ row.quantity_period }}
                         </td>
@@ -104,10 +112,10 @@
                     </tr>
                 </data-table>
             </div>
-   <customers-form
-            @clearSuscriptionId="clearsuscriptionid"
-            :suscriptionId="suscriptionId"
-                :showDialog.sync="showDialog">
+            <customers-form
+                :showDialog.sync="showDialog"
+                :suscriptionId="suscriptionId"
+                @clearSuscriptionId="clearsuscriptionid">
             </customers-form>
         </div>
     </div>
@@ -193,10 +201,10 @@ export default {
             this.$http
                 .post(`/suscription/${this.resource}/tables`, {})
                 .then(response => {
-                    let customers =  response.data.customers;
+                    let customers = response.data.customers;
                     this.$store.commit('setPeriods', response.data.periods)
-                    this.$store.commit('setCustomers',customers)
-                    this.$store.commit('setAllCustomers',customers)
+                    this.$store.commit('setCustomers', customers)
+                    this.$store.commit('setAllCustomers', customers)
                     this.$store.commit('setPlans', response.data.plans)
                 })
         },
@@ -206,7 +214,7 @@ export default {
 
             this.clearFormData();
             this.suscriptionId = null
-            if(row !== undefined && row.id !== null) {
+            if (row !== undefined && row.id !== null) {
                 this.suscriptionId = row.id
             }
 
@@ -221,7 +229,7 @@ export default {
                 this.$eventHub.$emit('reloadData')
             )
         },
-        clearsuscriptionid(data){
+        clearsuscriptionid(data) {
             this.suscriptionId = null;
         }
     }

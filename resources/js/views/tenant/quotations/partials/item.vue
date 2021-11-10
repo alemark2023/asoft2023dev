@@ -260,7 +260,7 @@
                                    v-text="errors.extra_attr_value[0]"></small>
                         </div>
                     </div>
-                    <div v-if="config.edit_name_product"
+                    <div v-if="config.edit_name_product && showDiscounts"
                          class="col-md-12 col-sm-12 mt-2">
                         <div class="form-group">
                             <label class="control-label">Nombre producto en PDF</label>

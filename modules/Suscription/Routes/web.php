@@ -44,14 +44,7 @@
                         */
                     });
                     // items/export/barcode/last
-                    /**
-                     * suscription/payments
-                     */
-                    Route::prefix('payments')->group(function () {
-                        Route::get('/', 'SuscriptionController@payments_index')
-                            ->name('tenant.suscription.payments.index')
-                            ->middleware(['redirect.level']);
-                    });
+
                     /**
                      * suscription/plans
                      */
@@ -74,6 +67,13 @@
                      * suscription/payments
                      */
                     Route::prefix('payments')->group(function () {
+
+                        /*
+                        Route::get('/', 'SuscriptionController@payments_index')
+                            ->name('tenant.suscription.payments.index')
+                            ->middleware(['redirect.level']);
+                        */
+
                         Route::get('/', 'PaymentsSuscriptionController@index')
                             ->name('tenant.suscription.payments.index')
                             ->middleware(['redirect.level']);

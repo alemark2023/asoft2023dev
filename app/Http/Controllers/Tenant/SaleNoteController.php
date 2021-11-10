@@ -44,7 +44,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Modules\Document\Traits\SearchTrait;
 use Modules\Finance\Traits\FinanceTrait;
@@ -52,11 +51,12 @@ use Modules\Inventory\Models\Warehouse;
 use Modules\Inventory\Traits\InventoryTrait;
 use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
+use Modules\Sale\Helpers\SaleNoteHelper;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
-use Modules\Sale\Helpers\SaleNoteHelper;
+
 // use App\Models\Tenant\Warehouse;
 
 class SaleNoteController extends Controller
@@ -444,6 +444,10 @@ class SaleNoteController extends Controller
      */
     private function getRecords($request){
         $records = SaleNote::whereTypeUser();
+        // Solo devuelve matriculas
+        if($request != null && $request->has('onlySuscription') && (bool)$request->onlySuscription == true){
+            $records->whereNotNull('grade')->whereNotNull('section') ;
+        }
         if($request->column == 'customer'){
             $records->whereHas('person', function($query) use($request){
                                     $query
@@ -691,9 +695,12 @@ class SaleNoteController extends Controller
 
     public function mergeData($inputs)
     {
+
         $this->company = Company::active();
 
-
+        // Para matricula, se busca el hijo en atributos
+        $attributes = $inputs['attributes']??[];
+        $children = $attributes['children_customer_id']??null;
         $type_period = isset($inputs['type_period']) ? $inputs['type_period'] : null;
         $quantity_period = isset($inputs['quantity_period']) ? $inputs['quantity_period'] : null;
         $d_of_issue = new Carbon($inputs['date_of_issue']);
@@ -749,6 +756,12 @@ class SaleNoteController extends Controller
             'series' => $series,
             'number' => $number
         ];
+        if(!empty($children)){
+            $customer = PersonInput::set($inputs['customer_id']);
+            $customer['children'] = PersonInput::set($children);
+            $values['customer'] = $customer;
+        }
+
 
         unset($inputs['series_id']);
 
