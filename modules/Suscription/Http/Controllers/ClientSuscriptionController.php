@@ -35,7 +35,8 @@
 
         public function Record(Request $request)
         {
-            $records = SearchCustomerController::getCustomersToSuscriptionList($request,$request->person)->firstOrFail();
+            $personId = (int)($request->has('person')?$request->person:0);
+            $records = SearchCustomerController::getCustomersToSuscriptionList($request,$personId)->firstOrFail();
             return ['data'=>$records->getCollectionData(true,true)];
         }
 

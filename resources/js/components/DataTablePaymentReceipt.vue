@@ -122,6 +122,11 @@ import queryString from 'query-string'
 export default {
     props: {
         resource: String,
+        extraquery: {
+            type: Object,
+            default: {},
+            required: false
+        },
         applyFilter: {
             type: Boolean,
             default: true,
@@ -193,7 +198,8 @@ export default {
             return queryString.stringify({
                 page: this.pagination.current_page,
                 limit: this.limit,
-                ...this.search
+                ...this.search,
+                ...this.extraquery
             })
         },
         async changeClearInput() {

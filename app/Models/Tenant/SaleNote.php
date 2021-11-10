@@ -52,6 +52,8 @@
      * @property User                                           $user
      * @property User                                           $seller
      * @property int                                            $id
+     * @property string|null                    $grade
+     * @property string|null                    $section
      * @property int                                            $user_id
      * @property string                                         $external_id
      * @property int                                            $establishment_id
@@ -149,7 +151,8 @@
             'establishment',
             'soap_type_id',
             'state_type_id',
-
+            'grade',
+            'section',
             'prefix',
 
             'date_of_issue',
@@ -646,6 +649,14 @@
                 }
             }
             $web_platforms = $this->getPlatformThroughItems();
+            $child_name = '';
+            $child_number = '';
+            $customer = $this->customer;
+            if(property_exists($customer,'children')){
+                $child = $customer->children;
+                $child_name= $child->name;
+                $child_number= $child->number;
+            }
 
             return [
                 'id' => $this->id,
@@ -655,8 +666,10 @@
                 'time_of_issue' => $this->time_of_issue,
                 'identifier' => $this->identifier,
                 'full_number' => $this->series . '-' . $this->number,
-                'customer_name' => $this->customer->name,
-                'customer_number' => $this->customer->number,
+                'customer_name' => $customer->name,
+                'customer_number' => $customer->number,
+                'children_name' => $child_name,
+                'children_number' => $child_number,
                 'currency_type_id' => $this->currency_type_id,
                 'total_exportation' => self::FormatNumber($this->total_exportation),
                 'total_free' => self::FormatNumber($this->total_free),
@@ -706,6 +719,8 @@
                 'serie' => $this->series,
                 'number' => $this->number,
                 // 'number' => $this->number_full,
+                'grade' => $this->getGrade(),
+                'section' => $this->getSection(),
                 'send_other_server' => $canSentToOtherServer,
                 'web_platforms' => $web_platforms,
                 // 'number' => $this->number,
@@ -1021,7 +1036,7 @@
         {
             return $this->hasMany(SaleNotePayment::class);
         }
-        
+
 
         /**
          *
@@ -1050,6 +1065,44 @@
             }
 
             return $query;
+        }
+
+        /**
+         * @return string|null
+         */
+        public function getGrade(): ?string
+        {
+            return $this->grade;
+        }
+
+        /**
+         * @param string|null $grade
+         *
+         * @return SaleNote
+         */
+        public function setGrade(?string $grade): SaleNote
+        {
+            $this->grade = $grade;
+            return $this;
+        }
+
+        /**
+         * @return string|null
+         */
+        public function getSection(): ?string
+        {
+            return $this->section;
+        }
+
+        /**
+         * @param string|null $section
+         *
+         * @return SaleNote
+         */
+        public function setSection(?string $section): SaleNote
+        {
+            $this->section = $section;
+            return $this;
         }
 
 

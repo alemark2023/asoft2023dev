@@ -46,11 +46,17 @@
                 </el-dropdown>
             </div>
             <div class="card-body">
-                <data-table-payment-receipt :resource="resource">
+                <data-table-payment-receipt
+                    :resource="resource"
+                    :extraquery="{onlySuscription:1}"
+                >
                     <tr slot="heading">
                         <th>#</th>
                         <th class="text-center">Fecha Emisión</th>
                         <th>Cliente</th>
+                        <th>Hijo</th>
+                        <th>Grado</th>
+                        <th>Sección</th>
                         <th>Recibo de pago</th>
                         <th>Estado</th>
                         <th class="text-center">Moneda</th>
@@ -103,7 +109,6 @@
                             class="text-center">
                             Cantidad Periodo
                         </th>
-                        -->
                         <th v-if="columns.paid.visible"
                             class="text-center">
                             Estado de Pago
@@ -126,9 +131,16 @@
                             <small v-text="row.customer_number">
                             </small>
                         </td>
-                        <!-- Recibo de pago -->
-                        <td>{{ row.full_number }}
+                        <!-- Hijo -->
+                        <td>{{ row.children_name }}<br/>
+                            <small v-text="row.children_number"></small>
                         </td>
+<!--                        Grado-->
+                    <td>{{ row.grade }} </td>
+<!--                        Sección -->
+                    <td>{{ row.section }} </td>
+                        <!-- Recibo de pago -->
+                        <td>{{ row.full_number }} </td>
                         <!-- Estado  -->
                         <td>{{ row.state_type_description }}</td>
                         <!--Moneda -->
@@ -238,7 +250,7 @@
                             class="text-right">
                             {{ row.quantity_period }}
                         </td>
-                         -->
+                         - >
                         <td v-if="columns.paid.visible"
                             class="text-right">
                             {{ row.paid ? 'Pagado' : 'Pendiente' }}
@@ -424,10 +436,12 @@ export default {
                     title: 'Pagado',
                     visible: false
                 },
+
                 total_pending_paid: {
                     title: 'Por pagar',
                     visible: false
                 },
+                /*
                 paid: {
                     title: 'Estado de Pago',
                     visible: false
