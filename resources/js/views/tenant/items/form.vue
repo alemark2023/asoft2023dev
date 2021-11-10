@@ -10,6 +10,8 @@
                @open="create">
         <form autocomplete="off"
               @submit.prevent="submit">
+
+
             <el-tabs v-model="activeName">
                 <el-tab-pane class
                              name="first">
@@ -459,6 +461,7 @@
                 </el-tab-pane>
 
                 <el-tab-pane class
+                             v-if="!isService"
                              name="second">
                     <span slot="label">Almacenes</span>
                     <div class="row">
@@ -492,6 +495,8 @@
                     </div>
                 </el-tab-pane>
                 <el-tab-pane class
+                             v-if="!isService"
+
                              name="third">
                     <span slot="label">Presentaciones</span>
                     <div class="row">
@@ -791,6 +796,7 @@
                     </div>
                 </el-tab-pane>
                 <el-tab-pane class
+                             v-if="!isService"
                              name="five">
                     <span slot="label">Compra</span>
                     <div class="row">
@@ -917,6 +923,23 @@ export default {
             'CatItemProductFamily',
             'config',
         ]),
+        isService: function () {
+            // Tener en cuenta que solo oculta las pestañas para tipo servicio.
+            if (this.form !== undefined) {
+                // Es servicio por selección
+                if (this.form.unit_type_id !== undefined && this.form.unit_type_id === 'ZZ') {
+                    if (
+                        this.activeName == 'second' ||
+                        this.activeName == 'third' ||
+                        this.activeName == 'five'
+                    ) {
+                        this.activeName = 'first';
+                    }
+                    return true;
+                }
+            }
+            return false;
+        },
         canShowExtraData: function () {
             if (this.config && this.config.show_extra_info_to_item !== undefined) {
                 return this.config.show_extra_info_to_item;
