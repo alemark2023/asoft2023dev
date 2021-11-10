@@ -300,7 +300,7 @@
                                         <div class="row table-responsive">
                                             <table class="table-sm text-right hidden-sm-down"
                                                    style="width: 100%;">
-                                                <tr v-if="form.total_taxed > 0 && enabled_discount_global">
+                                                <tr v-if="form.total > 0 && enabled_discount_global">
                                                     <td>
                                                         DESCUENTO
                                                         <template v-if="is_amount"> MONTO</template>
@@ -311,9 +311,16 @@
                                                         :
                                                     </td>
                                                     <td>
-                                                        <el-input v-model="total_global_discount"
+                                                        
+                                                        <el-input-number v-model="total_global_discount"
+                                                                         :min="0"
+                                                                         class="input-custom"
+                                                                         controls-position="right"
+                                                                         @change="changeTotalGlobalDiscount"></el-input-number>
+
+                                                        <!-- <el-input v-model="total_global_discount"
                                                                   class="input-custom"
-                                                                  @input="calculateTotal"></el-input>
+                                                                  @input="calculateTotal"></el-input> -->
                                                     </td>
                                                 </tr>
 
@@ -639,7 +646,7 @@
                             <div class="col-12 text-center table-responsive">
                                 <table class="table table-sm text-right"
                                        style="width: 100%;">
-                                    <tr v-if="form.total_taxed > 0 && enabled_discount_global">
+                                    <tr v-if="form.total > 0 && enabled_discount_global">
                                         <td>
                                             DESCUENTO
                                             <template v-if="is_amount"> MONTO</template>
@@ -650,9 +657,16 @@
                                             :
                                         </td>
                                         <td>
-                                            <el-input v-model="total_global_discount"
+                                            
+                                            <el-input-number v-model="total_global_discount"
+                                                                :min="0"
+                                                                class="input-custom"
+                                                                controls-position="right"
+                                                                @change="changeTotalGlobalDiscount"></el-input-number>
+
+                                            <!-- <el-input v-model="total_global_discount"
                                                       class="input-custom"
-                                                      @input="calculateTotal"></el-input>
+                                                      @input="calculateTotal"></el-input> -->
                                         </td>
                                     </tr>
 
@@ -2998,9 +3012,6 @@ export default {
             // }
             this.calculatePayments()
         },
-        changeTypeDiscount() {
-            this.calculateTotal()
-        },
         chargeGlobal() {
 
             let base = parseFloat(this.form.total)
@@ -3066,40 +3077,60 @@ export default {
             }
 
         },
+        changeTypeDiscount() {
+            this.calculateTotal()
+        },
+        changeTotalGlobalDiscount(){
+            this.calculateTotal()
+        },
+        deleteDiscountGlobal() {
+
+            let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
+            let index = this.form.discounts.indexOf(discount)
+
+            if (index > -1) {
+                this.form.discounts.splice(index, 1)
+                this.form.total_discount = 0
+            }
+
+        },
         discountGlobal() {
 
-            let base = this.form.total_taxed
+            this.deleteDiscountGlobal()
 
-            let amount = (this.is_amount) ? parseFloat(this.total_global_discount) : parseFloat(this.total_global_discount) / 100 * base
-            let factor = (this.is_amount) ? _.round(amount / base, 5) : _.round(parseFloat(this.total_global_discount) / 100, 5)
+            //input donde se ingresa monto o porcentaje
+            let input_global_discount = parseFloat(this.total_global_discount)
+            
+            if(input_global_discount > 0){
 
-            if (this.total_global_discount > 0 && this.form.discounts.length == 0) {
+                let base = parseFloat(this.form.total)
+                let amount = 0
+                let factor = 0
+    
+                if(this.is_amount){
+    
+                    amount = input_global_discount
+                    factor = _.round(amount / base, 5)
+    
+                }else{
+    
+                    factor = _.round(input_global_discount / 100, 5)
+                    amount = factor * base
+                }
+                
+                this.form.total_discount = _.round(amount, 2)
+                this.form.total = _.round(this.form.total - amount, 2)
 
                 this.form.discounts.push({
-                    discount_type_id: "02",
-                    description: "Descuento Global afecta a la base imponible",
-                    factor: 0,
-                    amount: 0,
-                    base: 0
+                    discount_type_id: '03',
+                    description: 'Descuentos globales que no afectan la base imponible del IGV/IVAP',
+                    factor: factor,
+                    amount: _.round(amount, 2),
+                    base: base
                 })
-
+    
             }
 
-
-            if (this.form.discounts.length) {
-
-                this.form.total_discount = _.round(amount, 2)
-                this.form.total_value = _.round(base - amount, 2)
-                this.form.total_igv = _.round(this.form.total_value * 0.18, 2)
-                this.form.total_taxes = _.round(this.form.total_igv, 2)
-                this.form.total = _.round(this.form.total_value + this.form.total_taxes, 2)
-
-                this.form.total_taxed = this.form.total_value
-
-                this.form.discounts[0].base = base
-                this.form.discounts[0].amount = _.round(amount, 2)
-                this.form.discounts[0].factor = factor
-            }
         },
         async deleteInitGuides() {
             await _.remove(this.form.guides, {'number': null})
