@@ -589,7 +589,7 @@ export default {
 
             let base = parseFloat(this.form.total)
             let amount = parseFloat(global_discount)
-            let factor = _.round(amount / base, 4)
+            let factor = _.round(amount / base, 5)
 
             let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
 
