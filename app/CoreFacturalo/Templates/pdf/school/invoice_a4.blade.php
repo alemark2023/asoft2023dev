@@ -129,27 +129,26 @@
 
     </tr>
 
-    @if($customer && $customer->children)
+    @if($customer && property_exists($customer,'children') && $customer->children)
         @php
             $children = $customer->children;
-
             $children_name = $children->name;
             $children_code = $children->internal_code;
             $grade = $document->grade;
             $section = $document->section;
         @endphp
         <tr>
-            <td>Hijo:</td>
-            <td>{{$children_name}}</td>
-            <td>Código:</td>
-            <td>{{$children_code}}</td>
+            <td>Hijo</td><td>:</td><td> {{$children_name}}</td>
         </tr>
-        <tr>
-            <td>Grado:</td>
-            <td>{{$grade}}</td>
-            <td>Sección:</td>
-            <td>{{$section}}</td>
-        </tr>
+    <tr>
+        <td>Código</td><td>:</td><td> {{$children_code}}</td>
+    </tr>
+    <tr>
+        <td>Grado</td><td>:</td><td> {{$grade}}</td>
+    </tr>
+    <tr>
+        <td>Sección</td><td>:</td><td> {{$section}}</td>
+    </tr>
     @endif
     <tr>
         <td>{{ $customer->identity_document_type->description }}</td>
