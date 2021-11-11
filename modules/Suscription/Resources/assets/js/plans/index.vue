@@ -42,10 +42,10 @@
                         <th class="text-center">
                             Cant. Veces
                         </th>
-                        <th class="text-center">
+                        <th class="text-left">
                             Nombre
                         </th>
-                        <th class="text-center">
+                        <th class="text-left">
                             Descripción
                         </th>
                         <!--
@@ -84,7 +84,7 @@
                                 class="btn waves-effect waves-light btn-xs btn-info"
                                 type="button"
                                 @click.prevent="clickShowPlan(row)">
-                                Editar
+                                Ver
                             </button>
 
                             <button

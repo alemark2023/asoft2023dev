@@ -129,15 +129,17 @@ foreach ($items as $item_obj) {
     $item_obj->dstto = $total_discount_line;
     $item['dsc'] = $dsc;
     $item['dscto1'] = (empty($total_discount_line)) ? null : $total_discount_line;
-    $item['neto'] = $item['p_unit'] - ($item['p_unit'] * ($item['dscto'] / 100));
-    $item['total'] = ($item['neto'] * $item['qty']);
     $item['dscto'] = (empty($item['dscto'])) ? null : setNubmer($item['dscto'], 2) . "%";
     $item['dscto1'] = (empty($total_discount_line)) ? null : setNubmer($total_discount_line, 2);
 
     $item['qty'] = setNubmer($item['qty'], 1);
-    $item['p_unit'] = setNubmer($item['p_unit']);
-    $item['neto'] = setNubmer($item['neto']);
-    $item['total'] = setNubmer($item['total']);
+
+    // El precio Unitario
+    $item['p_unit'] = setNubmer( $item_obj->unit_price );
+    // Valor Unitario
+    $item['neto'] = setNubmer( $item_obj->total_base_igv / $item_obj->quantity);
+    // Total de la linea
+    $item['total'] = setNubmer($item_obj->total);
     $array_items[] = $item;
 
 }

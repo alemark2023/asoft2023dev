@@ -448,7 +448,7 @@ a:active {
 }
 .header .logo-container {
     float: left;
-    width: 300px;
+    /* width: 300px; */
     padding: 0;
     height: 100%;
     display: flex;
