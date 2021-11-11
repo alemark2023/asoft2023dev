@@ -317,7 +317,8 @@
                         <div v-if="showDiscounts"
                              class="col-md-12 mt-2">
                             <el-collapse v-model="activePanel">
-                                <el-collapse-item :disabled="recordItem != null"
+                                <el-collapse-item
+                                    v-if="!(recordItem != null)"
                                                   name="1"
                                                   title="+ Agregar Descuentos/Cargos/Atributos especiales">
                                     <div v-if="discount_types.length > 0">
@@ -950,6 +951,7 @@ export default {
                 if (this.recordItem.item !== undefined && this.recordItem.item.extra !== undefined) {
                     this.extra_temp = this.recordItem.item.extra
                 }
+
                 await this.reloadDataItems(this.recordItem.item_id)
                 this.form.item_id = await this.recordItem.item_id
                 await this.changeItem()
