@@ -864,7 +864,7 @@
             :item_unit_types="[]"
         >
         </warehouses-detail>
-        
+
         <item-unit-types
             :showDialog.sync="showDialogItemUnitTypes"
             :itemUnitTypes="itemUnitTypes"
@@ -1016,9 +1016,9 @@ export default {
         await this.initCurrencyType();
         this.customer = await this.getLocalStorageIndex("customer");
 
-        if (document.querySelector(".sidebar-toggle")) {
-            document.querySelector(".sidebar-toggle").click();
-        }
+        // if (document.querySelector(".sidebar-toggle")) {
+        //     document.querySelector(".sidebar-toggle").click();
+        // }
 
         await this.selectDefaultCustomer();
         await this.enabledSearchItemByBarcode()
@@ -1108,7 +1108,7 @@ export default {
                     // console.log(this.configuration.select_available_price_list)
                     this.itemUnitTypes = this.items[0].unit_type
                     this.showDialogItemUnitTypes = true
-                
+
                 }else{
 
                     this.clickAddItem(this.items[0], 0);
@@ -1532,7 +1532,7 @@ export default {
 
             if(!this.form.subtotal){
                 //fix para agregar subtotal si no existe prop en json almacenado en local storage
-                this.form.subtotal = this.form.total 
+                this.form.subtotal = this.form.total
             }
 
             let flag = 0;
@@ -1628,7 +1628,7 @@ export default {
 
                 exist_item.has_plastic_bag_taxes = exist_item.item.has_plastic_bag_taxes;
 
-                
+
                 //asignar variables isc
                 exist_item.has_isc = exist_item.item.has_isc
                 exist_item.percentage_isc = exist_item.item.percentage_isc
