@@ -139,6 +139,7 @@
                         <th v-if="typeUser != 'seller' && columns.purchase_unit_price.visible" class="text-right">
                             P.Unitario (Compra)
                         </th>
+                        <th class="text-center" v-if="columns.real_unit_price.visible">P. venta</th>
                         <th class="text-center">Tiene Igv (Venta)</th>
                         <th class="text-center" v-if="columns.purchase_has_igv_description.visible">Tiene Igv (Compra)</th>
                         <th class="text-right"></th>
@@ -237,6 +238,9 @@
                         <td class="text-right">{{ row.sale_unit_price }}</td>
                         <td v-if="typeUser != 'seller' && columns.purchase_unit_price.visible" class="text-right">
                             {{ row.purchase_unit_price }}
+                        </td>
+                        <td class="text-center" v-if="columns.real_unit_price.visible">
+                            {{ row.sale_unit_price_with_igv }}
                         </td>
                         <td class="text-center">
                             {{ row.has_igv_description }}
@@ -420,6 +424,10 @@ export default {
                 },
                 cod_digemid: {
                     title: 'DIGEMID',
+                    visible: false
+                },
+                real_unit_price: {
+                    title: 'Mostrar el precio de venta total (con el cálculo IGV)',
                     visible: false
                 },
                 extra_data: {

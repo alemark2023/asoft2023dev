@@ -515,6 +515,7 @@ class DocumentController extends Controller
 
     public function store(DocumentRequest $request)
     {
+
         $validate = $this->validateDocument($request);
         if(!$validate['success']) return $validate;
 
@@ -526,7 +527,7 @@ class DocumentController extends Controller
         return $res;
     }
 
-    
+
     /**
      * Validaciones previas al proceso de facturacion
      *
@@ -557,6 +558,32 @@ class DocumentController extends Controller
 
     }
 
+    /**
+     * Guarda los datos del hijo para el proceso de suscripcion. #952
+     * Toma el valor de nota de venta y lo pasa para la boleta/factura
+     *
+     * @param $data
+     */
+    public static function setChildrenToData(&$data){
+        $request = request();
+        if(
+            $request != null &&
+            $request->has('sale_note_id') &&
+            $request->sale_note_id
+        ){
+            $saleNote = SaleNote::find($request->sale_note_id);
+            if($saleNote!=null && isset($data['customer'])){
+                $customer = $data['customer'];
+                $customerNote = (array) $saleNote->customer;
+                if(isset($customerNote['children'])){
+                    $customer['children'] = (array)$customerNote['children'];
+                }
+                $data['customer']=$customer;
+                $data['grade']=$saleNote->getGrade();
+                $data['section']=$saleNote->getSection();
+            }
+        }
+    }
 
     /**
      * @param array $data
@@ -566,6 +593,7 @@ class DocumentController extends Controller
      */
     public function storeWithData($data)
     {
+        self::setChildrenToData($data);
         $fact = DB::connection('tenant')->transaction(function () use ($data) {
             $facturalo = new Facturalo();
             $facturalo->save($data);
@@ -661,7 +689,7 @@ class DocumentController extends Controller
      */
     public function update(DocumentUpdateRequest $request, $id)
     {
-        
+
         $validate = $this->validateDocument($request);
         if(!$validate['success']) return $validate;
 

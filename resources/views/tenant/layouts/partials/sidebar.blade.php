@@ -1148,12 +1148,11 @@
                                href="#">
                                 <i class="fa fas fa-calendar-check"
                                    aria-hidden="true"></i>
-                                <span>Suscripción</span>
+                                <span>Suscripción Escolar</span>
                             </a>
                             <ul class="nav nav-children">
 {{--                                @if(in_array('suscription_app_client', $vc_module_levels))--}}
                                     <li class="{{ (($path[0] === 'suscription') && ($path[1] === 'client')) ? 'nav-active' : '' }}">
-
                                         <a class="nav-link"
                                            href="{{ route('tenant.suscription.client.index') }}">
                                             Cliente

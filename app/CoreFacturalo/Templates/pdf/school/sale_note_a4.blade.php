@@ -63,8 +63,9 @@
         <td>{{ $customer->identity_document_type->description }}:</td>
         <td>{{ $customer->number }}</td>
     </tr>
-    @if($customer && $customer->children)
-        @php
+    @if($customer && property_exists($customer,'children') && $customer->children)
+
+    @php
             $children = $customer->children;
 
             $children_name = $children->name;
