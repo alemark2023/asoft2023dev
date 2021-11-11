@@ -78,7 +78,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-8">
                             <div :class="{'has-danger': errors.name}"
                                  class="form-group">
                                 <label class="control-label">Nombre <span class="text-danger">*</span></label>
@@ -89,6 +89,7 @@
                                        v-text="errors.name[0]"></small>
                             </div>
                         </div>
+                        <!--
                         <div class="col-md-4">
                             <div :class="{'has-danger': errors.trade_name}"
                                  class="form-group">
@@ -101,6 +102,7 @@
                             </div>
 
                         </div>
+                        -->
 
                         <div class="col-md-4">
                             <div :class="{'has-danger': errors.internal_code}"
@@ -1123,7 +1125,7 @@ export default {
 
         },
         clickRemoveItem(index) {
-            this.form.items.splice(index, s1)
+            this.form.childrens.splice(index, 1)
 
         },
         getTextDocumentType(identity_document_type_id){
