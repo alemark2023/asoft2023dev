@@ -29,7 +29,7 @@
                 'name' => 'Nombre',
                 'number' => 'Número',
                 'document_type' => 'Tipo de documento',
-                'childrens' => 'Nombre de hijos',
+                // 'childrens' => 'Nombre de hijos',
             ];
         }
 
