@@ -137,12 +137,13 @@ foreach ($items as $item_obj) {
     // El precio Unitario
     $item['p_unit'] = setNubmer( $item_obj->unit_price );
     // Valor Unitario
-    $item['p_unit'] = setNubmer( $item_obj->unit_price + $total_discount_line);
+    $item['p_unit'] = setNubmer( $item_obj->unit_price + ($total_discount_line / (float) $item['qty']));
     // $item['p_unit'] = setNubmer( $item_obj->total_base_igv / $item_obj->quantity);
     $item['neto'] = setNubmer($item_obj->unit_price);
     // Total de la linea
     $item['total'] = setNubmer((float) $item_obj->unit_price * (float) $item['qty'] );
     $array_items[] = $item;
+    // dd($item);
 
 }
 
