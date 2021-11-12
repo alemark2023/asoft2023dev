@@ -93,37 +93,10 @@
                                        v-text="errors.children_customer_id[0]"></small>
 
                             </div>
-                            <div class="col-md-6">
-                                <div :class="{'has-danger': errors.grade}"
-                                     class="form-group">
-                                    <label class="control-label">
-                                        Grado
-                                    </label>
-                                    <el-input v-model="form.grade"
-                                              :disabled = '!is_editable'
-                                              dusk="trade_name"></el-input>
-                                    <small v-if="errors.grade"
-                                           class="form-control-feedback"
-                                           v-text="errors.grade[0]"></small>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div :class="{'has-danger': errors.section}"
-                                     class="form-group">
-                                    <label class="control-label">
-                                        Sección
-                                    </label>
-                                    <el-input v-model="form.section"
-                                              :disabled = '!is_editable'
-                                              dusk="trade_name"></el-input>
-                                    <small v-if="errors.section"
-                                           class="form-control-feedback"
-                                           v-text="errors.section[0]"></small>
-                                </div>
-                            </div>
+
                             <!-- Plan -->
                             <div :class="{'has-danger': errors.suscription_plan_id}"
-                                 class="form-group col-6 ">
+                                 class="form-group col-12 ">
                                 <label class="control-label">
                                     Seleccione el plan
                                 </label>
@@ -133,7 +106,7 @@
                                            class="border-left rounded-left border-info"
                                            dusk="suscription_plan_id"
                                            filterable
-                                           placeholder="Escriba el nombre o número de documento del cliente"
+                                           placeholder="Escriba el nombre del plan"
                                            popper-class="el-select-customers"
                                            remote
                                            @change="changePlan"
@@ -150,7 +123,73 @@
                                        v-text="errors.suscription_plan_id[0]"></small>
 
                             </div>
+                            <!-- Grado  -->
+                            <div class="col-md-3">
+                                <div :class="{'has-danger': errors.grade}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Grado
+                                    </label>
 
+                                    <el-select v-model="form.grade"
+                                               :disabled = '!is_editable'
+                                               class="border-left rounded-left border-info"
+                                               filterable
+                                               popper-class="el-select-parent"
+                                    >
+
+                                        <el-option v-for="option in grades"
+                                                   :key="option.name"
+                                                   :label="option.name"
+                                                   :value="option.name"></el-option>
+
+                                    </el-select>
+
+                                    <!--
+                                    <el-input v-model="form.grade"
+                                              :disabled = '!is_editable'
+                                              dusk="trade_name"></el-input>
+                                    -->
+
+
+                                    <small v-if="errors.grade"
+                                           class="form-control-feedback"
+                                           v-text="errors.grade[0]"></small>
+                                </div>
+                            </div>
+                            <!-- Sección  -->
+                            <div class="col-md-3">
+                                <div :class="{'has-danger': errors.section}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Sección
+                                    </label>
+
+                                    <el-select v-model="form.section"
+                                               :disabled = '!is_editable'
+                                               class="border-left rounded-left border-info"
+                                               filterable
+                                               popper-class="el-select-parent"
+                                    >
+
+                                        <el-option v-for="option in sections"
+                                                   :key="option.name"
+                                                   :label="option.name"
+                                                   :value="option.name"></el-option>
+
+                                    </el-select>
+                                    <!--
+
+                                                                        <el-input v-model="form.section"
+                                                                                  :disabled = '!is_editable'
+                                                                                  dusk="trade_name"></el-input>-->
+
+                                    <small v-if="errors.section"
+                                           class="form-control-feedback"
+                                           v-text="errors.section[0]"></small>
+                                </div>
+                            </div>
+<!--                            Fecha de inicio-->
                             <div class="col-md-3">
                                 <label class="control-label">
                                     Fecha de inicio
@@ -164,6 +203,7 @@
                                                 @change="changeStartDate"></el-date-picker>
                             </div>
 
+<!--                            Fecha de fin-->
                             <div class="col-md-3">
                                 <label class="control-label">
                                     Fecha de fin
@@ -328,6 +368,8 @@ export default {
             end_date: null,
             defaultStartDate: null,
             titleDialog: null,
+            grades:[],
+            sections:[],
             errors: {},
             tabActive: 'first',
             currency_type: {},
@@ -421,6 +463,9 @@ export default {
                     this.$store.commit('setAffectationIgvTypes', response.data.affectation_igv_types)
                     this.$store.commit('setUnitTypes', response.data.unit_types)
                     this.defaultStartDate = response.data.startDate;
+
+                    this.grades = response.data.grades
+                    this.sections = response.data.sections
                 })
                 .then(() => {
                     // console.error(this.currency_type);
