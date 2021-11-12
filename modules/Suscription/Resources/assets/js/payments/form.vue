@@ -31,7 +31,7 @@
                                     -->
                                 </label>
                                 <el-select v-model="form.parent_customer_id"
-                                           :disabled = '!is_editable'
+                                           :disabled='!is_editable'
                                            :loading="loading_search"
                                            :remote-method="searchRemoteParent"
                                            class="border-left rounded-left border-info"
@@ -69,10 +69,10 @@
                                     -->
                                 </label>
                                 <el-select v-model="form.children_customer_id"
+                                           :disabled='!is_editable'
                                            :loading="loading_search"
-                                           :remote-method="searchRemoteChildren"
 
-                                           :disabled = '!is_editable'
+                                           :remote-method="searchRemoteChildren"
                                            class="border-left rounded-left border-info"
                                            dusk="children_customer_id"
                                            filterable
@@ -93,47 +93,20 @@
                                        v-text="errors.children_customer_id[0]"></small>
 
                             </div>
-                            <div class="col-md-6">
-                                <div :class="{'has-danger': errors.grade}"
-                                     class="form-group">
-                                    <label class="control-label">
-                                        Grado
-                                    </label>
-                                    <el-input v-model="form.grade"
-                                              :disabled = '!is_editable'
-                                              dusk="trade_name"></el-input>
-                                    <small v-if="errors.grade"
-                                           class="form-control-feedback"
-                                           v-text="errors.grade[0]"></small>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div :class="{'has-danger': errors.section}"
-                                     class="form-group">
-                                    <label class="control-label">
-                                        Sección
-                                    </label>
-                                    <el-input v-model="form.section"
-                                              :disabled = '!is_editable'
-                                              dusk="trade_name"></el-input>
-                                    <small v-if="errors.section"
-                                           class="form-control-feedback"
-                                           v-text="errors.section[0]"></small>
-                                </div>
-                            </div>
+
                             <!-- Plan -->
                             <div :class="{'has-danger': errors.suscription_plan_id}"
-                                 class="form-group col-6 ">
+                                 class="form-group col-12 ">
                                 <label class="control-label">
                                     Seleccione el plan
                                 </label>
                                 <el-select v-model="form.suscription_plan_id"
-                                           :disabled = '!is_editable'
                                            :clearable="false"
+                                           :disabled='!is_editable'
                                            class="border-left rounded-left border-info"
                                            dusk="suscription_plan_id"
                                            filterable
-                                           placeholder="Escriba el nombre o número de documento del cliente"
+                                           placeholder="Escriba el nombre del plan"
                                            popper-class="el-select-customers"
                                            remote
                                            @change="changePlan"
@@ -150,20 +123,87 @@
                                        v-text="errors.suscription_plan_id[0]"></small>
 
                             </div>
+                            <!-- Grado  -->
+                            <div class="col-md-3">
+                                <div :class="{'has-danger': errors.grade}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Grado
+                                    </label>
 
+                                    <el-select v-model="form.grade"
+                                               :disabled='!is_editable'
+                                               class="border-left rounded-left border-info"
+                                               filterable
+                                               popper-class="el-select-parent"
+                                    >
+
+                                        <el-option v-for="option in grades"
+                                                   :key="option.name"
+                                                   :label="option.name"
+                                                   :value="option.name"></el-option>
+
+                                    </el-select>
+
+                                    <!--
+                                    <el-input v-model="form.grade"
+                                              :disabled = '!is_editable'
+                                              dusk="trade_name"></el-input>
+                                    -->
+
+
+                                    <small v-if="errors.grade"
+                                           class="form-control-feedback"
+                                           v-text="errors.grade[0]"></small>
+                                </div>
+                            </div>
+                            <!-- Sección  -->
+                            <div class="col-md-3">
+                                <div :class="{'has-danger': errors.section}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Sección
+                                    </label>
+
+                                    <el-select v-model="form.section"
+                                               :disabled='!is_editable'
+                                               class="border-left rounded-left border-info"
+                                               filterable
+                                               popper-class="el-select-parent"
+                                    >
+
+                                        <el-option v-for="option in sections"
+                                                   :key="option.name"
+                                                   :label="option.name"
+                                                   :value="option.name"></el-option>
+
+                                    </el-select>
+                                    <!--
+
+                                                                        <el-input v-model="form.section"
+                                                                                  :disabled = '!is_editable'
+                                                                                  dusk="trade_name"></el-input>-->
+
+                                    <small v-if="errors.section"
+                                           class="form-control-feedback"
+                                           v-text="errors.section[0]"></small>
+                                </div>
+                            </div>
+                            <!--                            Fecha de inicio-->
                             <div class="col-md-3">
                                 <label class="control-label">
                                     Fecha de inicio
                                 </label>
                                 <el-date-picker v-model="form.start_date"
-                                                :disabled = '!is_editable'
                                                 :clearable="false"
+                                                :disabled='!is_editable'
                                                 format="dd/MM/yyyy"
                                                 type="date"
                                                 value-format="yyyy-MM-dd"
                                                 @change="changeStartDate"></el-date-picker>
                             </div>
 
+                            <!--                            Fecha de fin-->
                             <div class="col-md-3">
                                 <label class="control-label">
                                     Fecha de fin
@@ -233,6 +273,215 @@
                         </div>
                     </div>
 
+                </el-tab-pane>
+
+
+                <el-tab-pane v-if="hasNv"
+                             class
+                             name="payments">
+                    <span slot="label">
+                        Ver Recibos de pago
+                    </span>
+                    <div class="form-body">
+
+                        <div class="table-responsive">
+                            <table class="table table-responsive-xl ">
+                                <thead class="">
+                                <th>#</th>
+                                <th class="text-center">Fecha Emisión</th>
+                                <!--                                <th>Cliente</th>-->
+                                <!--                                <th>Hijo</th>-->
+                                <!--                                <th>Grado</th>-->
+                                <!--                                <th>Sección</th>-->
+                                <th>Recibo de pago</th>
+                                <th>Estado</th>
+                                <th class="text-center">Moneda</th>
+                                <th
+                                    class="text-right">F. Vencimiento
+                                </th>
+                                <th class="text-right">Total</th>
+
+
+                                <th class="text-center">Comprobantes</th>
+                                <th class="text-center">Estado pago</th>
+                                <!--                                <th class="text-center">Pagos</th>-->
+                                <th class="text-center">Descarga</th>
+                                </thead>
+
+                                <tbody>
+                                <tr
+
+                                    v-for="(row, index) in form.sales_note"
+                                    :key="index"
+
+                                >
+                                    <!-- # -->
+                                    <td>{{ index }}</td>
+                                    <!-- Fecha Emisión -->
+                                    <td class="text-center">{{ row.date_of_issue }}</td>
+                                    <!-- Cliente -->
+                                    <!--                                <td>{{ row.customer_name }}<br/>
+                                                                        <small v-text="row.customer_number">
+                                                                        </small>
+                                                                    </td>-->
+                                    <!-- Hijo -->
+                                    <!--                                <td>{{ row.children_name }}<br/>
+                                                                        <small v-text="row.children_number"></small>
+                                                                    </td>-->
+                                    <!--                        Grado-->
+                                    <!--                                <td>{{ row.grade }}</td>-->
+                                    <!--                        Sección -->
+                                    <!--                                <td>{{ row.section }}</td>-->
+                                    <!-- Recibo de pago -->
+                                    <td>{{ row.full_number }}</td>
+                                    <!-- Estado  -->
+                                    <td>{{ row.state_type_description }}</td>
+                                    <!--Moneda -->
+                                    <td class="text-center">{{ row.currency_type_id }}</td>
+
+                                    <!-- F. Vencimiento -->
+                                    <td
+                                        class="text-right">{{ row.due_date }}
+                                    </td>
+                                    <!-- Total -->
+                                    <td class="text-right">{{ row.total }}</td>
+
+                                    <!--Comprobantes -->
+                                    <td>
+                                        <template v-for="(document,i) in row.documents">
+                                            <label :key="i"
+                                                   class="d-block"
+                                                   v-text="document.number_full">
+                                            </label>
+                                        </template>
+                                    </td>
+                                    <!-- Estado pago -->
+                                    <td class="text-center">
+                            <span
+                                :class="{'bg-success': (row.total_canceled), 'bg-warning': (!row.total_canceled)}"
+                                class="badge text-white">{{ row.total_canceled ? 'Pagado' : 'Pendiente' }}
+                            </span>
+                                    </td>
+
+                                    <!-- Pagos -->
+                                    <!--                                <td class="text-center">
+                                                                        <button class="btn waves-effect waves-light btn-xs btn-primary"
+                                                                                style="min-width: 41px"
+                                                                                type="button"
+                                                                                @click.prevent="clickPayment(row.id)">
+                                                                            <i class="fas fa-money-bill-alt">
+                                                                            </i>
+                                                                        </button>
+                                                                    </td>-->
+
+                                    <!-- Descarga -->
+                                    <td class="text-right">
+                                        <button class="btn waves-effect waves-light btn-xs btn-info"
+                                                type="button"
+                                                @click.prevent="clickDownload(row.external_id)">
+                                            <i class="fas fa-file-pdf">
+                                            </i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane v-if="hasFac"
+                             class
+                             name="invoices">
+                    <span slot="label">
+                        Ver Facturas
+                    </span>
+                    <div class="form-body">
+                        <table class="table table-responsive-xl ">
+                            <thead class="">
+
+                            <th>#</th>
+                            <!-- date_of_issue -->
+                            <th class="text-center"
+                                style="min-width: 95px;">Emisión
+                            </th>
+                            <th>Cliente</th>
+                            <th>Número</th>
+                            <th>Estado</th>
+                            <th class="text-center">Moneda</th>
+                            <th class="text-right">T.Igv</th>
+                            <th class="text-right">Total</th>
+                            <th class="text-center">Saldo</th>
+                            <th class="text-center"></th>
+                            </thead>
+
+                            <tbody>
+                            <tr
+
+                                v-for="(row, index) in form.invoices"
+                                :key="index"
+
+                                :class="{'text-danger': (row.state_type_id === '11'),
+                            'text-warning': (row.state_type_id === '13'),
+                            'border-light': (row.state_type_id === '01'),
+                            'border-left border-info': (row.state_type_id === '03'),
+                            'border-left border-success': (row.state_type_id === '05'),
+                            'border-left border-secondary': (row.state_type_id === '07'),
+                            'border-left border-dark': (row.state_type_id === '09'),
+                            'border-left border-danger': (row.state_type_id === '11'),
+                            'border-left border-warning': (row.state_type_id === '13')}"
+
+                            >
+                                <td>{{ index }}</td>
+                                <!-- date_of_issue -->
+                                <td class="text-center">{{ row.date_of_issue }}</td>
+                                <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
+                                <td>{{ row.number }}<br/>
+                                    <small v-text="row.document_type_description"></small><br/>
+                                    <small v-if="row.affected_document"
+                                           v-text="row.affected_document"></small>
+                                </td>
+                                <td>
+                                    <el-tooltip v-if="tooltip(row, false)"
+                                                class="item"
+                                                effect="dark"
+                                                placement="bottom">
+                                        <div slot="content">{{ tooltip(row) }}</div>
+                                        <span :class="{'bg-danger': (row.state_type_id === '11'), 'bg-warning': (row.state_type_id === '13'), 'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}"
+                                              class="badge bg-secondary text-white">
+                                    {{ row.state_type_description }}
+                                </span>
+                                    </el-tooltip>
+                                    <span v-else
+                                          :class="{'bg-danger': (row.state_type_id === '11'), 'bg-warning': (row.state_type_id === '13'), 'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}"
+                                          class="badge bg-secondary text-white">
+                                {{ row.state_type_description }}
+                            </span>
+                                    <template v-if="row.regularize_shipping && row.state_type_id === '01'">
+                                        <el-tooltip :content="row.message_regularize_shipping"
+                                                    class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <i class="fas fa-exclamation-triangle fa-lg"
+                                               style="color: #D2322D !important"></i>
+                                        </el-tooltip>
+                                    </template>
+                                </td>
+                                <td class="text-center">{{ row.currency_type_id }}</td>
+                                <td class="text-right">{{ row.total_igv }}</td>
+                                <td class="text-right">{{ row.total }}</td>
+                                <td class="text-right">{{ row.balance }}</td>
+                                <td class="text-center">
+                                    <button type="button"
+                                            style="min-width: 41px"
+                                            class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                                            @click.prevent="clickDownloadExtra(row.download_pdf)"
+                                            v-if="row.has_pdf">PDF
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </el-tab-pane>
                 <!--
                 <el-tab-pane class
@@ -328,7 +577,11 @@ export default {
             end_date: null,
             defaultStartDate: null,
             titleDialog: null,
+            grades: [],
+            sections: [],
             errors: {},
+            hasNv: false,
+            hasFac: false,
             tabActive: 'first',
             currency_type: {},
             //countries: [],
@@ -347,8 +600,8 @@ export default {
                 name: null,
                 description: null,
                 period: null,
-                grade:null,
-                section:null,
+                grade: null,
+                section: null,
                 currency_type_id: null,
                 items: [],
                 start_date: moment().format('YYYY-MM-DD'),
@@ -421,6 +674,9 @@ export default {
                     this.$store.commit('setAffectationIgvTypes', response.data.affectation_igv_types)
                     this.$store.commit('setUnitTypes', response.data.unit_types)
                     this.defaultStartDate = response.data.startDate;
+
+                    this.grades = response.data.grades
+                    this.sections = response.data.sections
                 })
                 .then(() => {
                     // console.error(this.currency_type);
@@ -440,8 +696,8 @@ export default {
                 currency_type_id: this.config.currency_type_id,
                 items: [],
                 start_date: moment().format('YYYY-MM-DD'),
-                grade:null,
-                section:null,
+                grade: null,
+                section: null,
                 total_igv_free: 0,
                 total_exportation: 0,
                 total_taxed: 0,
@@ -473,6 +729,19 @@ export default {
 
         },
         create() {
+            this.tabActive = 'first';
+            /*
+                    tabActive
+                    first
+                    payments
+                    invoices
+
+
+                    hasNv
+        hasFac
+                    */
+            this.hasNv = false;
+            this.hasFac = false;
             this.getCommonData()
             this.is_editable = false;
             this.tabActive = 'first'
@@ -520,6 +789,19 @@ export default {
                         this.$store.commit('setParentCustomer', parent)
                         this.$store.commit('setChildrenCustomer', child)
 
+
+                        if (this.form.sales_note !== undefined && this.form.sales_note.length > 0) {
+                            this.hasNv = true;
+                        }
+
+                        if (this.form.invoices !== undefined && this.form.invoices.length > 0) {
+                            this.hasFac = true;
+                        }
+
+                        /*
+                        hasNv
+                        hasFac
+                        */
                         // this.form = response.data.data
                         // this.filterProvinces()
                         // this.filterDistricts()
@@ -529,7 +811,7 @@ export default {
                     })
                     .finally(() => {
                         this.titleDialog = (this.form.id) ? 'Editar matrícula' : 'Nueva matrícula'
-                            this.$emit('clearSuscriptionId', null)
+                        this.$emit('clearSuscriptionId', null)
                     })
             } else {
                 this.clearForm()
@@ -884,7 +1166,7 @@ export default {
                         let child = customer.childrens
                         Object.keys(child).forEach(key => {
                             let row = child[key] // value of the current key
-                            if(row.id !== null ) {
+                            if (row.id !== null) {
                                 this.childrens.push(row)
                             }
                         })
@@ -903,7 +1185,7 @@ export default {
             this.$store.commit('setChildrenCustomer', customer)
             // Se asegura que el hijo tenga un solo padre y el padre tenga solo 1 hijo
 
-            if(this.form.parent_customer_id === null) {
+            if (this.form.parent_customer_id === null) {
                 let parent = _.find(this.customers, {'id': customer.parent.id});
                 if (parent === undefined) {
                     this.customers.push(customer.parent)
@@ -986,9 +1268,26 @@ export default {
             this.end_date = moment(date, 'YYYY-MM-DD').add(qty, period).format('YYYY-MM-DD');
 
         },
-
+        clickDownload(external_id) {
+            window.open(`/sale-notes/downloadExternal/${external_id}`, '_blank');
+        },
         // periods
+        tooltip(row, message = true) {
+            if (message) {
+                if (row.shipping_status) return row.shipping_status.message;
 
+                if (row.sunat_shipping_status) return row.sunat_shipping_status.message;
+
+                if (row.query_status) return row.query_status.message;
+            }
+
+            if ((row.shipping_status) || (row.sunat_shipping_status) || (row.query_status)) return true;
+
+            return false;
+        },
+        clickDownloadExtra(download) {
+            window.open(download, '_blank');
+        },
     }
 }
 </script>

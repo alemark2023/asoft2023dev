@@ -36,13 +36,31 @@
         public function Record(Request $request)
         {
             $personId = (int)($request->has('person')?$request->person:0);
-            $records = SearchCustomerController::getCustomersToSuscriptionList($request,$personId)->firstOrFail();
+            $records = SearchCustomerController::getCustomersToSuscriptionList($request,$personId);
+            if($request->has('users') ){
+                if($request->users == 'parent'){
+                    $records->where('parent_id',0);
+                }elseif($request->users == 'children'){
+                    $records->where('parent_id','!=',0);
+                }
+            }
+            $records = $records->firstOrFail();
+
             return ['data'=>$records->getCollectionData(true,true)];
         }
 
         public function Records(Request $request)
         {
             $records = SearchCustomerController::getCustomersToSuscriptionList($request);
+            // getCustomersToSuscriptionList(Request $request = null, ?int $id = 0, $onlyParent = true){
+            if($request->has('users') ){
+                if($request->users == 'parent'){
+                    $records->where('parent_id',0);
+                }elseif($request->users == 'children'){
+                    $records->where('parent_id','!=',0);
+                }
+            }
+            // users
             return new PersonCollection($records->paginate(config('tenant.items_per_page')));
         }
 
@@ -72,6 +90,15 @@
         public function index()
         {
             return view('suscription::clients.index');
+        }
+        /**
+         * Display a listing of the resource.
+         *
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\View\View
+         */
+        public function indexChildren()
+        {
+            return view('suscription::clients.index_child');
         }
 
         /**

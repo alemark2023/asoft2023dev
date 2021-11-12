@@ -18,7 +18,9 @@
     use Illuminate\Http\Request;
     use Illuminate\Routing\Controller;
     use Modules\Suscription\Http\Resources\SuscriptionPlansCollection;
+    use Modules\Suscription\Models\Tenant\SuscriptionGrade;
     use Modules\Suscription\Models\Tenant\SuscriptionPlan;
+    use Modules\Suscription\Models\Tenant\SuscriptionSection;
 
     class SuscriptionController extends Controller
     {
@@ -199,6 +201,8 @@
             $payments_credit = PaymentMethodType::select('id')->NonCredit()->get()->toArray();
             $payments_credit = PaymentMethodType:: getPaymentMethodTypes($payments_credit);
             $startDate = Carbon::createFromFormat('Y-m-d','2022-01-01')->format('Y-m-d');
+            $grades = SuscriptionGrade::all();
+            $sections = SuscriptionSection::all();
 
             return compact('unit_types',
                 'currency_types',
@@ -212,6 +216,8 @@
                 'locations',
                 'person_types',
                 'payments_credit',
+                'grades',
+'sections',
                 'api_service_token');
         }
 

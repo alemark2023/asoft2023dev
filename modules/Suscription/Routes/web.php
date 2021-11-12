@@ -16,9 +16,8 @@
                      * suscription/client
                      */
                     Route::prefix('client')->group(function () {
-                        Route::get('/', 'ClientSuscriptionController@index') ->name('tenant.suscription.client.index')
-                            ->middleware(['redirect.level'])
-                        ;
+                        Route::get('/', 'ClientSuscriptionController@index') ->name('tenant.suscription.client.index');
+                        Route::get('/childrens', 'ClientSuscriptionController@indexChildren')->name('tenant.suscription.client_children.index');
                         Route::post('/', 'ClientSuscriptionController@store');
 
                         Route::get('/columns', 'ClientSuscriptionController@Columns');

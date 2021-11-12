@@ -4,7 +4,7 @@
 
     <tenant-suscription-client-index
         :configuration="{{\App\Models\Tenant\Configuration::getPublicConfig()}}"
-        :listtype="'parent'"
+        :listtype="'children'"
     ></tenant-suscription-client-index>
 
 @endsection
