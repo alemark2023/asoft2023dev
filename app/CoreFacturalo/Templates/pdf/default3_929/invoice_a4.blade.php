@@ -104,7 +104,7 @@ function setNubmer($number, $decimal = 2, $mil = ',', $dec = '.')
 }
 foreach ($items as $item_obj) {
     /** @var DocumentItem $item_obj */
-    $item = [];
+    $item = $item_obj->toArray();
     $it = (array)$item_obj->item;
     $item['code'] = isset($it['internal_id']) ? $it['internal_id'] : null;
     $item['description'] = isset($it['description']) ? $it['description'] : null;
@@ -139,7 +139,7 @@ foreach ($items as $item_obj) {
     // Valor Unitario
     $item['neto'] = setNubmer( $item_obj->total_base_igv / $item_obj->quantity);
     // Total de la linea
-    $item['total'] = setNubmer($item_obj->total);
+    $item['total'] = setNubmer((float) $item_obj->unit_price * (float) $item['qty'] );
     $array_items[] = $item;
 
 }
