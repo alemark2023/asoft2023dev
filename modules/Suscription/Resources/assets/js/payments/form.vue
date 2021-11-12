@@ -740,6 +740,8 @@ export default {
                     hasNv
         hasFac
                     */
+            this.hasNv = false;
+            this.hasFac = false;
             this.getCommonData()
             this.is_editable = false;
             this.tabActive = 'first'
