@@ -289,10 +289,10 @@
                                 <thead class="">
                                 <th>#</th>
                                 <th class="text-center">Fecha Emisión</th>
-<!--                                <th>Cliente</th>-->
-<!--                                <th>Hijo</th>-->
-<!--                                <th>Grado</th>-->
-<!--                                <th>Sección</th>-->
+                                <!--                                <th>Cliente</th>-->
+                                <!--                                <th>Hijo</th>-->
+                                <!--                                <th>Grado</th>-->
+                                <!--                                <th>Sección</th>-->
                                 <th>Recibo de pago</th>
                                 <th>Estado</th>
                                 <th class="text-center">Moneda</th>
@@ -304,7 +304,7 @@
 
                                 <th class="text-center">Comprobantes</th>
                                 <th class="text-center">Estado pago</th>
-<!--                                <th class="text-center">Pagos</th>-->
+                                <!--                                <th class="text-center">Pagos</th>-->
                                 <th class="text-center">Descarga</th>
                                 </thead>
 
@@ -315,74 +315,74 @@
                                     :key="index"
 
                                 >
-                                <!-- # -->
-                                <td>{{ index }}</td>
-                                <!-- Fecha Emisión -->
-                                <td class="text-center">{{ row.date_of_issue }}</td>
-                                <!-- Cliente -->
-<!--                                <td>{{ row.customer_name }}<br/>
-                                    <small v-text="row.customer_number">
-                                    </small>
-                                </td>-->
-                                <!-- Hijo -->
-<!--                                <td>{{ row.children_name }}<br/>
-                                    <small v-text="row.children_number"></small>
-                                </td>-->
-                                <!--                        Grado-->
-<!--                                <td>{{ row.grade }}</td>-->
-                                <!--                        Sección -->
-<!--                                <td>{{ row.section }}</td>-->
-                                <!-- Recibo de pago -->
-                                <td>{{ row.full_number }}</td>
-                                <!-- Estado  -->
-                                <td>{{ row.state_type_description }}</td>
-                                <!--Moneda -->
-                                <td class="text-center">{{ row.currency_type_id }}</td>
+                                    <!-- # -->
+                                    <td>{{ index }}</td>
+                                    <!-- Fecha Emisión -->
+                                    <td class="text-center">{{ row.date_of_issue }}</td>
+                                    <!-- Cliente -->
+                                    <!--                                <td>{{ row.customer_name }}<br/>
+                                                                        <small v-text="row.customer_number">
+                                                                        </small>
+                                                                    </td>-->
+                                    <!-- Hijo -->
+                                    <!--                                <td>{{ row.children_name }}<br/>
+                                                                        <small v-text="row.children_number"></small>
+                                                                    </td>-->
+                                    <!--                        Grado-->
+                                    <!--                                <td>{{ row.grade }}</td>-->
+                                    <!--                        Sección -->
+                                    <!--                                <td>{{ row.section }}</td>-->
+                                    <!-- Recibo de pago -->
+                                    <td>{{ row.full_number }}</td>
+                                    <!-- Estado  -->
+                                    <td>{{ row.state_type_description }}</td>
+                                    <!--Moneda -->
+                                    <td class="text-center">{{ row.currency_type_id }}</td>
 
-                                <!-- F. Vencimiento -->
-                                <td
-                                    class="text-right">{{ row.due_date }}
-                                </td>
-                                <!-- Total -->
-                                <td class="text-right">{{ row.total }}</td>
+                                    <!-- F. Vencimiento -->
+                                    <td
+                                        class="text-right">{{ row.due_date }}
+                                    </td>
+                                    <!-- Total -->
+                                    <td class="text-right">{{ row.total }}</td>
 
-                                <!--Comprobantes -->
-                                <td>
-                                    <template v-for="(document,i) in row.documents">
-                                        <label :key="i"
-                                               class="d-block"
-                                               v-text="document.number_full">
-                                        </label>
-                                    </template>
-                                </td>
-                                <!-- Estado pago -->
-                                <td class="text-center">
+                                    <!--Comprobantes -->
+                                    <td>
+                                        <template v-for="(document,i) in row.documents">
+                                            <label :key="i"
+                                                   class="d-block"
+                                                   v-text="document.number_full">
+                                            </label>
+                                        </template>
+                                    </td>
+                                    <!-- Estado pago -->
+                                    <td class="text-center">
                             <span
                                 :class="{'bg-success': (row.total_canceled), 'bg-warning': (!row.total_canceled)}"
                                 class="badge text-white">{{ row.total_canceled ? 'Pagado' : 'Pendiente' }}
                             </span>
-                                </td>
+                                    </td>
 
-                                <!-- Pagos -->
-<!--                                <td class="text-center">
-                                    <button class="btn waves-effect waves-light btn-xs btn-primary"
-                                            style="min-width: 41px"
-                                            type="button"
-                                            @click.prevent="clickPayment(row.id)">
-                                        <i class="fas fa-money-bill-alt">
-                                        </i>
-                                    </button>
-                                </td>-->
+                                    <!-- Pagos -->
+                                    <!--                                <td class="text-center">
+                                                                        <button class="btn waves-effect waves-light btn-xs btn-primary"
+                                                                                style="min-width: 41px"
+                                                                                type="button"
+                                                                                @click.prevent="clickPayment(row.id)">
+                                                                            <i class="fas fa-money-bill-alt">
+                                                                            </i>
+                                                                        </button>
+                                                                    </td>-->
 
-                                <!-- Descarga -->
-                                <td class="text-right">
-                                    <button class="btn waves-effect waves-light btn-xs btn-info"
-                                            type="button"
-                                            @click.prevent="clickDownload(row.external_id)">
-                                        <i class="fas fa-file-pdf">
-                                        </i>
-                                    </button>
-                                </td>
+                                    <!-- Descarga -->
+                                    <td class="text-right">
+                                        <button class="btn waves-effect waves-light btn-xs btn-info"
+                                                type="button"
+                                                @click.prevent="clickDownload(row.external_id)">
+                                            <i class="fas fa-file-pdf">
+                                            </i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -396,7 +396,91 @@
                         Ver Facturas
                     </span>
                     <div class="form-body">
+                        <table class="table table-responsive-xl ">
+                            <thead class="">
 
+                            <th>#</th>
+                            <!-- date_of_issue -->
+                            <th class="text-center"
+                                style="min-width: 95px;">Emisión
+                            </th>
+                            <th>Cliente</th>
+                            <th>Número</th>
+                            <th>Estado</th>
+                            <th class="text-center">Moneda</th>
+                            <th class="text-right">T.Igv</th>
+                            <th class="text-right">Total</th>
+                            <th class="text-center">Saldo</th>
+                            <th class="text-center"></th>
+                            </thead>
+
+                            <tbody>
+                            <tr
+
+                                v-for="(row, index) in form.invoices"
+                                :key="index"
+
+                                :class="{'text-danger': (row.state_type_id === '11'),
+                            'text-warning': (row.state_type_id === '13'),
+                            'border-light': (row.state_type_id === '01'),
+                            'border-left border-info': (row.state_type_id === '03'),
+                            'border-left border-success': (row.state_type_id === '05'),
+                            'border-left border-secondary': (row.state_type_id === '07'),
+                            'border-left border-dark': (row.state_type_id === '09'),
+                            'border-left border-danger': (row.state_type_id === '11'),
+                            'border-left border-warning': (row.state_type_id === '13')}"
+
+                            >
+                                <td>{{ index }}</td>
+                                <!-- date_of_issue -->
+                                <td class="text-center">{{ row.date_of_issue }}</td>
+                                <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
+                                <td>{{ row.number }}<br/>
+                                    <small v-text="row.document_type_description"></small><br/>
+                                    <small v-if="row.affected_document"
+                                           v-text="row.affected_document"></small>
+                                </td>
+                                <td>
+                                    <el-tooltip v-if="tooltip(row, false)"
+                                                class="item"
+                                                effect="dark"
+                                                placement="bottom">
+                                        <div slot="content">{{ tooltip(row) }}</div>
+                                        <span :class="{'bg-danger': (row.state_type_id === '11'), 'bg-warning': (row.state_type_id === '13'), 'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}"
+                                              class="badge bg-secondary text-white">
+                                    {{ row.state_type_description }}
+                                </span>
+                                    </el-tooltip>
+                                    <span v-else
+                                          :class="{'bg-danger': (row.state_type_id === '11'), 'bg-warning': (row.state_type_id === '13'), 'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}"
+                                          class="badge bg-secondary text-white">
+                                {{ row.state_type_description }}
+                            </span>
+                                    <template v-if="row.regularize_shipping && row.state_type_id === '01'">
+                                        <el-tooltip :content="row.message_regularize_shipping"
+                                                    class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <i class="fas fa-exclamation-triangle fa-lg"
+                                               style="color: #D2322D !important"></i>
+                                        </el-tooltip>
+                                    </template>
+                                </td>
+                                <td class="text-center">{{ row.currency_type_id }}</td>
+                                <td class="text-right">{{ row.total_igv }}</td>
+                                <td class="text-right">{{ row.total }}</td>
+                                <td class="text-right">{{ row.balance }}</td>
+                                <td class="text-center">
+                                    <button type="button"
+                                            style="min-width: 41px"
+                                            class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                                            @click.prevent="clickDownloadExtra(row.download_pdf)"
+                                            v-if="row.has_pdf">PDF
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </el-tab-pane>
                 <!--
@@ -708,7 +792,7 @@ export default {
                             this.hasNv = true;
                         }
 
-                        if (this.form.sales_note !== undefined && this.form.sales_note.invoices > 0) {
+                        if (this.form.invoices !== undefined && this.form.invoices.length > 0) {
                             this.hasFac = true;
                         }
 
@@ -1186,7 +1270,22 @@ export default {
             window.open(`/sale-notes/downloadExternal/${external_id}`, '_blank');
         },
         // periods
+        tooltip(row, message = true) {
+            if (message) {
+                if (row.shipping_status) return row.shipping_status.message;
 
+                if (row.sunat_shipping_status) return row.sunat_shipping_status.message;
+
+                if (row.query_status) return row.query_status.message;
+            }
+
+            if ((row.shipping_status) || (row.sunat_shipping_status) || (row.query_status)) return true;
+
+            return false;
+        },
+        clickDownloadExtra(download) {
+            window.open(download, '_blank');
+        },
     }
 }
 </script>
