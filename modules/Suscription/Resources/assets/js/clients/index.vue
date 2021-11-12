@@ -10,7 +10,7 @@
             <ol class="breadcrumbs">
                 <li class="active">
                     <span>
-                        Clientes
+                        {{ typeText }}
                     </span>
                 </li>
             </ol>
@@ -27,11 +27,12 @@
         <div class="card mb-0">
             <div class="card-header bg-info">
                 <h3 class="my-0">
-                    Listado de clientes
+                    Listado de {{ typeText }}
                 </h3>
             </div>
             <div class="card-body">
-                <data-table >
+                <data-table
+                :extraquery = {users:type}>
                     <tr slot="heading">
                         <th>
                             #
@@ -58,10 +59,9 @@
                         </td>
                         <td class="text-right">
                             <button
-                                v-if="row.parent_id < 1"
                                 class="btn waves-effect waves-light btn-xs btn-info"
                                 type="button"
-                                @click.prevent="clickCreate(row.id)">
+                                @click.prevent="clickCreate(getRowId(row))">
                                 Editar
                             </button>
                             <!--
@@ -94,7 +94,8 @@ import {deletable} from '../../../../../../resources/js/mixins/deletable'
 
 export default {
     props: [
-        'configurations'
+        'configurations',
+        'listtype',
     ],
     mixins: [
         deletable
@@ -107,6 +108,8 @@ export default {
         return {
             showDialog: false,
             recordId: null,
+            type: null,
+            typeText:'Clientes',
         }
     },
     computed: {
@@ -129,6 +132,17 @@ export default {
         this.$store.commit('setResource', 'client')
 
         this.getCommonData()
+        // Clientes
+
+        if(this.listtype !== undefined){
+            this.type = this.listtype
+            if(this.type == 'parent'){
+                this.typeText = 'Padres';
+            }
+            else if(this.type == 'children'){
+                this.typeText = 'Hijos';
+            }
+        }
         // this.getPersonData()
 
     },
@@ -136,6 +150,13 @@ export default {
         ...mapActions([
             'loadConfiguration',
         ]),
+        getRowId(row){
+            // Si es un hijo, mostraria el modal del padre
+            if( row.parent_id > 0 ){
+                return row.parent_id
+            }
+            return row.id
+        },
         clickCreate(recordId = null) {
             this.recordId = recordId
             this.showDialog = true

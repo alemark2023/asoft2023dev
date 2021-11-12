@@ -1152,12 +1152,31 @@
                             </a>
                             <ul class="nav nav-children">
 {{--                                @if(in_array('suscription_app_client', $vc_module_levels))--}}
-                                    <li class="{{ (($path[0] === 'suscription') && ($path[1] === 'client')) ? 'nav-active' : '' }}">
-                                        <a class="nav-link"
-                                           href="{{ route('tenant.suscription.client.index') }}">
-                                            Cliente
-                                        </a>
-                                    </li>
+
+
+                                <li class="nav-parent
+{{ ( ($path[0] === 'suscription') && ($path[1] === 'client') ) ? ' nav-active nav-expanded ' : '' }}
+                                    ">
+
+                                    <a class="nav-link"
+                                       href="#">
+                                        Clientes
+                                    </a>
+                                    <ul class="nav nav-children">
+                                        <li class="{{ ( ($path[0] === 'suscription') && ($path[1] === 'client')  && ($path[2] !== 'childrens') )?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{ route('tenant.suscription.client.index') }}">
+                                                Padres
+                                            </a>
+                                        </li>
+                                        <li class="{{ ( ($path[0] === 'suscription') && ($path[1] === 'client') && ($path[2] === 'childrens') )?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{ route('tenant.suscription.client_children.index') }}">
+                                                Hijos
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
 {{--                                @endif--}}
                                 {{--
                                 @todo suscription_app_service borrar de modulo de permisos admin y cliente

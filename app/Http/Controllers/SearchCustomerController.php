@@ -189,7 +189,7 @@
          *
          * @return \App\Models\Tenant\Person|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
          */
-        public static function getCustomersToSuscriptionList(Request $request = null, ?int $id = 0, $onlyParent = true){
+        public static function getCustomersToSuscriptionList(Request $request = null, ?int $id = 0, $onlyParent = false){
             $person = Person::query();
             $person->with('addresses');
             $orderColum = 'name';
