@@ -32,13 +32,17 @@
             </div>
             <div class="card-body">
                 <data-table
-                :extraquery = {users:type}>
+                    :extraquery={users:type}>
                     <tr slot="heading">
                         <th>
                             #
                         </th>
-                        <th>
+                        <th class="text-left">
+
                             Nombre
+                        </th>
+                        <th class="text-left">
+                            Documento
                         </th>
                         <th class="text-right">
                             Número
@@ -51,8 +55,12 @@
                         <td>
                             {{ index }}
                         </td>
-                        <td>
+                        <td class="text-left">
+
                             {{ row.name }}
+                        </td>
+                        <td class="text-left">
+                            {{ row.document_type }}
                         </td>
                         <td class="text-right">
                             {{ row.number }}
@@ -109,7 +117,7 @@ export default {
             showDialog: false,
             recordId: null,
             type: null,
-            typeText:'Clientes',
+            typeText: 'Clientes',
         }
     },
     computed: {
@@ -134,12 +142,11 @@ export default {
         this.getCommonData()
         // Clientes
 
-        if(this.listtype !== undefined){
+        if (this.listtype !== undefined) {
             this.type = this.listtype
-            if(this.type == 'parent'){
+            if (this.type == 'parent') {
                 this.typeText = 'Padres';
-            }
-            else if(this.type == 'children'){
+            } else if (this.type == 'children') {
                 this.typeText = 'Hijos';
             }
         }
@@ -150,9 +157,9 @@ export default {
         ...mapActions([
             'loadConfiguration',
         ]),
-        getRowId(row){
+        getRowId(row) {
             // Si es un hijo, mostraria el modal del padre
-            if( row.parent_id > 0 ){
+            if (row.parent_id > 0) {
                 return row.parent_id
             }
             return row.id
@@ -177,21 +184,21 @@ export default {
         },
 
         getPersonData() {
-           this.$http.post(`/suscription/${this.resource}/tables`)
-            .then(response => {
-                this.api_service_token = response.data.api_service_token
-                // console.log(this.api_service_token)
+            this.$http.post(`/suscription/${this.resource}/tables`)
+                .then(response => {
+                    this.api_service_token = response.data.api_service_token
+                    // console.log(this.api_service_token)
 
-                this.$store.commit('setCountries',response.data.countrie);
-                this.$store.commit('setAllDepartments',response.data.departments);
-                this.$store.commit('setAllProvinces',response.data.provinces);
-                this.$store.commit('setAllDistricts',response.data.districts);
-                this.$store.commit('setIdentityDocumentTypes',response.data.identity_document_types);
-                this.$store.commit('setLocations',response.data.locations);
-                this.$store.commit('setPersonTypes',response.data.person_types);
+                    this.$store.commit('setCountries', response.data.countrie);
+                    this.$store.commit('setAllDepartments', response.data.departments);
+                    this.$store.commit('setAllProvinces', response.data.provinces);
+                    this.$store.commit('setAllDistricts', response.data.districts);
+                    this.$store.commit('setIdentityDocumentTypes', response.data.identity_document_types);
+                    this.$store.commit('setLocations', response.data.locations);
+                    this.$store.commit('setPersonTypes', response.data.person_types);
 
 
-            })
+                })
         },
 
     }

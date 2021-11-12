@@ -31,7 +31,7 @@
                                     -->
                                 </label>
                                 <el-select v-model="form.parent_customer_id"
-                                           :disabled = '!is_editable'
+                                           :disabled='!is_editable'
                                            :loading="loading_search"
                                            :remote-method="searchRemoteParent"
                                            class="border-left rounded-left border-info"
@@ -69,10 +69,10 @@
                                     -->
                                 </label>
                                 <el-select v-model="form.children_customer_id"
+                                           :disabled='!is_editable'
                                            :loading="loading_search"
-                                           :remote-method="searchRemoteChildren"
 
-                                           :disabled = '!is_editable'
+                                           :remote-method="searchRemoteChildren"
                                            class="border-left rounded-left border-info"
                                            dusk="children_customer_id"
                                            filterable
@@ -101,8 +101,8 @@
                                     Seleccione el plan
                                 </label>
                                 <el-select v-model="form.suscription_plan_id"
-                                           :disabled = '!is_editable'
                                            :clearable="false"
+                                           :disabled='!is_editable'
                                            class="border-left rounded-left border-info"
                                            dusk="suscription_plan_id"
                                            filterable
@@ -132,7 +132,7 @@
                                     </label>
 
                                     <el-select v-model="form.grade"
-                                               :disabled = '!is_editable'
+                                               :disabled='!is_editable'
                                                class="border-left rounded-left border-info"
                                                filterable
                                                popper-class="el-select-parent"
@@ -166,7 +166,7 @@
                                     </label>
 
                                     <el-select v-model="form.section"
-                                               :disabled = '!is_editable'
+                                               :disabled='!is_editable'
                                                class="border-left rounded-left border-info"
                                                filterable
                                                popper-class="el-select-parent"
@@ -189,21 +189,21 @@
                                            v-text="errors.section[0]"></small>
                                 </div>
                             </div>
-<!--                            Fecha de inicio-->
+                            <!--                            Fecha de inicio-->
                             <div class="col-md-3">
                                 <label class="control-label">
                                     Fecha de inicio
                                 </label>
                                 <el-date-picker v-model="form.start_date"
-                                                :disabled = '!is_editable'
                                                 :clearable="false"
+                                                :disabled='!is_editable'
                                                 format="dd/MM/yyyy"
                                                 type="date"
                                                 value-format="yyyy-MM-dd"
                                                 @change="changeStartDate"></el-date-picker>
                             </div>
 
-<!--                            Fecha de fin-->
+                            <!--                            Fecha de fin-->
                             <div class="col-md-3">
                                 <label class="control-label">
                                     Fecha de fin
@@ -273,6 +273,131 @@
                         </div>
                     </div>
 
+                </el-tab-pane>
+
+
+                <el-tab-pane v-if="hasNv"
+                             class
+                             name="payments">
+                    <span slot="label">
+                        Ver Recibos de pago
+                    </span>
+                    <div class="form-body">
+
+                        <div class="table-responsive">
+                            <table class="table table-responsive-xl ">
+                                <thead class="">
+                                <th>#</th>
+                                <th class="text-center">Fecha Emisión</th>
+<!--                                <th>Cliente</th>-->
+<!--                                <th>Hijo</th>-->
+<!--                                <th>Grado</th>-->
+<!--                                <th>Sección</th>-->
+                                <th>Recibo de pago</th>
+                                <th>Estado</th>
+                                <th class="text-center">Moneda</th>
+                                <th
+                                    class="text-right">F. Vencimiento
+                                </th>
+                                <th class="text-right">Total</th>
+
+
+                                <th class="text-center">Comprobantes</th>
+                                <th class="text-center">Estado pago</th>
+<!--                                <th class="text-center">Pagos</th>-->
+                                <th class="text-center">Descarga</th>
+                                </thead>
+
+                                <tbody>
+                                <tr
+
+                                    v-for="(row, index) in form.sales_note"
+                                    :key="index"
+
+                                >
+                                <!-- # -->
+                                <td>{{ index }}</td>
+                                <!-- Fecha Emisión -->
+                                <td class="text-center">{{ row.date_of_issue }}</td>
+                                <!-- Cliente -->
+<!--                                <td>{{ row.customer_name }}<br/>
+                                    <small v-text="row.customer_number">
+                                    </small>
+                                </td>-->
+                                <!-- Hijo -->
+<!--                                <td>{{ row.children_name }}<br/>
+                                    <small v-text="row.children_number"></small>
+                                </td>-->
+                                <!--                        Grado-->
+<!--                                <td>{{ row.grade }}</td>-->
+                                <!--                        Sección -->
+<!--                                <td>{{ row.section }}</td>-->
+                                <!-- Recibo de pago -->
+                                <td>{{ row.full_number }}</td>
+                                <!-- Estado  -->
+                                <td>{{ row.state_type_description }}</td>
+                                <!--Moneda -->
+                                <td class="text-center">{{ row.currency_type_id }}</td>
+
+                                <!-- F. Vencimiento -->
+                                <td
+                                    class="text-right">{{ row.due_date }}
+                                </td>
+                                <!-- Total -->
+                                <td class="text-right">{{ row.total }}</td>
+
+                                <!--Comprobantes -->
+                                <td>
+                                    <template v-for="(document,i) in row.documents">
+                                        <label :key="i"
+                                               class="d-block"
+                                               v-text="document.number_full">
+                                        </label>
+                                    </template>
+                                </td>
+                                <!-- Estado pago -->
+                                <td class="text-center">
+                            <span
+                                :class="{'bg-success': (row.total_canceled), 'bg-warning': (!row.total_canceled)}"
+                                class="badge text-white">{{ row.total_canceled ? 'Pagado' : 'Pendiente' }}
+                            </span>
+                                </td>
+
+                                <!-- Pagos -->
+<!--                                <td class="text-center">
+                                    <button class="btn waves-effect waves-light btn-xs btn-primary"
+                                            style="min-width: 41px"
+                                            type="button"
+                                            @click.prevent="clickPayment(row.id)">
+                                        <i class="fas fa-money-bill-alt">
+                                        </i>
+                                    </button>
+                                </td>-->
+
+                                <!-- Descarga -->
+                                <td class="text-right">
+                                    <button class="btn waves-effect waves-light btn-xs btn-info"
+                                            type="button"
+                                            @click.prevent="clickDownload(row.external_id)">
+                                        <i class="fas fa-file-pdf">
+                                        </i>
+                                    </button>
+                                </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane v-if="hasFac"
+                             class
+                             name="invoices">
+                    <span slot="label">
+                        Ver Facturas
+                    </span>
+                    <div class="form-body">
+
+                    </div>
                 </el-tab-pane>
                 <!--
                 <el-tab-pane class
@@ -368,9 +493,11 @@ export default {
             end_date: null,
             defaultStartDate: null,
             titleDialog: null,
-            grades:[],
-            sections:[],
+            grades: [],
+            sections: [],
             errors: {},
+            hasNv: false,
+            hasFac: false,
             tabActive: 'first',
             currency_type: {},
             //countries: [],
@@ -389,8 +516,8 @@ export default {
                 name: null,
                 description: null,
                 period: null,
-                grade:null,
-                section:null,
+                grade: null,
+                section: null,
                 currency_type_id: null,
                 items: [],
                 start_date: moment().format('YYYY-MM-DD'),
@@ -485,8 +612,8 @@ export default {
                 currency_type_id: this.config.currency_type_id,
                 items: [],
                 start_date: moment().format('YYYY-MM-DD'),
-                grade:null,
-                section:null,
+                grade: null,
+                section: null,
                 total_igv_free: 0,
                 total_exportation: 0,
                 total_taxed: 0,
@@ -518,6 +645,17 @@ export default {
 
         },
         create() {
+            this.tabActive = 'first';
+            /*
+                    tabActive
+                    first
+                    payments
+                    invoices
+
+
+                    hasNv
+        hasFac
+                    */
             this.getCommonData()
             this.is_editable = false;
             this.tabActive = 'first'
@@ -565,6 +703,19 @@ export default {
                         this.$store.commit('setParentCustomer', parent)
                         this.$store.commit('setChildrenCustomer', child)
 
+
+                        if (this.form.sales_note !== undefined && this.form.sales_note.length > 0) {
+                            this.hasNv = true;
+                        }
+
+                        if (this.form.sales_note !== undefined && this.form.sales_note.invoices > 0) {
+                            this.hasFac = true;
+                        }
+
+                        /*
+                        hasNv
+                        hasFac
+                        */
                         // this.form = response.data.data
                         // this.filterProvinces()
                         // this.filterDistricts()
@@ -574,7 +725,7 @@ export default {
                     })
                     .finally(() => {
                         this.titleDialog = (this.form.id) ? 'Editar matrícula' : 'Nueva matrícula'
-                            this.$emit('clearSuscriptionId', null)
+                        this.$emit('clearSuscriptionId', null)
                     })
             } else {
                 this.clearForm()
@@ -929,7 +1080,7 @@ export default {
                         let child = customer.childrens
                         Object.keys(child).forEach(key => {
                             let row = child[key] // value of the current key
-                            if(row.id !== null ) {
+                            if (row.id !== null) {
                                 this.childrens.push(row)
                             }
                         })
@@ -948,7 +1099,7 @@ export default {
             this.$store.commit('setChildrenCustomer', customer)
             // Se asegura que el hijo tenga un solo padre y el padre tenga solo 1 hijo
 
-            if(this.form.parent_customer_id === null) {
+            if (this.form.parent_customer_id === null) {
                 let parent = _.find(this.customers, {'id': customer.parent.id});
                 if (parent === undefined) {
                     this.customers.push(customer.parent)
@@ -1031,7 +1182,9 @@ export default {
             this.end_date = moment(date, 'YYYY-MM-DD').add(qty, period).format('YYYY-MM-DD');
 
         },
-
+        clickDownload(external_id) {
+            window.open(`/sale-notes/downloadExternal/${external_id}`, '_blank');
+        },
         // periods
 
     }

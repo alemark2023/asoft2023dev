@@ -98,7 +98,7 @@
                                 class="btn waves-effect waves-light btn-xs btn-info"
                                 type="button"
                                 @click.prevent="clickShowPlan(row)">
-                                Editar
+                                Ver
                             </button>
                             <!--
                             <button
