@@ -14,6 +14,7 @@ use phpDocumentor\Reflection\Types\Boolean;
  *
  * @package App\Models\Tenant
  * @mixin ModelTenant
+ * @property bool $item_name_pdf_description
  * @property bool $show_extra_info_to_item
  * @property bool $show_items_only_user_stablishment
  * @method static Builder|Configuration newModelQuery()
@@ -109,6 +110,7 @@ class Configuration extends ModelTenant
         'name_product_pdf_to_xml',
         'default_document_type_80',
         'search_item_by_barcode',
+        'item_name_pdf_description',
     ];
 
     protected $casts = [
@@ -131,6 +133,7 @@ class Configuration extends ModelTenant
         'show_items_only_user_stablishment' => 'boolean',
         'permission_to_edit_cpe' => 'boolean',
         'name_product_pdf_to_xml' => 'boolean',
+        'item_name_pdf_description' => 'boolean',
         'default_document_type_80' => 'boolean',
         'search_item_by_barcode' => 'boolean',
     ];
@@ -491,6 +494,7 @@ class Configuration extends ModelTenant
             'unit_type_id'=>$unit_type_id,
             'enabled_global_igv_to_purchase'=>$this->isEnabledGlobalIgvToPurchase(),
             'show_pdf_name'=>$this->isShowPdfName(),
+            'item_name_pdf_description'=>$this->isItemNamePdfDescription(),
             'api_service_token'=>self::getApiServiceToken(),
             'user'=>[
                 'serie'=>$serie,
@@ -703,4 +707,24 @@ class Configuration extends ModelTenant
 
         return $api_service_token;
     }
+
+    /**
+     * @return bool
+     */
+    public function isItemNamePdfDescription(): bool
+    {
+        return (bool) $this->item_name_pdf_description;
+    }
+
+    /**
+     * @param bool|null $item_name_pdf_description
+     *
+     * @return Configuration
+     */
+    public function setItemNamePdfDescription(bool $item_name_pdf_description):Configuration
+    {
+        $this->item_name_pdf_description = (bool)$item_name_pdf_description;
+        return $this;
+    }
+
 }

@@ -163,6 +163,10 @@ export default {
             if (this.productType == 'ZZ') {
                 this.search.type = 'ZZ';
             }
+            if (this.productType == 'PRODUCTS') {
+                // Debe listar solo productos
+                this.search.type = this.productType;
+            }
             return queryString.stringify({
                 page: this.pagination.current_page,
                 limit: this.limit,

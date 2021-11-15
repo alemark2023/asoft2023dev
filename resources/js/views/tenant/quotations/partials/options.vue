@@ -56,7 +56,7 @@
                     <!--<small class="form-control-feedback" v-if="errors.customer_email" v-text="errors.customer_email[0]"></small> -->
                 </div>
             </div>
-            <div class="row mt-3">
+            <div v-show="!showGenerate" class="row mt-3">
                 <div class="col-md-12">
                     <el-input v-model="form.customer_telephone">
                         <template slot="prepend">+51</template>
