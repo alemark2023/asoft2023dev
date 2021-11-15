@@ -33,6 +33,7 @@ export default {
         send_auto: false,
         formats: 0,
         warehouse_id: 0,
+        item_name_pdf_description: false,
         stock: false,
         dispatches_address_text: false,
         cron: false,

@@ -942,6 +942,9 @@ class Item extends ModelTenant
             'percentage_isc' => $this->percentage_isc,
         ];
 
+        // El nombre de producto, por defecto, sera la misma descripcion.
+        $data['name_product_pdf']="<p>".$data['description']."</p>";
+
         return $data;
     }
 

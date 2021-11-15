@@ -1068,6 +1068,9 @@ export default {
                 })
             }
             // this.form.lots_group = this.form.item.lots_group
+            if(this.form.item.name_product_pdf && this.config.item_name_pdf_description){
+                this.form.name_product_pdf = this.form.item.name_product_pdf;
+            }
         },
         focusTotalItem(change) {
             if (!change && this.form.item.calculate_quantity) {

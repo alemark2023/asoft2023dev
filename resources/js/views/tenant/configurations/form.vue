@@ -672,7 +672,7 @@
                                         </div>
                                     </div>
 
-                                    
+
                                     <div class="col-md-6 mt-4">
                                         <label class="control-label">Seleccionar nota de venta por defecto
                                             <el-tooltip class="item"
@@ -714,7 +714,7 @@
                                                    v-text="errors.search_item_by_barcode[0]"></small>
                                         </div>
                                     </div>
-                                    
+
                                     <!--
                                     <div class="col-md-6 mt-4">
                                         <label class="control-label">Mostrar item de solo el almacen de usuario
@@ -876,6 +876,32 @@
                                                 <small v-if="errors.update_document_on_dispaches"
                                                        class="form-control-feedback"
                                                        v-text="errors.update_document_on_dispaches[0]"></small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- item_name_pdf_description -->
+                                    <div class="col-md-6 mt-4">
+                                        <div class="form-group">
+                                            <label class="control-label">
+                                                Usar la descripcion como nombre del producto PDF
+                                                <el-tooltip class="item"
+                                                            effect="dark"
+                                                            placement="top-start">
+                                                    <div slot="content">
+                                                        En factura/boleta, cotizacion y nota de venta, se usará la descripcion como nombre del producto PDF por defecto.
+                                                    </div>
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                            </label>
+                                            <div :class="{'has-danger': errors.item_name_pdf_description}"
+                                                 class="form-group">
+                                                <el-switch v-model="form.item_name_pdf_description"
+                                                           active-text="Si"
+                                                           inactive-text="No"
+                                                           @change="submit"></el-switch>
+                                                <small v-if="errors.item_name_pdf_description"
+                                                       class="form-control-feedback"
+                                                       v-text="errors.item_name_pdf_description[0]"></small>
                                             </div>
                                         </div>
                                     </div>
