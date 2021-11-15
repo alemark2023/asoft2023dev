@@ -34,7 +34,8 @@ if (!isset($qty)) {
     $total_value = $value->total_value;
     $web_platform = optional($relation_item->web_platform)->name;
     $purchase_unit_price = ($relation_item) ? $relation_item->purchase_unit_price : 0;
-    $igv = $value->system_isc_type_id;
+    $igv = $value->total_igv;
+    // $igv = $value->system_isc_type_id;
     $total_isc = $value->total_isc;
     $system_isc_type_id = $value->system_isc_type_id;
     $total_plastic_bag_taxes = $value->total_plastic_bag_taxes;
