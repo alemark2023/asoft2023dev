@@ -3,6 +3,7 @@
     namespace App\CoreFacturalo\Helpers\Template;
 
 
+    use App\Models\Tenant\SaleNote;
     use App\Models\Tenant\Dispatch;
     use App\Models\Tenant\Document;
     use App\Models\Tenant\DocumentFee;
@@ -71,23 +72,28 @@
                     $data['PAGOS'][] = $temp;
                 }
             } else {
-                $data['CUOTA'] = [];
-                /**
-                 * @var int          $key
-                 * @var  DocumentFee $quote
-                 */
-                foreach ($document->fee as $key => $quote) {
-                    $temp = [
-                        'description' => (empty($quote->getStringPaymentMethodType()) ? 'Cuota #' . ($key + 1) : $quote->getStringPaymentMethodType()),
-                        'reference' => $quote->date->format($dateFormat),
-                        'amount' => $quote->amount,
-                        'symbol' => $quote->symbol,
-                    ];
-                    $data['CUOTA'][] = $temp;
+                if(!empty($document->fee)) {
+                    $data['CUOTA'] = [];
+                    /**
+                     * @var int          $key
+                     * @var  DocumentFee $quote
+                     */
+                    foreach ($document->fee as $key => $quote) {
+                        $temp = [
+                            'description' => (empty($quote->getStringPaymentMethodType()) ? 'Cuota #' . ($key + 1) : $quote->getStringPaymentMethodType()),
+                            'reference' => $quote->date->format($dateFormat),
+                            'amount' => $quote->amount,
+                            'symbol' => $quote->symbol,
+                        ];
+                        $data['CUOTA'][] = $temp;
 
+                    }
                 }
 
             }
+
+
+
             return $data;
         }
 
