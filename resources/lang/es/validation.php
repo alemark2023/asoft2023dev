@@ -288,6 +288,7 @@ return [
 		'system_isc_type_id'           => 'tipo de sistema ISC',
 		'has_isc'           => 'incluye ISC',
 		'percentage_isc'           => 'porcentaje ISC',
+		'movement_type'           => 'tipo movimiento',
 
 	],
 ];

@@ -221,6 +221,15 @@
                         Route::get('/records', 'ReportValuedKardexController@records');
 
                     });
+
+                    // reporte movimientos
+                    Route::prefix('inventory-movements')->group(function () {
+                        Route::get('pdf', 'ReportMovementController@pdf');
+                        Route::get('excel', 'ReportMovementController@excel');
+                        Route::get('filter', 'ReportMovementController@filter');
+                        Route::get('records', 'ReportMovementController@records');
+                    });
+
                 });
 
 
