@@ -1,5 +1,6 @@
 <?php
 namespace Modules\Inventory\Traits;
+use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\DocumentItem;
@@ -90,6 +91,7 @@ trait InventoryTrait
     {
         //$establishment_id = auth()->user()->establishment_id;
         //$current_warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+
         $records = Item::query()
             ->with('item_lots', 'warehouses')
             ->whereHas('warehouses', function ($query) use ($warehouse_id) {
@@ -99,23 +101,28 @@ trait InventoryTrait
             ->whereNotIsSet()
             ->get();
         return collect($records)->transform(function ($row) use ($warehouse_id) {
-            return [
-                'id' => $row->id,
-                'description' => $row->description,
-                'lots_enabled' => (bool)$row->lots_enabled,
-                'series_enabled' => (bool)$row->series_enabled,
-                'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse_id)->transform(function ($row1) {
-                    return [
-                        'id' => $row1->id,
-                        'series' => $row1->series,
-                        'date' => $row1->date,
-                        'item_id' => $row1->item_id,
-                        'warehouse_id' => $row1->warehouse_id,
-                        'has_sale' => (bool)$row1->has_sale,
-                        'lot_code' => ($row1->item_loteable_type) ? (isset($row1->item_loteable->lot_code) ? $row1->item_loteable->lot_code : null) : null
-                    ];
-                })->values(),
+            /** @var \App\Models\Tenant\Item $row */
+            $lots = $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse_id)->transform(function ($row1) {
+                return [
+                    'id' => $row1->id,
+                    'series' => $row1->series,
+                    'date' => $row1->date,
+                    'item_id' => $row1->item_id,
+                    'warehouse_id' => $row1->warehouse_id,
+                    'has_sale' => (bool)$row1->has_sale,
+                    'lot_code' => ($row1->item_loteable_type) ? (isset($row1->item_loteable->lot_code) ? $row1->item_loteable->lot_code : null) : null
+                ];
+            })->values();
+            $old = [
+                'lots' => $lots,
             ];
+            $data = $row->getDataToItemModal(
+                \App\Models\Tenant\Warehouse::find($warehouse_id),
+                false,
+                true
+
+            );
+            return array_merge($data, $old);
         });
     }
 

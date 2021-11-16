@@ -1260,7 +1260,9 @@ export default {
             // });
 
             if (this.type) {
-                this.form.unit_type_id = 'ZZ';
+                if (this.type !== 'PRODUCTS') {
+                    this.form.unit_type_id = 'ZZ';
+                }
             }
             this.titleDialog = (this.recordId) ? 'Editar Producto' : 'Nuevo Producto'
 
