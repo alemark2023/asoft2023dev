@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Modules\Inventory\Models\InventoryTransfer;
 use Modules\LevelAccess\Models\ModuleLevel;
 use Modules\Sale\Models\UserCommission;
 
@@ -171,6 +172,18 @@ class User extends Authenticatable
     }
 
 
+    /* *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    /*
+    public function inventory_transfer()
+    {
+        return $this->hasMany(InventoryTransfer::class);
+    }
+    */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function documents()
     {
         return $this->hasMany(Document::class);

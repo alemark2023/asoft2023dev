@@ -1033,6 +1033,7 @@ class Item extends ModelTenant
             'sanitary' => $this->sanitary,
             'cod_digemid' => $this->cod_digemid,
             'unit_type_id' => $this->unit_type_id,
+            'unit_type_text' => $this->getUnitTypeText(),
             'description' => $this->description,
             'name' => $this->name,
             'second_name' => $this->second_name,
@@ -1921,6 +1922,17 @@ class Item extends ModelTenant
 
     }
 
+    /**
+     * @return string|null
+     */
+    public function getUnitTypeText(){
+        if(!empty($this->unit_type)) {
+            return $this->unit_type->description;
+        }
+
+        return null;
+    }
+
 
     /**
      * Devuelve codigo interno - descripcion producto
@@ -1931,6 +1943,6 @@ class Item extends ModelTenant
     {
         return $this->internal_id ? "{$this->internal_id} - {$this->description}" : $this->description;
     }
-    
+
 }
 

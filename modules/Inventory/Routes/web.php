@@ -248,6 +248,17 @@
 
                 });
 
+                /**
+                    transfers/
+                    transfers/records
+                    transfers/columns
+                    transfers/tables
+                    transfers/record/{inventory}
+                    transfers/{inventory}
+                    transfers/create
+                    transfers/stock/{item_id}/{warehouse_id}
+                    transfers/items/{warehouse_id}
+                 */
 
                 Route::prefix('transfers')->group(function () {
                     Route::get('/', 'TransferController@index')->name('transfers.index');
@@ -256,15 +267,12 @@
                     Route::get('tables', 'TransferController@tables');
                     Route::get('record/{inventory}', 'TransferController@record');
                     Route::post('/', 'TransferController@store');
-
                     Route::delete('{inventory}', 'TransferController@destroy');
-
                     Route::get('create', 'TransferController@create')->name('transfer.create');
-
                     Route::get('stock/{item_id}/{warehouse_id}', 'TransferController@stock');
-
                     Route::get('items/{warehouse_id}', 'TransferController@items');
 
+                    // Route::get('info/{inventoryTransfer}', 'TransferController@getInventoryTransferData');
 
                 });
 
