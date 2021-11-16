@@ -1920,5 +1920,17 @@ class Item extends ModelTenant
         return $data;
 
     }
+
+
+    /**
+     * Devuelve codigo interno - descripcion producto
+     *
+     * @return array
+     */
+    public function getInternalIdDescription()
+    {
+        return $this->internal_id ? "{$this->internal_id} - {$this->description}" : $this->description;
+    }
+    
 }
 

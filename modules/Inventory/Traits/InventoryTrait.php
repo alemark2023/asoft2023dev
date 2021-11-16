@@ -601,4 +601,15 @@ trait InventoryTrait
             }
         }
     }
+
+    
+    /**
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection|InventoryTransaction[]
+     */
+    public function allInventoryTransaction()
+    {
+        return InventoryTransaction::get();
+    }
+    
 }

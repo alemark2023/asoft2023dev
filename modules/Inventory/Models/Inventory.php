@@ -52,11 +52,61 @@ class Inventory extends ModelTenant
 
     public function transaction()
     {
-        return $this->belongsTo(InventoryTransaction::class);
+        return $this->belongsTo(InventoryTransaction::class, 'inventory_transaction_id');
     }
 
     public function lots()
     {
         return $this->morphMany(ItemLot::class, 'item_loteable');
     }
+
+    public function getRowResourceReport()
+    {
+
+        $input = '-';
+        $output = '-';
+
+        if($this->transaction->type === 'input'){
+            $input = $this->quantity;
+        }else{
+            $output = -$this->quantity;
+        }
+
+        return [
+            'description' => $this->description,
+            'item_id' => $this->item_id,
+            'item_description' => $this->item->getInternalIdDescription(),
+            'inventory_transaction_id' => $this->inventory_transaction_id,
+            'quantity' => $this->quantity,
+            'input' => $input,
+            'output' => $output,
+            'date_time' => $this->created_at->format('Y-m-d H:i:s'),
+        ];
+
+    }
+    
+    /**
+     * Filtros para reporte movimientos
+     * Usado en: 
+     * ReportMovementController
+     *
+     * @param  $query
+     * @param  $warehouse_id
+     * @param  $inventory_transaction_id
+     * @param  $date_start
+     * @param  $date_end
+     */
+    public function scopeWhereFilterReportMovement($query, $warehouse_id, $inventory_transaction_id, $date_start, $date_end)
+    {
+        return $query->with(['inventory_kardex'])
+                    ->where('warehouse_id', $warehouse_id)
+                    ->where('inventory_transaction_id', $inventory_transaction_id)
+                    ->whereHas('inventory_kardex', function($query) use($date_start, $date_end){
+                        
+                        if ($date_start) $query->where('date_of_issue', '>=', $date_start);
+                        if ($date_end) $query->where('date_of_issue', '<=', $date_end);
+
+                    });
+    }
+
 }
