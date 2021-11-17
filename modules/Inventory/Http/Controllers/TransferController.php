@@ -3,6 +3,7 @@
     namespace Modules\Inventory\Http\Controllers;
 
     use App\Http\Controllers\Controller;
+    use App\Http\Controllers\SearchItemController;
     use Barryvdh\DomPDF\Facade as PDF;
     use Carbon\Carbon;
     use Illuminate\Http\Request;
@@ -256,8 +257,14 @@
         }
 
 
+        public function searchItems(Request  $request){
+            $items = SearchItemController::getItemToTrasferWithSearch($request);
+            return compact('items');
+
+        }
         public function items($warehouse_id)
         {
+            return ['items'=>SearchItemController::getItemToTrasferWithoutSearch($warehouse_id)];
             return [
                 'items' => $this->optionsItemWareHousexId($warehouse_id),
             ];

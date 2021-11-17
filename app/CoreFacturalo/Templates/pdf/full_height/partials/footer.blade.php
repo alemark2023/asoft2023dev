@@ -1,5 +1,7 @@
 @php
     use App\CoreFacturalo\Helpers\Template\TemplateHelper;
+    use App\Models\Tenant\Document;
+	use App\Models\Tenant\SaleNote;
     if ($document != null) {
         $establishment = $document->establishment;
         $customer = $document->customer;
@@ -36,7 +38,13 @@
 
 
     // Pago/Coutas detalladas
-    $paymentDetailed = TemplateHelper::getDetailedPayment($document)
+    $paymentDetailed= [];
+	if(
+		get_class($document) == Document::class ||
+		get_class($document) == SaleNote::class
+	){
+        $paymentDetailed = TemplateHelper::getDetailedPayment($document);
+	}
 @endphp
 <head>
     <link href="{{ $path_style }}" rel="stylesheet" />
