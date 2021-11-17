@@ -1026,4 +1026,134 @@
 
             return $desc;
         }
+
+        /**
+         * @param \Illuminate\Http\Request|null $request
+         *
+         * @return \Illuminate\Database\Eloquent\Collection
+         */
+        public static function getItemToTrasferWithSearch(Request $request = null): \Illuminate\Database\Eloquent\Collection
+        {
+            $warehouse_id = 0;
+            $whereItem = [];
+            $whereExtra = [];
+            if($request !== null && $request->has('params')){
+                $params = $request->params;
+                $warehouse_id = $params['warehouse_id'];
+                $input = $params['input'];
+                $search_by_barcode = $params['search_by_barcode'];
+            }
+
+
+            $data = self::getItemToTrasferCollection($warehouse_id);
+
+
+            if(!empty($input)) {
+                $whereItem[] = ['description', 'like', '%' . $input . '%'];
+                $whereItem[] = ['internal_id', 'like', '%' . $input . '%'];
+                $whereItem[] = ['barcode', '=', $input];
+                $whereExtra[] = ['name', 'like', '%' . $input . '%'];
+            }
+
+            if(!empty($whereItem)) {
+                foreach ($whereItem as $index => $wItem) {
+                    if ($index < 1) {
+                        $data->Where([$wItem]);
+                    } else {
+                        $data->orWhere([$wItem]);
+                    }
+                }
+
+                if ( !empty($whereExtra)) {
+                    $data
+                        ->orWhereHas('brand', function ($query) use ($whereExtra) {
+                            $query->where($whereExtra);
+                        })
+                        ->orWhereHas('category', function ($query) use ($whereExtra) {
+                            $query->where($whereExtra);
+                        });
+                }
+                $data->OrWhereJsonContains('attributes', ['value' => $input]);
+            }
+
+
+            return self::getItemToTrasferModal($data,$warehouse_id);
+        }
+
+        /**
+         * @param int $warehouse_id
+         *
+         * @return \Illuminate\Database\Eloquent\Collection
+         */
+        public static function getItemToTrasferWithoutSearch( $warehouse_id = 0): \Illuminate\Database\Eloquent\Collection
+        {
+            $data = self::getItemToTrasferCollection($warehouse_id);
+            return  self::getItemToTrasferModal($data,$warehouse_id);
+        }
+
+        /**
+         * @param \Illuminate\Database\Eloquent\Builder|null $data
+         * @param int $warehouse_id
+         *
+         * @return \Illuminate\Database\Eloquent\Collection
+         */
+        public static function getItemToTrasferModal(
+            \Illuminate\Database\Eloquent\Builder $data = null,
+            int $warehouse_id = 0
+        ): \Illuminate\Database\Eloquent\Collection
+        {
+            return $data
+                ->get()
+                ->transform(function ($row) use ($warehouse_id) {
+                    /** @var \App\Models\Tenant\Item $row */
+                    $lots = $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse_id)->transform(function ($row1) {
+                        return [
+                            'id' => $row1->id,
+                            'series' => $row1->series,
+                            'date' => $row1->date,
+                            'item_id' => $row1->item_id,
+                            'warehouse_id' => $row1->warehouse_id,
+                            'has_sale' => (bool)$row1->has_sale,
+                            'lot_code' => ($row1->item_loteable_type) ? (isset($row1->item_loteable->lot_code) ? $row1->item_loteable->lot_code : null) : null
+                        ];
+                    })->values();
+                    $old = [
+                        'lots' => $lots,
+                    ];
+                    $data = $row->getDataToItemModal(
+                        Warehouse::find($warehouse_id),
+                        false,
+                        true
+
+                    );
+                    return array_merge($data, $old);
+                });
+
+        }
+
+        /**
+         * Realiza las busquedas para transferencia de items
+         *
+         * Extraido de modules/Inventory/Traits/InventoryTrait.php  optionsItemWareHousexId
+         *
+         * @param int $warehouse_id
+         * @param int $take
+         *
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public static function getItemToTrasferCollection(
+            $warehouse_id = 0,
+            int $take = 100
+        ):\Illuminate\Database\Eloquent\Builder
+        {
+
+            return Item::query()
+                ->with('item_lots', 'warehouses')
+                ->whereHas('warehouses', function ($query) use ($warehouse_id) {
+                    $query->where('warehouse_id', $warehouse_id);
+                })
+                ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
+                ->take($take)
+                ->whereNotIsSet();
+        }
     }

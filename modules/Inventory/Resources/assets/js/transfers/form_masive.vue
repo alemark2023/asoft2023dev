@@ -66,7 +66,15 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="control-label">Producto</label>
+                                <label class="control-label">
+                                    Producto
+                                    <el-tooltip class="item"
+                                                effect="dark"
+                                                content="Puede escribir para buscar un producto en especifico"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
                                 <!-- <el-input v-model="form.item_description" :readonly="true"></el-input> -->
                                 <el-select
                                     v-model="form_add.item_id"
@@ -74,6 +82,16 @@
                                     filterable
                                     popper-class="el-select-document_type"
                                     @change="changeItem"
+
+                                    id="select-width"
+                                    ref="selectSearchNormal"
+                                    slot="prepend"
+                                    placeholder="Buscar"
+                                    remote
+                                    :loading="loading_search"
+                                    :remote-method="searchRemoteItems"
+                                    @focus="focusSelectItem"
+
                                 >
                                     <el-tooltip
                                         v-for="option in items"
@@ -214,13 +232,17 @@ export default {
             form: {},
             warehouses: [],
             items: [],
-            form_add: {}
+            form_add: {},
+            loading_search: false,
+            search_item_by_barcode: false,
+            all_items: [],
         };
     },
     async created() {
         await this.$http.get(`/${this.resource}/tables`).then(response => {
             this.warehouses = response.data.warehouses;
             this.items = response.data.items;
+            this.all_items = this.items
         });
 
         await this.initForm();
@@ -235,6 +257,7 @@ export default {
                 .get(`/${this.resource}/items/${this.form.warehouse_id}`)
                 .then(response => {
                     this.items = response.data.items;
+                    this.all_items = this.items
                 });
         },
         addRowOutputLot(lots) {
@@ -368,6 +391,41 @@ export default {
             return ItemOptionDescription(item)
         },
 
+        async searchRemoteItems(input) {
+            console.error(input.length)
+                if (this.form.warehouse_id && this.form.warehouse_id > 0 && input.length > 2) {
+                    this.loading_search = true
+                    const params = {
+                        'input': input,
+                        'search_by_barcode': this.search_item_by_barcode ? 1 : 0,
+                        'warehouse_id': this.form.warehouse_id,
+                    }
+                    await this.$http
+                        .post(`/${this.resource}/search-items`, {params})
+                        .then(response => {
+                            this.items = response.data.items
+                            // this.enabledSearchItemsBarcode()
+                            // this.enabledSearchItemBySeries()
+                            if (this.items.length == 0) {
+                                this.filterItems()
+                            }
+                        })
+                    .finally(()=>{
+                        this.loading_search = false
+
+                    })
+                } else {
+                    await this.filterItems()
+            }
+
+        },
+        filterItems() {
+            this.items = this.all_items
+        },
+
+        focusSelectItem() {
+            this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
+        },
     }
 };
 </script>
