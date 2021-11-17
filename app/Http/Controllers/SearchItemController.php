@@ -167,8 +167,6 @@
                 } elseif ($id != 0) {
                     $item->where('id', $id);
                 } else {
-
-
                     if ($search_by_barcode === true) {
                         $item
                             ->where('barcode', $input)
@@ -233,9 +231,12 @@
                         });
                 }
                 $item->OrWhereJsonContains('attributes', ['value' => $input]);
+                //  Limita los resultados de busqueda, inicial 250, puede modificarse en el .env con NUMBER_SEARCH_ITEMS
+                $item->take(\Config('extra.number_items_in_search'));
+
             }else{
-                // Si no se filtran datos, entonces se toman 20
-                $item->take(20);
+                // Si no se filtran datos, entonces se toman 20, puede añadirse en el env la variable NUMBER_ITEMS
+                $item->take(\Config('extra.number_items_at_start'));
             }
 
 
@@ -437,6 +438,8 @@
             $items_not_services = self::getNotServiceItem($request, $id);
             $items_services = self::getServiceItem($request, $id);
             return self::TransformToModal($items_not_services->merge($items_services));
+
+
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
             // $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
@@ -447,8 +450,15 @@
                 ->where('items.unit_type_id', 'ZZ')
                 ->whereIsActive()
                 ->orderBy('description');
-            $item_not_service = $item_not_service->take(20)->get();
-            $service_item = $service_item->take(10)->get();
+            $item_not_service = $item_not_service
+                // Configurable en  env la variable NUMBER_ITEMS
+                ->take(\Config('extra.number_items_at_start'))
+                ->get();
+            $service_item = $service_item
+                // Configurable en  env la variable NUMBER_ITEMS
+                ->take(\Config('extra.number_items_at_start'))
+                //->take(10)
+                ->get();
             return self::TransformToModal($item_not_service->merge($service_item));
         }
 
@@ -1074,6 +1084,12 @@
                         });
                 }
                 $data->OrWhereJsonContains('attributes', ['value' => $input]);
+                // Limita la cantidad de productos en la busqueda a 250, puede modificarse en el .env con NUMBER_SEARCH_ITEMS
+                $data->take(\Config('extra.number_items_in_search'));
+            }else{
+                // Inicia con 20 productos, puede añadirse en el env la variable NUMBER_ITEMS
+                $data->take(\Config('extra.number_items_at_start'));
+
             }
 
 
@@ -1088,6 +1104,8 @@
         public static function getItemToTrasferWithoutSearch( $warehouse_id = 0): \Illuminate\Database\Eloquent\Collection
         {
             $data = self::getItemToTrasferCollection($warehouse_id);
+            // Inicia con 20 productos, puede añadirse en el env la variable NUMBER_ITEMS
+            $data->take(\Config('extra.number_items_at_start'));
             return  self::getItemToTrasferModal($data,$warehouse_id);
         }
 
@@ -1137,13 +1155,11 @@
          * Extraido de modules/Inventory/Traits/InventoryTrait.php  optionsItemWareHousexId
          *
          * @param int $warehouse_id
-         * @param int $take
          *
          * @return \Illuminate\Database\Eloquent\Builder
          */
         public static function getItemToTrasferCollection(
-            $warehouse_id = 0,
-            int $take = 100
+            $warehouse_id = 0
         ):\Illuminate\Database\Eloquent\Builder
         {
 
@@ -1153,7 +1169,6 @@
                     $query->where('warehouse_id', $warehouse_id);
                 })
                 ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
-                ->take($take)
                 ->whereNotIsSet();
         }
     }
