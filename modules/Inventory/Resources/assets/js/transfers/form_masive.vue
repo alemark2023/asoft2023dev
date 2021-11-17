@@ -86,7 +86,7 @@
                                     id="select-width"
                                     ref="selectSearchNormal"
                                     slot="prepend"
-                                    placeholder="Buscar"
+                                    placeholder="Escribe para buscar ..."
                                     remote
                                     :loading="loading_search"
                                     :remote-method="searchRemoteItems"
