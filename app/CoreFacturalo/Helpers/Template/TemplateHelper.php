@@ -18,7 +18,7 @@
          * Devuelve la condicion de pago para un Document.
          * Las condiciones son Credito o Contado.
          *
-         * @param Document $document
+         * @param Document|SaleNote $document
          *
          * @return string|null
          * @example
@@ -29,12 +29,23 @@
          *          {{ $condition  }}
          *
          */
-        public static function getDocumentPaymentCondition(Document $document)
+        public static function getDocumentPaymentCondition( $document)
         {
             // Condicion de pago  Crédito / Contado
             if ($document) {
                 if ($document->payment_condition) {
                     return $document->payment_condition->name;
+                }
+                if(get_class($document)==SaleNote::class){
+                    // Las notas de venta no tiene condición de pago.
+                    if($document->payment_method_type) {
+                        return $document->payment_method_type->description;
+                    }
+                    $payments = $document->payments;
+                    if($document->payment_method_type_id && $payments->count() == 0) {
+                        return $document->payment_method_type->description;
+                    }
+
                 }
             }
             return '-';
@@ -50,11 +61,11 @@
         /**
          * Devuelve un array con los detalles de pago.
          *
-         * @param Document $document
+         * @param Document|SaleNote $document
          *
          * @return array
          */
-        public static function getDetailedPayment(Document $document, $dateFormat = 'Y-m-d')
+        public static function getDetailedPayment( $document, $dateFormat = 'Y-m-d')
         {
             $data = [];
             $payments = $document->payments;
@@ -91,7 +102,24 @@
                 }
 
             }
+            if(get_class($document)==SaleNote::class && $payments->count()!= 0){
+                // Las notas de venta no tiene condicion de pago.
 
+                /** @var \App\Models\Tenant\SaleNotePayment $row */
+                foreach ($payments as $row) {
+                    $temp = [
+                        'date_of_payment' => $row->date_of_payment->format($dateFormat),
+                        'description' => $row->payment_method_type->description,
+                        'reference' => $row->reference ? $row->reference . ' - ' : '',
+                        'symbol' => $document->currency_type->symbol,
+                        'payment' => $row->payment,
+                        'amount' => $row->payment + $row->change,
+                    ];
+
+                    $data['PAGOS'][] = $temp;
+                    // $payment += (float) $row->payment;
+                }
+            }
 
 
             return $data;

@@ -1,9 +1,11 @@
 <?php
 
-use App\Models\Tenant\ItemSet;
-use App\CoreFacturalo\Helpers\Template\TemplateHelper;
+    use App\Models\Tenant\Document;
+    use App\Models\Tenant\ItemSet;
+    use App\CoreFacturalo\Helpers\Template\TemplateHelper;
+    use App\Models\Tenant\SaleNote;
 
-$purchseOrder = $document->purchase_order;
+    $purchseOrder = $document->purchase_order;
 $stablihsment = $stablihsment ?? [
         'district' => '',
         'department' => '',
@@ -68,7 +70,16 @@ if (!isset($qty)) {
 $qty = $qty ?? $value->quantity;
 $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
 
-$payments = TemplateHelper::getDetailedPayment($document);
+
+    $payments= [];
+    if(
+        get_class($document) == Document::class ||
+        get_class($document) == SaleNote::class
+    ){
+        $payments = TemplateHelper::getDetailedPayment($document);
+    }
+
+
 ?>
 <tr>
     <td class="celda">{{ $document->date_of_issue->format('Y-m-d') }}</td>
