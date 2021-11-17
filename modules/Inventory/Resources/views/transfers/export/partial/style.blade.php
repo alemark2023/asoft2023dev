@@ -11,6 +11,12 @@
     .ten-width{
         width: 10%;
     }
+    .celda {
+        text-align: center;
+        padding: 5px;
+        border: 0.1px solid black;
+    }
+
     .text-left{
         text-align: left;
     }
@@ -40,11 +46,6 @@
 
     }
 
-    .celda {
-        text-align: center;
-        padding: 5px;
-        border: 0.1px solid black;
-    }
 
     th {
         padding: 5px;
