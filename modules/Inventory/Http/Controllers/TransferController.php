@@ -271,20 +271,49 @@
         }
 
 
-        // @todo Por hacer exportar excel
+
+        /**
+         * No se implementa
+         *
+         * @param \Modules\Inventory\Models\InventoryTransfer $inventoryTransfer
+         *
+         * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+         */
         public function excel(InventoryTransfer $inventoryTransfer)
         {
+
+            return null;
             $export = new InventoryTransferExport();
-            $export->setInventory($inventoryTransfer);
+           $export->setInventory($inventoryTransfer);
             return $export->download('Reporte_Traslado_' . $inventoryTransfer->id . '_' . date('YmdHis') . '.xlsx');
         }
 
-        // @todo Por hacer exportar pdf
         public function getInventoryTransferData(InventoryTransfer $inventoryTransfer)
         {
-            return $this->excel(($inventoryTransfer));
+            return null;
+            // return $this->excel(($inventoryTransfer));
             $data = $inventoryTransfer->getPdfData();
             $pdf = PDF::loadView('inventory::transfers.export.pdf', compact('data'));
+            $pdf->setPaper('A4', 'landscape');
+            $filename = 'Reporte_Traslado_' . $inventoryTransfer->id . '_' . date('YmdHis');
+            return $pdf->download($filename . '.pdf');
+
+        }
+
+
+        /**
+         * Genera un pdf para nota de traslado
+         *
+         * @param \Modules\Inventory\Models\InventoryTransfer $inventoryTransfer
+         *
+         * @return \Illuminate\Http\Response
+         */
+        public function getPdf(InventoryTransfer $inventoryTransfer): \Illuminate\Http\Response
+        {
+            $data = $inventoryTransfer->getPdfData();
+            // return View('inventory::transfers.export.pdf', compact('data'));
+            $pdf = PDF::loadView('inventory::transfers.export.pdf', compact('data'));
+            $pdf->setPaper('A4', 'landscape');
             $filename = 'Reporte_Traslado_' . $inventoryTransfer->id . '_' . date('YmdHis');
 
             return $pdf->download($filename . '.pdf');

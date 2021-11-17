@@ -5,15 +5,16 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type"
-          content="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8"/>
+          content="application/pdf; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible"
           content="ie=edge">
-
     <title>Reporte</title>
     @include('inventory::transfers.export.partial.style')
 
+
 </head>
 <body>
+
 <?php
 
 use Modules\Inventory\Models\Inventory;
@@ -26,13 +27,35 @@ if ($inventories == null) {
     $inventories->push(new Inventory());
 }
 $pdf = true;
-?>
-@include('inventory::transfers.export.partial.header')
 
-<br>
-@if($inventories->count()>0)
-    @include('inventory::transfers.export.partial.items')
+$inventories = !empty($data['inventories']) ? $data['inventories'] : null;
+$newInventory = new Collection();
+
+if ($inventories == null) {
+    $inventories = new Collection();
+    $inventories->push(new Inventory());
+}
+if ($inventories->count() > 0) {
+    $newInventory = $inventories->chunk(18);
+}
+$totalInv = $newInventory->count();
+?>
+@if($newInventory->count()>0)
+
+    @foreach ($newInventory as $invIndex => $inventories)
+        @include('inventory::transfers.export.partial.header')
+
+        <br>
+        @include('inventory::transfers.export.partial.items')
+        @if($totalInv < $invIndex)
+            {{-- Salto de linea --}}
+            <div class="page-break"></div>
+        @endif
+    @endforeach
 @else
+    @include('inventory::transfers.export.partial.header')
+
+    <br>
     <div>
         <p>No se encontraron registros.</p>
     </div>

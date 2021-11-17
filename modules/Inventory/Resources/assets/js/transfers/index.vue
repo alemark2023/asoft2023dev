@@ -34,7 +34,7 @@
                         <th>Detalle</th>
                         <th>Detalle Productos</th>
                         <th>Cantidad Total Productos</th>
-                        <!--<th class="text-right">Acciones</th> -->
+                        <th class="text-right">Acciones</th>
                     </tr>
                     <tr></tr>
                     <tr slot-scope="{ index, row }">
@@ -81,6 +81,16 @@
                             </el-popover>
                         </td>
                         <td>{{ row.quantity }}</td>
+                        <td class="text-right">
+                            <button
+                                class="btn waves-effect waves-light btn-xs btn-info"
+                                type="button"
+                                @click.prevent="clickDownload('pdf',row.id)"
+                            >
+                                <i class="fa fa-file-pdf"></i>
+                                PDF
+                            </button>
+                        </td>
                         <!--<td class="text-right">
                                          <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                                 @click.prevent="clickCreate(row.id)">Editar</button>
@@ -127,7 +137,10 @@ export default {
             this.destroy(`/${this.resource}/${id}`).then(() =>
                 this.$eventHub.$emit("reloadData")
             );
-        }
+        },
+        clickDownload(type,id) {
+            window.open(`/${this.resource}/download/${type}/${id}`, "_blank");
+        },
     }
 };
 </script>
