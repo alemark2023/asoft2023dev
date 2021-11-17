@@ -28,101 +28,108 @@
 
     $pdf = $pdf ?? false;
 ?>
-
-<table class="full-width">
-    <tbody class="full-width">
-    <tr>
-        <td
-            rowspan="4"
-            colspan="4"
-            class="half-width"
-            align="center">
-        @if($pdf == true)
-            <!-- Logo aqui -->
-                @if(!empty($company->logo))
-                    <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}"
-                         alt="{{$company->name}}"
-                         class="company_logo_ticket contain">
+<div>
+    <table class="no-border">
+        <tr>
+            <td
+                colspan="4"
+                align="center"
+                style="max-width: 300px; height: auto;"
+            >
+            @if($pdf == true)
+                <!-- Logo aqui -->
+                    @if(!empty($company->logo))
+                        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}"
+                             alt="{{$company->name}}"
+                             class="company_logo_ticket contain"
+                             style="max-width: 300px; height: auto;"
+                             >
+                    @endif
+                @else
+                    <h3>
+                        {{$company->name}}
+                    </h3>
                 @endif
-            @else
-                <h3>
-                    {{$company->name}}
-                </h3>
-            @endif
 
-        </td>
+            </td>
 
-        <td
-            rowspan="4"
-            colspan="4"
-            class="half-width"
-            align="center">
-            <h3 class="font-bold">{{ 'R.U.C. '.$company->number }}</h3>
-            <h3 class="text-center font-bold">{{ $document_type }}</h3>
-            <br>
-            <h3 class="text-center font-bold">{{ $serie }} - {{ $number }}</h3>
-        </td>
-    </tr>
-    </tbody>
-</table>
-
-<table class="full-width">
-    <tbody class="full-width">
-    <tr>
-
-    <tr>
-        <td
-            {{-- colspan="2" --}}
-        >
-            <strong>ALMACÉN INICIAL</strong>
-        </td>
-        <td
-            {{-- colspan="2" --}}
-        >
-            {{ $warehouse_from->getDescription() }}
-        </td>
-    </tr>
-    <tr>
-        <td
-            {{-- colspan="2" --}}
-        >
-            <strong>ALMACÉN DESTINO</strong>
-        </td>
-        <td
-            {{-- colspan="2" --}}
-        >
-            {{ $warehouse_to->getDescription() }}
-        </td>
-    </tr>
-    <tr>
-        <td
-            {{-- colspan="2" --}}
-        >
-            <strong>MOTIVO</strong>
-        </td>
-        <td
-            {{-- colspan="2" --}}
-        >
-            {{ $motivo }}
-        </td>
-    </tr>
-
-
-    <tr>
-        <td>
-            <strong>FECHA DOCUMENTO:</strong>
-        </td>
-        <td>
-            {{$created_at->format('d/m/Y')}}
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <strong>RESPONSABLE:</strong>
-        </td>
-        <td>
-            {{ $user->getName() }}
-        </td>
-    </tr>
-    </tbody>
-</table>
+            <td
+                colspan="4"
+                align="left"
+                style="max-width: 300px; height: auto;"
+            >
+                <table style="border:2px solid black; max-width: 150px;" >
+                    <tr>
+                        <td
+                            align="center"
+                        >
+                            <h3 class="font-bold">{{ 'R.U.C. '.$company->number }}</h3>
+                            <h3 class="text-center font-bold">{{ $document_type }}</h3>
+                            <h3 class="text-center font-bold">{{ $serie }} - {{ $number }}</h3>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+<div>
+    <table  class="no-border">
+        <tr>
+            <td>
+                <table  class="no-border">
+                    <tr>
+                        <td
+                            {{-- colspan="2" --}}
+                        >
+                            <strong>ALMACÉN INICIAL</strong>
+                        </td>
+                        <td
+                            {{-- colspan="2" --}}
+                        >
+                            {{ $warehouse_from->getDescription() }}
+                        </td>
+                        <td>
+                            <strong>FECHA DOCUMENTO:</strong>
+                        </td>
+                        <td>
+                            {{$created_at->format('d/m/Y')}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td
+                            {{-- colspan="2" --}}
+                        >
+                            <strong>ALMACÉN DESTINO</strong>
+                        </td>
+                        <td
+                            {{-- colspan="2" --}}
+                        >
+                            {{ $warehouse_to->getDescription() }}
+                        </td>
+                        <td>
+                            <strong>RESPONSABLE:</strong>
+                        </td>
+                        <td>
+                            {{ $user->getName() }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td
+                            {{-- colspan="2" --}}
+                        >
+                            <strong>MOTIVO</strong>
+                        </td>
+                        <td
+                            {{-- colspan="2" --}}
+                        >
+                            {{ $motivo }}
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
