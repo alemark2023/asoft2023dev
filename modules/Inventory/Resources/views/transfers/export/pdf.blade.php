@@ -35,8 +35,15 @@ if ($inventories == null) {
     $inventories = new Collection();
     $inventories->push(new Inventory());
 }
+/*
+$e = $inventories->first();
+for($i=1;$i<50;$i++){
+    $inventories->push($e);
+}
+*/
 if ($inventories->count() > 0) {
-    $newInventory = $inventories->chunk(18);
+    // 18 en horizontal
+    $newInventory = $inventories->chunk(31);
 }
 $totalInv = $newInventory->count();
 ?>
@@ -47,8 +54,7 @@ $totalInv = $newInventory->count();
 
         <br>
         @include('inventory::transfers.export.partial.items')
-        @if($totalInv < $invIndex)
-            {{-- Salto de linea --}}
+        @if(($invIndex+1) < $totalInv  )
             <div class="page-break"></div>
         @endif
     @endforeach

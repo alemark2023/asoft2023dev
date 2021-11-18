@@ -49,9 +49,11 @@
                 <?php
                 /** @var \Modules\Inventory\Models\Inventory $inventory */
                 $item = $inventory->item;
-                // $itemCollection = [];
                 $itemCollection = $item->getCollectionData($configuration);
 
+                $itemCollection['description'] = substr($itemCollection['description'], 0, 49);
+                $itemCollection['internal_id'] = substr($itemCollection['internal_id'], 0, 10);
+                $itemCollection['unit_type_text'] = substr($itemCollection['unit_type_text'], 0, 10);
                 $qty = $inventory->quantity;
                 $lot_code = $inventory->lot_code;
                 /*

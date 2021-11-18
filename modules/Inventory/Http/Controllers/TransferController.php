@@ -313,7 +313,8 @@
             $data = $inventoryTransfer->getPdfData();
             // return View('inventory::transfers.export.pdf', compact('data'));
             $pdf = PDF::loadView('inventory::transfers.export.pdf', compact('data'));
-            $pdf->setPaper('A4', 'landscape');
+            $pdf->setPaper('A4', 'portrait');
+            // $pdf->setPaper('A4', 'landscape');
             $filename = 'Reporte_Traslado_' . $inventoryTransfer->id . '_' . date('YmdHis');
 
             return $pdf->download($filename . '.pdf');
