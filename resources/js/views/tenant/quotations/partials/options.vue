@@ -184,7 +184,7 @@
                         <el-date-picker
                             v-model="document.date_of_issue"
                             :clearable="false"
-                            readonly
+
                             type="date"
                             value-format="yyyy-MM-dd"
                             @change="changeDateOfIssue"
@@ -527,6 +527,7 @@ export default {
     computed:{
         ...mapState([
             'config',
+            'payment_method_types'
         ]),
         credit_payment_metod: function () {
             return _.filter(this.payment_method_types, {'is_credit': true})
@@ -561,7 +562,7 @@ export default {
             is_document_type_invoice: true,
             payment_destinations: [],
             loading_search: false,
-            payment_method_types: [],
+            // payment_method_types: [],
             sellers: [],
         };
     },
@@ -851,7 +852,7 @@ export default {
                         this.$message.error(error.response.data.message);
                     }
                 })
-                .then(() => {
+                .finally(() => {
                     this.loading_submit = false;
                 });
         },
@@ -916,8 +917,8 @@ export default {
                     this.all_series = response.data.series;
                     this.payment_destinations =
                         response.data.payment_destinations;
-                    this.payment_method_types =
-                        response.data.payment_method_types;
+                    this.$store.commit('setPaymentMethodTypes', response.data.payment_method_types)
+                    // this.payment_method_types = response.data.payment_method_types ;
                     this.sellers = response.data.sellers
                     // this.document.document_type_id = (this.all_document_types.length > 0)?this.all_document_types[0].id:null
                     // this.changeDocumentType()
