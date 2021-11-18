@@ -99,7 +99,6 @@ trait ReportTrait
             $purchase_order,
             $guides,
             $web_platform);
-
            return $records;
 
     }
@@ -136,6 +135,8 @@ trait ReportTrait
     ) {
         $web_platform = (int)$web_platform;
         $document_type_id = ($document_type_id == 'null')?null:$document_type_id;
+        // En unas vistas esta consultando "01" en vez 01
+        $document_type_id = str_replace('"','',$document_type_id);
         if($model !== PurchaseItem::class) {
             $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])
                 ->latest()
@@ -152,14 +153,8 @@ trait ReportTrait
                 '03',
                 '07',
                 '08',
-                '"01"',
-                '"03"',
-                '"07"',
-                '"08"',
             ], true)
             ) {
-                // En unas vistas esta consultando "01" en vez 01
-                $document_type_id = str_replace('"','',$document_type_id);
                 $data->where('document_type_id', $document_type_id);
             }else{
                 $data->where('document_type_id', 'like', '%'.$document_type_id.'%');
