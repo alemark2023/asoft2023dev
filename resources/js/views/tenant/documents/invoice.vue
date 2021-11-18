@@ -311,7 +311,7 @@
                                                         :
                                                     </td>
                                                     <td>
-                                                        
+
                                                         <el-input-number v-model="total_global_discount"
                                                                          :min="0"
                                                                          class="input-custom"
@@ -331,7 +331,7 @@
                                                         <!-- <td>{{ currency_type.symbol }} {{ form.detraction.amount }}</td> -->
                                                     </tr>
                                                 </template>
-                                                
+
                                                 <template v-if="form.retention">
                                                     <tr v-if="form.retention.amount > 0">
                                                         <td>M. RETENCIÓN ({{form.retention.percentage * 100}}%):</td>
@@ -415,14 +415,14 @@
                                                     </td>
                                                 </tr>
 
-                                                
+
                                                 <!-- <template v-if="form.detraction">
                                                     <tr v-if="form.detraction.amount > 0 && form.total_pending_payment > 0">
                                                         <td width="60%">M. PENDIENTE:</td>
                                                         <td>{{ currency_type.symbol }} {{ form.total_pending_payment }}</td>
                                                     </tr>
                                                 </template> -->
-                                                
+
                                                 <template v-if="form.detraction || form.retention">
                                                     <tr v-if="form.total_pending_payment > 0">
                                                     <!-- <tr v-if="form.detraction.amount > 0 && form.total_pending_payment > 0"> -->
@@ -657,7 +657,7 @@
                                             :
                                         </td>
                                         <td>
-                                            
+
                                             <el-input-number v-model="total_global_discount"
                                                                 :min="0"
                                                                 class="input-custom"
@@ -1130,7 +1130,7 @@
                                         </div>
                                     </div>
 
-                                    
+
                                     <div class="col-12 py-2 px-0" v-if="show_has_retention">
                                         <div class="row no-gutters">
                                             <div class="col-10">¿Tiene retención de igv?</div>
@@ -1860,7 +1860,7 @@ export default {
         prepareDataRetention(){
 
             this.form.has_retention = !_.isEmpty(this.form.retention)
-            
+
             if(this.form.has_retention){
                 this.setTotalPendingAmountRetention(this.form.retention.amount)
             }
@@ -2505,7 +2505,7 @@ export default {
                 payment_condition_id: '01',
                 fee: [],
                 total_pending_payment: 0,
-                has_retention : false, 
+                has_retention : false,
                 retention: {},
             }
 
@@ -2525,7 +2525,7 @@ export default {
             this.$eventHub.$emit('eventInitForm')
 
             this.initInputPerson()
-            
+
             if (!this.config.restrict_receipt_date) {
                 this.datEmision = {}
             }
@@ -2544,9 +2544,9 @@ export default {
                 let amount = _.round(base * percentage, 2)
 
                 this.form.retention = {
-                    base: base, 
+                    base: base,
                     code: '62', //Código de Retención del IGV
-                    amount: amount, 
+                    amount: amount,
                     percentage: percentage
                 }
 
@@ -2721,7 +2721,7 @@ export default {
                 // this.form.customer_id = (this.customers.length > 0) ? this.establishment.customer_id : null
                 let alt = _.find(this.customers, {'id': this.establishment.customer_id});
                 // console.log(alt)
-                
+
                 if (alt !== undefined) {
                     this.form.customer_id = this.establishment.customer_id
                     this.validateCustomerRetention(alt.identity_document_type_id)
@@ -2739,7 +2739,7 @@ export default {
             this.form.customer_id = null
         },
         dateValidError(){
-            
+
             this.$message.error('No puede seleccionar una fecha menor a 6 días.');
             this.dateValid = false
 
@@ -2960,7 +2960,7 @@ export default {
             this.form.total_igv = _.round(total_igv, 2)
             this.form.total_value = _.round(total_value, 2)
             // this.form.total_taxes = _.round(total_igv, 2)
-            
+
             //impuestos (isc + igv)
             this.form.total_taxes = _.round(total_igv + total_isc, 2);
 
@@ -3100,24 +3100,24 @@ export default {
 
             //input donde se ingresa monto o porcentaje
             let input_global_discount = parseFloat(this.total_global_discount)
-            
+
             if(input_global_discount > 0){
 
                 let base = parseFloat(this.form.total)
                 let amount = 0
                 let factor = 0
-    
+
                 if(this.is_amount){
-    
+
                     amount = input_global_discount
                     factor = _.round(amount / base, 5)
-    
+
                 }else{
-    
+
                     factor = _.round(input_global_discount / 100, 5)
                     amount = factor * base
                 }
-                
+
                 this.form.total_discount = _.round(amount, 2)
                 this.form.total = _.round(this.form.total - amount, 2)
 
@@ -3128,7 +3128,7 @@ export default {
                     amount: _.round(amount, 2),
                     base: base
                 })
-    
+
             }
 
         },
@@ -3239,6 +3239,7 @@ export default {
                 path = `/${this.resource}/${this.form.id}/update`;
             }
             let temp = this.form.payment_condition_id;
+            // Condicion de pago Credito con cuota pasa a credito
             if (this.form.payment_condition_id === '03') this.form.payment_condition_id = '02';
             this.$http.post(path, this.form).then(response => {
                 if (response.data.success) {
@@ -3458,7 +3459,7 @@ export default {
             })
         },
         getTotal(){
-           
+
             if(!_.isEmpty(this.form.detraction) && this.form.total_pending_payment > 0)
             {
                 return this.form.total_pending_payment
