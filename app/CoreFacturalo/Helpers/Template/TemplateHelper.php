@@ -182,4 +182,14 @@
             return $data;
         }
 
+        /**
+         * Devuelve un string html para salto de linea
+         *
+         * @return string
+         */
+        public static function breakLine(): string
+        {
+
+            return '<div style="page-break-after: always;"></div>';
+        }
     }

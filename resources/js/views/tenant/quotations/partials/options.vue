@@ -891,6 +891,8 @@ export default {
             this.resetDocument();
         },
         clickToPrint(format) {
+            // Si no hay external id, no hará nada.
+            if(this.form.external_id == null) return null;
             window.open(
                 `/${this.resource}/print/${this.form.external_id}/${format}`,
                 "_blank"

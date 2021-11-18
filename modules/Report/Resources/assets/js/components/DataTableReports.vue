@@ -449,6 +449,7 @@ export default {
                 this.form.user_type = 'CREADOR';
             }
 
+
             this.form.person_id = null
             this.form.user_id = [];
             this.$eventHub.$emit('changeFilterColumn', 'seller')
@@ -464,6 +465,7 @@ export default {
                 let parameters = `input=${input}`
 
                 this.form.type_person = this.resource === 'reports/sales' ? 'customers' : 'suppliers'
+
 
                 this.$http.get(`/reports/data-table/persons/${this.form.type_person}?${parameters}`)
                     .then(response => {
@@ -635,12 +637,14 @@ export default {
 
         },
         getQueryParameters() {
+            if(this.users.length  > 0){
+                delete(this.form.type_person)
+            }
             let parameters = queryString.stringify({
                 page: this.pagination.current_page,
                 limit: this.limit,
                 ...this.form
             })
-
             delete(parameters.user_id)
             delete(parameters.document_type_id)
 
