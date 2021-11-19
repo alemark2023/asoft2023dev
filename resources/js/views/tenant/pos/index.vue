@@ -1564,17 +1564,32 @@ export default {
         async clickAddItem(item, index, input = false) {
             this.loading = true;
             let exchangeRateSale = this.form.exchange_rate_sale;
+            let presentation = item.presentation
 
-            // console.log(item.unit_type_id)
-            // console.log(exist_item)
-            // console.log(item)
+            let exist_item = false;
+            if(presentation === undefined) {
+                exist_item = _.find(this.form.items, {
+                    item_id: item.item_id,
+                    unit_type_id: item.unit_type_id
+                });
+            }else{
+                // Se evalua si existe presentation de item
+                    exist_item = _.find(this.form.items, {
+                    item_id: item.item_id,
+                    presentation: presentation,
+                    unit_type_id: item.unit_type_id
+                });
+            }
 
-            let exist_item = _.find(this.form.items, {
-                item_id: item.item_id,
-                unit_type_id: item.unit_type_id
-            });
+            /*
+            console.log(exist_item)
+            console.log(item.unit_type_id)
+            console.log(exist_item)
+            console.log(item)
+            console.log(presentation)
+            console.log(presentation)
+            */
 
-            // console.log(exist_item)
 
             let pos = this.form.items.indexOf(exist_item);
             let response = null;
@@ -1648,8 +1663,8 @@ export default {
 
                 response = await this.getStatusStock(
                     item.item_id,
-                    item.presentation
-                        ? parseInt(item.presentation.quantity_unit)
+                    presentation
+                        ? parseInt(presentation.quantity_unit)
                         : 1
                 );
                 if (!response.success) {
@@ -1671,8 +1686,8 @@ export default {
 
                 this.form_item.unit_price = unit_price;
                 this.form_item.item.unit_price = unit_price;
-                this.form_item.item.presentation = item.presentation
-                    ? item.presentation
+                this.form_item.presentation = presentation
+                    ? presentation
                     : null;
 
                 this.form_item.charges = [];
@@ -1698,10 +1713,12 @@ export default {
 
                 // this.row['unit_type_id'] = item.presentation ? item.presentation.unit_type_id : 'NIU';
 
-                this.row["unit_type_id"] = item.presentation
-                    ? item.presentation.unit_type_id
+                this.row["unit_type_id"] = presentation
+                    ? presentation.unit_type_id
                     : this.form_item.item.unit_type_id;
 
+                // Se añade la presentation directamente al item para filtrarlo posteriormente
+                this.row.presentation = presentation;
                 this.form.items.unshift(this.row);
                 item.aux_quantity = 1;
             }

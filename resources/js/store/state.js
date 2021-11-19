@@ -21,6 +21,7 @@ export default {
         id: 0,
         company: {},
         establishment: {
+            id: null,
             address: null,
             email: null,
             telephone: null,

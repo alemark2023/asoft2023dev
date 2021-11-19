@@ -1,5 +1,5 @@
 <?php
-use App\Models\Tenant\Company;
+use App\CoreFacturalo\Helpers\Template\TemplateHelper;use App\Models\Tenant\Company;
 use App\Models\Tenant\Document;use App\Models\Tenant\DocumentItem;use App\Models\Tenant\PaymentMethodType;use Illuminate\Database\Eloquent\Collection;
 /**
  * @var Document $document
@@ -98,6 +98,10 @@ $sale_condition = $paymentCondition->getDescription();
 /** @var Collection $items */
 $items = $document->items;
 $array_items = [];
+// Condicion de pago
+$condition = TemplateHelper::getDocumentPaymentCondition($document);
+// Pago/Coutas detalladas
+$paymentDetailed = TemplateHelper::getDetailedPayment($document);
 function setNubmer($number, $decimal = 2, $mil = ',', $dec = '.')
 {
     return number_format($number, $decimal, $mil, $dec);
@@ -135,13 +139,13 @@ foreach ($items as $item_obj) {
     $item['qty'] = setNubmer($item['qty'], 1);
 
     // El precio Unitario
-    $item['p_unit'] = setNubmer( $item_obj->unit_price );
+    $item['p_unit'] = setNubmer($item_obj->unit_price);
     // Valor Unitario
-    $item['p_unit'] = setNubmer( $item_obj->unit_price + ($total_discount_line / (float) $item['qty']));
+    $item['p_unit'] = setNubmer($item_obj->unit_price + ($total_discount_line / (float)$item['qty']));
     // $item['p_unit'] = setNubmer( $item_obj->total_base_igv / $item_obj->quantity);
     $item['neto'] = setNubmer($item_obj->unit_price);
     // Total de la linea
-    $item['total'] = setNubmer((float) $item_obj->unit_price * (float) $item['qty'] );
+    $item['total'] = setNubmer((float)$item_obj->unit_price * (float)$item['qty']);
     $array_items[] = $item;
     // dd($item);
 
@@ -450,7 +454,7 @@ $total_array_chunk = count($array_chunk);
                     valign=top>@if($item_blank_line==true)
                         {!! $item['description'] !!}
                     @else
-                        {{ $item['description'] }}
+                        {!! $item['description'] !!}
                     @endif</td>
                 <td style="{{ $border_common }}"
                     colspan={{ $span_qty }}
@@ -512,7 +516,28 @@ $total_array_chunk = count($array_chunk);
                 rowspan=6
                 height="104"
                 align="left"
-                valign=top>{{ $extra_info }}</td>
+                valign=top>{{ $extra_info }}
+                <br>
+                <strong>Condición de pago: </strong>{{ $condition }}
+                <br>
+                @if(!empty($paymentDetailed))
+                    @foreach($paymentDetailed as $detailed)
+                        {{ isset($paymentDetailed['CUOTA'])?'Cuotas:':'Pagos:' }}<br>
+                        @foreach($detailed as $row)
+                            &#8226;
+                            {{ $row['description']  }}
+                            {{ isset($paymentDetailed['CUOTA'])?' / FECHA: ':' - ' }}
+                            {{ $row['reference']  }}
+                            {{ isset($paymentDetailed['CUOTA'])?' / Monto: ':'' }}
+                            {{ $row['symbol']  }}
+                            {{ number_format( $row['amount'], 2) }}
+                            <br>
+                        @endforeach
+                    @endforeach
+                @endif
+
+
+            </td>
             <td align="left"><br></td>
 
             <?php
@@ -589,7 +614,7 @@ $total_array_chunk = count($array_chunk);
     @endfor
 
 
-{{--    <pre>{{ var_export($debug,true) }}</pre>--}}
+    {{--    <pre>{{ var_export($debug,true) }}</pre>--}}
 
 
     </body>

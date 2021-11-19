@@ -136,22 +136,25 @@ class HotelRentController extends Controller
 		$rent = HotelRent::with('room', 'room.category', 'items')
 			->findOrFail($rentId);
 
-		$token = auth()->user()->api_token;
-
 		$room = $rent->items->firstWhere('type', 'HAB');
 
 		$customer = Person::withOut('department', 'province', 'district')
 			->findOrFail($rent->customer_id);
 
-        $payment_method_types = PaymentMethodType::all();
+        // $payment_method_types = PaymentMethodType::all();
+        $payment_method_types = PaymentMethodType::getPaymentMethodTypes();
         $payment_destinations = $this->getPaymentDestinations();
-        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
-        $series = Series::where('establishment_id', $establishment->id)->get();
+        $series = Series::where('establishment_id',  auth()->user()->establishment_id)->get();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
-        $user = auth()->user();
-        $warehouse_id = $user->establishment_id;
 
-		return view('hotel::rooms.checkout', compact('rent', 'room', 'token', 'customer', 'payment_method_types', 'payment_destinations', 'series', 'document_types_invoice', 'warehouse_id'));
+		return view('hotel::rooms.checkout', compact(
+            'rent', 'room',
+            'customer',
+            'payment_method_types',
+            'payment_destinations',
+            'series',
+            'document_types_invoice'
+        ));
 	}
 
 	public function finalizeRent($rentId)
@@ -165,10 +168,11 @@ class HotelRentController extends Controller
 			->update([
 				'status' => 'LIMPIEZA'
 			]);
-
+        $rent = HotelRent::with('room', 'room.category', 'items')->findOrFail($rentId);
 		return response()->json([
 			'success' => true,
-			'message' => 'Información procesada de forma correcta.'
+			'message' => 'Información procesada de forma correcta.',
+            'currentRent' => $rent
 		], 200);
 	}
 
