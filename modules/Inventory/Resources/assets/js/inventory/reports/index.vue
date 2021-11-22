@@ -156,6 +156,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Descripción</th>
+                                        <th v-if="filters.model.visible">Modelo</th>
                                         <th>Categoria</th>
                                         <th class="text-right">Stock mínimo</th>
                                         <th class="text-right">Stock actual</th>
@@ -191,6 +192,7 @@
                                         :key="index">
                                         <td>{{ index + 1 }}</td>
                                         <td>{{ row.name }}</td>
+                                        <td v-if="filters.model.visible">{{ row.model }}</td>
                                         <td>{{ row.item_category_name }}</td>
                                         <td class="text-right">{{ row.stock_min }}</td>
                                         <td class="text-right">{{ row.stock }}</td>
@@ -277,6 +279,10 @@ export default {
         this.filters = {
             categories: {
                 title: 'Categorias',
+                visible: false
+            },
+            model: {
+                title: 'Modelo',
                 visible: false
             },
             brand: {

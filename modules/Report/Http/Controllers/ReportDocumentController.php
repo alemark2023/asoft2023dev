@@ -49,6 +49,7 @@ class ReportDocumentController extends Controller
 
     public function records(Request $request)
     {
+
         $records = $this->getRecords($request->all(), Document::class);
 
         return new DocumentCollection($records->paginate(config('tenant.items_per_page')));
