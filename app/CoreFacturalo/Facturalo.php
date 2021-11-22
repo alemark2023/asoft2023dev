@@ -604,9 +604,18 @@ class Facturalo
             $pdf->SetHTMLFooter($html_footer_blank);
         }
 
+        if ($base_pdf_template === 'default3_929' && in_array($this->document->document_type_id, ['03','01'])) {
+            // Solo boleta o factura #929
+            $html_header = $template->pdfHeader($base_pdf_template, $this->company, $this->document);
+            $pdf->SetHTMLHeader($html_header);
+            $html_footer = $template->pdfFooter($base_pdf_template, $this->document);
+            $pdf->SetHTMLFooter($html_footer);
+        }
+
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
+        // echo $html_header.$html.$html_footer; exit();
         $this->uploadFile($pdf->output('', 'S'), 'pdf');
         return $this;
     }

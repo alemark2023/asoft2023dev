@@ -171,17 +171,18 @@ class DocumentController extends Controller
     public function tables()
     {
         $customers = $this->table('customers');
+        $user = new User();
+        if(\Auth::user()){
+            $user = \Auth::user();
+        }
+        $document_id =  $user->document_id;
+        $series_id =  $user->series_id;
+        $establishment_id =  $user->establishment_id;
+        $userId =  $user->id;
+        $userType = $user->type;
+        $series = $user->getSeries();
         // $prepayment_documents = $this->table('prepayment_documents');
-        $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();// Establishment::all();
-        $series = collect(Series::all())->transform(function($row) {
-            return [
-                'id' => $row->id,
-                'contingency' => (bool) $row->contingency,
-                'document_type_id' => $row->document_type_id,
-                'establishment_id' => $row->establishment_id,
-                'number' => $row->number
-            ];
-        });
+        $establishments = Establishment::where('id', $establishment_id)->get();// Establishment::all();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
         $document_types_note = DocumentType::whereIn('id', ['07', '08'])->get();
         $note_credit_types = NoteCreditType::whereActive()->orderByDescription()->get();
@@ -192,8 +193,7 @@ class DocumentController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
-        $user = auth()->user()->type;
-        $sellers = User::where('establishment_id', auth()->user()->establishment_id)->whereIn('type', ['seller', 'admin'])->orWhere('id', auth()->user()->id)->get();
+        $sellers = User::where('establishment_id',$establishment_id)->whereIn('type', ['seller', 'admin'])->orWhere('id', $userId)->get();
         $payment_method_types = $this->table('payment_method_types');
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
@@ -222,10 +222,8 @@ class DocumentController extends Controller
         //                'discount_types', 'charge_types', 'company', 'document_type_03_filter');
 
         $payment_destinations = $this->getPaymentDestinations();
-        $document_id =  auth()->user()->document_id;
-        $series_id =  auth()->user()->series_id;
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
-
+        $user = $userType;
         return compact(
             'document_id',
             'series_id',

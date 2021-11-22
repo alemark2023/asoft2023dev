@@ -109,6 +109,7 @@
                                         <el-option v-for="option in series"
                                                    :key="option.id"
                                                    :label="option.number"
+                                                   :disabled="option.disabled"
                                                    :value="option.id"></el-option>
                                     </el-select>
                                     <small v-if="errors.series_id"
@@ -243,7 +244,8 @@
                                     <td>{{ index + 1 }}</td>
                                     <td>{{ setDescriptionOfItem(row.item) }}
                                         {{
-                                            row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''
+                                        row.item.presentation.hasOwnProperty('description') ?
+                                        row.item.presentation.description : ''
                                         }}<br/><small>{{ row.affectation_igv_type.description }}</small>
                                     </td>
                                     <td class="text-center">{{ row.item.unit_type_id }}</td>
@@ -375,7 +377,7 @@
                                                 <tr v-if="form.total_plastic_bag_taxes > 0">
                                                     <td>ICBPER:</td>
                                                     <td>{{ currency_type.symbol }} {{
-                                                            form.total_plastic_bag_taxes
+                                                        form.total_plastic_bag_taxes
                                                         }}
                                                     </td>
                                                 </tr>
@@ -425,9 +427,11 @@
 
                                                 <template v-if="form.detraction || form.retention">
                                                     <tr v-if="form.total_pending_payment > 0">
-                                                    <!-- <tr v-if="form.detraction.amount > 0 && form.total_pending_payment > 0"> -->
+                                                        <!-- <tr v-if="form.detraction.amount > 0 && form.total_pending_payment > 0"> -->
                                                         <td>M. PENDIENTE:</td>
-                                                        <td>{{ currency_type.symbol }} {{ form.total_pending_payment }}</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.total_pending_payment
+                                                            }}
+                                                        </td>
                                                     </tr>
                                                 </template>
 
@@ -659,10 +663,10 @@
                                         <td>
 
                                             <el-input-number v-model="total_global_discount"
-                                                                :min="0"
-                                                                class="input-custom"
-                                                                controls-position="right"
-                                                                @change="changeTotalGlobalDiscount"></el-input-number>
+                                                             :min="0"
+                                                             class="input-custom"
+                                                             controls-position="right"
+                                                             @change="changeTotalGlobalDiscount"></el-input-number>
 
                                             <!-- <el-input v-model="total_global_discount"
                                                       class="input-custom"
@@ -1131,7 +1135,8 @@
                                     </div>
 
 
-                                    <div class="col-12 py-2 px-0" v-if="show_has_retention">
+                                    <div class="col-12 py-2 px-0"
+                                         v-if="show_has_retention">
                                         <div class="row no-gutters">
                                             <div class="col-10">¿Tiene retención de igv?</div>
                                             <div class="col-2">
@@ -1420,8 +1425,8 @@ export default {
                     return time.getTime() > moment();
                 }
             },
-            default_document_type: null,
-            default_series_type: null,
+            // default_document_type: null,
+            // default_series_type: null,
             dateValid: false,
             input_person: {},
             showDialogDocumentDetraction: false,
@@ -1454,8 +1459,8 @@ export default {
             establishments: [],
             payment_method_types: [],
             establishment: null,
-            all_series: [],
-            series: [],
+            // all_series: [],
+            // series: [],
             prepayment_documents: [],
             currency_type: {},
             documentNewId: null,
@@ -1489,6 +1494,8 @@ export default {
     computed: {
         ...mapState([
             'config',
+            'series',
+            'all_series',
         ]),
         credit_payment_metod: function () {
             return _.filter(this.payment_method_types, {'is_credit': true})
@@ -1518,7 +1525,8 @@ export default {
                 this.business_turns = response.data.business_turns
                 this.establishments = response.data.establishments
                 this.operation_types = response.data.operation_types
-                this.all_series = response.data.series
+                this.$store.commit('setAllSeries',response.data.series)
+                // this.all_series = response.data.series
                 this.all_customers = response.data.customers
                 this.sellers = response.data.sellers
                 this.discount_types = response.data.discount_types
@@ -1544,8 +1552,8 @@ export default {
 
                 this.seller_class = (this.user == 'admin') ? 'col-lg-4 pb-2' : 'col-lg-6 pb-2';
 
-                this.default_document_type = response.data.document_id;
-                this.default_series_type = response.data.series_id;
+                // this.default_document_type = response.data.document_id;
+                // this.default_series_type = response.data.series_id;
                 this.selectDocumentType()
 
                 this.changeEstablishment()
@@ -1745,13 +1753,16 @@ export default {
             return item
         },
         // #307 Ajuste para seleccionar automaticamente el tipo de comprobante y serie
-        setDefaultDocumentType() {
-            if (this.default_document_type === undefined) this.default_document_type = null;
-            if (this.default_series_type === undefined) this.default_series_type = null;
+        setDefaultDocumentType(from_function ) {
+            this.default_series_type = this.config.user.serie;
+            this.default_document_type = this.config.user.document_id;
+            // if (this.default_document_type === undefined) this.default_document_type = null;
+            // if (this.default_series_type === undefined) this.default_series_type = null;
+
             let alt = _.find(this.document_types, {'id': this.default_document_type});
             if (this.default_document_type !== null && alt !== undefined) {
                 this.form.document_type_id = this.default_document_type;
-                this.changeDocumentType()
+                    this.changeDocumentType()
                 alt = _.find(this.series, {'id': this.default_series_type});
                 if (this.default_series_type !== null && alt !== undefined) {
                     this.form.series_id = this.default_series_type;
@@ -1792,7 +1803,8 @@ export default {
             this.form.seller_id = data.seller_id;
             this.form.items = this.onPrepareItems(data.items);
             // this.form.series = data.series; //form.series no llena el selector
-            this.series = this.onSetSeries(data.document_type_id, data.series);
+            this.$store.commit('setSeries', this.onSetSeries(data.document_type_id, data.series))
+            // this.series = this.onSetSeries(data.document_type_id, data.series);
             this.form.state_type_id = data.state_type_id;
             this.form.total_discount = parseFloat(data.total_discount);
             this.form.total_exonerated = parseFloat(data.total_exonerated);
@@ -1857,20 +1869,20 @@ export default {
             this.calculateTotal();
             // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
         },
-        prepareDataRetention(){
+        prepareDataRetention() {
 
             this.form.has_retention = !_.isEmpty(this.form.retention)
 
-            if(this.form.has_retention){
+            if (this.form.has_retention) {
                 this.setTotalPendingAmountRetention(this.form.retention.amount)
             }
 
         },
-        async prepareDataDetraction(){
+        async prepareDataDetraction() {
 
             this.has_data_detraction = (this.form.detraction) ? true : false
 
-            if(this.has_data_detraction){
+            if (this.has_data_detraction) {
 
                 let legend_value = (this.form.operation_type_id === '1001') ? 'Operación sujeta a detracción' : 'Operación Sujeta a Detracción - Servicios de Transporte - Carga'
                 let legend = await _.find(this.form.legends, {'code': '2006'})
@@ -2505,7 +2517,7 @@ export default {
                 payment_condition_id: '01',
                 fee: [],
                 total_pending_payment: 0,
-                has_retention : false,
+                has_retention: false,
                 retention: {},
             }
 
@@ -2535,9 +2547,9 @@ export default {
             this.total_discount_no_base = 0
 
         },
-        changeRetention(){
+        changeRetention() {
 
-            if(this.form.has_retention){
+            if (this.form.has_retention) {
 
                 let base = this.form.total
                 let percentage = _.round(parseFloat(this.config.igv_retention_percentage) / 100, 5)
@@ -2552,7 +2564,7 @@ export default {
 
                 this.setTotalPendingAmountRetention(amount)
 
-            }else{
+            } else {
 
                 this.form.retention = {}
                 this.form.total_pending_payment = 0
@@ -2560,7 +2572,7 @@ export default {
             }
 
         },
-        setTotalPendingAmountRetention(amount){
+        setTotalPendingAmountRetention(amount) {
 
             //monto neto pendiente aplica si la condicion de pago es credito
             this.form.total_pending_payment = ['02', '03'].includes(this.form.payment_condition_id) ? this.form.total - amount : 0
@@ -2633,12 +2645,12 @@ export default {
             if (this.form.detraction) {
                 // this.form.detraction.amount = (this.form.currency_type_id == 'PEN') ? _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage) / 100), 2) : _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage) / 100), 2)
 
-                if(this.form.currency_type_id == 'PEN'){
+                if (this.form.currency_type_id == 'PEN') {
 
                     this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage) / 100), 2)
                     this.form.total_pending_payment = this.form.total - this.form.detraction.amount
 
-                }else{
+                } else {
 
                     this.form.detraction.amount = _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage) / 100), 2)
                     this.form.total_pending_payment = _.round(this.form.total - (this.form.detraction.amount / this.form.exchange_rate_sale), 2)
@@ -2649,7 +2661,7 @@ export default {
 
             }
         },
-        calculateAmountToPayments(){
+        calculateAmountToPayments() {
 
             // if(this.form.payments.length > 0){
             //     // this.form.payments[0].payment = this.form.total_pending_payment
@@ -2706,14 +2718,14 @@ export default {
                     temp_customers = temp_customers.push(...data_customer)
                 })
                 temp_all_customers = this.all_customers.filter((item, index, self) =>
-                        index === self.findIndex((t) => (
-                            t.id === item.id
-                        ))
+                    index === self.findIndex((t) => (
+                        t.id === item.id
+                    ))
                 )
                 temp_customers = this.customers.filter((item, index, self) =>
-                        index === self.findIndex((t) => (
-                            t.id === item.id
-                        ))
+                    index === self.findIndex((t) => (
+                        t.id === item.id
+                    ))
                 )
                 this.all_customers = temp_all_customers;
                 this.customers = temp_customers;
@@ -2738,13 +2750,13 @@ export default {
         cleanCustomer() {
             this.form.customer_id = null
         },
-        dateValidError(){
+        dateValidError() {
 
             this.$message.error('No puede seleccionar una fecha menor a 6 días.');
             this.dateValid = false
 
         },
-        validateDateOfIssue(){
+        validateDateOfIssue() {
 
             let minDate = moment().subtract(7, 'days')
 
@@ -2752,8 +2764,7 @@ export default {
             if (moment(this.form.date_of_issue) < minDate && this.form.document_type_id === '01') {
 
                 this.dateValidError()
-            }
-            else if (moment(this.form.date_of_issue) < minDate && this.config.restrict_receipt_date) {
+            } else if (moment(this.form.date_of_issue) < minDate && this.config.restrict_receipt_date) {
 
                 this.dateValidError()
 
@@ -2780,11 +2791,24 @@ export default {
         },
         filterSeries() {
             this.form.series_id = null
-            this.series = _.filter(this.all_series, {
+            let series = _.filter(this.all_series, {
                 'establishment_id': this.form.establishment_id,
                 'document_type_id': this.form.document_type_id,
                 'contingency': this.is_contingency
             });
+            if(this.form.document_type_id === this.config.user.document_id){
+                // Se filtra si el documento es el mismo que el establecido para el usuario.
+                series = _.filter(this.all_series, {
+                    'establishment_id': this.form.establishment_id,
+                    'document_type_id': this.form.document_type_id,
+                    'contingency': this.is_contingency,
+                    'id': this.config.user.serie,
+
+                });
+            }
+
+
+            this.$store.commit('setSeries',series)
             this.form.series_id = (this.series.length > 0) ? this.series[0].id : null
         },
         filterCustomers() {
@@ -2978,7 +3002,7 @@ export default {
             if (['1001', '1004'].includes(this.form.operation_type_id))
                 this.changeDetractionType()
 
-            if(this.form.has_retention){
+            if (this.form.has_retention) {
                 this.changeRetention()
             }
 
@@ -3080,7 +3104,7 @@ export default {
         changeTypeDiscount() {
             this.calculateTotal()
         },
-        changeTotalGlobalDiscount(){
+        changeTotalGlobalDiscount() {
             this.calculateTotal()
         },
         deleteDiscountGlobal() {
@@ -3101,18 +3125,18 @@ export default {
             //input donde se ingresa monto o porcentaje
             let input_global_discount = parseFloat(this.total_global_discount)
 
-            if(input_global_discount > 0){
+            if (input_global_discount > 0) {
 
                 let base = parseFloat(this.form.total)
                 let amount = 0
                 let factor = 0
 
-                if(this.is_amount){
+                if (this.is_amount) {
 
                     amount = input_global_discount
                     factor = _.round(amount / base, 5)
 
-                }else{
+                } else {
 
                     factor = _.round(input_global_discount / 100, 5)
                     amount = factor * base
@@ -3331,23 +3355,23 @@ export default {
                 this.form.customer_address_id = address.id;
             }*/
         },
-        validateCustomerRetention(identity_document_type_id){
+        validateCustomerRetention(identity_document_type_id) {
 
-            if(identity_document_type_id != '6'){
+            if (identity_document_type_id != '6') {
 
-                if(this.form.has_retention){
+                if (this.form.has_retention) {
                     this.form.has_retention = false
                     this.changeRetention()
                 }
 
                 this.show_has_retention = false
 
-            }else{
+            } else {
                 this.show_has_retention = true
             }
 
         },
-        initDataPaymentCondition01(){
+        initDataPaymentCondition01() {
 
             this.readonly_date_of_due = false
             this.enabled_payments = true
@@ -3373,10 +3397,10 @@ export default {
             }
 
             // if(this.isCreditPaymentCondition){
-                // this.changeRetention()
+            // this.changeRetention()
             // }
 
-            if(!_.isEmpty(this.form.retention)){
+            if (!_.isEmpty(this.form.retention)) {
                 this.setTotalPendingAmountRetention(this.form.retention.amount)
             }
 
@@ -3458,22 +3482,20 @@ export default {
                 row.amount = amount;
             })
         },
-        getTotal(){
+        getTotal() {
 
-            if(!_.isEmpty(this.form.detraction) && this.form.total_pending_payment > 0)
-            {
+            if (!_.isEmpty(this.form.detraction) && this.form.total_pending_payment > 0) {
                 return this.form.total_pending_payment
             }
 
-            if(!_.isEmpty(this.form.retention) && this.form.total_pending_payment > 0)
-            {
+            if (!_.isEmpty(this.form.retention) && this.form.total_pending_payment > 0) {
                 return this.form.total_pending_payment
             }
 
             return this.form.total
         },
-        setDescriptionOfItem(item){
-            return showNamePdfOfDescription(item,this.config.show_pdf_name)
+        setDescriptionOfItem(item) {
+            return showNamePdfOfDescription(item, this.config.show_pdf_name)
         }
     }
 }

@@ -102,12 +102,9 @@ $array_items = [];
 $condition = TemplateHelper::getDocumentPaymentCondition($document);
 // Pago/Coutas detalladas
 $paymentDetailed = TemplateHelper::getDetailedPayment($document);
-function setNubmer($number, $decimal = 2, $mil = ',', $dec = '.')
-{
-    return number_format($number, $decimal, $mil, $dec);
-}
 foreach ($items as $item_obj) {
     /** @var DocumentItem $item_obj */
+    // $faker = Faker\Factory::create('es_ES');
     $item = $item_obj->toArray();
     $it = (array)$item_obj->item;
     $item['code'] = isset($it['internal_id']) ? $it['internal_id'] : null;
@@ -133,38 +130,44 @@ foreach ($items as $item_obj) {
     $item_obj->dstto = $total_discount_line;
     $item['dsc'] = $dsc;
     $item['dscto1'] = (empty($total_discount_line)) ? null : $total_discount_line;
-    $item['dscto'] = (empty($item['dscto'])) ? null : setNubmer($item['dscto'], 2) . "%";
-    $item['dscto1'] = (empty($total_discount_line)) ? null : setNubmer($total_discount_line, 2);
+    $item['dscto'] = (empty($item['dscto'])) ? null : TemplateHelper::setNumber($item['dscto'], 2) . "%";
+    $item['dscto1'] = (empty($total_discount_line)) ? null : TemplateHelper::setNumber($total_discount_line, 2);
 
-    $item['qty'] = setNubmer($item['qty'], 1);
+    $item['qty'] = TemplateHelper::setNumber($item['qty'], 1);
 
     // El precio Unitario
-    $item['p_unit'] = setNubmer($item_obj->unit_price);
+    $item['p_unit'] = TemplateHelper::setNumber($item_obj->unit_price);
     // Valor Unitario
-    $item['p_unit'] = setNubmer($item_obj->unit_price + ($total_discount_line / (float)$item['qty']));
-    // $item['p_unit'] = setNubmer( $item_obj->total_base_igv / $item_obj->quantity);
-    $item['neto'] = setNubmer($item_obj->unit_price);
+    $item['p_unit'] = TemplateHelper::setNumber($item_obj->unit_price + ($total_discount_line / (float)$item['qty']));
+    // $item['p_unit'] = TemplateHelper::setNumber( $item_obj->total_base_igv / $item_obj->quantity);
+    $item['neto'] = TemplateHelper::setNumber($item_obj->unit_price);
     // Total de la linea
-    $item['total'] = setNubmer((float)$item_obj->unit_price * (float)$item['qty']);
+    $item['total'] = TemplateHelper::setNumber((float)$item_obj->unit_price * (float)$item['qty']);
     $array_items[] = $item;
-    // dd($item);
 
+    /*
+    $item['description'] = $faker->paragraph(rand(3, 10));
+    for ($i = 0; $i < rand(50, 100); $i++) {
+        $array_items[] = $item;
+
+    }
+*/
 }
 
 $total_word = '';
 $extra_info = '';
 $currency_symbol = $document->currency_type->symbol;
 
-$total_gravado = $currency_symbol . " " . setNubmer($document->total_taxed);
-$total_inefacta = $currency_symbol . " " . setNubmer($document->total_unaffected);
-$total_exonerada = $currency_symbol . " " . setNubmer($document->total_exonerated);
-$total_gratuita = $currency_symbol . " " . setNubmer($document->total_free);
-$total_descuento = $currency_symbol . " " . setNubmer($document->total_discount);
-$total_igv = $currency_symbol . " " . setNubmer($document->total_igv);
-$total_importe = $currency_symbol . " " . setNubmer($document->total);
+$total_gravado = $currency_symbol . " " . TemplateHelper::setNumber($document->total_taxed);
+$total_inefacta = $currency_symbol . " " . TemplateHelper::setNumber($document->total_unaffected);
+$total_exonerada = $currency_symbol . " " . TemplateHelper::setNumber($document->total_exonerated);
+$total_gratuita = $currency_symbol . " " . TemplateHelper::setNumber($document->total_free);
+$total_descuento = $currency_symbol . " " . TemplateHelper::setNumber($document->total_discount);
+$total_igv = $currency_symbol . " " . TemplateHelper::setNumber($document->total_igv);
+$total_importe = $currency_symbol . " " . TemplateHelper::setNumber($document->total);
 
 $total_items = count($array_items);
-$cantidad_linea = 25;
+$cantidad_linea = 30;
 
 foreach (array_reverse((array)$document->legends) as $row) {
     $total_word .= ($row->code == "1000") ? $row->value . " " . $document->currency_type->description : $row->code . " " . $row->value;
@@ -190,173 +193,19 @@ $array_chunk = array_chunk($array_items, $cantidad_linea);
 $total_array_chunk = count($array_chunk);
 
 ?>
+<html>
+<head>
+    {{--<title>{{ $document_number }}</title>--}}
+    {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
+</head>
+<body>
 @for($items_in_array = 0; $items_in_array < $total_array_chunk; $items_in_array++)
     @php
         $array_to_work = $array_chunk[$items_in_array] ?? null
     @endphp
-
-    <html>
-    <head>
-        {{--<title>{{ $document_number }}</title>--}}
-        {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
-    </head>
-    <body>
-
-
-    @if($document->state_type->id == '11')
-        <div class="company_logo_box"
-             style="position: absolute; text-align: center; top:30%;">
-            <img
-                src="data:{{mime_content_type(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png")) }};base64, {{base64_encode(file_get_contents(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png"))) }}"
-                alt="anulado"
-                class=""
-                style="opacity: 0.6; {{ $border_st }}">
-        </div>
-    @endif
-    <table width="100%">
-        <colgroup width="60%"></colgroup>
-        <colgroup width="30%"></colgroup>
-        <tr>
-            <td
-                align="center">
-                <div class="company_logo_box">
-                    <img
-                        @if($company_logo!=null)
-                        src="data:{{mime_content_type(public_path("storage/uploads/logos/".$company_logo)) }};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/".$company_logo))) }}"
-                        @endif
-                        alt="{{ $company_name }}"
-                        class="company_logo"
-                        style="max-height: 50px; width: 400px;">
-                </div>
-
-            </td>
-            <td style="{!! $four_borders !!}"
-                rowspan=2
-                width="30%"
-                align="center"
-            >
-                <h3 class="font-bold">R.U.C. N° {{  $company_number }}</h3>
-                <h3 class="text-center font-bold">{{ $document->document_type->description }}</h3>
-                <br>
-                <h3 class="text-center font-bold">{{ $document_number }}</h3>
-
-            </td>
-        </tr>
-        <tr>
-            <td align="center">
-                <small>
-                    @if(!empty($company_name)){{ $company_name }}<br>@endif
-                    @if(!empty($establishment_trade_address)){{ $establishment_trade_address }}<br>@endif
-                    @if(!empty($establishment_address)){{ $establishment_address }}<br>@endif
-                    @if(!empty($establishment_ubi)){{ $establishment_ubi }}<br>@endif
-                    @if(!empty($establishment_aditional_information)){{ $establishment_aditional_information }}
-                    <br>@endif
-                    @if(!empty($establishment_telephone)){{ $establishment_telephone }}<br>@endif
-                    @if(!empty($establishment_email)){{ $establishment_email }}<br>@endif
-                    @if(!empty($establishment_web_address)){{ $establishment_web_address }}<br>@endif
-
-                <!--            <h5>RUC {{ $company_number }}</h5>-->
-                </small>
-            </td>
-        </tr>
-
-    </table>
-    <!-- Aqui Tabla de factura -->
-    <!-- Datos de cliente y documento -->
-    <table cellspacing="0"
-           border="0"
-           width="100%">
-        <tr>
-            <td colspan="39"
-                height="17"
-                align="left"><br></td>
-        </tr>
-        <colgroup span="36"
-                  width="19"></colgroup>
-        <tr>
-            <td colspan=4
-                height="17"
-                align="left"
-                valign=middle
-                sdnum="8202;0;@"><b>Cliente</b></td>
-            <td align="center">:</td>
-            <td colspan=16
-                align="left"
-                valign=middle>{{ $customer_name }}</td>
-            <td rowspan=4
-                align="center"
-                valign=middle><br></td>
-            <td colspan=7
-                align="left"
-                valign=middle><b>F. Emisi&oacute;n</b></td>
-            <td align="center">:</td>
-            <td colspan=9
-                align="left"
-                valign=middle>{{ $date }}</td>
-        </tr>
-        <tr>
-            <td colspan=4
-                height="17"
-                align="left"
-                valign=middle
-                sdnum="8202;0;@"><b>Doc. ID</b></td>
-            <td align="center">:</td>
-            <td colspan=16
-                align="left"
-                valign=middle>{{ $customer_dni }}</td>
-            <td colspan=7
-                align="left"
-                valign=middle><b>Moneda</b></td>
-            <td align="center">:</td>
-            <td colspan=9
-                align="left"
-                valign=middle>{{ $currency }}</td>
-        </tr>
-        <tr>
-            <td colspan=4
-                height="17"
-                align="left"
-                valign=middle
-                sdnum="8202;0;@"><b>Direcci&oacute;n</b></td>
-            <td align="center">:</td>
-            <td colspan=16
-                rowspan=2
-                align="left"
-                valign=top>@if($address_clean == true)
-
-                    {{ $customer_address }}<br>
-                @else
-                    {!! $customer_address !!}
-                @endif</td>
-            <td colspan=7
-                align="left"
-                valign=middle><b>Gu&iacute;a de remisi&oacute;n</b></td>
-            <td align="center">:</td>
-            <td colspan=9
-                align="left"
-                valign=middle>{{ $gudie }}</td>
-        </tr>
-        <tr>
-            <td colspan=5
-                rowspan=2
-                height="35"
-                align="center"
-                valign=middle><br></td>
-            <td colspan=7
-                align="left"
-                valign=middle><b>Condici&oacute;n de venta</b></td>
-            <td align="center">:</td>
-            <td colspan=9
-                align="left"
-                valign=middle>{{ $sale_condition }}</td>
-        </tr>
-        <tr>
-            <td colspan=34
-                align="center"
-                valign=middle><b><br></b></td>
-        </tr>
-
-
+    <div class="space_to_header"></div>
+    <table class="full-width full-height table-top"
+           style="">
         <!-- Cabecera Tabla de items -->
         <?php
         // Col span de los bloques
@@ -436,8 +285,10 @@ $total_array_chunk = count($array_chunk);
             if (isset($array_to_work[$i]) && $array_to_work[$i] != null) {
                 $item = $array_to_work[$i];
                 $item_blank_line = false;
+                $item['description'] = str_replace(['<p>','</p>','<br>',"\n","\t","\r","  "]," ",$item['description'] );
                 $item['description'] = substr($item['description'], 0, 50);
             }
+
 
             $border_common = $border . 'border-left: 1px solid #000000; border-right: 1px solid #000000';
             ?>
@@ -451,11 +302,10 @@ $total_array_chunk = count($array_chunk);
                     colspan={{ $span_description }}
 
                         align="left"
-                    valign=top>@if($item_blank_line==true)
-                        {!! $item['description'] !!}
-                    @else
-                        {!! $item['description'] !!}
-                    @endif</td>
+                    valign=top>
+                    {{$item['description'] }}
+
+                </td>
                 <td style="{{ $border_common }}"
                     colspan={{ $span_qty }}
 
@@ -486,137 +336,18 @@ $total_array_chunk = count($array_chunk);
 
     <!-- Tabla de items -->
 
-        <!-- Cantidad en palabras -->
-
-        <tr>
-            <td colspan="39"
-                height="17"
-                align="left"><br></td>
-        </tr>
-        <tr>
-            <td colspan=39
-                height="17"
-                align="left"
-                valign=top>{!! $total_word !!}</td>
-        </tr>
-        <!-- Cantidad en palabras -->
-
-
-        <!-- Seccion inferior -->
-
-
-        <tr>
-            <td colspan="39"
-                height="17"
-                align="left"><br></td>
-        </tr>
-        <tr>
-            <td style="{{ $four_borders }}"
-                colspan=22
-                rowspan=6
-                height="104"
-                align="left"
-                valign=top>{{ $extra_info }}
-                <br>
-                <strong>Condición de pago: </strong>{{ $condition }}
-                <br>
-                @if(!empty($paymentDetailed))
-                    @foreach($paymentDetailed as $detailed)
-                        {{ isset($paymentDetailed['CUOTA'])?'Cuotas:':'Pagos:' }}<br>
-                        @foreach($detailed as $row)
-                            &#8226;
-                            {{ $row['description']  }}
-                            {{ isset($paymentDetailed['CUOTA'])?' / FECHA: ':' - ' }}
-                            {{ $row['reference']  }}
-                            {{ isset($paymentDetailed['CUOTA'])?' / Monto: ':'' }}
-                            {{ $row['symbol']  }}
-                            {{ number_format( $row['amount'], 2) }}
-                            <br>
-                        @endforeach
-                    @endforeach
-                @endif
-
-
-            </td>
-            <td align="left"><br></td>
-
-            <?php
-            $sepracion1 = 8;
-            ?>
-            <td style="{{ $four_borders }}"
-                colspan={{ $sepracion1 + 1 }}
-                    align="left"
-                valign=middle><b>Total Op. Gravada</b></td>
-            <td style="{{ $four_borders }}"
-                colspan={{ $sepracion1 }}
-                    align="left"
-                valign=middle>{{ $total_gravado }}</td>
-        </tr>
-        <tr>
-            <td align="left"><br></td>
-            <td style="{{ $four_borders }}"
-                colspan={{ $sepracion1 + 1 }}
-                    align="left"
-                valign=middle><b>Total Op. Inefacta</b></td>
-            <td style="{{ $four_borders }}"
-                colspan={{ $sepracion1 }}
-                    align="left"
-                valign=middle>{{ $total_inefacta }}</td>
-        </tr>
-        <tr>
-            <td align="left"><br></td>
-            <td style="{{ $four_borders }}"
-                colspan={{ $sepracion1 + 1 }}
-                    align="left"
-                valign=middle><b>Total Op. Exonerada</b></td>
-            <td style="{{ $four_borders }}"
-                colspan={{ $sepracion1 }}
-                    align="left"
-                valign=middle>{{ $total_exonerada }}</td>
-        </tr>
-        <tr>
-            <td align="left"><br></td>
-            <td style="{{ $four_borders }}"
-                colspan={{ $sepracion1 + 1 }}
-                    align="left"
-                valign=middle><b>Total Op. Gratuita</b></td>
-            <td style="{{ $four_borders }}"
-                colspan={{ $sepracion1 }}
-                    align="left"
-                valign=middle>{{ $total_gratuita }}</td>
-        </tr>
-        <tr>
-            <td align="left"><br></td>
-            <td style="{{ $four_borders }}"
-                colspan={{ $sepracion1 + 1 }}
-                    align="left"
-                valign=middle><b>Total IGV {{ $igv }}%</b></td>
-            <td style="{{ $four_borders }}"
-                colspan={{ $sepracion1 }}
-                    align="left"
-                valign=middle>{{ $total_igv }}</td>
-        </tr>
-        <tr>
-            <td align="left"><br></td>
-            <td style="{{ $four_borders }}"
-                colspan={{ $sepracion1 + 1 }}
-                    align="left"
-                valign=middle><b>Importe Total</b></td>
-            <td style="{{ $four_borders }}"
-                colspan={{ $sepracion1 }}
-                    align="left"
-                valign=middle>{{ $total_importe }}</td>
-        </tr>
-        <!-- Seccion inferior -->
 
     </table>
     <!-- Aqui Tabla de factura -->
-    @endfor
+    @if(isset($array_chunk[$items_in_array+1]))
+        {!! TemplateHelper::breakLine() !!}
+    @endif
+@endfor
 
 
-    {{--    <pre>{{ var_export($debug,true) }}</pre>--}}
+{{--    <pre>{{ var_export($debug,true) }}</pre>--}}
 
 
-    </body>
+</body>
 
-    </html>
+</html>

@@ -153,7 +153,7 @@
                     Route::get('regularize_stock', 'InventoryController@regularize_stock');
 
                     Route::post('search_items', 'InventoryController@searchItems');
-                    /*
+                    /**
                      * inventory/report/tables
                      * inventory/report/records
                      * inventory/report/export
