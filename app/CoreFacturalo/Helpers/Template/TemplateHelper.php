@@ -192,4 +192,9 @@
 
             return '<div style="page-break-after: always;"></div>';
         }
+
+        public static function setNumber($number, $decimal = 2, $mil = ',', $dec = '.')
+        {
+            return number_format($number, $decimal, $mil, $dec);
+        }
     }
