@@ -12,7 +12,8 @@ export default {
     exchange_rate: 1,
     currency_types: [],
     table_data: [],
-
+    all_series: [],
+    series: [],
     affectation_igv_types: [],
     unit_types: [],
     item_search_extra_parameters: {},
@@ -85,7 +86,12 @@ export default {
         affectation_igv_types_exonerated_unaffected: [{}],
         typeUser: '',
         show_items_only_user_stablishment: false,
-        show_pdf_name: false
+        show_pdf_name: false,
+        user: {
+            serie: null,
+            document_id: null,
+            type: '',
+        }
 
     },
     form_pos: {},
@@ -104,7 +110,7 @@ export default {
     colors: [],
     molds: [],
     periods: [],
-    form_data:{},
+    form_data: {},
     CatItemMoldProperty: [],
     CatItemUnitBusiness: [],
     CatItemStatus: [],

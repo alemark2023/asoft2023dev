@@ -413,9 +413,11 @@ class Configuration extends ModelTenant
         $company = Company::first();
         /** @var User $user */
         $user = new User();
+
         if(\Auth::user()) {
             $user = auth()->user();
         }
+
         $establishment =   $user->establishment;
         $establishment_id = $user->establishment_id;
         $serie = $user->series_id;
