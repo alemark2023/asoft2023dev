@@ -2796,7 +2796,7 @@ export default {
                 'document_type_id': this.form.document_type_id,
                 'contingency': this.is_contingency
             });
-            if(this.form.document_type_id === this.config.user.document_id){
+            if(this.form.document_type_id === this.config.user.document_id && this.typeUser == 'seller'){
                 // Se filtra si el documento es el mismo que el establecido para el usuario.
                 series = _.filter(this.all_series, {
                     'establishment_id': this.form.establishment_id,
