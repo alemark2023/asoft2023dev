@@ -31,8 +31,8 @@ class QuotationResource extends JsonResource
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'),
             'quotation' => $quotation,
             'message_text' => "Su cotización {$this->number_full} ha sido generado correctamente, " .
-                "puede revisarlo en el siguiente enlace: " . url('') . "/quotations/print/{$this->external_id}/a4" . "",
- ];
+                "puede revisarlo en el siguiente enlace: " . url('') . "/print/quotation/{$this->external_id}/a4" . "",
+            ];
     }
 
     public static function getTransformPayments($payments){
