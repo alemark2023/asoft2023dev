@@ -304,7 +304,7 @@ class Facturalo
         return $qr;
     }
 
-    public function createPdf($document = null, $type = null, $format = null) {
+    public function createPdf($document = null, $type = null, $format = null, $output = 'pdf') {
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
         $pdf = new Mpdf();
@@ -606,6 +606,10 @@ class Facturalo
 
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+        if($output == 'html') {
+            return $html;
+        }
 
         $this->uploadFile($pdf->output('', 'S'), 'pdf');
         return $this;

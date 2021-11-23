@@ -174,6 +174,10 @@
     {{--<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>--}}
 
     @stack('scripts')
+    <!-- QZ -->
+    <script src="{{ asset('js/sha-256.min.js') }}"></script>
+    <script src="{{ asset('js/qz-tray.js') }}"></script>
+    <!-- END QZ -->
 
     <script src="{{ asset('js/manifest.js') }}"></script>
     <script src="{{ asset('js/vendor.js') }}"></script>
@@ -183,6 +187,14 @@
     <!-- Theme Custom -->
     <script src="{{asset('porto-light/js/custom.js')}}"></script>
     <script src="{{asset('porto-light/js/jquery.xml2json.js')}}"></script>
+
+    <!-- QZ -->
+    <script src="{{ asset('js/rsvp-3.1.0.min.js') }}"></script>
+    <script src="{{ asset('js/jsrsasign-all-min.js') }}"></script>
+    <script src="{{ asset('js/sign-message.js') }}"></script>
+    <script src="{{ asset('js/function-qztray.js') }}"></script>
+    <!-- END QZ -->
+
     <script>
 
         function parseXMLToJSON(source)
