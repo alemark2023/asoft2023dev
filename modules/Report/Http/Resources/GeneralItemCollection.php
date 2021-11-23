@@ -16,8 +16,8 @@ class GeneralItemCollection extends ResourceCollection
             $resource = self::getDocument($row);
             $purchase_item = null;
             $total_item_purchase = self::getPurchaseUnitPrice($row,$resource,$purchase_item);
-            if ($row->item->presentation) {
-                $total_item_purchase = $total_item_purchase * $row->item->presentation->quantity_unit;
+            if ($row->hasAttribute('item') && $row->item->presentation) {
+                $total_item_purchase *= $row->item->presentation->quantity_unit;
             }
             $utility_item = $row->total - $total_item_purchase;
             $item = $row->getModelItem();

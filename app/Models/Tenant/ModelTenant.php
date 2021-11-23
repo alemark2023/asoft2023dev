@@ -45,4 +45,22 @@
                 'image_small' => null,
             ];
         }
+
+        /**
+         * Evalua si el attr se encuentra en el modelo.
+         *
+         * @param $attr
+         *
+         * @return bool
+         *@example
+         *<code>
+         *         if($row->hasAttribute('item')) {
+         *         // do something
+         * }
+         * </code>
+         */
+        public function hasAttribute($attr)
+        {
+            return array_key_exists($attr, $this->attributes);
+        }
     }
