@@ -23,6 +23,9 @@
     {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
 </head>
 <body>
+<div class="item_watermark" style="position: absolute; text-align: center; top:46%;">
+    <img style="width: 100%" height="200px" src="data:{{mime_content_type($marca_agua)}};base64, {{base64_encode(file_get_contents($marca_agua))}}" alt="anulado" class="" style="opacity: 0.1;width: 95%">
+</div>
 <table class="full-width">
     <tr>
         @if($company->logo)
