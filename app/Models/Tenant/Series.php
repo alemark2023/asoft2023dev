@@ -129,14 +129,16 @@
         /**
          * Devuelve un array de datos con estrcutura unificada para series
          *
-         * @param int    $document_id
-         * @param int    $series_id
-         * @param string $userType
+         * @param int|null    $document_id
+         * @param int|null    $series_id
+         * @param string|null $userType
          *
          * @return array
          */
-        public function getCollectionData(int $document_id = 0, int $series_id = 0, string $userType = 'seller'): array
+        public function getCollectionData(?int $document_id = 0, ?int  $series_id = 0, ?string $userType = 'seller'): array
         {
+            $document_id = (int)$document_id;
+            $series_id = (int)$series_id;
             $disabled = false;
             if ($document_id == $this->document_type_id  && $userType !== 'admin') {
                 $disabled = !(($series_id == $this->id));
