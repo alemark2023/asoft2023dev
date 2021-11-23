@@ -1,13 +1,16 @@
 <?php
 namespace App\Http\Controllers\Tenant;
 
+use App\CoreFacturalo\Facturalo;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\Http\Controllers\Controller;
-use App\CoreFacturalo\Facturalo;
-use App\CoreFacturalo\Template;
-use App\Models\Tenant\Company;
 use App\Models\Tenant\Dispatch;
-use Mpdf\Mpdf;
+use App\Models\Tenant\Document;
+use App\Models\Tenant\Perception;
+use App\Models\Tenant\Quotation;
+use App\Models\Tenant\Retention;
+use App\Models\Tenant\Summary;
+use App\Models\Tenant\Voided;
 use Exception;
 
 class DownloadController extends Controller
@@ -59,23 +62,37 @@ class DownloadController extends Controller
     }
 
     /**
+     * Funcion para imprimir los pdf
+     *
      * @param      $model
      * @param      $external_id
-     * @param null $format
+     * @param string|null $format
      *
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      * @throws \Exception
      */
-    public function toPrint($model, $external_id, $format = null) {
-        $document_type = $model;
-        $model = "App\\Models\\Tenant\\".ucfirst($model);
-
+    public function toPrint($model, $external_id, ?string $format = 'a4')
+    {
+        $type = null;
+        $model = "App\\Models\\Tenant\\" . ucfirst($model);
         $document = $model::where('external_id', $external_id)->first();
-
         if (!$document) throw new Exception("El código {$external_id} es inválido, no se encontro documento relacionado");
 
-        if ($format != null) $this->reloadPDF($document, 'invoice', $format);
-        if ($document_type == 'dispatch') $this->reloadPDF($document, 'dispatch', 'a4');
+        if ($format != null) {
+            $type = 'invoice';
+            if(Quotation::class == $model) {
+                // Cotizacion
+                $type = 'quotation';
+            }elseif(Document::class == $model) {
+                $type = 'invoice';
+            }elseif(Dispatch::class == $model) {
+                // Despachos
+                $type = 'dispatch';
+            }
+        }
+        if(empty($type)) {
+            $this->reloadPDF($document, $type, $format);
+        }
 
 
         $temp = tempnam(sys_get_temp_dir(), 'pdf');
