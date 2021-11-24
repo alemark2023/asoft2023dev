@@ -165,6 +165,7 @@
                                     form.user_type === 'CREADOR' ? 'Usuario' : 'Vendedor'
                                                          }}</label>
                             <el-select v-model="form.user_id"
+                                       :disabled="cantChoiseUserWithUserType"
                                        clearable
                                        filterable
                                        multiple>
@@ -411,7 +412,12 @@ export default {
             sellers: []
         }
     },
-    computed: {},
+    computed: {
+        cantChoiseUserWithUserType(){
+            if(this.form.user_type && this.form.user_type.length > 1) return false;
+            return true;
+        }
+    },
     created() {
         this.initForm()
         this.initTotals()
