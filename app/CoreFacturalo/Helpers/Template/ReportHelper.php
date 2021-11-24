@@ -125,4 +125,49 @@
             return ($person !== null) ? $person->name : '';
 
         }
+
+        /**
+         * @param $value
+         *
+         * @return array|string[]
+         */
+        public static function getLocationData($value)
+        {
+            $customer = null;
+            $district = '';
+            $department = '';
+            $province = '';
+            $type_doc = $value;
+            if (
+                $type_doc &&
+                $type_doc->customer
+            ) {
+                $customer = $type_doc->customer;
+            }
+            if ($customer != null) {
+                if (
+                    $customer->district &&
+                    $customer->district->description
+                ) {
+                    $district = $customer->district->description;
+                }
+                if (
+                    $customer->department &&
+                    $customer->department->description
+                ) {
+                    $department = $customer->department->description;
+                }
+                if (
+                    $customer->province &&
+                    $customer->province->description
+                ) {
+                    $province = $customer->province->description;
+                }
+            }
+            return [
+                'district' => $district,
+                'department' => $department,
+                'province' => $province,
+            ];
+        }
     }
