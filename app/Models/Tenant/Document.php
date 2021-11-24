@@ -25,6 +25,7 @@
     use Modules\Item\Models\WebPlatform;
     use Modules\Order\Models\OrderNote;
     use Modules\Sale\Models\TechnicalService;
+    use phpDocumentor\Reflection\Utils;
 
 
     /**
@@ -1018,6 +1019,15 @@
         {
             $this->section = $section;
             return $this;
+        }
+
+        /**
+         * Devuelve el modelo del tipo de documetno actual
+         *
+         * @return DocumentType
+         */
+        public function getDocumentType(){
+            return $this->document_type;
         }
 
 
