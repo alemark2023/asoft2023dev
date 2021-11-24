@@ -3,6 +3,7 @@
     namespace App\Models\Tenant;
 
     use App\Models\Tenant\Catalogs\CurrencyType;
+    use App\Models\Tenant\Catalogs\DocumentType;
     use App\Traits\SellerIdTrait;
     use Carbon\Carbon;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
@@ -780,7 +781,19 @@
                 ->wherein("$item_table_name.id", $items)
                 ->get();
         }
+        /**
+         * Devuelve el vendedor asociado, Si seller id es nulo, devolverá el usuario del campo user.
+         *
+         * @return User
+         */
+        public function getSellerData()
+        {
+            if ( !empty($this->seller_id)) {
+                return $this->seller;
+            }
+            return $this->user;
 
+        }
         public static function FormatNumber($number, $decimal = 2)
         {
             return number_format($number, $decimal);
@@ -1105,5 +1118,13 @@
             return $this;
         }
 
+        /**
+         * Devuelve el modelo del tipo de documetno actual
+         *
+         * @return DocumentType
+         */
+        public function getDocumentType(){
+            return DocumentType::find('80');
+        }
 
     }

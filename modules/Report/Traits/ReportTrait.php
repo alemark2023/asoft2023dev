@@ -155,9 +155,12 @@ trait ReportTrait
                 '08',
             ], true)
             ) {
-                $data->where('document_type_id', $document_type_id);
+                    $data->where('document_type_id', $document_type_id);
             }else{
-                $data->where('document_type_id', 'like', '%'.$document_type_id.'%');
+                //las notas de venta no tienen document_type_id
+                if($model !== SaleNote::class) {
+                   $data->where('document_type_id', 'like', '%' . $document_type_id . '%');
+                }
             }
         } elseif ($establishment_id) {
             $data->where('establishment_id', 'like', '%'.$establishment_id.'%');
