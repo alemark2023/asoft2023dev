@@ -206,7 +206,7 @@
                             <p class="text-right" v-if="form.total_isc > 0">ISC: {{ currency_type.symbol }} {{ form.total_isc }}</p>
                             <p class="text-right" v-if="form.total_charge > 0">OTROS CARGOS: {{ currency_type.symbol }} {{ form.total_charge }}</p>
 
-                            <template v-if="isCreditNoteAndType13">
+                            <template v-if="isCreditNoteAndType13 || isCreditNoteAndType03">
                                 <h3 class="text-right"><b>TOTAL A PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
                             </template>
                             <template v-else>
@@ -273,7 +273,7 @@
                 </div>
                 <div class="form-actions text-right mt-4">
                     <el-button @click.prevent="close()">Cancelar</el-button>
-                    <template v-if="isCreditNoteAndType13">
+                    <template v-if="isCreditNoteAndType13 || isCreditNoteAndType03">
                         <el-button type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0">Generar</el-button>
                     </template>
                     <template v-else>
@@ -340,7 +340,8 @@
                 affected_documents: [],
                 temp_total:0,
                 selected_credit_note_type_13: false,
-                apply_change_has_discounts: false
+                apply_change_has_discounts: false,
+                selected_credit_note_type_03: false,
             }
         },
         created() {
@@ -376,6 +377,9 @@
         computed: { 
             isCreditNoteAndType13: function () {
                 return (this.form.document_type_id === '07' && this.form.note_credit_or_debit_type_id === '13')
+            },
+            isCreditNoteAndType03: function () {
+                return (this.form.document_type_id === '07' && this.form.note_credit_or_debit_type_id === '03')
             },
             hasDiscounts: function () {
                 return (parseFloat(this.document_affected.total_discount) > 0)
@@ -474,7 +478,9 @@
             },
             changeNoteCreditType(){
 
-                if(this.isCreditNoteAndType13){
+                if(this.isCreditNoteAndType13)
+                {
+                    // Ajustes – montos y/o fechas de pago
 
                     //si la condicion de pago del cpe relacionado es diferente de credito, no es posible usar el tipo de nota = 13
                     if(this.document_affected.payment_condition_id !== '02'){
@@ -491,17 +497,27 @@
                     // variable usada para determinar si al menos usaron una vez el tipo de nota 13
                     this.selected_credit_note_type_13 = true
 
-                }else{
+                }
+                else if(this.isCreditNoteAndType03)
+                {
+                    //Corrección por error en la descripción
 
+                    //cuando es tipo de nota credito = 03 se recalculan los montos a 0
+                    this.recalculateItems()
+                    // variable usada para determinar si al menos usaron una vez el tipo de nota 03
+                    this.selected_credit_note_type_03 = true
+                }
+                else
+                {
+                    // Otros
                     this.initData()
-                
                 }
 
             },
             async initData(){
 
                 // si se seleccionó el tipo de nota 13, se deberá reiniciar la data
-                if(this.selected_credit_note_type_13){
+                if(this.selected_credit_note_type_13 || this.selected_credit_note_type_03){
 
                     //si no tiene descuento, se puede inicializar la data, caso contrario los items se deben agregar manualmente
                     if(!this.hasDiscounts){
@@ -631,6 +647,7 @@
 
                 this.temp_total = this.form.total
                 this.selected_credit_note_type_13 = false
+                this.selected_credit_note_type_03 = false
                 this.apply_change_has_discounts = false
 
             },
