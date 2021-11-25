@@ -304,7 +304,7 @@ class Facturalo
         return $qr;
     }
 
-    public function createPdf($document = null, $type = null, $format = null) {
+    public function createPdf($document = null, $type = null, $format = null, $output = 'pdf') {
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
         $pdf = new Mpdf();
@@ -612,8 +612,20 @@ class Facturalo
             $pdf->SetHTMLFooter($html_footer);
         }
 
-        $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
-        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+        // para impresion automatica se requiere el resultado en html ya que es lo que se envia a las funciones de impresión
+        if($output == 'html') {
+            $path_html = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                             DIRECTORY_SEPARATOR.'pdf'.
+                                             DIRECTORY_SEPARATOR.'ticket_html.css');
+            $ticket_html = file_get_contents($path_html);
+            $pdf->WriteHTML($ticket_html, HTMLParserMode::HEADER_CSS);
+            $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+            return "<style>".$ticket_html.$stylesheet."</style>".$html;
+        }
+        else {
+            $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
+            $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+        }
 
         // echo $html_header.$html.$html_footer; exit();
         $this->uploadFile($pdf->output('', 'S'), 'pdf');

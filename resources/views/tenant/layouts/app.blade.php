@@ -183,6 +183,7 @@
     <!-- Theme Custom -->
     <script src="{{asset('porto-light/js/custom.js')}}"></script>
     <script src="{{asset('porto-light/js/jquery.xml2json.js')}}"></script>
+
     <script>
 
         function parseXMLToJSON(source)

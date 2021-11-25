@@ -25,7 +25,7 @@
     {{--<title>{{ $document_number }}</title>--}}
     {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
 </head>
-<body>
+<body class="ticket">
 
 @if($company->logo)
     <div class="text-center company_logo_box pt-5">
@@ -417,7 +417,7 @@
                 @if($row->total_isc > 0)
                     <br/>ISC : {{ $row->total_isc }} ({{ $row->percentage_isc }}%)
                 @endif
-                
+
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
 
                 @foreach($row->additional_information as $information)
@@ -534,7 +534,7 @@
             <td colspan="4" class="text-right font-bold desc">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold desc">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
-        
+
         @if($document->total_isc > 0)
         <tr>
             <td colspan="4" class="text-right font-bold desc">ISC: {{ $document->currency_type->symbol }}</td>
