@@ -905,6 +905,32 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <!-- impresion automatica en pos -->
+                                    <div class="col-md-6 mt-4">
+                                        <div class="form-group">
+                                            <label class="control-label">
+                                                Impresión de PDF automática en POS
+                                                <el-tooltip class="item"
+                                                            effect="dark"
+                                                            placement="top-start">
+                                                    <div slot="content">
+                                                        Luego de realizar el pago se envia el documento a la impresora, seguir la documentación para el buen funcionamiento.
+                                                    </div>
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                            </label>
+                                            <div :class="{'has-danger': errors.auto_print}"
+                                                 class="form-group">
+                                                <el-switch v-model="form.auto_print"
+                                                           active-text="Si"
+                                                           inactive-text="No"
+                                                           @change="submit"></el-switch>
+                                                <small v-if="errors.auto_print"
+                                                       class="form-control-feedback"
+                                                       v-text="errors.auto_print[0]"></small>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3"
