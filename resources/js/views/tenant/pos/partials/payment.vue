@@ -448,7 +448,7 @@ import MultiplePaymentForm from './multiple_payment.vue'
 export default {
     components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress},
 
-    props: ['form', 'customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany', 'businessTurns'],
+    props: ['form', 'customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany', 'businessTurns', 'isPrint'],
     data() {
         return {
             enabled_discount: false,
@@ -502,7 +502,8 @@ export default {
 
         await this.getFormPosLocalStorage()
         // console.log(this.form.payments, this.payments)
-	if (!qz.websocket.isActive()) {
+        console.log(this.isPrint);
+        if (!qz.websocket.isActive() && this.isPrint) {
             startConnection();
         }
     },
@@ -976,8 +977,7 @@ export default {
 
                     // this.initFormPayment() ;
                     this.cleanLocalStoragePayment()
-                    if(this.form.is_print){
-                        console.log('gethtml')
+                    if(this.isPrint){
                         this.gethtml();
                     }
                     this.$eventHub.$emit('saleSuccess');
@@ -1007,10 +1007,8 @@ export default {
 
             this.$http.get(route)
             .then(response => {
-                console.log(response);
                 if (response.data.length>0) {
                     this.form.datahtml=response.data;
-                    console.log('printticket');
                     this.printticket();
                 }
 
@@ -1021,7 +1019,7 @@ export default {
         },
         async printticket(){
             //getUpdatedConfig();
-            await this.sleep(800);
+            await this.sleep(400);
             var configg = getUpdatedConfig();
             var opts = getUpdatedConfig();
             var printData = [

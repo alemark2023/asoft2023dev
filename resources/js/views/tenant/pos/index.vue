@@ -843,6 +843,7 @@
                 :customer="customer"
                 :soapCompany="soapCompany"
                 :businessTurns="businessTurns"
+                :is-print="isPrint"
             ></payment-form>
         </template>
 
@@ -953,7 +954,7 @@ import TableItems from "./partials/table.vue";
 import ItemUnitTypes from "./partials/item_unit_types.vue";
 
 export default {
-    props: ["configuration", "soapCompany", "businessTurns", "typeUser"],
+    props: ["configuration", "soapCompany", "businessTurns", "typeUser", "isPrint"],
     components: {
         PaymentForm,
         ItemForm,
