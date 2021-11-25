@@ -2893,11 +2893,15 @@ export default {
             // let total_free_igv = 0
 
             this.form.items.forEach((row) => {
+
+                // console.log(row)
+                
                 total_discount += parseFloat(row.total_discount)
                 total_charge += parseFloat(row.total_charge)
 
                 if (row.affectation_igv_type_id === '10') {
-                    total_taxed += parseFloat(row.total_value)
+                    // total_taxed += parseFloat(row.total_value)
+                    total_taxed += parseFloat(row.total_value_without_rounding)
                 }
 
                 if (
@@ -2936,14 +2940,18 @@ export default {
                     '20', '21',
                     '30', '31', '32', '33', '34', '35', '36',
                     '40'].indexOf(row.affectation_igv_type_id) > -1) {
-                    total_igv += parseFloat(row.total_igv)
-                    total += parseFloat(row.total)
+                    // total_igv += parseFloat(row.total_igv)
+                    // total += parseFloat(row.total)
+                    
+                    total_igv += parseFloat(row.total_igv_without_rounding)
+                    total += parseFloat(row.total_without_rounding)
                 }
 
                 // console.log(row.total_value)
 
                 if (!['21', '37'].includes(row.affectation_igv_type_id)) {
-                    total_value += parseFloat(row.total_value)
+                    // total_value += parseFloat(row.total_value)
+                    total_value += parseFloat(row.total_value_without_rounding)
                 }
 
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
