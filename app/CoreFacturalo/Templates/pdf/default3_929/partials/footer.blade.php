@@ -48,6 +48,7 @@ $cycle_items = $allowed_items - ($quantity_items * 3);
 $total_weight = 0;
 $border_st = "border:1px solid black;";
 $four_borders = "border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000";
+$three_borders = "border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-right: 1px solid #000000";
 
 $igv = 18;
 $anchoTotal = (100 / 745);
@@ -191,134 +192,98 @@ $total_array_chunk = count($array_chunk);
     <link href="{{ $path_style }}" rel="stylesheet" />
 </head>
 <body>
+
 <table class="full-width">
-
-    <!-- Cantidad en palabras -->
-
     <tr>
-        <td colspan="39"
+        <td
             height="17"
             align="left"><br></td>
     </tr>
     <tr>
-        <td colspan=39
-            height="17"
+        <td height="17"
             align="left"
-            valign=top>{!! $total_word !!}</td>
-    </tr>
-    <!-- Cantidad en palabras -->
-
-
-    <!-- Seccion inferior -->
-
-
-    <tr>
-        <td colspan="39"
-            height="17"
-            align="left"><br></td>
-    </tr>
-    <tr>
-        <td style="{{ $four_borders }}"
-            colspan=22
-            rowspan=6
-            height="104"
-            align="left"
-            valign=top>{{ $extra_info }}
-            <br>
-            <strong>Condición de pago: </strong>{{ $condition }}
-            <br>
-            @if(!empty($paymentDetailed))
-                @foreach($paymentDetailed as $detailed)
-                    {{ isset($paymentDetailed['CUOTA'])?'Cuotas:':'Pagos:' }}<br>
-                    @foreach($detailed as $row)
-                        &#8226;
-                        {{ $row['description']  }}
-                        {{ isset($paymentDetailed['CUOTA'])?' / FECHA: ':' - ' }}
-                        {{ $row['reference']  }}
-                        {{ isset($paymentDetailed['CUOTA'])?' / Monto: ':'' }}
-                        {{ $row['symbol']  }}
-                        {{ number_format( $row['amount'], 2) }}
-                        <br>
-                    @endforeach
-                @endforeach
-            @endif
-
-
+            valign=top>{!! $total_word !!}
         </td>
-        <td align="left"><br></td>
-
-        <?php
-        $sepracion1 = 8;
-        ?>
-        <td style="{{ $four_borders }}"
-            colspan={{ $sepracion1 + 1 }}
-                align="left"
-            valign=middle><b>Total Op. Gravada</b></td>
-        <td style="{{ $four_borders }}"
-            colspan={{ $sepracion1 }}
-                align="left"
-            valign=middle>{{ $total_gravado }}</td>
     </tr>
     <tr>
-        <td align="left"><br></td>
-        <td style="{{ $four_borders }}"
-            colspan={{ $sepracion1 + 1 }}
-                align="left"
-            valign=middle><b>Total Op. Inefacta</b></td>
-        <td style="{{ $four_borders }}"
-            colspan={{ $sepracion1 }}
-                align="left"
-            valign=middle>{{ $total_inefacta }}</td>
+        <td>
+            <table>
+                <tr>
+                    <td style="{{ $four_borders }}" valign="top" width="48%">
+                        {{ $extra_info }}
+                        <br>
+                        <strong>Condición de pago: </strong>{{ $condition }}
+                        <br>
+                        @if(!empty($paymentDetailed))
+                            @foreach($paymentDetailed as $detailed)
+                                {{ isset($paymentDetailed['CUOTA'])?'Cuotas:':'Pagos:' }}<br>
+                                @foreach($detailed as $row)
+                                    &#8226;
+                                    {{ $row['description']  }}
+                                    {{ isset($paymentDetailed['CUOTA'])?' / FECHA: ':' - ' }}
+                                    {{ $row['reference']  }}
+                                    {{ isset($paymentDetailed['CUOTA'])?' / Monto: ':'' }}
+                                    {{ $row['symbol']  }}
+                                    {{ number_format( $row['amount'], 2) }}
+                                    <br>
+                                @endforeach
+                            @endforeach
+                        @endif
+                    </td>
+                    <td style="{{ $four_borders }} ; padding:0px;" width="26%" class="text-center">
+                        <img src="data:image/png;base64, {{ $document->qr }}" style="max-width: 90px;"/>
+                        <p style="font-size: 9px">{{ $document->hash }}</p>
+                    </td>
+                    <td style="padding: 0px;" valign=top>
+                        <table style="padding: 0px; border: none;" width="100%">
+                            <tr>
+                                <td style="{{ $three_borders }}"
+                                    valign=top><b>Total Op. Gravada</b></td>
+                                <td style="{{ $three_borders }}"
+                                    valign=top>{{ $total_gravado }}</td>
+                            </tr>
+                            <tr
+                            >
+                                <td style="{{ $three_borders }}"
+                                    valign=top><b>Total Op. Inefacta</b></td>
+                                <td style="{{ $three_borders }}"
+                                    valign=top>{{ $total_inefacta }}</td>
+                            </tr>
+                            <tr>
+                                <td style="{{ $three_borders }}"
+                                    valign=top><b>Total Op. Exonerada</b></td>
+                                <td style="{{ $three_borders }}"
+                                    valign=top>{{ $total_exonerada }}</td>
+                            </tr>
+                            <tr>
+                                <td style="{{ $three_borders }}"
+                                    valign=top><b>Total Op. Gratuita</b></td>
+                                <td style="{{ $three_borders }}"
+                                    valign=top>{{ $total_gratuita }}</td>
+                            </tr>
+                            <tr>
+                                <td style="{{ $three_borders }}"
+                                    valign=top><b>Total IGV {{ $igv }}%</b></td>
+                                <td style="{{ $three_borders }}"
+                                    valign=top>{{ $total_igv }}</td>
+                            </tr>
+                            <tr>
+                                <td style="{{ $three_borders }}"
+                                    valign=top><b>Importe Total</b></td>
+                                <td style="{{ $three_borders }}"
+                                    valign=top>{{ $total_importe }}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
     </tr>
-    <tr>
-        <td align="left"><br></td>
-        <td style="{{ $four_borders }}"
-            colspan={{ $sepracion1 + 1 }}
-                align="left"
-            valign=middle><b>Total Op. Exonerada</b></td>
-        <td style="{{ $four_borders }}"
-            colspan={{ $sepracion1 }}
-                align="left"
-            valign=middle>{{ $total_exonerada }}</td>
-    </tr>
-    <tr>
-        <td align="left"><br></td>
-        <td style="{{ $four_borders }}"
-            colspan={{ $sepracion1 + 1 }}
-                align="left"
-            valign=middle><b>Total Op. Gratuita</b></td>
-        <td style="{{ $four_borders }}"
-            colspan={{ $sepracion1 }}
-                align="left"
-            valign=middle>{{ $total_gratuita }}</td>
-    </tr>
-    <tr>
-        <td align="left"><br></td>
-        <td style="{{ $four_borders }}"
-            colspan={{ $sepracion1 + 1 }}
-                align="left"
-            valign=middle><b>Total IGV {{ $igv }}%</b></td>
-        <td style="{{ $four_borders }}"
-            colspan={{ $sepracion1 }}
-                align="left"
-            valign=middle>{{ $total_igv }}</td>
-    </tr>
-    <tr>
-        <td align="left"><br></td>
-        <td style="{{ $four_borders }}"
-            colspan={{ $sepracion1 + 1 }}
-                align="left"
-            valign=middle><b>Importe Total</b></td>
-        <td style="{{ $four_borders }}"
-            colspan={{ $sepracion1 }}
-                align="left"
-            valign=middle>{{ $total_importe }}</td>
-    </tr>
-    <!-- Seccion inferior -->
 </table>
+
 <table class="full-width">
     <tr>
-        <td class="text-center desc font-bold">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
+        <td class="text-center desc font-bold"><br> Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
     </tr>
 </table>
 </body>
