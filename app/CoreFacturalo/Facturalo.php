@@ -612,6 +612,17 @@ class Facturalo
             $pdf->SetHTMLFooter($html_footer);
         }
 
+        if ($base_pdf_template === 'distpatch_pharmacy' && in_array($this->document->document_type_id, ['09'])) {
+            // Solo para guia #1192
+            $pdf->setAutoTopMargin = 'stretch'; //margen autommatico
+            $pdf->autoMarginPadding  = 0;
+            $pdf->setAutoBottomMargin = 'stretch';
+            $html_header = $template->pdfHeader($base_pdf_template, $this->company, $this->document);
+            $pdf->SetHTMLHeader($html_header);
+            $html_footer = $template->pdfFooterDispatch($base_pdf_template, $this->document);
+            $pdf->SetHTMLFooter($html_footer);
+        }
+
         // para impresion automatica se requiere el resultado en html ya que es lo que se envia a las funciones de impresión
         if($output == 'html') {
             $path_html = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
