@@ -3,10 +3,10 @@
     namespace Modules\Finance\Traits;
 
     use App\Models\Tenant\{DocumentPayment, PurchasePayment, SaleNotePayment};
-    use App\Models\Tenant\TransferAccountPayment;
     use App\Models\Tenant\BankAccount;
     use App\Models\Tenant\Cash;
     use App\Models\Tenant\Company;
+    use App\Models\Tenant\TransferAccountPayment;
     use Carbon\Carbon;
     use ErrorException;
     use Illuminate\Database\Eloquent\Collection;
@@ -272,6 +272,8 @@
                 'quotation_payment' => self::FormatNumber($quotation_payment),
                 'contract_payment' => self::FormatNumber($contract_payment),
                 'income_payment' => self::FormatNumber($income_payment_return),
+               'debs' => self::FormatNumber( (($transfer_beween_account < 0)?(abs($transfer_beween_account)):0) +$egress),
+                'credits' => self::FormatNumber((($transfer_beween_account > 0)?(abs($transfer_beween_account)):0) +$entry),
                 'technical_service_payment' => self::FormatNumber($technical_service_payment),
                 'balance' => self::FormatNumber($balance),
                 'transfer_beween_account' => self::FormatNumber($transfer_beween_account),
@@ -432,6 +434,8 @@
                 'purchase_payment' => self::FormatNumber($purchase_payment),
                 'income_payment' => self::FormatNumber($income_payment),
                 'initial_balance' => self::FormatNumber($initial_balance),
+                'debs' => self::FormatNumber($egress),
+                'credits' => self::FormatNumber($entry),
                 'technical_service_payment' => self::FormatNumber($technical_service_payment),
                 'balance' => self::FormatNumber($balance),
 
@@ -447,6 +451,7 @@
         public function getBalanceByBankAcounts($bank_accounts)
         {
             $records = $bank_accounts->map(function ($row) {
+                /** @var \App\Models\Tenant\BankAccount  $row */
 
                 $document_payment = $this->getSumPayment($row->global_destination, DocumentPayment::class);
                 $expense_payment = $this->getSumPayment($row->global_destination, ExpensePayment::class);
@@ -486,6 +491,8 @@
                     'income_payment' => self::FormatNumber($income_payment),
                     'initial_balance' => self::FormatNumber($row->initial_balance),
                     'technical_service_payment' => self::FormatNumber($technical_service_payment),
+                    'debs' => self::FormatNumber( (($transfer_beween_account < 0)?(abs($transfer_beween_account)):0) +$egress),
+                    'credits' => self::FormatNumber((($transfer_beween_account > 0)?(abs($transfer_beween_account)):0) +$entry),
                     'balance' => self::FormatNumber($balance),
                     'transfer_beween_account' => self::FormatNumber($transfer_beween_account),
 
@@ -516,13 +523,18 @@
                 $cash_transaction = $row->cash_transactions->sum('payment');
                 $income_payment = $this->getSumByPMT($row->income_payments) + $cash_transaction;
                 $technical_service_payment = $this->getSumByPMT($row->technical_service_payments);
-                $balance = $sale_note_payment +
-                    $document_payment -
-                    $purchase_payment +
+
+                $egress = $purchase_payment;
+                $entry = $document_payment +
+                    $sale_note_payment +
                     $quotation_payment +
                     $contract_payment +
                     $income_payment +
                     $technical_service_payment;
+                $balance =
+                    $entry -
+                    $egress;
+
 
                 return [
 
@@ -532,11 +544,15 @@
                     'sale_note_payment' => self::FormatNumber($sale_note_payment),
 
                     'document_payment' => self::FormatNumber($document_payment),
-                    'purchase_payment' => self::FormatNumber($purchase_payment ),
+                    'purchase_payment' => self::FormatNumber($purchase_payment),
                     'quotation_payment' => self::FormatNumber($quotation_payment),
                     'contract_payment' => self::FormatNumber($contract_payment),
                     'income_payment' => self::FormatNumber($income_payment),
                     'technical_service_payment' => self::FormatNumber($technical_service_payment),
+
+                    'debs' => self::FormatNumber($egress),
+                    'credits' => self::FormatNumber($entry),
+
                     'balance' => self::FormatNumber($balance),
                 ];
 

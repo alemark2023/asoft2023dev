@@ -5,6 +5,7 @@
 
     use App\Models\Tenant\Person;
     use App\Models\Tenant\User;
+    use Illuminate\Http\Request;
     use Illuminate\Support\Str;
 
     class ReportHelper
@@ -24,7 +25,6 @@
          *         $params['user_type'] , $params['user_id'] );
          *         // user_id   Creador del documento
          *         // seller_id Usuario Asignado
-         *
          * @endphp
          * @if(count($sellers) > 0)
          *         <td>
@@ -42,21 +42,20 @@
          *         </td>
          * @endif
          *         </code>
-         *
          */
         public static function getSellersFromRequest(?string $userType = null, $userId = null)
         {
             $sellers = [];
             // Vendedor asignado
             $column = 'seller_id';
-            /** @var \Illuminate\Http\Request $request */
+            /** @var Request $request */
             $request = request();
             if ((empty($userType) || empty($userId)) && $request !== null) {
                 if (empty($userType) && $request->has('user_type')) {
-                    $userType = ( !empty($request->user_type)) ? $request->user_type : null;
+                    $userType = (!empty($request->user_type)) ? $request->user_type : null;
                 }
                 if (empty($userId) && $request->has('user_id')) {
-                    $userId = ( !empty($request->user_id)) ? $request->user_id : null;
+                    $userId = (!empty($request->user_id)) ? $request->user_id : null;
                 }
             }
 
@@ -73,12 +72,12 @@
                     $usersId = json_decode($userId);
                     if (count($usersId) > 0) {
                         foreach ($usersId as $seller_id) {
-                            if ( !isset($sellers[$column])) $sellers[$column] = [];
+                            if (!isset($sellers[$column])) $sellers[$column] = [];
                             $sellers[$column][] = self::getUserName($seller_id);
                         }
                     }
                 } else {
-                    if ( !isset($sellers[$column])) $sellers[$column] = [];
+                    if (!isset($sellers[$column])) $sellers[$column] = [];
                     $sellers[$column][] = self::getUserName($userId);
                 }
 
@@ -86,7 +85,7 @@
                 $sellers = json_decode($params['sellers']);
                 if (count($sellers) > 0) {
                     foreach ($sellers as $seller_id) {
-                        if ( !isset($sellers[$column])) $sellers[$column] = [];
+                        if (!isset($sellers[$column])) $sellers[$column] = [];
 
                         $sellers[$column][] = self::getUserName($seller_id);
                     }
@@ -169,5 +168,10 @@
                 'department' => $department,
                 'province' => $province,
             ];
+        }
+
+        public static function setNumber($number=0, $decimal = 2, $mil = ',', $dec = '.')
+        {
+            return number_format($number, $decimal, $mil, $dec);
         }
     }
