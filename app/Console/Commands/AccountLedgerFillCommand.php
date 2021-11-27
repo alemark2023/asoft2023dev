@@ -45,7 +45,7 @@
         {
             $minutes = 60;
             $now = Carbon::now()->addMinutes($minutes);
-            $this->info('The command was started');
+            $this->info('Se ha iniciado account_ledger:fill');
             $months = $this->getDatesToReport();
             $numberRecorsToSave = 3;
 
@@ -81,7 +81,7 @@
                     }
                 }
             });
-            $this->info('Algo?');
+            $this->info('Se ha finalizado el comando');
 
 
         }
@@ -108,9 +108,11 @@
                 $documents_max = $documents->max('date_of_issue');
                 $months = [];
                 do {
-                    $d = $documents_min->firstOfMonth();
-                    $f = $d->format('Y-m');
-                    $months[$f] = Carbon::createFromFormat('Y-m', $f)->firstOfMonth()->setTime(0, 0, 0);
+                    if(!empty($documents_min)) {
+                        $d = $documents_min->firstOfMonth();
+                        $f = $d->format('Y-m');
+                        $months[$f] = Carbon::createFromFormat('Y-m', $f)->firstOfMonth()->setTime(0, 0, 0);
+                    }
                 } while ($documents_min->addMonth() <= $documents_max);
                 return $months;
             });
