@@ -585,8 +585,8 @@ class Item extends ModelTenant
         return $query;
         */
         // No selecciona corectamente los establecimeintos.
-        if ($params->establishment_id) {
-
+        if (property_exists($params,'establishment_id') && $params->establishment_id) {
+        // if ($params->establishment_id) {
             return $query->with(['document_items' => function ($q) use ($params) {
                 $q->whereHas('document', function ($q) use ($params) {
                     $q->whereStateTypeAccepted()
