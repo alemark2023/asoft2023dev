@@ -25,7 +25,7 @@
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
     //calculate items
-    $allowed_items = 94 - (\App\Models\Tenant\BankAccount::all()->count())*2 - ($document->fee()->count() * 1);
+    $allowed_items = 94 - (\App\Models\Tenant\BankAccount::all()->count())*2 - $document->fee()->count();
     $quantity_items = $document->items()->count();
     $cycle_items = $allowed_items - ($quantity_items * 3);
     $total_weight = 0;
