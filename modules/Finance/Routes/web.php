@@ -108,6 +108,22 @@ if($hostname) {
                     Route::post('excel', 'MovementController@excel');
                     Route::post('excel', 'MovementController@postExcel');
                     Route::get('records', 'MovementController@records');
+                });
+                /**
+                 * finances/transactions
+                 * finances/transactions/pdf
+                 * finances/transactions/excel
+                 * finances/transactions/records
+                 */
+                Route::prefix('transactions')->group(function () {
+
+                    Route::get('', 'MovementController@indexTransactions')->name('tenant.finances.transactions.index');
+                    Route::get('pdf', 'MovementController@pdf');
+                    Route::post('pdf', 'MovementController@postPdf');
+                    Route::get('excel', 'MovementController@excel');
+                    Route::post('excel', 'MovementController@excel');
+                    Route::post('excel', 'MovementController@postExcel');
+                    Route::get('records', 'MovementController@records');
 
                 });
                 /**
