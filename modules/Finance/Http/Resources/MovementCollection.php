@@ -8,7 +8,6 @@
     use Illuminate\Support\Collection;
     use Modules\Finance\Http\Controllers\MovementController;
     use Modules\Finance\Models\GlobalPayment;
-    use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 
     class MovementCollection extends ResourceCollection
@@ -31,11 +30,8 @@
             $this->calculateResiduary(self::$request);
             /** @var Collection $data */
 
-            $data = $this->collection->transform(function ($row, $key) use ($request) {
-                /** @var GlobalPayment $row */
+            $data = $this->collection->transform(function (GlobalPayment $row, $key) use ($request) {
                 $data_person = $row->data_person;
-
-
                 $amount = $row->payment->payment;
                 $document = $row->payment->document;
                 // Convirtiendo el documento que esta hecho en dolares a soles
@@ -64,6 +60,8 @@
                 } elseif (isset($payment->associated_record_payment->prefix)) {
                     $document_type = $payment->associated_record_payment->prefix;
                 }
+                $destinationArray = $row->getDestinationWithCci();
+                $destinationName = $destinationArray['name'] . " - " . $destinationArray['description'];
 
                 return [
                     'index' => $index,
@@ -71,6 +69,8 @@
                     'document_type' => $document_type,
                     'id' => $row->id,
                     'destination_description' => $row->destination_description,
+                    'destination_array' => $destinationArray,
+                    'destination_name' => $destinationName,
                     'date_of_payment_class' => get_class($payment),
                     'date_of_payment' => $timedate,
                     'payment_method_type_description' => $this->getPaymentMethodTypeDescription($row),
