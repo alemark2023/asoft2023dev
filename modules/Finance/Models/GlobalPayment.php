@@ -3,22 +3,23 @@
     namespace Modules\Finance\Models;
 
     use App\Models\Tenant\Bank;
-    use App\Models\Tenant\BankAccount;
+    use App\Models\Tenant\Cash;
     use App\Models\Tenant\DocumentPayment;
+    use App\Models\Tenant\ModelTenant;
     use App\Models\Tenant\PurchasePayment;
     use App\Models\Tenant\SaleNotePayment;
+    use App\Models\Tenant\SoapType;
     use App\Models\Tenant\TransferAccountPayment;
     use App\Models\Tenant\User;
-
-    use App\Models\Tenant\Cash;
-    use App\Models\Tenant\ModelTenant;
-    use App\Models\Tenant\SoapType;
+    use Carbon\Carbon;
     use Eloquent;
     use Exception;
+    use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
     use Illuminate\Database\Eloquent\Model;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Illuminate\Database\Eloquent\Relations\MorphTo;
+    use Illuminate\Support\HigherOrderCollectionProxy;
     use Modules\Expense\Models\ExpensePayment;
     use Modules\Pos\Models\CashTransaction;
     use Modules\Sale\Models\ContractPayment;
@@ -28,8 +29,19 @@
     /**
      * Modules\Finance\Models\GlobalPayment
      *
-     * @property-read CashTransaction                              $cas_transaction
-     * @property-read ContractPayment                              $con_payment
+     * @property int                          $id
+     * @property string                       $soap_type_id
+     * @property int|null                     $destination_id
+     * @property string                       $destination_type
+     * @property int                          $payment_id
+     * @property string                       $payment_type
+     * @property int|null                     $user_id
+     * @property Carbon|null                  $created_at
+     * @property Carbon|null                  $updated_at
+     * @property SoapType                     $soap_type
+     * @property User|null                    $user
+     * @property-read CashTransaction         $cas_transaction
+     * @property-read ContractPayment         $con_payment
      * @property-read Model|Eloquent          $destination
      * @property-read DocumentPayment         $doc_payments
      * @property-read TransferAccountPayment  $transfers_accounts
@@ -45,18 +57,18 @@
      * @property-read PurchasePayment         $pur_payment
      * @property-read QuotationPayment        $quo_payment
      * @property-read SaleNotePayment         $sln_payments
-     * @property-read SoapType                $soap_type
      * @property-read TechnicalServicePayment $tec_serv_payment
-     * @property-read User                    $user
      * @method static Builder|GlobalPayment newModelQuery()
      * @method static Builder|GlobalPayment newQuery()
      * @method static Builder|GlobalPayment query()
      * @method static Builder|GlobalPayment whereDefinePaymentType($payment_type)
      * @method static Builder|GlobalPayment whereFilterPaymentType($params)
-     * @mixin Eloquent
+     * @mixin ModelTenant
      */
     class GlobalPayment extends ModelTenant
     {
+
+        use UsesTenantConnection;
 
         protected $fillable = [
             'soap_type_id',
@@ -67,6 +79,11 @@
             'user_id',
         ];
 
+        protected $casts = [
+            'destination_id' => 'int',
+            'payment_id' => 'int',
+            'user_id' => 'int'
+        ];
 
         /**
          * @return BelongsTo
@@ -83,7 +100,6 @@
         {
             return $this->morphTo();
         }
-
 
         /**
          * @return MorphTo
@@ -187,6 +203,9 @@
                 ->wherePaymentType(TechnicalServicePayment::class);
         }
 
+        /**
+         * @return HigherOrderCollectionProxy|mixed|string
+         */
         public function getDestinationDescriptionAttribute()
         {
             if ($this->destination_type === Cash::class) return 'CAJA GENERAL';
@@ -196,7 +215,7 @@
                 $bank = Bank::find($bank_id);
                 if ($bank !== null) {
                     try {
-                        return $bank->description;
+                        return $bank->description." ". $bank->cci;
                     } catch (Exception $e) {
                         // do nothing
                         return '';
@@ -210,11 +229,52 @@
             return $this->destination_type === Cash::class ? 'CAJA GENERAL' : "{$this->destination->bank->description} - {$this->destination->currency_type_id} - {$this->destination->description}";
         }
 
+        /**
+         * @return string[]
+         */
+        public function getDestinationWithCci(): array
+        {
+            $data = [
+                'name' => '',
+                'description' => '',
+                'cci' => '',
+            ];
+            if ($this->destination_type === Cash::class) {
+                $data['name'] = 'CAJA GENERAL';
+                return $data;
+            }
+            $destination = $this->destination;
+            try {
+                $data['description'] = $destination->description;
+                $data['cci'] = $destination->cci;
+                $bank_id = $destination->bank_id;
+                $bank = Bank::find($bank_id);
+                if ($bank !== null) {
+                    try {
+                        $data['name'] = $bank->description;
+                    } catch (Exception $e) {
+                        // do nothing
+
+                    }
+                }
+            } catch (Exception $e) {
+                // do nothing
+            }
+            return $data;
+
+        }
+
+        /**
+         * @return string
+         */
         public function getTypeRecordAttribute()
         {
             return $this->destination_type === Cash::class ? 'cash' : 'bank_account';
         }
 
+        /**
+         * @return string
+         */
         public function getInstanceTypeAttribute()
         {
             $instance_type = [
@@ -331,7 +391,13 @@
         }
 
 
-        public function scopeWhereFilterPaymentType($query, $params)
+        /**
+         * @param Builder $query
+         * @param         $params
+         *
+         * @return Builder
+         */
+        public function scopeWhereFilterPaymentType(Builder $query, $params)
         {
 
             /** DocumentPayment  */
@@ -467,12 +533,21 @@
             return $query;
         }
 
+        /**
+         * @return BelongsTo
+         */
         public function user()
         {
             return $this->belongsTo(User::class);
         }
 
-        public function scopeWhereDefinePaymentType($query, $payment_type)
+        /**
+         * @param Builder $query
+         * @param         $payment_type
+         *
+         * @return Builder
+         */
+        public function scopeWhereDefinePaymentType(Builder $query, $payment_type)
         {
 
             if ($payment_type === IncomePayment::class) {
@@ -482,4 +557,5 @@
             return $query->wherePaymentType($payment_type);
 
         }
+
     }
