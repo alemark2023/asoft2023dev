@@ -512,15 +512,21 @@ class CashController extends Controller
         $data = $this->setDataToReport($cash);
         $quantity_rows = 30;//$cash->cash_documents()->count();
 
+        $width = 78;
+        $explode = ['ticket'];
 
-        $view = view('pos::cash.report_pdf_'.$format, compact('data'));
+        if($format != 'ticket') {
+            $explode = explode('_', $format);
+            $width = $explode[1] - 2;
+        }
+
+        $view = view('pos::cash.report_pdf_'.$explode[0], compact('data'));
         $html = $view->render();
         /*
         $html = view('pos::cash.report_pdf_' . $format,
             compact('cash', 'company', 'methods_payment','status_type_id'))->render();
         */
-        $width = 78;
-        if ($format === 'ticket') {
+        if ($explode[0] === 'ticket') {
             $pdf = new Mpdf([
                                 'mode'          => 'utf-8',
                                 'format'        => [
@@ -548,14 +554,20 @@ class CashController extends Controller
      * Reporte en Ticket formato cash_pdf_ticket
      *
      * @param $cash
+     * @param integer $format
      *
      * @return mixed
      * @throws \Mpdf\MpdfException
      * @throws \Throwable
      */
-    public function reportTicket($cash) {
-        $temp = tempnam(sys_get_temp_dir(), 'cash_pdf_ticket');
-        file_put_contents($temp, $this->getPdf($cash, 'ticket'));
+    public function reportTicket($cash, $format = 80) {
+        $temp = tempnam(sys_get_temp_dir(), 'cash_pdf_tickets_'.$format);
+
+        if($format != 80) {
+            file_put_contents($temp, $this->getPdf($cash, 'ticket_'.$format));
+        } else {
+            file_put_contents($temp, $this->getPdf($cash, 'ticket'));
+        }
 
         return response()->file($temp);
     }
