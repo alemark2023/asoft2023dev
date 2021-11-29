@@ -842,7 +842,7 @@
                     @endif
 
                     @if(in_array('accounting', $vc_modules))
-                        <li class="nav-parent {{ ($path[0] === 'account')?'nav-active nav-expanded':'' }}">
+                        <li class="nav-parent {{ ($path[0] === 'account' || $path[0] === 'accounting_ledger'  )?'nav-active nav-expanded':'' }}">
                             <a class="nav-link"
                                href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -891,7 +891,13 @@
                                            href="{{ route('tenant.account_summary_report.index') }}">Reporte resumido -
                                                                                                      Ventas</a>
                                     </li>
-                                @endif
+                               @endif
+                                    <li class="{{(($path[0] === 'accounting_ledger') )   ? 'nav-active' : ''}}">
+                                        <a class="nav-link"
+                                           href="{{ route('tenant.accounting_ledger.create') }}">
+                                            Libro Mayor
+                                        </a>
+                                    </li>
                             </ul>
                         </li>
                     @endif
