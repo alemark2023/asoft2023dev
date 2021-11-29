@@ -111,6 +111,7 @@ class Configuration extends ModelTenant
         'default_document_type_80',
         'search_item_by_barcode',
         'item_name_pdf_description',
+        'auto_print',
     ];
 
     protected $casts = [
@@ -503,6 +504,7 @@ class Configuration extends ModelTenant
                 'document_id'=>$document_id,
                 'type'=>$typeUser,
             ],
+            'auto_print' => (bool)$this->auto_print,
 
         ];
     }

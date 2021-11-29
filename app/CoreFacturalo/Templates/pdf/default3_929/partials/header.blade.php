@@ -259,56 +259,56 @@ class="full-width ">
     >
 
         <td
-
-            colspan="2">
+            colspan="2"
+            style="padding-top: 15px;">
             <table cellspacing="0"
                    border="0"
-                   class="full-width "
+                   class="full-width"
             >
                 <tr
                 >
                     <td colspan=4
                         align="left"
-                        valign=middle
+                        valign=top
 
                     >
                         <b>
                             Cliente
                         </b>
                     </td>
-                    <td align="center">:</td>
+                    <td align="center" valign=top>:</td>
                     <td colspan=5
 
                         align="left"
-                        valign=middle>{{ $customer_name }}</td>
+                        valign=top>{{ $customer_name }}</td>
                     <td rowspan=4
                         align="center"
-                        valign=middle><br></td>
+                        valign=top><br></td>
                     <td
                         align="left"
-                        valign=middle><b>F. Emisión</b></td>
-                    <td align="center">:</td>
+                        valign=top><b>F. Emisión</b></td>
+                    <td align="center" valign=top>:</td>
                     <td
                         align="left"
-                        valign=middle>{{ $date }}</td>
+                        valign=top>{{ $date }}</td>
                 </tr>
 
                 <tr>
                     <td colspan=4
                         align="left"
-                        valign=middle
+                        valign=top
                     ><b>Doc. ID</b></td>
-                    <td align="center">:</td>
+                    <td align="center" valign=top>:</td>
                     <td colspan=5
                         align="left"
-                        valign=middle>{{ $customer_dni }}</td>
+                        valign=top>{{ $customer_dni }}</td>
                     <td
                         align="left"
-                        valign=middle><b>Moneda</b></td>
-                    <td align="center">:</td>
+                        valign=top><b>Moneda</b></td>
+                    <td align="center" valign=top>:</td>
                     <td
                         align="left"
-                        valign=middle>{{ $currency }}</td>
+                        valign=top>{{ $currency }}</td>
                 </tr>
 
                 <tr>

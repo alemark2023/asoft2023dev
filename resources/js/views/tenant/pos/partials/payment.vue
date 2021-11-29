@@ -122,9 +122,9 @@
                     <div class="col-sm-6 py-2">
                         <p class="font-weight-semibold mb-0 text-white">TOTAL</p>
                     </div>
-                    <div class="col-sm-6 py-2 text-right"> 
+                    <div class="col-sm-6 py-2 text-right">
                         <h4 class="font-weight-semibold mb-0 text-white">{{ currencyTypeActive.symbol }} {{form.total}}</h4>
-                    </div> 
+                    </div>
                 </div>
                 <div class="row m-0 p-0 h-25 d-flex align-items-center bg-white">
                     <div class="col-lg-6">
@@ -448,7 +448,7 @@ import MultiplePaymentForm from './multiple_payment.vue'
 export default {
     components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress},
 
-    props: ['form', 'customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany', 'businessTurns'],
+    props: ['form', 'customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany', 'businessTurns', 'isPrint'],
     data() {
         return {
             enabled_discount: false,
@@ -502,6 +502,10 @@ export default {
 
         await this.getFormPosLocalStorage()
         // console.log(this.form.payments, this.payments)
+        console.log(this.isPrint);
+        if (!qz.websocket.isActive() && this.isPrint) {
+            startConnection();
+        }
     },
     mounted() {
         // console.log(this.currencyTypeActive)
@@ -611,7 +615,7 @@ export default {
             this.difference = this.enter_amount - this.form.total
             // this.difference = this.enter_amount - this.form.total_payable_amount
             // console.log(this.form.discounts)
-        }, 
+        },
         reCalculateTotal() {
 
             let total_discount = 0
@@ -653,7 +657,7 @@ export default {
                 }
                 total_value += parseFloat(row.total_value)
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
-                
+
                 // isc
                 total_isc += parseFloat(row.total_isc)
                 total_base_isc += parseFloat(row.total_base_isc)
@@ -672,7 +676,7 @@ export default {
             this.form.total_igv = _.round(total_igv, 2)
             this.form.total_value = _.round(total_value, 2)
             // this.form.total_taxes = _.round(total_igv, 2)
-            
+
             //impuestos (isc + igv)
             this.form.total_taxes = _.round(total_igv + total_isc, 2);
 
@@ -855,7 +859,7 @@ export default {
         initFormPayment() {
 
             this.difference = -this.form.total
-            
+
             this.form_payment = {
                 id: null,
                 date_of_payment: moment().format('YYYY-MM-DD'),
@@ -973,6 +977,9 @@ export default {
 
                     // this.initFormPayment() ;
                     this.cleanLocalStoragePayment()
+                    if(this.isPrint){
+                        this.gethtml();
+                    }
                     this.$eventHub.$emit('saleSuccess');
                 } else {
                     this.$message.error(response.data.message);
@@ -987,6 +994,43 @@ export default {
                 this.loading_submit = false;
                 this.locked_submit = false
             });
+        },
+        gethtml(){
+            this.form.datahtml="";
+            var doc='salenote';
+            var route = `/printticket/document/${this.documentNewId}/ticket`;
+            if(this.resource_documents!=='documents'){
+                route = `/sale-notes/ticket/${this.documentNewId}/ticket`;
+            }
+
+            console.log(route);
+
+            this.$http.get(route)
+            .then(response => {
+                if (response.data.length>0) {
+                    this.form.datahtml=response.data;
+                    this.printticket();
+                }
+
+            })
+            .catch(error => {
+                console.log(error);
+            })
+        },
+        async printticket(){
+            //getUpdatedConfig();
+            await this.sleep(400);
+            var configg = getUpdatedConfig();
+            var opts = getUpdatedConfig();
+            var printData = [
+                {
+                    type: 'html',
+                    format: 'plain',
+                    data: this.form.datahtml,
+                    options: opts
+                }
+            ];
+            qz.print(configg, printData).catch(displayError);
         },
         saveCashDocument() {
             this.$http.post(`/cash/cash_document`, this.form_cash_document)

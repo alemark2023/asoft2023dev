@@ -843,6 +843,7 @@
                 :customer="customer"
                 :soapCompany="soapCompany"
                 :businessTurns="businessTurns"
+                :is-print="isPrint"
             ></payment-form>
         </template>
 
@@ -953,7 +954,7 @@ import TableItems from "./partials/table.vue";
 import ItemUnitTypes from "./partials/item_unit_types.vue";
 
 export default {
-    props: ["configuration", "soapCompany", "businessTurns", "typeUser"],
+    props: ["configuration", "soapCompany", "businessTurns", "typeUser", "isPrint"],
     components: {
         PaymentForm,
         ItemForm,
@@ -973,6 +974,7 @@ export default {
             showDialogItemUnitTypes: false,
             history_item_id: null,
             search_item_by_barcode: false,
+            is_print: true,
             warehousesDetail: [],
             unittypeDetail: [],
             input_person: {},
@@ -1493,7 +1495,8 @@ export default {
                 actions: {
                     format_pdf: "a4"
                 },
-                reference_data: null
+                reference_data: null,
+                is_print: true
             };
 
             this.initFormItem();

@@ -112,4 +112,11 @@ class Template
         return view('pdf.'.$base_template.'.partials.footer_blank', compact('document'))->render();
     }
 
+    public function pdfFooterDispatch($base_template, $document)
+    {
+        view()->addLocation(__DIR__.'/Templates');
+
+        return view('pdf.'.$base_template.'.partials.footer_dispatch', compact('document'))->render();
+    }
+
 }
