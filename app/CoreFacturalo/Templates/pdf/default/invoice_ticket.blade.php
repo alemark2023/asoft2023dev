@@ -503,7 +503,7 @@
                 <td class="text-right font-bold desc">{{ number_format($document->total_exonerated, 2) }}</td>
             </tr>
         @endif
-        
+
         @if ($document->document_type_id === '07')
             @if($document->total_taxed >= 0)
             <tr>
