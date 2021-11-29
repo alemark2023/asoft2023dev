@@ -503,30 +503,28 @@ class CashController extends Controller
      *
      * @param        $cash
      * @param string $format
+     * @param integer $mm
      *
      * @return string
      * @throws \Mpdf\MpdfException
      * @throws \Throwable
      */
-    private function getPdf($cash, $format = 'ticket') {
+    private function getPdf($cash, $format = 'ticket', $mm = null) {
         $data = $this->setDataToReport($cash);
         $quantity_rows = 30;//$cash->cash_documents()->count();
 
         $width = 78;
-        $explode = ['ticket'];
-
-        if($format != 'ticket') {
-            $explode = explode('_', $format);
-            $width = $explode[1] - 2;
+        if($mm != null) {
+            $width = $mm - 2;
         }
 
-        $view = view('pos::cash.report_pdf_'.$explode[0], compact('data'));
+        $view = view('pos::cash.report_pdf_'.$format, compact('data'));
         $html = $view->render();
         /*
         $html = view('pos::cash.report_pdf_' . $format,
             compact('cash', 'company', 'methods_payment','status_type_id'))->render();
         */
-        if ($explode[0] === 'ticket') {
+        if ($format === 'ticket') {
             $pdf = new Mpdf([
                                 'mode'          => 'utf-8',
                                 'format'        => [
@@ -554,20 +552,16 @@ class CashController extends Controller
      * Reporte en Ticket formato cash_pdf_ticket
      *
      * @param $cash
-     * @param integer $format
+     * @param integer $mm
      *
      * @return mixed
      * @throws \Mpdf\MpdfException
      * @throws \Throwable
      */
-    public function reportTicket($cash, $format = 80) {
-        $temp = tempnam(sys_get_temp_dir(), 'cash_pdf_tickets_'.$format);
+    public function reportTicket($cash, $mm) {
+        $temp = tempnam(sys_get_temp_dir(), 'cash_pdf_ticket_'.$mm);
 
-        if($format != 80) {
-            file_put_contents($temp, $this->getPdf($cash, 'ticket_'.$format));
-        } else {
-            file_put_contents($temp, $this->getPdf($cash, 'ticket'));
-        }
+        file_put_contents($temp, $this->getPdf($cash, 'ticket', $mm));
 
         return response()->file($temp);
     }
