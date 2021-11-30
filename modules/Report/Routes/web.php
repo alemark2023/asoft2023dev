@@ -110,20 +110,24 @@
                     Route::get('cash/filter', 'ReportCashController@filter')->name('tenant.reports.cash.filter');
                     Route::get('cash/records', 'ReportCashController@records')->name('tenant.reports.cash.records');
 
+                   /**
+                    * reports/document-hotels
+                    * reports/document-hotels/pdf
+                    * reports/document-hotels/excel
+                    * reports/document-hotels/filter
+                    * reports/document-hotels/records
+                    */
+                   Route::prefix('document-hotels')->group(function () {
 
-                    Route::get('document-hotels', 'ReportDocumentHotelController@index')
-                         ->name('tenant.reports.document_hotels.index');
-                    Route::get('document-hotels/pdf', 'ReportDocumentHotelController@pdf')
-                         ->name('tenant.reports.document_hotels.pdf');
-                    Route::get('document-hotels/excel', 'ReportDocumentHotelController@excel')
-                         ->name('tenant.reports.document_hotels.excel');
-                    Route::get('document-hotels/filter', 'ReportDocumentHotelController@filter')
-                         ->name('tenant.reports.document_hotels.filter');
-                    Route::get('document-hotels/records', 'ReportDocumentHotelController@records')
-                         ->name('tenant.reports.document_hotels.records');
+                       Route::get('', 'ReportDocumentHotelController@index')->name('tenant.reports.document_hotels.index');
+                       Route::get('/pdf', 'ReportDocumentHotelController@pdf')->name('tenant.reports.document_hotels.pdf');
+                       Route::get('/excel', 'ReportDocumentHotelController@excel')->name('tenant.reports.document_hotels.excel');
+                       Route::get('/filter', 'ReportDocumentHotelController@filter')->name('tenant.reports.document_hotels.filter');
+                       Route::get('/records', 'ReportDocumentHotelController@records')->name('tenant.reports.document_hotels.records');
+                   });
 
 
-                    Route::get('commercial-analysis', 'ReportCommercialAnalysisController@index')
+                   Route::get('commercial-analysis', 'ReportCommercialAnalysisController@index')
                          ->name('tenant.reports.commercial_analysis.index');
                     Route::get('commercial-analysis/pdf', 'ReportCommercialAnalysisController@pdf')
                          ->name('tenant.reports.commercial_analysis.pdf');

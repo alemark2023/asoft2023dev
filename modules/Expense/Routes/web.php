@@ -7,6 +7,18 @@ if($current_hostname) {
         Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
 
             // Route::redirect('/', '/dashboard');
+            /**
+             * expenses/
+             * expenses/columns
+             * expenses/records
+             * expenses/records/expense-payments/{expense}
+             * expenses/create/{id?}
+             * expenses/tables
+             * expenses/table/{table}
+             * expenses/record/{expense}
+             * expenses/record}/voided
+             * expenses/report/excel
+             */
 
             Route::prefix('expenses')->group(function () {
 
