@@ -670,12 +670,13 @@ if ($hostname) {
             Route::post('clients/password/{client}', 'System\ClientController@password');
             Route::post('clients/locked_emission', 'System\ClientController@lockedEmission');
             Route::post('clients/locked_tenant', 'System\ClientController@lockedTenant');
+            // Route::post('clients/locked_tenant', 'System\ClientController@lockedTenant'); //Linea repetida
+
             Route::post('clients/locked_user', 'System\ClientController@lockedUser');
             Route::post('clients/renew_plan', 'System\ClientController@renewPlan');
 
             Route::post('clients/set_billing_cycle', 'System\ClientController@startBillingCycle');
 
-            Route::post('clients/locked_tenant', 'System\ClientController@lockedTenant');
 
             Route::post('clients/upload', 'System\ClientController@upload');
 

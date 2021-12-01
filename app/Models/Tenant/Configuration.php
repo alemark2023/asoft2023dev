@@ -11,7 +11,6 @@
     use Illuminate\Foundation\Application;
     use Illuminate\Support\Facades\Config;
     use Modules\Inventory\Models\Warehouse;
-    use phpDocumentor\Reflection\Types\Boolean;
 
     /**
      * Class App\Models\Tenant\Configuration
@@ -93,6 +92,19 @@
      * @property bool        $name_product_pdf_to_xml
      * @property int         $item_name_pdf_description
      * @property bool        $auto_print
+     * @property bool        $show_service_on_pos
+     * @property bool        $locked_admin
+     * @property string|null $certificate
+     * @property string|null $soap_send_id
+     * @property string|null $soap_type_id
+     * @property string|null $soap_username
+     * @property string|null $soap_password
+     * @property string|null $soap_url
+     * @property string|null $token_public_culqui
+     * @property string|null $token_private_culqui
+     * @property string|null $url_apiruc
+     * @property string|null $token_apiruc
+     * @property bool        $use_login_global
      * @package App\Models\Tenant
      * @mixin ModelTenant
      * @method static Builder|Configuration newModelQuery()
@@ -192,6 +204,7 @@
             'terms_condition',
             'ticket_58',
             'update_document_on_dispaches',
+            'show_service_on_pos',
             'visual',
 
         ];
@@ -203,6 +216,7 @@
             'seller_can_generate_sale_opportunities' => 'boolean',
             'seller_can_view_balance' => 'boolean',
             'update_document_on_dispaches' => 'boolean',
+            'show_service_on_pos' => 'boolean',
             'is_pharmacy' => 'boolean',
             'auto_send_dispatchs_to_sunat' => 'boolean',
             'send_data_to_other_server' => 'boolean',
@@ -418,6 +432,7 @@
                     'type' => $typeUser,
                 ],
                 'auto_print' => (bool)$this->auto_print,
+                'show_service_on_pos' => (bool)$this->show_service_on_pos,
 
             ];
         }
@@ -1905,5 +1920,25 @@
             return $this;
         }
 
+        /**
+         * Si esta activo, permite listar los servicios en POS
+         *
+         * @return bool
+         */
+        public function isShowServiceOnPos(): bool
+        {
+            return (bool)$this->show_service_on_pos;
+        }
+
+        /**
+         * @param bool $show_service_on_pos
+         *
+         * @return Configuration
+         */
+        public function setShowServiceOnPos(bool $show_service_on_pos): Configuration
+        {
+            $this->show_service_on_pos = (bool)$show_service_on_pos;
+            return $this;
+        }
 
     }

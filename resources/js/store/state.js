@@ -37,6 +37,7 @@ export default {
         warehouse_id: 0,
         item_name_pdf_description: false,
         stock: false,
+        show_service_on_pos: false,
         dispatches_address_text: false,
         cron: false,
         sunat_alternate_server: false,
