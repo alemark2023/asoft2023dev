@@ -408,7 +408,7 @@
                 'search_item_by_series' => (bool)$this->search_item_by_series,
                 'change_free_affectation_igv' => (bool)$this->change_free_affectation_igv,
                 'select_available_price_list' => (bool)$this->select_available_price_list,
-                'show_extra_info_to_item' => (bool)$this->show_extra_info_to_item,
+                'show_extra_info_to_item' => $this->isShowExtraInfoToItem(),
                 'percentage_allowance_charge' => $this->percentage_allowance_charge,
                 'group_items_generate_document' => $this->group_items_generate_document,
                 'set_address_by_establishment' => $this->set_address_by_establishment,
