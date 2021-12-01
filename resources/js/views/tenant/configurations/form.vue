@@ -979,6 +979,33 @@
                                 ></tenant-configurations-form-purchases>
 
                             </el-tab-pane>
+                            <el-tab-pane class="mb-3"
+                                         name="eight">
+                                <span slot="label">
+                                    <h3>
+                                        POS
+                                    </h3>
+                                </span>
+                                <div class="row">
+                                    <div class="col-12 mt-4">
+                                        <div class="form-group">
+                                            <label>
+                                                Listar servicios al inicio de Pos
+                                                <el-tooltip class="item"
+                                                            content="Normalmente, los servicios necesitan ser buscados, en este caso, se podran listar al inicio"
+                                                            effect="dark"
+                                                            placement="top-start">
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                            </label>
+                                            <el-switch v-model="form.show_service_on_pos"
+                                                       active-text="Si"
+                                                       inactive-text="No"
+                                                       @change="submit"></el-switch>
+                                        </div>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
                         </el-tabs>
                         <terms-condition :form="form"
                                          :showClose="false"
@@ -1009,7 +1036,11 @@ export default {
         'typeUser',
         'configuration',
     ],
-    components: {TermsCondition, TermsConditionSale, AllowanceCharge},
+    components: {
+        TermsCondition,
+        TermsConditionSale,
+        AllowanceCharge,
+    },
     computed: {
         ...mapState([
             'config',

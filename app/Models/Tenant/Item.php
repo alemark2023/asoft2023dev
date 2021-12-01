@@ -1316,6 +1316,7 @@ class Item extends ModelTenant
     public function setItemColor($colors = []) {
         return $this->setExtraData(ItemColor::class,'cat_colors_item_id',$colors);
     }
+
     public function getItemColor(){
         return ItemColor::where('item_id', $this->id)->where('active',1)->get();
     }
@@ -1376,7 +1377,8 @@ class Item extends ModelTenant
      *
      * @return $this
      */
-    protected function setExtraData($class,$field_id = '',$data = []){
+    protected function setExtraData($class,$field_id = '',$data = []): Item
+    {
         $dataCollection = collect($data);
         $currentRow = $class::where('item_id',$this->id)
             ->whereNotIn($field_id,$dataCollection)
@@ -1400,7 +1402,16 @@ class Item extends ModelTenant
         }
         return $this;
     }
-
+    /**
+     * @param  ItemMoldProperty|ItemUnitBusiness|ItemStatus|ItemColor|ItemUnitsPerPackage|ItemProductFamily|ItemMoldCavity|ItemPackageMeasurement|null      $class
+     * @param string $field_id
+     * @param array  $data
+     *
+     * @return $this
+     */
+    public function setExtraDataByCatalogCategory($class,$field_id = '',$data = []){
+        return $this->setExtraData($class, $field_id, $data);
+    }
     /**
      * Genera una estructura unica para los datos extra.
      *

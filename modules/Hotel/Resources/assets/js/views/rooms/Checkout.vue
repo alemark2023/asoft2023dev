@@ -774,6 +774,9 @@ export default {
         onGotoBack() {
             window.location.href = "/hotels/reception";
         },
+        clickCancel(index) {
+            this.document.payments.splice(index, 1);
+        },
         onCalculateTotals() {
             let total_exportation = 0;
             let total_taxed = 0;
