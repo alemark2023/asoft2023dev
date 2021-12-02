@@ -532,10 +532,10 @@ class CashController extends Controller
                                     190 +
                                     ($quantity_rows * 8),
                                 ],
-                                'margin_top'    => 5,
-                                'margin_right'  => 5,
-                                'margin_bottom' => 5,
-                                'margin_left'   => 5,
+                                'margin_top'    => 3,
+                                'margin_right'  => 3,
+                                'margin_bottom' => 3,
+                                'margin_left'   => 3,
                             ]);
         } else {
             $pdf = new Mpdf([
