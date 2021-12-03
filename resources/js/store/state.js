@@ -15,6 +15,7 @@ export default {
     all_series: [],
     series: [],
     affectation_igv_types: [],
+    payment_destinations: [],
     unit_types: [],
     item_search_extra_parameters: {},
     mold: {},

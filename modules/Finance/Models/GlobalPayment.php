@@ -20,6 +20,7 @@
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Illuminate\Database\Eloquent\Relations\MorphTo;
     use Illuminate\Support\HigherOrderCollectionProxy;
+    use Modules\Expense\Models\BankLoanPayment;
     use Modules\Expense\Models\ExpensePayment;
     use Modules\Pos\Models\CashTransaction;
     use Modules\Sale\Models\ContractPayment;
@@ -179,6 +180,14 @@
         /**
          * @return mixed
          */
+        public function bank_loan_payment()
+        {
+            return $this->belongsTo(BankLoanPayment::class, 'payment_id')
+                ->wherePaymentType(BankLoanPayment::class);
+        }
+        /**
+         * @return mixed
+         */
         public function inc_payment()
         {
             return $this->belongsTo(IncomePayment::class, 'payment_id')
@@ -284,6 +293,7 @@
                 ExpensePayment::class => 'expense',
                 QuotationPayment::class => 'quotation',
                 ContractPayment::class => 'contract',
+                BankLoanPayment::class => 'bank_loan',
                 IncomePayment::class => 'income',
                 CashTransaction::class => 'cash_transaction',
                 TechnicalServicePayment::class => 'technical_service',
@@ -317,6 +327,9 @@
                 case 'contract':
                     $description = 'CONTRATO';
                     break;
+                case 'bank_loan':
+                    $description = 'PRESTAMO BANCARIO';
+                    break;
                 case 'income':
                     $description = 'INGRESO';
                     break;
@@ -342,6 +355,7 @@
                 case 'sale_note':
                 case 'quotation':
                 case 'contract':
+                case 'bank_loan':
                 case 'income':
                 case 'cash_transaction':
                 case 'technical_service':
@@ -382,6 +396,11 @@
                 case 'income':
                     $person['name'] = $record->customer;
                     $person['number'] = '';
+                case 'bank_loan':
+                    // @todo Ajustar los datos de banco
+                    $bank = $record->bank ?? '';
+                    $person['name'] = $bank;//." ".__FILE__;
+                    $person['number'] = "";// __LINE__;
                 case 'cash_transaction':
                     $person['name'] = '-';
                     $person['number'] = '';
