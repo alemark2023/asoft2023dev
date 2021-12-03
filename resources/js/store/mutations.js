@@ -34,6 +34,9 @@ export default {
     setCustomers(state, customers) {
         state.customers = (customers === undefined) ?[]:customers
     },
+    setPaymentDestinations(state, payment_destinations) {
+        state.payment_destinations = (payment_destinations === undefined) ?[]:payment_destinations
+    },
     setCustomer(state, customer) {
         state.customer = (customer === undefined) ? {} :customer
     },

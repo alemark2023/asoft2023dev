@@ -351,6 +351,9 @@ Vue.component('tenant-suscription-payments-index', require('../../modules/Suscri
 Vue.component('data-table-payment-receipt', require('../js/components/DataTablePaymentReceipt.vue') );
 Vue.component('tenant-index-payment-receipt', require('../../modules/Suscription/Resources/assets/js/payment_receipt/index.vue') );
 
+/** Prestamos Bancarios **/
+Vue.component('tenant-bankloans-index', require('../../modules/Expense/Resources/assets/js/views/bank_loans/index.vue'));
+Vue.component('tenant-bankloans-form', require('../../modules/Expense/Resources/assets/js/views/bank_loans/form.vue'));
 import moment from 'moment';
 
 Vue.mixin({

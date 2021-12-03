@@ -525,12 +525,14 @@
                         @if(in_array('purchases', $vc_modules))
                             <li class="
                             nav-parent
-                            {{ ($firstLevel === 'purchases')?'nav-active nav-expanded':'' }}
-                            {{ ($firstLevel === 'persons' && $secondLevel === 'suppliers')?'nav-active nav-expanded':'' }}
-                            {{ ($firstLevel === 'expenses')?'nav-active nav-expanded':'' }}
-                            {{ ($firstLevel === 'purchase-quotations')?'nav-active nav-expanded':'' }}
-                            {{ ($firstLevel === 'purchase-orders')?'nav-active nav-expanded':'' }}
-                            {{ ($firstLevel === 'fixed-asset')?'nav-active nav-expanded':'' }}
+                            {{ (
+	                            $firstLevel === 'purchases' ||
+                                ($firstLevel === 'persons' && $secondLevel === 'suppliers') ||
+                                $firstLevel === 'expenses' ||
+                                $firstLevel === 'bank_loan' ||
+                                $firstLevel === 'purchase-quotations' ||
+                                $firstLevel === 'fixed-asset'
+                                ) ?'nav-active nav-expanded':'' }}
                                 ">
                                 <a class="nav-link"
                                    href="#">
@@ -572,6 +574,12 @@
                                                href="{{route('tenant.purchase-orders.index')}}">Ordenes de compra</a>
                                         </li>
                                     @endif
+                                        @if(in_array('purchases_expenses', $vc_module_levels))
+                                            <li class="{{ ($firstLevel === 'bank_loan' )?'nav-active':'' }}">
+                                                <a class="nav-link"
+                                                   href="{{route('tenant.bank_loan.index')}}">Credito Bancario</a>
+                                            </li>
+                                        @endif
                                     @if(in_array('purchases_expenses', $vc_module_levels))
                                         <li class="{{ ($firstLevel === 'expenses' )?'nav-active':'' }}">
                                             <a class="nav-link"
@@ -938,6 +946,7 @@
                                 <span>Finanzas</span>
                             </a>
                             <ul class="nav nav-children">
+
                                 @if(in_array('finances_movements', $vc_module_levels))
                                     <li class="{{(($firstLevel === 'finances') && ($secondLevel == 'movements')) ? 'nav-active' : ''}}">
                                         <a class="nav-link"
