@@ -65,6 +65,7 @@ if ($hostname) {
         //reseller
         Route::post('reseller/detail', 'System\Api\ResellerController@resellerDetail');
         Route::post('reseller/lockedAdmin', 'System\Api\ResellerController@lockedAdmin');
+        Route::post('reseller/lockedTenant', 'System\Api\ResellerController@lockedTenant');
 
     });
 
