@@ -46,7 +46,30 @@
             $minutes = 60;
             $now = Carbon::now()->addMinutes($minutes);
             $this->info('Se ha iniciado account_ledger:fill');
-            $months = $this->getDatesToReport();
+//            $months = $this->getDatesToReport();
+            $months = [];
+            DB::connection('tenant')->transaction(function () use ( &$months) {
+// * @var Collection $documents
+//
+                /**
+                 * @var Carbon     $documents_min
+                 * @var Carbon     $documents_max
+                 */
+                $documents = Document::query()
+                    ->select('date_of_issue')
+                    ->groupby('date_of_issue')->get();
+
+                $documents_min = $documents->min('date_of_issue');
+                $documents_max = $documents->max('date_of_issue');
+                do {
+                    if(!empty($documents_min)) {
+                        $d = $documents_min->firstOfMonth();
+                        $f = $d->format('Y-m');
+                        $months[$f] = Carbon::createFromFormat('Y-m', $f)->firstOfMonth()->setTime(0, 0, 0);
+                    }
+                } while ($documents_min->addMonth() <= $documents_max);
+            });
+
             $numberRecorsToSave = 3;
 
             DB::connection('tenant')->transaction(function () use ($now, $months, $numberRecorsToSave) {
