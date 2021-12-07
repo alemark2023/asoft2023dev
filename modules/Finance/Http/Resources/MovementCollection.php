@@ -45,7 +45,11 @@
                 $index = $key + 1;
                 $payment = $row->payment;
                 // $timedate = $payment->date_of_payment->format('Y-m-d');
-                $timedate = $payment->date_of_payment->toDateTimeString();
+                $timedate = null;
+                if( $payment->date_of_payment &&  $payment->date_of_payment != null){
+                    $timedate = $payment->date_of_payment->toDateTimeString();
+
+                }
                 $document_type = '';
                 $type_movement = $row->type_movement;
                 $payments = $payment->payment;
