@@ -393,19 +393,30 @@
                     $person['name'] = $record->supplier->name;
                     $person['number'] = $record->supplier->number;
                     break;
-                case 'income':
-                    $person['name'] = $record->customer;
-                    $person['number'] = '';
                 case 'bank_loan':
                     // @todo Ajustar los datos de banco
                     $bank = $record->bank ?? '';
                     $person['name'] = $bank;//." ".__FILE__;
                     $person['number'] = "";// __LINE__;
+                    break;
+                case 'income':
+                    $person['name'] = $record->customer;
+                    $person['number'] = '';
+
                 case 'cash_transaction':
                     $person['name'] = '-';
                     $person['number'] = '';
             }
 
+            if(!isset($person) || !is_array($person)){
+                $person =[];
+            }
+            if(!isset($person['name'])) {
+                $person['name'] = '-';
+            }
+            if(!isset($person['number'])) {
+                $person['number'] = '';
+            }
             return (object)$person;
         }
 
