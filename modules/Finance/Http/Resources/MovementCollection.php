@@ -54,15 +54,17 @@
                 $type_movement = $row->type_movement;
                 $payments = $payment->payment;
 
-                if ($payment->associated_record_payment && $payment->associated_record_payment->date_of_issue) {
-                    $timedate = $payment->associated_record_payment->date_of_issue->format('Y-m-d') . " " . $payment->associated_record_payment->time_of_issue;
-                    $timedate = Carbon::createFromFormat('Y-m-d H:i:s', $timedate)->toDateTimeString();
-                }
+                if($payment->associated_record_payment ) {
+                    if ($payment->associated_record_payment->date_of_issue) {
+                        $timedate = $payment->associated_record_payment->date_of_issue->format('Y-m-d') . " " . $payment->associated_record_payment->time_of_issue;
+                        $timedate = Carbon::createFromFormat('Y-m-d H:i:s', $timedate)->toDateTimeString();
+                    }
 
-                if ($payment->associated_record_payment->document_type) {
-                    $document_type = $payment->associated_record_payment->document_type->description;
-                } elseif (isset($payment->associated_record_payment->prefix)) {
-                    $document_type = $payment->associated_record_payment->prefix;
+                    if ($payment->associated_record_payment->document_type) {
+                        $document_type = $payment->associated_record_payment->document_type->description;
+                    } elseif (isset($payment->associated_record_payment->prefix)) {
+                        $document_type = $payment->associated_record_payment->prefix;
+                    }
                 }
                 $destinationArray = $row->getDestinationWithCci();
                 $destinationName = $destinationArray['name'] . " - " . $destinationArray['description'];
@@ -80,8 +82,8 @@
                     'payment_method_type_description' => $this->getPaymentMethodTypeDescription($row),
                     'reference' => $payment->reference,
                     'total' => $amount,
-                    'number_full' => $payment->associated_record_payment->number_full,
-                    'currency_type_id' => $payment->associated_record_payment->currency_type_id,
+                    'number_full' => $payment->associated_record_payment->number_full??null,
+                    'currency_type_id' => $payment->associated_record_payment->currency_type_id??'PEN',
                     // 'document_type_description' => ($payment->associated_record_payment->document_type) ? $payment->associated_record_payment->document_type->description:'NV',
                     'document_type_description' => $this->getDocumentTypeDescription($row),
                     'person_name' => $data_person->name,
@@ -133,7 +135,7 @@
 
                 $payment_method_type_description = $row->payment->payment_method_type->description;
 
-            } else {
+            } elseif($row->payment->expense_method_type){
                 $payment_method_type_description = $row->payment->expense_method_type->description;
             }
 
@@ -145,14 +147,16 @@
 
             $document_type = '';
 
-            if ($row->payment->associated_record_payment->document_type) {
+            if($row->payment->associated_record_payment) {
+                if ($row->payment->associated_record_payment->document_type) {
 
-                $document_type = $row->payment->associated_record_payment->document_type->description;
+                    $document_type = $row->payment->associated_record_payment->document_type->description;
 
-            } elseif (isset($row->payment->associated_record_payment->prefix)) {
+                } elseif (isset($row->payment->associated_record_payment->prefix)) {
 
-                $document_type = $row->payment->associated_record_payment->prefix;
+                    $document_type = $row->payment->associated_record_payment->prefix;
 
+                }
             }
             return $document_type;
 
