@@ -343,10 +343,9 @@
                 </div>
                 <div class="form-actions text-right mt-4">
                     <el-button @click.prevent="close()">Cancelar</el-button>
-                    <el-button v-if="form.items.length > 0"
+                    <el-button v-if="form.items.length > 0 && !id"
                                :loading="loading_submit"
                                native-type="submit"
-                               v-else-if="!id"
                                type="primary">{{ (id) ? 'Actualizar' : 'Generar' }}
                     </el-button>
                 </div>
@@ -456,6 +455,11 @@ export default {
             .then(() => {
 
                 this.getDataFromLoan()
+            }).finally(()=>{
+            if (this.form.fee.length < 1) {
+                this.addFee()
+            }
+
             })
     },
     created() {
@@ -495,10 +499,11 @@ export default {
                         this.form.fee = []
                         data = response.data.data.bank_loan;
                         this.form = data
+                    })
+                .finally(()=>{
                         if (this.form.fee.length < 1) {
                             this.addFee()
                         }
-                        console.error(this.form.fee)
                     })
             }else{
                 this.addFee()
@@ -719,19 +724,15 @@ export default {
 
         clickAddFee() {
             // @todo: mejorar las cuotas para que añadan un mes automaticamente
-            if (this.form && this.form.fee !== undefined) {
-
                 this.addFee()
                 this.calculateFee();
-            }
 
         },
         addFee(){
             let date = moment();
             this.form.date_of_due = date;
             // @todo: mejorar las cuotas para que añadan un mes automaticamente
-            if (this.form && this.form.fee !== undefined) {
-                if (this.form.fee.length > 0) {
+                if (this.form.fee) {
                     let fee_count = parseInt(this.form.fee.length);
                     if (isNaN(fee_count)) fee_count = 0;
                     date = date.add(fee_count, 'months')
@@ -742,7 +743,6 @@ export default {
                         amount: 0,
                     });
                 }
-            }
         },
         calculateFee() {
 
