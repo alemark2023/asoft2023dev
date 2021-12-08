@@ -46,7 +46,8 @@
                 'number_full' => $expense->number,
                 'total_paid' => $total_paid,
                 'total' => $total,
-                'total_difference' => $total_difference
+                'total_difference' => $total_difference,
+                'payment_destination_id'=> (int)$expense->bank_account_id
             ];
 
         }
@@ -54,18 +55,17 @@
 
         public function store(BankLoanPaymentRequest $request)
         {
-            return $this->stillOnWork();
+            // return $this->stillOnWork();
 
             $id = $request->input('id');
+
 
             DB::connection('tenant')->transaction(function () use ($id, $request) {
 
                 $record = BankLoanPayment::firstOrNew(['id' => $id]);
+
                 $record->fill($request->all());
 
-                if ($request->expense_method_type_id == 1) {
-                    $request['payment_destination_id'] = 'cash';
-                }
 
                 $record->save();
                 $this->createGlobalPayment($record, $request->all());

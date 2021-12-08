@@ -23,7 +23,6 @@
     use Modules\Expense\Exports\ExpenseExport;
     use Modules\Expense\Http\Requests\BankLoanRequest;
     use Modules\Expense\Http\Resources\BankLoanCollection;
-    use Modules\Expense\Http\Resources\ExpenseCollection;
     use Modules\Expense\Http\Resources\BankLoanResource;
     use Modules\Expense\Models\BankLoan;
     use Modules\Expense\Models\BankLoanReason;
@@ -75,7 +74,7 @@
         /**
          * @param Request $request
          *
-         * @return ExpenseCollection
+         * @return BankLoanCollection
          */
         public function records(Request $request)
         {
@@ -122,6 +121,7 @@
             $bank_loan_method_types = ExpenseMethodType::all(); // Por hacer
             $bank_loan_reasons = BankLoanReason::all();
             $payment_destinations = $this->getBankAccounts();
+            $bank_loan_method_types = $payment_destinations;
             $accounts = $allAccounts;
             return compact(
                 'accounts',
@@ -185,7 +185,7 @@
          */
         public function store(BankLoanRequest $request)
         {
-            // dd($request->all());
+             // dd($request->all());
             $data = self::merge_inputs($request);
 
 
@@ -225,15 +225,21 @@
          *
          * @return mixed
          */
-        public static function merge_inputs($inputs)
+        public static function merge_inputs(BankLoanRequest $inputs)
         {
             $company = Company::active();
+            $bank = $inputs->bank_id;
+            if($inputs->has('bank_account_id') && $bank=== null){
+                $bankAccount = BankAccount::find($inputs->bank_account_id);
+                $bank = $bankAccount->bank_id;
+            }
             $values = [
                 'user_id' => auth()->id(),
                 'state_type_id' => $inputs['id'] ? $inputs['state_type_id'] : '05',
                 'soap_type_id' => $company->soap_type_id,
                 'external_id' => $inputs['id'] ? $inputs['external_id'] : Str::uuid()->toString(),
-                'bank' => BankInput::set($inputs['bank_id']),
+                'bank' => BankInput::set($bank),
+                'bank_id'=>$bank
             ];
             $inputs->merge($values);
             return $inputs->all();
@@ -255,7 +261,7 @@
                     'data' => [
                         'id' => $expense->id,
                     ],
-                    'message' => 'Gasto anulado exitosamente',
+                    'message' => 'Credito bancario anulado exitosamente',
                 ];
             } catch (\Exception $e) {
                 return [

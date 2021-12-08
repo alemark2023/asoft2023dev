@@ -11,14 +11,12 @@
 
                     <div class="row">
                         <!--                                     Institución Financiera -->
+                        <!--
                         <div class="col-lg-3 col-md-4">
                             <div :class="{'has-danger': errors.bank_id}"
                                  class="form-group">
                                 <label class="control-label">
                                     Institución Financiera
-                                    <!--
-                                    <a href="#"@click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
-                                    -->
                                 </label>
                                 <el-select v-model="form.bank_id"
                                            @change="changeBank"
@@ -35,19 +33,17 @@
                                 </small>
                             </div>
                         </div>
+                        -->
                         <!--                                     Cuenta bancaria-->
                         <div class="col-lg-3 col-md-4">
                             <div :class="{'has-danger': errors.bank_account_id}"
                                  class="form-group">
                                 <label class="control-label">
                                     Cuenta
-                                    <!--
-                                    <a href="#"@click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
-                                    -->
                                 </label>
                                 <el-select v-model="form.bank_account_id"
                                            filterable>
-                                    <el-option v-for="option in accounts_by_bank"
+                                    <el-option v-for="option in bank_loan_method_types"
                                                :key="option.id"
                                                :label="option.description"
                                                :value="option.id">
@@ -238,7 +234,46 @@
                     <!-- Cuoptas -->
                     <div v-if="form.total > 0"
                          class="row col-lg-12 mt-3">
-                        <div class="col-md-6">&nbsp;</div>
+                        <!-- Pagos -->
+
+                        <!--
+                        <div class="col-md-6 table-responsive" v-if="form.payments !== undefined && form.payments.length>0">
+                            <table v-if="form.payments.length>0"
+                                   class="text-left table"
+                                   width="100%">
+                                <thead>
+                                <tr>
+                                    <th class="text-left" >#
+                                    </th>
+                                    <th class="text-left" >Metodo de pago
+                                    </th>
+                                    <th class="text-left" >Descripcion
+                                    </th>
+                                    <th class="text-left"> Referencia </th>
+                                    <th class="text-left"> Pago </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="(row, index) in form.payments"
+                                    :key="index">
+                                    <td>{{ index + 1 }}</td>
+                                    <td>{{ row.payment_method_type_description}}</td>
+
+                                                                            <td>{{ row.destination_description}}</td>
+
+                                                                           <td>{{ row.reference}}</td>
+
+                                                                            <td>{{ row.payment}}</td>
+
+
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6" v-else >&nbsp;</div>
+                        -->
+                        <div class="col-md-6" >&nbsp;</div>
+
                         <div class="col-md-6 table-responsive">
                             <table v-if="form.fee.length>0"
                                    class="text-left table"
@@ -311,6 +346,7 @@
                     <el-button v-if="form.items.length > 0"
                                :loading="loading_submit"
                                native-type="submit"
+                               v-else-if="!id"
                                type="primary">{{ (id) ? 'Actualizar' : 'Generar' }}
                     </el-button>
                 </div>
@@ -413,6 +449,7 @@ export default {
                 this.form.loan_reason_id = (this.bank_loan_reasons.length > 0) ? this.bank_loan_reasons[0].id : null
                 this.$store.commit('setPaymentMethodTypes',data.payment_destinations)
                 // this.payment_destinations = data.payment_destinations
+
                 this.changeDateOfIssue()
                 this.changeCurrencyType()
             })
@@ -423,14 +460,17 @@ export default {
     },
     created() {
 
-        // },
-        // async created() {
         this.$store.commit('setConfiguration', this.configuration);
         this.loadConfiguration()
         // await
         this.initForm()
-        this.form.currency_type_id = this.config.currency_type_id
-        this.form.establishment_id = this.config.establishment.id
+        if(this.config.currency_type_id !== undefined) {
+            this.form.currency_type_id = this.config.currency_type_id
+        }
+        if(this.config.establishment !== undefined) {
+            this.form.establishment_id = this.config.establishment.id
+        }
+
         // await
 
         // await
@@ -448,11 +488,20 @@ export default {
         ]),
         getDataFromLoan(){
             if (this.id !== undefined && this.id) {
+                let data = undefined
                 this.expenseNewId = this.id
                 this.$http.get(`/${this.resource}/record/${this.id}`)
                     .then(response => {
-                        this.form = response.data.data.bank_loan
+                        this.form.fee = []
+                        data = response.data.data.bank_loan;
+                        this.form = data
+                        if (this.form.fee.length < 1) {
+                            this.addFee()
+                        }
+                        console.error(this.form.fee)
                     })
+            }else{
+                this.addFee()
             }
         },
         async isUpdate() {
@@ -486,7 +535,7 @@ export default {
         initForm() {
             this.errors = {}
             this.form = {
-                id: null,
+                id: (this.id)?this.id:null,
                 bank_account_id :null,
                 payment_condition_id: '02',
                 establishment_id: null,
@@ -511,7 +560,7 @@ export default {
         resetForm() {
             this.initForm()
             this.form.currency_type_id = (this.currency_types.length > 0) ? this.currency_types[0].id : null
-            this.form.establishment_id = this.establishment.id
+            this.form.establishment_id = (this.config.establishment !== undefined)?this.config.establishment.id:null;
             this.form.bank_loan_type_id = (this.bank_loan_types.length > 0) ? this.bank_loan_types[0].id : null
             this.form.loan_reason_id = (this.bank_loan_reasons.length > 0) ? this.bank_loan_reasons[0].id : null
 
@@ -615,7 +664,6 @@ export default {
             this.loading_submit = true
             this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
-
                     if (response.data.success) {
                         this.resetForm()
                         this.expenseNewId = response.data.data.id
@@ -638,7 +686,6 @@ export default {
         },
         validate_payments() {
 
-            console.log('validate_payments()')
 
             let error_by_item = 0
             let acum_total = 0
@@ -671,6 +718,15 @@ export default {
         },
 
         clickAddFee() {
+            // @todo: mejorar las cuotas para que añadan un mes automaticamente
+            if (this.form && this.form.fee !== undefined) {
+
+                this.addFee()
+                this.calculateFee();
+            }
+
+        },
+        addFee(){
             let date = moment();
             this.form.date_of_due = date;
             // @todo: mejorar las cuotas para que añadan un mes automaticamente
@@ -679,17 +735,14 @@ export default {
                     let fee_count = parseInt(this.form.fee.length);
                     if (isNaN(fee_count)) fee_count = 0;
                     date = date.add(fee_count, 'months')
-
+                    this.form.fee.push({
+                        id: null,
+                        date: date.format('YYYY-MM-DD'),
+                        currency_type_id: this.form.currency_type_id,
+                        amount: 0,
+                    });
                 }
-                this.form.fee.push({
-                    id: null,
-                    date: date.format('YYYY-MM-DD'),
-                    currency_type_id: this.form.currency_type_id,
-                    amount: 0,
-                });
-                this.calculateFee();
             }
-
         },
         calculateFee() {
 

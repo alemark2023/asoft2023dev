@@ -300,20 +300,23 @@ export default {
         },
         clickAddRow() {
             // 04  transferencia
-            /*
-            let payment_method_type_id = _.findIndex(this.payment_method_types,{id:'04'});
+            let payment_method_type_id = '04';
+            let payment_destination_id = null;
+            let payment_destination_disabled =false;
 
-            payment_method_type_id = null;
-            if(payment_method_type_id === undefined) {
+            if(_.findIndex(this.payment_method_types,{id:'04'}) === undefined) {
                 payment_method_type_id = null;
-            }*/
-            let payment_method_type_id = null
+                payment_destination_disabled =  true;
+            }
+            if(this.expense && this.expense.payment_destination_id && this.expense.payment_destination_id != 0){
+                payment_destination_id = this.expense.payment_destination_id
+            }
             this.records.push({
                 id: null,
                 date_of_payment: moment().format('YYYY-MM-DD'),
                 payment_method_type_id: payment_method_type_id,
-                payment_destination_id: null,
-                payment_destination_disabled: true,
+                payment_destination_id: payment_destination_id,
+                payment_destination_disabled: payment_destination_disabled,
                 reference: null,
                 filename: null,
                 temp_path: null,
@@ -322,6 +325,7 @@ export default {
                 loading: false
             });
             this.showAddButton = false;
+
         },
         clickCancel(index) {
             this.records.splice(index, 1);
@@ -337,7 +341,7 @@ export default {
 
             let form = {
                 id: this.records[index].id,
-                expense_id: this.expenseId,
+                bank_loan_id: this.expenseId,
                 date_of_payment: this.records[index].date_of_payment,
                 payment_method_type_id: this.records[index].payment_method_type_id,
                 payment_destination_id: this.records[index].payment_destination_id,

@@ -530,6 +530,23 @@
                     });
 
                 });
+            /* BankLoanPayment */
+            $query
+                ->OrWhereHas('bank_loan_payment', function ($q) use ($params) {
+                    if ($params->date_start) {
+                        $q->where('date_of_payment', '>=', $params->date_start);
+                    }
+                    if ($params->date_end) {
+                        $q->where('date_of_payment', '<=', $params->date_end);
+                    }
+                    // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+                    $q->whereHas('associated_record_payment', function ($p) {
+                          $p->whereStateTypeAccepted()
+                            ->whereTypeUser()
+                        ;
+                    });
+
+                });
             /*CashTransaction*/
             $query
                 ->OrWhereHas('cas_transaction', function ($q) use ($params) {

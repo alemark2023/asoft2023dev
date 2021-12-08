@@ -79,6 +79,8 @@
             $data['totals']['t_expenses'] = $this::FormatNumber($record->sum('expense_payment'));
             $data['totals']['t_balance'] = $this::FormatNumber($record->sum('balance'));
             $data['totals']['t_purchases'] = $this::FormatNumber($record->sum('purchase_payment'));
+            $data['totals']['t_bank_loan'] = $this::FormatNumber($record->sum('bank_loan'));
+            $data['totals']['t_bank_loan_payment'] = $this::FormatNumber($record->sum('bank_loan_payment'));
             return $data;
         }
 
