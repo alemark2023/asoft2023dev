@@ -23,9 +23,11 @@ class BankLoanRequest extends FormRequest
     {
 
         return [
+            /*
             'bank_id' => [
                 'required',
             ],
+            */
             'loan_reason_id' => [
                 'required',
             ],

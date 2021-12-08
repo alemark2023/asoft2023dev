@@ -6,6 +6,7 @@
     use Illuminate\Http\Request;
     use Illuminate\Http\Resources\Json\JsonResource;
     use Modules\Expense\Models\BankLoan;
+    use Modules\Expense\Models\BankLoanFee;
     use Modules\Expense\Models\BankLoanPayment;
 
     class BankLoanResource extends JsonResource
@@ -22,13 +23,27 @@
 
 
             $bankLoan = BankLoan::with(['items','fee','payments','bank_account'])->find($this->id);
-            $bankLoan->payments = self::getTransformPayments($bankLoan->payments);
+            // $bankLoan->payments = self::getTransformPayments($bankLoan->payments);
+
             return [
                 'id' => $bankLoan->id,
                 'external_id' => $bankLoan->external_id,
                 'number' => $bankLoan->number ?? '-',
                 'state_type_id' => $bankLoan->state_type_id,
                 'date_of_issue' => $bankLoan->date_of_issue->format('Y-m-d'),
+
+                'fee'=>$bankLoan->fee->transform(function(BankLoanFee $row){
+                    $data = [
+                        'id' => $row->id,
+                        'date' => $row->date,
+                        'currency_type_id' => $row->currency_type_id,
+                        'amount' => (float)$row->amount,
+                    ];
+
+
+                    return $data;
+                }),
+
                 'payments' => $bankLoan->payments->transform(function (BankLoanPayment $row, $key) {
                     return [
                         'id' => $row->id,

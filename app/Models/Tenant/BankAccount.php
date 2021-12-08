@@ -8,6 +8,8 @@
     use Illuminate\Database\Eloquent\Collection;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Illuminate\Database\Eloquent\Relations\MorphMany;
+    use Modules\Expense\Models\BankLoan;
+    use Modules\Expense\Models\BankLoanItem;
     use Modules\Finance\Models\GlobalPayment;
 
     /**
@@ -114,6 +116,27 @@
         public function scopePrintShowInDocuments($query)
         {
             return $query->where('status', 1)->where('show_in_documents', 1);
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function bank_loan()
+        {
+            return $this->hasMany(BankLoan::class);
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+         */
+        public function bank_loan_items(){
+            return $this->hasManyThrough(
+                BankLoanItem::class,
+                BankLoan::class,
+                'bank_account_id',
+                'id'
+
+            )->whereIn('bank_loans.state_type_id', ['01', '03', '05', '07', '13']);
         }
 
 

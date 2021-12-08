@@ -17,6 +17,8 @@
                         <th class="text-center"><strong>Ingresos</strong></th>
                         <th class="text-center"><strong>Compras</strong></th>
                         <th class="text-center"><strong>Gastos</strong></th>
+                        <th class="text-center"><strong>Prestamos Bancarios</strong></th>
+                        <th class="text-center"><strong>Pago Prestamos Bancarios</strong></th>
                         <th v-show="seller_can_view_balance"
                             class="text-center"><strong>Saldo</strong></th>
                     <tr>
@@ -31,6 +33,8 @@
                         <td class="text-center">S/ {{ row.income_payment }}</td>
                         <td class="text-center">S/ {{ row.purchase_payment }}</td>
                         <td class="text-center">S/ {{ row.expense_payment }}</td>
+                        <td class="text-center">S/ {{ row.bank_loan }}</td>
+                        <td class="text-center">S/ {{ row.bank_loan_payment }}</td>
                         <td v-show="seller_can_view_balance"
                             class="text-center">S/ {{ row.balance }}
                         </td>
