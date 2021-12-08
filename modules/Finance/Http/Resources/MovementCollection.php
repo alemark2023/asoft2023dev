@@ -8,6 +8,7 @@
     use Illuminate\Support\Collection;
     use Modules\Finance\Http\Controllers\MovementController;
     use Modules\Finance\Models\GlobalPayment;
+    use phpDocumentor\Reflection\DocBlock\Description;
 
 
     class MovementCollection extends ResourceCollection
@@ -69,6 +70,14 @@
                 $destinationArray = $row->getDestinationWithCci();
                 $destinationName = $destinationArray['name'] . " - " . $destinationArray['description'];
 
+                $person_name = $data_person->name;
+                $person_number = $data_person->number;
+                if($row->instance_type == 'bank_loan'){
+                    $person_name = $person_name->description;
+                    $document_type = $row->instance_type_description;
+                    // $person_name = $person_name->description;
+                    $person_number= '';
+                }
                 return [
                     'index' => $index,
                     'payments' => $payments,
@@ -86,8 +95,8 @@
                     'currency_type_id' => $payment->associated_record_payment->currency_type_id??'PEN',
                     // 'document_type_description' => ($payment->associated_record_payment->document_type) ? $payment->associated_record_payment->document_type->description:'NV',
                     'document_type_description' => $this->getDocumentTypeDescription($row),
-                    'person_name' => $data_person->name,
-                    'person_number' => $data_person->number,
+                    'person_name' => $person_name,
+                    'person_number' => $person_number,
                     // 'payment' => $row->payment,
                     // 'payment_type' => $row->payment_type,
                     'instance_type' => $row->instance_type,
@@ -165,7 +174,7 @@
         public function getItems($row)
         {
 
-            if (in_array($row->instance_type, ['expense', 'income'])) {
+            if (in_array($row->instance_type, ['expense', 'income', 'bank_loan'])) {
 
                 return $row->payment->associated_record_payment->items->transform(function ($row, $key) {
                     return [
