@@ -174,4 +174,15 @@
         {
             return number_format($number, $decimal, $mil, $dec);
         }
+
+        /**
+         * @param $title
+         */
+        public static  function getTitleToExcel(&$title): void
+        {
+            if(empty($title)) {
+                $title = '';
+            }
+            $title = substr(str_replace(['*', ':', '/', '\\', '?', '[', ']'], '', $title), 0, 31);
+        }
     }

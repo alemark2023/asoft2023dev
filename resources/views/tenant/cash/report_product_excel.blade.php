@@ -1,7 +1,8 @@
 @php
 
 $establishment = $cash->user->establishment;
-
+$title = "Reporte POS - ".$cash->user->name." - ".$cash->date_opening." ".$cash->time_opening;
+$title = \App\CoreFacturalo\Helpers\Template\ReportHelper::getTitleToExcel ($title);
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -10,7 +11,7 @@ $establishment = $cash->user->establishment;
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="application/pdf; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Reporte POS - {{$cash->user->name}} - {{$cash->date_opening}} {{$cash->time_opening}}</title>
+        <title>{{ $title }}</title>
         <style>
             html {
                 font-family: sans-serif;
