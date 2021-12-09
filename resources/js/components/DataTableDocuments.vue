@@ -4,8 +4,8 @@
 
             <div class="col-md-12 col-lg-12 col-xl-12 ">
 
-                <div class="row">
-                    <div class="col-lg-8 col-md-8 mb-2">
+                <div class="row col-12">
+                    <div class="col-lg-9 col-md-8 col-sm-12 mb-2">
                         <div class="form-group">
                             <label class="control-label font-custom"><strong>Filtros de busqueda</strong></label>
                             <template v-if="!see_more">
@@ -15,6 +15,9 @@
                                 <a class="control-label font-weight-bold text-info font-custom" href="#" @click="clickSeeMore"><strong> [- Ver menos]</strong></a>
                             </template>
                         </div>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-12 text-right">
+                        <slot name="showhide"></slot>
                     </div>
                 </div>
                 <div class="row mt-2" v-if="see_more">

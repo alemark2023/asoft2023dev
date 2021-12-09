@@ -82,6 +82,8 @@
      * @property bool        $search_item_by_series
      * @property bool        $group_items_generate_document
      * @property bool        $change_free_affectation_igv
+     * @property bool        $pos_history
+     * @property bool        $pos_cost_price
      * @property string|null $currency_type_id
      * @property bool        $select_available_price_list
      * @property int|null    $show_extra_info_to_item
@@ -203,6 +205,8 @@
             'terms_condition_sale',
             'terms_condition',
             'ticket_58',
+            'pos_history',
+            'pos_cost_price',
             'update_document_on_dispaches',
             'show_service_on_pos',
             'visual',
@@ -266,7 +270,8 @@
             'ticket_58' => 'bool',
             'search_item_by_series' => 'bool',
             'change_free_affectation_igv' => 'bool',
-
+            'pos_history' => 'bool',
+            'pos_cost_price' => 'bool',
             'auto_print' => 'bool'
         ];
 
@@ -433,6 +438,8 @@
                 ],
                 'auto_print' => (bool)$this->auto_print,
                 'show_service_on_pos' => (bool)$this->show_service_on_pos,
+                'pos_history' => $this->isPosHistory(),
+                'pos_cost_price' => $this->isPosCostPrice(),
 
             ];
         }
@@ -1941,4 +1948,19 @@
             return $this;
         }
 
+        /**
+         * @return bool
+         */
+        public function isPosHistory(): bool
+        {
+            return (bool)$this->pos_history;
+        }
+
+        /**
+         * @return bool
+         */
+        public function isPosCostPrice(): bool
+        {
+            return (bool)$this->pos_cost_price;
+        }
     }

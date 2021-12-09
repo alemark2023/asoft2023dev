@@ -176,7 +176,10 @@
                                                 </th>
                                                 <th v-if="form.payments.length>0">Referencia</th>
                                                 <th v-if="form.payments.length>0">Monto</th>
-                                                <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                                <th width="15%">
+                                                    <a href="#"
+                                                       @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a>
+                                                </th>
                                             </template>
                                         </tr>
                                     </thead>
@@ -286,7 +289,9 @@
                             </div>
                             <div class="col-lg-12 col-md-6 d-flex align-items-end">
                                 <div class="form-group">
-                                    <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="showDialogAddItem = true">+ Agregar Producto</button>
+                                    <button
+                                        type="button" class="btn waves-effect waves-light btn-primary"
+                                        @click.prevent="showDialogAddItem = true">+ Agregar Producto</button>
                                 </div>
                             </div>
 
@@ -681,6 +686,8 @@
             changeEstablishment() {
                 this.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
                 this.filterSeries()
+                this.selectDefaultCustomer()
+
             },
             cleanCustomer(){
                 this.form.customer_id = null
@@ -718,7 +725,7 @@
                 this.calculateTotal()
             },
             calculateTotal() {
-                
+
                 let total_discount = 0
                 let total_charge = 0
                 let total_exportation = 0
@@ -924,6 +931,38 @@
                     this.form.customer_id = customer_id
                 })
             },
+            async selectDefaultCustomer() {
+
+                if (this.config.establishment.customer_id) {
+
+                    let temp_all_customers = this.all_customers;
+                    let temp_customers = this.customers;
+                    await this.$http.get(`/${this.resource}/search/customer/${this.config.establishment.customer_id}`)
+                        .then((response) => {
+                        let data_customer = response.data.customers
+                        temp_all_customers = temp_all_customers.push(...data_customer)
+                        temp_customers = temp_customers.push(...data_customer)
+                    })
+                    temp_all_customers = this.all_customers.filter((item, index, self) =>
+                        index === self.findIndex((t) => (
+                            t.id === item.id
+                        ))
+                    )
+                    temp_customers = this.customers.filter((item, index, self) =>
+                        index === self.findIndex((t) => (
+                            t.id === item.id
+                        ))
+                    )
+                    this.all_customers = temp_all_customers;
+                    this.customers = temp_customers;
+                    let alt = _.find(this.customers, {'id': this.config.establishment.customer_id});
+
+                    if (alt !== undefined) {
+                        this.form.customer_id = this.config.establishment.customer_id
+                    }
+                }
+            },
+
         }
     }
 </script>

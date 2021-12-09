@@ -21,6 +21,8 @@ export default {
     mold: {},
     config: {
         id: 0,
+        pos_history:true,
+        pos_cost_price:true,
         company: {},
         establishment: {
             id: null,

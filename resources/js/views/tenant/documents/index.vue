@@ -53,6 +53,7 @@
             </div>
         </div>
         <div class="card mb-0">
+            <!--
             <div class="data-table-visible-columns">
 
                 <el-dropdown :hide-on-click="false">
@@ -67,8 +68,22 @@
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
+            -->
             <div class="card-body ">
                 <data-table :resource="resource">
+
+                        <el-dropdown :hide-on-click="false" slot="showhide">
+                            <el-button type="primary">
+                                Mostrar/Ocultar columnas<i class="el-icon-arrow-down el-icon--right"></i>
+                            </el-button>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item v-for="(column, index) in columns"
+                                                  :key="index">
+                                    <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                                </el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+
                     <tr slot="heading">
                         <th>#</th>
                         <th>SOAP</th>
