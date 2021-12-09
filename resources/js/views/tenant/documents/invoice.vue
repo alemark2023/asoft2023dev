@@ -2895,13 +2895,17 @@ export default {
             this.form.items.forEach((row) => {
 
                 // console.log(row)
-                
+
                 total_discount += parseFloat(row.total_discount)
                 total_charge += parseFloat(row.total_charge)
 
                 if (row.affectation_igv_type_id === '10') {
                     // total_taxed += parseFloat(row.total_value)
-                    total_taxed += parseFloat(row.total_value_without_rounding)
+                    if(row.total_value_without_rounding) {
+                        total_taxed += parseFloat(row.total_value_without_rounding)
+                    } else {
+                        total_taxed += parseFloat(row.total_value)
+                    }
                 }
 
                 if (
@@ -2942,16 +2946,36 @@ export default {
                     '40'].indexOf(row.affectation_igv_type_id) > -1) {
                     // total_igv += parseFloat(row.total_igv)
                     // total += parseFloat(row.total)
-                    
-                    total_igv += parseFloat(row.total_igv_without_rounding)
-                    total += parseFloat(row.total_without_rounding)
+                    if(row.total_igv_without_rounding) {
+                        total_igv += parseFloat(row.total_igv_without_rounding)
+                    } else {
+                        total_igv += parseFloat(row.total_igv)
+                    }
+
+                    // row.total_value_without_rounding = total_value
+                    // row.total_base_igv_without_rounding = total_base_igv
+                    // row.total_igv_without_rounding = total_igv
+                    // row.total_taxes_without_rounding = total_taxes
+                    // row.total_without_rounding = total
+
+                    if(row.total_without_rounding) {
+                        total += parseFloat(row.total_without_rounding)
+                    } else {
+                        total += parseFloat(row.total)
+                    }
+
+
                 }
 
                 // console.log(row.total_value)
 
                 if (!['21', '37'].includes(row.affectation_igv_type_id)) {
                     // total_value += parseFloat(row.total_value)
-                    total_value += parseFloat(row.total_value_without_rounding)
+                    if(row.total_value_without_rounding) {
+                        total_value += parseFloat(row.total_value_without_rounding)
+                    } else {
+                        total_value += parseFloat(row.total_value)
+                    }
                 }
 
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
