@@ -72,12 +72,17 @@
 
                 $person_name = $data_person->name;
                 $person_number = $data_person->number;
-                if($row->instance_type == 'bank_loan'){
+                $numberFull =$payment->associated_record_payment->number_full??null;
+                if($row->instance_type == 'bank_loan_payment'){
+                    /** @var \Modules\Finance\Models\GlobalPayment $row */
                     $person_name = $person_name->description;
                     $document_type = $row->instance_type_description;
                     // $person_name = $person_name->description;
                     $person_number= '';
+                    // dd($row->payment->associated_record_payment);
+                    $numberFull = $row->payment->associated_record_payment->getNumberFull();
                 }
+
                 return [
                     'index' => $index,
                     'payments' => $payments,
@@ -91,7 +96,7 @@
                     'payment_method_type_description' => $this->getPaymentMethodTypeDescription($row),
                     'reference' => $payment->reference,
                     'total' => $amount,
-                    'number_full' => $payment->associated_record_payment->number_full??null,
+                    'number_full' => $numberFull,
                     'currency_type_id' => $payment->associated_record_payment->currency_type_id??'PEN',
                     // 'document_type_description' => ($payment->associated_record_payment->document_type) ? $payment->associated_record_payment->document_type->description:'NV',
                     'document_type_description' => $this->getDocumentTypeDescription($row),
@@ -174,7 +179,7 @@
         public function getItems($row)
         {
 
-            if (in_array($row->instance_type, ['expense', 'income', 'bank_loan'])) {
+            if (in_array($row->instance_type, ['expense', 'income', 'bank_loan_payment'])) {
 
                 return $row->payment->associated_record_payment->items->transform(function ($row, $key) {
                     return [
