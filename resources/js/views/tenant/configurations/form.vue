@@ -987,7 +987,7 @@
                                     </h3>
                                 </span>
                                 <div class="row">
-                                    <div class="col-12 mt-4">
+                                    <div class="col-6 mt-4">
                                         <div class="form-group">
                                             <label>
                                                 Listar servicios al inicio de Pos
@@ -999,6 +999,40 @@
                                                 </el-tooltip>
                                             </label>
                                             <el-switch v-model="form.show_service_on_pos"
+                                                       active-text="Si"
+                                                       inactive-text="No"
+                                                       @change="submit"></el-switch>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 mt-4">
+                                        <div class="form-group">
+                                            <label>
+                                                Mostrar historial de compras
+                                                <el-tooltip class="item"
+                                                            content="Permite a los usuarios con perfil Vendedor, ver el historial de compras"
+                                                            effect="dark"
+                                                            placement="top-start">
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                            </label>
+                                            <el-switch v-model="form.pos_history"
+                                                       active-text="Si"
+                                                       inactive-text="No"
+                                                       @change="submit"></el-switch>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 mt-4">
+                                        <div class="form-group">
+                                            <label>
+                                                Mostrar historial de precio de costos
+                                                <el-tooltip class="item"
+                                                            content="Permite a los usuarios con perfil Vendedor, ver el historial de precio de costos"
+                                                            effect="dark"
+                                                            placement="top-start">
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                            </label>
+                                            <el-switch v-model="form.pos_cost_price"
                                                        active-text="Si"
                                                        inactive-text="No"
                                                        @change="submit"></el-switch>

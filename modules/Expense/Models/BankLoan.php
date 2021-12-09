@@ -711,6 +711,22 @@
         {
             return $query->whereIn('state_type_id', ['01', '03', '05', '07', '13']);
         }
+        /**
+         * @return string
+         */
+        public function getNumberFullAttribute()
+        {
+            return  $this->number;
+        }
+
+        /**
+         * @return string
+         */
+        public function getNumberFull()
+        {
+            return  $this->getNumberFullAttribute();
+        }
+
     }
 
 

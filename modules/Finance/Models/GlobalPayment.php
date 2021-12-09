@@ -19,7 +19,9 @@
     use Illuminate\Database\Eloquent\Model;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Illuminate\Database\Eloquent\Relations\MorphTo;
+    use Illuminate\Database\QueryException;
     use Illuminate\Support\HigherOrderCollectionProxy;
+    use Modules\Expense\Models\BankLoan;
     use Modules\Expense\Models\BankLoanPayment;
     use Modules\Expense\Models\ExpensePayment;
     use Modules\Pos\Models\CashTransaction;
@@ -185,6 +187,22 @@
             return $this->belongsTo(BankLoanPayment::class, 'payment_id')
                 ->wherePaymentType(BankLoanPayment::class);
         }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+         */
+        public function bank_loan(){
+            return $this->hasManyThrough(
+                BankLoan::class,
+                BankLoanPayment::class,
+                'id',
+                'id',
+                'payment_id',
+                'bank_loan_id'
+
+            )
+                ->whereIn('bank_loans.state_type_id', ['01', '03', '05', '07', '13']);
+        }
         /**
          * @return mixed
          */
@@ -293,7 +311,8 @@
                 ExpensePayment::class => 'expense',
                 QuotationPayment::class => 'quotation',
                 ContractPayment::class => 'contract',
-                BankLoanPayment::class => 'bank_loan',
+                BankLoanPayment::class => 'bank_loan_payment',
+                BankLoan::class => 'bank_loan',
                 IncomePayment::class => 'income',
                 CashTransaction::class => 'cash_transaction',
                 TechnicalServicePayment::class => 'technical_service',
@@ -327,8 +346,11 @@
                 case 'contract':
                     $description = 'CONTRATO';
                     break;
+                case 'bank_loan_payment':
+                    $description = 'PAGO PRESTAMO BANCARIO';
+                    break;
                 case 'bank_loan':
-                    $description = 'PRESTAMO BANCARIO';
+                    $description = 'INGRESO PRESTAMO BANCARIO';
                     break;
                 case 'income':
                     $description = 'INGRESO';
@@ -355,13 +377,14 @@
                 case 'sale_note':
                 case 'quotation':
                 case 'contract':
-                case 'bank_loan':
                 case 'income':
+                case 'bank_loan':
                 case 'cash_transaction':
                 case 'technical_service':
                     $type = 'input';
                     break;
                 case 'purchase':
+                case 'bank_loan_payment':
                 case 'expense':
                     $type = 'output';
                     break;
@@ -376,7 +399,7 @@
         public function getDataPersonAttribute()
         {
 
-            $record = $this->payment->associated_record_payment;
+                $record = $this->payment->associated_record_payment;
 
             switch ($this->instance_type) {
 
@@ -394,6 +417,7 @@
                     $person['number'] = $record->supplier->number;
                     break;
                 case 'bank_loan':
+                case 'bank_loan_payment':
                     // @todo Ajustar los datos de banco
                     $bank = $record->bank ?? '';
                     $person['name'] = $bank;//." ".__FILE__;
@@ -547,6 +571,21 @@
                     });
 
                 });
+            /* BankLoan @todo no muestra el total de credito abonado*/
+            /*
+            $query
+                ->OrWhereHas('bank_loan', function ($q) use ($params) {
+                    if ($params->date_start) {
+                        $q->where('date_of_issue', '>=', $params->date_start);
+                    }
+                    if ($params->date_end) {
+                        $q->where('date_of_issue', '<=', $params->date_end);
+                    }
+                    $q->whereStateTypeAccepted()
+                        ->whereTypeUser();
+
+                });
+            */
             /*CashTransaction*/
             $query
                 ->OrWhereHas('cas_transaction', function ($q) use ($params) {

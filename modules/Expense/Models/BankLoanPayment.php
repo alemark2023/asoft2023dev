@@ -281,6 +281,8 @@
         {
             return $this->belongsTo(BankLoan::class, 'bank_loan_id');
         }
+
     }
+
 
 
