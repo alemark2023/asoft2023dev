@@ -382,6 +382,11 @@
                                                     </td>
                                                 </tr>
 
+                                                <tr v-if="form.subtotal > 0 && form.total_discount > 0">
+                                                    <td>SUBTOTAL:</td>
+                                                    <td>{{ currency_type.symbol }} {{ form.subtotal }}</td>
+                                                </tr>
+
                                                 <tr v-if="form.total > 0">
                                                     <td>OTROS CARGOS:</td>
                                                     <td>{{ currency_type.symbol }}
@@ -723,6 +728,11 @@
                                     <tr v-if="form.total_plastic_bag_taxes > 0">
                                         <td>ICBPER:</td>
                                         <td>{{ currency_type.symbol }} {{ form.total_plastic_bag_taxes }}</td>
+                                    </tr>
+
+                                    <tr v-if="form.subtotal > 0 && form.total_discount > 0">
+                                        <td>SUBTOTAL:</td>
+                                        <td>{{ currency_type.symbol }} {{ form.subtotal }}</td>
                                     </tr>
 
                                     <tr v-if="form.total > 0">

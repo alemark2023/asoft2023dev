@@ -428,12 +428,6 @@
             </tr>
         @endif
 
-         @if($document->total_discount > 0)
-            <tr>
-                <td colspan="6" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
-            </tr>
-        @endif
         @if($document->total_plastic_bag_taxes > 0)
             <tr>
                 <td colspan="6" class="text-right font-bold">ICBPER: {{ $document->currency_type->symbol }}</td>
@@ -450,6 +444,20 @@
             <td colspan="6" class="text-right font-bold">ISC: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_isc, 2) }}</td>
         </tr>
+        @endif
+
+        @if($document->total_discount > 0 && $document->subtotal > 0)
+        <tr>
+            <td colspan="6" class="text-right font-bold">SUBTOTAL: {{ $document->currency_type->symbol }}</td>
+            <td class="text-right font-bold">{{ number_format($document->subtotal, 2) }}</td>
+        </tr>
+        @endif
+
+        @if($document->total_discount > 0)
+            <tr>
+                <td colspan="6" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
+            </tr>
         @endif
 
         @if($document->total_charge > 0)
