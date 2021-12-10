@@ -13,6 +13,7 @@ use App\Models\Tenant\Catalogs\Province;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\PersonType;
+use App\Models\Tenant\Zone;
 use Exception;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Excel;
@@ -64,12 +65,14 @@ class PersonController extends Controller
         $identity_document_types = IdentityDocumentType::whereActive()->get();
         $person_types = PersonType::get();
         $locations = $this->getLocationCascade();
+        $zones = Zone::all();
         // $configuration = Configuration::first();
         // $api_service_token = $configuration->token_apiruc == 'false' ? config('configuration.api_service_token') : $configuration->token_apiruc;
         $api_service_token = \App\Models\Tenant\Configuration::getApiServiceToken();
 
 
-        return compact('countries', 'departments', 'provinces', 'districts', 'identity_document_types', 'locations','person_types','api_service_token');
+        return compact('countries', 'departments', 'provinces', 'districts', 'identity_document_types', 'locations','person_types','api_service_token'
+        ,'zones');
     }
 
     public function record($id)

@@ -181,6 +181,7 @@ Vue.component('tenant-documents-regularize-shipping', require('../../modules/Doc
 
 Vue.component('tenant-categories-index', require('../../modules/Item/Resources/assets/js/views/categories/index.vue'));
 Vue.component('tenant-brands-index', require('../../modules/Item/Resources/assets/js/views/brands/index.vue'));
+Vue.component('tenant-zone-index', require('../../modules/Item/Resources/assets/js/views/zone/index.vue'));
 Vue.component('tenant-incentives-index', require('../../modules/Item/Resources/assets/js/views/incentives/index.vue'));
 Vue.component('tenant-item-lots-index', require('../../modules/Item/Resources/assets/js/views/item-lots/index.vue'));
 
