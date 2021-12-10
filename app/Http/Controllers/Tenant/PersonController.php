@@ -221,6 +221,7 @@ class PersonController extends Controller
 
     public function export($type, Request $request)
     {
+
         $d_start = null;
         $d_end = null;
         $period = $request->period;
@@ -236,7 +237,13 @@ class PersonController extends Controller
                 break;
         }
 
-        $records = ($period == 'all') ? Person::where('type', $type)->get() : Person::where('type', $type)->whereBetween('created_at', [$d_start, $d_end])->get();
+        if($period == 'all'){
+            $records = Person::where('type', $type)->get();
+        }elseif($period == 'seller'){
+            $records = Person::where([ 'type'=> $type, 'seller_id'=> $request->seller_id, ])->get();
+        }else{
+            $records = Person::where('type', $type)->whereBetween('created_at', [$d_start, $d_end])->get();
+        }
 
         $filename = ($type == 'customers') ? 'Reporte_Clientes_':'Reporte_Proveedores_';
 
