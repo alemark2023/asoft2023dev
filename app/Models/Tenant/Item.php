@@ -1947,6 +1947,12 @@ class Item extends ModelTenant
         return null;
     }
 
+    public function scopeForProduction($query){
+        return $query->where('is_for_production',1);
+    }
+    public function scopeNotForProduction($query){
+        return $query->where('is_for_production',0);
+    }
 
     /**
      * Devuelve codigo interno - descripcion producto
