@@ -8,9 +8,11 @@
     use App\Models\Tenant\Catalogs\District;
     use App\Models\Tenant\Catalogs\IdentityDocumentType;
     use App\Models\Tenant\Catalogs\Province;
+    use Eloquent;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
     use Illuminate\Database\Eloquent\Collection;
+    use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Modules\DocumentaryProcedure\Models\DocumentaryFile;
     use Modules\Expense\Models\Expense;
     use Modules\Order\Models\OrderForm;
@@ -25,6 +27,9 @@
     /**
      * App\Models\Tenant\Person
      *
+     * @property int|null                             $seller_id
+     * @property int|null                             $zone_id
+     * @property Zone                                 $zone
      * @property-read AddressType                     $address_type
      * @property-read Collection|PersonAddress[]      $addresses
      * @property-read int|null                        $addresses_count
@@ -89,7 +94,7 @@
      * @method static Builder|Person whereIsEnabled()
      * @method static Builder|Person whereType($type)
      * @mixin ModelTenant
-     * @mixin \Eloquent
+     * @mixin Eloquent
      */
     class Person extends ModelTenant
     {
@@ -110,7 +115,9 @@
             'enabled' => 'bool',
             'status' => 'int',
             'credit_days' => 'int',
-            'parent_id' => 'int'
+            'seller_id' => 'int',
+            'zone_id' => 'int',
+            'parent_id' => 'int',
         ];
         protected $fillable = [
             'type',
@@ -140,6 +147,8 @@
             'observation',
             'credit_days',
             'optional_email',
+            'seller_id',
+            'zone_id',
             'status',
             'parent_id'
         ];
@@ -162,6 +171,7 @@
         {
             return $this->hasMany(Person::class, 'parent_id');
         }
+
         /**
          * Devuelve el padre basado en parent_id
          *
@@ -478,13 +488,13 @@
             }
             $optional_mail = $this->getOptionalEmailArray();
             $optional_mail_send = [];
-            if ( !empty($this->email)) {
+            if (!empty($this->email)) {
                 $optional_mail_send[] = $this->email;
             }
             $total_optional_mail = count($optional_mail);
             for ($i = 0; $i < $total_optional_mail; $i++) {
                 $temp = trim($optional_mail[$i]['email']);
-                if ( !empty($temp) && $temp != $this->email) {
+                if (!empty($temp) && $temp != $this->email) {
                     $optional_mail_send[] = $temp;
                 }
             }
@@ -499,6 +509,8 @@
                 'internal_code' => $this->internal_code,
                 'observation' => $this->observation,
                 'zone' => $this->zone,
+                'zone_id' => $this->zone_id,
+                'seller_id' => $this->seller_id,
                 'website' => $this->website,
                 'document_type' => $this->identity_document_type->description,
                 'enabled' => (bool)$this->enabled,
@@ -527,13 +539,13 @@
                 'optional_email_send' => implode(',', $optional_mail_send),
                 'childrens' => [],
             ];
-            if($childrens == true){
-                $child = $this->children_person->transform(function($row){
+            if ($childrens == true) {
+                $child = $this->children_person->transform(function ($row) {
                     return $row->getCollectionData();
                 });
                 $data['childrens'] = $child;
                 $parent = null;
-                if($this->parent_person) {
+                if ($this->parent_person) {
                     $parent = $this->parent_person->getCollectionData();
                 }
 
@@ -661,5 +673,13 @@
         {
             $this->parent_id = (int)$parent_id;
             return $this;
+        }
+
+        /**
+         * @return BelongsTo
+         */
+        public function zone()
+        {
+            return $this->belongsTo(Zone::class, 'zone_id');
         }
     }
