@@ -197,4 +197,24 @@
         {
             return number_format($number, $decimal, $mil, $dec);
         }
+
+        /**
+         * Devuelve la marca desde lo sitems del documento.
+         *
+         * @param $row
+         *
+         * @return mixed|string
+         */
+        public static function  getBrandFormItem($row){
+            $brand = '';
+            if(!empty($row->item) && !empty($row->item->brand) ){
+                if(is_string($row->item->brand)){
+                    $brand = $row->item->brand;
+                }elseif($row->item->brand->name){
+                    $brand = $row->item->brand->name;
+                }
+
+            }
+            return $brand;
+        }
     }
