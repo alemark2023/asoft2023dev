@@ -1264,7 +1264,7 @@
                     @endif
 
 
-                        <li class=" nav-parent {{ ($firstLevel === 'production') ? 'nav-active nav-expanded' : '' }}">
+                        <li class=" nav-parent {{ (($firstLevel === 'item-production') || ($firstLevel === 'mill-production')) ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link"
                                href="#">
                                 <i class="fa fas fa-calendar-check"
@@ -1274,16 +1274,16 @@
                             <ul class="nav nav-children">
 
 
-                                
-                                <li class="{{ (($firstLevel === 'suscription') && ($secondLevel === 'plans')) ? 'nav-active' : '' }}">
+
+                                <li class="{{ (($firstLevel === 'item-production') ) ? 'nav-active' : '' }}">
                                     <a class="nav-link"
-                                       href="{{ route('tenant.suscription.plans.index') }}">
+                                       href="{{ route('tenant.item_production.index') }}">
                                         Producir
                                     </a>
                                 </li>
-                                <li class="{{ (($firstLevel === 'suscription') && ($secondLevel === 'plans')) ? 'nav-active' : '' }}">
+                                <li class="{{ (($firstLevel === 'mill-production')) ? 'nav-active' : '' }}">
                                     <a class="nav-link"
-                                       href="{{ route('tenant.suscription.plans.index') }}">
+                                       href="{{ route('tenant.mill_production.index') }}">
                                         Molino
                                     </a>
                                 </li>

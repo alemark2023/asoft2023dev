@@ -1,86 +1,128 @@
 <template>
-    <div class="card">
-        <div class="card-header bg-info">
-            <h3 class="my-0">Listado Molino</h3>
+    <div>
+        <div class="page-header pr-0">
+            <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
+            <ol class="breadcrumbs">
+                <li class="active">
+                    <span>Molino</span>
+                </li>
+            </ol>
+            <div class="right-wrapper pull-right pt-2">
+                <!--
+                <el-button class="submit"
+                           type="success"
+                           @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel"></i> Exportar Excel
+                </el-button>
+                -->
+                <a :href="`/${resource}/create`"
+                   class="btn btn-custom btn-sm "><i class="fa fa-plus-circle"></i> Nuevo</a>
+            </div>
         </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Usuario</th>
-                        <th>Almacen</th>
-                        <th>Fecha</th>
-                        <th class="text-right">Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="(row, index) in records" :key="index">
-                        <td>{{ index + 1 }}</td>
-                        <td>{{ row.id }}</td>
-                        <td>{{ row.id }}</td>
-                        <td>{{ row.description }}</td>
-                        <td class="text-right">
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
+        <div class="card mb-0">
+            <div class="card-body">
+                <data-table :resource="resource">
+                    <tr slot="heading">
 
-                              <template v-if="typeUser === 'admin'">
-                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"  @click.prevent="clickDelete(row.id)">Eliminar</button>
-                              </template>
-                        </td>
+                        <th>#</th>
+                        <th class="text-center">Nombre</th>
+                        <th>Fecha de inicio</th>
+                        <th>Hora de inicio</th>
+                        <th>Fecha de fin</th>
+                        <th>Hora de fin</th>
+                        <th class="text-right">Acciones</th>
+                    <tr>
+                    <tr slot-scope="{ index, row }">
+                        <td>{{ index }}</td>
+
+                        <td class="text-center">{{ row.date_start }}</td>
+                        <td class="text-center">{{ row.time_start }}</td>
+                        <td class="text-center">{{ row.date_end }}</td>
+                        <td class="text-center">{{ row.time_end }}</td>
+                    <td class="text-right">
+                        <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
+
+                        <template v-if="typeUser === 'admin'">
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"  @click.prevent="clickDelete(row.id)">Eliminar</button>
+                        </template>
+                    </td>
                     </tr>
-                    </tbody>
-                </table>
+                </data-table>
             </div>
-            <div class="row">
-                <div class="col">
-                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i class="fa fa-plus-circle"></i> Nuevo</button>
-                </div>
-            </div>
+
+            <!--
+            <document-payments :showDialog.sync="showDialogPayments"
+                               :expenseId="recordId"></document-payments>
+            <expense-voided :showDialog.sync="showDialogVoided"
+                            :expenseId="recordId"></expense-voided>
+
+            <expense-payments
+                :showDialog.sync="showDialogExpensePayments"
+                :expenseId="recordId"
+                :external="true"
+            ></expense-payments>
+            -->
         </div>
-       
     </div>
+
 </template>
 
 <script>
 
-   // import CardBrandsForm from './form.vue'
-   //import {deletable} from '../../../mixins/deletable'
+import DataTable from '@components/DataTable.vue'
+// import DocumentPayments from './partials/payments.vue'
+// import ExpenseVoided from './partials/voided.vue'
+// import ExpensePayments from '@viewsModuleExpense/expense_payments/payments.vue'
+import queryString from 'query-string'
 
-    export default {
-       // mixins: [deletable],
-        props: ['typeUser'],
-        components: {CardBrandsForm},
-        data() {
-            return {
-                showDialog: false,
-                resource: 'mill-production',
-                recordId: null,
-                records: [],
-            }
-        },
-        created() {
-            this.$eventHub.$on('reloadData', () => {
-                this.getData()
-            })
-            this.getData()
-        },
-        methods: {
-            getData() {
-                this.$http.get(`/${this.resource}/records`)
-                    .then(response => {
-                        this.records = response.data
-                    })
-            },
-            clickCreate(recordId = null) {
-                this.recordId = recordId
-                this.showDialog = true
-            },
-            clickDelete(id) {
-               /* this.destroy(`/${this.resource}/${id}`).then(() =>
-                    this.$eventHub.$emit('reloadData')
-                )*/
-            }
+export default {
+    components: {
+        // DocumentPayments,
+        // ExpenseVoided,
+        // ExpensePayments,
+        DataTable
+
+    },
+    data() {
+        return {
+            showDialogVoided: false,
+            resource: 'mill-production',
+            showDialogPayments: false,
+            showDialogExpensePayments: false,
+            recordId: null,
+            showDialogOptions: false
         }
+    },
+    created() {
+    },
+    methods: {
+        clickCreate(id = '') {
+            location.href = `/${this.resource}/create/${id}`
+        },
+        clickExpensePayment(recordId) {
+            this.recordId = recordId;
+            this.showDialogExpensePayments = true
+        },
+        clickVoided(recordId) {
+            this.recordId = recordId;
+            this.showDialogVoided = true;
+        },
+        clickDownload(download) {
+            let data = this.$root.$refs.DataTable.getSearch();
+            let query = queryString.stringify({
+                'column': data.column,
+                'value': data.value
+            });
+
+            window.open(`/${this.resource}/report/excel/?${query}`, '_blank');
+        },
+        clickOptions(recordId = null) {
+            this.recordId = recordId
+            this.showDialogOptions = true
+        },
+        clickPayment(recordId) {
+            this.recordId = recordId;
+            this.showDialogPayments = true;
+        },
     }
+}
 </script>

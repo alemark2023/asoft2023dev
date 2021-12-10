@@ -12,12 +12,14 @@
     use Illuminate\Database\Eloquent\Collection;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+    use Illuminate\Database\Eloquent\Relations\MorphMany;
     use Modules\Inventory\Models\InventoryKardex;
 
 
     /**
      * Class Mill
      *
+     * @property string|null               $name
      * @property int               $id
      * @property Carbon|null       $date_start
      * @property Carbon|null       $time_start
@@ -38,17 +40,12 @@
         protected $perPage = 25;
 
         protected $casts = [
-            'user_id' => 'int'
+            'user_id' => 'int',
         ];
 
-        protected $dates = [
-            'date_start',
-            'time_start',
-            'date_end',
-            'time_end'
-        ];
 
         protected $fillable = [
+            'name',
             'date_start',
             'time_start',
             'date_end',

@@ -35,7 +35,7 @@
                 Route::prefix('item-production')->group(function () {
 
                     // @todo Pasar al modulo de produccion
-                    Route::get('', 'Tenant\ItemSetController@index');//->name('tenant.item_sets.index')->middleware('redirect.level');
+                    Route::get('', 'Tenant\ItemSetController@index')->name('tenant.item_production.index'); // ->middleware('redirect.level');
                     Route::post('', 'Tenant\ItemSetController@store');
                     Route::get('/columns', 'Tenant\ItemSetController@columns');
                     Route::get('/records', 'Tenant\ItemSetController@records');
@@ -52,18 +52,20 @@
                 Route::prefix('mill-production')->group(function () {
 
                     // @todo Pasar al modulo de produccion
-                    Route::get('', 'Tenant\MillController@index');//->name('tenant.item_sets.index')->middleware('redirect.level');
-                    Route::post('', 'Tenant\MillController@store');
-                    Route::get('/columns', 'Tenant\MillController@columns');
-                    Route::get('/records', 'Tenant\MillController@records');
-                    Route::get('/tables', 'Tenant\MillController@tables');
-                    Route::get('/record/{item}', 'Tenant\MillController@record');
-                    Route::delete('/{item}', 'Tenant\MillController@destroy');
-                    Route::delete('/item-unit-type/{item}', 'Tenant\MillController@destroyItemUnitType');
-                    Route::post('/import', 'Tenant\MillController@import');
-                    Route::post('/upload', 'Tenant\MillController@upload');
-                    Route::post('/visible_store', 'Tenant\MillController@visibleStore');
-                    Route::get('/item/tables', 'Tenant\MillController@item_tables');
+                    Route::get('', 'MillController@index')->name('tenant.mill_production.index'); // ->middleware('redirect.level');
+                    Route::get('/create', 'MillController@create');
+                    Route::post('/create', 'MillController@create');
+                    Route::post('', 'MillController@store');
+                    Route::get('/columns', 'MillController@columns');
+                    Route::get('/records', 'MillController@records');
+                    Route::get('/tables', 'MillController@tables');
+                    Route::get('/record/{item}', 'MillController@record');
+                    Route::delete('/{item}', 'MillController@destroy');
+                    Route::delete('/item-unit-type/{item}', 'MillController@destroyItemUnitType');
+                    Route::post('/import', 'MillController@import');
+                    Route::post('/upload', 'MillController@upload');
+                    Route::post('/visible_store', 'MillController@visibleStore');
+                    Route::get('/item/tables', 'MillController@item_tables');
                 });
             });
         });
