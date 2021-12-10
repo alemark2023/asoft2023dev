@@ -3,10 +3,20 @@
     namespace Modules\Production\Http\Controllers;
 
     use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
+    use App\Models\Tenant\Catalogs\AffectationIgvType;
+    use App\Models\Tenant\Catalogs\AttributeType;
+    use App\Models\Tenant\Catalogs\ChargeDiscountType;
     use App\Models\Tenant\Catalogs\CurrencyType;
+    use App\Models\Tenant\Catalogs\OperationType;
+    use App\Models\Tenant\Catalogs\PriceType;
+    use App\Models\Tenant\Catalogs\SystemIscType;
     use App\Models\Tenant\Company;
+    use App\Models\Tenant\Configuration;
     use App\Models\Tenant\Establishment;
+    use App\Models\Tenant\Item;
     use App\Models\Tenant\Person;
+    use App\Models\Tenant\Warehouse;
+    use App\Traits\OfflineTrait;
     use Carbon\Carbon;
     use Illuminate\Http\Request;
     use Illuminate\Http\Response;
@@ -27,6 +37,7 @@
     {
         use InventoryTrait;
         use FinanceTrait;
+        use OfflineTrait;
 
         public static function merge_inputs($inputs)
         {
@@ -239,15 +250,40 @@
                         ];
                     });
                     return $suppliers;
+                case 'items':
+
+                    // $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
+
+                    $items = Item::orderBy('description')->whereIsActive()
+                        ->ForProduction()
+                        // ->NotForProduction()
+                        // ->with(['warehouses' => function($query) use($warehouse){
+                        //     return $query->where('warehouse_id', $warehouse->id);
+                        // }])
+                        ->take(20)->get();
+
+                    $this->ReturnItem($items);
+
+                    return $items;
 
                     break;
                 default:
-
                     return [];
 
                     break;
             }
         }
+        public function ReturnItem( &$item)
+    {
+        $configuration = Configuration::first();
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = \Modules\Inventory\Models\Warehouse::where('establishment_id', $establishment_id)->first();
+
+        $item->transform(function ($row) use ($configuration, $warehouse) {
+            /** @var \App\Models\Tenant\Item $row */
+            return $row->getDataToItemModal($warehouse, false, true);
+        });
+    }
 
         public function records()
         {
@@ -305,5 +341,34 @@
             // return $balance->View();
             return $balance->download('Expense_' . Carbon::now() . '.xlsx');
 
+        }
+
+        public function item_tables() {
+
+            $items = $this->table('items');
+            // $items = SearchItemController::getItemToContract();
+            $categories = [];
+            $affectation_igv_types = AffectationIgvType::whereActive()->get();
+            $system_isc_types = SystemIscType::whereActive()->get();
+            $price_types = PriceType::whereActive()->get();
+            $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
+            $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
+            $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
+
+            $operation_types = OperationType::whereActive()->get();
+            $is_client = $this->getIsClient();
+
+            return compact(
+                'items',
+                'categories',
+                'affectation_igv_types',
+                'system_isc_types',
+                'price_types',
+                'discount_types',
+                'charge_types',
+                'attribute_types',
+                'operation_types',
+                'is_client'
+            );
         }
     }
