@@ -24,6 +24,7 @@ class AddZoneIdToPerson extends Migration
         Schema::table('persons', function (Blueprint $table) {
             //
             $table->unsignedInteger('zone_id')->nullable();
+            $table->unsignedInteger('seller_id')->nullable();
         });
         Schema::table('users', function (Blueprint $table) {
             //

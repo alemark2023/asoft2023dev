@@ -27,6 +27,7 @@
     /**
      * App\Models\Tenant\Person
      *
+     * @property int|null                             $seller_id
      * @property int|null                             $zone_id
      * @property Zone                                 $zone
      * @property-read AddressType                     $address_type
@@ -114,6 +115,7 @@
             'enabled' => 'bool',
             'status' => 'int',
             'credit_days' => 'int',
+            'seller_id' => 'int',
             'zone_id' => 'int',
             'parent_id' => 'int',
         ];
@@ -145,6 +147,7 @@
             'observation',
             'credit_days',
             'optional_email',
+            'seller_id',
             'zone_id',
             'status',
             'parent_id'
@@ -507,6 +510,7 @@
                 'observation' => $this->observation,
                 'zone' => $this->zone,
                 'zone_id' => $this->zone_id,
+                'seller_id' => $this->seller_id,
                 'website' => $this->website,
                 'document_type' => $this->identity_document_type->description,
                 'enabled' => (bool)$this->enabled,

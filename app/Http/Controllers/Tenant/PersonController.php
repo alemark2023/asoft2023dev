@@ -66,13 +66,15 @@ class PersonController extends Controller
         $person_types = PersonType::get();
         $locations = $this->getLocationCascade();
         $zones = Zone::all();
+        $sellers = $this->getSellers();
+
         // $configuration = Configuration::first();
         // $api_service_token = $configuration->token_apiruc == 'false' ? config('configuration.api_service_token') : $configuration->token_apiruc;
         $api_service_token = \App\Models\Tenant\Configuration::getApiServiceToken();
 
 
         return compact('countries', 'departments', 'provinces', 'districts', 'identity_document_types', 'locations','person_types','api_service_token'
-        ,'zones');
+        ,'zones','sellers');
     }
 
     public function record($id)

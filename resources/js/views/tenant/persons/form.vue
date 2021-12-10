@@ -507,7 +507,52 @@
                             </div>
                         </div>
                         <div class="row">
+
+                            <!--SitioWeb -->
                             <div class="col-md-6">
+                                <div :class="{'has-danger': errors.website }"
+                                     class="form-group">
+                                    <label class="control-label">Sitio Web</label>
+                                    <el-input v-model="form.website"></el-input>
+                                    <small v-if="errors.website"
+                                           class="form-control-feedback"
+                                           v-text="errors.website[0]"></small>
+                                </div>
+                            </div>
+                            <!--Observaciones -->
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.observation }"
+                                     class="form-group">
+                                    <label class="control-label">Observaciones</label>
+                                    <el-input v-model="form.observation"></el-input>
+                                    <small v-if="errors.observation"
+                                           class="form-control-feedback"
+                                           v-text="errors.observation[0]"></small>
+                                </div>
+                            </div>
+                            <!--ID Días Crédito -->
+
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4">
+
+                                <div :class="{'has-danger': errors.seller_id}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Vendedor
+                                    </label>
+                                    <el-select v-model="form.seller_id"
+                                               clearable>
+                                        <el-option v-for="option in sellers"
+                                                   :key="option.id"
+                                                   :label="option.name"
+                                                   :value="option.id">{{ option.name }}
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
                                 <div :class="{'has-danger': errors.zone_id}"
                                      class="form-group">
                                     <label class="control-label">
@@ -560,30 +605,6 @@
                                 </div>
                             </div>
                             -->
-                            <!--SitioWeb -->
-                            <div class="col-md-6">
-                                <div :class="{'has-danger': errors.website }"
-                                     class="form-group">
-                                    <label class="control-label">Sitio Web</label>
-                                    <el-input v-model="form.website"></el-input>
-                                    <small v-if="errors.website"
-                                           class="form-control-feedback"
-                                           v-text="errors.website[0]"></small>
-                                </div>
-                            </div>
-                            <!--Observaciones -->
-                            <div class="col-md-6">
-                                <div :class="{'has-danger': errors.observation }"
-                                     class="form-group">
-                                    <label class="control-label">Observaciones</label>
-                                    <el-input v-model="form.observation"></el-input>
-                                    <small v-if="errors.observation"
-                                           class="form-control-feedback"
-                                           v-text="errors.observation[0]"></small>
-                                </div>
-                            </div>
-                            <!--ID Días Crédito -->
-
                         </div>
                     </el-tab-pane>
                 </el-tabs>
@@ -633,6 +654,7 @@ export default {
             temp_email: null,
             countries: [],
             zones: [],
+            sellers: [],
             all_departments: [],
             all_provinces: [],
             all_districts: [],
@@ -655,6 +677,7 @@ export default {
 
                 this.countries = response.data.countries
                 this.zones = response.data.zones
+                this.sellers = response.data.sellers
                 this.all_departments = response.data.departments;
                 this.all_provinces = response.data.provinces;
                 this.all_districts = response.data.districts;
