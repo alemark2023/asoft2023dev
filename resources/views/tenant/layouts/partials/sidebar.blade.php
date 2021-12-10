@@ -1262,6 +1262,34 @@
                             </a>
                         </li>
                     @endif
+
+
+                        <li class=" nav-parent {{ ($firstLevel === 'production') ? 'nav-active nav-expanded' : '' }}">
+                            <a class="nav-link"
+                               href="#">
+                                <i class="fa fas fa-calendar-check"
+                                   aria-hidden="true"></i>
+                                <span>Producción</span>
+                            </a>
+                            <ul class="nav nav-children">
+
+
+                                
+                                <li class="{{ (($firstLevel === 'suscription') && ($secondLevel === 'plans')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.suscription.plans.index') }}">
+                                        Producir
+                                    </a>
+                                </li>
+                                <li class="{{ (($firstLevel === 'suscription') && ($secondLevel === 'plans')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.suscription.plans.index') }}">
+                                        Molino
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
                 </ul>
             </nav>
         </div>

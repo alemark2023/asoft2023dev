@@ -48,6 +48,23 @@
                     Route::post('/visible_store', 'Tenant\ItemSetController@visibleStore');
                     Route::get('/item/tables', 'Tenant\ItemSetController@item_tables');
                 });
+
+                Route::prefix('mill-production')->group(function () {
+
+                    // @todo Pasar al modulo de produccion
+                    Route::get('', 'Tenant\MillController@index');//->name('tenant.item_sets.index')->middleware('redirect.level');
+                    Route::post('', 'Tenant\MillController@store');
+                    Route::get('/columns', 'Tenant\MillController@columns');
+                    Route::get('/records', 'Tenant\MillController@records');
+                    Route::get('/tables', 'Tenant\MillController@tables');
+                    Route::get('/record/{item}', 'Tenant\MillController@record');
+                    Route::delete('/{item}', 'Tenant\MillController@destroy');
+                    Route::delete('/item-unit-type/{item}', 'Tenant\MillController@destroyItemUnitType');
+                    Route::post('/import', 'Tenant\MillController@import');
+                    Route::post('/upload', 'Tenant\MillController@upload');
+                    Route::post('/visible_store', 'Tenant\MillController@visibleStore');
+                    Route::get('/item/tables', 'Tenant\MillController@item_tables');
+                });
             });
         });
     }

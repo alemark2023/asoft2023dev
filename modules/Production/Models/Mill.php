@@ -12,6 +12,8 @@
     use Illuminate\Database\Eloquent\Collection;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+    use Modules\Inventory\Models\InventoryKardex;
+
 
     /**
      * Class Mill
@@ -70,5 +72,17 @@
             return $this->belongsToMany(Item::class, 'mill_items')
                 ->withPivot('id', 'height_to_mill', 'total_height')
                 ->withTimestamps();
+        }
+
+           /**
+         * Se usa en la relacion con el inventario kardex en modules/Inventory/Traits/InventoryTrait.php.
+         * Tambien se debe tener en cuenta modules/Inventory/Providers/InventoryKardexServiceProvider.php y
+         * app/Providers/KardexServiceProvider.php para la correcta gestion de kardex
+         *
+         * @return MorphMany
+         */
+        public function inventory_kardex()
+        {
+            return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
         }
     }
