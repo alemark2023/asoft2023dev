@@ -475,6 +475,12 @@
                                            href="{{route('tenant.item-lots.index')}}">Series</a>
                                     </li>
                                 @endif
+
+                                    <li class="{{ ($firstLevel === 'zones')?'nav-active':'' }}">
+                                        <a class="nav-link"
+                                           href="{{route('tenant.zone.index')}}">Zonas</a>
+                                    </li>
+
                             </ul>
                         </li>
                     @endif
