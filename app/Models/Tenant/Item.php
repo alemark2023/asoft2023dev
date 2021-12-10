@@ -55,6 +55,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  * @property \Illuminate\Database\Eloquent\Collection|ItemMovementRelExtra[] $item_movement_rel_extras
  * @property Account $account
  * @property Brand $brand
+ * @property Bool $is_for_production
  * @property CatDigemid|null $cat_digemid
  * @property Category $category
  * @property CurrencyType $currency_type
@@ -160,11 +161,13 @@ class Item extends ModelTenant
         'barcode',
         'sanitary',
         'cod_digemid',
+        'is_for_production',
         // 'warehouse_id'
     ];
 
     protected $casts = [
-        'date_of_due' => 'date'
+        'date_of_due' => 'date',
+        'is_for_production' => 'bool',
     ];
 
     /**
