@@ -460,7 +460,7 @@ class Item extends ModelTenant
      */
     public function sets()
     {
-    return $this->hasMany(ItemSet::class);
+        return $this->hasMany(ItemSet::class);
     }
 
     /**
@@ -1962,6 +1962,14 @@ class Item extends ModelTenant
     public function getInternalIdDescription()
     {
         return $this->internal_id ? "{$this->internal_id} - {$this->description}" : $this->description;
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function supplies()
+    {
+        return $this->hasMany(ItemSupply::class);
     }
 
 }

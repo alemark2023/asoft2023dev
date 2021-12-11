@@ -67,6 +67,16 @@
                     Route::post('/visible_store', 'MillController@visibleStore');
                     Route::get('/item/tables', 'MillController@item_tables');
                 });
+
+                Route::prefix('production')->group(function () {
+
+                    // @todo Pasar al modulo de produccion
+                    Route::get('', 'ProductionController@create')->name('tenant.production.index'); // ->middleware('redirect.level');
+                    Route::post('', 'ProductionController@store');
+                    Route::post('search_items', 'ProductionController@searchItems');
+                    Route::get('/tables', 'ProductionController@tables');
+
+                });
             });
         });
     }
