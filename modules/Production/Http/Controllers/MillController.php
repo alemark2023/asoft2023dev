@@ -173,12 +173,6 @@
                 $inventory->inventory_transaction_id = $inventory_transaction->id;
                 $inventory->save();
 
-                /*$presentationQuantity = $presentation->quantity_unit ?? 1;
-
-                $warehouse = ($warehouse_id) ? $this->findWarehouse($this->findWarehouseById($warehouse_id)->establishment_id) : $this->findWarehouse();
-
-                $this->createInventoryKardex($model, $id, ($quantity * $presentationQuantity), $warehouse->id);
-                $this->updateStock($id, ($quantity * $presentationQuantity), $warehouse->id);*/
 
             }
 
