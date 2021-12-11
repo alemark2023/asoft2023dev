@@ -29,13 +29,17 @@
     use Modules\Expense\Models\ExpenseReason;
     use Modules\Expense\Models\ExpenseType;
     use Modules\Finance\Traits\FinanceTrait;
-    use Modules\Inventory\Traits\InventoryTrait;
+    //use Modules\Inventory\Traits\InventoryTrait;
     use Modules\Production\Models\Mill;
+    use Modules\Production\Models\MillItem;
+    use Modules\Inventory\Models\InventoryTransaction;
+    use Modules\Inventory\Models\Inventory;
+
 
 
     class MillController extends Controller
     {
-        use InventoryTrait;
+        //use InventoryTrait;
         use FinanceTrait;
         use OfflineTrait;
 
@@ -145,20 +149,39 @@
             $model = Mill::firstOrNew(['id' => null]);
             $model->fill($request->all());
             $model->save();
+            
+            $warehouse_id = $request['warehouse_id'];
+
 
             foreach ($request->items as $item) {
+
+                $mill_item = new MillItem();
+                $mill_item->fill($item);
 
                 $id = $item['id'];
                 $quantity = $item['quantity'];
                 $presentation = $item['presentation'];
-                $warehouse_id = $item['warehouse_id'];
 
-                $presentationQuantity = $presentation->quantity_unit ?? 1;
+                $inventory_transaction = InventoryTransaction::findOrFail('100'); //debe ser ingreso por molino
+
+                $inventory = new Inventory();
+                $inventory->type = null;
+                $inventory->description = $inventory_transaction->name;
+                $inventory->item_id = $mill_item->item_id;
+                $inventory->warehouse_id = $warehouse_id;
+                $inventory->quantity = $quantity;
+                $inventory->inventory_transaction_id = $inventory_transaction->id;
+                $inventory->save();
+
+
+
+
+                /*$presentationQuantity = $presentation->quantity_unit ?? 1;
 
                 $warehouse = ($warehouse_id) ? $this->findWarehouse($this->findWarehouseById($warehouse_id)->establishment_id) : $this->findWarehouse();
 
                 $this->createInventoryKardex($model, $id, ($quantity * $presentationQuantity), $warehouse->id);
-                $this->updateStock($id, ($quantity * $presentationQuantity), $warehouse->id);
+                $this->updateStock($id, ($quantity * $presentationQuantity), $warehouse->id);*/
 
             }
 
