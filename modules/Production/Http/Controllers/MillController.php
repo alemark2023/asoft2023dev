@@ -150,6 +150,9 @@
         {
             $model = Mill::firstOrNew(['id' => null]);
             $model->fill($request->all());
+            if(empty($model->user_id)) {
+                $model->user_id = \Auth::user()->id;
+            }
             $model->save();
 
             $userWarehouse = \Auth::user()->establishment;
