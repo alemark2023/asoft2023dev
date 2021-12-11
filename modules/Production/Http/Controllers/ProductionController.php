@@ -46,7 +46,7 @@ class ProductionController extends Controller
 			$inventory_transaction_id = $request->input('inventory_transaction_id');
 			$quantity = $request->input('quantity');
 
-			$inventory_transaction = InventoryTransaction::findOrFail($inventory_transaction_id); //debe ser ingreso por produccion
+			$inventory_transaction = InventoryTransaction::findOrFail(19); //debe ser ingreso por produccion
 
 			$inventory = new Inventory();
 			$inventory->type = null;
@@ -67,16 +67,16 @@ class ProductionController extends Controller
 
             foreach ($items_supplies as $item) {
 
-                $inventory_transaction = InventoryTransaction::findOrFail('100'); //Ingreso insumos por molino
-
-
-
-
-
-
-
+                $inventory_transaction_item = InventoryTransaction::findOrFail('101'); //Salida insumos por molino
+                $inventory_it = new Inventory();
+                $inventory_it->type = null;
+                $inventory_it->description = $inventory_transaction_item->name;
+                $inventory_it->item_id = $item->id;
+                $inventory_it->warehouse_id = $warehouse_id;
+                $inventory_it->quantity = $item->$quantity * $quantity;
+                $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
+                $inventory_it->save();
             }
-
 
 			return  [
 				'success' => true,
