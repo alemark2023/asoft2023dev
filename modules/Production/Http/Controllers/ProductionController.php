@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Inventory\Models\InventoryTransaction;
 use Modules\Inventory\Models\Inventory;
+use App\Models\Tenant\Item;
 
 class ProductionController extends Controller
 {
@@ -43,10 +44,10 @@ class ProductionController extends Controller
 			$type = $request->input('type');
 			$item_id = $request->input('item_id');
 			$warehouse_id = $request->input('warehouse_id');
-			$inventory_transaction_id = $request->input('inventory_transaction_id');
+			//$inventory_transaction_id = '19';  //Ingreso de producción
 			$quantity = $request->input('quantity');
 
-			$inventory_transaction = InventoryTransaction::findOrFail(19); //debe ser ingreso por produccion
+			$inventory_transaction = InventoryTransaction::findOrFail(19); //debe ser Ingreso de producción
 
 			$inventory = new Inventory();
 			$inventory->type = null;
@@ -54,7 +55,7 @@ class ProductionController extends Controller
 			$inventory->item_id = $item_id;
 			$inventory->warehouse_id = $warehouse_id;
 			$inventory->quantity = $quantity;
-			$inventory->inventory_transaction_id = $inventory_transaction_id;
+			$inventory->inventory_transaction_id = $inventory_transaction->id;
 			$inventory->save();
 
             $production = Production::firstOrNew(['id' => null]);
@@ -62,8 +63,9 @@ class ProductionController extends Controller
             $production->inventory_id_reference = $inventory->id;
             $production->save();
 
+            $item = Item::find($item_id);
 
-            $items_supplies = $production->items_supplies();
+            $items_supplies = $item->items_supplies();
 
             foreach ($items_supplies as $item) {
 
