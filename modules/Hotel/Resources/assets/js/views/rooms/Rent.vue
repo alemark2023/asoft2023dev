@@ -373,12 +373,13 @@ export default {
         output_date: null,
         payment_status: 'PAID',
         quantity_persons: 2,
-        affectation_igv_type_id: '10',
+        affectation_igv_type_id: null,
       },
       rate: null,
       loading: false,
       showDialogNewPerson: false,
       input_person: {},
+      configuration: {},
       errors: {
         customer: {},
       },
@@ -521,10 +522,18 @@ export default {
         .get("/hotels/reception/tables")
         .then((response) => {
           this.customers = response.data.customers;
+          this.configuration = response.data.configuration
+          this.setAffectationIgvType()
         })
         .finally(() => {
           this.loading = false;
         });
+    },
+    setAffectationIgvType(){
+
+      let affectation_igv_type = _.find(this.getAllowedAffectationIgvTypes, { id : this.configuration.affectation_igv_type_id})
+      this.form.affectation_igv_type_id = (affectation_igv_type) ? affectation_igv_type.id : '10'
+      
     },
     searchRemoteCustomers(input) {
       if (input.length > 0) {
