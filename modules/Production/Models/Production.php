@@ -40,7 +40,8 @@
         protected $fillable = [
             'user_id',
             'item_id',
-            'quantity'
+            'quantity', 
+            'inventory_id_reference'
         ];
 
         /**

@@ -5,6 +5,11 @@ namespace Modules\Production\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Modules\Production\Models\Production;
+use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Models\ItemWarehouse;
+use Modules\Inventory\Models\InventoryTransaction;
+use Modules\Inventory\Models\Inventory;
 
 class ProductionController extends Controller
 {
@@ -33,7 +38,54 @@ class ProductionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+           
+			$type = $request->input('type');
+			$item_id = $request->input('item_id');
+			$warehouse_id = $request->input('warehouse_id');
+			$inventory_transaction_id = $request->input('inventory_transaction_id');
+			$quantity = $request->input('quantity');
+
+			$inventory_transaction = InventoryTransaction::findOrFail($inventory_transaction_id); //debe ser ingreso por produccion
+
+			$inventory = new Inventory();
+			$inventory->type = null;
+			$inventory->description = $inventory_transaction->name;
+			$inventory->item_id = $item_id;
+			$inventory->warehouse_id = $warehouse_id;
+			$inventory->quantity = $quantity;
+			$inventory->inventory_transaction_id = $inventory_transaction_id;
+			$inventory->save();
+
+            $production = Production::firstOrNew(['id' => null]);
+            $production->fill($request->all());
+            $production->inventory_id_reference = $inventory->id;
+            $production->save();
+
+
+            $items_supplies = $production->items_supplies();
+
+            foreach ($items_supplies as $item) {
+
+                $inventory_transaction = InventoryTransaction::findOrFail('100'); //Ingreso insumos por molino
+
+
+
+
+
+
+
+            }
+
+
+			return  [
+				'success' => true,
+				'message' => 'Ingreso registrado correctamente'
+			];
+		});
+
+		return $result;
+
     }
 
     /**
