@@ -11,9 +11,12 @@ use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Inventory\Models\InventoryTransaction;
 use Modules\Inventory\Models\Inventory;
 use App\Models\Tenant\Item;
+use Modules\Inventory\Traits\InventoryTrait;
+
 
 class ProductionController extends Controller
 {
+    use InventoryTrait;
     /**
      * Display a listing of the resource.
      * @return Response
@@ -29,7 +32,7 @@ class ProductionController extends Controller
      */
     public function create()
     {
-        return view('production::create');
+        return view('production::production.form');
     }
 
     /**
@@ -41,7 +44,6 @@ class ProductionController extends Controller
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
            
-			$type = $request->input('type');
 			$item_id = $request->input('item_id');
 			$warehouse_id = $request->input('warehouse_id');
 			//$inventory_transaction_id = '19';  //Ingreso de producción
@@ -61,11 +63,12 @@ class ProductionController extends Controller
             $production = Production::firstOrNew(['id' => null]);
             $production->fill($request->all());
             $production->inventory_id_reference = $inventory->id;
+            $production->user_id = auth()->user()->id;
             $production->save();
 
             $item = Item::find($item_id);
 
-            $items_supplies = $item->items_supplies();
+            $items_supplies = $item->supplies();
 
             foreach ($items_supplies as $item) {
 
@@ -73,7 +76,7 @@ class ProductionController extends Controller
                 $inventory_it = new Inventory();
                 $inventory_it->type = null;
                 $inventory_it->description = $inventory_transaction_item->name;
-                $inventory_it->item_id = $item->id;
+                $inventory_it->item_id = $item->individual_item_id;
                 $inventory_it->warehouse_id = $warehouse_id;
                 $inventory_it->quantity = $item->$quantity * $quantity;
                 $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
@@ -130,4 +133,21 @@ class ProductionController extends Controller
     {
         //
     }
+
+    public function tables()
+	{
+		return [
+			'items'      => $this->optionsItemProduction(),
+			'warehouses' => $this->optionsWarehouse()
+		];
+	}
+
+    public function searchItems(Request $request)
+	{
+		$search = $request->input('search');
+
+		return [
+			'items' => $this->optionsItemFullProduction($search, 20),
+		];
+	}
 }
