@@ -16,10 +16,26 @@ class MillRequest extends FormRequest
     public function rules()
     {
 
-        return [/*
-            'supplier_id' => [
+        return [
+            'name' => [
                 'required',
             ],
+            'date_start' => [
+                'required',
+            ],
+            'time_start' => [
+                'required',
+            ],
+            'date_end' => [
+                'required',
+            ],
+            'time_end' => [
+                'required',
+            ],
+            'items' => [
+                'required',
+            ],
+                /*
             'expense_reason_id' => [
                 'required',
             ],

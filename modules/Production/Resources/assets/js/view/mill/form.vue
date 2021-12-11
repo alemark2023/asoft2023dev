@@ -32,9 +32,8 @@
                                 <label class="control-label">Hora de finalizacion</label>
                                 <el-time-picker v-model="form.time_start"
                                                 dusk="time_start"
-                                                format="HH:mm"
-                                                placeholder="Seleccionar"
-                                                @change="setTime"></el-time-picker>
+                                                value-format="HH:mm:ss"
+                                                placeholder="Seleccionar"></el-time-picker>
                                 <small v-if="errors.time_start"
                                        class="form-control-feedback"
                                        v-text="errors.time_start[0]"></small>
@@ -64,9 +63,8 @@
                                 <label class="control-label">Hora de finalizacion</label>
                                 <el-time-picker v-model="form.time_end"
                                                 dusk="time_end"
-                                                format="HH:mm"
-                                                placeholder="Seleccionar"
-                                                @change="setTimeEnd"></el-time-picker>
+                                                value-format="HH:mm:ss"
+                                                placeholder="Seleccionar"></el-time-picker>
                                 <small v-if="errors.time_end"
                                        class="form-control-feedback"
                                        v-text="errors.time_end[0]"></small>
@@ -115,7 +113,7 @@
                             <div class="form-group">
                                 <button class="btn waves-effect waves-light btn-primary"
                                         type="button"
-                                        @click.prevent="showDialogAddItem = true">+ Agregar detalle
+                                        @click.prevent="showAddItemModal">+ Agregar detalle
                                 </button>
                             </div>
                         </div>
@@ -129,15 +127,17 @@
                                     <tr>
                                         <th>#</th>
                                         <th class="font-weight-bold">Descripción</th>
-                                        <th class="text-right font-weight-bold">Total</th>
+                                        <th class="text-right font-weight-bold">Entrada</th>
+                                        <th class="text-right font-weight-bold">Salida</th>
                                         <th></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr v-for="(row, index) in form.items">
                                         <td>{{ index + 1 }}</td>
-                                        <td>{{ row.description }}</td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
+                                        <td>{{ ItemOptionDescriptionView(row.item) }}</td>
+                                        <td class="text-right">{{ row.height_to_mill }}</td>
+                                        <td class="text-right">{{ row.total_height }}</td>
                                         <td class="text-right">
                                             <button class="btn waves-effect waves-light btn-xs btn-danger"
                                                     type="button"
@@ -168,7 +168,7 @@
         <mill-form-item
             :currency-type-id-active="form.currency_type_id"
             :exchange-rate-sale="form.exchange_rate_sale"
-            showDialog.sync="showDialogAddItem"
+            :showDialog.sync="showDialog"
             @add="addRow"></mill-form-item>
         <!--
 
@@ -194,6 +194,7 @@ import PersonForm from '../../../../../../../resources/js/views/tenant/persons/f
 import ExpenseOptions from './partials/options.vue'
 */
 import {exchangeRate, functions} from '../../../../../../../resources/js/mixins/functions'
+import {ItemOptionDescription} from "../../../../../../../resources/js/helpers/modal_item";
 
 
 export default {
@@ -212,7 +213,7 @@ export default {
     data() {
         return {
             resource: 'mill-production',
-            showDialogAddItem: false,
+            showDialog: false,
             showDialogNewPerson: false,
             showDialogOptions: false,
             loading_submit: false,
@@ -261,6 +262,9 @@ export default {
         await this.isUpdate()
     },
     methods: {
+        showAddItemModal(){
+            this.showDialog = true;
+        },
         setTime(timePicker) {
             this.form.time_start = `${moment(timePicker).format('HH:mm')}:00`;
         },
@@ -285,16 +289,24 @@ export default {
 
         },
         selectSupplier() {
+            /*
 
             let supplier = _.find(this.suppliers, {'id': this.aux_supplier_id})
             this.form.supplier_id = (supplier) ? supplier.id : null
             this.aux_supplier_id = null
-
+*/
         },
         initForm() {
             this.errors = {}
             this.form = {
                 id: null,
+                date_start: moment().format('YYYY-MM-DD'),
+                time_start: moment().format('HH:mm'),
+                date_end: moment().format('YYYY-MM-DD'),
+                time_end: moment().format('HH:mm'),
+                items:[]
+
+                /*
                 establishment_id: null,
                 mill_type_id: null,
                 mill_reason_id: null,
@@ -305,11 +317,10 @@ export default {
                 currency_type_id: null,
                 exchange_rate_sale: 0,
                 total: 0,
-                items: [],
                 payments: [],
+                */
             }
 
-            this.clickAddPayment()
             // this.changeExpenseMethodType()
         },
         resetForm() {
@@ -323,25 +334,15 @@ export default {
             this.changeCurrencyType()
         },
         changeDateOfIssue() {
+            /*
             this.form.date_of_due = this.form.date_of_issue
             this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                 this.form.exchange_rate_sale = response
             })
+            */
         },
         clickCancel(index) {
-            this.form.payments.splice(index, 1);
-        },
-        clickAddPayment() {
-            this.form.payments.push({
-                id: null,
-                mill_id: null,
-                date_of_payment: moment().format('YYYY-MM-DD'),
-                mill_method_type_id: 1,
-                payment_destination_id: null,
-                reference: null,
-                payment_destination_disabled: true,
-                payment: 0,
-            });
+            // this.form.payments.splice(index, 1);
         },
         addRow(row) {
             this.form.items.push(row)
@@ -352,16 +353,18 @@ export default {
             this.calculateTotal()
         },
         changeCurrencyType() {
-            this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+            // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
             let items = []
             this.form.items.forEach((row) => {
-                items.push(this.calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+                items.push(row)
+                // items.push(this.calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
 
 
             });
             this.form.items = items
             this.calculateTotal()
         },
+        /*
         calculateRowItem(row, currency_type_id, exchange_rate_sale) {
 
             let currency_type_id_old = row.currency_type_id
@@ -379,18 +382,23 @@ export default {
             row.total = _.round(row.total, 2)
 
             return row
-        },
+        },*/
         calculateTotal() {
-            let total = 0
+            /*
+            let height_to_mill = 0
+            let total_height = 0
             this.form.items.forEach((row) => {
-                total += parseFloat(row.total)
+                height_to_mill += parseFloat(row.height_to_mill)
+                total_height += parseFloat(row.total_height)
             });
             this.form.total = _.round(total, 2)
             this.form.payments[0].payment = this.form.total
+            */
         },
         submit() {
 
-            let validate = this.validate_payments()
+            /*
+
             if (validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
                 return this.$message.error('Los montos ingresados no coinciden con el monto total o son incorrectos');
             }
@@ -404,7 +412,7 @@ export default {
                     return this.$message.error('El número es obligatorio')
                 }
             }
-
+            */
             this.loading_submit = true
             this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
@@ -429,25 +437,6 @@ export default {
                     this.loading_submit = false
                 })
         },
-        validate_payments() {
-
-            let error_by_item = 0
-            let acum_total = 0
-            let empty_payment_destination = 0
-
-            this.form.payments.forEach((item) => {
-                acum_total += parseFloat(item.payment)
-                if (item.payment <= 0 || item.payment == null) error_by_item++;
-                if (item.mill_method_type_id != 1 && item.payment_destination_id == null) empty_payment_destination++;
-            })
-
-            return {
-                error_by_item: error_by_item,
-                empty_payment_destination: empty_payment_destination,
-                acum_total: acum_total
-            }
-
-        },
         close() {
             location.href = `/${this.resource}`
         },
@@ -459,6 +448,10 @@ export default {
                 this.suppliers = response.data
 
             })
+        },
+
+        ItemOptionDescriptionView(item) {
+            return ItemOptionDescription(item)
         },
     }
 }
