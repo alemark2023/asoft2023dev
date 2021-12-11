@@ -22,14 +22,13 @@
      * @method static Builder|ItemSet query()
      * @mixin Eloquent
      */
-    class ItemSet extends ModelTenant
+    class ItemSupply extends ModelTenant
     {
 
         protected $fillable = [
             'item_id',
             'individual_item_id',
             'quantity',
-            'unit_price'
         ];
 
         /**

@@ -1279,11 +1279,9 @@
                             </a>
                             <ul class="nav nav-children">
 
-
-
-                                <li class="{{ (($firstLevel === 'item-production') ) ? 'nav-active' : '' }}">
+                                <li class="{{ (($firstLevel === 'production') ) ? 'nav-active' : '' }}">
                                     <a class="nav-link"
-                                       href="{{ route('tenant.item_production.index') }}">
+                                       href="{{ route('tenant.production.index') }}">
                                         Producir
                                     </a>
                                 </li>
