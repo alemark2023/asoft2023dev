@@ -158,9 +158,9 @@
                 $mill_item = new MillItem();
                 $mill_item->fill($item);
 
-                $id = $item['id'];
+                //$id = $item['id'];
                 $quantity = $item['quantity'];
-                $presentation = $item['presentation'];
+                //$presentation = $item['presentation'];
 
                 $inventory_transaction = InventoryTransaction::findOrFail('100'); //debe ser ingreso por molino
 
@@ -172,9 +172,6 @@
                 $inventory->quantity = $quantity;
                 $inventory->inventory_transaction_id = $inventory_transaction->id;
                 $inventory->save();
-
-
-
 
                 /*$presentationQuantity = $presentation->quantity_unit ?? 1;
 

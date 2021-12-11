@@ -41,7 +41,8 @@
             'item_id',
             'mill_id',
             'height_to_mill',
-            'total_height'
+            'total_height',
+            'quantity'
         ];
 
         /**
