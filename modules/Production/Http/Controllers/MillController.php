@@ -152,7 +152,8 @@
             $model->fill($request->all());
             $model->save();
 
-            $warehouse_id = $request['warehouse_id'];
+            $userWarehouse = \Auth::user()->establishment;
+            $warehouse_id = $request['warehouse_id'] ?? $userWarehouse->id; // si no hay warehuse. pega el establecimiento del usuario
 
 
             foreach ($request->items as $item) {
