@@ -30,6 +30,8 @@
     use Modules\Expense\Models\ExpenseType;
     use Modules\Finance\Traits\FinanceTrait;
     //use Modules\Inventory\Traits\InventoryTrait;
+    use Modules\Inventory\Traits\InventoryTrait;
+    use Modules\Production\Http\Requests\MillRequest;
     use Modules\Production\Models\Mill;
     use Modules\Production\Models\MillItem;
     use Modules\Inventory\Models\InventoryTransaction;
@@ -140,16 +142,16 @@
         /**
          * Store a newly created resource in storage.
          *
-         * @param Request $request
+         * @param MillRequest $request
          *
          * @return Response
          */
-        public function store(Request $request)
+        public function store(MillRequest $request)
         {
             $model = Mill::firstOrNew(['id' => null]);
             $model->fill($request->all());
             $model->save();
-            
+
             $warehouse_id = $request['warehouse_id'];
 
 
@@ -270,7 +272,7 @@
                     // $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
                     $items = Item::orderBy('description')->whereIsActive()
-                        ->ForProduction()
+                        // ->ForProduction()
                         // ->NotForProduction()
                         // ->with(['warehouses' => function($query) use($warehouse){
                         //     return $query->where('warehouse_id', $warehouse->id);
