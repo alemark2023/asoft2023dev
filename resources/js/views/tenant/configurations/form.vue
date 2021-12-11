@@ -110,7 +110,7 @@
                                              class="form-group">
                                             <label class="control-label">Tipo de afectación
                                                 <el-tooltip class="item"
-                                                            content="Tipo de afectación predeterminada al registrar nuevo producto"
+                                                            content="Tipo de afectación predeterminada al registrar nuevo producto y rentar habitación en hoteles (Disponible Op. Gravadas y Exoneradas)"
                                                             effect="dark"
                                                             placement="top-start">
                                                     <i class="fa fa-info-circle"></i>
