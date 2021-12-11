@@ -38,6 +38,7 @@
                 $table->increments('id');
                 $table->unsignedInteger('user_id')->default(0)->nullable();
                 $table->unsignedInteger('item_id')->default(0)->nullable();
+                $table->unsignedInteger('inventory_id_reference')->nullable();
                 $table->decimal('quantity', 12, 4)->default(0)->nullable()->comment('Peso dle insumo ');
                 $table->timestamps();
 
