@@ -1263,10 +1263,11 @@
                         </li>
                     @endif
                     {{-- Produccion --}}
-                    @if(in_array('production_app', $vc_modules) )
+                        @if(in_array('production_app', $vc_modules) )
 
                         <li class=" nav-parent {{ (
 		($firstLevel === 'item-production') ||
+		($firstLevel === 'production') ||
 	 ($firstLevel === 'mill-production') ) ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link"
                                href="#">
@@ -1276,7 +1277,12 @@
                             </a>
                             <ul class="nav nav-children">
 
-                                <li class="{{ (($firstLevel === 'production') ) ? 'nav-active' : '' }}">
+                                <li class="{{ (($firstLevel === 'item-production') ) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.item_production.index') }}">
+                                        Productos Compuestos
+                                    </a>
+                                </li> <li class="{{ (($firstLevel === 'production') ) ? 'nav-active' : '' }}">
                                     <a class="nav-link"
                                        href="{{ route('tenant.production.index') }}">
                                         Producir
@@ -1291,7 +1297,7 @@
 
                             </ul>
                         </li>
-                    @endif
+                     @endif
 
                 </ul>
             </nav>
