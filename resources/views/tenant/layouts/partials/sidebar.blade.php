@@ -574,12 +574,12 @@
                                                href="{{route('tenant.purchase-orders.index')}}">Ordenes de compra</a>
                                         </li>
                                     @endif
-                                        @if(in_array('purchases_expenses', $vc_module_levels))
-                                            <li class="{{ ($firstLevel === 'bank_loan' )?'nav-active':'' }}">
-                                                <a class="nav-link"
-                                                   href="{{route('tenant.bank_loan.index')}}">Credito Bancario</a>
-                                            </li>
-                                        @endif
+                                    @if(in_array('purchases_expenses', $vc_module_levels))
+                                        <li class="{{ ($firstLevel === 'bank_loan' )?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{route('tenant.bank_loan.index')}}">Credito Bancario</a>
+                                        </li>
+                                    @endif
                                     @if(in_array('purchases_expenses', $vc_module_levels))
                                         <li class="{{ ($firstLevel === 'expenses' )?'nav-active':'' }}">
                                             <a class="nav-link"
@@ -1262,9 +1262,12 @@
                             </a>
                         </li>
                     @endif
+                    {{-- Produccion --}}
+                    @if(in_array('production_app', $vc_modules) )
 
-
-                        <li class=" nav-parent {{ (($firstLevel === 'item-production') || ($firstLevel === 'mill-production')) ? 'nav-active nav-expanded' : '' }}">
+                        <li class=" nav-parent {{ (
+		($firstLevel === 'item-production') ||
+	 ($firstLevel === 'mill-production') ) ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link"
                                href="#">
                                 <i class="fa fas fa-calendar-check"
@@ -1288,6 +1291,8 @@
 
                             </ul>
                         </li>
+                    @endif
+
                 </ul>
             </nav>
         </div>

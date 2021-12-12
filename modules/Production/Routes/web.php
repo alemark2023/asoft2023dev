@@ -35,25 +35,25 @@
                 Route::prefix('item-production')->group(function () {
 
                     // @todo Pasar al modulo de produccion
-                    Route::get('', 'Tenant\ItemSetController@index')->name('tenant.item_production.index'); // ->middleware('redirect.level');
-                    Route::post('', 'Tenant\ItemSetController@store');
-                    Route::get('/columns', 'Tenant\ItemSetController@columns');
-                    Route::get('/records', 'Tenant\ItemSetController@records');
-                    Route::get('/tables', 'Tenant\ItemSetController@tables');
-                    Route::get('/record/{item}', 'Tenant\ItemSetController@record');
-                    Route::delete('/{item}', 'Tenant\ItemSetController@destroy');
-                    Route::delete('/item-unit-type/{item}', 'Tenant\ItemSetController@destroyItemUnitType');
-                    Route::post('/import', 'Tenant\ItemSetController@import');
-                    Route::post('/upload', 'Tenant\ItemSetController@upload');
-                    Route::post('/visible_store', 'Tenant\ItemSetController@visibleStore');
-                    Route::get('/item/tables', 'Tenant\ItemSetController@item_tables');
+                    Route::get('', 'ItemProductionController@index')->name('tenant.item_production.index'); // ->middleware('redirect.level');
+                    Route::post('', 'ItemProductionController@store');
+                    Route::get('/columns', 'ItemProductionController@columns');
+                    Route::get('/records', 'ItemProductionController@records');
+                    Route::get('/tables', 'ItemProductionController@tables');
+                    Route::get('/record/{item}', 'ItemProductionController@record');
+                    Route::delete('/{item}', 'ItemProductionController@destroy');
+                    Route::delete('/item-unit-type/{item}', 'ItemProductionController@destroyItemUnitType');
+                    Route::post('/import', 'ItemProductionController@import');
+                    Route::post('/upload', 'ItemProductionController@upload');
+                    Route::post('/visible_store', 'ItemProductionController@visibleStore');
+                    Route::get('/item/tables', 'ItemProductionController@item_tables');
                 });
 
                 Route::prefix('mill-production')->group(function () {
 
                     // @todo Pasar al modulo de produccion
                     Route::get('', 'MillController@index')->name('tenant.mill_production.index'); // ->middleware('redirect.level');
-                    Route::get('/create', 'MillController@create');
+                    Route::get('/create/{id?}', 'MillController@create');
                     Route::post('/create', 'MillController@create');
                     Route::post('', 'MillController@store');
                     Route::get('/columns', 'MillController@columns');
@@ -71,9 +71,11 @@
                 Route::prefix('production')->group(function () {
 
                     // @todo Pasar al modulo de produccion
-                    Route::get('', 'ProductionController@create')->name('tenant.production.index'); // ->middleware('redirect.level');
-                    Route::post('', 'ProductionController@store');
+                    Route::get('', 'ProductionController@index')->name('tenant.production.index'); // ->middleware('redirect.level');
+                    Route::get('create', 'ProductionController@create')->name('tenant.production.new');
+                    Route::post('create', 'ProductionController@store');
                     Route::post('search_items', 'ProductionController@searchItems');
+                    Route::get('/records', 'ProductionController@records');
                     Route::get('/tables', 'ProductionController@tables');
 
                 });

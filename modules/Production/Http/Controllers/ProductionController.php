@@ -5,6 +5,8 @@ namespace Modules\Production\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Modules\Production\Http\Requests\ProductionRequest;
+use Modules\Production\Http\Resources\ProductionCollection;
 use Modules\Production\Models\Production;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Models\ItemWarehouse;
@@ -23,7 +25,7 @@ class ProductionController extends Controller
      */
     public function index()
     {
-        return view('production::index');
+        return view('production::production.index');
     }
 
     /**
@@ -37,13 +39,13 @@ class ProductionController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
+     * @param ProductionRequest $request
      * @return Response
      */
-    public function store(Request $request)
+    public function store(ProductionRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
-           
+
 			$item_id = $request->input('item_id');
 			$warehouse_id = $request->input('warehouse_id');
 			//$inventory_transaction_id = '19';  //Ingreso de producción
@@ -150,4 +152,12 @@ class ProductionController extends Controller
 			'items' => $this->optionsItemFullProduction($search, 20),
 		];
 	}
+
+    public function records()
+    {
+        $records = Production::query();
+        return new ProductionCollection($records->paginate(config('tenant.items_per_page')));
+
+    }
+
 }

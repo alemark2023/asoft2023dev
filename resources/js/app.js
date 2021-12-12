@@ -363,6 +363,11 @@ Vue.component('tenant-mill-form', require('../../modules/Production/Resources/as
 Vue.component('tenant-mill-index', require('../../modules/Production/Resources/assets/js/view/item_production/index.vue'));
 Vue.component('tenant-mill-form', require('../../modules/Production/Resources/assets/js/view/item_production//form.vue'));
 */
+/** produccion */
+
+Vue.component('tenant-production-index', require('../../modules/Production/Resources/assets/js/view/production/index.vue'));
+Vue.component('tenant-production-form', require('../../modules/Production/Resources/assets/js/view/production/form.vue'));
+
 
 import moment from 'moment';
 

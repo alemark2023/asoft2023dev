@@ -33,6 +33,7 @@
 
         protected $casts = [
             'user_id' => 'int',
+            'inventory_id_reference' => 'int',
             'item_id' => 'int',
             'quantity' => 'float'
         ];
@@ -40,7 +41,7 @@
         protected $fillable = [
             'user_id',
             'item_id',
-            'quantity', 
+            'quantity',
             'inventory_id_reference'
         ];
 

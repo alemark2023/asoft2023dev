@@ -24,28 +24,31 @@
                     <tr slot="heading">
 
                         <th>#</th>
-                        <th class="text-center">Nombre</th>
+                        <th class="text-center">Número de registro</th>
                         <th>Fecha de inicio</th>
                         <th>Hora de inicio</th>
                         <th>Fecha de fin</th>
                         <th>Hora de fin</th>
-                        <th class="text-right">Acciones</th>
+<!--                        <th class="text-right">Acciones</th>-->
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
 
+                        <td class="text-center">{{ row.name }}</td>
                         <td class="text-center">{{ row.date_start }}</td>
                         <td class="text-center">{{ row.time_start }}</td>
                         <td class="text-center">{{ row.date_end }}</td>
                         <td class="text-center">{{ row.time_end }}</td>
-                    <td class="text-right">
-                        <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
+                    <!--
+<td class="text-right">
+ <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Ver</button>
 
-                        <template v-if="typeUser === 'admin'">
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"  @click.prevent="clickDelete(row.id)">Eliminar</button>
-                        </template>
-                    </td>
-                    </tr>
+ <template v-if="typeUser === 'admin'">
+     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"  @click.prevent="clickDelete(row.id)">Eliminar</button>
+ </template>
+                    </td> -->
+
+                </tr>
                 </data-table>
             </div>
 
