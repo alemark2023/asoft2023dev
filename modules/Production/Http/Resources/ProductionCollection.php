@@ -1,11 +1,13 @@
 <?php
 
-namespace Modules\Production\Http\Resources;
+    namespace Modules\Production\Http\Resources;
+
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Modules\Production\Models\Mill;
+use Modules\Production\Models\Production;
 
-class MillCollection extends ResourceCollection
+class ProductionCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
@@ -15,8 +17,11 @@ class MillCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return $this->collection->transform(function( Mill $row, $key) {
-            return $row->toArray();
+        return $this->collection->transform(function( Production $row, $key) {
+
+            $data = $row->toArray();
+            $data['item'] = $row->item->getDataToItemModal();
+            return $data;
             // @todo coleccion de descarga
 
 

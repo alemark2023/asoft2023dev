@@ -23,7 +23,6 @@
     use Illuminate\Routing\Controller;
     use Illuminate\Support\Str;
     use Modules\Expense\Exports\ExpenseExport;
-    use Modules\Expense\Http\Resources\MillCollection;
     use Modules\Expense\Models\Expense;
     use Modules\Expense\Models\ExpenseMethodType;
     use Modules\Expense\Models\ExpenseReason;
@@ -32,6 +31,7 @@
     //use Modules\Inventory\Traits\InventoryTrait;
     use Modules\Inventory\Traits\InventoryTrait;
     use Modules\Production\Http\Requests\MillRequest;
+    use Modules\Production\Http\Resources\MillCollection;
     use Modules\Production\Models\Mill;
     use Modules\Production\Models\MillItem;
     use Modules\Inventory\Models\InventoryTransaction;
@@ -41,7 +41,7 @@
 
     class MillController extends Controller
     {
-        //use InventoryTrait;
+        use InventoryTrait;
         use FinanceTrait;
         use OfflineTrait;
 
@@ -275,6 +275,8 @@
 
                     // $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
+                    $items = $this->optionsItemProduction();
+                    /*
                     $items = Item::orderBy('description')->whereIsActive()
                         // ->ForProduction()
                         // ->NotForProduction()
@@ -283,6 +285,7 @@
                         // }])
                         ->take(20)->get();
 
+                    */
                     $this->ReturnItem($items);
 
                     return $items;
