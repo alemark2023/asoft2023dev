@@ -48,6 +48,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  * @method static Builder|Item whereIsNotActive()
  * @method static Builder|Item whereIsSet()
  * @method static Builder|Item whereNotIsSet()
+ * @method static Builder|Item ForProduction()
  * @method static Builder|Item whereNotService()
  * @method static Builder|Item whereService()
  * @method static Builder|Item whereTypeUser()
@@ -1948,10 +1949,13 @@ class Item extends ModelTenant
     }
 
     public function scopeForProduction($query){
-        return $query->where('is_for_production',1);
-    }
-    public function scopeNotForProduction($query){
-        return $query->where('is_for_production',0);
+        return $query->where([
+            // ['item_type_id', '01'],
+            ['unit_type_id', '!=', 'ZZ'],
+            // ['is_for_production', 1]
+             ['is_set', 0]
+        ]);
+
     }
 
     /**

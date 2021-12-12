@@ -279,7 +279,6 @@
                     /*
                     $items = Item::orderBy('description')->whereIsActive()
                         // ->ForProduction()
-                        // ->NotForProduction()
                         // ->with(['warehouses' => function($query) use($warehouse){
                         //     return $query->where('warehouse_id', $warehouse->id);
                         // }])
