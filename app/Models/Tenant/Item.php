@@ -104,6 +104,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  * @method  array getCollectionData()
  * @method static Builder|Item whereFilterValuedKardexFormatSunat($params)
 * @property \Illuminate\Database\Eloquent\Collection|ItemSupply[] $supplies
+* @property \Illuminate\Database\Eloquent\Collection|ItemSupply[] supplies_items
 
  */
 class Item extends ModelTenant
@@ -1963,6 +1964,16 @@ class Item extends ModelTenant
 
     }
 
+    public function scopeForProductionSupply($query){
+        return $query->where([
+                ['item_type_id', '01'],
+                ['unit_type_id', '!=', 'ZZ'],
+                ['is_for_production', 0],
+                ['is_set', 0]
+        ]);
+
+    }
+
     /**
      * Devuelve codigo interno - descripcion producto
      *
@@ -1979,6 +1990,13 @@ class Item extends ModelTenant
     public function supplies()
     {
         return $this->hasMany(ItemSupply::class);
+    }
+    /**
+     * @return HasMany
+     */
+    public function supplies_items()
+    {
+        return $this->hasMany(ItemSupply::class,'individual_item_id');
     }
 
     /**
