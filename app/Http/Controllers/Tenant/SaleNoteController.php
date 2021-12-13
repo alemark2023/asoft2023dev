@@ -481,10 +481,12 @@ class SaleNoteController extends Controller
                             ->orWhere('name','like', "%{$request->input}%")
                             ->whereType('customers')->orderBy('name')
                             ->whereIsEnabled()
-                            ->get()->transform(function($row) {
+                            ->get()->transform(function(Person $row) {
                                 return [
                                     'id' => $row->id,
                                     'description' => $row->number.' - '.$row->name,
+                                    'seller_id' => $row->seller_id,
+                                    'seller' => $row->seller,
                                     'name' => $row->name,
                                     'number' => $row->number,
                                     'identity_document_type_id' => $row->identity_document_type_id,
@@ -1013,10 +1015,13 @@ class SaleNoteController extends Controller
         switch ($table) {
             case 'customers':
 
-                $customers = Person::whereType('customers')->whereIsEnabled()->orderBy('name')->take(20)->get()->transform(function($row) {
+                $customers = Person::whereType('customers')
+                    ->whereIsEnabled()->orderBy('name')->take(20)->get()->transform(function(Person$row) {
                     return [
                         'id' => $row->id,
                         'description' => $row->number.' - '.$row->name,
+                        'seller' => $row->seller,
+                        'seller_id' => $row->seller_id,
                         'name' => $row->name,
                         'number' => $row->number,
                         'identity_document_type_id' => $row->identity_document_type_id,

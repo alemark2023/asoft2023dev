@@ -3389,7 +3389,13 @@ export default {
                 })
             }
 
-            // retencion para clientes con ruc
+
+            let seller = this.sellers.find(element => element.id == customer.seller_id)
+            if(seller !== undefined){
+                this.form.seller_id = seller.id
+
+            }
+                        // retencion para clientes con ruc
             this.validateCustomerRetention(customer.identity_document_type_id)
 
             /*if(this.customer_addresses.length > 0) {

@@ -28,6 +28,7 @@
      * App\Models\Tenant\Person
      *
      * @property int|null                             $seller_id
+     * @property User                                 $seller
      * @property int|null                             $zone_id
      * @property Zone                                 $zone
      * @property-read AddressType                     $address_type
@@ -143,7 +144,7 @@
             'percentage_perception',
             'enabled',
             'website',
-            'zone',
+            // 'zone',
             'observation',
             'credit_days',
             'optional_email',
@@ -508,7 +509,8 @@
                 'address' => $this->address,
                 'internal_code' => $this->internal_code,
                 'observation' => $this->observation,
-                'zone' => $this->zone,
+                'seller' => $this->seller,
+                'zone' => $this->getZone(),
                 'zone_id' => $this->zone_id,
                 'seller_id' => $this->seller_id,
                 'website' => $this->website,
@@ -520,8 +522,11 @@
                 'trade_name' => $this->trade_name,
                 'country_id' => $this->country_id,
                 'department_id' => $this->department_id,
+                'department' => $this->department,
                 'province_id' => $this->province_id,
+                'province' => $this->province,
                 'district_id' => $this->district_id,
+                'district' => $this->district,
                 'telephone' => $this->telephone,
                 'email' => $this->email,
                 'perception_agent' => (bool)$this->perception_agent,
@@ -538,6 +543,7 @@
                 'optional_email' => $optional_mail,
                 'optional_email_send' => implode(',', $optional_mail_send),
                 'childrens' => [],
+
             ];
             if ($childrens == true) {
                 $child = $this->children_person->transform(function ($row) {
@@ -588,24 +594,6 @@
             return $this;
         }
 
-        /**
-         * @return string
-         */
-        public function getZone(): string
-        {
-            return $this->zone;
-        }
-
-        /**
-         * @param string $zone
-         *
-         * @return Person
-         */
-        public function setZone(string $zone): Person
-        {
-            $this->zone = $zone;
-            return $this;
-        }
 
         /**
          * @return string
@@ -681,5 +669,16 @@
         public function zone()
         {
             return $this->belongsTo(Zone::class, 'zone_id');
+        }
+        public function getZone()
+            {
+                return Zone::find($this->zone_id);
+            }
+        /**
+         * @return BelongsTo
+         */
+        public function seller()
+        {
+            return $this->belongsTo(User::class, 'seller_id');
         }
     }

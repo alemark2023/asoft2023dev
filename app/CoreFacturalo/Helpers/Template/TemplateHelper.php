@@ -9,6 +9,7 @@
     use App\Models\Tenant\DocumentFee;
     use App\Models\Tenant\DocumentPayment;
     use App\Models\Tenant\PaymentCondition;
+    use App\Models\Tenant\Zone;
 
     class TemplateHelper
     {
@@ -216,5 +217,19 @@
 
             }
             return $brand;
+        }
+
+        /**
+         * @param int $zone_id
+         *
+         * @return string|null
+         */
+        public static function getZoneById($zone_id =0){
+            $zone = Zone::find($zone_id);
+            if(!empty($zone)){
+
+                return  $zone->getName();
+            }
+            return '';
         }
     }

@@ -261,6 +261,8 @@
                     Route::get('sales-consolidated', 'ReportSaleConsolidatedController@index')
                          ->name('tenant.reports.sales_consolidated.index');
                     Route::get('sales-consolidated/pdf', 'ReportSaleConsolidatedController@pdf');
+                    Route::get('sales-consolidated/ticket-totals', 'ReportSaleConsolidatedController@pdfTicketsTotal');
+                    Route::get('sales-consolidated/ticket80-totals', 'ReportSaleConsolidatedController@pdfTicketsTotal80');
                     Route::get('sales-consolidated/excel', 'ReportSaleConsolidatedController@excel');
                     Route::get('sales-consolidated/filter', 'ReportSaleConsolidatedController@filter');
                     Route::get('sales-consolidated/records', 'ReportSaleConsolidatedController@records');
