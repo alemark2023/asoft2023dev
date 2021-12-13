@@ -322,12 +322,15 @@ class ItemController extends Controller
             $item_unit_type->save();
 
         }
-        foreach($request->supplies as $value){
+        if (isset($request->supplies)) {
+            foreach($request->supplies as $value){
 
-            $itemSupply = ItemSupply::firstOrCreate(['id' => $value['id']],$value);
-            $itemSupply->fill($value);
-            $itemSupply->save();
+                $itemSupply = ItemSupply::firstOrCreate(['id' => $value['id']],$value);
+                $itemSupply->fill($value);
+                $itemSupply->save();
+            }
         }
+       
         $configuration = Configuration::first();
         if($configuration->isShowExtraInfoToItem()){
             // Extra data
