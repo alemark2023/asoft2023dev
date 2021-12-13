@@ -20,6 +20,7 @@ use Modules\Inventory\Models\Warehouse;
 use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
 use Modules\Order\Models\OrderNote;
+use App\Models\Tenant\ItemSupply;
 
 /**
  * Se debe tener en cuenta este trait para llevar el control de Kardex
@@ -64,6 +65,19 @@ trait InventoryTrait
             ];
         });
     }
+
+    public function optionsItemSupplies()
+    {
+        $ids = ItemSupply::select('individual_item_id')->pluck('individual_item_id');
+        $records = Item::find($ids)->get();
+        return collect($records)->transform(function ($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->description
+            ];
+        });
+    }
+
 
     /**
      * @return \Illuminate\Support\Collection
