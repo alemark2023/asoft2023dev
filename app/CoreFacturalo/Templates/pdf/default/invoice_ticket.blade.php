@@ -518,12 +518,6 @@
             </tr>
         @endif
 
-        @if($document->total_discount > 0)
-            <tr>
-                <td colspan="4" class="text-right font-bold desc">DESCUENTO TOTAL: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold desc">{{ number_format($document->total_discount, 2) }}</td>
-            </tr>
-        @endif
         @if($document->total_plastic_bag_taxes > 0)
             <tr>
                 <td colspan="4" class="text-right font-bold desc">ICBPER: {{ $document->currency_type->symbol }}</td>
@@ -540,6 +534,20 @@
             <td colspan="4" class="text-right font-bold desc">ISC: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold desc">{{ number_format($document->total_isc, 2) }}</td>
         </tr>
+        @endif
+
+        @if($document->total_discount > 0 && $document->subtotal > 0)
+            <tr>
+                <td colspan="4" class="text-right font-bold desc">SUBTOTAL: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold desc">{{ number_format($document->subtotal, 2) }}</td>
+            </tr>
+        @endif
+
+        @if($document->total_discount > 0)
+            <tr>
+                <td colspan="4" class="text-right font-bold desc">DESCUENTO TOTAL: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold desc">{{ number_format($document->total_discount, 2) }}</td>
+            </tr>
         @endif
 
         @if($document->total_charge > 0)

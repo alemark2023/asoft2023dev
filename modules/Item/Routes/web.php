@@ -21,6 +21,19 @@ if($hostname) {
             Route::get('brands/columns', 'BrandController@columns');
             Route::delete('brands/{brand}', 'BrandController@destroy');
 
+
+
+            Route::prefix('zones')->group(function () {
+
+                Route::get('', 'ZoneController@index')->name('tenant.zone.index');
+                Route::post('', 'ZoneController@store');
+                Route::get('/records', 'ZoneController@records');
+                Route::get('/record/{brand}', 'ZoneController@record');
+                Route::get('/columns', 'ZoneController@columns');
+                Route::delete('/{brand}', 'ZoneController@destroy');
+            });
+
+
             Route::get('incentives', 'IncentiveController@index')->name('tenant.incentives.index')->middleware('redirect.level');
             Route::get('incentives/records', 'IncentiveController@records');
             Route::get('incentives/record/{incentive}', 'IncentiveController@record');
