@@ -60,68 +60,28 @@
             </div>
             -->
             <div class="card-body">
-                <data-table :resource="resource" :applyFilter="false">
-                    <tr slot="heading" width="100%">
+
+                <table class="table">
+                    <thead>
+                    <tr>
                         <th>#</th>
                         <th>Cód. Interno</th>
-                        <th>Unidad</th>
-                        <th>Nombre</th>
-                        <th v-if="columns.description.visible">Descripción</th>
-                        <th v-if="columns.model.visible">Modelo</th>
-                        <!-- <th v-if="columns.brand.visible">Marca</th>  -->
-                        <th v-if="columns.item_code.visible">Cód. SUNAT</th>
-                        <th >Cantidad</th>
-<!--                        &lt;!&ndash; <th  class="text-left">Stock</th> &ndash;&gt;
-                        <th class="text-right">P.Unitario (Venta)</th>
-                        <th class="text-center">Tiene Igv</th>
-                                      <th class="text-right">Acciones</th>-->
-                    <tr>
-                    <tr slot-scope="{ index, row }">
-                        <td>{{ index }}</td>
-                        <td>{{ row.item.internal_id }}</td>
-                        <td>{{ row.item.unit_type_id }}</td>
-                        <td>{{ row.item.description }}</td>
-                        <td v-if="columns.description.visible">{{ row.item.name }}</td>
-                        <td v-if="columns.model.visible">{{ row.item.model }}</td>
-                        <td v-if="columns.item_code.visible">{{ row.item.item_code }}</td>
-                        <td >{{ row.quantity}}</td>
-                        <!-- <td>
-                            <template v-if="typeUser=='seller' && row.unit_type_id !='ZZ'">{{ row.stock }}</template>
-                            <template v-else-if="typeUser!='seller'&& row.unit_type_id !='ZZ'">
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickWarehouseDetail(row.warehouses)"><i class="fa fa-search"></i></button>
-                            </template>
-                        </td>
-                        <td class="text-right">{{ row.item.sale_unit_price }}</td>
-                        <td class="text-center">{{ row.item.has_igv_description }}</td>
-                        <td class="text-right">
-                            <template v-if="typeUser === 'admin'">
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                        @click.prevent="clickCreate(row.id)">Editar
-                                </button>
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
-                                        @click.prevent="clickDelete(row.id)">Eliminar
-                                </button>
-                            </template>
-                        </td>                            -->
-
-                </tr>
-                </data-table>
+                        <th>User</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(row, index) in records">
+                        <td>{{ index + 1 }}</td>
+                        <td>000{{ row.id }}</td>
+                        <td >{{ row.user }}</td>
+                        <td >{{ row.item_name }}</td>
+                        <td >{{ row.quantity }}</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
-
-            <!--
-
-            <items-form :showDialog.sync="showDialog"
-                        :recordId="recordId"></items-form>
-            <items-import :showDialog.sync="showImportSetDialog"></items-import>
-
-            <items-import-set-individual :showDialog.sync="showImportSetIndividualDialog"></items-import-set-individual>
-
-            <warehouses-detail
-                :showDialog.sync="showWarehousesDetail"
-                :warehouses="warehousesDetail">
-            </warehouses-detail>
-            -->
-
 
         </div>
     </div>
@@ -135,7 +95,7 @@ import ItemsImport from './import.vue'
 import ItemsImportSetIndividual from './partials/import_set_individual.vue'
 */
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
-import DataTable from "../../../../../../../resources/js/components/DataTable";
+//import DataTable from "../../../../../../../resources/js/components/DataTable";
 import {deletable} from "../../../../../../../resources/js/mixins/deletable";
 
 export default {
@@ -147,7 +107,7 @@ export default {
     components: {
         ItemsForm,
         // ItemsImport,
-        DataTable,
+       //DataTable,
         // WarehousesDetail,
         // ItemsImportSetIndividual
     },
@@ -208,6 +168,8 @@ export default {
 
                  */
             },
+            pagination: {},
+            records: []
         }
     },
     created() {
@@ -217,7 +179,22 @@ export default {
             // delete this.columns.sanitary;
             // delete this.columns.cod_digemid;
         }
-        this.canCreateProduct();
+
+        return this.$http
+                .get(`/${this.resource}/records`)
+                .then(response => {
+                    this.records = response.data.data;
+                    this.pagination = response.data.meta;
+                    this.pagination.per_page = parseInt(
+                        response.data.meta.per_page
+                    );
+                })
+                .catch(error => {})
+                .then(() => {
+                    this.loading_submit = false;
+                });
+
+        //this.canCreateProduct();
 
     },
     methods: {
