@@ -1258,7 +1258,37 @@
                         </li>
                     @endif
 
-                    {{-- DIGEMID --}}
+                    {{-- Produccion --}}
+                    @if(in_array('production_app', $vc_modules) )
+
+                            <li class=" nav-parent {{ (
+		// ($firstLevel === 'item-production') ||
+		($firstLevel === 'production') ||
+	 ($firstLevel === 'mill-production') ) ? 'nav-active nav-expanded' : '' }}">
+                                <a class="nav-link"
+                                   href="#">
+                                    <i class="fa fas fa-calendar-check"
+                                       aria-hidden="true"></i>
+                                    <span>Producción</span>
+                                </a>
+                                <ul class="nav nav-children">
+                                    <li class="{{ (($firstLevel === 'production') ) ? 'nav-active' : '' }}">
+                                        <a class="nav-link"
+                                           href="{{ route('tenant.production.index') }}">
+                                            Producir
+                                        </a>
+                                    </li>
+                                    <li class="{{ (($firstLevel === 'mill-production')) ? 'nav-active' : '' }}">
+                                        <a class="nav-link"
+                                           href="{{ route('tenant.mill_production.index') }}">
+                                            Molino
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </li>
+                        @endif
+                    {{-- APP --}}
                     @if(in_array('apps', $vc_modules))
                         <li class="">
                             <a class="nav-link"
@@ -1268,36 +1298,7 @@
                             </a>
                         </li>
                     @endif
-                    {{-- Produccion --}}
-                        @if(in_array('production_app', $vc_modules) )
 
-                        <li class=" nav-parent {{ (
-		// ($firstLevel === 'item-production') ||
-		($firstLevel === 'production') ||
-	 ($firstLevel === 'mill-production') ) ? 'nav-active nav-expanded' : '' }}">
-                            <a class="nav-link"
-                               href="#">
-                                <i class="fa fas fa-calendar-check"
-                                   aria-hidden="true"></i>
-                                <span>Producción</span>
-                            </a>
-                            <ul class="nav nav-children">
-                                <li class="{{ (($firstLevel === 'production') ) ? 'nav-active' : '' }}">
-                                    <a class="nav-link"
-                                       href="{{ route('tenant.production.index') }}">
-                                        Producir
-                                    </a>
-                                </li>
-                                <li class="{{ (($firstLevel === 'mill-production')) ? 'nav-active' : '' }}">
-                                    <a class="nav-link"
-                                       href="{{ route('tenant.mill_production.index') }}">
-                                        Molino
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </li>
-                     @endif
 
                 </ul>
             </nav>
