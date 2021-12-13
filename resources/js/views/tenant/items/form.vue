@@ -1586,11 +1586,13 @@ export default {
                     return this.$message.error('El porcentaje isc debe ser mayor a 0');
             }
 
-            this.loading_submit = true
-            // this.form.warehouses = this.warehouses.filter(w => w.price);
+            //this.loading_submit = true
+
+            console.log(this.form);
 
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
+                    console.log(response.data)
                     if (response.data.success) {
                         this.$message.success(response.data.message)
                         if (this.external) {
@@ -1733,12 +1735,18 @@ export default {
             if(this.form.supplies === undefined) this.form.supplies = [];
             let item = this.item_suplly;
             item.item_id = this.form.id
+            //item.individual_item_id = item.id
             item.individual_item_id = item.id
-            item.individual_item = item
+            item.individual_item = {
+                'description':item.description
+            }
+            //item.individual_item = item
             item.quantity = 0
             //if(isNaN(item.quantity)) item.quantity = 0 ;
             this.form.supplies.push(item)
             this.item_suplly = {}
+
+            
         },
     }
 }
