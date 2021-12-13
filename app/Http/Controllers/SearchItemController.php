@@ -4,12 +4,14 @@
 
     use App\Models\Tenant\Configuration;
     use App\Models\Tenant\Item;
+    use App\Models\Tenant\ItemSupply;
     use App\Models\Tenant\ItemUnitType;
     use App\Models\Tenant\ItemWarehouse;
     use App\Models\Tenant\Warehouse;
     use Illuminate\Database\Query\Builder;
     use Illuminate\Http\Request;
     use Illuminate\Support\Collection;
+    use Modules\Inventory\Traits\InventoryTrait;
 
     /**
      * Tener en cuenta como base modules/Document/Traits/SearchTrait.php
@@ -21,6 +23,7 @@
     class SearchItemController extends Controller
     {
 
+        // use InventoryTrait;
 
         /**
          * Devuelve una lista de items unido entre service y no service.
@@ -435,10 +438,18 @@
          */
         public static function getItemsToSupply(Request $request = null, $id = 0)
         {
-            $items_not_services = self::getNotServiceItem($request, $id);
-            // $items_services = self::getServiceItem($request, $id);
-            // ->merge($items_services)
-            return self::TransformToModalAndSupply($items_not_services);
+
+            self::validateRequest($request);
+            $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
+            $input = self::setInputByRequest($request);
+            $item = self::getAllItemBase($request, false, $id);
+
+            if ($search_by_barcode === false && $input != null) {
+                self::SetWarehouseToUser($item);
+            }
+             $item->ForProductionSupply();
+             // $item->wherein('id',ItemSupply::select('individual_item_id')->pluck('individual_item_id'));
+            return self::TransformToModalAndSupply($item->orderBy('description')->get());
 
         }
 
@@ -511,8 +522,10 @@
             return $items
                 ->transform(function (Item $row) use ($warehouse) {
                     $data= $row->getDataToItemModal($warehouse);
-                    $data['supplies'] = $row->supplies;
+                    $suppl = $row->supplies;
 
+
+                    $data['supplies'] = $row->supplies;
                     return  $data;
                 });
 

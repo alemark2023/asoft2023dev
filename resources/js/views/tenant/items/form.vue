@@ -957,7 +957,7 @@
                                     <tr v-for="(row, index) in form.supplies" :key="index">
                                         <td>{{ index + 1 }}</td>
 <!--                                        <td>{{ row.item_id }}</td>-->
-                                        <td>{{ row.individual_item.description }}</td>
+                                        <td>{{ (row.individual_item)?row.individual_item.description:row.individual_item }}</td>
                                         <td>
                                             <el-input v-model="row.quantity"
                                                       ></el-input>
@@ -1734,8 +1734,9 @@ export default {
             let item = this.item_suplly;
             item.item_id = this.form.id
             item.individual_item_id = item.id
+            item.individual_item = item
             item.quantity = parseFloat(item.quantity)
-            if(isNaN(item.quantity))item.quantity =0;
+            if(isNaN(item.quantity)) item.quantity = 0 ;
             this.form.supplies.push(item )
             this.item_suplly = {}
         },
