@@ -206,6 +206,7 @@
                                 <td colspan="4"></td>
                                 <td class="text-center"><strong>Total</strong></td>
                                 <td class="text-center">{{totals}}</td>
+                                <td class="text-center">{{totals_sale}}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -262,6 +263,7 @@ export default {
                 series: [],
                 pagination: {},
                 search: {},
+                totals_sale: {},
                 totals: {},
                 establishment: null,
                 establishment_id: null,
@@ -397,6 +399,7 @@ export default {
             },
             getTotals(){
                 this.totals = _.sumBy(this.records, (it) => parseFloat(it.item_quantity));
+                this.totals_sale = _.sumBy(this.records, (it) => parseFloat(it.total_sale));
             },
             getRecords() {
 

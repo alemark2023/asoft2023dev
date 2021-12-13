@@ -33,7 +33,9 @@
                                         dusk="customer_id"
                                         placeholder="Escriba el nombre o número de documento del cliente"
                                         :remote-method="searchRemoteCustomers"
-                                        :loading="loading_search">
+                                               @change="changeCustomer"
+
+                                               :loading="loading_search">
 
                                         <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
 
@@ -593,6 +595,15 @@
             },
             clickCancel(index) {
                 this.form.payments.splice(index, 1);
+            },
+            changeCustomer() {
+                let customer = _.find(this.customers, {'id': this.form.customer_id});
+                let seller = this.sellers.find(element => element.id == customer.seller_id)
+                if(seller !== undefined){
+                    this.form.seller_id = seller.id
+
+                }
+
             },
             searchRemoteCustomers(input) {
 
