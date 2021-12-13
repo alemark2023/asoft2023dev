@@ -32,6 +32,10 @@
             'quantity',
         ];
 
+        protected $casts = [
+            'quantity' => 'float',
+        ];
+
         /**
          * @return BelongsTo
          */

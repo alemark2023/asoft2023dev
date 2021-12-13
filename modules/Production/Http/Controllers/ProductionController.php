@@ -44,6 +44,9 @@ class ProductionController extends Controller
      */
     public function store(ProductionRequest $request)
     {
+
+
+
         $result = DB::connection('tenant')->transaction(function () use ($request) {
 
 			$item_id = $request->input('item_id');
@@ -70,7 +73,7 @@ class ProductionController extends Controller
 
             $item = Item::find($item_id);
 
-            $items_supplies = $item->supplies();
+            $items_supplies = $item->supplies;
 
             foreach ($items_supplies as $item) {
 
@@ -80,7 +83,7 @@ class ProductionController extends Controller
                 $inventory_it->description = $inventory_transaction_item->name;
                 $inventory_it->item_id = $item->individual_item_id;
                 $inventory_it->warehouse_id = $warehouse_id;
-                $inventory_it->quantity = $item->$quantity * $quantity;
+                $inventory_it->quantity = (float)$item->quantity * $quantity;
                 $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
                 $inventory_it->save();
             }
