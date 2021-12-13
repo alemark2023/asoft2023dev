@@ -69,8 +69,8 @@
                         <td v-if="columns.email.visible === true " class="text-center">{{ row.email }}</td>
                         <td v-if="columns.telephone.visible === true " class="text-center">{{ row.telephone?row.telephone:'' }}</td>
                         <td v-if="columns.department.visible === true " class="text-center">{{ (row.department)?row.department.description:'' }}</td>
-                        <td v-if="columns.province.visible === true " class="text-center">{{ (row.department)?row.province.description:'' }}</td>
-                        <td v-if="columns.district.visible === true " class="text-center">{{ (row.department)?row.district.description:'' }}</td>
+                        <td v-if="columns.province.visible === true " class="text-center">{{ (row.province)?row.province.description:'' }}</td>
+                        <td v-if="columns.district.visible === true " class="text-center">{{ (row.district)?row.district.description:'' }}</td>
                         <td class="text-right">
                             <div class="dropdown">
                                 <button class="btn btn-default btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
