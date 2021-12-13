@@ -275,7 +275,7 @@
 
                     // $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
-                    $items = $this->optionsItemProduction();
+                    $items = $this->optionsItemSupplies();
                     /*
                     $items = Item::orderBy('description')->whereIsActive()
                         // ->ForProduction()
