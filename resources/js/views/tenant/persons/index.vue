@@ -48,6 +48,7 @@
                         <th v-if="columns.credit_days.visible === true" class="text-center">Días de crédito</th>
                         <th v-if="columns.seller.visible === true" class="text-center">Vendedor asignado</th>
                         <th v-if="columns.email.visible === true" class="text-center">Correo</th>
+                        <th v-if="columns.telephone.visible === true" class="text-center">Telefono</th>
                         <th v-if="columns.department.visible === true" class="text-center">Departamento</th>
                         <th v-if="columns.province.visible === true" class="text-center">Provincia</th>
                         <th v-if="columns.district.visible === true" class="text-center">Distrito</th>
@@ -66,6 +67,7 @@
                         <td v-if="columns.credit_days.visible === true" class="text-center">{{ row.credit_days }}</td>
                         <td v-if="columns.seller.visible === true " class="text-center">{{ (row.seller && row.seller.name)?row.seller.name:'' }}</td>
                         <td v-if="columns.email.visible === true " class="text-center">{{ row.email }}</td>
+                        <td v-if="columns.telephone.visible === true " class="text-center">{{ row.telephone?row.telephone:'' }}</td>
                         <td v-if="columns.department.visible === true " class="text-center">{{ (row.department)?row.department.description:'' }}</td>
                         <td v-if="columns.province.visible === true " class="text-center">{{ (row.department)?row.province.description:'' }}</td>
                         <td v-if="columns.district.visible === true " class="text-center">{{ (row.department)?row.district.description:'' }}</td>
@@ -162,6 +164,10 @@ export default {
                 },
                 email: {
                     title: 'Correo electrónico',
+                    visible: false
+                },
+                telephone: {
+                    title: 'Teléfono',
                     visible: false
                 },
                 department: {
