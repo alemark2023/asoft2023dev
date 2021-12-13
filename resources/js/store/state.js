@@ -22,6 +22,7 @@ export default {
     config: {
         id: 0,
         pos_history:true,
+        production_app:false,
         pos_cost_price:true,
         company: {},
         establishment: {
