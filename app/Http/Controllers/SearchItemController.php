@@ -433,6 +433,27 @@
          *
          * @return \Illuminate\Database\Eloquent\Collection|Collection
          */
+        public static function getItemsToSupply(Request $request = null, $id = 0)
+        {
+            $items_not_services = self::getNotServiceItem($request, $id);
+            // $items_services = self::getServiceItem($request, $id);
+            // ->merge($items_services)
+            return self::TransformToModalAndSupply($items_not_services);
+
+        }
+
+
+        /**
+         * Retorna la coleccion de items par Documento y Boleta.
+         *  Usado en app/Http/Controllers/Tenant/DocumentController.php::250
+         *  Usado en app/Http/Controllers/Tenant/DocumentController.php::370
+         *  Usado en modules/Document/Http/Controllers/DocumentController.php::297
+         *
+         * @param Request| null $request
+         * @param int           $id
+         *
+         * @return \Illuminate\Database\Eloquent\Collection|Collection
+         */
         public static function getItemsToDocuments(Request $request = null, $id = 0)
         {
             $items_not_services = self::getNotServiceItem($request, $id);
@@ -475,6 +496,24 @@
                 ->transform(function ($row) use ($warehouse) {
                     /** @var Item $row */
                     return $row->getDataToItemModal($warehouse);
+                });
+
+        }
+        /**
+         * @param Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed $items
+         * @param Warehouse|null                                                                                                     $warehouse
+         *
+         * @return \Illuminate\Database\Eloquent\Collection|Collection
+         */
+        public static function TransformToModalAndSupply($items, Warehouse $warehouse = null)
+        {
+            /** @var Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed $items */
+            return $items
+                ->transform(function (Item $row) use ($warehouse) {
+                    $data= $row->getDataToItemModal($warehouse);
+                    $data['supplies'] = $row->supplies;
+
+                    return  $data;
                 });
 
         }

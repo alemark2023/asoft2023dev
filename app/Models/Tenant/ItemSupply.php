@@ -20,6 +20,7 @@
      * @method static Builder|ItemSet newModelQuery()
      * @method static Builder|ItemSet newQuery()
      * @method static Builder|ItemSet query()
+     * @mixin ModelTenant
      * @mixin Eloquent
      */
     class ItemSupply extends ModelTenant
@@ -111,5 +112,12 @@
             $this->quantity = (float)$quantity;
             return $this;
         }
+        public function getCollectionData(){
+        $data = $this->toArray();
+        $data['item'] = $this->item;
+        $data['individual_item'] = $this->individual_item;
+        return $data;
+
+    }
 
     }
