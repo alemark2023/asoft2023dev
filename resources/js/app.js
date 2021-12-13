@@ -355,6 +355,21 @@ Vue.component('tenant-index-payment-receipt', require('../../modules/Suscription
 /** Prestamos Bancarios **/
 Vue.component('tenant-bankloans-index', require('../../modules/Expense/Resources/assets/js/views/bank_loans/index.vue'));
 Vue.component('tenant-bankloans-form', require('../../modules/Expense/Resources/assets/js/views/bank_loans/form.vue'));
+
+/**Molino */
+Vue.component('tenant-mill-index', require('../../modules/Production/Resources/assets/js/view/mill/index.vue'));
+Vue.component('tenant-mill-form', require('../../modules/Production/Resources/assets/js/view/mill/form.vue'));
+/**items de produccion */
+/*
+Vue.component('tenant-mill-index', require('../../modules/Production/Resources/assets/js/view/item_production/index.vue'));
+Vue.component('tenant-mill-form', require('../../modules/Production/Resources/assets/js/view/item_production//form.vue'));
+*/
+/** produccion */
+
+Vue.component('tenant-production-index', require('../../modules/Production/Resources/assets/js/view/production/index.vue'));
+Vue.component('tenant-production-form', require('../../modules/Production/Resources/assets/js/view/production/form.vue'));
+
+
 import moment from 'moment';
 
 Vue.mixin({

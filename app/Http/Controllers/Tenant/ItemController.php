@@ -6,6 +6,7 @@ use App\Exports\ItemExport;
 use App\Exports\ItemExportWp;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\PdfUnionController;
+use App\Http\Controllers\SearchItemController;
 use App\Http\Requests\Tenant\ItemRequest;
 use App\Http\Resources\Tenant\ItemCollection;
 use App\Http\Resources\Tenant\ItemResource;
@@ -21,7 +22,10 @@ use App\Models\Tenant\Catalogs\CatItemProductFamily;
 use App\Models\Tenant\Catalogs\CatItemStatus;
 use App\Models\Tenant\Catalogs\CatItemUnitBusiness;
 use App\Models\Tenant\Catalogs\CatItemUnitsPerPackage;
+use App\Models\Tenant\Catalogs\ChargeDiscountType;
 use App\Models\Tenant\Catalogs\CurrencyType;
+use App\Models\Tenant\Catalogs\OperationType;
+use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\Tag;
 use App\Models\Tenant\Catalogs\UnitType;
@@ -31,10 +35,12 @@ use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\ItemImage;
+use App\Models\Tenant\ItemSupply;
 use App\Models\Tenant\ItemTag;
 use App\Models\Tenant\ItemUnitType;
 use App\Models\Tenant\ItemWarehousePrice;
 use App\Models\Tenant\Warehouse;
+use App\Traits\OfflineTrait;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -57,6 +63,8 @@ use setasign\Fpdi\Fpdi;
 
 class ItemController extends Controller
 {
+    use OfflineTrait;
+
     public function index()
     {
         $type = 'PRODUCTS';
@@ -229,6 +237,7 @@ class ItemController extends Controller
 
     public function store(ItemRequest $request) {
 
+
         $id = $request->input('id');
         if (!$request->barcode) {
             if ($request->internal_id) {
@@ -313,6 +322,15 @@ class ItemController extends Controller
             $item_unit_type->save();
 
         }
+        if (isset($request->supplies)) {
+            foreach($request->supplies as $value){
+
+                $itemSupply = ItemSupply::firstOrCreate(['id' => $value['id']],$value);
+                $itemSupply->fill($value);
+                $itemSupply->save();
+            }
+        }
+       
         $configuration = Configuration::first();
         if($configuration->isShowExtraInfoToItem()){
             // Extra data
@@ -1124,4 +1142,89 @@ class ItemController extends Controller
         return new ItemCollection($records->paginate(5000));
 
     }
+
+
+    public function searchItemById($id)
+    {
+        // $items = SearchItemController::searchByIdToModal($id);
+        $items = SearchItemController::getItemsToSupply(null, $id);
+        return compact('items');
+    }
+
+
+    public function searchItems(Request $request)
+    {
+
+        $items = SearchItemController::getItemsToSupply($request);
+
+        return compact('items');
+
+    }
+
+    public function item_tables()
+    {
+        // $items = $this->table('items');
+        $items = SearchItemController::getItemsToDocuments();
+        $categories = [];
+        $affectation_igv_types = AffectationIgvType::whereActive()->get();
+        $system_isc_types = SystemIscType::whereActive()->get();
+        $price_types = PriceType::whereActive()->get();
+        $operation_types = OperationType::whereActive()->get();
+        $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
+        $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
+        $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
+        $is_client = $this->getIsClient();
+
+        $configuration= Configuration::first();
+
+        /** Informacion adicional */
+        $colors = collect([]);
+        $CatItemSize=$colors;
+        $CatItemStatus=$colors;
+        $CatItemUnitBusiness = $colors;
+        $CatItemMoldCavity = $colors;
+        $CatItemPackageMeasurement =$colors;
+        $CatItemUnitsPerPackage = $colors;
+        $CatItemMoldProperty = $colors;
+        $CatItemProductFamily= $colors;
+        if($configuration->isShowExtraInfoToItem()){
+
+            $colors = CatColorsItem::all();
+            $CatItemSize= CatItemSize::all();
+            $CatItemStatus= CatItemStatus::all();
+            $CatItemUnitBusiness = CatItemUnitBusiness::all();
+            $CatItemMoldCavity = CatItemMoldCavity::all();
+            $CatItemPackageMeasurement = CatItemPackageMeasurement::all();
+            $CatItemUnitsPerPackage = CatItemUnitsPerPackage::all();
+            $CatItemMoldProperty = CatItemMoldProperty::all();
+            $CatItemProductFamily= CatItemProductFamily::all();
+        }
+
+
+        /** Informacion adicional */
+
+        return compact(
+            'items',
+            'categories',
+            'affectation_igv_types',
+            'system_isc_types',
+            'price_types',
+            'operation_types',
+            'discount_types',
+            'charge_types',
+            'attribute_types',
+            'is_client',
+            'colors',
+            'CatItemSize',
+            'CatItemMoldCavity',
+            'CatItemMoldProperty',
+            'CatItemUnitBusiness',
+            'CatItemStatus',
+            'CatItemPackageMeasurement',
+            'CatItemProductFamily',
+            'CatItemUnitsPerPackage');
+    }
+
+
+
 }

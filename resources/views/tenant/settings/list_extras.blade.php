@@ -112,6 +112,23 @@
                     </div>
                 </header>
                 <div class="card-body text-center">
+                    <h3 class="font-weight-semibold mt-3 text-center">Produccion</h3>
+                    <p class="text-center">Gestiona Molino, produccion de productos... </p>
+                    <span class="badge badge-info">
+                    Próximamente
+                </span>
+                    <br>
+                </div>
+            </section>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-2">
+            <section class="card mb-2">
+                <header class="card-header bg-secondary">
+                    <div class="card-header-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </header>
+                <div class="card-body text-center">
                     <h3 class="font-weight-semibold mt-3 text-center">Suscripciones</h3>
                     <p class="text-center">Gestiona matriculas educativas, suscripción de servicios, entre otros..</p>
                     <span class="badge badge-info">
