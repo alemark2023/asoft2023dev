@@ -41,7 +41,7 @@
 
                                         <el-option v-for="option in items"
                                                    :key="option.id"
-                                                   :label="option.full_description"
+                                                   :label="option.description"
                                                    :value="option.id"></el-option>
                                     </el-select>
                                     <el-tooltip slot="append"
@@ -109,7 +109,7 @@
                              class="form-group">
                             <label class="control-label">Cantidad a moler</label>
                             <el-input-number v-model="form.height_to_mill"
-                                             :min="0.01"></el-input-number>
+                                             :min="1"></el-input-number>
                             <small v-if="errors.height_to_mill"
                                    class="form-control-feedback"
                                    v-text="errors.height_to_mill[0]"></small>

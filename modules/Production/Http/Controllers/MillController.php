@@ -183,6 +183,11 @@
 
             }
 
+            return [
+                'success' => true,
+                'message' => 'Datos guardada de forma correcta.'
+            ];
+
         }
 
         /**
@@ -285,7 +290,7 @@
                         ->take(20)->get();
 
                     */
-                    $this->ReturnItem($items);
+                    //$this->ReturnItem($items);
 
                     return $items;
 

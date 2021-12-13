@@ -418,10 +418,14 @@ export default {
                 .then(response => {
 
                     if (response.data.success) {
-                        this.resetForm()
-                        this.millNewId = response.data.data.id
-                        this.showDialogOptions = true
+                        this.initForm()
+                        //this.millNewId = response.data.data.id
+                        //this.showDialogOptions = true
                         this.isUpdate()
+
+                        this.$message.success(response.data.message)
+
+
                     } else {
                         this.$message.error(response.data.message)
                     }
