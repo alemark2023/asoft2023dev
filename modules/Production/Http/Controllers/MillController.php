@@ -163,6 +163,7 @@
 
                 $mill_item = new MillItem();
                 $mill_item->fill($item);
+                $mill_item->mill_id = $model->id;
                 $mill_item->save();
 
                 //$id = $item['id'];
