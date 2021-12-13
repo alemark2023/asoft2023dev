@@ -11,7 +11,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-4" v-if="show_summary_status_type">
                         <div class="form-group" :class="{'has-danger': errors.summary_status_type_id}">
                             <label class="control-label">Tipo de estado</label>
                             <el-select v-model="form.summary_status_type_id"
@@ -94,7 +94,8 @@
                 resource: 'summaries',
                 errors: {},
                 form: {},
-                summary_status_types: []
+                summary_status_types: [],
+                show_summary_status_type: false,
             }
         },
         created() {
@@ -107,6 +108,7 @@
                 await this.$http.get(`/${this.resource}/tables`)
                     .then(response => {
                         this.summary_status_types = response.data.summary_status_types
+                        this.show_summary_status_type = response.data.show_summary_status_type
                     })
 
             },
@@ -158,7 +160,7 @@
                 this.form.documents.splice(index, 1)
             },
             submit() {
-                // this.loading_submit = true
+                this.loading_submit = true
                 this.$http.post(`${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {
