@@ -279,6 +279,7 @@ if ($hostname) {
             Route::get('summaries/record/{summary}', 'Tenant\SummaryController@record');
             Route::get('summaries/regularize/{summary}', 'Tenant\SummaryController@regularize');
             Route::get('summaries/cancel-regularize/{summary}', 'Tenant\SummaryController@cancelRegularize');
+            Route::get('summaries/tables', 'Tenant\SummaryController@tables');
 
             //Voided
             Route::get('voided', 'Tenant\VoidedController@index')->name('tenant.voided.index')->middleware('redirect.level', 'tenant.internal.mode');
