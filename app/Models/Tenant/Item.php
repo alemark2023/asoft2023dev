@@ -103,6 +103,8 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  * @property WebPlatform $web_platform
  * @method  array getCollectionData()
  * @method static Builder|Item whereFilterValuedKardexFormatSunat($params)
+* @property \Illuminate\Database\Eloquent\Collection|ItemSupply[] $supplies
+
  */
 class Item extends ModelTenant
 {
@@ -944,6 +946,7 @@ class Item extends ModelTenant
             'has_isc' => (bool)$this->has_isc,
             'system_isc_type_id' => $this->system_isc_type_id,
             'percentage_isc' => $this->percentage_isc,
+            'is_for_production'=>$this->isIsForProduction(),
         ];
 
         // El nombre de producto, por defecto, sera la misma descripcion.
@@ -1108,6 +1111,8 @@ class Item extends ModelTenant
                     'description' => $row->warehouse->description,
                 ];
             }),
+            'is_for_production'=>$this->isIsForProduction(),
+
         ];
     }
 
@@ -1950,9 +1955,9 @@ class Item extends ModelTenant
 
     public function scopeForProduction($query){
         return $query->where([
-            // ['item_type_id', '01'],
+             ['item_type_id', '01'],
             ['unit_type_id', '!=', 'ZZ'],
-            // ['is_for_production', 1]
+             ['is_for_production', 1],
              ['is_set', 0]
         ]);
 
@@ -1975,6 +1980,16 @@ class Item extends ModelTenant
     {
         return $this->hasMany(ItemSupply::class);
     }
+
+    /**
+     * @return bool
+     */
+    public function isIsForProduction(): bool
+    {
+        return (bool) $this->is_for_production;
+    }
+
+
 
 }
 
