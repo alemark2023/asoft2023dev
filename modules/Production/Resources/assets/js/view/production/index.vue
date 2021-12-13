@@ -3,7 +3,7 @@
         <div class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Productos</span></li>
+                <li class="active"><span>Producción</span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <!--
