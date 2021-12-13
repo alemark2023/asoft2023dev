@@ -9,11 +9,11 @@
                                     data-toggle="dropdown" aria-expanded="false">Reporte <span class="caret"></span></button>
                             <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
                                 <a class="dropdown-item text-1" href="#" @click.prevent="clickDownload('pdf')">PDF A4</a>
-                                <!--
-                                @todo validar si es posible, ajustar el alto automaticamente
                                 <a class="dropdown-item text-1" href="#" @click.prevent="clickDownload('ticket')">PDF Ticket</a>
                                 <a class="dropdown-item text-1" href="#" @click.prevent="clickDownload('ticket80')">PDF Ticket 80</a>
-                                -->
+                                <!--
+                               @todo validar si es posible, ajustar el alto automaticamente
+                               -->
                                 <a class="dropdown-item text-1" href="#" @click.prevent="clickDownload('excel')">Excel</a>
                                 <!-- <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'excel')">Excel</a> -->
                             </div>
