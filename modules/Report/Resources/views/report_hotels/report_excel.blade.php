@@ -60,17 +60,17 @@
                 <tbody>
                 @foreach($records as $key => $value)
                     <?php
-                    /** @var HotelRent $value */
+                    /** @var \Modules\Hotel\Models\HotelRent $value */
 
 
-                    use Modules\Hotel\Models\HotelRent;$customer = $value->customer;
+                    $customer = $value->customer;
                     $room = $value->room;
                     ?>
                     <tr>
 
                         <td>{{ $key+1 }}</td>
                         <td>{{$customer->description}}</td>
-                        <td>{{(!empty($room))? $room->name : ''}}</td>
+                        <td>{{$room->name ?? ''}}</td>
                         <td>{{ $value ->payment_status === "PAID" ? "Pagado" : "Debe" }}</td>
                         <td>{{$value ->status}}</td>
                         <td>{{$value ->input_date}}</td>
