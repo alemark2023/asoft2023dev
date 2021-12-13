@@ -959,8 +959,8 @@
 <!--                                        <td>{{ row.item_id }}</td>-->
                                         <td>{{ (row.individual_item)?row.individual_item.description:row.individual_item }}</td>
                                         <td>
-                                            <el-input v-model="row.quantity"
-                                                      ></el-input>
+                                            <el-input-number v-model="row.quantity"
+                                                      ></el-input-number>
                                             </td>
 
                                         <!--
@@ -1735,9 +1735,9 @@ export default {
             item.item_id = this.form.id
             item.individual_item_id = item.id
             item.individual_item = item
-            item.quantity = parseFloat(item.quantity)
-            if(isNaN(item.quantity)) item.quantity = 0 ;
-            this.form.supplies.push(item )
+            item.quantity = 0
+            //if(isNaN(item.quantity)) item.quantity = 0 ;
+            this.form.supplies.push(item)
             this.item_suplly = {}
         },
     }

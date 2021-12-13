@@ -425,6 +425,8 @@ export default {
 
                         this.$message.success(response.data.message)
 
+                        window.location.href = '/mill-production'
+
 
                     } else {
                         this.$message.error(response.data.message)
