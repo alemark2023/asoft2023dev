@@ -26,7 +26,7 @@
                             <td>{{ index }}</td>
                             <td>{{row.customer.description}}</td>
 <!--                            <td>{{row.identity_document_type_description}}</td>-->
-                            <td>{{row.room.name}}</td>
+                            <td>{{ row.room?row.room.name:''}}</td>
                             <td>{{ row.payment_status === "PAID" ? "Pagado" : "Debe" }}</td>
                             <td>{{row.status}}</td>
                             <td>{{row.input_date}}</td>
