@@ -68,8 +68,8 @@ trait InventoryTrait
 
     public function optionsItemSupplies()
     {
-        $ids = ItemSupply::select('individual_item_id')->pluck('individual_item_id');
-        $records = Item::find($ids)->get();
+        $ids = ItemSupply::select('individual_item_id')->distinct()->pluck('individual_item_id');
+        $records = Item::find($ids);
         return collect($records)->transform(function ($row) {
             return [
                 'id' => $row->id,
