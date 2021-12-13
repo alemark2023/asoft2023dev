@@ -346,9 +346,12 @@
             $company = Company::first();
             /** @var User $user */
             $user = new User();
-
+            $productionApp = false;
             if (Auth::user()) {
                 $user = auth()->user();
+                $productionApp = !empty($user->modules->where('value', 'production_app')->first());
+                // se busca el permiso para produccion app
+
             }
 
             $establishment = $user->establishment;
@@ -366,6 +369,7 @@
                 'id' => $this->id,
                 'company' => $company,
                 'establishment' => $establishment,
+                'production_app' => $productionApp,
                 'warehouse_id' => $warehouse->id,
                 'send_auto' => (bool)$this->send_auto,
                 'formats' => $this->formats,

@@ -365,7 +365,7 @@
                                             </div>
                                         </th>
                                         <th width="25%">
-                                            <div v-show="form.unit_type_id !='ZZ'">
+                                            <div v-show="form.unit_type_id !='ZZ' && canSeeProduction">
                                                 <el-checkbox v-model="form.is_for_production"
                                                              @change="changeProductioTab">Este producto, ¿requiere insumos?
                                                 </el-checkbox>
@@ -879,7 +879,7 @@
                 </el-tab-pane>
 
                 <el-tab-pane class
-                             v-if="form.is_for_production"
+                             v-if="form.is_for_production && canSeeProduction"
                              name="six">
                     <span slot="label">Producción</span>
                     <div class="row">
@@ -1096,11 +1096,14 @@ export default {
             }
             return false;
         },
+        canSeeProduction:function(){
+            if(this.config.production_app) return this.config.production_app
+            return false;
+        },
         requireSupply:function(){
 
             if(this.form.is_for_production) {
 
-                console.dir( this.form.is_for_production)
                 if( this.form.is_for_production == true) return true
             };
             return false;
@@ -1447,7 +1450,6 @@ export default {
                     .then(response => {
                         this.form = response.data.data
                         this.has_percentage_perception = (this.form.percentage_perception) ? true : false
-                        console.error(this.form.is_for_production)
                         this.changeAffectationIgvType()
                         this.changePurchaseAffectationIgvType()
                         // let warehousePrices = response.data.data.warehouse_prices;
@@ -1746,7 +1748,7 @@ export default {
             this.form.supplies.push(item)
             this.item_suplly = {}
 
-            
+
         },
     }
 }
