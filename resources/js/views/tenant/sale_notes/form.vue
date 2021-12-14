@@ -1,5 +1,11 @@
 <template>
-    <div class="card mb-0 pt-2 pt-md-0">
+    <div class="card mb-0 pt-2 pt-md-0"
+    >
+        <Keypress
+            key-event="keyup"
+
+            @success="checkKey"
+        />
         <div class="tab-content"  v-if="company && establishment">
             <div class="invoice">
                 <header class="clearfix">
@@ -34,7 +40,8 @@
                                         placeholder="Escriba el nombre o número de documento del cliente"
                                         :remote-method="searchRemoteCustomers"
                                                @change="changeCustomer"
-
+                                               @focus="focus_on_client = true"
+                                               @blur="focus_on_client = false"
                                                :loading="loading_search">
 
                                         <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
@@ -351,6 +358,7 @@
     import {calculateRowItem, sumAmountDiscountsNoBaseByItem} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
     import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+    import Keypress from "vue-keypress";
 
     export default {
         props: [
@@ -358,7 +366,13 @@
             'typeUser',
             'configuration',
         ],
-        components: {SaleNotesFormItem, PersonForm, SaleNotesOptions, Logo},
+        components: {
+            SaleNotesFormItem,
+            PersonForm,
+            SaleNotesOptions,
+            Logo,
+            Keypress
+        },
         mixins: [functions, exchangeRate],
         computed:{
             ...mapState([
@@ -391,6 +405,7 @@
                         return date.getTime() < (now.getTime());
                     },
                 },
+                focus_on_client :false,
                 sellers: [],
                 resource: 'sale-notes',
                 showDialogAddItem: false,
@@ -578,6 +593,24 @@
                         })
                 }
 
+            },
+            keyUpLicensePlate1(e){
+
+                console.error(e.keyCode );/*
+
+                if(this.form.license_plates.license_plate_1.length == 3 && e.keyCode !== 8){
+                    this.form.license_plates.license_plate_1 = await this.form.license_plates.license_plate_1.concat('-')
+                }
+*/
+            },
+            keyUpLicensePlate2(e){
+
+                console.log(e.keyCode );/*
+
+                if(this.form.license_plates.license_plate_1.length == 3 && e.keyCode !== 8){
+                    this.form.license_plates.license_plate_1 = await this.form.license_plates.license_plate_1.concat('-')
+                }
+*/
             },
             clickAddPayment() {
                 this.form.payments.push({
@@ -973,6 +1006,34 @@
                     }
                 }
             },
+            checkKey(e){
+                let code = e.event.code;
+                if(code === 'F2'){
+                    //abrir el modal de agergar producto
+                    if(!this.showDialogAddItem ) this.showDialogAddItem = true
+                }
+                if(code === 'Escape'){
+                    if(this.showDialogAddItem ) this.showDialogAddItem = false
+                }
+                if(
+                    code === 'KeyG'  // key G
+                    && !this.showDialogAddItem   // Modal hidden
+                    && this.form.items.length > 0  // with items
+                    && this.focus_on_client  === false // not client search
+                )
+                {
+                    this.submit()
+                }
+                if(
+                    this.showDialogOptions === true &&
+                    code === 'KeyN'
+                ){
+                    this.showDialogOptions = false
+
+
+                }
+
+            }
 
         }
     }

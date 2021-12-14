@@ -28,6 +28,8 @@
                 <data-table :resource="resource">
                     <tr slot="heading">
                         <th>#</th>
+                        <th class="text-right"  v-if="columns.seller_name.visible" >Vendedor</th>
+
                         <th class="text-center">Fecha Emisión</th>
                         <th>Cliente</th>
                         <th>Nota de Venta</th>
@@ -70,6 +72,9 @@
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
+                    <td class="text-right"  v-if="columns.seller_name.visible" >{{ row.seller_name }}</td>
+
+
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                         <td>{{ row.full_number }}
@@ -135,47 +140,91 @@
                         </td>
 
                         <td class="text-right">
-                            <button data-toggle="tooltip" data-placement="top" title="Anular" v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"
-                             @click.prevent="clickVoided(row.id)"><i class="fas fa-trash"></i></button>
+
+                            <div class="dropdown">
+                                <button class="btn btn-default btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+
+                            <button
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                title="Anular"
+                                v-if="row.state_type_id != '11'"
+                                type="button"
+                                class="dropdown-item"
+                             @click.prevent="clickVoided(row.id)">
+<!--                                <i class="fas fa-trash"></i>-->
+                                Anular
+                            </button>
 
                             <button data-toggle="tooltip"
                                     data-placement="top"
                                     title="Editar"
                                     type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-primary"
+                                    class="dropdown-item"
                                     @click.prevent="clickCreate(row.id)"
                                     v-if="row.btn_generate && row.state_type_id != '11' && typeUser != 'seller'">
-                                        <i class="fas fa-file-signature"></i>
+<!--                                        <i class="dropdown-item fas fa-file-signature"></i>-->
+                                Editar
                             </button>
 
                             <button data-toggle="tooltip"
                                     data-placement="top"
                                     title="Generar comprobante"
                                     type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-success"
+                                    class="dropdown-item"
                                     @click.prevent="clickGenerate(row.id)"
                                     v-if="!row.changed && row.state_type_id != '11' && soapCompany != '03'">
-                                <i class="fas fa-file-excel"></i>
+<!--                                <i class="dropdown-item fas fa-file-excel"></i>-->
+                                Generar comprobante
                             </button>
 
                             <el-tooltip class="item" effect="dark" content="Generar guía desde CPE" placement="top-start">
                                 <template v-for="(document,i) in row.documents" >
-                                    <a :href="`/dispatches/create/${document.id}`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
-                                        v-if="row.changed" :key="i"><i class="fas fa-file-alt"></i></a>
+                                    <a :href="`/dispatches/create/${document.id}`"
+                                       class="dropdown-item"
+                                        v-if="row.changed" :key="i">
+<!--                                        <i class="dropdown-item fas fa-file-alt"></i>-->
+                                        Generar guía desde
+
+                                    </a>
                                 </template>
                             </el-tooltip>
 
-                            <el-tooltip class="item" effect="dark" content="Generar guía desde Nota Venta" placement="top-start">
-                                <a :href="`/dispatches/generate/${row.id}`" class="btn waves-effect waves-light btn-xs btn-primary m-1__2"><i class="fas fa-file-alt"></i></a>
+                            <el-tooltip
+                                class="item"
+                                effect="dark"
+                                content="Generar guía desde Nota Venta"
+                                placement="top-start">
+                                <a :href="`/dispatches/generate/${row.id}`"
+                                   class="dropdown-item"
+                                >
+<!--                                    <i class="dropdown-item fas fa-file-alt"></i>-->
+                                    Generar guía desde Nota Venta
+                                </a>
                             </el-tooltip>
 
-                            <button  data-toggle="tooltip" data-placement="top" title="Imprimir" v-if="row.state_type_id != '11'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickOptions(row.id)"><i class="fas fa-print"></i></button>
+                            <button
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                title="Imprimir"
+                                v-if="row.state_type_id != '11'"
+                                type="button"
+                                class="dropdown-item"
+                                    @click.prevent="clickOptions(row.id)">
+                                    <!--                                <i class="dropdown-item fas fa-print"></i>-->
+                                    Imprimir
+                            </button>
                             <button @click="duplicate(row.id)"
                                     title="Duplica la nota de venta"
                                     type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-info">
-                                <i class="fas fa-copy"></i>
+                                    class="dropdown-item"
+                                    >
+<!--                                <i class="dropdown-item fas fa-copy"></i>-->
+                                Duplica la nota de venta
                             </button>
                             <button
                                 data-toggle="tooltip"
@@ -183,9 +232,15 @@
                                 title="Enviar a otro servidor"
                                 v-if="row.state_type_id != '11' && row.send_other_server=== true"
                                 type="button"
-                                class="btn waves-effect waves-light btn-xs btn-inverse"
-                                @click.prevent="sendToServer(row.id)"><i class="fas fa-wifi"></i>
+                                class="dropdown-item"
+                                @click.prevent="sendToServer(row.id)">
+<!--                                <i class="dropdown-item fas fa-wifi"></i>-->
+                                Enviar a otro servidor
                             </button>
+
+                                </div>
+                            </div>
+
                         </td>
 
 
@@ -305,6 +360,10 @@
                     },
                     total_pending_paid:{
                         title: 'Por pagar',
+                        visible: false
+                    },
+                    seller_name:{
+                        title: 'Vendedor',
                         visible: false
                     }
 

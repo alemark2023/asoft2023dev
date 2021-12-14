@@ -945,7 +945,7 @@ export default {
             this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
             let operation_type = await _.find(this.operation_types, {id: this.operationTypeId})
             this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
-
+//
 
             if (this.recordItem) {
                 if (this.recordItem.item !== undefined && this.recordItem.item.extra !== undefined) {
@@ -1003,6 +1003,7 @@ export default {
             } else {
                 this.isUpdateWarehouseId = null
             }
+            this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
 
         },
         setPresentationEditItem() {
