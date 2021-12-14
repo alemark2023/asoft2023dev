@@ -7,7 +7,6 @@ class SummaryValidation
     public static function validation($inputs) {
         // if ($inputs['summary_status_type_id'] === '1') $inputs['documents'] = self::setDocuments($inputs);
         if (in_array($inputs['summary_status_type_id'], ['1', '2'])) $inputs['documents'] = self::setDocuments($inputs);
-        // dd($inputs);
         
         return $inputs;
     }
