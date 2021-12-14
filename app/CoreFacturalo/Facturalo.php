@@ -783,7 +783,8 @@ class Facturalo
             $this->updateTicket($ticket);
             $this->updateState(self::SENT);
             if($this->type === 'summary') {
-                if($this->document->summary_status_type_id === '1') {
+                // if($this->document->summary_status_type_id === '1') {
+                if(in_array($this->document->summary_status_type_id, ['1', '2'])) {
                     $this->updateStateDocuments(self::SENT);
                 } else {
                     $this->updateStateDocuments(self::CANCELING);
@@ -834,7 +835,8 @@ class Facturalo
 
                 if($extService->getCustomStatusCode() === 0){
 
-                    if($this->document->summary_status_type_id === '1') {
+                    // if($this->document->summary_status_type_id === '1') {
+                    if(in_array($this->document->summary_status_type_id, ['1', '2'])) {
                         $this->updateStateDocuments(self::ACCEPTED);
                     } else {
                         $this->updateStateDocuments(self::VOIDED);
