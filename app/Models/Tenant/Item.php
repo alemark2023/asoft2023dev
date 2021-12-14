@@ -1028,7 +1028,12 @@ class Item extends ModelTenant
             // Exonerado, solo se multiplica por la unidad para que no haga cambio.
             $igv = 1;
         }
-
+        $itemSupply = $this->supplies;
+        if(!emptY($itemSupply)){
+            $itemSupply = $itemSupply->transform(function (ItemSupply $row ){
+                return $row-> getCollectionData();
+            });
+        }
         $salePriceWithIgv = ($has_igv == true)?$this->sale_unit_price:($this->sale_unit_price * $igv);
         $salePriceWithIgv = number_format($salePriceWithIgv, $configuration->decimal_quantity, '.', '');
         return [
@@ -1113,6 +1118,7 @@ class Item extends ModelTenant
                 ];
             }),
             'is_for_production'=>$this->isIsForProduction(),
+            'supplies' => $itemSupply,
 
         ];
     }

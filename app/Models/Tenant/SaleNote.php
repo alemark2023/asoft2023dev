@@ -440,7 +440,7 @@
          */
         public function seller()
         {
-            return $this->belongsTo(User::class);
+            return $this->belongsTo(User::class,'seller_id');
         }
 
         /**
@@ -632,7 +632,9 @@
             $btn_payments = ($total_documents > 0) ? false : true;
             $due_date = ( !empty($this->due_date)) ? $this->due_date->format('Y-m-d') : null;
 
-            $this->seller_id = $this->user_id;
+            if(emptY($this->seller_id)) {
+                $this->seller_id = $this->user_id;
+            }
             $this->payments = $this->getTransformPayments();
             $message_text = '';
             if ( !empty($this->number_full) && !empty($this->external_id)) {
@@ -724,7 +726,9 @@
                 'section' => $this->getSection(),
                 'send_other_server' => $canSentToOtherServer,
                 'web_platforms' => $web_platforms,
-                // 'number' => $this->number,
+                'seller' => $this->seller,
+                'seller_name'                     => ((int)$this->seller_id !=0)?$this->seller->name:'',
+// 'number' => $this->number,
             ];
         }
 
