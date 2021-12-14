@@ -20,6 +20,7 @@
                                         id="select-width"
                                         ref="selectSearchNormal"
                                         slot="prepend"
+                                        tabindex="1"
                                         v-model="form.item_id"
                                         :disabled="recordItem != null"
                                         :loading="loading_search"
@@ -139,6 +140,7 @@
 
                             <label class="control-label">Cantidad</label>
                             <el-input
+                                tabindex="2"
                                 ref="inputQuantity"
                                 v-model="form.quantity"
                                       :disabled="form.item.calculate_quantity"
@@ -161,7 +163,7 @@
                     <div class="col-md-4 col-sm-4">
                         <div :class="{'has-danger': errors.unit_price_value}" class="form-group">
                             <label class="control-label">Precio Unitario</label>
-                            <el-input v-model="form.unit_price_value" :readonly="!edit_unit_price"
+                            <el-input tabindex="3" v-model="form.unit_price_value" :readonly="!edit_unit_price"
                                       @input="calculateQuantity">
                                 <template v-if="form.item.currency_type_symbol" slot="prepend">
                                     {{ form.item.currency_type_symbol }}
@@ -874,6 +876,7 @@ export default {
                 this.isUpdateWarehouseId = null
             }
 
+            this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
         },
         async regularizeLots() {
 

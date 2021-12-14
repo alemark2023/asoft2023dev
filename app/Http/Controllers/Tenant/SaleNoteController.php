@@ -463,6 +463,9 @@ class SaleNoteController extends Controller
         if($request->series) {
             $records->where('series', 'like', '%' . $request->series . '%');
         }
+        if($request->number) {
+            $records->where('number', 'like', '%' . $request->number . '%');
+        }
         if($request->total_canceled != null) {
             $records->where('total_canceled', $request->total_canceled);
         }

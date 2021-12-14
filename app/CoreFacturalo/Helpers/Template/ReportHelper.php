@@ -3,6 +3,7 @@
     namespace App\CoreFacturalo\Helpers\Template;
 
 
+    use App\Models\Tenant\DocumentItem;
     use App\Models\Tenant\Person;
     use App\Models\Tenant\User;
     use Illuminate\Http\Request;
@@ -184,5 +185,27 @@
                 $title = '';
             }
             $title = substr(str_replace(['*', ':', '/', '\\', '?', '[', ']'], '', $title), 0, 31);
+        }
+
+        /**
+         * @param $model
+         *
+         * @return \App\Models\Tenant\User
+         */
+        public static function getSellerData($model){
+            if(get_class($model)== DocumentItem::class){
+                $model = $model->document;
+            }
+            try{
+                    if ( !empty($model->seller_id)) {
+                        return $model->seller;
+                    }
+            }catch (\ErrorException $e){
+
+                return $model->user;
+
+            }
+            return $model->user;
+
         }
     }

@@ -1,5 +1,10 @@
 <template>
     <div>
+        <Keypress
+            key-event="keyup"
+
+            @success="checkKey"
+        />
         <div v-if="loading_form">
             <form autocomplete="off"
                   class="row no-gutters"
@@ -191,6 +196,9 @@
                                            class="border-left rounded-left border-info"
                                            dusk="customer_id"
                                            filterable
+
+                                           @focus="focus_on_client = true"
+                                           @blur="focus_on_client = false"
                                            placeholder="Escriba el nombre o número de documento del cliente"
                                            popper-class="el-select-customers"
                                            remote
@@ -1409,6 +1417,7 @@ import DocumentTransportForm from '../../../../../modules/BusinessTurn/Resources
 import DocumentDetraction from './partials/detraction.vue'
 import moment from 'moment'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+import Keypress from "vue-keypress";
 
 export default {
     props: [
@@ -1424,6 +1433,7 @@ export default {
         DocumentOptions,
         Logo,
         DocumentHotelForm,
+        Keypress,
         DocumentDetraction,
         DocumentTransportForm
     },
@@ -1437,6 +1447,7 @@ export default {
             },
             // default_document_type: null,
             // default_series_type: null,
+            focus_on_client: false,
             dateValid: false,
             input_person: {},
             showDialogDocumentDetraction: false,
@@ -3544,6 +3555,34 @@ export default {
         },
         setDescriptionOfItem(item) {
             return showNamePdfOfDescription(item, this.config.show_pdf_name)
+        },
+        checkKey(e){
+            let code = e.event.code;
+            if(code === 'F2'){
+                //abrir el modal de agergar producto
+                if(!this.showDialogAddItem ) this.showDialogAddItem = true
+            }
+            if(code === 'Escape'){
+                if(this.showDialogAddItem ) this.showDialogAddItem = false
+            }
+            if(
+                code === 'KeyG'  // key G
+                && !this.showDialogAddItem   // Modal hidden
+                && this.form.items.length > 0  // with items
+                && this.focus_on_client  === false // not client search
+            )
+            {
+                this.submit()
+            }
+            if(
+                this.showDialogOptions === true &&
+                code === 'KeyN'
+            ){
+                this.showDialogOptions = false
+
+
+            }
+
         }
     }
 }

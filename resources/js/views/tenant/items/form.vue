@@ -1437,7 +1437,7 @@ export default {
             //     delete w.price;
             //     return w;
             // });
-
+this.activeName =  'first'
             if (this.type) {
                 if (this.type !== 'PRODUCTS') {
                     this.form.unit_type_id = 'ZZ';
@@ -1590,7 +1590,6 @@ export default {
 
             //this.loading_submit = true
 
-            console.log(this.form);
 
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
@@ -1736,6 +1735,12 @@ export default {
             // item_supplies
             if(this.form.supplies === undefined) this.form.supplies = [];
             let item = this.item_suplly;
+            if(item === null) return false;
+            if(item === undefined) return false;
+            if(item.id=== undefined) return false;
+            this.items = [];
+            this.item_suplly = {}
+
             item.item_id = this.form.id
             //item.individual_item_id = item.id
             item.individual_item_id = item.id
@@ -1743,10 +1748,9 @@ export default {
                 'description':item.description
             }
             //item.individual_item = item
-            item.quantity = 0
+            // item.quantity = 0
             //if(isNaN(item.quantity)) item.quantity = 0 ;
             this.form.supplies.push(item)
-            this.item_suplly = {}
 
 
         },
