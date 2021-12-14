@@ -24,6 +24,7 @@ Vue.component('tenant-item-aditional-info-modal', require('./views/tenant/compon
 
 
 Vue.component('tenant-dashboard-index', require('../../modules/Dashboard/Resources/assets/js/views/index.vue'));
+Vue.component('tenant-dashboard-sales-by-product', require('../../modules/Dashboard/Resources/assets/js/views/items/SalesByProduct.vue'));
 
 Vue.component('x-graph', require('./components/graph/src/Graph.vue'));
 Vue.component('x-graph-line', require('./components/graph/src/GraphLine.vue'));
