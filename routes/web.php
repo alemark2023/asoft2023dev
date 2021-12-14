@@ -179,6 +179,9 @@ if ($hostname) {
             Route::get('items/export', 'Tenant\ItemController@export')->name('tenant.items.export');
             Route::get('items/export/wp', 'Tenant\ItemController@exportWp')->name('tenant.items.export.wp');
             Route::get('items/export/digemid', 'Tenant\ItemController@exportDigemid');
+            Route::get('items/search-items', 'Tenant\ItemController@searchItems');
+            Route::get('items/search/item/{item}', 'Tenant\ItemController@searchItemById');
+            Route::get('items/item/tables', 'Tenant\ItemController@item_tables');
             Route::get('items/export/barcode', 'Tenant\ItemController@exportBarCode')->name('tenant.items.export.barcode');
             Route::get('items/export/barcode_full', 'Tenant\ItemController@exportBarCodeFull');
             Route::get('items/export/barcode/print', 'Tenant\ItemController@printBarCode')->name('tenant.items.export.barcode.print');

@@ -48,6 +48,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  * @method static Builder|Item whereIsNotActive()
  * @method static Builder|Item whereIsSet()
  * @method static Builder|Item whereNotIsSet()
+ * @method static Builder|Item ForProduction()
  * @method static Builder|Item whereNotService()
  * @method static Builder|Item whereService()
  * @method static Builder|Item whereTypeUser()
@@ -55,6 +56,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  * @property \Illuminate\Database\Eloquent\Collection|ItemMovementRelExtra[] $item_movement_rel_extras
  * @property Account $account
  * @property Brand $brand
+ * @property Bool $is_for_production
  * @property CatDigemid|null $cat_digemid
  * @property Category $category
  * @property CurrencyType $currency_type
@@ -101,6 +103,9 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  * @property WebPlatform $web_platform
  * @method  array getCollectionData()
  * @method static Builder|Item whereFilterValuedKardexFormatSunat($params)
+* @property \Illuminate\Database\Eloquent\Collection|ItemSupply[] $supplies
+* @property \Illuminate\Database\Eloquent\Collection|ItemSupply[] supplies_items
+
  */
 class Item extends ModelTenant
 {
@@ -160,11 +165,13 @@ class Item extends ModelTenant
         'barcode',
         'sanitary',
         'cod_digemid',
+        'is_for_production',
         // 'warehouse_id'
     ];
 
     protected $casts = [
-        'date_of_due' => 'date'
+        'date_of_due' => 'date',
+        'is_for_production' => 'bool',
     ];
 
     /**
@@ -457,7 +464,7 @@ class Item extends ModelTenant
      */
     public function sets()
     {
-    return $this->hasMany(ItemSet::class);
+        return $this->hasMany(ItemSet::class);
     }
 
     /**
@@ -940,6 +947,7 @@ class Item extends ModelTenant
             'has_isc' => (bool)$this->has_isc,
             'system_isc_type_id' => $this->system_isc_type_id,
             'percentage_isc' => $this->percentage_isc,
+            'is_for_production'=>$this->isIsForProduction(),
         ];
 
         // El nombre de producto, por defecto, sera la misma descripcion.
@@ -1104,6 +1112,8 @@ class Item extends ModelTenant
                     'description' => $row->warehouse->description,
                 ];
             }),
+            'is_for_production'=>$this->isIsForProduction(),
+
         ];
     }
 
@@ -1944,6 +1954,25 @@ class Item extends ModelTenant
         return null;
     }
 
+    public function scopeForProduction($query){
+        return $query->where([
+             ['item_type_id', '01'],
+            ['unit_type_id', '!=', 'ZZ'],
+             ['is_for_production', 1],
+             ['is_set', 0]
+        ]);
+
+    }
+
+    public function scopeForProductionSupply($query){
+        return $query->where([
+                ['item_type_id', '01'],
+                ['unit_type_id', '!=', 'ZZ'],
+                ['is_for_production', 0],
+                ['is_set', 0]
+        ]);
+
+    }
 
     /**
      * Devuelve codigo interno - descripcion producto
@@ -1954,6 +1983,31 @@ class Item extends ModelTenant
     {
         return $this->internal_id ? "{$this->internal_id} - {$this->description}" : $this->description;
     }
+
+    /**
+     * @return HasMany
+     */
+    public function supplies()
+    {
+        return $this->hasMany(ItemSupply::class);
+    }
+    /**
+     * @return HasMany
+     */
+    public function supplies_items()
+    {
+        return $this->hasMany(ItemSupply::class,'individual_item_id');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIsForProduction(): bool
+    {
+        return (bool) $this->is_for_production;
+    }
+
+
 
 }
 
