@@ -325,12 +325,13 @@ class ItemController extends Controller
         if (isset($request->supplies)) {
             foreach($request->supplies as $value){
 
+                if(!isset($value['item_id'])) $value['item_id'] = $item->id;
                 $itemSupply = ItemSupply::firstOrCreate(['id' => $value['id']],$value);
                 $itemSupply->fill($value);
                 $itemSupply->save();
             }
         }
-       
+
         $configuration = Configuration::first();
         if($configuration->isShowExtraInfoToItem()){
             // Extra data
