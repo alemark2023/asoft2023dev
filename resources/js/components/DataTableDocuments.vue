@@ -155,6 +155,21 @@
                 <div class="row mt-1 mb-3">
 
                 </div>
+
+                <!-- Totales -->
+                <div class="row col-md-12 mt-1 mb-3 " v-if="totals !== undefined && totals!== null && totals.length>0">
+                    <div class="col-md-6 col-sm-12 row"
+                     v-for="(row, index) in totals" :row="row"
+                     >
+                    <div class="col-md-6">
+                        {{row.name}}
+                    </div>
+                    <div class="col-md-6 text-right">
+                        {{row.total}}
+                    </div>
+                </div>
+                </div>
+
             </div>
 
 
@@ -205,6 +220,7 @@
             return {
                 loading_submit:false,
                 columns: [],
+                totals: [],
                 records: [],
                 customers: [],
                 all_customers: [],
@@ -352,6 +368,18 @@
                     this.pagination = response.data.meta
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
                     this.loading_submit = false
+                    this.getTotalRecords()
+                });
+
+            },
+            getTotalRecords() {
+                return this.$http.get(`/${this.resource}/recordsTotal?${this.getQueryParameters()}`).then((response) => {
+                    let data = response.data
+                    this.totals = data;
+                    // this.records = response.data.data
+                    // this.pagination = response.data.meta
+                    // this.pagination.per_page = parseInt(response.data.meta.per_page)
+                    // this.loading_submit = false
                 });
 
             },

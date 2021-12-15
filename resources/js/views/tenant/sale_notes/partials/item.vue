@@ -253,7 +253,8 @@
                                         <td class="text-center">{{ row.price3 }}</td>
                                         <td class="text-center">Precio {{ row.price_default }}</td>
                                         <td class="series-table-actions text-right">
-                                            <button class="btn waves-effect waves-light btn-xs btn-success"
+                                            <button :class="getSelectedClass(row)"
+                                                    class="btn waves-effect waves-light btn-xs"
                                                     type="button"
                                                     @click.prevent="selectedPrice(row)">
                                                 <i class="el-icon-check"></i>
@@ -1213,6 +1214,17 @@ export default {
         setFocusSelectItem() {
 
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
+
+        },
+        isSelectedPrice(item_unit_type) {
+            if (!_.isEmpty(this.item_unit_type)) {
+                return (this.item_unit_type.id === item_unit_type.id)
+            }
+            return false
+        },
+        getSelectedClass(row) {
+            if (this.isSelectedPrice(row)) return 'btn-success'
+            return 'btn-secondary'
 
         },
     }
