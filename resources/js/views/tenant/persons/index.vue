@@ -28,7 +28,9 @@
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item v-for="(column, index) in columns" :key="index">
-                            <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                            <el-checkbox
+                                @change="getColumnsToShow(1)"
+                                v-model="column.visible">{{ column.title }}</el-checkbox>
                         </el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -189,8 +191,29 @@ export default {
     },
     created() {
         this.title = (this.type === 'customers') ? 'Clientes' : 'Proveedores'
+        this.getColumnsToShow();
     },
     methods: {
+        getColumnsToShow(updated){
+
+            this.$http.post('/validate_columns',{
+                columns : this.columns,
+                report : 'client_index', // Nombre del reporte.
+                updated : (updated !== undefined),
+            })
+                .then((response)=>{
+                    if(updated === undefined){
+                        let currentCols = response.data.columns;
+                        if(currentCols !== undefined) {
+                            this.columns = currentCols
+                        }
+                    }
+                })
+                .catch((error)=>{
+                    console.error(error)
+                })
+        },
+
         clickCreate(recordId = null) {
             this.recordId = recordId
             this.showDialog = true

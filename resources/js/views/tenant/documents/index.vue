@@ -577,15 +577,15 @@ export default {
                     visible: false
                 },
                 currency_type_id: {
-                    title: 'MONEDA',
+                    title: 'Moneda',
                     visible: false
                 },
                 purchase_order: {
-                    title: 'ORDEN DE COMPRA',
+                    title: 'Orden de Compra',
                     visible: false
                 },
                 soap_type: {
-                    title: 'SOAP',
+                    title: 'Soap',
                     visible: false
                 },
 
@@ -598,7 +598,7 @@ export default {
     methods: {
         getColumnsToShow(updated){
 
-            this.$http.post('validate_columns',{
+            this.$http.post('/validate_columns',{
                 columns : this.columns,
                 report : 'document_index', // Nombre del reporte.
                 updated : (updated !== undefined),
