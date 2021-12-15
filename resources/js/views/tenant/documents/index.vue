@@ -79,14 +79,16 @@
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item v-for="(column, index) in columns"
                                                   :key="index">
-                                    <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                                    <el-checkbox
+                                        @change="getColumnsToShow(1)"
+                                        v-model="column.visible">{{ column.title }}</el-checkbox>
                                 </el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
 
                     <tr slot="heading">
                         <th>#</th>
-                        <th>SOAP</th>
+                        <th v-if="columns.soap_type.visible">SOAP</th>
                         <th class="text-center" style="min-width: 95px;">Emisión</th>
                         <th class="text-center"
                             v-if="columns.date_of_due.visible">Fecha Vencimiento
@@ -100,7 +102,7 @@
                         <th v-if="columns.send_it.visible">Email Enviado</th>
                         <th>Estado</th>
                         <th v-if="columns.user_name.visible">Usuario</th>
-                        <th class="text-center">Moneda</th>
+                        <th class="text-center" v-if="columns.currency_type_id.visible"  >Moneda</th>
                         <th class="text-right"
                             v-if="columns.guides.visible">Guia
                         </th>
@@ -116,11 +118,13 @@
                         <th class="text-right"
                             v-if="columns.total_exonerated.visible">T.Exonerado
                         </th>
+
+
                         <th class="text-right">T.Gravado</th>
                         <th class="text-right">T.Igv</th>
-                        <th class="text-right">Total</th>
+                        <th class="text-right" v-if="columns.total.visible" >Total</th>
                         <th class="text-center">Saldo</th>
-                        <th class="text-center" style="min-width: 95px;">Orden de compra</th>
+                        <th class="text-center" style="min-width: 95px;" v-if="columns.purchase_order.visible"  >Orden de compra</th>
                         <th class="text-center"></th>
                         <th class="text-right" v-if="typeUser != 'integrator'">
                         </th>
@@ -136,7 +140,7 @@
                             'border-left border-danger': (row.state_type_id === '11'),
                             'border-left border-warning': (row.state_type_id === '13')}">
                         <td>{{ index }}</td>
-                        <td>{{ row.soap_type_description }}</td>
+                        <td v-if="columns.soap_type.visible"> {{ row.soap_type_description }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td class="text-center"
                             v-if="columns.date_of_due.visible">{{ row.date_of_due }}
@@ -232,7 +236,7 @@
                             {{ row.user_name }}
                             <br/><small v-text="row.user_email"></small>
                         </td>
-                        <td class="text-center">{{ row.currency_type_id }}</td>
+                        <td class="text-center" v-if="columns.currency_type_id.visible">{{ row.currency_type_id }}</td>
                         <td class="text-center"
                             v-if="columns.guides.visible">
                         <span v-for="(item, i) in row.guides"
@@ -256,9 +260,9 @@
                         </td>
                         <td class="text-right">{{ row.total_taxed }}</td>
                         <td class="text-right">{{ row.total_igv }}</td>
-                        <td class="text-right">{{ row.total }}</td>
+                        <td class="text-right" v-if="columns.total.visible">{{ row.total }}</td>
                         <td class="text-right">{{ row.balance }}</td>
-                        <td>{{ row.purchase_order }}</td>
+                        <td v-if="columns.purchase_order.visible"  >{{ row.purchase_order }}</td>
                         <td class="text-center">
                             <button type="button"
                                     style="min-width: 41px"
@@ -568,12 +572,49 @@ export default {
                     title: 'Correo enviado al destinatario',
                     visible: false
                 },
+                total: {
+                    title: 'Total',
+                    visible: false
+                },
+                currency_type_id: {
+                    title: 'MONEDA',
+                    visible: false
+                },
+                purchase_order: {
+                    title: 'ORDEN DE COMPRA',
+                    visible: false
+                },
+                soap_type: {
+                    title: 'SOAP',
+                    visible: false
+                },
+
             }
         }
     },
     created() {
+        this.getColumnsToShow();
     },
     methods: {
+        getColumnsToShow(updated){
+
+            this.$http.post('validate_columns',{
+                columns : this.columns,
+                report : 'document_index', // Nombre del reporte.
+                updated : (updated !== undefined),
+            })
+                .then((response)=>{
+                    if(updated === undefined){
+                        let currentCols = response.data.columns;
+                        if(currentCols !== undefined) {
+                            this.columns = currentCols
+                        }
+                    }
+                })
+                .catch((error)=>{
+                    console.error(error)
+                })
+        },
         clickVoided(recordId = null) {
             this.recordId = recordId
             this.showDialogVoided = true

@@ -3,12 +3,17 @@
     namespace App\Http\Controllers\Tenant;
 
     use App\Http\Controllers\Controller;
+
+    use App\Http\Requests\Tenant\ColumnsToReportRequest;
+    use App\Models\Tenant\ColumnsToReport;
     use App\Models\Tenant\Configuration;
     use App\Models\Tenant\User;
     use Auth;
     use Illuminate\Contracts\View\Factory;
+    use Illuminate\Database\Eloquent\Model;
     use Illuminate\Foundation\Application;
     use Illuminate\View\View;
+    use Illuminate\Http\Request;
 
     /**
      * Class SettingController
@@ -158,5 +163,49 @@
             // vista blade no vue
             $configuration = Configuration::first();
             return view('tenant.settings.list_extras')->with('apk_url', $configuration->apk_url);
+        }
+
+        /**
+         * Lee o Guarda
+         * @param ColumnsToReportRequest $request
+         *
+         * @return array
+         */
+        public function getColumnsToDatatable(ColumnsToReportRequest  $request){
+
+            $user = \Auth::user();
+            $user_id =  (null!==$user)?$user->id:0;
+            $report = $request->report;
+            $columns = $request->columns;
+            $updated = (bool)$request->updated;
+
+            $cols =  ColumnsToReport::where([
+                'user_id'=>$user_id,
+                'report'=>$report,
+            ])->first();
+
+            if(empty($cols)){
+                // Se crea una nueva por que no existe
+                $cols =  new ColumnsToReport([
+                    'user_id'=>$user_id,
+                    'report'=>$report,
+                    'columns'=>$columns,
+
+                ]);
+                $cols->save();
+            }
+            $return = [
+                'user_id'=>$user_id,
+                'report'=>$report,
+                'columns'=>$columns,
+                'updated'=> $updated,
+            ];
+            if($updated !== false){
+                $cols->columns = $columns;
+                $cols->push();
+            }
+            $return ['columns'] = $cols->columns;
+            return $return;
+
         }
     }
