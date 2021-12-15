@@ -97,6 +97,8 @@
     <div class="">
         <div class=" ">
             @php
+                        $acum_total=0;
+                        $acu_total_sale = 0;
                 @endphp
             <table class="">
                 <thead>
@@ -122,7 +124,18 @@
                         <td>{{$value['quantity']}}</td>
                         <td>{{$value['total_sale']}}</td>
                     </tr>
+                    @php
+                        $acum_total += $value['quantity']??0;
+                         $acu_total_sale += $value['total_sale']??0;
+                    @endphp
                 @endforeach
+
+                            <tr>
+                                <td class="celda" colspan="1"></td>
+                                <td class="celda" ><strong>Total</strong></td>
+                                <td class="celda">{{$acum_total}}</td>
+                                <td class="celda">{{$acu_total_sale}}</td>
+                            </tr>
                 </tbody>
             </table>
         </div>
