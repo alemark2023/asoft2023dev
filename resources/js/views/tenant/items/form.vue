@@ -1751,6 +1751,7 @@ this.activeName =  'first'
             // item.quantity = 0
             //if(isNaN(item.quantity)) item.quantity = 0 ;
             this.form.supplies.push(item)
+            this.changeItem()
 
 
         },
