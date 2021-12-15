@@ -171,7 +171,7 @@ class ReportSaleConsolidatedController extends Controller
         $records = $this->getRecordsSalesConsolidated($request->all())->get();
         $params = $request->all();
 
-         return View('report::sales_consolidated.report_pdf', compact("records", "company", "establishment", "params"));;
+         // return View('report::sales_consolidated.report_pdf', compact("records", "company", "establishment", "params"));;
         /** @var \Barryvdh\DomPDF\PDF $pdf */
         $pdf = PDF::loadView('report::sales_consolidated.report_pdf', compact("records", "company", "establishment", "params"));
 

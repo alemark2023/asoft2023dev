@@ -7,6 +7,10 @@
                append-to-body
                width="30%"
                @open="create">
+        <Keypress
+            key-event="keyup"
+            @success="checkKey"
+        />
         <div v-loading="loading">
             <div v-if="form.response_message"
                  class="row mb-4">
@@ -147,9 +151,13 @@
 
 <script>
 import {mapState, mapActions} from "vuex/dist/vuex.mjs";
+import Keypress from "vue-keypress";
 
 export default {
     props: ['showDialog', 'recordId', 'showClose', 'isContingency', 'generatDispatch', 'dispatchId', 'isUpdate', 'configuration'],
+    components: {
+        Keypress
+    },
     data() {
         return {
             titleDialog: null,
@@ -309,6 +317,12 @@ export default {
             this.$emit('update:showDialog', false)
             this.initForm()
         },
+        checkKey(e){
+            let code = e.event.code;
+            if(code === 'KeyP'){
+                this.clickPrint('ticket_50'); // Imprime ticket 50 con letra P
+            }
+        }
     }
 }
 </script>

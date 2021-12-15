@@ -38,6 +38,7 @@
                                         placeholder="Buscar"
                                         popper-class="el-select-items"
                                         remote
+                                        :tabindex="'1'"
                                         @change="changeItem"
                                         @focus="focusSelectItem"
                                         @visible-change="focusTotalItem">
@@ -157,6 +158,7 @@
 
                             <label class="control-label">Cantidad</label>
                             <el-input
+                                :tabindex="'2'"
                                 ref="inputQuantity"
                                 v-model="form.quantity"
                                 :disabled="form.item.calculate_quantity"
@@ -185,6 +187,7 @@
                              class="form-group">
                             <label class="control-label">Precio Unitario</label>
                             <el-input v-model="form.unit_price_value"
+                                      :tabindex="'3'"
                                       :readonly="!edit_unit_price"
                                       @input="calculateQuantity">
                                 <template v-if="form.item.currency_type_symbol"

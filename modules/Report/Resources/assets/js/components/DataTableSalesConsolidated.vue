@@ -203,7 +203,7 @@
                         </tbody>
                         <tfoot v-if="resource == 'reports/order-notes-consolidated' || resource == 'reports/sales-consolidated'">
                             <tr>
-                                <td colspan="4"></td>
+                                <td colspan="5"></td>
                                 <td class="text-center"><strong>Total</strong></td>
                                 <td class="text-center">{{totals}}</td>
                                 <td class="text-center">{{totals_sale}}</td>
