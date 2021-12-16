@@ -108,6 +108,7 @@
 
             self::validateRequest($request);
             $search_item_by_series = Configuration::first()->isSearchItemBySeries();
+            $production = (bool)($request->production ??false);
 
             $items_id = ($request->has('items_id')) ? $request->items_id : null;
             $id = (int)$id;
@@ -129,8 +130,13 @@
             }
 
 
-            $item->with('warehousePrices');
-            $ItemToSearchBySeries->with('warehousePrices');
+            if($production !== false) {
+                // busqueda de insumos, no se lista por codigo de barra o por series
+                $search_item_by_series = false;
+            } else {
+                $item->with('warehousePrices');
+                $ItemToSearchBySeries->with('warehousePrices');
+            }
 
             $alt_item = $item;
 
@@ -444,9 +450,11 @@
             $input = self::setInputByRequest($request);
             $item = self::getAllItemBase($request, false, $id);
 
+            /*
             if ($search_by_barcode === false && $input != null) {
                 self::SetWarehouseToUser($item);
             }
+            */
              $item->ForProductionSupply();
              // $item->wherein('id',ItemSupply::select('individual_item_id')->pluck('individual_item_id'));
             return self::TransformToModalAndSupply($item->orderBy('description')->get());

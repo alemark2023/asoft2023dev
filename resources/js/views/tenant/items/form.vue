@@ -931,8 +931,8 @@
                                        v-text="errors.item_id[0]"></small>
                             </div>
                         </div>
-                        <div class="col-md-7 col-lg-7 col-xl-7 col-sm-7">
-                            <div class="form-group">
+                        <div class="col-md-7 col-lg-7 col-xl-7 col-sm-7 " style="    margin-top: 1rem !important;">
+                            <div class="form-group ">
                                 <button class="btn waves-effect waves-light btn-primary"
                                         type="button"
                                         @click.prevent="clickAddSupply" >
@@ -1681,7 +1681,8 @@ this.activeName =  'first'
                 this.loading_search = true
                 const params = {
                     'input': input,
-                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0
+                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0,
+                    'production':1
                 }
                 await this.$http.get(`/${this.resource}/search-items/`, {params})
                     .then(response => {
