@@ -183,6 +183,8 @@ if ($hostname) {
             Route::get('items/search/item/{item}', 'Tenant\ItemController@searchItemById');
             Route::get('items/item/tables', 'Tenant\ItemController@item_tables');
             Route::get('items/export/barcode', 'Tenant\ItemController@exportBarCode')->name('tenant.items.export.barcode');
+            Route::get('items/export/extra_atrributes/PDF', 'Tenant\ItemController@downloadExtraDataPdf');
+            Route::get('items/export/extra_atrributes/XLSX', 'Tenant\ItemController@downloadExtraDataItemsExcel');
             Route::get('items/export/barcode_full', 'Tenant\ItemController@exportBarCodeFull');
             Route::get('items/export/barcode/print', 'Tenant\ItemController@printBarCode')->name('tenant.items.export.barcode.print');
             Route::get('items/export/barcode/last', 'Tenant\ItemController@itemLast')->name('tenant.items.last');

@@ -37,13 +37,14 @@
                                         placeholder="Buscar"
                                         popper-class="el-select-items"
                                         @change="changeItem"
-                                        @focus="focusSelectItem">
-
+                                        >
+                                        <!--@focus="focusSelectItem"-->
                                         <el-option v-for="option in items"
                                                    :key="option.id"
                                                    :label="option.description"
                                                    :value="option.id"></el-option>
                                     </el-select>
+                                    <!--
                                     <el-tooltip slot="append"
                                                 class="item"
                                                 content="Ver Stock del Producto"
@@ -52,6 +53,7 @@
                                         <el-button @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i>
                                         </el-button>
                                     </el-tooltip>
+                                    -->
                                 </el-input>
                             </template>
                             <!--
@@ -191,6 +193,7 @@ export default {
             },
             all_items: [],
             items: [],
+            item: {},
             operation_types: [],
             all_affectation_igv_types: [],
             aux_items: [],
@@ -351,13 +354,15 @@ export default {
         },
         changeItem() {
             this.getItems();
-            this.form.item = _.find(this.items, {'id': this.form.item_id});
+            let item =  _.find(this.items, {'id': this.form.item_id});;
+            this.form.item = item;
+            this.item = item
 
         },
         clickAddItem() {
 
-            // this.initializeFields()
-             this.form.quantity = this.form.total_height
+            this.form.quantity = this.form.total_height
+            this.form.full_description = ( this.item &&  this.item.description ) ? this.item.description: '';
             this.$emit('add', this.form);
             this.initForm();
             this.setFocusSelectItem()

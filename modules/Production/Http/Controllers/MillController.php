@@ -14,6 +14,7 @@
     use App\Models\Tenant\Configuration;
     use App\Models\Tenant\Establishment;
     use App\Models\Tenant\Item;
+    use App\Models\Tenant\ItemSupply;
     use App\Models\Tenant\Person;
     use App\Models\Tenant\Warehouse;
     use App\Traits\OfflineTrait;
@@ -261,6 +262,20 @@
             return compact('suppliers', 'establishment', 'currency_types', 'expense_types', 'expense_method_types', 'expense_reasons', 'payment_destinations');
         }
 
+        public static function optionsItemSupplies(){
+            // $ids = ItemSupply::select('individual_item_id')->distinct()->pluck('individual_item_id');
+            return Item::ProductSupply()
+                ->get()
+                ->transform(function (Item $row) {
+                    return  $row->getCollectionData();
+                });
+            return collect($records)->transform(function ($row) {
+                return [
+                    'id' => $row->id,
+                    'description' => $row->description
+                ];
+            });
+        }
         public function table($table)
         {
             switch ($table) {
@@ -281,7 +296,7 @@
 
                     // $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
-                    $items = $this->optionsItemSupplies();
+                    $items = self::optionsItemSupplies();
                     /*
                     $items = Item::orderBy('description')->whereIsActive()
                         // ->ForProduction()

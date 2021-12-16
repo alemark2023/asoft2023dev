@@ -211,7 +211,7 @@ trait InventoryTrait
     public function optionsItemFullProduction($search = null, $take = null)
     {
         $query = Item::query()
-            ->with('item_lots', 'item_lots.item_loteable', 'lots_group')
+            ->with('item_lots', 'item_lots.item_loteable', 'lots_group','supplies')
             ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ'], ['is_for_production', 1]])
             ->whereNotIsSet();
         if ($search) {
@@ -222,7 +222,8 @@ trait InventoryTrait
         if ($take) {
             $query->take($take);
         }
-        return $query->get()->transform(function ($row) {
+        return $query->get()->transform(function (Item $row) {
+            return $row->getCollectionData();
             $description = $row->description;
             if($row->internal_id) {
                 $description .= " | {$row->internal_id}";
@@ -231,6 +232,7 @@ trait InventoryTrait
                 $description .= " | {$row->barcode}";
             }
             return [
+
                 'id' => $row->id,
                 'description' => $description,
                 'lots_enabled' => (bool)$row->lots_enabled,
@@ -665,7 +667,7 @@ trait InventoryTrait
         }
     }
 
-    
+
     /**
      *
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection|InventoryTransaction[]
@@ -674,5 +676,5 @@ trait InventoryTrait
     {
         return InventoryTransaction::get();
     }
-    
+
 }

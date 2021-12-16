@@ -84,7 +84,8 @@
         public function item_tables()
         {
 
-            $individual_items = Item::whereWarehouse()->whereTypeUser()->ForProduction()->whereIsActive()->get()->transform(function($row) {
+            $individual_items = Item::whereWarehouse()->whereTypeUser()->ForProduction()->whereIsActive()->get()->transform(function(Item $row) {
+                return $row->getCollectionData();
                 $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                 return [
                     'id' => $row->id,

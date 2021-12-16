@@ -46,7 +46,6 @@ class ProductionController extends Controller
     {
 
 
-
         $result = DB::connection('tenant')->transaction(function () use ($request) {
 
 			$item_id = $request->input('item_id');
@@ -71,19 +70,25 @@ class ProductionController extends Controller
             $production->user_id = auth()->user()->id;
             $production->save();
 
+            /*
             $item = Item::find($item_id);
 
             $items_supplies = $item->supplies;
+            */
+            $items_supplies = $request->supplies;
 
             foreach ($items_supplies as $item) {
 
+                $supplyWarehouseId = (int)($item['warehouse_id'] ?? $warehouse_id);
+                $supplyWarehouseId = $supplyWarehouseId !== 0?$supplyWarehouseId :$warehouse_id;
+                $qty = $item['quantity'] ??0;
                 $inventory_transaction_item = InventoryTransaction::findOrFail('101'); //Salida insumos por molino
                 $inventory_it = new Inventory();
                 $inventory_it->type = null;
                 $inventory_it->description = $inventory_transaction_item->name;
-                $inventory_it->item_id = $item->individual_item_id;
-                $inventory_it->warehouse_id = $warehouse_id;
-                $inventory_it->quantity = (float)$item->quantity * $quantity;
+                $inventory_it->item_id = $item['individual_item_id'];
+                $inventory_it->warehouse_id = $supplyWarehouseId;
+                $inventory_it->quantity = (float)($qty * $quantity);
                 $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
                 $inventory_it->save();
             }
@@ -139,10 +144,40 @@ class ProductionController extends Controller
         //
     }
 
+
+    public static function optionsItemProduction()
+    {
+        return Item::ProductEnded()
+            ->get()
+            ->transform(function (Item $row) {
+            return  $row->getCollectionData();
+
+        });
+    }
+
+    public static function optionsItemFullProduction($search = null, $take = null)
+    {
+        $query = Item::query()
+            ->ProductEnded()
+            ->with('item_lots', 'item_lots.item_loteable', 'lots_group')
+            ;
+        if ($search) {
+            $query->where('description', 'like', "%{$search}%")
+                ->orWhere('barcode', 'like', "%{$search}%")
+                ->orWhere('internal_id', 'like', "%{$search}%");
+        }
+        if ($take) {
+            $query->take($take);
+        }
+        return $query->get()->transform(function (Item $row) {
+            return $row->getCollectionData();
+        });
+    }
+
     public function tables()
 	{
 		return [
-			'items'      => $this->optionsItemProduction(),
+			'items'      => self::optionsItemProduction(),
 			'warehouses' => $this->optionsWarehouse()
 		];
 	}
@@ -152,7 +187,7 @@ class ProductionController extends Controller
 		$search = $request->input('search');
 
 		return [
-			'items' => $this->optionsItemFullProduction($search, 20),
+			'items' => self::optionsItemFullProduction($search, 20),
 		];
 	}
 

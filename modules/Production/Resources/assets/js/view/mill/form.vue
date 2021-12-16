@@ -2,7 +2,7 @@
     <div class="card mb-0 pt-2 pt-md-0">
         <div class="card-header bg-info">
             <h3 class="my-0">
-                Nuevo Molino
+                Nuevo Ingreso de insumo
             </h3>
         </div>
         <div class="tab-content">
@@ -113,7 +113,7 @@
                             <div class="form-group">
                                 <button class="btn waves-effect waves-light btn-primary"
                                         type="button"
-                                        @click.prevent="showAddItemModal">+ Agregar detalle
+                                        @click.prevent="showAddItemModal">+ Seleccionar Insumo
                                 </button>
                             </div>
                         </div>
@@ -135,7 +135,7 @@
                                     <tbody>
                                     <tr v-for="(row, index) in form.items">
                                         <td>{{ index + 1 }}</td>
-                                        <td>{{ ItemOptionDescriptionView(row.item) }}</td>
+                                        <td>{{ ItemOptionDescriptionView(row) }}</td>
                                         <td class="text-right">{{ row.height_to_mill }}</td>
                                         <td class="text-right">{{ row.total_height }}</td>
                                         <td class="text-right">

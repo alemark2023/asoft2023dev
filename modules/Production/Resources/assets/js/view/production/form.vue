@@ -1,7 +1,7 @@
 <template>
     <div class="card mb-0 pt-2 pt-md-0">
         <div class="card-header bg-info">
-            <h3 class="my-0">Producción</h3>
+            <h3 class="my-0">Producto Final</h3>
         </div>
         <div class="tab-content">
             <form autocomplete="off"
@@ -11,13 +11,14 @@
                         <div class="col-md-6">
                             <div :class="{'has-danger': errors.item_id}"
                                  class="form-group">
-                                <label class="control-label">Producto</label>
+                                <label class="control-label">Producto </label>
                                 <el-select
                                     v-model="form.item_id"
                                     :loading="loading_search"
                                     :remote-method="searchRemoteItems"
                                     filterable
                                     remote
+                                    @change="changeItem"
                                 >
                                     <el-option
                                         v-for="option in items"
@@ -96,6 +97,42 @@
                     >Guardar
                     </el-button>
                 </div>
+                <div class="col-12 col-md-12 mt-3"  v-if="supplies.length > 0">
+                    <h3 class="my-0">Lista de materiales</h3>
+
+                    <div class="col-md-12 mt-3 table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Cantidad</th>
+                                <th class="text-center">Almacen</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="row in supplies">
+                                <th>{{ row.individual_item.description }}</th>
+                                <th>{{ row.quantity }}</th>
+                                <th>
+
+                                    <el-select v-model="row.warehouse_id"
+                                               filterable>
+                                        <el-option
+                                            v-for="option in warehouses"
+                                            :key="option.id"
+                                            :label="option.description"
+                                            :value="option.id"
+                                        ></el-option>
+                                    </el-select>
+                                </th>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+
             </form>
         </div>
     </div>
@@ -112,6 +149,7 @@ export default {
             resource: 'production',
             loading_submit: false,
             errors: {},
+            supplies : {},
             form: {
                 items: []
             },
@@ -159,6 +197,7 @@ export default {
 
             this.loading_submit = true
 
+            this.form.supplies  =this.supplies
             await this.$http.post(`/${this.resource}/create`, this.form)
                 .then(response => {
                     if (response.data.success) {
@@ -175,10 +214,15 @@ export default {
                         console.log(error)
                     }
                 })
-                .then(() => {
+                .finally(() => {
                     this.loading_submit = false
                 })
-        }
+        },
+        changeItem() {
+            let item =  _.find(this.items, {'id': this.form.item_id})
+            this.supplies = item.supplies
+
+        },
 
 
     }

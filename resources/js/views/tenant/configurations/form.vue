@@ -714,6 +714,21 @@
                                                    v-text="errors.search_item_by_barcode[0]"></small>
                                         </div>
                                     </div>
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">
+                                            Mostrar totales en el listado de CPE
+                                        </label>
+                                        <div :class="{'has-danger': errors.show_totals_on_cpe_list}"
+                                             class="form-group">
+                                            <el-switch v-model="form.show_totals_on_cpe_list"
+                                                       active-text="Si"
+                                                       inactive-text="No"
+                                                       @change="submit"></el-switch>
+                                            <small v-if="errors.show_totals_on_cpe_list"
+                                                   class="form-control-feedback"
+                                                   v-text="errors.show_totals_on_cpe_list[0]"></small>
+                                        </div>
+                                    </div>
 
                                     <!--
                                     <div class="col-md-6 mt-4">

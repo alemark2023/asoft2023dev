@@ -3,7 +3,7 @@
         <div class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Producción</span></li>
+                <li class="active"><span>Productos Finales</span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <!--
@@ -38,7 +38,7 @@
         <div class="card mb-0">
             <div class="card-header bg-info">
                 <h3 class="my-0">
-                    Producción
+                    Productos Finales
                 </h3>
             </div>
             <!--
@@ -66,7 +66,7 @@
                     <tr>
                         <th>#</th>
                         <th>Cód. Interno</th>
-                        <th>User</th>
+                        <th>Usuario</th>
                         <th>Producto</th>
                         <th>Cantidad</th>
                     </tr>

@@ -21,6 +21,7 @@ export default {
     mold: {},
     config: {
         id: 0,
+        show_totals_on_cpe_list:false,
         pos_history:true,
         production_app:false,
         pos_cost_price:true,
