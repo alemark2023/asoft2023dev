@@ -148,10 +148,8 @@ $title = \App\CoreFacturalo\Helpers\Template\ReportHelper::getTitleToExcel ($tit
                             <tr>
                                 <td class="celda"></td>
                                 <td class="celda"></td>
+                                <td class="celda"></td>
                                 <td class="celda"> Totales </td>
-                                <td class="celda" style="text-align: right">
-                                    {{ App\CoreFacturalo\Helpers\Template\ReportHelper::setNumber($total) }}
-                                </td>
                                 <td class="celda" style="text-align: right">
                                     {{ App\CoreFacturalo\Helpers\Template\ReportHelper::setNumber($subTotal) }}
                                 </td>

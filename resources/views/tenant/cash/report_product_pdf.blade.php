@@ -161,10 +161,8 @@
                 <tr>
                     <td class="celda"></td>
                     <td class="celda"></td>
+                    <td class="celda"></td>
                     <td class="celda"> Totales </td>
-                        <td class="celda" style="text-align: right">
-                        {{ App\CoreFacturalo\Helpers\Template\ReportHelper::setNumber($total) }}
-                    </td>
                     <td style="text-align: right">
                         {{ App\CoreFacturalo\Helpers\Template\ReportHelper::setNumber($subTotal) }}
                     </td>
