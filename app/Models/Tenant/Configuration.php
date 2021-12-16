@@ -84,6 +84,7 @@
      * @property bool        $change_free_affectation_igv
      * @property bool        $pos_history
      * @property bool        $pos_cost_price
+     * @property bool        $show_totals_on_cpe_list
      * @property string|null $currency_type_id
      * @property bool        $select_available_price_list
      * @property int|null    $show_extra_info_to_item
@@ -210,6 +211,7 @@
             'update_document_on_dispaches',
             'show_service_on_pos',
             'visual',
+            'show_totals_on_cpe_list',
 
         ];
 
@@ -272,6 +274,7 @@
             'change_free_affectation_igv' => 'bool',
             'pos_history' => 'bool',
             'pos_cost_price' => 'bool',
+            'show_totals_on_cpe_list' => 'bool',
             'auto_print' => 'bool'
         ];
 
@@ -444,6 +447,7 @@
                 'show_service_on_pos' => (bool)$this->show_service_on_pos,
                 'pos_history' => $this->isPosHistory(),
                 'pos_cost_price' => $this->isPosCostPrice(),
+                'show_totals_on_cpe_list' => $this->isShowTotalsOnCpeList(),
 
             ];
         }
@@ -1967,4 +1971,24 @@
         {
             return (bool)$this->pos_cost_price;
         }
+
+        /**
+         * @return bool
+         */
+        public function isShowTotalsOnCpeList(): bool
+        {
+            return (bool)$this->show_totals_on_cpe_list;
+        }
+
+        /**
+         * @param bool $show_totals_on_cpe_list
+         *
+         * @return Configuration
+         */
+        public function setShowTotalsOnCpeList(?bool $show_totals_on_cpe_list): Configuration
+        {
+            $this->show_totals_on_cpe_list = (bool)$show_totals_on_cpe_list;
+            return $this;
+        }
+
     }

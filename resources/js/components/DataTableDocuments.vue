@@ -208,11 +208,12 @@
 </style>
 <script>
 
-    import moment from 'moment'
-    import queryString from 'query-string'
-    import $ from 'jquery'
+import moment from 'moment'
+import queryString from 'query-string'
+import $ from 'jquery'
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
-    export default {
+export default {
         props: {
             resource: String,
         },
@@ -248,8 +249,12 @@
             }
         },
         computed: {
+            ...mapState([
+                'config',
+            ]),
         },
         created() {
+            this.loadConfiguration();
             this.initForm()
             this.$eventHub.$on('reloadData', () => {
                 this.getRecords()
@@ -275,6 +280,7 @@
             await this.cargalo()
         },
         methods: {
+            ...mapActions(['loadConfiguration']),
 
             searchRemoteItems(input) {
 
@@ -373,9 +379,9 @@
 
             },
             getTotalRecords() {
+                if(this.config.show_totals_on_cpe_list !== true) return null;
                 return this.$http.get(`/${this.resource}/recordsTotal?${this.getQueryParameters()}`).then((response) => {
-                    let data = response.data
-                    this.totals = data;
+                    this.totals = response.data;
                     // this.records = response.data.data
                     // this.pagination = response.data.meta
                     // this.pagination.per_page = parseInt(response.data.meta.per_page)

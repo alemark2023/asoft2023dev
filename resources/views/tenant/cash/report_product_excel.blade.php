@@ -111,6 +111,10 @@ $title = \App\CoreFacturalo\Helpers\Template\ReportHelper::getTitleToExcel ($tit
             </table>
         </div>
         @if($documents->count())
+            @php
+                $total = 0;
+                $subTotal = 0;
+            @endphp
             <div class="">
                 <div class=" ">
                     <table class="">
@@ -135,7 +139,25 @@ $title = \App\CoreFacturalo\Helpers\Template\ReportHelper::getTitleToExcel ($tit
                                     <td class="celda" style="text-align: right">{{ App\CoreFacturalo\Helpers\Template\ReportHelper::setNumber($item['sub_total']) }}</td>
                                     <td class="celda">{{ $item['number_full'] }}</td>
                                 </tr>
+                                @php
+                                    $total+=$item['unit_value'];
+                                    $subTotal+=$item['sub_total']
+                                @endphp
                             @endforeach
+
+                            <tr>
+                                <td class="celda"></td>
+                                <td class="celda"></td>
+                                <td class="celda"> Totales </td>
+                                <td class="celda" style="text-align: right">
+                                    {{ App\CoreFacturalo\Helpers\Template\ReportHelper::setNumber($total) }}
+                                </td>
+                                <td class="celda" style="text-align: right">
+                                    {{ App\CoreFacturalo\Helpers\Template\ReportHelper::setNumber($subTotal) }}
+                                </td>
+                                <td class="celda"></td>
+
+                            </tr>
                         </tbody>
                     </table>
                 </div>

@@ -52,6 +52,8 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  * @method static Builder|Item whereNotService()
  * @method static Builder|Item whereService()
  * @method static Builder|Item whereTypeUser()
+ * @method static Builder|Item ProductSupply()
+ * @method static Builder|Item ProductEnded()
  * @method static Builder|Item whereWarehouse()
  * @property \Illuminate\Database\Eloquent\Collection|ItemMovementRelExtra[] $item_movement_rel_extras
  * @property Account $account
@@ -2011,6 +2013,38 @@ class Item extends ModelTenant
     public function isIsForProduction(): bool
     {
         return (bool) $this->is_for_production;
+    }
+
+    /**
+     * @param Builder $query
+     *
+     * @return mixed
+     */
+    public function scopeProductEnded(Builder $query){
+        return $query->where([
+            ['item_type_id', '01'],
+            ['unit_type_id', '!=', 'ZZ'],
+            ['is_for_production', 1]
+        ])
+            ->with('supplies')
+            ->whereNotIsSet();
+    }
+
+    /**
+     * @param Builder $query
+     *
+     * @return mixed
+     */
+    public function scopeProductSupply(Builder $query){
+        $sup = ItemSupply::select('individual_item_id')->distinct()->pluck('individual_item_id');
+        return $query->where([
+            ['unit_type_id', '!=', 'ZZ'],
+        ])
+            ->wherein('id',$sup)
+            ->with('supplies_items')
+            ->whereNotIsSet()
+            // ->join('items', 'item_supplies.individual_item_id', '=', 'items.id')
+            ->distinct();
     }
 
 

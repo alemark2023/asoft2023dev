@@ -4,7 +4,7 @@
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
                 <li class="active">
-                    <span>Molino</span>
+                    <span>Ingreso de insumo</span>
                 </li>
             </ol>
             <div class="right-wrapper pull-right pt-2">
@@ -34,11 +34,11 @@
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
 
-                        <td class="text-center">{{ row.name }}</td>
-                        <td class="text-center">{{ row.date_start }}</td>
-                        <td class="text-center">{{ row.time_start }}</td>
-                        <td class="text-center">{{ row.date_end }}</td>
-                        <td class="text-center">{{ row.time_end }}</td>
+                        <td>{{ row.name }}</td>
+                        <td>{{ row.date_start }}</td>
+                        <td>{{ row.time_start }}</td>
+                        <td>{{ row.date_end }}</td>
+                        <td>{{ row.time_end }}</td>
                     <!--
 <td class="text-right">
  <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Ver</button>

@@ -1275,13 +1275,13 @@
                                     <li class="{{ (($firstLevel === 'production') ) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
                                            href="{{ route('tenant.production.index') }}">
-                                            Producir
+                                            Productos Finales
                                         </a>
                                     </li>
                                     <li class="{{ (($firstLevel === 'mill-production')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
                                            href="{{ route('tenant.mill_production.index') }}">
-                                            Molino
+                                            Ingreso de Insumos
                                         </a>
                                     </li>
 

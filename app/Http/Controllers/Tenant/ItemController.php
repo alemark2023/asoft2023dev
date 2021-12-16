@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenant;
 use App\Exports\DigemidItemExport;
 use App\Exports\ItemExport;
 use App\Exports\ItemExportWp;
+use App\Exports\ItemExtraDataExport;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\PdfUnionController;
 use App\Http\Controllers\SearchItemController;
@@ -35,12 +36,14 @@ use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\ItemImage;
+use App\Models\Tenant\ItemMovement;
 use App\Models\Tenant\ItemSupply;
 use App\Models\Tenant\ItemTag;
 use App\Models\Tenant\ItemUnitType;
 use App\Models\Tenant\ItemWarehousePrice;
 use App\Models\Tenant\Warehouse;
 use App\Traits\OfflineTrait;
+use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -946,6 +949,86 @@ class ItemController extends Controller
 
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadExtraDataPdf(Request $request){
+        $field ='';
+        $records = $this->exportExtraItem($request,$field);
+
+
+        $pdf = PDF::loadView('tenant.items.exports.items_extra_data',
+            compact("records", "field"))
+            ->setPaper('a4', 'landscape');
+
+        $filename = 'Reporte_Items_Extra_Data_'.Carbon::now().'.xlsx';
+
+        return $pdf->download($filename.'.pdf');
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\Response|mixed|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function downloadExtraDataItemsExcel(Request $request){
+        $field ='';
+        $items = $this->exportExtraItem($request,$field);
+        $excel = new ItemExtraDataExport();
+        $excel->setRecords($items)->setField($field);
+        $filename = 'Reporte_Items_Extra_Data_'.Carbon::now().'.xlsx';
+
+        return $excel->download($filename);
+        return $excel->view();
+
+    }
+
+    /**
+     * Obtiene lo smovimientos de inventario para la categoria correspondiente,
+     * se implementa en pdf y excel por igual
+     *
+     * @param Request $request
+     * @param         $field
+     *
+     * @return Item[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection
+     */
+    public function exportExtraItem(Request $request, &$field){
+
+        $stockByAttribute = ItemMovement::getQueryToStockWithOutItemId(auth()->user()->establishment_id)->distinct();
+        $field = $request->fields ?? '';
+        if($field == 'colors'){
+            $stockByAttribute->where('item_movement_rel_extra.item_color_id','!=',0);
+        }elseif($field == 'CatItemMoldProperty'){
+            $stockByAttribute->where('item_movement_rel_extra.item_mold_properties_id','!=',0);
+        }elseif($field == 'CatItemUnitBusiness'){
+            $stockByAttribute->where('item_movement_rel_extra.item_unit_business_id','!=',0);
+        }elseif($field == 'CatItemStatus'){
+            $stockByAttribute->where('item_movement_rel_extra.item_status_id','!=',0);
+        }
+        elseif($field == 'CatItemPackageMeasurement'){
+            $stockByAttribute->where('item_movement_rel_extra.item_package_measurements_id','!=',0);
+        }
+        elseif($field == 'CatItemProductFamily'){
+            $stockByAttribute->where('item_movement_rel_extra.item_product_family_id','!=',0);
+        }
+        elseif($field == 'CatItemSize'){
+            $stockByAttribute->where('item_movement_rel_extra.item_size_id','!=',0);
+        }
+        elseif($field == 'CatItemUnitsPerPackage'){
+            $stockByAttribute->where('item_movement_rel_extra.item_units_per_package_id','!=',0);
+        }
+        elseif($field == 'CatItemMoldCavity'){
+            $stockByAttribute->where('item_movement_rel_extra.item_mold_cavities_id','!=',0);
+        }
+        $itemsIds =$stockByAttribute->get()->pluck('item_id')->unique();
+        $items = Item::wherein('id',$itemsIds)->get()->transform(function (Item $row){
+           return $row->getCollectionData();
+        });
+        return $items;
+
+    }
     public function exportBarCode(Request $request){
 
         ini_set("pcre.backtrack_limit", "50000000");

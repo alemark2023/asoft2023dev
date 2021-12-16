@@ -491,11 +491,27 @@ import ReportPayment from './partials/report_payment.vue'
 import ReportPaymentComplete from './partials/report_payment_complete.vue'
 import DocumentValidate from './partials/validate.vue';
 import MassiveValidateCpe from '../../../../../modules/ApiPeruDev/Resources/assets/js/components/MassiveValidateCPE';
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 
 export default {
     mixins: [deletable],
-    props: ['isClient', 'typeUser', 'import_documents', 'import_documents_second', 'userId', 'configuration', 'userPermissionEditCpe','view_apiperudev_validator_cpe', 'view_validator_cpe'],
+    props: [
+        'isClient',
+        'typeUser',
+        'import_documents',
+        'import_documents_second',
+        'userId',
+        'configuration',
+        'userPermissionEditCpe',
+        'view_apiperudev_validator_cpe',
+        'view_validator_cpe'
+    ],
+    computed: {
+        ...mapState([
+            'config',
+        ]),
+    },
     components: {
         DocumentsVoided,
         ItemsImport,
@@ -593,9 +609,14 @@ export default {
         }
     },
     created() {
+        this.$store.commit('setConfiguration',this.configuration)
+        this.loadConfiguration();
         this.getColumnsToShow();
+
     },
     methods: {
+        ...mapActions(['loadConfiguration']),
+
         getColumnsToShow(updated){
 
             this.$http.post('/validate_columns',{
