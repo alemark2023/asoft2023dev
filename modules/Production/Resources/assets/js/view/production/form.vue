@@ -179,6 +179,8 @@ export default {
                 warehouse_id: null,
                 quantity: 0
             }
+            this.supplies = {};
+
         },
         async searchRemoteItems(search) {
             this.loading_search = true;
