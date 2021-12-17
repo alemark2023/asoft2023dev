@@ -502,6 +502,12 @@ class SaleNoteController extends Controller
 
     public function tables()
     {
+        $user = new User();
+        if(\Auth::user()){
+            $user = \Auth::user();
+        }
+        $establishment_id =  $user->establishment_id;
+        $userId =  $user->id;
         $customers = $this->table('customers');
         $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();
         $currency_types = CurrencyType::whereActive()->get();
@@ -520,7 +526,9 @@ class SaleNoteController extends Controller
         });
         $payment_destinations = $this->getPaymentDestinations();
         $configuration = Configuration::select('destination_sale','ticket_58')->first();
-        $sellers = User::GetSellers(false)->get();
+        // $sellers = User::GetSellers(false)->get();
+        $sellers = User::getSellersToNvCpe($establishment_id,$userId);
+
 
         return compact('customers', 'establishments','currency_types', 'discount_types', 'configuration',
                          'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers');

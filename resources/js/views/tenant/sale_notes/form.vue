@@ -1026,6 +1026,10 @@
 
                     if (alt !== undefined) {
                         this.form.customer_id = this.config.establishment.customer_id
+                        let seller = this.sellers.find(element => element.id == alt.seller_id)
+                        if(seller !== undefined){
+                            this.form.seller_id = seller.id
+                        }
                     }
                 }
             },

@@ -232,7 +232,8 @@ class DocumentController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
-        $sellers = User::where('establishment_id',$establishment_id)->whereIn('type', ['seller', 'admin'])->orWhere('id', $userId)->get();
+        // $sellers = User::where('establishment_id',$establishment_id)->whereIn('type', ['seller', 'admin'])->orWhere('id', $userId)->get();
+        $sellers = User::getSellersToNvCpe($establishment_id,$userId);
         $payment_method_types = $this->table('payment_method_types');
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');

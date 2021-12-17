@@ -43,7 +43,7 @@
         <br>
         @if(!empty($records))
             <div class="">
-                <div class=" "> 
+                <div class=" ">
                     <table class="">
                         <thead>
                             <tr>
@@ -65,20 +65,21 @@
                         <tbody>
                             @foreach($records as $key => $value)
                                 <tr>
-                                    @php 
+                                    @php
+
                                         $data_person = $value->data_person;
                                         $document_type = '';
 
                                         if($value->payment->associated_record_payment->document_type){
 
                                             $document_type = $value->payment->associated_record_payment->document_type->description;
-                                        
+
                                         }elseif($value->instance_type == 'technical_service'){
-                
+
                                             $document_type = 'ST';
-                                            
+
                                         }elseif(isset($value->payment->associated_record_payment->prefix)){
-                                            
+
                                             $document_type = $value->payment->associated_record_payment->prefix;
 
                                         }
@@ -91,34 +92,45 @@
                                             $payment_method_type_description = $value->payment->expense_method_type->description;
                                         }
 
+                                $cci = $value->getCciAcoount();
+
+            $personName= $data_person->name;
+            if(!is_string($personName)){
+
+                if(property_exists($personName,'description')){
+                    $personName = $personName->description;
+                }
+            }
+
                                     @endphp
                                     <td class="celda">{{$loop->iteration}}</td>
-                                    <td class="celda">{{$data_person->name}}</td>
+                                    <td class="celda">{{$personName}}</td>
                                     <td class="celda">{{$data_person->number}}</td>
                                     <td class="celda">{{ $document_type }}</td>
                                     <td class="celda">{{$value->payment->associated_record_payment->number_full}}</td>
                                     <td class="celda">{{$value->payment->associated_record_payment->currency_type_id}}</td>
                                     <td class="celda">{{$value->instance_type_description}}</td>
                                     <td class="celda">{{$value->destination_description}}</td>
-                                    <td class="celda">{{$value->payment->date_of_payment->format('Y-m-d')}}</td> 
-                                    <td class="celda">{{$payment_method_type_description}}</td>  
+                                    <td class="celda">{{$cci}}</td>
+                                    <td class="celda">{{$value->payment->date_of_payment->format('Y-m-d')}}</td>
+                                    <td class="celda">{{$payment_method_type_description}}</td>
                                     <td class="celda">{{$value->payment->reference}}</td>
                                     <td class="celda">{{ optional($value->user)->name }}</td>
                                     <td class="celda">{{$value->payment->payment}}</td>
                                 </tr>
 
-                                 
-                            @endforeach 
+
+                            @endforeach
                         </tbody>
-                        <tfoot> 
+                        <tfoot>
                             <tr>
-                                <td class="celda" colspan="11"></td>
-                                <td class="celda"><strong>Totales PEN</strong></td> 
+                                <td class="celda" colspan="12"></td>
+                                <td class="celda"><strong>Totales PEN</strong></td>
                                 <td class="celda">{{ $records->where('payment.associated_record_payment.currency_type_id', 'PEN')->sum('payment.payment') }}</td>
                             </tr>
                             <tr>
                                 <td colspan="11"></td>
-                                <td class="celda"><strong>Totales USD</strong></td> 
+                                <td class="celda"><strong>Totales USD</strong></td>
                                 <td class="celda">{{ $records->where('payment.associated_record_payment.currency_type_id', 'USD')->sum('payment.payment') }}</td>
 
                             </tr>

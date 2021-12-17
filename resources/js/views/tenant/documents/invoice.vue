@@ -2790,7 +2790,13 @@ export default {
                 if (alt !== undefined) {
                     this.form.customer_id = this.establishment.customer_id
                     this.validateCustomerRetention(alt.identity_document_type_id)
+                    let seller = this.sellers.find(element => element.id == alt.seller_id)
+                    if(seller !== undefined){
+                        this.form.seller_id = seller.id
+                    }
                 }
+
+
             }
         },
         changeDocumentType() {
@@ -3438,7 +3444,8 @@ export default {
                 this.form.seller_id = seller.id
 
             }
-                        // retencion para clientes con ruc
+
+            // retencion para clientes con ruc
             this.validateCustomerRetention(customer.identity_document_type_id)
 
             /*if(this.customer_addresses.length > 0) {
