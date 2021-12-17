@@ -1008,6 +1008,7 @@
             },
             checkKey(e){
                 let code = e.event.code;
+                console.log(code)
                 if(code === 'F2'){
                     //abrir el modal de agergar producto
                     if(!this.showDialogAddItem ) this.showDialogAddItem = true
@@ -1022,13 +1023,13 @@
                     && this.focus_on_client  === false // not client search
                 )
                 {
-                    this.submit()
+                    // this.submit()
                 }
                 if(
                     this.showDialogOptions === true &&
                     code === 'KeyN'
                 ){
-                    this.showDialogOptions = false
+                    // this.showDialogOptions = false
 
 
                 }

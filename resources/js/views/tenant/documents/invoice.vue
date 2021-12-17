@@ -3572,13 +3572,13 @@ export default {
                 && this.focus_on_client  === false // not client search
             )
             {
-                this.submit()
+                // this.submit()
             }
             if(
                 this.showDialogOptions === true &&
                 code === 'KeyN'
             ){
-                this.showDialogOptions = false
+                // this.showDialogOptions = false
 
 
             }
