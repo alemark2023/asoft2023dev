@@ -59,7 +59,7 @@ class DocumentEmail extends Mailable
 
     public function getCdr($document){
         $file = null;
-        if($document->isHasCdr() && !empty($document->external_id)) {
+        if( !empty($document->external_id)) {
             $file = $this->getStorage($document->filename, 'cdr');
         }
         return $file;
