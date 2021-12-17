@@ -209,6 +209,14 @@
                 // Si existe una nueva columna, se envia de regreso para prevenir error en rendering
                 if(!property_exists($currencCol,$index)){
                     $currencCol->{$index} = $columns;
+                }else{
+                    if(isset($column['title'])){
+                        $currencCol->{$index} = $column;
+                    }else{
+                        // Si la columna nueva no existe
+                        $orgCOls = $request->columns;
+                        $currencCol->{$index} = $orgCOls[$index];
+                    }
                 }
             }
             $return ['columns'] = $currencCol;
