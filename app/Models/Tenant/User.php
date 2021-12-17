@@ -844,4 +844,18 @@ $withEstablishment = true){
     {
         return $this->belongsTo(Zone::class, 'zone_id');
     }
+
+    /**
+     * Devuelve una coleccion de usuarios vendedores para CPE y NV
+     * @param int $establishment_id
+     * @param int $userId
+     *
+     * @return User[]|Builder[]|Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection
+     */
+    public static function  getSellersToNvCpe($establishment_id =0,$userId=0){
+        return  self::where('establishment_id',$establishment_id)
+            ->whereIn('type', ['seller', 'admin'])->orWhere('id', $userId)
+            ->get();
+
+    }
 }

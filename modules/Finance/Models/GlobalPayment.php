@@ -230,19 +230,44 @@
                 ->wherePaymentType(TechnicalServicePayment::class);
         }
 
-        /**
-         * @return HigherOrderCollectionProxy|mixed|string
-         */
-        public function getDestinationDescriptionAttribute()
-        {
-            if ($this->destination_type === Cash::class) return 'CAJA GENERAL';
+        public function getCciAcoount(){
+            if ($this->destination_type === Cash::class) {
+                /** @var \App\Models\Tenant\Cash $destination */
+                $destination = $this->destination;
+                return $destination->reference_number;
+            }
             $destination = $this->destination;
             try {
                 $bank_id = $destination->bank_id;
                 $bank = Bank::find($bank_id);
                 if ($bank !== null) {
                     try {
-                        return $bank->description." ". $bank->cci;
+                        return  $destination->cci;
+                    } catch (Exception $e) {
+                        // do nothing
+                        return '-';
+                    }
+                }
+            } catch (Exception $e) {
+                // do nothing
+                return '-';
+            }
+            return '-';
+        }
+        /**
+         * @return HigherOrderCollectionProxy|mixed|string
+         */
+        public function getDestinationDescriptionAttribute()
+        {
+            if ($this->destination_type === Cash::class) return 'CAJA GENERAL';
+            /** @var mixed|\App\Models\Tenant\BankAccount  $destination */
+            $destination = $this->destination;
+            try {
+                $bank_id = $destination->bank_id;
+                $bank = Bank::find($bank_id);
+                if ($bank !== null) {
+                    try {
+                        return $bank->description." ". $destination->cci;
                     } catch (Exception $e) {
                         // do nothing
                         return '';
