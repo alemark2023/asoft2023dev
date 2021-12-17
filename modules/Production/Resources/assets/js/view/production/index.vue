@@ -3,7 +3,7 @@
         <div class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Productos Finales</span></li>
+                <li class="active"><span>Productos Fabricados</span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <!--
@@ -38,7 +38,7 @@
         <div class="card mb-0">
             <div class="card-header bg-info">
                 <h3 class="my-0">
-                    Productos Finales
+                    Productos Fabricados
                 </h3>
             </div>
             <!--
