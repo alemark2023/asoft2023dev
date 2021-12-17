@@ -10,10 +10,8 @@
     use App\Models\Tenant\User;
     use Auth;
     use Illuminate\Contracts\View\Factory;
-    use Illuminate\Database\Eloquent\Model;
     use Illuminate\Foundation\Application;
     use Illuminate\View\View;
-    use Illuminate\Http\Request;
 
     /**
      * Class SettingController
@@ -203,12 +201,17 @@
             if($updated !== false){
                 $cols->columns = $columns;
                 $cols->push();
+                $return['saved'] = 1;
             }
             $currencCol = $cols->columns;
+            $currencColDeb = (array)$cols->columns;
+            $orgCOls = $request->columns;
+
             foreach($columns as $index => $column){
                 // Si existe una nueva columna, se envia de regreso para prevenir error en rendering
-                if(!property_exists($currencCol,$index)){
-                    $currencCol->{$index} = $columns;
+                if (isset($currencColDeb[$index])) {
+                    $currentRow = (array)$currencColDeb[$index];
+                    $currencCol->{$index} = (isset($currentRow['title'])) ?$currentRow: $orgCOls[$index];
                 }else{
                     if(isset($column['title'])){
                         $currencCol->{$index} = $column;
