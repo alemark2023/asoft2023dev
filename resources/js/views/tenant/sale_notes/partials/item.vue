@@ -1,6 +1,12 @@
 <template>
     <el-dialog :close-on-click-modal="false" :title="titleDialog" :visible="showDialog" top="7vh" @close="close"
                @open="create">
+
+        <Keypress
+            key-event="keyup"
+            @success="checkKey"
+        />
+
         <form autocomplete="off" @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
@@ -403,7 +409,18 @@
                 &nbsp;
                 </div>
                 <div class="col-6">
-                    <el-button class="form-control" @click.prevent="close()">Cerrar</el-button>
+
+                    <el-popover
+                        placement="top-start"
+                        :open-delay="1000"
+                        width="135"
+                        trigger="hover"
+                        content="Presiona ESC">
+                        <el-button slot="reference"
+                                    @click.prevent="close()">
+                        Cerrar
+                    </el-button>
+                    </el-popover>
                 </div>
                 <div class="col-6">
                     <el-button v-if="form.item_id" class="add form-control btn btn-primary" native-type="submit" type="primary">
@@ -417,7 +434,17 @@
             <!-- Ocultar en cel -->
 
             <div class="form-actions text-right pt-2  hidden-sm-down">
-                <el-button @click.prevent="close()">Cerrar</el-button>
+                <el-popover
+                    placement="top-start"
+                    title="Acceso directo"
+                    width="145"
+                    trigger="hover"
+                    content="Presiona ESC">
+                    <el-button slot="reference"
+                                @click.prevent="close()">
+                        Cerrar
+                    </el-button>
+                </el-popover>
                 <el-button v-if="form.item_id" class="add" native-type="submit" type="primary">
                     Agregar
                 </el-button>
@@ -471,6 +498,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import VueCkeditor from 'vue-ckeditor5'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
+import Keypress from "vue-keypress";
 
 export default {
     props: [
@@ -489,6 +517,7 @@ export default {
         ItemForm,
         WarehousesDetail,
         LotsGroup,
+        Keypress,
         SelectLotsForm,
         'vue-ckeditor': VueCkeditor.component
     },
@@ -1227,7 +1256,17 @@ export default {
             return 'btn-secondary'
 
         },
-    }
+        checkKey(e){
+            let code = e.event.code;
+            if(code === 'Escape'){
+                this.close()
+
+            }
+
+
+        }
+
+    },
 }
 
 </script>

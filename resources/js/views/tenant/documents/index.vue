@@ -123,7 +123,7 @@
                         <th class="text-right">T.Gravado</th>
                         <th class="text-right">T.Igv</th>
                         <th class="text-right" v-if="columns.total.visible" >Total</th>
-                        <th class="text-center">Saldo</th>
+                        <th class="text-center" v-if="columns.balance.visible">Saldo</th>
                         <th class="text-center" style="min-width: 95px;" v-if="columns.purchase_order.visible"  >Orden de compra</th>
                         <th class="text-center"></th>
                         <th class="text-right" v-if="typeUser != 'integrator'">
@@ -261,7 +261,7 @@
                         <td class="text-right">{{ row.total_taxed }}</td>
                         <td class="text-right">{{ row.total_igv }}</td>
                         <td class="text-right" v-if="columns.total.visible">{{ row.total }}</td>
-                        <td class="text-right">{{ row.balance }}</td>
+                        <td class="text-right" v-if="columns.balance.visible">{{ row.balance }}</td>
                         <td v-if="columns.purchase_order.visible"  >{{ row.purchase_order }}</td>
                         <td class="text-center">
                             <button type="button"
@@ -603,6 +603,10 @@ export default {
                 soap_type: {
                     title: 'Soap',
                     visible: false
+                },
+                balance: {
+                    title: 'Saldo',
+                    visible: true
                 },
 
             }

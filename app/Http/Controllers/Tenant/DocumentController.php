@@ -125,18 +125,15 @@ class DocumentController extends Controller
     public function recordsTotal(Request $request)
     {
 
-        /** @var Builder $records */
-        $records = $this->getRecords($request);
-
         $FT_t = DocumentType::find('01');
         $BV_t = DocumentType::find('03');
         $NC_t = DocumentType::find('07');
         $ND_t = DocumentType::find('08');
 
-        $FT = $records->where('document_type_id', $FT_t->id)->where('currency_type_id','PEN')->sum('total');
-        $BV = $records->where('document_type_id', $BV_t->id)->where('currency_type_id','PEN')->sum('total');
-        $NC = $records->where('document_type_id', $NC_t->id)->where('currency_type_id','PEN')->sum('total');
-        $ND = $records->where('document_type_id', $ND_t->id)->where('currency_type_id','PEN')->sum('total');
+        $BV = $this->getRecords($request)->where('document_type_id', $BV_t->id)->where('currency_type_id','PEN')->sum('total');
+        $FT = $this->getRecords($request)->where('document_type_id', $FT_t->id)->where('currency_type_id','PEN')->sum('total');
+        $NC = $this->getRecords($request)->where('document_type_id', $NC_t->id)->where('currency_type_id','PEN')->sum('total');
+        $ND = $this->getRecords($request)->where('document_type_id', $ND_t->id)->where('currency_type_id','PEN')->sum('total');
         return [
             [
                 'name' => $FT_t->description,

@@ -204,7 +204,14 @@
                 $cols->columns = $columns;
                 $cols->push();
             }
-            $return ['columns'] = $cols->columns;
+            $currencCol = $cols->columns;
+            foreach($columns as $index => $column){
+                // Si existe una nueva columna, se envia de regreso para prevenir error en rendering
+                if(!property_exists($currencCol,$index)){
+                    $currencCol->{$index} = $columns;
+                }
+            }
+            $return ['columns'] = $currencCol;
             return $return;
 
         }

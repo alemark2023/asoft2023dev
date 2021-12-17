@@ -6,6 +6,9 @@
 
             @success="checkKey"
         />
+        <Keypress key-event="keyup" :multiple-keys="multiple" @success="checkKeyWithAlt" />
+
+
         <div class="tab-content"  v-if="company && establishment">
             <div class="invoice">
                 <header class="clearfix">
@@ -298,9 +301,20 @@
                             </div>
                             <div class="col-lg-12 col-md-6 d-flex align-items-end">
                                 <div class="form-group">
-                                    <button
-                                        type="button" class="btn waves-effect waves-light btn-primary"
-                                        @click.prevent="showDialogAddItem = true">+ Agregar Producto</button>
+                                    <el-popover
+                                        placement="top-start"
+                                        :open-delay="1000"
+
+                                        width="145"
+                                        trigger="hover"
+                                        content="Presiona F2">
+                                        <el-button slot="reference"
+                                                   type="button" class="btn waves-effect waves-light btn-primary"
+                                                   @click.prevent="showDialogAddItem = true"
+                                        >
+                                            + Agregar Producto
+                                            </el-button>
+                                    </el-popover>
                                 </div>
                             </div>
 
@@ -326,7 +340,22 @@
 
                     <div class="form-actions text-right mt-4">
                         <el-button @click.prevent="close()">Cancelar</el-button>
-                        <el-button class="submit" type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0">Generar</el-button>
+
+                        <el-popover
+                            placement="top-start"
+                            width="145"
+                            trigger="hover"
+                            content="Presiona ALT + G">
+                            <el-button slot="reference"
+                                       class="submit"
+                                       type="primary"
+                                       native-type="submit"
+                                       :loading="loading_submit"
+                                       v-if="form.items.length > 0"
+                            >
+                                Generar
+                            </el-button>
+                        </el-popover>
                     </div>
                 </form>
             </div>
@@ -405,6 +434,18 @@
                         return date.getTime() < (now.getTime());
                     },
                 },
+                multiple: [
+                    {
+                        keyCode: 78, // N
+                        modifiers: ['altKey'],
+                        preventDefault: true,
+                    },
+                    {
+                        keyCode: 71, // g
+                        modifiers: ['altKey'],
+                        preventDefault: true,
+                    },
+                ],
                 focus_on_client :false,
                 sellers: [],
                 resource: 'sale-notes',
@@ -593,24 +634,6 @@
                         })
                 }
 
-            },
-            keyUpLicensePlate1(e){
-
-                console.error(e.keyCode );/*
-
-                if(this.form.license_plates.license_plate_1.length == 3 && e.keyCode !== 8){
-                    this.form.license_plates.license_plate_1 = await this.form.license_plates.license_plate_1.concat('-')
-                }
-*/
-            },
-            keyUpLicensePlate2(e){
-
-                console.log(e.keyCode );/*
-
-                if(this.form.license_plates.license_plate_1.length == 3 && e.keyCode !== 8){
-                    this.form.license_plates.license_plate_1 = await this.form.license_plates.license_plate_1.concat('-')
-                }
-*/
             },
             clickAddPayment() {
                 this.form.payments.push({
@@ -1006,16 +1029,15 @@
                     }
                 }
             },
-            checkKey(e){
+            checkKeyWithAlt(e){
                 let code = e.event.code;
-                console.log(code)
-                if(code === 'F2'){
-                    //abrir el modal de agergar producto
-                    if(!this.showDialogAddItem ) this.showDialogAddItem = true
+                if(
+                    this.showDialogOptions === true &&
+                    code === 'KeyN'
+                ){
+                    this.showDialogOptions = false
                 }
-                if(code === 'Escape'){
-                    if(this.showDialogAddItem ) this.showDialogAddItem = false
-                }
+
                 if(
                     code === 'KeyG'  // key G
                     && !this.showDialogAddItem   // Modal hidden
@@ -1023,16 +1045,22 @@
                     && this.focus_on_client  === false // not client search
                 )
                 {
-                    // this.submit()
+                     this.submit()
                 }
-                if(
-                    this.showDialogOptions === true &&
-                    code === 'KeyN'
-                ){
-                    // this.showDialogOptions = false
-
+            },
+            checkKey(e){
+                let code = e.event.code;
+                if(code === 'F2'){
+                    //abrir el modal de agergar producto
+                    if(!this.showDialogAddItem ) this.showDialogAddItem = true
+                }
+                if(code === 'Escape'){
+                    if(this.showDialogAddItem ) {
+                        this.showDialogAddItem = false;
+                    }
 
                 }
+
 
             }
 

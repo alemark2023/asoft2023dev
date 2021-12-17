@@ -660,6 +660,9 @@
                 $child_name= $child->name;
                 $child_number= $child->number;
             }
+            $person = $this->person;
+            $mails = $person->getCollectionData();
+            $customer_email=  $mails['optional_email_send'];
 
             return [
                 'id' => $this->id,
@@ -726,6 +729,8 @@
                 'section' => $this->getSection(),
                 'send_other_server' => $canSentToOtherServer,
                 'web_platforms' => $web_platforms,
+                'customer_email' => $customer_email,
+                'customer_telephone' => optional($this->person)->telephone,
                 'seller' => $this->seller,
                 'seller_name'                     => ((int)$this->seller_id !=0)?$this->seller->name:'',
 // 'number' => $this->number,
