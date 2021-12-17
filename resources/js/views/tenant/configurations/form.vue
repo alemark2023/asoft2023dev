@@ -717,6 +717,12 @@
                                     <div class="col-md-6 mt-4">
                                         <label class="control-label">
                                             Mostrar totales en el listado de CPE
+                                            <el-tooltip class="item"
+                                                        content="Solo para usuarios tipo admin"
+                                                        effect="dark"
+                                                        placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
                                         </label>
                                         <div :class="{'has-danger': errors.show_totals_on_cpe_list}"
                                              class="form-group">

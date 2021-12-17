@@ -48,14 +48,12 @@
                 </div>
             </div>
             <span slot="footer" class="dialog-footer row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <el-input v-model="form.customer_email">
                         <el-button slot="append" icon="el-icon-message"   @click="clickSendEmail" :loading="loading">Enviar</el-button>
                     </el-input>
                 </div>
-                <!--
-                @todo aun no implemendado, enviar a whatsap
-                <div class="col-md-6">
+                <div class="col-md-12 mt-3">
                     <el-input v-model="form.customer_telephone">
                         <template slot="prepend">+51</template>
                         <el-button slot="append"
@@ -72,15 +70,27 @@
                            class="form-control-feedback"
                            v-text="errors.customer_telephone[0]"></small>
                 </div>
-            </div>
-                -->
-                <div class="col-md-6">
+            <div class="col-md-6 mt-3">&nbsp;</div>
+                <div class="col-md-6 mt-3">
                 <template v-if="showClose">
                     <el-button @click="clickClose">Cerrar</el-button>
                 </template>
                 <template v-else>
                     <el-button @click="clickFinalize">Ir al listado</el-button>
-                    <el-button type="primary"  ref="new_note" @click="clickNewSaleNote">Nueva nota de venta</el-button>
+                     <el-popover
+                        :open-delay="1000"
+                         placement="top-start"
+                         width="145"
+                         trigger="hover"
+                         content="Presiona ALT + N">
+                            <el-button slot="reference"
+                                       type="primary"
+                                       ref="new_note"
+                                       @click="clickNewSaleNote"
+                            >
+                                Nueva nota de venta
+                            </el-button>
+                        </el-popover>
                 </template>
                 </div>
             </span>

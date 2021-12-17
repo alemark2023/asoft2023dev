@@ -6,6 +6,11 @@
                top="7vh"
                @close="close"
                @open="create">
+        <Keypress
+            key-event="keyup"
+            @success="checkKey"
+        />
+
         <form autocomplete="off"
               @submit.prevent="clickAddItem">
             <div class="form-body">
@@ -468,10 +473,22 @@
                 <div class="col-12">
                     &nbsp;
                 </div>
+
+
+
+
                 <div class="col-6">
-                    <el-button class="form-control"
-                               @click.prevent="close()">Cerrar
-                    </el-button>
+                    <el-popover
+                        placement="top-start"
+                        :open-delay="1000"
+                        width="145"
+                        trigger="hover"
+                        content="Presiona ESC">
+                        <el-button slot="reference"
+                                   @click.prevent="close()">
+                            Cerrar
+                        </el-button>
+                    </el-popover>
                 </div>
                 <div class="col-6">
                     <el-button v-if="form.item_id"
@@ -547,6 +564,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import VueCkeditor from 'vue-ckeditor5'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
+import Keypress from "vue-keypress";
 
 export default {
     props: [
@@ -565,6 +583,7 @@ export default {
     components: {
         ItemForm,
         WarehousesDetail,
+        Keypress,
         LotsGroup,
         SelectLotsForm,
         'vue-ckeditor': VueCkeditor.component
@@ -1514,6 +1533,12 @@ export default {
                 }
             }
         },
+        checkKey(e){
+            let code = e.event.code;
+            if(code === 'Escape'){
+                this.close()
+            }
+        }
     }
 }
 

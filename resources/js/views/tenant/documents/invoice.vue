@@ -5,6 +5,8 @@
 
             @success="checkKey"
         />
+        <Keypress key-event="keyup" :multiple-keys="multiple" @success="checkKeyWithAlt" />
+
         <div v-if="loading_form">
             <form autocomplete="off"
                   class="row no-gutters"
@@ -298,11 +300,20 @@
 
                                     <td class="text-center pt-3"
                                         colspan="2">
-                                        <button class="btn waves-effect waves-light btn-primary btn-sm hidden-sm-down"
-                                                style="width: 180px;"
-                                                type="button"
-                                                @click.prevent="clickAddItemInvoice">+ Agregar Producto
-                                        </button>
+                                        <el-popover
+                                            placement="top-start"
+                                            :open-delay="1000"
+                                            width="145"
+                                            trigger="hover"
+                                            content="Presiona F2">
+                                            <el-button slot="reference"
+                                                       class="btn waves-effect waves-light btn-primary btn-sm hidden-sm-down"
+                                                       style="width: 180px;"
+                                                       type="button"
+                                                       @click.prevent="clickAddItemInvoice">
+                                                + Agregar Producto
+                                            </el-button>
+                                        </el-popover>
                                     </td>
                                     <td colspan="2"></td>
                                     <td class="p-0"
@@ -996,12 +1007,21 @@
                                 style="min-width: 180px"
                                 @click.prevent="close()">Cancelar
                         </button>
-                        <el-button v-if="form.items.length > 0 && this.dateValid"
-                                   :loading="loading_submit"
-                                   class="submit btn btn-primary"
-                                   native-type="submit"
-                                   style="min-width: 180px">{{ btnText }}
-                        </el-button>
+                        <el-popover
+                            placement="top-start"
+                            :open-delay="1000"
+                            width="145"
+                            trigger="hover"
+                            content="Presiona ALT + G">
+                            <el-button slot="reference"
+                                v-if="form.items.length > 0 && this.dateValid"
+                                :loading="loading_submit"
+                                class="submit btn btn-primary"
+                                native-type="submit"
+                                style="min-width: 180px">
+                                    {{ btnText }}
+                            </el-button>
+                        </el-popover>
                     </div>
                     <!-- @todo: Mejorar evitando duplicar codigo -->
                     <!-- Ocultar en cel -->
@@ -1445,6 +1465,18 @@ export default {
                     return time.getTime() > moment();
                 }
             },
+             multiple: [
+                {
+                    keyCode: 78, // N
+                    modifiers: ['altKey'],
+                    preventDefault: true,
+                },
+                {
+                    keyCode: 71, // g
+                    modifiers: ['altKey'],
+                    preventDefault: true,
+                },
+            ],
             // default_document_type: null,
             // default_series_type: null,
             focus_on_client: false,
@@ -3556,6 +3588,25 @@ export default {
         setDescriptionOfItem(item) {
             return showNamePdfOfDescription(item, this.config.show_pdf_name)
         },
+        checkKeyWithAlt(e){
+            let code = e.event.code;
+            if(
+                this.showDialogOptions === true &&
+                code === 'KeyN'
+            ){
+                this.showDialogOptions = false
+            }
+
+            if(
+                code === 'KeyG'  // key G
+                && !this.showDialogAddItem   // Modal hidden
+                && this.form.items.length > 0  // with items
+                && this.focus_on_client  === false // not client search
+            )
+            {
+                this.submit()
+            }
+        },
         checkKey(e){
             let code = e.event.code;
             if(code === 'F2'){
@@ -3564,23 +3615,6 @@ export default {
             }
             if(code === 'Escape'){
                 if(this.showDialogAddItem ) this.showDialogAddItem = false
-            }
-            if(
-                code === 'KeyG'  // key G
-                && !this.showDialogAddItem   // Modal hidden
-                && this.form.items.length > 0  // with items
-                && this.focus_on_client  === false // not client search
-            )
-            {
-                // this.submit()
-            }
-            if(
-                this.showDialogOptions === true &&
-                code === 'KeyN'
-            ){
-                // this.showDialogOptions = false
-
-
             }
 
         }

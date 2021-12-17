@@ -366,6 +366,7 @@ export default {
                 this.loading_submit = await true
                 await this.getRecords()
                 this.loading_submit = await false
+                this.getTotalRecords()
 
             },
             getRecords() {
@@ -374,12 +375,12 @@ export default {
                     this.pagination = response.data.meta
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
                     this.loading_submit = false
-                    this.getTotalRecords()
                 });
 
             },
             getTotalRecords() {
                 if(this.config.show_totals_on_cpe_list !== true) return null;
+                if(this.config.typeUser !== 'admin') return null;
                 return this.$http.get(`/${this.resource}/recordsTotal?${this.getQueryParameters()}`).then((response) => {
                     this.totals = response.data;
                     // this.records = response.data.data

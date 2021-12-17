@@ -7,10 +7,13 @@
                append-to-body
                width="30%"
                @open="create">
+        <!--
         <Keypress
             key-event="keyup"
             @success="checkKey"
         />
+        -->
+        <Keypress key-event="keyup" :multiple-keys="multiple" @success="checkKeyWithAlt" />
         <div v-loading="loading">
             <div v-if="form.response_message"
                  class="row mb-4">
@@ -35,9 +38,9 @@
 
                 <div class="col text-center font-weight-bold mt-3">
                     <button class="btn btn-lg btn-info waves-effect waves-light"
-                            type="button"
-                            @click="clickPrint('a4')">
-                        <i class="fa fa-file-alt"></i>
+                                   type="button"
+                                   @click="clickPrint('a4')">
+                            <i class="fa fa-file-alt"></i>
                     </button>
                     <p>Imprimir A4</p>
                 </div>
@@ -53,11 +56,19 @@
 
                 <div class="col text-center font-weight-bold mt-3">
 
-                    <button class="btn btn-lg btn-info waves-effect waves-light"
-                            type="button"
-                            @click="clickPrint('ticket_50')">
-                        <i class="fa fa-receipt"></i>
-                    </button>
+                    <el-popover
+                        placement="top-start"
+                        :open-delay="1000"
+                        width="145"
+                        trigger="hover"
+                        content="Presiona ALT + P">
+                        <el-button slot="reference"
+                                   class="btn btn-lg btn-info waves-effect waves-light"
+                                   type="button"
+                                   @click="clickPrint('ticket_50')">
+                            <i class="fa fa-receipt"></i>
+                        </el-button>
+                    </el-popover>
                     <p>Imprimir Ticket 50MM</p>
                 </div>
 
@@ -141,9 +152,22 @@
             <template v-else>
                 <el-button class="list"
                            @click="clickFinalize">Ir al listado</el-button>
-                <el-button v-if="!isUpdate"
-                           type="primary"
-                           @click="clickNewDocument">Nuevo comprobante</el-button>
+
+
+                <el-popover
+                    :open-delay="1000"
+                    placement="top-start"
+                    width="145"
+                    trigger="hover"
+                    content="Presiona ALT + N">
+                            <el-button slot="reference"
+                                       v-if="!isUpdate"
+                                       type="primary"
+                                       @click="clickNewDocument"
+                            >
+                                Nuevo comprobante
+                            </el-button>
+                </el-popover>
             </template>
         </span>
     </el-dialog>
@@ -165,6 +189,18 @@ export default {
             resource: 'documents',
             errors: {},
             form: {},
+            multiple: [
+                {
+                    keyCode: 78, // N
+                    modifiers: ['altKey'],
+                    preventDefault: true,
+                },
+                {
+                    keyCode: 80, // P
+                    modifiers: ['altKey'],
+                    preventDefault: true,
+                },
+            ],
             company: {},
             locked_emission: {},
             // config:{}
@@ -319,10 +355,20 @@ export default {
         },
         checkKey(e){
             let code = e.event.code;
+        },
+        checkKeyWithAlt(e){
+            let code = e.event.code;
+            if(
+                // this.showDialogOptions === true &&
+                code === 'KeyN'
+            ){
+                this.clickClose()
+            }
             if(code === 'KeyP'){
                 this.clickPrint('ticket_50'); // Imprime ticket 50 con letra P
             }
-        }
+
+        },
     }
 }
 </script>
