@@ -1469,7 +1469,7 @@ class SaleNoteController extends Controller
     }
 
 
-    private function savePayments($sale_note, $payments){
+    public function savePayments($sale_note, $payments){
 
         $total = $sale_note->total;
         $balance = $total - collect($payments)->sum('payment');
