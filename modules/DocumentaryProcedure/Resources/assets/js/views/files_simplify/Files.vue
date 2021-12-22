@@ -23,7 +23,7 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Todos los tramites simplificados</h3>
+                <h3 class="my-0">Todos los tramites</h3>
             </div>
             <div class="card-body">
                 <form class="row"
