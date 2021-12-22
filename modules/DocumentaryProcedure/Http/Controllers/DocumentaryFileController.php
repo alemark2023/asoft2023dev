@@ -129,9 +129,10 @@
             }
             if ($request->has('guide')) {
                 $guide = $request->guide;
-                $files->with('documentary_guide_number',function ($q) use($guide){
-                   $q->where('guide',$guide);
-                });
+
+                $d = DocumentaryGuidesNumber::where('guide','like',"%$guide%")->distinct()->get()->pluck('doc_file_id');
+
+                $files->wherein('id',$d);
 
 
             }
