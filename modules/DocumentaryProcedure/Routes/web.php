@@ -49,6 +49,24 @@ if ($hostname) {
                  ->name('documentaryprocedure.download.file');
             route::get('file/remove/{id}', 'DocumentaryFilesArchivesController@destroy');
             route::post('file/reload/{id?}', 'DocumentaryFileController@getData');
-		});
+
+
+            Route::get('files_simplify/create', 'DocumentaryFileController@index_simplify_new');
+            Route::get('files_simplify/new', 'DocumentaryFileController@index_simplify_new');
+            Route::get('files_simplify/edit/{id?}', 'DocumentaryFileController@index_simplify_new');
+            Route::post('files_simplify/ask/{id?}', 'DocumentaryFileController@getDocumentary');
+            Route::post('files_simplify/destroy/{id?}', 'DocumentaryFileController@destroy');
+            Route::post('files_simplify/archive/{id?}', 'DocumentaryFileController@archive');
+
+            Route::get('files_simplify/tables', 'DocumentaryFileController@tables');
+            Route::post('files_simplify/{id}/update', 'DocumentaryFileController@store_simplify');
+            Route::get('files_simplify/document-number', 'DocumentaryFileController@getDocumentNumber');
+            Route::post('files_simplify/store', 'DocumentaryFileController@store_simplify');
+
+            Route::get('files_simplify', 'DocumentaryFileController@index_simplify')->name('documentary.files_simplify');
+            Route::get('files_simplify/export/excel', 'DocumentaryFileController@excel');
+            Route::get('files_simplify/export/pdf', 'DocumentaryFileController@pdf');
+
+        });
 	});
 }

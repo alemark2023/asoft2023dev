@@ -275,8 +275,8 @@ export default {
     setSeries(state,series){ state.series = (series === undefined) ?[]: series },
     setAllSeries(state,all_series){ state.all_series = (all_series === undefined) ?[]: all_series },
 
-
-
+    setSellers(state,sellers){ state.sellers = (sellers === undefined) ?[]: sellers },
+    setStatusDocumentary(state,statusDocumentary){ state.statusDocumentary = (statusDocumentary === undefined) ?[]: statusDocumentary },
 
 
 

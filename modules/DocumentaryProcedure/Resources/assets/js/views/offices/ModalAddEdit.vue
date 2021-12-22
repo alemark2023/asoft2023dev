@@ -21,8 +21,8 @@
                         {{ errors.name[0] }}
                     </div>
                 </div>
-                <div class="form-group col-md-6">
-                    <label for="description">Descripción</label>
+                <div class="form-group col-md-12">
+                <label for="description">Descripción</label>
                     <input
                         id="description"
                         v-model="form.description"
@@ -34,6 +34,7 @@
                         {{ errors.description[0] }}
                     </div>
                 </div>
+                <!--
                 <div class="form-group col-md-6">
                     <div :class="{'has-danger': errors.days}" class="form-group">
                         <label class="control-label">Dias de tramite</label>
@@ -47,8 +48,6 @@
                                v-text="errors.days[0]"></small>
                     </div>
                 </div>
-                <!-- v-if="hasParent"  -->
-                <!--
                 <div  :class="{'has-danger': errors.type}" class="form-group">
                     <label class="control-label">Etapa principal</label>
                     <el-select
@@ -68,6 +67,7 @@
                 </div>
                 -->
 
+                <!--
                 <div v-if="office!==undefined" class="form-group col-md-12">
                     <div :class="{'has-danger': errors.type}" class="form-group">
                         <label class="control-label">Responsable</label>
@@ -86,6 +86,7 @@
                     </div>
                 </div>
 
+                -->
                 <div class="form-group col-md-12">
                     <label>Mostrar etapa</label>
                     <el-switch v-model="form.active"></el-switch>
@@ -141,18 +142,15 @@ export default {
             'workers',
         ]),
         OfficeNotNull: function () {
-            if (this.office !== null) return true
-            return false;
+            return this.office !== null;
+
         },
         hasParent: function () {
-            if (
-                this.office !== undefined &&
+            return this.office !== undefined &&
                 this.office.parent !== undefined &&
-                this.office.parent.id > 0) {
-                return true;
-            }
+                this.office.parent.id > 0;
 
-            return false;
+
         },
     },
     created() {
@@ -216,7 +214,9 @@ export default {
                 });
         },
         onSubmit() {
-            if (this.office) {
+            console.error(this.office)
+            if (this.office && this.office.id) {
+
                 this.onUpdate();
             } else {
                 this.onStore();
@@ -227,7 +227,8 @@ export default {
             this.$store.commit('setOffice', {})
         },
         onCreate() {
-            if (this.office) {
+            console.error(this.office)
+            if (this.office && this.office.id) {
                 this.form = this.office;
                 this.title = "Editar Etapa";
             } else {

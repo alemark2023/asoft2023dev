@@ -55,8 +55,10 @@
                             <th>Etapa</th>
                             <th>Descripción</th>
                             <th>Visible</th>
+                            <!--
                             <th>Responsable</th>
                             <th>Dias</th>
+                            -->
                             <th></th>
                         </tr>
                         </thead>
@@ -73,17 +75,18 @@
                                 <span v-if="item.active">Si</span>
                                 <span v-else>No</span>
                             </td>
+                            <!--
                             <td>
                                 <span
                                     v-for="users in item.users_name" :key="users.id"
 
                                 >
-                                    <!--v-if=" (item.user !== undefined &&  item.user !== null) "-->
                                 {{ users.name }} <br>
                                 </span>
                             </td>
                             <td> {{ item.string_days }}
                             </td>
+                            -->
                             <td class="text-center">
                                 <el-button
                                     :disabled="loading"
@@ -215,9 +218,13 @@ export default {
                 })
                 .catch();
         },
+
+        onCreate() {
+            this.$store.commit('setOffice', {})
+            this.openModalAddEdit = true;
+        },
         onEdit(item) {
             this.$store.commit('setOffice', item)
-            // this.office = {...item};
             this.openModalAddEdit = true;
         },
         onUpdateItem(data) {
@@ -226,10 +233,6 @@ export default {
         },
         onAddItem(data) {
             this.onFilter()
-        },
-        onCreate() {
-            this.$store.commit('setOffice', {})
-            this.openModalAddEdit = true;
         },
     },
 };
