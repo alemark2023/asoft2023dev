@@ -67,6 +67,7 @@ if ($hostname) {
             Route::post('files_simplify/store', 'DocumentaryFileController@store_simplify');
 
             Route::get('files_simplify', 'DocumentaryFileController@index_simplify')->name('documentary.files_simplify');
+            Route::get('files_simplify/export_current/{id}', 'DocumentaryFileController@pdfIndividual');
             Route::get('files_simplify/export/excel', 'DocumentaryFileController@excel');
             Route::get('files_simplify/export/pdf', 'DocumentaryFileController@pdf');
 

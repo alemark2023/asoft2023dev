@@ -255,6 +255,12 @@
                                             <button
                                                 class="dropdown-item"
                                                 type="button"
+                                                @click.prevent="printFile(item.id)">
+                                                Imprimir
+                                            </button>
+                                            <button
+                                                class="dropdown-item"
+                                                type="button"
                                                 @click.prevent="removeItem(item.id)">
                                                 Eliminar
                                             </button>
@@ -264,9 +270,7 @@
                                                 type="button"
                                                 @click.prevent="archiveFile(item.id)">
                                                 Archivar
-
                                             </button>
-
 
                                         </div>
                                     </div>
@@ -584,6 +588,9 @@ export default {
         editItem(id) {
             window.location = `/documentary-procedure/files_simplify/edit/` + id;
 
+        },
+        printFile(id) {
+            window.open(`/documentary-procedure/files_simplify/export_current/` + id, '_blank');
         },
         archiveFile(id) {
             this.$http

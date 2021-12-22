@@ -1024,6 +1024,32 @@
             return $pdf->stream($filename . '.pdf');
         }
 
+
+        public function pdfIndividual(Expediente $id)
+        {
+
+            $company = Company::first();
+            $establishment = auth()->user()->establishment;
+            $records = $id->getCollectionData();
+
+            $view = 'documentaryprocedure::exports.report_detailed_excel';
+
+
+            // return view($view, compact('records', 'company', 'establishment'));
+
+
+            /** @var \Barryvdh\DomPDF\PDF  $pdf */
+            $pdf = PDF::loadView($view,
+                compact('records', 'company', 'establishment'))
+                ;;
+
+
+
+            $filename = 'Reporte_Tramie_' . date('YmdHis');
+
+            return $pdf->stream($filename . '.pdf');
+        }
+
         public function uploadFile(Request  $request){
 
             $stage = $request->stage_id;

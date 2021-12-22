@@ -5,6 +5,7 @@
 
 
     use App\Models\Tenant\ModelTenant;
+    use App\Models\Tenant\User;
     use Carbon\Carbon;
     use Eloquent;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
@@ -152,5 +153,13 @@
             return $this;
 
         }
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+         */
+        public function user()
+        {
+            return $this->belongsTo(User::class);
+        }
+
 
     }
