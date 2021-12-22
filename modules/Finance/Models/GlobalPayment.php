@@ -234,7 +234,7 @@
             if ($this->destination_type === Cash::class) {
                 /** @var \App\Models\Tenant\Cash $destination */
                 $destination = $this->destination;
-                if(property_exists($destination,'reference_number')) {
+                if($destination !== null) {
                     return $destination->reference_number;
                 }
                 return '';
