@@ -3,6 +3,7 @@
         <el-dialog
             :title="title"
             :visible="visible"
+            :closeOnClickModal="false"
             @close="onClose"
             @open="onCreate"
         >
@@ -70,7 +71,7 @@
                     class="form-group col-sm-12 col-md-6 col-lg-4 ">
                     <label>
                         Fecha cuando se toma el tramite
-                        <span class="text-danger">*</span></label>
+                        </label>
                     <el-date-picker
                         v-model="guide.date_take "
                         format="yyyy/MM/dd HH:mm"
@@ -86,7 +87,7 @@
                     class="form-group col-sm-12 col-md-6 col-lg-4 ">
                     <label>
                         Fecha de finalizacion
-                        <span class="text-danger">*</span></label>
+                        </label>
                     <el-date-picker
                         v-model="guide.date_end "
                         format="yyyy/MM/dd HH:mm"
@@ -141,15 +142,22 @@
                     class="form-group col-sm-12 col-md-6 col-lg-4 ">
                     <label>
                         Observaciones
-                        <span class="text-danger">*</span></label>
+                        </label>
                     <el-input v-model="guide.observation"
                               placeholder="Observaciones"></el-input>
                 </div>
 
                 <div class="row text-center col-12 p-t-20">
+
+                    <div class="col-6">
+                        <el-button class="btn-block"
+                                   @click="onClose">Cancelar
+                        </el-button>
+                    </div>
                     <div
-                        class="col-6">
+                        class="col-6" >
                         <el-button
+                            :disabled="disableWhileData"
                             :loading="loading"
                             class="btn-block"
                             native-type="submit"
@@ -158,11 +166,6 @@
                         >Guardar
                         </el-button
                         >
-                    </div>
-                    <div class="col-6">
-                        <el-button class="btn-block"
-                                   @click="onClose">Cancelar
-                        </el-button>
                     </div>
                 </div>
 
@@ -279,6 +282,7 @@ export default {
                 observation: null,
             },
             title: "",
+
             loading: false,
             borrando: false,
             basePath: "/documentary-procedure/files",
@@ -312,7 +316,18 @@ export default {
             'sellers',
 
         ]),
-
+        disableWhileData:function(){
+            let guide = this.guide;
+            if(
+                guide.guide !== null &&
+                guide.user_id !== null &&
+                guide.doc_office_id !== null &&
+                guide.documentary_guides_number_status_id !== null
+            ){
+                return  false;
+            }
+            return true;
+        }
     },
     methods: {
         ...mapActions([

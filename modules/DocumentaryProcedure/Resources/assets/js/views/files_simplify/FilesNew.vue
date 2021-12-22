@@ -97,7 +97,7 @@
                 <div
                     :class="{ 'has-danger': errors.date_register }"
                     class="form-group col-sm-12 col-md-3 col-lg-3 ">
-                    <label>Fecha de registro <span class="text-danger">*</span></label>
+                    <label>Fecha de registro </label>
                     <el-date-picker
                         v-model="form.date_register"
                         :loading="loading"
@@ -117,7 +117,7 @@
                     :class="{ 'has-danger': errors.time_register }"
                     class="form-group col-sm-12 col-md-3 col-lg-3 ">
 
-                    <label>Hora de registro <span class="text-danger">*</span></label>
+                    <label>Hora de registro </label>
                     <el-input v-model="form.time_register"
                               :loading="loading"
                               placeholder="13:30:00">
@@ -203,10 +203,11 @@
                                                     <button
                                                         class="dropdown-item"
                                                         type="button"
-                                                        @click.prevent="row=clickRemoveItem(index, row)">
+                                                        @click.prevent="clickRemoveItem(index, row)">
                                                         Eliminar
                                                     </button>
                                                     <button
+                                                        v-if="row.id > 0"
                                                         class="dropdown-item"
                                                         type="button"
                                                         @click.prevent="row=clickFileUpload(row.id)">
@@ -553,7 +554,7 @@ export default {
             this.$emit("updateFiles");
         },
         fileAdded(file) {
-            console.log("File Dropped => ", file);
+            // console.log("File Dropped => ", file);
             let attachment = {};
             attachment._id = file.upload.uuid;
             attachment.title = file.name;
@@ -592,7 +593,7 @@ export default {
 
         },
         errormultiple(file, response, other) {
-            console.log('errormultiple')
+            // console.log('errormultiple')
             if (response.message !== undefined) {
                 response.status = 422
                 if (response.data === undefined) {
@@ -763,15 +764,11 @@ export default {
         onSubmit() {
             // const data = this.onGenerateData();
             let data = '';
-            console.log('e1')
             if (this.form && this.form.id) {
-                console.log('e2')
                 this.onUpdate(data)
             } else {
-                console.log('e3')
                 this.onStore(data)
             }
-            console.log('e4')
         },
         onClose() {
             window.location = '/documentary-procedure/files_simplify'
@@ -836,7 +833,6 @@ export default {
                 .get(`${this.basePath}/tables`)
                 .then((response) => {
                     const data = response.data.data;
-                    console.error(data)
                     this.$store.commit('setCustomers', data.customers)
                     this.$store.commit('setDocumentTypes', data.document_types)
                     this.$store.commit('setActions', data.actions)
@@ -870,6 +866,7 @@ export default {
                         this.attachFile = null;
                         this.ChangeSelect();
                     } else if (this.recordid !== undefined) {
+                        this.title = "Editar tramite";
                         this.updateData()
 
                     } else if (this.file == null) {
@@ -977,9 +974,9 @@ export default {
             this.showFileUpload = true;
         },
         clickRemoveItem(index, row) {
-            row.visible = false
-            // this.form.guides.splice(index, 1)
-            return row;
+            // row.visible = false
+             this.form.guides.splice(index, 1)
+            // return row;
         },
 
     },

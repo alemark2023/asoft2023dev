@@ -24,7 +24,6 @@
     use Modules\DocumentaryProcedure\Models\DocumentaryFileOffice as FileRelStage;
     use Modules\DocumentaryProcedure\Models\DocumentaryFilesArchives as FilesFolder;
     use Modules\DocumentaryProcedure\Models\DocumentaryGuidesNumber;
-    use Modules\DocumentaryProcedure\Models\DocumentaryGuidesNumber as Guides;
     use Modules\DocumentaryProcedure\Models\DocumentaryGuidesNumberStatus;
     use Modules\DocumentaryProcedure\Models\DocumentaryObservation as Observation;
     use Modules\DocumentaryProcedure\Models\DocumentaryOffice as Stage;
@@ -434,9 +433,13 @@
                     $file->sender = $request->sender;
                     $file->push();
                 }
+                $ids = [];
                 foreach($guides as $guide){
                     $guide['visible'] = (bool)($guide['visible']??true);
                     $guide['id'] = (int)($guide['id']??null);
+                    if($guide['id'] !== 0){
+                        $ids[] =$guide['id'];
+                    }
                     $guide['doc_file_id'] = $file->id;
                     $g = DocumentaryGuidesNumber::firstOrCreate(['id'=>$guide['id']],$guide);
                     if($guide['visible']=== false){
@@ -444,6 +447,9 @@
                     }
 
                 }
+                $deleted = DocumentaryGuidesNumber::where('doc_file_id',$file->id)->whereNotIn('id',$ids)->get();
+                foreach ($deleted as $de ){ $de->delete();}
+
                 return response()->json([
                     'data' => $file,
                     'message' => 'Expediente guardada de forma correcta.',
@@ -623,7 +629,7 @@
                     $guide = (array)$guide;
                     $guide['doc_file_id'] = $guide['doc_file_id'] ?? $office->id;
                     $guide['doc_office_id'] = $guide['doc_office_id'] ?? $office->documentary_office_id;
-                    $guide_record = Guides::firstOrCreate($guide);
+                    $guide_record = DocumentaryGuidesNumber::firstOrCreate($guide);
                     $guide_record->push();
                 }
             }
@@ -730,7 +736,7 @@
                     $guide = (array)$guide;
                     $guide['doc_file_id'] = $guide['doc_file_id'] ?? $office->id;
                     $guide['doc_office_id'] = $guide['doc_office_id'] ?? $office->documentary_office_id;
-                    $guide_record = Guides::firstOrCreate($guide);
+                    $guide_record = DocumentaryGuidesNumber::firstOrCreate($guide);
                     $guide_record->push();
                 }
             }

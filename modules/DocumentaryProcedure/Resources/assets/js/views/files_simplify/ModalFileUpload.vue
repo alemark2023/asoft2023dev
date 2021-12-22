@@ -40,6 +40,12 @@
 
 
                     <div class="row text-center col-12 p-t-20">
+
+                        <div class="col-6">
+                            <el-button class="btn-block"
+                                       @click="onClose">Cancelar
+                            </el-button>
+                        </div>
                         <div class="col-6">
                             <el-button
                                 :disabled="!sendFile"
@@ -50,11 +56,6 @@
                             >Guardar
                             </el-button
                             >
-                        </div>
-                        <div class="col-6">
-                            <el-button class="btn-block"
-                                       @click="onClose">Cancelar
-                            </el-button>
                         </div>
                     </div>
                 </div>
