@@ -67,6 +67,7 @@ export default {
         if (state.all_series === undefined) state.all_series = [];
         if (state.series === undefined) state.series = [];
         if (state.payment_destinations === undefined) state.payment_destinations = [];
+        if (state.statusDocumentary === undefined) state.statusDocumentary = [];
 
 
 
