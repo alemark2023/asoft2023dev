@@ -444,12 +444,14 @@
                     $guide['doc_file_id'] = $file->id;
                     $g = DocumentaryGuidesNumber::firstOrCreate(['id'=>$guide['id']],$guide);
                     if($guide['visible']=== false){
-                        $g->delete();
+                        // $g->delete();
                     }
 
                 }
+                /*
                 $deleted = DocumentaryGuidesNumber::where('doc_file_id',$file->id)->whereNotIn('id',$ids)->get();
                 foreach ($deleted as $de ){ $de->delete();}
+                */
 
                 return response()->json([
                     'data' => $file,
