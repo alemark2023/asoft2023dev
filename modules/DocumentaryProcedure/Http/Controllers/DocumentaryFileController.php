@@ -1078,4 +1078,9 @@
             return $request->all();
         }
 
+
+        public function removeGuide(DocumentaryGuidesNumber $id){
+            if(!empty($id)) $id->delete();
+            return true;
+        }
     }

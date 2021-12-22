@@ -974,8 +974,23 @@ export default {
             this.showFileUpload = true;
         },
         clickRemoveItem(index, row) {
-            // row.visible = false
-             this.form.guides.splice(index, 1)
+            if(row.id > 0){
+                this.$http
+                    .post(`${this.basePath}/removeStage/${row.id}`, {})
+                    .then((response) => {
+                        this.$message({
+                            message: response.data.message,
+                            type: "success",
+                        });
+                        this.form.guides.splice(index, 1)
+                    })
+                    .finally(() => {
+
+                    })
+            }else{
+                this.form.guides.splice(index, 1)
+
+            }
             // return row;
         },
 
