@@ -579,6 +579,9 @@ if ($hostname) {
             Route::get('cash/report/products/{cash}', 'Tenant\CashController@report_products');
             Route::get('cash/report/products-excel/{cash}', 'Tenant\CashController@report_products_excel');
 
+            //POS VENTA RAPIDA
+            Route::get('pos/fast', 'Tenant\PosController@fast')->name('tenant.pos.fast');
+
             //Tags
             Route::get('tags', 'Tenant\TagController@index')->name('tenant.tags.index');
             Route::get('tags/columns', 'Tenant\TagController@columns');

@@ -290,8 +290,8 @@
                     @if(auth()->user()->type != 'integrator')
                         @if(in_array('pos', $vc_modules))
                             <li class="nav-parent
-                        {{ ($firstLevel === 'pos')?'nav-active nav-expanded':'' }}
-                            {{ ($firstLevel === 'cash')?'nav-active nav-expanded':'' }}
+                                {{ ($firstLevel === 'pos')?'nav-active nav-expanded':'' }}
+                                {{ ($firstLevel === 'cash')?'nav-active nav-expanded':'' }}
                                 ">
                                 <a class="nav-link"
                                    href="#">
@@ -316,6 +316,12 @@
                                     <span>POS</span>
                                 </a>
                                 <ul class="nav nav-children">
+                                    @if(in_array('pos', $vc_module_levels))
+                                        <li class="{{ ($firstLevel === 'pos' && $secondLevel === 'fast')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{route('tenant.pos.fast')}}">Venta rápida</a>
+                                        </li>
+                                    @endif
                                     @if(in_array('pos', $vc_module_levels))
                                         <li class="{{ ($firstLevel === 'pos'  )?'nav-active':'' }}">
                                             <a class="nav-link"
@@ -359,8 +365,7 @@
                                 @if(in_array('ecommerce', $vc_module_levels))
                                     <li class="">
                                         <a class="nav-link"
-                                           onclick="window.open( '{{ route("tenant.ecommerce.index") }} ')">Ir a
-                                                                                                            Tienda</a>
+                                           onclick="window.open( '{{ route("tenant.ecommerce.index") }} ')">Ir a Tienda</a>
                                     </li>
                                 @endif
                                 @if(in_array('ecommerce_orders', $vc_module_levels))
@@ -611,8 +616,7 @@
                                                 @if(in_array('purchases_quotations', $vc_module_levels))
                                                     <li class="{{ ($firstLevel === 'purchase-quotations')?'nav-active':'' }}">
                                                         <a class="nav-link"
-                                                           href="{{route('tenant.purchase-quotations.index')}}">Solicitar
-                                                                                                                cotización</a>
+                                                           href="{{route('tenant.purchase-quotations.index')}}">Solicitar cotización</a>
                                                     </li>
                                                 @endif
                                             </ul>
@@ -998,9 +1002,7 @@
                                 @if(in_array('finances_payment_method_types', $vc_module_levels))
                                     <li class="{{(($firstLevel === 'finances') && ($secondLevel == 'payment-method-types')) ? 'nav-active' : ''}}">
                                         <a class="nav-link"
-                                           href="{{route('tenant.finances.payment_method_types.index')}}">Ingresos y
-                                                                                                          Egresos - M.
-                                                                                                          Pago</a>
+                                           href="{{route('tenant.finances.payment_method_types.index')}}">Ingresos y Egresos - M. Pago</a>
                                     </li>
                                 @endif
                             </ul>
@@ -1191,10 +1193,7 @@
                             </a>
                             <ul class="nav nav-children">
                                 {{--                                @if(in_array('suscription_app_client', $vc_module_levels))--}}
-
-
-                                <li class="nav-parent
-{{ ( ($firstLevel === 'suscription') && ($secondLevel === 'client') ) ? ' nav-active nav-expanded ' : '' }}
+                                <li class="nav-parent {{ ( ($firstLevel === 'suscription') && ($secondLevel === 'client') ) ? ' nav-active nav-expanded ' : '' }}
                                     ">
 
                                     <a class="nav-link"
@@ -1261,33 +1260,30 @@
                     {{-- Produccion --}}
                     @if(in_array('production_app', $vc_modules) )
 
-                            <li class=" nav-parent {{ (
-		// ($firstLevel === 'item-production') ||
-		($firstLevel === 'production') ||
-	 ($firstLevel === 'mill-production') ) ? 'nav-active nav-expanded' : '' }}">
-                                <a class="nav-link"
-                                   href="#">
-                                    <i class="fa fas fa-calendar-check"
-                                       aria-hidden="true"></i>
-                                    <span>Producción</span>
-                                </a>
-                                <ul class="nav nav-children">
-                                    <li class="{{ (($firstLevel === 'production') ) ? 'nav-active' : '' }}">
-                                        <a class="nav-link"
-                                           href="{{ route('tenant.production.index') }}">
-                                            Productos Fabricados
-                                        </a>
-                                    </li>
-                                    <li class="{{ (($firstLevel === 'mill-production')) ? 'nav-active' : '' }}">
-                                        <a class="nav-link"
-                                           href="{{ route('tenant.mill_production.index') }}">
-                                            Ingreso de Insumos
-                                        </a>
-                                    </li>
+                        <li class=" nav-parent {{ (($firstLevel === 'production') || ($firstLevel === 'mill-production') ) ? 'nav-active nav-expanded' : '' }}">
+                            <a class="nav-link"
+                                href="#">
+                                <i class="fa fas fa-calendar-check"
+                                    aria-hidden="true"></i>
+                                <span>Producción</span>
+                            </a>
+                            <ul class="nav nav-children">
+                                <li class="{{ (($firstLevel === 'production') ) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.production.index') }}">
+                                        Productos Fabricados
+                                    </a>
+                                </li>
+                                <li class="{{ (($firstLevel === 'mill-production')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.mill_production.index') }}">
+                                        Ingreso de Insumos
+                                    </a>
+                                </li>
 
-                                </ul>
-                            </li>
-                        @endif
+                            </ul>
+                        </li>
+                    @endif
                     {{-- APP --}}
                     @if(in_array('apps', $vc_modules))
                         <li class="">
@@ -1298,8 +1294,6 @@
                             </a>
                         </li>
                     @endif
-
-
                 </ul>
             </nav>
         </div>
