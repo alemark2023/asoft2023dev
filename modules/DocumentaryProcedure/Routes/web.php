@@ -6,7 +6,10 @@ $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
 if ($hostname) {
 	Route::domain($hostname->fqdn)->group(function () {
-		Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->prefix('documentary-procedure')->group(function () {
+		Route::middleware(['auth', 'redirect.module', 'locked.tenant'])
+            ->prefix('documentary-procedure')
+            ->group(function () {
+
 			Route::get('offices', 'DocumentaryOfficeController@index')->name('documentary.offices');
 			Route::post('offices/store', 'DocumentaryOfficeController@store');
 			Route::put('offices/{id}/update', 'DocumentaryOfficeController@update');
@@ -66,6 +69,10 @@ if ($hostname) {
             Route::get('files_simplify', 'DocumentaryFileController@index_simplify')->name('documentary.files_simplify');
             Route::get('files_simplify/export/excel', 'DocumentaryFileController@excel');
             Route::get('files_simplify/export/pdf', 'DocumentaryFileController@pdf');
+
+
+            Route::post('files_simplify/upload/{id}/update', 'DocumentaryFileController@uploadFile');
+            Route::post('files_simplify/upload/store', 'DocumentaryFileController@uploadFile');
 
         });
 	});

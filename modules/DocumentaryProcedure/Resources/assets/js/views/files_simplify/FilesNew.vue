@@ -60,8 +60,8 @@
                     class="form-group col-sm-12 col-md-6 col-lg-4 ">
                     <label>Tipo de tramite <span class="text-danger">*</span></label>
                     <el-select
-                        :loading="loading"
                         v-model="form.documentary_process_id"
+                        :loading="loading"
                         @change="ChangeSelect"
                     >
                         <el-option
@@ -83,9 +83,9 @@
                     :class="{ 'has-danger': errors.number }"
                     class="form-group col-sm-12 col-md-6 col-lg-4 ">
 
-                <label>Código de expediente (interno) </label>
-                    <el-input                         :loading="loading"
-                                                      v-model="form.invoice"></el-input>
+                    <label>Código de expediente (interno) </label>
+                    <el-input v-model="form.invoice"
+                              :loading="loading"></el-input>
                     <small
                         v-if="errors.invoice"
                         class="form-control-feedback"
@@ -99,8 +99,8 @@
                     class="form-group col-sm-12 col-md-3 col-lg-3 ">
                     <label>Fecha de registro <span class="text-danger">*</span></label>
                     <el-date-picker
-                        :loading="loading"
                         v-model="form.date_register"
+                        :loading="loading"
                         placeholder="Selecciona una fecha"
                         type="date"
                     >
@@ -156,53 +156,69 @@
                                 <tr v-for="(row, index) in form.guides">
 
                                     <template v-if="row.visible !== false">
-                                    <td> {{ index + 1 }}</td>
-                                    <td>
-                                        {{ row.guide }}
+                                        <td> {{ index + 1 }}</td>
+                                        <td>
+                                            {{ row.guide }}
 
-                                    </td>
-                                    <td>
-                                        {{ row.created_at }}
-                                    </td>
-                                    <td>
-                                        {{ getStage(row.doc_office_id) }}
-                                    </td>
-                                    <td>
-                                        {{ row.date_take }}
-                                    </td>
-                                    <td>
-                                        {{ row.date_end }}
-                                    </td>
-                                    <td>
-                                        {{ getStatus(row.documentary_guides_number_status_id) }}
-                                    </td>
-                                    <td>
-                                        {{ getUser(row.user_id) }}
-                                    </td>
-                                    <td>
-                                        {{ row.observation }}
-                                    </td>
-                                    <td>
+                                        </td>
+                                        <td>
+                                            {{ row.created_at }}
+                                        </td>
+                                        <td>
+                                            {{ getStage(row.doc_office_id) }}
+                                        </td>
+                                        <td>
+                                            {{ row.date_take }}
+                                        </td>
+                                        <td>
+                                            {{ row.date_end }}
+                                        </td>
+                                        <td>
+                                            {{ getStatus(row.documentary_guides_number_status_id) }}
+                                        </td>
+                                        <td>
+                                            {{ getUser(row.user_id) }}
+                                        </td>
+                                        <td>
+                                            {{ row.observation }}
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button id="dropdownMenuButton"
+                                                        aria-expanded="false"
+                                                        aria-haspopup="true"
+                                                        class="btn btn-default btn-sm"
+                                                        data-toggle="dropdown"
+                                                        type="button">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </button>
+                                                <div aria-labelledby="dropdownMenuButton"
+                                                     class="dropdown-menu">
+                                                    <button
+                                                        class="dropdown-item"
+                                                        type="button"
+                                                        @click.prevent="clickEditStep(row)">
+                                                        Editar/Ver
+                                                    </button>
+                                                    <button
+                                                        class="dropdown-item"
+                                                        type="button"
+                                                        @click.prevent="row=clickRemoveItem(index, row)">
+                                                        Eliminar
+                                                    </button>
+                                                    <button
+                                                        class="dropdown-item"
+                                                        type="button"
+                                                        @click.prevent="row=clickFileUpload(row.id)">
+                                                        Cargar archivo
+                                                    </button>
 
-                                        <button class="btn waves-effect waves-light btn-xs btn-primary m-1__2"
 
-                                                type="button"
-                                                @click.prevent="clickEditStep(row)">
-                                            <i class="fa fa-pen"></i>
-                                        </button>
-                                        <br>
+                                                </div>
+                                            </div>
 
 
-                                        <button class="btn waves-effect waves-light btn-xs btn-danger"
-                                                type="button"
-                                                @click.prevent="row=clickRemoveItem(index, row)">x
-                                        </button>
-
-
-                                        <!--                                            ADJUNTAR ARCHIVO<br>-->
-
-<!--                                    <br>    CANCELAR Y ARCHIVAR<br>-->
-                                    </td>
+                                        </td>
                                     </template>
                                 </tr>
                                 </tbody>
@@ -274,7 +290,11 @@
                 :showDialog.sync="showDialogNewPerson"
                 type="customers"
             ></person-form>
-
+            <modal-file-upload
+                :stageId="stageId"
+                :visible.sync="showFileUpload"
+                @updateStage="updateData"
+            ></modal-file-upload>
 
 
         </div>
@@ -291,10 +311,12 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import {mapActions, mapState} from "vuex";
 // import TableObservation from "./TableObservation";
 import AddProcessModal from './ModalAddProcess.vue';
+import ModalFileUpload from './ModalFileUpload.vue';
 
 export default {
     components: {
         // TableObservation,
+        ModalFileUpload,
         AddProcessModal,
         // TableArchives,
         PersonForm,
@@ -367,6 +389,8 @@ export default {
             attachments: [],
             data_load: false,
             input_person: null,
+            showFileUpload: false,
+            stageId: 0,
             urlDropzone: null,
             form: {
                 date_register: moment().format("YYYY-MM-DD"),
@@ -740,13 +764,13 @@ export default {
             // const data = this.onGenerateData();
             let data = '';
             console.log('e1')
-                if (this.form && this.form.id) {
-                    console.log('e2')
-                    this.onUpdate(data)
-                } else {
-                    console.log('e3')
-                    this.onStore(data)
-                }
+            if (this.form && this.form.id) {
+                console.log('e2')
+                this.onUpdate(data)
+            } else {
+                console.log('e3')
+                this.onStore(data)
+            }
             console.log('e4')
         },
         onClose() {
@@ -845,16 +869,10 @@ export default {
                         this.currentYear = this.form.year;
                         this.attachFile = null;
                         this.ChangeSelect();
-                    }
-                    else if (this.recordid !== undefined){
-                        this.$http
-                            .post(`${this.basePath}/ask/${this.recordid}`)
-                            .then((response) => {
-                                this.form = response.data;
-                            })
+                    } else if (this.recordid !== undefined) {
+                        this.updateData()
 
-                    }
-                    else if (this.file == null) {
+                    } else if (this.file == null) {
                         this.title = "Crear tramite";
                         this.onInitializeForm();
                         // this.onGetDataForNewFile();
@@ -865,10 +883,15 @@ export default {
                 });
 
 
-
-
-
-
+        },
+        updateData() {
+            if (this.recordid > 0) {
+                this.$http
+                    .post(`${this.basePath}/ask/${this.recordid}`)
+                    .then((response) => {
+                        this.form = response.data;
+                    })
+            }
         },
 
         clickAddStep() {
@@ -949,7 +972,10 @@ export default {
                 this.editGuide = row;
             }
         },
-
+        clickFileUpload(id) {
+            this.stageId = id;
+            this.showFileUpload = true;
+        },
         clickRemoveItem(index, row) {
             row.visible = false
             // this.form.guides.splice(index, 1)

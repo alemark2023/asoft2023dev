@@ -172,26 +172,18 @@
 
                               */
             $guides =  $this->documentary_guide_number;
-            $data['guides'] =$guides;
+            // $data['guides'] =$guides;
+            $data['guides'] =$guides->transform(function (DocumentaryGuidesNumber $row){
+                return $row->getCollectionData();
+            });
             $lastGuide = $guides->last();
             // $lastGuide->office = [];}
             if($lastGuide === null) {
                 $lastGuide = new DocumentaryGuidesNumber();
             }
-            $lastGuide->office = $lastGuide->doc_office ;
+            // $lastGuide->office = $lastGuide->doc_office ;
+            $lastGuide = $lastGuide->getCollectionData();
 
-            $class = 'badge bg-secondary text-white ';
-
-            if(!empty( $lastGuide->date_end )){
-                $now = Carbon::now();
-                $parse = Carbon::createFromFormat('Y-m-d H:i:s',$lastGuide->date_end);
-                if($now > $parse){
-                    $class .= "bg-danger";
-                }else{
-                    $class .= "bg-success";
-                }
-            }
-            $lastGuide->class = $class;
             $data['last_guide'] = $lastGuide;
             $data['last_guide_status'] = $lastGuide->documentary_guides_number_status ?? null;
             $data['documentary_office'] = $documentary_file_office->getCollectionData();

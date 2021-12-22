@@ -572,8 +572,7 @@
             $filenameOriginal = str_replace('.' . $ext, '', $file->getClientOriginalName());
             $name = $filenameOriginal . '-' . time() . '.' . $ext;
             $path = 'storage/uploads/files/';
-            $fullpath = $path . $name;
-            $file->storeAs('public/uploads/files', $name);
+            $fullpath = $file->storeAs($path, $name);
 
             return $fullpath;
         }
@@ -1025,5 +1024,23 @@
             return $pdf->stream($filename . '.pdf');
         }
 
+        public function uploadFile(Request  $request){
+
+            $stage = $request->stage_id;
+            if ($request->has('file')) {
+                foreach ($request->file as $file) {
+                    /** @var UploadedFile $file */
+                    $data = [
+                        'user_id' => auth()->user()->id,
+                        'documentary_guides_number_id' => $stage,
+                        'attached_file' => $this->storeFile($file),
+                    ];
+                    $newFile = new FilesFolder($data);
+                    $newFile->push();
+                }
+
+            }
+            return $request->all();
+        }
 
     }

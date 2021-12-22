@@ -125,4 +125,32 @@
             return $this;
         }
 
+        public function documentary_file_archive(){
+            $this->hasMany(DocumentaryFilesArchives::class,'documentary_guides_number_id','id');
+        }
+
+
+        public function getCollectionData(){
+
+
+            $this->files = DocumentaryFilesArchives::where('documentary_guides_number_id',$this->id)->get()->transform( function (DocumentaryFilesArchives $row){
+                return $row->getCollectionData();
+            });
+            $this->office = $this->doc_office ;
+            $class = 'badge bg-secondary text-white ';
+
+            if(!empty( $this->date_end )){
+                $now = Carbon::now();
+                $parse = Carbon::createFromFormat('Y-m-d H:i:s',$this->date_end);
+                if($now > $parse){
+                    $class .= "bg-danger";
+                }else{
+                    $class .= "bg-success";
+                }
+            }
+            $this->class = $class;
+            return $this;
+
+        }
+
     }

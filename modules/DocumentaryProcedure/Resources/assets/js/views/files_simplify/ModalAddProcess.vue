@@ -145,28 +145,6 @@
                     <el-input v-model="guide.observation"
                               placeholder="Observaciones"></el-input>
                 </div>
-                <div
-                    :class="{ 'has-danger': errors.created_at }"
-                    class="form-group col-sm-12 col-md-6 col-lg-4 ">
-                    <label>
-                        Archivo
-                        <span class="text-danger">*</span></label>
-                    <el-upload
-                        :action="`/finances/payment-file/upload`"
-                        :data="{'index': index}"
-                        :file-list="fileList"
-                        :headers="headers"
-                        :limit="1"
-                        :multiple="false"
-                        :on-remove="handleRemove"
-                        :on-success="onSuccess"
-                        :show-file-list="true"
-                    >
-                        <el-button slot="trigger"
-                                   type="primary"><i class="fas fa-file-upload"></i></el-button>
-                    </el-upload>
-                </div>
-
 
                 <div class="row text-center col-12 p-t-20">
                     <div
@@ -187,6 +165,57 @@
                         </el-button>
                     </div>
                 </div>
+
+
+                <template v-if="guide.files !== undefined && guide.files.length > 0">
+                    <div class="col-12 table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>
+                                    #
+                                </th>
+
+                                <!--                                        <th>
+                                                                            observation
+                                                                        </th>-->
+                                <th>
+                                    Nombre de archivo
+                                </th>
+                                <th>
+                                    Accion
+                                </th>
+                            </tr>
+
+
+                            </thead>
+                            <tbody>
+                            <tr v-for="(archive,index) in guide.files"
+                                :key="archive.id"
+                            >
+                                <td>
+                                    {{ index + 1 }}
+                                <td>
+                                    {{ archive.public_name }}
+                                </td>
+                                <td>
+                                    <el-button type="primary"
+                                               @click.prevent="downloadFile(archive.public_url)">Descargar
+                                    </el-button>
+                                    <el-button :loading="borrando"
+                                               type="danger"
+                                               @click.prevent="removeFile(archive.id)">Borrar
+
+                                    </el-button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </template>
+
+
             </div>
 
         </el-dialog>
@@ -240,17 +269,18 @@ export default {
             guide: {
                 id: null,
                 guide: null,
-                created_at: moment().format('YYYY-MM-DD'),
+                date_take: moment().format('YYYY-MM-DD HH:mm'),
+                date_end: moment().format('YYYY-MM-DD HH:mm'),
+                created_at: moment().format('YYYY-MM-DD HH:mm'),
 
                 doc_office_id: null,
-                date_take: null,
-                date_end: null,
                 documentary_guides_number_status_id: null,
                 user_id: null,
                 observation: null,
             },
             title: "",
             loading: false,
+            borrando: false,
             basePath: "/documentary-procedure/files",
             showDialogNewPerson: false,
             errors: {},
@@ -439,8 +469,8 @@ export default {
         },
         handleRemove(file, fileList) {
 
-            this.guide.file[this.index_file].filename = null
-            this.guide.file[this.index_file].temp_path = null
+            this.guide.files[this.index_file].filename = null
+            this.guide.files[this.index_file].temp_path = null
             this.fileList = []
             this.index_file = null
 
@@ -453,19 +483,47 @@ export default {
             if (response.success) {
 
                 this.index_file = response.data.index
-                this.guide.file[this.index_file].filename = response.data.filename
-                this.guide.file[this.index_file].temp_path = response.data.temp_path
+                this.guide.files[this.index_file].filename = response.data.filename
+                this.guide.files[this.index_file].temp_path = response.data.temp_path
 
             } else {
                 this.cleanFileList()
                 this.$message.error(response.message)
             }
 
-            // console.log(this.guide.file)
+            // console.log(this.guide.files)
 
         },
         cleanFileList() {
             this.fileList = []
+        },
+
+        downloadFile(url) {
+            window.open(url, '_blank');
+        },
+        removeFile(id) {
+            this.borrando = true;
+            this.$http
+                .get(`/documentary-procedure/file/remove/${id}`)
+                .then((result) => {
+                    //reload
+                    // this.updateFile(documentary_file_id)
+                    this.updateFiles()
+                    this.borrando = false;
+                })
+                .catch((err) => {
+                    // this.updateFile(documentary_file_id)
+
+                    this.updateFiles()
+                })
+                .finally(() => {
+                    this.borrando = false;
+                })
+
+        },
+
+        updateFiles() {
+            this.$emit("updateFiles");
         },
     },
 };

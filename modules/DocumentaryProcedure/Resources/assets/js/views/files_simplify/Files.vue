@@ -231,27 +231,46 @@
                             <td class="text-center td-btns">
                                 <template v-if="!item.is_archive">
 
-                                    <button class="btn waves-effect waves-light btn-xs btn-primary m-1__2"
-                                            type="button"
-                                            @click.prevent="editItem(item.id)">
-                                        <i class="fa fa-pen"></i>
 
-                                    </button>
+                                    <div class="dropdown">
+                                        <button id="dropdownMenuButton"
+                                                aria-expanded="false"
+                                                aria-haspopup="true"
+                                                class="btn btn-default btn-sm"
+                                                data-toggle="dropdown"
+                                                type="button">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <div aria-labelledby="dropdownMenuButton"
+                                             class="dropdown-menu">
 
 
-                                    <button class="btn waves-effect waves-light btn-xs btn-danger"
-                                            type="button"
-                                            @click.prevent="removeItem(item.id)">x
-                                    </button>
+                                            <button
+                                                class="dropdown-item"
+                                                type="button"
+                                                @click.prevent="editItem(item.id)">
+                                                Editar/Ver
 
-                                    <button class="btn waves-effect waves-light btn-xs btn-danger"
-                                            type="button"
-                                            @click.prevent="archiveFile(item.id)">
-                                        <i class="fa fa-archive"></i>
+                                            </button>
+                                            <button
+                                                class="dropdown-item"
+                                                type="button"
+                                                @click.prevent="removeItem(item.id)">
+                                                Eliminar
+                                            </button>
 
-                                    </button>
+                                            <button
+                                                class="dropdown-item"
+                                                type="button"
+                                                @click.prevent="archiveFile(item.id)">
+                                                Archivar
 
-                                    <br>
+                                            </button>
+
+
+                                        </div>
+                                    </div>
+
                                     <!--
                                     AGREGAR SECUENCIA DE TRAMITE <br>
                                     IMPRIMIR ESTADO DE TRAMITE<br>
