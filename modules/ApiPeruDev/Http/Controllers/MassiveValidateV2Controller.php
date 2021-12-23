@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\ApiPeruDev\Data\ServiceData;
 
-class MassiveValidateController extends Controller
+class MassiveValidateV2Controller extends Controller
 {
     public function tables()
     {
@@ -64,19 +64,20 @@ class MassiveValidateController extends Controller
         if (strlen($c_soap_username) > 11) {
             $soap_username = substr($c_soap_username, 11, strlen($c_soap_username) - 11);
         }
+
         $total_documents = 0;
         $groups = $records->chunk(100);
         foreach ($groups as $group) {
             $documents = [];
             foreach ($group as $row) {
-                $documents[] = [
-                    "ruc_emisor" => $company->number,
-                    "codigo_tipo_documento" => $row->document_type_id,
-                    "serie_documento" => $row->series,
-                    "numero_documento" => $row->number,
-                    "fecha_de_emision" => $row->date_of_issue->format('Y-m-d'),
-                    "total" => $row->total
-                ];
+                $documents[] = join('|', [
+                    $company->number,
+                    $row->document_type_id,
+                    $row->series,
+                    $row->number,
+                    $row->date_of_issue->format('Y-m-d'),
+                    $row->total
+                ]);
             }
 
             $data = [
@@ -103,26 +104,27 @@ class MassiveValidateController extends Controller
         $res = (new ServiceData)->massive_validate_cpe($data);
         if ($res['success']) {
             foreach ($res['data']['comprobantes'] as $row) {
+                $row_data = explode('|', $row);
                 $state_type_id = null;
-                if ($row['comprobante_estado_codigo'] === '-') {
+                if ($row_data[6] === '-') {
                     $state_type_id = '01';
                 }
-                if ($row['comprobante_estado_codigo'] === '0') {
+                if ($row_data[6] === '0') {
                     $state_type_id = '01';
                 }
-                if ($row['comprobante_estado_codigo'] === '1') {
+                if ($row_data[6] === '1') {
                     $state_type_id = '05';
                 }
-                if ($row['comprobante_estado_codigo'] === '2') {
+                if ($row_data[6] === '2') {
                     $state_type_id = '11';
                 }
                 if (!is_null($state_type_id)) {
                     Document::query()->where('soap_type_id', $company->soap_type_id)
-                        ->where('document_type_id', $row['codigo_tipo_documento'])
-                        ->where('series', $row['serie_documento'])
-                        ->where('number', $row['numero_documento'])
-                        ->where('date_of_issue', $row['fecha_de_emision'])
-                        ->where('total', $row['total'])
+                        ->where('document_type_id', $row_data[1])
+                        ->where('series', $row_data[2])
+                        ->where('number', $row_data[3])
+                        ->where('date_of_issue', $row_data[4])
+                        ->where('total', $row_data[5])
                         ->update([
                             'state_type_id' => $state_type_id
                         ]);
