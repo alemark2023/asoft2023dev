@@ -1086,4 +1086,52 @@
                 'message'=>'Borrado existoso'
             ];
         }
+
+        public function addStage(Request $request){
+            $name = $request->name;
+            if(!empty($name)){
+                $name = trim($name);
+                $stage = Stage::firstOrNew(['name'=>$name]);
+                $stage->push();
+                return [
+                    'success'=>true,
+                    'data'=>$stage->getCollectionData(),
+                    'message'=>'Se ha creado existosamente'
+                ];;
+            }
+            return [
+                'data'=>null,
+                'message'=>'No se pudo guardar'
+            ];;
+
+        }
+        public function addStatus(Request $request){
+            $name = $request->name;
+            if(!empty($name)){
+                $name = trim($name);
+                $stage = DocumentaryGuidesNumberStatus::firstOrNew(['name'=>$name]);
+                $stage->push();
+
+                return [
+                    'success'=>true,
+                    'data'=>$stage->toArray(),
+                    'message'=>'Se ha creado existosamente'
+                ];;
+            }
+            return [
+                'data'=>null,
+                'message'=>'No se pudo guardar'
+            ];;
+
+        }
+        public function updateStatus(Request $request, DocumentaryGuidesNumber $id){
+
+            $id->documentary_guides_number_status_id = $request->status;
+            $id->push();
+            return [
+                'message'=>'Se ha actualizado correctamente',
+                'data'=> $id->toArray(),
+            ];
+
+        }
     }

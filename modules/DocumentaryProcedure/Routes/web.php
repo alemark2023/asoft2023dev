@@ -53,6 +53,8 @@ if ($hostname) {
             route::get('file/remove/{id}', 'DocumentaryFilesArchivesController@destroy');
             route::post('file/reload/{id?}', 'DocumentaryFileController@getData');
 
+                route::post('files/addStage', 'DocumentaryFileController@addStage');
+                route::post('files/addStatus', 'DocumentaryFileController@addStatus');
 
             Route::get('files_simplify/create', 'DocumentaryFileController@index_simplify_new');
             Route::get('files_simplify/new', 'DocumentaryFileController@index_simplify_new');
@@ -60,7 +62,6 @@ if ($hostname) {
             Route::post('files_simplify/ask/{id?}', 'DocumentaryFileController@getDocumentary');
             Route::post('files_simplify/destroy/{id?}', 'DocumentaryFileController@destroy');
             Route::post('files_simplify/archive/{id?}', 'DocumentaryFileController@archive');
-
             Route::get('files_simplify/tables', 'DocumentaryFileController@tables');
             Route::post('files_simplify/{id}/update', 'DocumentaryFileController@store_simplify');
             Route::get('files_simplify/document-number', 'DocumentaryFileController@getDocumentNumber');
@@ -68,6 +69,7 @@ if ($hostname) {
 
             Route::get('files_simplify', 'DocumentaryFileController@index_simplify')->name('documentary.files_simplify');
             Route::post('files_simplify/removeStage/{id}', 'DocumentaryFileController@removeGuide');
+            Route::post('files_simplify/updateStage/{id}', 'DocumentaryFileController@updateStatus');
             Route::get('files_simplify/export_current/{id}', 'DocumentaryFileController@pdfIndividual');
             Route::get('files_simplify/export/excel', 'DocumentaryFileController@excel');
             Route::get('files_simplify/export/pdf', 'DocumentaryFileController@pdf');
