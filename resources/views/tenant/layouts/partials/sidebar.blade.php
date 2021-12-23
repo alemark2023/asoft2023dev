@@ -317,15 +317,15 @@
                                 </a>
                                 <ul class="nav nav-children">
                                     @if(in_array('pos', $vc_module_levels))
-                                        <li class="{{ ($firstLevel === 'pos' && $secondLevel === 'fast')?'nav-active':'' }}">
-                                            <a class="nav-link"
-                                               href="{{route('tenant.pos.fast')}}">Venta rápida</a>
-                                        </li>
-                                    @endif
-                                    @if(in_array('pos', $vc_module_levels))
                                         <li class="{{ ($firstLevel === 'pos'  )?'nav-active':'' }}">
                                             <a class="nav-link"
                                                href="{{route('tenant.pos.index')}}">Punto de venta</a>
+                                        </li>
+                                    @endif
+                                    @if(in_array('pos', $vc_module_levels))
+                                        <li class="{{ ($firstLevel === 'pos' && $secondLevel === 'fast')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{route('tenant.pos.fast')}}">Venta rápida</a>
                                         </li>
                                     @endif
                                     @if(in_array('cash', $vc_module_levels))
