@@ -1079,8 +1079,11 @@
         }
 
 
-        public function removeGuide(DocumentaryGuidesNumber $id){
+        public function removeGuide( $id){
+            $id = DocumentaryGuidesNumber::find($id);
             if(!empty($id)) $id->delete();
-            return true;
+            return [
+                'message'=>'Borrado existoso'
+            ];
         }
     }

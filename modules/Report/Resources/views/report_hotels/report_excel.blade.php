@@ -54,7 +54,9 @@
                     <th>Status de pago</th>
                     <th>Status checkout</th>
                     <th>Fecha de entrada</th>
+                    <th>Hora de entrada</th>
                     <th>Fecha de salida</th>
+                    <th>Hora de salida</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -74,7 +76,9 @@
                         <td>{{ $value ->payment_status === "PAID" ? "Pagado" : "Debe" }}</td>
                         <td>{{$value ->status}}</td>
                         <td>{{$value ->input_date}}</td>
+                        <td>{{$value ->input_time}}</td>
                         <td>{{$value ->output_date}}</td>
+                        <td>{{$value ->output_time}}</td>
 
 
                     </tr>
