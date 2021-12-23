@@ -58,6 +58,7 @@
                         </div>
                     </div>
                 </el-tab-pane>
+                <!--
                 <el-tab-pane class name="second">
                     <span slot="label">Seleccion de etapas</span>
 
@@ -99,6 +100,7 @@
                         </div>
                     </div>
                 </el-tab-pane>
+                -->
             </el-tabs>
 
             <div class="col-md-12 row text-center p-t-20">
@@ -210,6 +212,8 @@ export default {
             this.$emit("update:visible", false);
         },
         onCreate() {
+            this.tabActive = 'first';
+
             if (this.process) {
                 this.form = this.process;
                 this.title = "Editar trámite";

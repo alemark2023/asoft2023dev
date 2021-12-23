@@ -1124,6 +1124,7 @@
                                            href="{{ route('documentary.offices') }}">Listado de Etapas</a>
                                     </li>
                                 @endif
+                                {{--
                                 @if(in_array('documentary_requirements', $vc_module_levels))
 
                                     <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'requirements')) ? 'nav-active' : '' }}">
@@ -1132,6 +1133,7 @@
                                     </li>
 
                                 @endif
+                                    --}}
                                 @if(in_array('documentary_process', $vc_module_levels))
                                     <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'processes')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
@@ -1151,9 +1153,15 @@
                             @endif
                                 --}}
                                 @if(in_array('documentary_files', $vc_module_levels))
+                                    {{--
                                     <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'files')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
                                            href="{{ route('documentary.files') }}">Listado de tramites</a>
+                                    </li>
+                                    --}}
+                                    <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'files')) ? 'nav-active' : '' }}">
+                                        <a class="nav-link"
+                                           href="{{ route('documentary.files_simplify') }}">Listado de tramites</a>
                                     </li>
                                 @endif
                             </ul>
