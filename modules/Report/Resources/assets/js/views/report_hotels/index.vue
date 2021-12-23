@@ -14,7 +14,9 @@
                             <th  >Status de pago</th>
                             <th  >Status checkout</th>
                             <th  >Fecha de entrada</th>
+                            <th  >Hora de entrada</th>
                             <th  >Fecha de salida</th>
+                            <th  >Hora de salida</th>
                            <!-- <th  >Edad</th>
                             <th  >E. civil</th>
                             <th  >Nacionalidad</th>
@@ -30,7 +32,9 @@
                             <td>{{ row.payment_status === "PAID" ? "Pagado" : "Debe" }}</td>
                             <td>{{row.status}}</td>
                             <td>{{row.input_date}}</td>
+                            <td>{{row.input_time}}</td>
                             <td>{{row.output_date}}</td>
+                            <td>{{row.output_time}}</td>
 
                         <!--
 
