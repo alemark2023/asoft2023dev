@@ -19,20 +19,21 @@ class GlobalPaymentCollection extends ResourceCollection
             $data_person = $row->data_person;
 
             $document_type = '';
+            $payment = ($row->payment)?$row->payment:null;
+                if ($payment !== null && $row->payment->associated_record_payment !== null && $row->payment->associated_record_payment->document_type) {
 
-            if($row->payment->associated_record_payment->document_type){
+                    $document_type = $row->payment->associated_record_payment->document_type->description;
 
-                $document_type = $row->payment->associated_record_payment->document_type->description;
+                } elseif ($row->instance_type == 'technical_service') {
 
-            }elseif($row->instance_type == 'technical_service'){
+                    $document_type = 'ST';
 
-                $document_type = 'ST';
+                } elseif ($payment !== null && isset($row->payment->associated_record_payment->prefix)) {
 
-            }elseif(isset($row->payment->associated_record_payment->prefix)){
+                    $document_type = $row->payment->associated_record_payment->prefix;
 
-                $document_type = $row->payment->associated_record_payment->prefix;
+                }
 
-            }
             $cci = $row->getCciAcoount();
             $personName= $data_person->name;
             if(!is_string($personName)){
@@ -46,12 +47,12 @@ class GlobalPaymentCollection extends ResourceCollection
                 'id' => $row->id,
                 'destination_description' => $row->destination_description,
                 'cci' => $cci,
-                'date_of_payment' => $row->payment->date_of_payment->format('Y-m-d'),
+                'date_of_payment' => ($payment !== null && $row->payment->date_of_payment !== null) ? $row->payment->date_of_payment->format('Y-m-d'):'',
                 'payment_method_type_description' => $this->getPaymentMethodTypeDescription($row),
-                'reference' => $row->payment->reference,
-                'total' => $row->payment->payment,
-                'number_full' => $row->payment->associated_record_payment->number_full,
-                'currency_type_id' => $row->payment->associated_record_payment->currency_type_id,
+                'reference' => ($payment !== null) ?  $row->payment->reference:'',
+                'total' => ($payment !== null) ? $row->payment->payment: 0,
+                'number_full' => ($payment !== null && $row->payment->associated_record_payment) ? $row->payment->associated_record_payment->number_full:'',
+                'currency_type_id' =>($payment !== null && $row->payment->associated_record_payment != null) ? $row->payment->associated_record_payment->currency_type_id:'',
                 // 'document_type_description' => ($row->payment->associated_record_payment->document_type) ? $row->payment->associated_record_payment->document_type->description:'NV',
                 'document_type_description' => $document_type,
                 'person_name' => $personName,
@@ -71,12 +72,12 @@ class GlobalPaymentCollection extends ResourceCollection
 
         $payment_method_type_description = '';
 
-        if($row->payment->payment_method_type){
+        if($row->payment !== null && $row->payment->payment_method_type){
 
             $payment_method_type_description = $row->payment->payment_method_type->description;
 
         }else{
-            $payment_method_type_description = $row->payment->expense_method_type->description;
+            $payment_method_type_description = ($row->payment !== null  && $row->payment->expense_method_type!== null) ? $row->payment->expense_method_type->description:'';
         }
 
         return $payment_method_type_description;
