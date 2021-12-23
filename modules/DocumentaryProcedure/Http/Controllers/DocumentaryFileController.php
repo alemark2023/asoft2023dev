@@ -1124,10 +1124,15 @@
             ];;
 
         }
-        public function updateStatus(Request $request, DocumentaryGuidesNumber $id){
+        public function updateStatus(Request $request,  $id){
 
-            $id->documentary_guides_number_status_id = $request->status;
-            $id->push();
+            $guide = DocumentaryGuidesNumber::find($id);
+            if(!empty($guide)){
+                $id->documentary_guides_number_status_id = $request->status;
+                $id->push();
+            }else{
+                $id = new DocumentaryGuidesNumber(['documentary_guides_number_status_id'=>$request->status]);
+            }
             return [
                 'message'=>'Se ha actualizado correctamente',
                 'data'=> $id->toArray(),
