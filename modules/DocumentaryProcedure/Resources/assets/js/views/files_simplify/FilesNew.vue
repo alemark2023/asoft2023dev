@@ -83,7 +83,10 @@
                     :class="{ 'has-danger': errors.number }"
                     class="form-group col-sm-12 col-md-6 col-lg-4 ">
 
-                    <label>Código de expediente (interno) </label>
+                    <label>
+                        Código de expediente (interno)
+                        <span class="text-danger">*</span>
+                    </label>
                     <el-input v-model="form.invoice"
                               :loading="loading"></el-input>
                     <small
@@ -128,9 +131,17 @@
                         v-text="errors.time_register[0]"
                     ></small>
                 </div>
+                <!--
+                <div class="col-12 row  ">
+                    <div class="col-1">&nbsp;</div>
+                    <div class="col-10">
+                        {{titleDescription}}
+                    </div>
+
+                </div>
+                -->
 
 
-                <div class="row">
                     <div class="col-12">
                         <label>
                             Procesos
@@ -143,6 +154,7 @@
                                     <th>Num. De Seguimiento</th>
                                     <th>Fecha/Hora De Registro</th>
                                     <th>Etapa</th>
+                                    <th>Descripcion</th>
                                     <th>Tiempo Que Toma El Tramite</th>
                                     <th>Fecha Concluida</th>
                                     <th>Estado</th>
@@ -166,6 +178,9 @@
                                         </td>
                                         <td>
                                             {{ getStage(row.doc_office_id) }}
+                                        </td>
+                                        <td>
+                                            {{ getStageDescription(row.doc_office_id) }}
                                         </td>
                                         <td>
                                             {{ row.date_take }}
@@ -197,7 +212,7 @@
                                                     <button
                                                         class="dropdown-item"
                                                         type="button"
-                                                        @click.prevent="clickEditStep(row)">
+                                                        @click.prevent="clickEditStep(row,index)">
                                                         Editar/Ver
                                                     </button>
                                                     <button
@@ -239,7 +254,6 @@
                             </label>
                         </div>
                     </div>
-                </div>
                 <!--
                 <div v-if="haveObservation(file)">
                     <table-observation></table-observation>
@@ -274,6 +288,7 @@
 
 
             </div>
+
             <!-- </el-dialog> -->
 
             <add-process-modal
@@ -406,6 +421,7 @@ export default {
             },
             disable: false,
             title: "",
+            titleDescription: "",
             loading: false,
             basePath: "/documentary-procedure/files_simplify",
             showDialogNewPerson: false,
@@ -539,6 +555,7 @@ export default {
         ChangeSelect() {
             this.setRequirement()
             this.convertRequirementsIntoArray()
+            this.titleDescription = this.getProcessDescription(this.form.documentary_process_id)
         },
         haveObservation(file) {
             if (file === null) return false;
@@ -896,25 +913,14 @@ export default {
             if (this.data_load == true) {
                 this.showDialogNewProcess = true
             }
-            /*
-            let newGuide = {
-                id: null,
-                guide: '',
-                created_at: moment().format('YYYY-MM-DD HH:mm'),
-                doc_office_id: '',
-                date_take: '',
-                date_end: '',
-                documentary_guides_number_status_id: '',
-                user_id: '',
-                observation: '',
-
-            };
-            this.form.guides.push(newGuide);
-            */
 
         },
         addStep(row) {
-            this.form.guides.push(row);
+            if(row.index !== undefined){
+                this.form.guides[row.index]=row
+            }else{
+                this.form.guides.push(row);
+            }
             this.editGuide = {};
 
         },
@@ -931,6 +937,30 @@ export default {
             let retu = '';
             if (stageT !== undefined) {
                 retu = stageT.name
+            }
+            return retu
+        },
+        getStageDescription(doc_office_id) {
+            if (this.offices === undefined) return '';
+            if (this.offices.length < 1) return '';
+            let stageT = this.offices.find((it) => {
+                return it.id === doc_office_id
+            });
+            let retu = '';
+            if (stageT !== undefined) {
+                retu = stageT.description
+            }
+            return retu
+        },
+        getProcessDescription(documentary_process_id) {
+            if (this.processes === undefined) return '';
+            if (this.processes.length < 1) return '';
+            let stageT = this.processes.find((it) => {
+                return it.id === documentary_process_id
+            });
+            let retu = '';
+            if (stageT !== undefined) {
+                retu = stageT.name+": "+stageT.description
             }
             return retu
         },
@@ -963,9 +993,10 @@ export default {
             }
             return retu
         },
-        clickEditStep(row) {
+        clickEditStep(row,index) {
             if (this.data_load == true) {
                 this.showDialogNewProcess = true
+                row.index = index
                 this.editGuide = row;
             }
         },
