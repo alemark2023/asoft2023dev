@@ -3,7 +3,9 @@
     namespace App\Models\Tenant;
 
 
+    use Illuminate\Database\Eloquent\Relations\HasMany;
     use Illuminate\Database\Eloquent\SoftDeletes;
+    use Modules\LogisticOperator\Models\LogisticYobel;
 
 
     class Order extends ModelTenant
@@ -66,5 +68,16 @@
             ];
 
             return $data;
+        }
+
+
+        /**
+         * Operador logistico Yobel
+         *
+         * @return HasMany
+         */
+        public function logistic_yobel()
+        {
+            return $this->hasMany(LogisticYobel::class);
         }
     }

@@ -371,6 +371,8 @@ Vue.component('tenant-mill-form', require('../../modules/Production/Resources/as
 Vue.component('tenant-production-index', require('../../modules/Production/Resources/assets/js/view/production/index.vue'));
 Vue.component('tenant-production-form', require('../../modules/Production/Resources/assets/js/view/production/form.vue'));
 
+/** Operador Logistico Yobel */
+Vue.component('tenant-logistic-operator-yobel-form', require('../../modules/LogisticOperator/Resources/assets/js/yobel/index.vue'));
 
 import moment from 'moment';
 

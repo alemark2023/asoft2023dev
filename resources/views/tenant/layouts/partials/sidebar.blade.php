@@ -1262,9 +1262,9 @@
                     @if(in_array('production_app', $vc_modules) )
 
                             <li class=" nav-parent {{ (
-		// ($firstLevel === 'item-production') ||
+
 		($firstLevel === 'production') ||
-	 ($firstLevel === 'mill-production') ) ? 'nav-active nav-expanded' : '' }}">
+	 ($secondLevel === 'mill-production') ) ? 'nav-active nav-expanded' : '' }}">
                                 <a class="nav-link"
                                    href="#">
                                     <i class="fa fas fa-calendar-check"
@@ -1288,6 +1288,30 @@
                                 </ul>
                             </li>
                         @endif
+
+
+
+                        <!-- @todo homologar el item de operador logistico yobel -->
+                        <li class=" nav-parent {{ (
+
+		($firstLevel === 'logistic_operator') ||
+	 ($firstLevel === 'logistic_operator' && $secondLevel =='yobel') ) ? 'nav-active nav-expanded' : '' }}">
+                            <a class="nav-link"
+                               href="#">
+                                <i class="fa fas fa-calendar-check"
+                                   aria-hidden="true"></i>
+                                <span>OPERADOR LOGISTICO </span>
+                            </a>
+                            <ul class="nav nav-children">
+                                <li class="{{ ($firstLevel === 'logistic_operator' && $secondLevel =='yobel') ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.logistic_operator.yobel.index') }}">
+                                        Yobel
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
                     {{-- APP --}}
                     @if(in_array('apps', $vc_modules))
                         <li class="">
