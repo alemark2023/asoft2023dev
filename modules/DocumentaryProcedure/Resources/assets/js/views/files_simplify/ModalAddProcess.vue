@@ -51,8 +51,24 @@
                     <label>
                         Etapa
                         <span class="text-danger">*</span></label>
+                    <a v-if="form_stage.add == false"
+                       class="control-label font-weight-bold text-info"
+                       href="#"
+                       @click="form_stage.add = true"> [ + Nuevo]</a>
+                    <a v-if="form_stage.add == true"
+                       class="control-label font-weight-bold text-info"
+                       href="#"
+                       @click="saveStage()"> [ + Guardar]</a>
+                    <a v-if="form_stage.add == true"
+                       class="control-label font-weight-bold text-danger"
+                       href="#"
+                       @click="form_stage.add = false"> [ Cancelar]</a>
+                    <el-input v-if="form_stage.add == true"
+                              v-model="form_stage.name"
+                              dusk="item_code"
+                              style="margin-bottom:1.5%;"></el-input>
 
-                    <el-select
+                    <el-select v-if="form_stage.add == false"
                         v-model="guide.doc_office_id"
                         clearable
                         placeholder="Etapa"
@@ -104,7 +120,26 @@
                     <label>
                         Estado de tramite
                         <span class="text-danger">*</span></label>
-                    <el-select
+
+                    <a v-if="form_status.add == false"
+                                  class="control-label font-weight-bold text-info"
+                                  href="#"
+                                  @click="form_status.add = true"> [ + Nuevo]</a>
+                    <a v-if="form_status.add == true"
+                       class="control-label font-weight-bold text-info"
+                       href="#"
+                       @click="saveStatus()"> [ + Guardar]</a>
+                    <a v-if="form_status.add == true"
+                       class="control-label font-weight-bold text-danger"
+                       href="#"
+                       @click="form_status.add = false"> [ Cancelar]</a>
+                    <el-input v-if="form_status.add == true"
+                              v-model="form_status.name"
+                              dusk="item_code"
+                              style="margin-bottom:1.5%;"></el-input>
+
+                    <el-select v-if="form_status.add == false"
+
                         v-model="guide.documentary_guides_number_status_id"
                         clearable
                         placeholder="Estado de tramite"
@@ -260,6 +295,14 @@ export default {
                 parallelUploads: 10,
                 maxFiles: 10,
                 uploadMultiple: true,
+            },
+            form_stage: {
+                add:false,
+                name:'',
+            },
+            form_status: {
+                add:false,
+                name:'',
             },
             tabActive: "first",
             tempAttachments: [],
@@ -539,6 +582,42 @@ export default {
 
         updateFiles() {
             this.$emit("updateFiles");
+        },
+        saveStage() {
+            this.form_stage.add = false
+            this.$http.post(`${this.basePath}/addStage`, this.form_stage)
+                .then(response => {
+                    if (response.data.success) {
+                        let off = this.offices;
+                        this.$message.success(response.data.message)
+                        off.push(response.data.data)
+                        this.$store.commit('setOffices',off);
+                        this.form_stage.name = null
+                    } else {
+                        this.$message.error('No se guardaron los cambios')
+                    }
+                })
+                .catch(error => {
+
+                })
+        },
+        saveStatus() {
+            this.form_status.add = false
+            this.$http.post(`${this.basePath}/addStatus`, this.form_status)
+                .then(response => {
+                    if (response.data.success) {
+                        let off = this.statusDocumentary;
+                        this.$message.success(response.data.message)
+                        off.push(response.data.data)
+                        this.$store.commit('setStatusDocumentary',off);
+                        this.form_status.name = null
+                    } else {
+                        this.$message.error('No se guardaron los cambios')
+                    }
+                })
+                .catch(error => {
+
+                })
         },
     },
 };

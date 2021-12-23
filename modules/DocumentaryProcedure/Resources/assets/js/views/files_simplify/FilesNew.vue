@@ -142,118 +142,130 @@
                 -->
 
 
-                    <div class="col-12">
-                        <label>
-                            Procesos
-                        </label>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Num. De Seguimiento</th>
-                                    <th>Fecha/Hora De Registro</th>
-                                    <th>Etapa</th>
-                                    <th>Descripcion</th>
-                                    <th>Tiempo Que Toma El Tramite</th>
-                                    <th>Fecha Concluida</th>
-                                    <th>Estado</th>
-                                    <th>Responsable</th>
-                                    <th>Observaciones</th>
-                                    <th>Acciones</th>
-                                    <!--                                        <th>herramientas /opciones</th>-->
-                                </tr>
-                                </thead>
-                                <tbody v-if="form.guides.length > 0">
-                                <tr v-for="(row, index) in form.guides">
+                <div class="col-12">
+                    <label>
+                        Procesos
+                    </label>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Num. De Seguimiento</th>
+                                <th>Fecha/Hora De Registro</th>
+                                <th>Etapa</th>
+                                <th>Descripcion</th>
+                                <th>Tiempo Que Toma El Tramite</th>
+                                <th>Fecha Concluida</th>
+                                <th>Estado</th>
+                                <th>Responsable</th>
+                                <th>Observaciones</th>
+                                <th>Acciones</th>
+                                <!--                                        <th>herramientas /opciones</th>-->
+                            </tr>
+                            </thead>
+                            <tbody v-if="form.guides.length > 0">
+                            <tr v-for="(row, index) in form.guides">
 
-                                    <template v-if="row.visible !== false">
-                                        <td> {{ index + 1 }}</td>
-                                        <td>
-                                            {{ row.guide }}
+                                <template v-if="row.visible !== false">
+                                    <td> {{ index + 1 }}</td>
+                                    <td>
+                                        {{ row.guide }}
 
-                                        </td>
-                                        <td>
-                                            {{ row.created_at }}
-                                        </td>
-                                        <td>
-                                            {{ getStage(row.doc_office_id) }}
-                                        </td>
-                                        <td>
-                                            {{ getStageDescription(row.doc_office_id) }}
-                                        </td>
-                                        <td>
-                                            {{ row.date_take }}
-                                        </td>
-                                        <td>
-                                            {{ row.date_end }}
-                                        </td>
-                                        <td>
-                                            {{ getStatus(row.documentary_guides_number_status_id) }}
-                                        </td>
-                                        <td>
-                                            {{ getUser(row.user_id) }}
-                                        </td>
-                                        <td>
-                                            {{ row.observation }}
-                                        </td>
-                                        <td>
-                                            <div class="dropdown">
-                                                <button id="dropdownMenuButton"
-                                                        aria-expanded="false"
-                                                        aria-haspopup="true"
-                                                        class="btn btn-default btn-sm"
-                                                        data-toggle="dropdown"
-                                                        type="button">
-                                                    <i class="fas fa-ellipsis-v"></i>
+                                    </td>
+                                    <td>
+                                        {{ row.created_at }}
+                                    </td>
+                                    <td>
+                                        {{ getStage(row.doc_office_id) }}
+                                    </td>
+                                    <td>
+                                        {{ getStageDescription(row.doc_office_id) }}
+                                    </td>
+                                    <td>
+                                        {{ row.date_take }}
+                                    </td>
+                                    <td>
+                                        {{ row.date_end }}
+                                    </td>
+                                    <td>
+                                        <el-select
+                                            v-model="row.documentary_guides_number_status_id"
+                                            clearable
+                                            placeholder="Estado de tramite"
+                                            @change="updateStatus(row)"
+                                        >
+                                            <el-option
+                                                v-for="of in statusDocumentary"
+                                                :key="of.id"
+                                                :label="of.name"
+                                                :value="of.id"
+                                            ></el-option>
+                                        </el-select>
+                                    </td>
+                                    <td>
+                                        {{ getUser(row.user_id) }}
+                                    </td>
+                                    <td>
+                                        {{ row.observation }}
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button id="dropdownMenuButton"
+                                                    aria-expanded="false"
+                                                    aria-haspopup="true"
+                                                    class="btn btn-default btn-sm"
+                                                    data-toggle="dropdown"
+                                                    type="button">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <div aria-labelledby="dropdownMenuButton"
+                                                 class="dropdown-menu">
+                                                <button
+                                                    class="dropdown-item"
+                                                    type="button"
+                                                    @click.prevent="clickEditStep(row,index)">
+                                                    Editar/Ver
                                                 </button>
-                                                <div aria-labelledby="dropdownMenuButton"
-                                                     class="dropdown-menu">
-                                                    <button
-                                                        class="dropdown-item"
-                                                        type="button"
-                                                        @click.prevent="clickEditStep(row,index)">
-                                                        Editar/Ver
-                                                    </button>
-                                                    <button
-                                                        class="dropdown-item"
-                                                        type="button"
-                                                        @click.prevent="clickRemoveItem(index, row)">
-                                                        Eliminar
-                                                    </button>
-                                                    <button
-                                                        v-if="row.id > 0"
-                                                        class="dropdown-item"
-                                                        type="button"
-                                                        @click.prevent="row=clickFileUpload(row.id)">
-                                                        Cargar archivo
-                                                    </button>
+                                                <button
+                                                    class="dropdown-item"
+                                                    type="button"
+                                                    @click.prevent="clickRemoveItem(index, row)">
+                                                    Eliminar
+                                                </button>
+                                                <button
+                                                    v-if="row.id > 0"
+                                                    class="dropdown-item"
+                                                    type="button"
+                                                    @click.prevent="row=clickFileUpload(row.id)">
+                                                    Cargar archivo
+                                                </button>
 
 
-                                                </div>
                                             </div>
+                                        </div>
 
 
-                                        </td>
-                                    </template>
-                                </tr>
-                                </tbody>
+                                    </td>
+                                </template>
+                            </tr>
+                            </tbody>
 
-                            </table>
+                        </table>
 
-                        </div>
-                        <div v-show="data_load"
-                             class="col-12 text-center">
-                            <label class="control-label">
-                                <a class="btn"
-                                   href="#"
-                                   @click.prevent="clickAddStep">
-                                    <i class="fa fa-plus font-weight-bold text-info"></i>
-                                    <span style="color: #777777">Agregar Etapa</span></a>
-
-                            </label>
-                        </div>
                     </div>
+                    <div v-show="data_load"
+                         class="col-12 text-center">
+                        <label class="control-label">
+                            <a class="btn"
+                               href="#"
+                               @click.prevent="clickAddStep">
+                                <i class="fa fa-plus font-weight-bold text-info"></i>
+                                <span style="color: #777777">Agregar Etapa</span></a>
+
+                        </label>
+                    </div>
+                </div>
                 <!--
                 <div v-if="haveObservation(file)">
                     <table-observation></table-observation>
@@ -916,9 +928,9 @@ export default {
 
         },
         addStep(row) {
-            if(row.index !== undefined){
-                this.form.guides[row.index]=row
-            }else{
+            if (row.index !== undefined) {
+                this.form.guides[row.index] = row
+            } else {
                 this.form.guides.push(row);
             }
             this.editGuide = {};
@@ -960,7 +972,7 @@ export default {
             });
             let retu = '';
             if (stageT !== undefined) {
-                retu = stageT.name+": "+stageT.description
+                retu = stageT.name + ": " + stageT.description
             }
             return retu
         },
@@ -993,7 +1005,7 @@ export default {
             }
             return retu
         },
-        clickEditStep(row,index) {
+        clickEditStep(row, index) {
             if (this.data_load == true) {
                 this.showDialogNewProcess = true
                 row.index = index
@@ -1005,7 +1017,7 @@ export default {
             this.showFileUpload = true;
         },
         clickRemoveItem(index, row) {
-            if(row.id > 0){
+            if (row.id > 0) {
                 this.$http
                     .post(`${this.basePath}/removeStage/${row.id}`, {})
                     .then((response) => {
@@ -1018,12 +1030,21 @@ export default {
                     .finally(() => {
 
                     })
-            }else{
+            } else {
                 this.form.guides.splice(index, 1)
 
             }
             // return row;
         },
+        updateStatus(row) {
+            let url = `${this.basePath}/updateStage/${row.id}`;
+            this.$http
+                .post(url, {'id':row.id,'status':row.documentary_guides_number_status_id})
+                .then(response => {
+                    this.$message.success(response.data.message)
+                })
+        },
+
 
     },
 };
