@@ -61,6 +61,7 @@ use Modules\DocumentaryProcedure\Models\DocumentaryGuidesNumber;
                     <th>Fecha/Hora registro</th>
                     <th>Datos del cliente</th>
                     <th>Trámite</th>
+                    <th>Descripcion Trámite</th>
                     <th>Número Etapa</th>
                     <th>Número de seguimiento</th>
                     <th>Etapa</th>
@@ -95,6 +96,12 @@ use Modules\DocumentaryProcedure\Models\DocumentaryGuidesNumber;
                                 <span
                                 >
                                      {{ $documentary_process['name']??'' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span
+                                >
+                                     {{ $documentary_process['description']??'' }}
                                 </span>
                             </td>
 

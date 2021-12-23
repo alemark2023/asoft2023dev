@@ -188,9 +188,10 @@
                         <tr>
                             <th>#</th>
                             <th>Numero de expediente</th>
+                            <th>Trámite</th>
+                            <th>Descripcion Trámite</th>
                             <th>Fecha/Hora registro</th>
                             <th>Datos del cliente</th>
-                            <th>Trámite</th>
                             <th>Ultimo número de seguimiento</th>
                             <th>Etapa</th>
                             <th>Status de Etapa</th>
@@ -203,14 +204,19 @@
                             :key="item.id">
                             <td class="text-right">{{ index + 1 }}</td>
                             <td>{{ item.invoice }}</td>
-                            <td>{{ item.date_register }} - {{ item.time_register }}</td>
-                            <td>{{ item.sender.name }}</td>
-                            <td>
-                                <span
-                                    v-if=" item.documentary_process !== undefined && item.documentary_process.name !== undefined ">
+                            <td><span
+                                v-if=" item.documentary_process !== undefined && item.documentary_process.name !== undefined ">
                                      {{ item.documentary_process.name }}
                                 </span>
+                                </td>
+                            <td>
+                                <span
+                                    v-if=" item.documentary_process !== undefined && item.documentary_process.description !== undefined ">
+                                     {{ item.documentary_process.description }}
+                                </span>
                             </td>
+                            <td>{{ item.date_register }} - {{ item.time_register }}</td>
+                            <td>{{ item.sender.name }}</td>
                             <td>{{ (item.last_guide && item.last_guide.guide) ? item.last_guide.guide : '' }}</td>
                             <td>
                                 <div v-if="item.last_guide && item.last_guide.doc_office && item.last_guide.doc_office.name">
