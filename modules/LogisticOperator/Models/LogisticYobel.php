@@ -105,7 +105,7 @@
 
             $totalItem = count((array)$items);
             $temp = [
-                "PEDCIA" => "IRX",
+                "PEDCIA" => $data['Seguridad']['compania'] ?? "IRX",
                 "PEDFPR" => "2018-12-14", //Fecha de proceso
                 "PEDCTR" => "P1", //Cód. Transacción
                 "PEDNRO" => "PEDIRX101", //Número de pedido
@@ -162,11 +162,11 @@
             $data['Mensaje']['Head']["tipo"] = "RECEMB";
 
             $temp = [];
-            $temp["EMBCIA"] = "IRX";
+            $temp["EMBCIA"] = $data['Seguridad']['compania'] ?? "IRX";
             $temp["EMBNRO"] = "IRXEMBPRB001"; // numero de embarque
             $temp["EMBFA1"] = "2018-12-14"; // fecha de arribo a bodega
             $temp["EMBOCP"] = "OC0001"; // numeor de orden de compra
-            $temp["EMBPRV1"] = "PRV0001"; //cpdogp del proveedor
+             $temp["EMBPRV1"] = "PRV0001"; //cpdogp del proveedor
             $temp["EMBPOR"] = "CR"; // pais de origen
             $temp["EMBNCT"] = "0001"; // Numero de contenedor
             $temp["EMBA01"] = "";
@@ -199,11 +199,11 @@
 
             $temp = [];
 
-            $temp["EMBCIA"] = "IRX";
+            $temp["EMBCIA"] = $data['Seguridad']['compania'] ?? "IRX";
             $temp["EMBNRO"] = "IRXEMBPRB002";
             $temp["EMBFA1"] = "2018-12-14";
             $temp["EMBOCP"] = "OC0002";
-            $temp["EMBPRV1"] = "PRV0002";
+             $temp["EMBPRV1"] = "PRV0002";
             $temp["EMBPOR"] = "CR";
             $temp["EMBNCT"] = "0002";
             $temp["EMBA01"] = "";
@@ -249,7 +249,7 @@
             $nowYMD = $now->format('Y-m-d');
 
             $temp = [
-                "CLICIA" => self::cutString("IRX", 0, 3), // Comṕañia
+                "CLICIA" => self::cutString($data['Seguridad']['compania'] ?? "IRX", 0, 3), // Comṕañia
                 "CLIFPR" => $nowYMD, // Fecha del proceso
                 "CLICCL" => self::cutString($this->order, 0, 10), // Codigo de destino cliente, provee, serv tec
                 "CLINBR" => self::cutString($customer->apellidos_y_nombres_o_razon_social, 0, 100), // Nombre / Razon Social
@@ -268,8 +268,8 @@
                 "CLIDIS" => optional($customer->district->description),
                 "CLIPRV" => optional($customer->province->description),
                 "CLIDEP" => optional($customer->department->description),
-                // "CLILAT" => "0",
-                // "CLILON" => "0"
+                 "CLILAT" => "0",
+                 "CLILON" => "0"
             ];
             $data['Mensaje']['Body']['Clientes'][] = $temp;
 
