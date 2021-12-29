@@ -54,7 +54,7 @@
             </tr>
             <tr>
                 <td width="35%">Etapa</td>
-                <td>{{$guide->office->name}}</td>
+                <td>{{($guide->doc_office_id!== null)?$guide->office->name:'-'}}</td>
             </tr>
             <tr>
                 <td width="35%">Observación</td>
@@ -78,7 +78,7 @@
 
             <tr>
                 <td width="35%">Estado</td>
-                <td>{{$guide->documentary_guides_number_status->name}}</td>
+                <td>{{($guide->documentary_guides_number_status_id!== null)?$guide->documentary_guides_number_status->name:'-'}}</td>
             </tr>
 
             <tr>
