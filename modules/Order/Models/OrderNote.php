@@ -24,6 +24,7 @@
     use Illuminate\Support\Collection;
     use Modules\Inventory\Models\InventoryKardex;
     use Modules\Item\Models\ItemLot;
+    use Modules\LogisticOperator\Models\LogisticYobel;
 
 
     /**
@@ -625,5 +626,12 @@
         public function guide_files()
         {
             return $this->hasMany(GuideFile::class);
+        }
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasOne
+         */
+        public function logistic_yobel()
+        {
+            return $this->hasOne(LogisticYobel::class);
         }
     }

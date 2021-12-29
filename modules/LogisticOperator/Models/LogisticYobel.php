@@ -6,22 +6,31 @@
     use App\Models\Tenant\Order;
     use App\Models\Tenant\Person;
     use Carbon\Carbon;
+    use ErrorException;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
     use Illuminate\Database\Eloquent\Collection;
+    use Illuminate\Database\Eloquent\Model;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Illuminate\Database\Eloquent\Relations\HasMany;
     use Illuminate\Support\Str;
+    use Modules\Order\Models\OrderNote;
+    use phpDocumentor\Reflection\DocBlock\Tags\Throws;
 
     /**
      * Class LogisticYobel
      *
      * @property int                           $id
+     * @property int|null                      $status
      * @property int|null                      $person_id
      * @property int|null                      $order_id
+     * @property int|null                      $order_note_id
      * @property string|null                   $order
      * @property string|null                   $reference
      * @property string|null                   $gateway_code
+     * @property string|null                   $PEDCCL  // Codigo de cliente
+     * @property string|null                   $EMBPRV1 // Codigo de proveedor
+     * @property string|null                   $EMBNRO // Codigo de embarque
      * @property string                        $items
      * @property Carbon|null                   $created_at
      * @property Carbon|null                   $updated_at
@@ -40,8 +49,15 @@
 
         protected $table = 'logistic_yobel';
         protected $perPage = 25;
+        public const status = [
+            0=>'Creado',
+            1=>'Embarque',
+            2=>'Pedido',
+        ];
 
         protected $casts = [
+            'status' => 'int',
+            'order_note_id' => 'int',
             'person_id' => 'int',
             'order_id' => 'int'
         ];
@@ -52,6 +68,9 @@
             'order',
             'reference',
             'gateway_code',
+            'status',
+            'PEDCCL',
+            'order_note_id',
             'items'
         ];
 
@@ -76,6 +95,14 @@
         /**
          * @return BelongsTo
          */
+        public function order_notes()
+        {
+            return $this->belongsTo(OrderNote::class);
+        }
+
+        /**
+         * @return BelongsTo
+         */
         public function person()
         {
             return $this->belongsTo(Person::class);
@@ -89,14 +116,120 @@
             return $this->hasMany(LogisticYobelApi::class);
         }
 
+        /**
+         * @param string|null $PEDCCL
+         *
+         * @return LogisticYobel
+         */
+        public function setPEDCCL(?string $PEDCCL): LogisticYobel
+        {
+            $this->PEDCCL = $PEDCCL;
+            return $this;
+        }
 
-        public function  crearPedido($data = []){
+        /**
+         * @return string|null
+         */
+        public function getEMBPRV1(): ?string
+        {
+            return $this->EMBPRV1;
+        }
 
+        /**
+         * @param string|null $EMBPRV1
+         *
+         * @return LogisticYobel
+         */
+        public function setEMBPRV1(?string $EMBPRV1): LogisticYobel
+        {
+            $this->EMBPRV1 = $EMBPRV1;
+            return $this;
+        }
+
+        /**
+         * @return string|null
+         */
+        public function getEMBNRO(): ?string
+        {
+            if(empty($this->EMBNRO)){
+                $config = $this->getConfig();
+                $cdoClient = $config->getCompania() . $this->order_id ."E". $this->order_note_id ."E". $this->person_id . Str::random(10);
+                $this->EMBNRO = $cdoClient;
+            }
+            return $this->EMBNRO;
+        }
+
+        /**
+         * @param string|null $EMBNRO
+         *
+         * @return LogisticYobel
+         */
+        public function setEMBNRO(?string $EMBNRO): LogisticYobel
+        {
+            $this->EMBNRO = $EMBNRO;
+            return $this;
+        }
+
+        /**
+         * @return string|null
+         */
+        public function getOrder(): ?string
+        {
+            return $this->order;
+        }
+
+        /**
+         * @param string|null $Order
+         *
+         * @return LogisticYobel
+         */
+        public function setOrder(?string $Order = null): LogisticYobel
+        {
+            if (empty($Order)) {
+                $config = $this->getConfig();
+                $Order = $config->getCompania() . $this->order_id . $this->order_note_id . $this->person_id . Str::random(10);
+            }
+            $Order = self::cutString($Order, 0, 10);
+
+            $this->order = $Order;
+            return $this;
+        }
+
+        /**
+         * @return YobelConfiguration
+         */
+        protected function getConfig()
+        {
+            $config = YobelConfiguration::first();
+            if (empty($config)) {
+                $config = new YobelConfiguration();
+            }
+            return $config;
+        }
+
+        protected static function cutString($string, $start = 0, $end = 0)
+        {
+            return substr($string, $start, $end);
+        }
+
+        public function crearPedido()
+        {
+            $url = "http://yscmserver-test.yobelscm.biz:1973/TI_Logistics/WSYOB_RECEP_LOG/WSYOB_RECEP/CrearPedido";
+
+            $config = $this->getConfig();
+            $data = $config->setSecurity();
             $now = Carbon::now();
-            /** @var Order $order */
             $order = Order::find($this->order_id);
-            $customer = $order->customer;
+            if (empty($order)) {
+                $order = OrderNote::find($this->order_note_id);
+            }
+            $customer = $this->getPEDCCL();
+            if(empty($customer)){
+                throw new \Exception("No hay codigo de cliente");
+
+            }
             $items = $this->items;
+
 
             $data['Mensaje']['Head']["id_mensaje"] = $order->external_id;
             $data['Mensaje']['Head']["sistema_origen"] = "SAP";
@@ -106,13 +239,13 @@
             $totalItem = count((array)$items);
             $temp = [
                 "PEDCIA" => $data['Seguridad']['compania'] ?? "IRX",
-                "PEDFPR" => "2018-12-14", //Fecha de proceso
-                "PEDCTR" => "P1", //Cód. Transacción
-                "PEDNRO" => "PEDIRX101", //Número de pedido
-                "PEDCCL" => "CLIIRX01", // Código destino (cliente)
+                "PEDFPR" => $now->format('Y-m-d'), //Fecha de proceso
+                "PEDCTR" => $now->format('i'), //Cód. Transacción
+                "PEDNRO" => $this->order, //Número de pedido
+                "PEDCCL" => $customer, // Código destino (cliente)
                 "PEDFCH" => $now->format('Y-m-d'), // Fecha de emisión del pedido
                 "PEDTIT" => $totalItem, //Cantidad de Líneas del Detalle
-                "PEDTUN" => "30", // Sumatoria de cantidades del detalle
+                "PEDTUN" => "", // Sumatoria de cantidades del detalle - Se llena al final del for
                 "PEDFEI" => "", // Fecha entrega Inicial
                 "PEDHOI" => "", // Hora de entrega inicial
                 "PEDFEF" => "",// Fecha Entrega final
@@ -125,19 +258,27 @@
                 'Detalles' => [],
             ];
             $i = 1;
-            $totalQty =0;
-            foreach ($items as $item){
+            $totalQty = 0;
+            foreach ($items as $item) {
+                $internalId = null;
+                try{
+                    $internalId = $item->internal_id;
+                }catch (ErrorException $e){
+                    $item =  Item::find($item->id);
+                    $internalId = $item->internal_id;
+
+                }
                 $temp1 = [
-                        "PEDAUX" => $i, //Número de Línea en el Pedido
-                        "PEDCPR" => $item->internal_id, // Código de Producto
-                        "PEDLOT" => "", // Lote de Producto
-                        "PEDCTD" => $item->quantity, // Cantidad de venta
-                        "PEDALM" => "", // Almacén Origen
-                        "PEDSKU" => "", // SKU del cliente
-                        "PEDUXE" => "", // Unidades máximas por empaque para Picking
-                        "PEDA02" => "", //Adicional2
-                        "PEDN02" => "", // Numérico2
-                        "PEDF02" => "" // Detalles Flag2
+                    "PEDAUX" => $i, //Número de Línea en el Pedido
+                    "PEDCPR" => $item->internal_id, // Código de Producto
+                    "PEDLOT" => "", // Lote de Producto
+                    "PEDCTD" => $item->quantity, // Cantidad de venta
+                    "PEDALM" => "", // Almacén Origen
+                    "PEDSKU" => "", // SKU del cliente
+                    "PEDUXE" => "", // Unidades máximas por empaque para Picking
+                    "PEDA02" => "", //Adicional2
+                    "PEDN02" => "", // Numérico2
+                    "PEDF02" => "" // Detalles Flag2
                 ];
                 $totalQty += $item->quantity;
                 $temp['Detalles'][] = $temp1;
@@ -145,16 +286,201 @@
 
             }
             $temp['PEDTUN'] = $totalQty;
-            $data['Mensaje']['Body'] ['Pedidos'] []= $temp;
+            $data['Mensaje']['Body'] ['Pedidos'] [] = $temp;
+
+            $response = $this->sendData($url, $data);
+            $responseObject = json_decode($response);
+            $status = 0;
+
+            if ($responseObject && $responseObject->CrearPedidoResult && $responseObject->CrearPedidoResult->resultado && $responseObject->CrearPedidoResult->resultado == 'OK') {
+                $status = 1;
+                $this->status = 2;
+            }
+            $log = new LogisticYobelApi([
+                'logistic_yobel_id' => $this->id,
+                'command' => 'CrearPedido',
+                'yobel_response' => $response,
+                'yobel_send' => json_encode($data),
+                'status' => $status,
+                'last_check' => $now,
+            ]);
+            $log->push();
+
+
+            if($status!== 1){
+                throw new \Exception($response);
+            }
+
             return $data;
         }
-        public function getDataToCrearEmbarque($data = [])
+
+        /**
+         * @return string|null
+         */
+        public function getPEDCCL(): ?string
         {
+            $cod = $this->PEDCCL;
+            if (empty($cod)) {
+                $this->crearCliente();
+            }
+            return $this->PEDCCL;
+        }
+
+        /**
+         * Valida si existe el codigo de cliente, si no existe, lo crea.
+         *
+         * @return $this
+         */
+        protected function crearCliente()
+        {
+            if (!empty($this->PEDCCL)) return $this;
+            $url = "http://yscmserver-test.yobelscm.biz:1973/TI_Logistics/WSYOB_RECEP_LOG/WSYOB_RECEP/CrearCliente";
+            $config = $this->getConfig();
+            $data = $config->setSecurity();
+
+            $now = Carbon::now();
+            $nowYMD = $now->format('Y-m-d');
+
+            $order = Order::find($this->order_id);
+            if (empty($order)) {
+                $order = OrderNote::find($this->order_note_id);
+                $customer = $order->customer;
+                $name = $customer->name;
+                $address = $customer->address;
+                $department_id = $customer->department_id;
+                $department = optional($customer->department->description);
+                $province_id = $customer->province_id;
+                $province = optional($customer->province->description);
+                $district_id = $customer->district_id;
+                $district = optional($customer->district->description);
+                $number = $customer->number;
+                $tradeName = (empty($customer->trade_name)) ? $name : $customer->trade_name;
+                $telephone = $customer->telephone;
+                $email = $customer->email;
+            } else {
+                $customer = $order->customer;
+                $name = $customer->apellidos_y_nombres_o_razon_social;
+                $address = $customer->direccion;
+
+
+                $department_id = $customer->department_id;
+                $department = optional($customer->department->description);
+                $province_id = $customer->province_id;
+                $province = optional($customer->province->description);
+                $district_id = $customer->district_id;
+                $district = optional($customer->district->description);
+                $number = $customer->number;
+                $tradeName = $name;
+                $telephone = $customer->telephone;
+                $email = $customer->email;
+            }
+
+            // CMAR BORRAR @todo borrar
+            $address = ' Testing Address ';
+
+            if(empty($address)){
+                throw new \Exception("No hay direccion de entrega");
+            }
+
+
+            $cdoClient = $config->getCompania() . $this->order_id ."C". $this->order_note_id ."C". $this->person_id . Str::random(10);
+
+
+            $data['Mensaje']['Head']["id_mensaje"] = $order->external_id;
+            $data['Mensaje']['Head']["sistema_origen"] = "SAP";
+            $data['Mensaje']['Head']["fecha_origen"] = $now->format('Y-m-d') . "T" . $now->format('H:m:i');
+            $data['Mensaje']['Head']["tipo"] = "RECCLIEN";
+
+            $temp = [
+                "CLICIA" => self::cutString($data['Seguridad']['compania'] ?? "IRX", 0, 3), // Comṕañia
+                "CLIFPR" => $nowYMD, // Fecha del proceso
+                "CLICCL" => $cdoClient, // Codigo de destino cliente, provee, serv tec
+                "CLINBR" => self::cutString($name, 0, 100), // Nombre / Razon Social
+                "CLIDIR" => self::cutString($address, 0, 200), // Dirección de Entrega de Mercadería
+                "CLIUBG" => self::cutString($district_id, 0, 10), // Ubigeo Fiscal para entrega de documentos fiscales
+                // "CLINBRF" => "RAZON SOCIAL FISCAL-RAZON SOCIAL FISCAL-RAZON SOCIAL FISCAL-", // Nombre o Razón Social Fiscal
+                "CLINBRF" => self::cutString($tradeName, 0, 75), // nombre o Razón Social Fiscal
+                "CLIDIRF" => self::cutString($address, 0, 70), // Dirección Fiscal para entrega de documentos fiscales
+                "CLIUBF" => self::cutString($district_id, 0, 10), // Ubigeo Fiscal para entrega de documentos fiscales
+                "CLIRUC" => self::cutString($number, 0, 15),
+                "CLIREF" => self::cutString('', 0, 100), // "REFERENCIA DIRECCION ENTREGA-REFERENCIA DIRECCION ENTREGA- REFERENCIA DIRECCION ENTREGA-REFERENCIA DI"
+                "CLIDNI" => self::cutString($number, 0, 15),
+                "CLITLF" => self::cutString($telephone, 0, 20),
+                "CLICEL" => self::cutString($email, 0, 20),
+                "CLIDIS" => $district,
+                "CLIPRV" => $province,
+                "CLIDEP" => $department,
+                "CLILAT" => "0",
+                "CLILON" => "0"
+            ];
+            $data['Mensaje']['Body']['Clientes'][] = $temp;
+
+            $response = $this->sendData($url, $data);
+            $responseObject = json_decode($response);
+            $status = 0;
+
+            if ($responseObject && $responseObject->CrearClienteResult && $responseObject->CrearClienteResult->resultado && $responseObject->CrearClienteResult->resultado == 'OK') {
+                $status = 1;
+                $this->PEDCCL = $cdoClient;
+                $this->push();
+            }
+            $log = new LogisticYobelApi([
+                'logistic_yobel_id' => $this->id,
+                'command' => 'CrearCliente',
+                'yobel_response' => $response,
+                'yobel_send' => json_encode($data),
+                'status' => $status,
+                'last_check' => $now,
+            ]);
+            $log->push();
+
+            if($status!== 1){
+                throw new \Exception($response);
+            }
+            return $this;
+        }
+
+        protected function sendData($url = '', $data = [], $type = 'POST')
+        {
+            $curl = curl_init();
+            $data = collect($data)->toJson();
+            curl_setopt_array($curl, array (
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => $type,
+                CURLOPT_POSTFIELDS => $data,
+                CURLOPT_HTTPHEADER => array (
+                    'Content-Type: application/json',
+                ),
+                CURLOPT_SSL_VERIFYPEER => false     // Disabled SSL Cert checks
+            ));
+
+            $response = curl_exec($curl);
+            curl_close($curl);
+            return $response;
+        }
+
+        public function crearEmbarque()
+        {
+            $url = "http://yscmserver-test.yobelscm.biz:1973/TI_Logistics/WSYOB_RECEP_LOG/WSYOB_RECEP/CrearEmbarque";
+            $config = $this->getConfig();
+            $data = $config->setSecurity();
 
             $now = Carbon::now();
             /** @var Order $order */
             $order = Order::find($this->order_id);
-            $customer = $order->customer;
+            if (empty($order)) {
+                $order = OrderNote::find($this->order_note_id);
+            }
+
+            $this->crearProveedor();
+            $cdoClient = $this->getEMBNRO();
+
 
             $data['Mensaje']['Head']["id_mensaje"] = $order->external_id;
             $data['Mensaje']['Head']["sistema_origen"] = "SAP";
@@ -163,122 +489,137 @@
 
             $temp = [];
             $temp["EMBCIA"] = $data['Seguridad']['compania'] ?? "IRX";
-            $temp["EMBNRO"] = "IRXEMBPRB001"; // numero de embarque
-            $temp["EMBFA1"] = "2018-12-14"; // fecha de arribo a bodega
-            $temp["EMBOCP"] = "OC0001"; // numeor de orden de compra
-             $temp["EMBPRV1"] = "PRV0001"; //cpdogp del proveedor
-            $temp["EMBPOR"] = "CR"; // pais de origen
+            $temp["EMBNRO"] = $cdoClient; // numero de embarque
+            $temp["EMBFA1"] = $now->format('Y-m-d'); // fecha de arribo a bodega
+            $temp["EMBOCP"] = "OC0001"; // numero de orden de compra
+            $temp["EMBPRV1"] = $this->EMBPRV1; //codigo del proveedor
+            $temp["EMBPOR"] = "PE"; // pais de origen
             $temp["EMBNCT"] = "0001"; // Numero de contenedor
             $temp["EMBA01"] = "";
             $temp["EMBN01"] = "";
-            $temp["Detalles"][] = [
-                "EMBLIN" => "1",
-                "EMBPRO" => "PRD001",
-                "EMBQTY" => "1",
-                "EMBUMC" => "UN",
-                "EMBLOT" => "",
-                "EMBFVE" => "20201231",
-                "EMBALX" => "",
-                "EMBA02" => "",
-                "EMBN02" => "",
-            ];
-            $temp["Detalles"][] = [
-                "EMBLIN" => "2",
-                "EMBPRO" => "PRD002",
-                "EMBQTY" => "1",
-                "EMBUMC" => "UN",
-                "EMBLOT" => "",
-                "EMBFVE" => "",
-                "EMBALX" => "",
-                "EMBA02" => "",
-                "EMBN02" => ""
-            ];
+            $items = $this->items;
+
+
+            $i =1;
+            foreach ($items as $item) {
+                $internalId = null;
+                try{
+                    $internalId = $item->internal_id;
+                }catch (ErrorException $e){
+                    $item =  Item::find($item->id);
+                    $internalId = $item->internal_id;
+
+                }
+                $unitId = 'NIU';
+                try{
+                    $unitId = $item->unit_type_id;
+                }catch (ErrorException $e) {
+                    $unitId = 'NIU';
+
+                }
+                    $temp1 = [
+                    "EMBLIN" => $i,
+                    "EMBPRO" => $internalId,
+                    "EMBQTY" =>  $item->quantity,
+                    "EMBUMC" =>  $item->unit_type_id,
+                    "EMBLOT" => "",
+                    "EMBFVE" => "20201231",
+                    "EMBALX" => "",
+                    "EMBA02" => "",
+                    "EMBN02" => "",
+
+                ];
+                $temp['Detalles'][] = $temp1;
+                $i++;
+
+            }
 
             $data['Mensaje']['Body']['Embarques'][] = $temp;
+            $response = $this->sendData($url, $data);
+            $responseObject = json_decode($response);
+            $status = 0;
 
+            if ($responseObject && $responseObject->CrearEmbarqueResult && $responseObject->CrearEmbarqueResult->resultado && $responseObject->CrearEmbarqueResult->resultado == 'OK') {
+                $status = 1;
+                $this->status = 1;
+                $this->EMBNRO = $cdoClient;
+                $this->push();
+            }
+            $log = new LogisticYobelApi([
+                'logistic_yobel_id' => $this->id,
+                'command' => 'CrearEmbarque',
+                'yobel_response' => $response,
+                'yobel_send' => json_encode($data),
+                'status' => $status,
+                'last_check' => $now,
+            ]);
+            $log->push();
 
-            $temp = [];
-
-            $temp["EMBCIA"] = $data['Seguridad']['compania'] ?? "IRX";
-            $temp["EMBNRO"] = "IRXEMBPRB002";
-            $temp["EMBFA1"] = "2018-12-14";
-            $temp["EMBOCP"] = "OC0002";
-             $temp["EMBPRV1"] = "PRV0002";
-            $temp["EMBPOR"] = "CR";
-            $temp["EMBNCT"] = "0002";
-            $temp["EMBA01"] = "";
-            $temp["EMBN01"] = "";
-            $temp["Detalles"][] = [
-                "EMBLIN" => "1",
-                "EMBPRO" => "PRD001",
-                "EMBQTY" => "1",
-                "EMBUMC" => "UN",
-                "EMBLOT" => "",
-                "EMBFVE" => "20201231",
-                "EMBALX" => "",
-                "EMBA02" => "",
-                "EMBN02" => ""
-            ];
-            $temp["Detalles"][] = [
-                "EMBLIN" => "2",
-                "EMBPRO" => "PRD002",
-                "EMBQTY" => "1",
-                "EMBUMC" => "UN",
-                "EMBLOT" => "",
-                "EMBFVE" => "",
-                "EMBALX" => "",
-                "EMBA02" => "",
-                "EMBN02" => ""
-            ];
-            $data['Mensaje']['Body']['Embarques'][] = $temp;
+            if($status!== 1){
+                throw new \Exception($response);
+            }
             return $data;
         }
 
-        public function getDataToCrearCliente($data = [])
+        protected function crearProveedor()
         {
+            if (!empty($this->EMBPRV1)) return $this;
+            $url = "http://yscmserver-test.yobelscm.biz:1973/TI_Logistics/WSYOB_RECEP_LOG/WSYOB_RECEP/CrearProveedor";
+            $config = $this->getConfig();
+            $data = $config->setSecurity();
+
             $now = Carbon::now();
-            /** @var Order $order */
+
             $order = Order::find($this->order_id);
-            $customer = $order->customer;
+            if (empty($order)) {
+                $order = OrderNote::find($this->order_note_id);
+                $customer = $order->customer;
+                $name = $customer->name;
+            } else {
+                $customer = $order->customer;
+                $name = $customer->apellidos_y_nombres_o_razon_social;
+            }
+
+
+
+            $cdoClient =self::cutString( $config->getCompania() . $this->order_id ."C". $this->order_note_id ."C". $this->person_id . Str::random(20),0,20);
 
 
             $data['Mensaje']['Head']["id_mensaje"] = $order->external_id;
             $data['Mensaje']['Head']["sistema_origen"] = "SAP";
             $data['Mensaje']['Head']["fecha_origen"] = $now->format('Y-m-d') . "T" . $now->format('H:m:i');
-            $data['Mensaje']['Head']["tipo"] = "RECCLIEN";
-            $nowYMD = $now->format('Y-m-d');
+            $data['Mensaje']['Head']["tipo"] = "RECPROV";
 
             $temp = [
-                "CLICIA" => self::cutString($data['Seguridad']['compania'] ?? "IRX", 0, 3), // Comṕañia
-                "CLIFPR" => $nowYMD, // Fecha del proceso
-                "CLICCL" => self::cutString($this->order, 0, 10), // Codigo de destino cliente, provee, serv tec
-                "CLINBR" => self::cutString($customer->apellidos_y_nombres_o_razon_social, 0, 100), // Nombre / Razon Social
-                "CLIDIR" => self::cutString($customer->direccion, 0, 200), // Dirección de Entrega de Mercadería
-                "CLIUBG" => self::cutString($customer->district_id, 0, 10), // Ubigeo Fiscal para entrega de documentos fiscales
-                // "CLINBRF" => "RAZON SOCIAL FISCAL-RAZON SOCIAL FISCAL-RAZON SOCIAL FISCAL-", // Nombre o Razón Social Fiscal
-                "CLINBRF" => self::cutString($customer->apellidos_y_nombres_o_razon_social, 0, 75), // nombre o Razón Social Fiscal
-                "CLIDIRF" => self::cutString($customer->direccion, 0, 70), // Dirección Fiscal para entrega de documentos fiscales
-                "CLIUBF" => self::cutString($customer->district_id, 0, 10), // Ubigeo Fiscal para entrega de documentos fiscales
-                "CLIRUC" => self::cutString($customer->number, 0, 15),
-                "CLIREF" => self::cutString("REFERENCIA DIRECCION ENTREGA-REFERENCIA DIRECCION ENTREGA- REFERENCIA DIRECCION ENTREGA-REFERENCIA DI", 0, 100),
-                // "CLIDNI" => "DNI456789012345",
-                "CLIDNI" => self::cutString($customer->number, 0, 15),
-                "CLITLF" => self::cutString($customer->telephone, 0, 20),
-                "CLICEL" => self::cutString($customer->email, 0, 20),
-                "CLIDIS" => optional($customer->district->description),
-                "CLIPRV" => optional($customer->province->description),
-                "CLIDEP" => optional($customer->department->description),
-                 "CLILAT" => "0",
-                 "CLILON" => "0"
+                "PRVCIA" => self::cutString($data['Seguridad']['compania'] ?? "IRX", 0, 3), // Comṕañia
+                "PRVPRV" => $cdoClient, // Codigo de destino cliente, provee, serv tec
+                "PRVNPR" => self::cutString($name, 0, 100), // Nombre / Razon Social
+
             ];
-            $data['Mensaje']['Body']['Clientes'][] = $temp;
+            $data['Mensaje']['Body']['Proveedores'][] = $temp;
 
-            return $data;
+            $response = $this->sendData($url, $data);
+            $responseObject = json_decode($response);
+            $status = 0;
+            if ($responseObject && $responseObject->CrearProveedorResult && $responseObject->CrearProveedorResult->resultado && $responseObject->CrearProveedorResult->resultado == 'OK') {
+                $status = 1;
+                $this->EMBPRV1 = $cdoClient;
+                $this->push();
+            }
+            $log = new LogisticYobelApi([
+                'logistic_yobel_id' => $this->id,
+                'command' => 'CrearProveedor',
+                'yobel_response' => $response,
+                'yobel_send' => json_encode($data),
+                'status' => $status,
+                'last_check' => $now,
+            ]);
+            $log->push();
+
+            if($status!== 1){
+                throw new \Exception($response);
+            }
+            return $this;
         }
 
-
-        protected static function cutString($string, $start = 0, $end = 0)
-        {
-            return substr($string, $start, $end);
-        }
     }

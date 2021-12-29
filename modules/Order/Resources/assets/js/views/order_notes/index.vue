@@ -111,6 +111,8 @@
                             <button @click="duplicate(row.id)"  type="button" class="btn waves-effect waves-light btn-xs btn-info">Duplicar</button>
                             <a :href="`/dispatches/create/${row.id}/on`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2">Guía</a>
 
+                            <button @click="sendYobel(row.id)"  type="button" class="btn waves-effect waves-light btn-xs btn-info">Enviar a Yobel</button>
+
 
                         </td>
 
@@ -282,7 +284,38 @@
 
                 })
                 this.$eventHub.$emit('reloadData')
+            },
+
+            clickProvision(){
+                window.open('/purchases/create')
+            },
+            sendYobel(id){
+                this.$http.post(`/${this.resource}/yobelscm/pedido`, {order_note:id})
+                    .then(response => {
+                        console.error(response.data)
+                        /*
+                        if (response.data.success) {
+                            this.$eventHub.$emit('successRegularize', response.data)
+                            // this.$message.success(response.data.message)
+                            this.getRecordsByFilter()
+                        } else {
+                            this.$message.error(response.data.message)
+                        }
+                        */
+                    })
+                    .catch(error => {
+                        if (error.response.status === 500) {
+                            this.$message.error('Error al intentar regularizar');
+                        } else {
+                            console.log(error.response.data.message)
+                        }
+                    })
+                    .then(()=>{
+                        // this.$eventHub.$emit('valueLoadingRegularize', false)
+                    })
             }
+
+
         }
     }
 </script>

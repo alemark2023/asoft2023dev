@@ -19,14 +19,22 @@
                 $table->increments('id');
                 $table->unsignedInteger('person_id')->nullable()->comment('Relacion con cliente');
                 $table->unsignedInteger('order_id')->nullable()->comment('Relacion con Orders');
+                $table->unsignedInteger('order_note_id')->nullable()->comment('Relacion con Orders');
                 $table->string('order')->nullable()->comment('numero de orden de  importacion');
                 $table->string('reference')->nullable()->comment('Referencia del excel');
                 $table->string('gateway_code')->nullable()->comment('Codigo de pasarela');
+                $table->unsignedInteger('status')->default(0)->nullable()->comment('Relacion con Orders');
+
+                $table->string('PEDCCL')->nullable();
+                $table->string('EMBPRV1')->nullable();
+                $table->string('EMBNRO')->nullable();
+
+
                 $table->json('items');
                 $table->timestamps();
 
-                $table->foreign('person_id')->references('id')->on('persons')->onDelete('cascade');
-                $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
+                 $table->foreign('person_id')->references('id')->on('persons')->onDelete('cascade');
+                // $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
 
             });
             Schema::create('logistic_yobel_api', function (Blueprint $table) {
@@ -41,6 +49,14 @@
                 $table->foreign('logistic_yobel_id')->references('id')->on('logistic_yobel')->onDelete('cascade');
 
             });
+            Schema::create('yobel_configuration', function (Blueprint $table) {
+                $table->increments('id');
+                $table->string('compania')->nullable();
+                $table->string('usuario')->nullable();
+                $table->string('password')->nullable();
+                $table->boolean('is_active')->default(false)->nullable();
+
+            });
         }
 
         /**
@@ -52,6 +68,7 @@
         {
             Schema::dropIfExists('logistic_yobel_api');
             Schema::dropIfExists('logistic_yobel');
+            Schema::dropIfExists('yobel_configuration');
 
         }
     }

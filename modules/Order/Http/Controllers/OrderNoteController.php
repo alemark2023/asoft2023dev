@@ -38,6 +38,7 @@
     use Illuminate\Support\Facades\DB;
     use Illuminate\Support\Str;
     use Modules\Finance\Traits\FinanceTrait;
+    use Modules\LogisticOperator\Models\LogisticYobel;
     use Modules\Order\Http\Requests\OrderNoteRequest;
     use Modules\Order\Http\Resources\OrderNoteCollection;
     use Modules\Order\Http\Resources\OrderNoteDocumentCollection;
@@ -871,5 +872,50 @@
             $configuration = Configuration::query()->first();
 
             return $id->getCollectionData($company, $configuration, true);
+        }
+
+        public function makeYobelPedido(Request $request){
+
+            $orderNote = OrderNote::find($request->order_note);
+            $orderYobel = null;
+            if(!empty($orderNote)){
+                $orderYobel = $orderNote->logistic_yobel;
+                if(empty($orderYobel)){
+                    $orderYobel = new LogisticYobel([
+                        'order_note_id'=>$orderNote->id,
+                        'person_id'=>$orderNote->customer_id,
+                        'status'=>0,
+                    ]);
+                    $items = [];
+                    foreach($orderNote->items as $item){
+                        $items[] = (array)($item->item);
+                    }
+                    $orderYobel->items=$items;
+                    $orderYobel->setOrder();
+                    $orderYobel->push();
+                }
+                $items = [];
+                foreach($orderNote->items as $item){
+                    $itemToSave = $item->item;
+                    $itemToSave->quantity = $item->quantity;
+                    $i = Item::find($item->item_id);
+                    $itemToSave->internal_id = $i->internal_id;
+                    if(!empty($itemToSave->internal_id)) {
+                        $items[] = (array)($itemToSave);
+                    }
+                }
+                $orderYobel->items=$items;
+                $orderYobel->push();
+                if($orderYobel->status == 0){
+                    $orderYobel->crearEmbarque();
+
+                }elseif ($orderYobel->status == 1){
+                    $orderYobel->crearPedido();
+
+                }
+            }
+
+            return $orderYobel->toArray();
+            return $request->all();
         }
     }

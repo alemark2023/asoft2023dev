@@ -162,6 +162,11 @@
                                 <a href="{{route('tenant.sale_notes.configuration')}}">Nota de ventas</a>
                             </li>
                         @endif
+                            @if($user->type === 'admin')
+                            <li>
+                                <a href="{{route('tenant.yobel.configuration')}}">Configuracion de YobelSCM</a>
+                            </li>
+                        @endif
                 </ul>
             </div>
         </div>
