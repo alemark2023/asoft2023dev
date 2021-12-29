@@ -62,6 +62,7 @@
                     <el-select
                         v-model="form.documentary_process_id"
                         :loading="loading"
+                        filterable
                         @change="ChangeSelect"
                     >
                         <el-option
@@ -177,31 +178,77 @@
                                         {{ row.created_at }}
                                     </td>
                                     <td>
-                                        {{ getStage(row.doc_office_id) }}
+
+                                        <div
+                                            class="badge"
+                                            :style="'background-color:'+ getColorStage(row.doc_office_id)+
+                                             ';font-size: 12px;'"
+                                        >
+                                            {{ getStage(row.doc_office_id) }}
+                                        </div>
                                     </td>
                                     <td>
                                         {{ getStageDescription(row.doc_office_id) }}
                                     </td>
                                     <td>
-                                        {{ row.date_take }}
+                                        {{ row.total_day }} {{ getDiffDay(row.date_end) }}
                                     </td>
                                     <td>
+                                        <span :class="row.class">
                                         {{ row.date_end }}
+                                            </span>
                                     </td>
-                                    <td>
-                                        <el-select
-                                            v-model="row.documentary_guides_number_status_id"
-                                            clearable
-                                            placeholder="Estado de tramite"
-                                            @change="updateStatus(row)"
+                                    <td
+
+                                        class="row"
+                                    >
+                                        <div class="col-1"
+                                             v-for="of in statusDocumentary"
+                                             :key="of.id"
+                                             :label="of.name"
+                                             :value="of.id"
+                                             :class="(of.id === row.documentary_guides_number_status_id)?'badge':'d-none'"
+                                             :style="'background-color:'+of.color"
                                         >
-                                            <el-option
-                                                v-for="of in statusDocumentary"
-                                                :key="of.id"
-                                                :label="of.name"
-                                                :value="of.id"
-                                            ></el-option>
-                                        </el-select>
+                                            <div
+                                            :class="(of.id === row.documentary_guides_number_status_id)?'badge':'d-none'"
+                                            v-if="of.id === row.documentary_guides_number_status_id">
+                                                &nbsp;
+                                            </div>
+                                        </div>
+                                        <div class="col-8">
+                                            <el-select
+
+                                                v-model="row.documentary_guides_number_status_id"
+                                                clearable
+                                                filterable
+                                                placeholder="Estado de tramite"
+                                                @change="updateStatus(row)"
+                                            >
+
+                                                <el-option
+                                                    v-for="of in statusDocumentary"
+                                                    :key="of.id"
+                                                    :label="of.name"
+                                                    :value="of.id"
+                                                >
+                                                    <template>
+                                                        <p
+                                                            :style="'background-color:'+ getColorStatus(of.id)"
+                                                        >
+                                                            {{ of.name }}
+                                                        </p>
+                                                    </template>
+
+                                                </el-option>
+                                            </el-select>
+
+                                        </div>
+
+
+
+
+
                                     </td>
                                     <td>
                                         {{ getUser(row.user_id) }}
@@ -417,6 +464,7 @@ export default {
             attachments: [],
             data_load: false,
             input_person: null,
+            color_status: null,
             showFileUpload: false,
             stageId: 0,
             urlDropzone: null,
@@ -477,6 +525,7 @@ export default {
             'statusDocumentary',
 
         ]),
+
         onlyShow() {
             if (this.form !== undefined && this.form.disable !== undefined) return this.form.disable
             return false;
@@ -526,6 +575,37 @@ export default {
             'loadDocumentTypes',
             'loadFiles',
         ]),
+        getColorStatusComputed(id){
+            let stageT = this.statusDocumentary.find((it) => {
+                return it.id === id
+            });
+            let retu = "#FFFFFF";
+            if (stageT !== undefined) {
+                retu = stageT.color
+            }
+            return retu
+
+        },
+        getDiffDay(dateEnd) {
+            if (dateEnd === undefined) return ' -';
+            if (dateEnd === null) return ' -';
+
+            let now = moment();
+            dateEnd = moment(dateEnd, "YYYY-MM-DD HH:mm:ss");
+            now.hour(dateEnd.hour())
+            now.minute(dateEnd.minute())
+
+            let total = (dateEnd.diff(now, 'days')+1);
+            let str = '';
+            if (total > 0) {
+                str = '-  Falta(n) ' + total + ' día(s)';
+            } else if (total < 0) {
+                str = '-  Finalizó hace ' + total + ' día(s)';
+            } else {
+                str = '-  Hoy finaliza'
+            }
+            return str
+        },
         convertRequirementsIntoArray(val) {
             return this.form.requirements_id;
 
@@ -1039,10 +1119,44 @@ export default {
         updateStatus(row) {
             let url = `${this.basePath}/updateStage/${row.id}`;
             this.$http
-                .post(url, {'id':row.id,'status':row.documentary_guides_number_status_id})
+                .post(url, {'id': row.id, 'status': row.documentary_guides_number_status_id})
                 .then(response => {
                     this.$message.success(response.data.message)
+                    row.color = this.getColorStatus(row.documentary_guides_number_status_id)
                 })
+                .finally(() => {
+                    row.edited = false;
+                })
+            return row;
+        },
+        getColorStatus(documentary_guides_number_status_id) {
+            if (this.statusDocumentary === undefined) return '';
+
+            if (this.statusDocumentary.length < 1) return '';
+
+
+            let stageT = this.statusDocumentary.find((it) => {
+                return it.id === documentary_guides_number_status_id
+            });
+            let retu = "#FFFFFF";
+            if (stageT !== undefined) {
+                retu = stageT.color
+            }
+            // this.color_status = retu;
+            return retu
+        },
+        getColorStage(doc_office_id) {
+            if (this.offices === undefined) return '';
+            if (this.offices.length < 1) return '';
+            let stageT = this.offices.find((it) => {
+                return it.id === doc_office_id
+            });
+            let retu = "#FFFFFF";
+
+            if (stageT !== undefined) {
+                retu = stageT.color
+            }
+            return retu
         },
 
 

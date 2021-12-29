@@ -106,9 +106,8 @@
                 ->setDescription($request->description)
                 ->setName($request->name)
                 ->setDays($request->days)
-                // ->setParentId($request->parent_id)
-                // ->setOrder($request->order)
             ;
+            $stage->color = $request->color;
             $stage->fill($request->only('active'));
 
 

@@ -5,7 +5,7 @@
                 <a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a>
             </h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>REGISTRO DE ETAPAS</span></li>
+                <li class="active"><span>REGISTRO DE ESTADOOS</span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <div class="btn-group flex-wrap">
@@ -21,12 +21,13 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Listado de etapas</h3>
+                <h3 class="my-0">Listado de Estado</h3>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-12 col-md-4 mb-3">
-                        <form class="form-group" @submit.prevent="onFilter">
+                        <form class="form-group"
+                              @submit.prevent="onFilter">
                             <div class="input-group mb-3">
                                 <input
                                     v-model="filter.name"
@@ -37,7 +38,7 @@
                                 <div class="input-group-append">
                                     <button
                                         class="btn btn-outline-secondary"
-                                        style="border-color: #ced4da"
+                                        style="border-color: #CED4DA"
                                         type="submit"
                                     >
                                         <i class="fa fa-search"></i>
@@ -52,13 +53,7 @@
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>Etapa</th>
-                            <th>Descripción</th>
-                            <th>Visible</th>
-                            <!--
-                            <th>Responsable</th>
-                            <th>Dias</th>
-                            -->
+                            <th>Estado</th>
                             <th></th>
                         </tr>
                         </thead>
@@ -70,23 +65,6 @@
                         >
                             <td class="text-right">{{ index + 1 }}</td>
                             <td>{{ item.name }}</td>
-                            <td>{{ item.description }}</td>
-                            <td class="text-center">
-                                <span v-if="item.active">Si</span>
-                                <span v-else>No</span>
-                            </td>
-                            <!--
-                            <td>
-                                <span
-                                    v-for="users in item.users_name" :key="users.id"
-
-                                >
-                                {{ users.name }} <br>
-                                </span>
-                            </td>
-                            <td> {{ item.string_days }}
-                            </td>
-                            -->
                             <td class="text-center">
                                 <el-button
                                     :disabled="loading"
@@ -125,7 +103,7 @@ import {mapActions, mapState} from "vuex";
 
 export default {
     props: {
-        etapas: {
+        status: {
             type: Array,
             required: true,
         },
@@ -141,7 +119,7 @@ export default {
     computed: {
         ...mapState([
             'workers',
-            'offices',
+            'statusDocumentary',
             'config'
         ])
     },
@@ -154,18 +132,19 @@ export default {
             filter: {
                 name: "",
             },
-            basePath: '/documentary-procedure/offices'
+            basePath: '/documentary-procedure/status'
         };
     },
     created() {
-        this.$store.commit('setOffices', this.etapas);
+        this.$store.commit('setStatusDocumentary', this.status);
         this.$store.commit('setConfiguration', this.configuration);
         this.$store.commit('setWorkers', this.users);
 
         this.loadConfiguration()
         this.loadWorkers()
-        this.loadOffices()
-        this.items = this.offices
+
+        this.loadStatusDocumentary()
+        this.items = this.statusDocumentary
     },
     mounted() {
     },
@@ -173,7 +152,7 @@ export default {
         ...mapActions([
             'loadWorkers',
             'loadConfiguration',
-            'loadOffices'
+            'loadStatusDocumentary'
         ]),
         WorkAssociated(item) {
             if (item === undefined || item === null) return '';
@@ -186,9 +165,8 @@ export default {
                 .get(this.basePath, {params})
                 .then((response) => {
                     let item = response.data.data;
-                    console.error(item)
-                    this.$store.commit('setOffices', item)
-                    this.items = this.offices
+                    this.$store.commit('setStatusDocumentary', item)
+                    this.items = this.statusDocumentary
                 })
                 .finally(() => {
                     this.loading = false;

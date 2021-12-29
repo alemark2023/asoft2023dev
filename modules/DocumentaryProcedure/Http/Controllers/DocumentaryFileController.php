@@ -438,20 +438,11 @@
                 foreach($guides as $guide){
                     $guide['visible'] = (bool)($guide['visible']??true);
                     $guide['id'] = (int)($guide['id']??null);
-                    if($guide['id'] !== 0){
-                        $ids[] =$guide['id'];
-                    }
                     $guide['doc_file_id'] = $file->id;
                     $g = DocumentaryGuidesNumber::firstOrCreate(['id'=>$guide['id']],$guide);
-                    if($guide['visible']=== false){
-                        // $g->delete();
-                    }
+                    $g->fill(($guide))->push();
 
                 }
-                /*
-                $deleted = DocumentaryGuidesNumber::where('doc_file_id',$file->id)->whereNotIn('id',$ids)->get();
-                foreach ($deleted as $de ){ $de->delete();}
-                */
 
                 return response()->json([
                     'data' => $file,
@@ -890,6 +881,28 @@
                 ], 500);
             }
         }
+        /**
+         * @param $id
+         *
+         * @return JsonResponse
+         */
+        public function reactive($id)
+        {
+            try {
+                $file = Expediente::findOrFail($id);
+                $file->setArchive(false)->push();
+                return response()->json([
+                    'data' => null,
+                    'message' => 'Expediente reactivado de forma correcta.',
+                    'succes' => true,
+                ], 200);
+            } catch (Throwable $th) {
+                return response()->json([
+                    'success' => false,
+                    'data' => 'Ocurrió un error al procesar su petición. Detalles: ' . $th->getMessage(),
+                ], 500);
+            }
+        }
 
         /**
          * @return JsonResponse
@@ -930,8 +943,7 @@
             $offices = Stage::orderBy('id')
                 ->whereActive(true)
                 ->get()
-                ->transform(function ($row) {
-                    /** @var Stage $row */
+                ->transform(function (Stage $row) {
                     return $row->getCollectionData();
                 });
             $sellers = User::GetSellers(false)->get();
@@ -1043,8 +1055,7 @@
 
             $view = 'documentaryprocedure::exports.report_detailed_excel';
 
-
-            // return view($view, compact('records', 'company', 'establishment'));
+             // return view($view, compact('records', 'company', 'establishment'));
 
 
             /** @var \Barryvdh\DomPDF\PDF  $pdf */
@@ -1128,15 +1139,41 @@
 
             $guide = DocumentaryGuidesNumber::find($id);
             if(!empty($guide)){
-                $id->documentary_guides_number_status_id = $request->status;
-                $id->push();
+                $guide->documentary_guides_number_status_id = $request->status;
+                $guide->push();
             }else{
-                $id = new DocumentaryGuidesNumber(['documentary_guides_number_status_id'=>$request->status]);
+                $guide = new DocumentaryGuidesNumber(['documentary_guides_number_status_id'=>$request->status]);
             }
             return [
                 'message'=>'Se ha actualizado correctamente',
-                'data'=> $id->toArray(),
+                'data'=> $guide->toArray(),
             ];
 
+        }
+
+        public function calculateEndDays(Request $request){
+
+            $date = (!$request->has('date_take'))?Carbon::now():Carbon::createFromFormat('Y-m-d H:i',$request->date_take);
+            $totalDays = (!$request->has('total_day'))?1:(int)$request->total_day;
+            $currentDay = 1;
+            $days = [];
+
+
+            while ($currentDay <= $totalDays) {
+                if ($date->isWeekend()) {
+                    $days[]="Fin de semana ".$date->format('Y-m-d');
+                } elseif (in_array($date->format('d-m-Y'),$this->holidays)) {
+                    $days[] = 'Feriado '.$date->format('Y-m-d');
+                } else {
+                    ++$currentDay;
+                    $days[] = 'Normal '.$date->format('Y-m-d');
+
+                }
+                $date = $date->addDay();
+            }
+            return [
+                'date_end'=>$date->format('Y-m-d H:i:s'),
+            ];
+            return $days;
         }
     }

@@ -119,7 +119,9 @@ export default {
     },
     loadOffices(store) {
         if (state.offices === undefined) state.offices = [];
-        // state.offices = readStorageData('offices', true)
+    },
+    loadStatusDocumentary(store) {
+        if (state.statusDocumentary === undefined) state.statusDocumentary = [];
     },
     loadCustomers(store) {
         if (state.customers === undefined) state.customers = [];

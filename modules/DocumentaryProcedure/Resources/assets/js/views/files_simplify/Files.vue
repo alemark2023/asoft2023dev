@@ -70,6 +70,7 @@
                     <div class="col-6 col-md-4 mb-3">
                         <el-select
                             v-model="filter.documentary_guides_number_status_id"
+                            filterable
                             clearable
                             placeholder="Estado de tramite"
                         >
@@ -84,6 +85,7 @@
                     <div class="col-6 col-md-4 mb-3">
                         <el-select
                             v-model="filter.documentary_office_id"
+                            filterable
                             clearable
                             placeholder="Etapa"
                         >
@@ -99,6 +101,7 @@
                         <el-select
                             v-model="filter.register_date"
                             clearable
+                            filterable
                             placeholder="Fecha de registro"
                             @change="onPrepareFilterDate"
                         >
@@ -145,7 +148,9 @@
                             class="form-group">
                             <el-switch v-model="filter.archived"
                                        active-text="Si"
-                                       inactive-text="No"></el-switch>
+                                       inactive-text="No"
+                                       @change="onFilter"
+                            ></el-switch>
                         </div>
                     </div>
                     <!--
@@ -219,24 +224,33 @@
                             <td>{{ item.sender.name }}</td>
                             <td>{{ (item.last_guide && item.last_guide.guide) ? item.last_guide.guide : '' }}</td>
                             <td>
-                                <div v-if="item.last_guide && item.last_guide.doc_office && item.last_guide.doc_office.name">
+                                <div v-if="item.last_guide && item.last_guide.doc_office && item.last_guide.doc_office.name"
+                                     class="badge"
+                                     :style="'background-color:'+ item.last_guide.doc_office.color+
+                                             ';font-size: 12px;'"
+                                >
                                     {{ item.last_guide.doc_office.name }}
                                 </div>
                             </td>
                             <td>
-                                <div v-if="item.last_guide_status && item.last_guide_status.name">
+
+
+                                <div v-if="item.last_guide_status && item.last_guide_status.name"
+                                     class="badge"
+                                     :style="'background-color:'+ item.last_guide_status.color+
+                                             ';font-size: 12px;'"
+                                >
                                     {{ item.last_guide_status.name }}
                                 </div>
                             </td>
                             <td>
                                 <div v-if="item.last_guide.date_end"
                                      :class="item.last_guide.class">
+
                                     {{ item.last_guide.date_end }}
                                 </div>
                             </td>
                             <td class="text-center td-btns">
-                                <template v-if="!item.is_archive">
-
 
                                     <div class="dropdown">
                                         <button id="dropdownMenuButton"
@@ -249,7 +263,7 @@
                                         </button>
                                         <div aria-labelledby="dropdownMenuButton"
                                              class="dropdown-menu">
-
+                                            <template v-if="!item.is_archive">
 
                                             <button
                                                 class="dropdown-item"
@@ -278,14 +292,25 @@
                                                 Archivar
                                             </button>
 
+                                            </template>
+                                            <template v-else>
+                                                <button
+                                                    class="dropdown-item"
+                                                    type="button"
+                                                    @click.prevent="reactiveFile(item.id)">
+                                                    Retomar Tramite
+                                                </button>
+
+
+                                            </template>
                                         </div>
+
                                     </div>
 
                                     <!--
                                     AGREGAR SECUENCIA DE TRAMITE <br>
                                     IMPRIMIR ESTADO DE TRAMITE<br>
                                     -->
-                                </template>
                             </td>
                         </tr>
                         </tbody>
@@ -614,10 +639,23 @@ export default {
                 .finally(() => {
                     this.updateFiles();
                 });
+        },
+        reactiveFile(id) {
+            this.$http
+                .post(`/documentary-procedure/files_simplify/reactive/` + id)
+                .then((response) => {
+                    this.$message({
+                        type: "success",
+                        message: response.data.message,
+                    });
 
-
-            //window.location = `/documentary-procedure/files_simplify/edit/` + id;
-
+                })
+                .catch((error) => {
+                    this.axiosError(error)
+                })
+                .finally(() => {
+                    this.updateFiles();
+                });
         },
         removeItem(id) {
             this.$http
