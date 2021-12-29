@@ -292,6 +292,7 @@ Vue.component('tenant-hotel-rent-checkout', require('@viewsModuleHotel/rooms/Che
 
 // Trámite documentario
 Vue.component('tenant-documentary-offices', require('@viewsModuleDocumentary/offices/Offices.vue'));
+Vue.component('tenant-documentary-status', require('@viewsModuleDocumentary/status/Status.vue'));
 Vue.component('tenant-documentary-processes', require('@viewsModuleDocumentary/processes/Processes.vue'));
 Vue.component('tenant-documentary-documents', require('@viewsModuleDocumentary/documents/Documents.vue'));
 Vue.component('tenant-documentary-actions', require('@viewsModuleDocumentary/actions/Actions.vue'));
@@ -366,11 +367,6 @@ Vue.component('tenant-bankloans-form', require('../../modules/Expense/Resources/
 /**Molino */
 Vue.component('tenant-mill-index', require('../../modules/Production/Resources/assets/js/view/mill/index.vue'));
 Vue.component('tenant-mill-form', require('../../modules/Production/Resources/assets/js/view/mill/form.vue'));
-/**items de produccion */
-/*
-Vue.component('tenant-mill-index', require('../../modules/Production/Resources/assets/js/view/item_production/index.vue'));
-Vue.component('tenant-mill-form', require('../../modules/Production/Resources/assets/js/view/item_production//form.vue'));
-*/
 /** produccion */
 
 Vue.component('tenant-production-index', require('../../modules/Production/Resources/assets/js/view/production/index.vue'));

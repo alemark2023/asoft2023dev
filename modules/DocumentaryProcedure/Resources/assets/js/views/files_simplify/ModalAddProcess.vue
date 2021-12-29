@@ -1,9 +1,9 @@
 <template>
     <div>
         <el-dialog
+            :closeOnClickModal="false"
             :title="title"
             :visible="visible"
-            :closeOnClickModal="false"
             @close="onClose"
             @open="onCreate"
         >
@@ -69,9 +69,11 @@
                               style="margin-bottom:1.5%;"></el-input>
 
                     <el-select v-if="form_stage.add == false"
-                        v-model="guide.doc_office_id"
-                        clearable
-                        placeholder="Etapa"
+                               v-model="guide.doc_office_id"
+                               clearable
+                               filterable
+
+                               placeholder="Etapa"
                     >
                         <el-option
                             v-for="of in offices"
@@ -83,11 +85,11 @@
                 </div>
 
                 <div
-                    :class="{ 'has-danger': errors.created_at }"
+                    :class="{ 'has-danger': errors.date_take }"
                     class="form-group col-sm-12 col-md-6 col-lg-4 ">
                     <label>
                         Fecha cuando se toma el tramite
-                        </label>
+                    </label>
                     <el-date-picker
                         v-model="guide.date_take "
                         format="yyyy/MM/dd HH:mm"
@@ -98,14 +100,29 @@
                     </el-date-picker>
                 </div>
 
+
+                <div
+                    :class="{ 'has-danger': errors.total_day }"
+                    class="form-group col-sm-12 col-md-6 col-lg-4 ">
+
+                    <label>
+                        Dias que toma el tramite
+                    </label>
+                    <el-input v-model="guide.total_day"
+                              type="number"
+                              @change="calculateDays">
+                    </el-input>
+                </div>
+
                 <div
                     :class="{ 'has-danger': errors.created_at }"
                     class="form-group col-sm-12 col-md-6 col-lg-4 ">
                     <label>
                         Fecha de finalizacion
-                        </label>
+                    </label>
                     <el-date-picker
                         v-model="guide.date_end "
+                        :disabled="true"
                         format="yyyy/MM/dd HH:mm"
                         placeholder="Fecha de finalizacion"
                         type="datetime"
@@ -122,9 +139,9 @@
                         <span class="text-danger">*</span></label>
 
                     <a v-if="form_status.add == false"
-                                  class="control-label font-weight-bold text-info"
-                                  href="#"
-                                  @click="form_status.add = true"> [ + Nuevo]</a>
+                       class="control-label font-weight-bold text-info"
+                       href="#"
+                       @click="form_status.add = true"> [ + Nuevo]</a>
                     <a v-if="form_status.add == true"
                        class="control-label font-weight-bold text-info"
                        href="#"
@@ -139,10 +156,12 @@
                               style="margin-bottom:1.5%;"></el-input>
 
                     <el-select v-if="form_status.add == false"
+                               v-model="guide.documentary_guides_number_status_id"
 
-                        v-model="guide.documentary_guides_number_status_id"
-                        clearable
-                        placeholder="Estado de tramite"
+                               clearable
+                               filterable
+
+                               placeholder="Estado de tramite"
                     >
                         <el-option
                             v-for="of in statusDocumentary"
@@ -177,7 +196,7 @@
                     class="form-group col-sm-12 col-md-6 col-lg-4 ">
                     <label>
                         Observaciones
-                        </label>
+                    </label>
                     <el-input v-model="guide.observation"
                               placeholder="Observaciones"></el-input>
                 </div>
@@ -190,7 +209,7 @@
                         </el-button>
                     </div>
                     <div
-                        class="col-6" >
+                        class="col-6">
                         <el-button
                             :disabled="disableWhileData"
                             :loading="loading"
@@ -297,12 +316,12 @@ export default {
                 uploadMultiple: true,
             },
             form_stage: {
-                add:false,
-                name:'',
+                add: false,
+                name: '',
             },
             form_status: {
-                add:false,
-                name:'',
+                add: false,
+                name: '',
             },
             tabActive: "first",
             tempAttachments: [],
@@ -314,6 +333,7 @@ export default {
             urlDropzone: null,
             guide: {
                 id: null,
+                total_day: 1,
                 guide: null,
                 date_take: moment().format('YYYY-MM-DD HH:mm'),
                 date_end: moment().format('YYYY-MM-DD HH:mm'),
@@ -359,15 +379,15 @@ export default {
             'sellers',
 
         ]),
-        disableWhileData:function(){
+        disableWhileData: function () {
             let guide = this.guide;
-            if(
+            if (
                 guide.guide !== null &&
                 guide.user_id !== null &&
                 guide.doc_office_id !== null &&
                 guide.documentary_guides_number_status_id !== null
-            ){
-                return  false;
+            ) {
+                return false;
             }
             return true;
         }
@@ -440,6 +460,24 @@ export default {
         onClose() {
             this.$emit("update:visible", false);
         },
+        calculateDays() {
+            this.$http
+                .post(`${this.basePath}/calculateDays`, this.guide)
+                .then((response) => {
+                    let data = response.data;
+                    if (data.date_end) {
+                        this.guide.date_end = data.date_end;
+                    }
+                })
+                .catch((error) => {
+                    //this.axiosError(error)
+                })
+                .finally(() => {
+                    // this.loading = false
+                });
+
+        },
+
         async onGetDataForNewFile() {
             this.loading = true;
             await this.$http
@@ -465,14 +503,16 @@ export default {
             this.guide = {
                 id: null,
                 guide: null,
-                created_at: moment().format('YYYY-MM-DD HH:mm'),
+                created_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+                date_take: moment().format('YYYY-MM-DD HH:mm:ss'),
                 doc_office_id: null,
-                date_take: null,
                 date_end: null,
                 documentary_guides_number_status_id: null,
                 user_id: null,
+                total_day: 1,
                 observation: null,
             };
+            this.calculateDays();
         },
         onCreate() {
             this.loading = true;
@@ -591,7 +631,7 @@ export default {
                         let off = this.offices;
                         this.$message.success(response.data.message)
                         off.push(response.data.data)
-                        this.$store.commit('setOffices',off);
+                        this.$store.commit('setOffices', off);
                         this.form_stage.name = null
                     } else {
                         this.$message.error('No se guardaron los cambios')
@@ -609,7 +649,7 @@ export default {
                         let off = this.statusDocumentary;
                         this.$message.success(response.data.message)
                         off.push(response.data.data)
-                        this.$store.commit('setStatusDocumentary',off);
+                        this.$store.commit('setStatusDocumentary', off);
                         this.form_status.name = null
                     } else {
                         this.$message.error('No se guardaron los cambios')

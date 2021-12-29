@@ -77,7 +77,7 @@
                                        Carbon::SUNDAY,
                                    ]);
             $today = Carbon::now();
-            $holyday = [];
+            // $holyday = [];
             $data = [
                 'id'            => $this->id,
                 'description'   => $this->getDescription(),

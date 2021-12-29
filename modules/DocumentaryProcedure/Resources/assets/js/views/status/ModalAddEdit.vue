@@ -6,11 +6,12 @@
         @close="onClose"
         @open="onCreate"
     >
-        <form autocomplete="off" @submit.prevent="onSubmit">
+        <form autocomplete="off"
+              @submit.prevent="onSubmit">
             <div class="form-body row">
                 <div class="form-group col-md-12">
                     <label for="name">
-                        Nombre de la etapa
+                        Nombre del estado
                     </label>
                     <input
                         id="name"
@@ -19,41 +20,25 @@
                         class="form-control"
                         type="text"
                     />
-                    <div v-if="errors.name" class="invalid-feedback">
+                    <div v-if="errors.name"
+                         class="invalid-feedback">
                         {{ errors.name[0] }}
                     </div>
                 </div>
-                <div class="form-group col-md-12">
-                <label for="description">Descripción</label>
-                    <input
-                        id="description"
-                        v-model="form.description"
-                        :class="{ 'is-invalid': errors.description }"
-                        class="form-control"
-                        type="text"
-                    />
-                    <div v-if="errors.description" class="invalid-feedback">
-                        {{ errors.description[0] }}
-                    </div>
-                </div>
 
-
-
-
-
-                <div class="form-group col-md-3">
-                    <label for="color">
-                        Color de fondo<br>
-                    </label>
-                    <el-color-picker
-                        id="color"
-                        v-model="form.color"
-                        :color-format="'true'"
-                        :predefine="predefineColors"
-                        :size="'medium'"
-                        show-alpha
-                    >
-                    </el-color-picker>
+                <div class="form-group col-md-5">
+                        <label for="color">
+                            Color de fondo<br>
+                        </label>
+                        <el-color-picker
+                            id="color"
+                            v-model="form.color"
+                            :color-format="'true'"
+                            :predefine="predefineColors"
+                            :size="'medium'"
+                            show-alpha
+                        >
+                        </el-color-picker>
 
                     <div v-if="errors.color"
                          class="invalid-feedback">
@@ -61,7 +46,7 @@
                     </div>
 
                 </div>
-                <div class="form-group col-md-3">
+                <div class="form-group col-md-7">
 
                     <label
                         class=" badge"
@@ -69,12 +54,13 @@
                                              ';font-size: 12px;'"
                     > Texto de prueba</label>
                 </div>
-
+                <!--
 
                 <div class="form-group col-md-6">
-                    <label>Mostrar etapa</label>
+                    <label>Mostrar Estado</label>
                     <el-switch v-model="form.active"></el-switch>
                 </div>
+                -->
                 <div class="row text-center col-md-12">
                     <div class="col-6">
                         <el-button
@@ -88,7 +74,9 @@
                         >
                     </div>
                     <div class="col-6">
-                        <el-button class="btn-block" @click="onClose">Cancelar</el-button>
+                        <el-button class="btn-block"
+                                   @click="onClose">Cancelar
+                        </el-button>
                     </div>
                 </div>
             </div>
@@ -121,7 +109,7 @@ export default {
     },
     computed: {
         ...mapState([
-            'offices',
+            'statusDocumentary',
             'office',
             'workers',
         ]),
@@ -147,19 +135,19 @@ export default {
     data() {
         return {
             form: {
-                color: "#fff",
+                color: "#FFFFFF",
             },
             title: "",
             errors: {},
             loading: false,
-            basePath: "/documentary-procedure/offices",
+            basePath: "/documentary-procedure/status",
             predefineColors: [
-                '#ff4500',
-                '#ff8c00',
+                '#FF4500',
+                '#FF8C00',
                 '#ffd700',
                 '#90ee90',
-                '#00ced1',
-                '#1e90ff',
+                '#00CED1',
+                '#1E90FF',
                 '#c71585',
             ],
         };
@@ -221,12 +209,11 @@ export default {
             this.$store.commit('setOffice', {})
         },
         onCreate() {
-            this.color = null;
             if (this.office && this.office.id) {
                 this.form = this.office;
-                this.title = "Editar Etapa";
+                this.title = "Editar Estado";
             } else {
-                this.title = "Crear Etapa";
+                this.title = "Crear Estado";
                 this.form = {
                     active: true,
                 };

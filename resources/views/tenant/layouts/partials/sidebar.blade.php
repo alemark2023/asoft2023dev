@@ -1123,6 +1123,10 @@
                                         <a class="nav-link"
                                            href="{{ route('documentary.offices') }}">Listado de Etapas</a>
                                     </li>
+                                    <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'status')) ? 'nav-active' : '' }}">
+                                        <a class="nav-link"
+                                           href="{{ route('documentary.status') }}">Listado de Estados</a>
+                                    </li>
                                 @endif
                                 {{--
                                 @if(in_array('documentary_requirements', $vc_module_levels))
