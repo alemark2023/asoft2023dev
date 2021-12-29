@@ -88,7 +88,7 @@
                     :class="{ 'has-danger': errors.date_take }"
                     class="form-group col-sm-12 col-md-6 col-lg-4 ">
                     <label>
-                        Fecha cuando se toma el tramite
+                        Fecha cuando se toma el etapa
                     </label>
                     <el-date-picker
                         v-model="guide.date_take "
@@ -106,7 +106,7 @@
                     class="form-group col-sm-12 col-md-6 col-lg-4 ">
 
                     <label>
-                        Dias que toma el tramite
+                        Dias que toma el etapa
                     </label>
                     <el-input v-model="guide.total_day"
                               type="number"
@@ -135,7 +135,7 @@
                     :class="{ 'has-danger': errors.created_at }"
                     class="form-group col-sm-12 col-md-6 col-lg-4 ">
                     <label>
-                        Estado de tramite
+                        Estado de etapa
                         <span class="text-danger">*</span></label>
 
                     <a v-if="form_status.add == false"
@@ -161,7 +161,7 @@
                                clearable
                                filterable
 
-                               placeholder="Estado de tramite"
+                               placeholder="Estado de etapa"
                     >
                         <el-option
                             v-for="of in statusDocumentary"
@@ -524,12 +524,12 @@ export default {
             }
             this.tabActive = 'first'
             if (newItem === true) {
-                this.title = "Crear tramite";
+                this.title = "Crear Etapa";
                 this.onInitializeForm();
                 // this.onGetDataForNewFile();
             } else {
                 this.guide = this.guides
-                this.title = "Editar tramite";
+                this.title = "Editar Etapa";
                 /*
                 this.filename = this.onGetFilenameFromPath(this.guide.attached_file);
                 this.nextId = this.guide.id;

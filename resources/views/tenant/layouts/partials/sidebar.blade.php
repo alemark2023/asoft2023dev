@@ -1163,7 +1163,7 @@
                                            href="{{ route('documentary.files') }}">Listado de tramites</a>
                                     </li>
                                     --}}
-                                    <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'files')) ? 'nav-active' : '' }}">
+                                    <li class="{{ (($firstLevel === 'documentary-procedure') &&( ($secondLevel === 'files_simplify')||($secondLevel === 'files'))) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
                                            href="{{ route('documentary.files_simplify') }}">Listado de tramites</a>
                                     </li>

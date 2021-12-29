@@ -595,7 +595,7 @@ export default {
             now.hour(dateEnd.hour())
             now.minute(dateEnd.minute())
 
-            let total = (dateEnd.diff(now, 'days'));
+            let total = (dateEnd.diff(now, 'days')+1);
             let str = '';
             if (total > 0) {
                 str = '-  Falta(n) ' + total + ' día(s)';

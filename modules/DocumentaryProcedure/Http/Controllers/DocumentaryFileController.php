@@ -1152,10 +1152,12 @@
         }
 
         public function calculateEndDays(Request $request){
-            $date = (!$request->has('date_take'))?Carbon::now():Carbon::createFromFormat('Y-m-d H:i:s',$request->date_take);
+
+            $date = (!$request->has('date_take'))?Carbon::now():Carbon::createFromFormat('Y-m-d H:i',$request->date_take);
             $totalDays = (!$request->has('total_day'))?1:(int)$request->total_day;
             $currentDay = 1;
             $days = [];
+
 
             while ($currentDay <= $totalDays) {
                 if ($date->isWeekend()) {
