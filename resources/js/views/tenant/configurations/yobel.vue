@@ -19,37 +19,39 @@
                                 </span>
                                 <div class="row">
 
-                                    <div class="col-md-4 mt-4">
-                                        <label class="control-label">Url del servidor</label>
+                                    <div class="col-md-3 col-lg-1 mt-4">
+                                        <label class="control-label">
+                                            Codigo Compañia
+                                        </label>
                                         <div :class="{'has-danger': errors.compania}"
                                              class="form-group">
-                                            <el-input v-model="form.compania"></el-input>
+                                            <el-input v-model="form.compania"  maxlength="3"></el-input>
                                             <small v-if="errors.compania"
                                                    class="form-control-feedback"
                                                    v-text="errors.compania[0]"></small>
                                         </div>
                                     </div>
-                                    <div class="col-md-4 mt-4">
-                                        <label class="control-label">Api del servidor</label>
+                                    <div class="col-md-3 mt-4">
+                                        <label class="control-label">Usuario</label>
                                         <div :class="{'has-danger': errors.usuario}"
                                              class="form-group">
-                                            <el-input v-model="form.usuario"></el-input>
+                                            <el-input v-model="form.usuario"   maxlength="10"></el-input>
                                             <small v-if="errors.usuario"
                                                    class="form-control-feedback"
                                                    v-text="errors.usuario[0]"></small>
                                         </div>
                                     </div>
-                                    <div class="col-md-4 mt-4">
-                                        <label class="control-label">Api del servidor</label>
+                                    <div class="col-md-3 mt-4">
+                                        <label class="control-label">Contraseña</label>
                                         <div :class="{'has-danger': errors.password}"
                                              class="form-group">
-                                            <el-input v-model="form.password"></el-input>
+                                            <el-input v-model="form.password" maxlength="10"></el-input>
                                             <small v-if="errors.password"
                                                    class="form-control-feedback"
                                                    v-text="errors.password[0]"></small>
                                         </div>
                                     </div>
-                                    <div class="col-md-4 mt-4">
+                                    <div class="col-md-3 mt-4">
                                         <label class="control-label">
                                             Activo
                                         </label>

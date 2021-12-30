@@ -309,19 +309,10 @@
 
             $Mensaje = $data['Mensaje'] ?? [];
 
-            $head = $Mensaje['Head'] ?? [];
-            $id_mensaje = $head['id_mensaje'] ?? '';
-            $sistema_origen = $head['sistema_origen'] ?? '';
-            $fecha_origen = $head['fecha_origen'] ?? '';
-            $tipo = $head['tipo'] ?? "CONFEMB";
-
 
             $body = $Mensaje['Body'] ?? [];
             $ConfEmbarque = $body['ConfEmbarque'] ?? [];
-            $CEMCIA = $ConfEmbarque['CEMCIA'] ?? '';
             $CEMEMB = $ConfEmbarque['CEMEMB'] ?? '';
-
-            $CEMFEC = $ConfEmbarque['CEMFEC'] ?? '';
             $Detalles = $ConfEmbarque['Detalles'] ?? [];
             if (!empty($CEMEMB)) {
                 $logiscti = LogisticYobel::where('EMBNRO', $CEMEMB)->first();
@@ -346,16 +337,7 @@
 
                     /*
                     @todo validar como se comportan los items
-                    "CEMLIN" => "1"
-            "CEMCPR" => "PRD001"
-            "CEMQTY" => "1"
-            "CEMUMC" => "UN"
-            "CEMLOT" => "LOT1"
-            "CEMFFA" => "20181210"
-            "CEMFVE" => "20201231"
-            "CEMALX" => null
-            "CEMA01" => null
-            "CEMN01" => null*/
+             */
 
                 }
                 if($logiscti->confirmation_status  <= 1) {
@@ -372,6 +354,101 @@
                 'data'=>$data,
                 'success'=>true,
                 'message'=>"Se ha confirmado el embarque $CEMEMB",
+            ];
+
+
+        }
+        public function webServiceConfPedido(Request $request)
+        {
+            $data = $request->all();
+            \Log::debug("Datos de yobel \n\n".var_export($data,true));
+            $err = [
+                'success' => false,
+                'message' => ''
+            ];
+            $seguridad = $data['Seguridad'] ?? [];
+            $compania = $seguridad['compania'] ?? null;
+            $usuario = $seguridad['usuario'] ?? null;
+            $password = $seguridad['password'] ?? null;
+            $now = Carbon::now();
+
+
+            $log = new LogisticYobelApi([
+                'logistic_yobel_id' => 0,
+                'command' => 'webServiceConfPedido',
+                'yobel_response' => json_encode($data),
+                'yobel_send' => '',
+                'status' => 0,
+                'last_check' => $now,
+            ]);
+            $log->push();
+
+
+
+            if (
+                empty($compania) ||
+                empty($usuario) ||
+                empty($password)
+            ) {
+                $err['message'] = 'No se encuentra la compañia COD-555';
+                return $err;
+            }
+
+            $yobel = YobelConfiguration::where([
+                'usuario' => $usuario,
+                'password' => $password,
+            ])->first();
+
+            if (empty($yobel)) {
+                $err['message'] = 'No se encuentra la compañia';
+                return $err;
+            }
+
+            $Mensaje = $data['Mensaje'] ?? [];
+            $body = $Mensaje['Body'] ?? [];
+            $ConfPedido = $body['ConfPedido'] ?? [];
+            $CPINRO = $ConfPedido['CPINRO'] ?? '';
+            $Detalles = $ConfPedido['Detalles'] ?? [];
+            if (!empty($CPINRO)) {
+                $logiscti = LogisticYobel::where('order', $CPINRO)->first();
+                if (empty($logiscti)) {
+                    $err['message'] = 'No se ha encontrado el pedido ' . $CPINRO;
+                    return $err;
+                }
+                $itemYobel = $logiscti->items;
+                $collectionItem = collect([]);
+
+                foreach ($itemYobel as $item) {
+                    $collectionItem->push($item);
+                }
+
+
+                foreach ($Detalles as $item) {
+                    $codItem = $item['CPICPR'];
+                    $te = $collectionItem->where('internal_id', $codItem)->first();
+                    if (!empty($te)) {
+                        $confirmado[] = $te;
+                    }
+
+                    /*
+                    @todo validar como se comportan los items
+                    */
+
+                }
+                if($logiscti->confirmation_status  <= 2) {
+                    $logiscti->confirmation_status = 2;
+                     $logiscti->push();
+                }
+
+            } else {
+                $err['message'] = 'Hay datos para el pedido ' . $CPINRO;
+
+                return $err;
+            }
+            return [
+                'data'=>$data,
+                'success'=>true,
+                'message'=>"Se ha confirmado el pedido $CPINRO",
             ];
 
 
