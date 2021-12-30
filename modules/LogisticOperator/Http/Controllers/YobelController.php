@@ -278,7 +278,7 @@
             $log = new LogisticYobelApi([
                 'logistic_yobel_id' => 0,
                 'command' => 'webServiceConfEmarque',
-                'yobel_response' => $data,
+                'yobel_response' => json_encode($data),
                 'yobel_send' => '',
                 'status' => 0,
                 'last_check' => $now,
@@ -297,10 +297,10 @@
             }
 
             $yobel = YobelConfiguration::where([
-                'compania' => $compania,
                 'usuario' => $usuario,
                 'password' => $password,
             ])->first();
+
             if (empty($yobel)) {
                 $err['message'] = 'No se encuentra la compañia';
                 return $err;
@@ -358,15 +358,21 @@
             "CEMN01" => null*/
 
                 }
-                $logiscti->confirmation_status = 1;
-                $logiscti->push();
+                if($logiscti->confirmation_status  <= 1) {
+                    $logiscti->confirmation_status = 1;
+                    $logiscti->push();
+                }
 
             } else {
                 $err['message'] = 'Hay datos para el embarque ' . $CEMEMB;
 
                 return $err;
             }
-            return $data;
+            return [
+                'data'=>$data,
+                'success'=>true,
+                'message'=>"Se ha confirmado el embarque $CEMEMB",
+            ];
 
 
         }
