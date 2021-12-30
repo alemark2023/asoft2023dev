@@ -31,6 +31,7 @@
      * @property Carbon|null            $date_end
      * @property int|null               $documentary_guides_number_status_id
      * @property int                    $user_id
+     * @property int                    $total_day
      * @package Modules\DocumentaryProcedure\Models
      * @property-read DocumentaryFile   $doc_file
      * @property-read DocumentaryOffice $doc_office
@@ -50,7 +51,8 @@
             'doc_file_id' => 'int',
             'doc_office_id' => 'int',
             'documentary_guides_number_status_id' => 'int',
-            'user_id' => 'int'
+            'user_id' => 'int',
+            'total_day' => 'int',
         ];
 
         protected $fillable = [
@@ -65,6 +67,7 @@
             'date_end',
             'documentary_guides_number_status_id',
             'user_id',
+            'total_day',
         ];
 
         /**

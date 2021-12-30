@@ -62,6 +62,7 @@
                     <el-select
                         v-model="form.documentary_process_id"
                         :loading="loading"
+                        filterable
                         @change="ChangeSelect"
                     >
                         <el-option
@@ -83,7 +84,10 @@
                     :class="{ 'has-danger': errors.number }"
                     class="form-group col-sm-12 col-md-6 col-lg-4 ">
 
-                    <label>Código de expediente (interno) </label>
+                    <label>
+                        Código de expediente (interno)
+                        <span class="text-danger">*</span>
+                    </label>
                     <el-input v-model="form.invoice"
                               :loading="loading"></el-input>
                     <small
@@ -128,116 +132,185 @@
                         v-text="errors.time_register[0]"
                     ></small>
                 </div>
+                <!--
+                <div class="col-12 row  ">
+                    <div class="col-1">&nbsp;</div>
+                    <div class="col-10">
+                        {{titleDescription}}
+                    </div>
+
+                </div>
+                -->
 
 
-                <div class="row">
-                    <div class="col-12">
-                        <label>
-                            Procesos
-                        </label>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Num. De Seguimiento</th>
-                                    <th>Fecha/Hora De Registro</th>
-                                    <th>Etapa</th>
-                                    <th>Tiempo Que Toma El Tramite</th>
-                                    <th>Fecha Concluida</th>
-                                    <th>Estado</th>
-                                    <th>Responsable</th>
-                                    <th>Observaciones</th>
-                                    <th>Acciones</th>
-                                    <!--                                        <th>herramientas /opciones</th>-->
-                                </tr>
-                                </thead>
-                                <tbody v-if="form.guides.length > 0">
-                                <tr v-for="(row, index) in form.guides">
+                <div class="col-12">
+                    <label>
+                        Procesos
+                    </label>
+                    <div class="col-12 table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Num. De Seguimiento</th>
+                                <th>Fecha/Hora De Registro</th>
+                                <th>Etapa</th>
+                                <th>Descripcion</th>
+                                <th>Tiempo Que Toma El Tramite</th>
+                                <th>Fecha Concluida</th>
+                                <th style="    min-width: 300px;">Estado</th>
+                                <th>Responsable</th>
+                                <th>Observaciones</th>
+                                <th>Acciones</th>
+                                <!--                                        <th>herramientas /opciones</th>-->
+                            </tr>
+                            </thead>
+                            <tbody v-if="form.guides.length > 0">
+                            <tr v-for="(row, index) in form.guides">
 
-                                    <template v-if="row.visible !== false">
-                                        <td> {{ index + 1 }}</td>
-                                        <td>
-                                            {{ row.guide }}
+                                <template v-if="row.visible !== false">
+                                    <td> {{ index + 1 }}</td>
+                                    <td>
+                                        {{ row.guide }}
 
-                                        </td>
-                                        <td>
-                                            {{ row.created_at }}
-                                        </td>
-                                        <td>
+                                    </td>
+                                    <td>
+                                        {{ row.created_at }}
+                                    </td>
+                                    <td>
+
+                                        <div
+                                            class="badge"
+                                            :style="'background-color:'+ getColorStage(row.doc_office_id)+
+                                             ';font-size: 12px;'"
+                                        >
                                             {{ getStage(row.doc_office_id) }}
-                                        </td>
-                                        <td>
-                                            {{ row.date_take }}
-                                        </td>
-                                        <td>
-                                            {{ row.date_end }}
-                                        </td>
-                                        <td>
-                                            {{ getStatus(row.documentary_guides_number_status_id) }}
-                                        </td>
-                                        <td>
-                                            {{ getUser(row.user_id) }}
-                                        </td>
-                                        <td>
-                                            {{ row.observation }}
-                                        </td>
-                                        <td>
-                                            <div class="dropdown">
-                                                <button id="dropdownMenuButton"
-                                                        aria-expanded="false"
-                                                        aria-haspopup="true"
-                                                        class="btn btn-default btn-sm"
-                                                        data-toggle="dropdown"
-                                                        type="button">
-                                                    <i class="fas fa-ellipsis-v"></i>
-                                                </button>
-                                                <div aria-labelledby="dropdownMenuButton"
-                                                     class="dropdown-menu">
-                                                    <button
-                                                        class="dropdown-item"
-                                                        type="button"
-                                                        @click.prevent="clickEditStep(row)">
-                                                        Editar/Ver
-                                                    </button>
-                                                    <button
-                                                        class="dropdown-item"
-                                                        type="button"
-                                                        @click.prevent="clickRemoveItem(index, row)">
-                                                        Eliminar
-                                                    </button>
-                                                    <button
-                                                        v-if="row.id > 0"
-                                                        class="dropdown-item"
-                                                        type="button"
-                                                        @click.prevent="row=clickFileUpload(row.id)">
-                                                        Cargar archivo
-                                                    </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {{ getStageDescription(row.doc_office_id) }}
+                                    </td>
+                                    <td>
+                                        {{ row.total_day }} {{ getDiffDay(row.date_end) }}
+                                    </td>
+                                    <td>
+                                        <span :class="row.class">
+                                        {{ row.date_end }}
+                                            </span>
+                                    </td>
+                                    <td
 
-
-                                                </div>
+                                        class="row col-12"
+                                    >
+                                        <div class="col-1"
+                                             v-for="of in statusDocumentary"
+                                             :key="of.id"
+                                             :label="of.name"
+                                             :value="of.id"
+                                             :class="(of.id === row.documentary_guides_number_status_id)?'badge':'d-none'"
+                                             :style="'background-color:'+of.color"
+                                        >
+                                            <div
+                                            :class="(of.id === row.documentary_guides_number_status_id)?'badge':'d-none'"
+                                            v-if="of.id === row.documentary_guides_number_status_id">
+                                                &nbsp;
                                             </div>
+                                        </div>
+                                        <div class="col-8">
+                                            <el-select
+
+                                                v-model="row.documentary_guides_number_status_id"
+                                                clearable
+                                                filterable
+                                                placeholder="Estado de tramite"
+                                                @change="updateStatus(row)"
+                                            >
+
+                                                <el-option
+                                                    v-for="of in statusDocumentary"
+                                                    :key="of.id"
+                                                    :label="of.name"
+                                                    :value="of.id"
+                                                >
+                                                    <template>
+                                                        <p
+                                                            :style="'background-color:'+ getColorStatus(of.id)"
+                                                        >
+                                                            {{ of.name }}
+                                                        </p>
+                                                    </template>
+
+                                                </el-option>
+                                            </el-select>
+
+                                        </div>
 
 
-                                        </td>
-                                    </template>
-                                </tr>
-                                </tbody>
 
-                            </table>
 
-                        </div>
-                        <div v-show="data_load"
-                             class="col-12 text-center">
-                            <label class="control-label">
-                                <a class="btn"
-                                   href="#"
-                                   @click.prevent="clickAddStep">
-                                    <i class="fa fa-plus font-weight-bold text-info"></i>
-                                    <span style="color: #777777">Agregar Etapa</span></a>
 
-                            </label>
-                        </div>
+                                    </td>
+                                    <td>
+                                        {{ getUser(row.user_id) }}
+                                    </td>
+                                    <td>
+                                        {{ row.observation }}
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button id="dropdownMenuButton"
+                                                    aria-expanded="false"
+                                                    aria-haspopup="true"
+                                                    class="btn btn-default btn-sm"
+                                                    data-toggle="dropdown"
+                                                    type="button">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <div aria-labelledby="dropdownMenuButton"
+                                                 class="dropdown-menu">
+                                                <button
+                                                    class="dropdown-item"
+                                                    type="button"
+                                                    @click.prevent="clickEditStep(row,index)">
+                                                    Editar/Ver
+                                                </button>
+                                                <button
+                                                    class="dropdown-item"
+                                                    type="button"
+                                                    @click.prevent="clickRemoveItem(index, row)">
+                                                    Eliminar
+                                                </button>
+                                                <button
+                                                    v-if="row.id > 0"
+                                                    class="dropdown-item"
+                                                    type="button"
+                                                    @click.prevent="row=clickFileUpload(row.id)">
+                                                    Cargar archivo
+                                                </button>
+
+
+                                            </div>
+                                        </div>
+
+
+                                    </td>
+                                </template>
+                            </tr>
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                    <div v-show="data_load"
+                         class="col-12 text-center">
+                        <label class="control-label">
+                            <a class="btn"
+                               href="#"
+                               @click.prevent="clickAddStep">
+                                <i class="fa fa-plus font-weight-bold text-info"></i>
+                                <span style="color: #777777">Agregar Etapa</span></a>
+
+                        </label>
                     </div>
                 </div>
                 <!--
@@ -274,6 +347,7 @@
 
 
             </div>
+
             <!-- </el-dialog> -->
 
             <add-process-modal
@@ -390,6 +464,7 @@ export default {
             attachments: [],
             data_load: false,
             input_person: null,
+            color_status: null,
             showFileUpload: false,
             stageId: 0,
             urlDropzone: null,
@@ -406,6 +481,7 @@ export default {
             },
             disable: false,
             title: "",
+            titleDescription: "",
             loading: false,
             basePath: "/documentary-procedure/files_simplify",
             showDialogNewPerson: false,
@@ -449,6 +525,7 @@ export default {
             'statusDocumentary',
 
         ]),
+
         onlyShow() {
             if (this.form !== undefined && this.form.disable !== undefined) return this.form.disable
             return false;
@@ -498,6 +575,37 @@ export default {
             'loadDocumentTypes',
             'loadFiles',
         ]),
+        getColorStatusComputed(id){
+            let stageT = this.statusDocumentary.find((it) => {
+                return it.id === id
+            });
+            let retu = "#FFFFFF";
+            if (stageT !== undefined) {
+                retu = stageT.color
+            }
+            return retu
+
+        },
+        getDiffDay(dateEnd) {
+            if (dateEnd === undefined) return ' -';
+            if (dateEnd === null) return ' -';
+
+            let now = moment();
+            dateEnd = moment(dateEnd, "YYYY-MM-DD HH:mm:ss");
+            now.hour(dateEnd.hour())
+            now.minute(dateEnd.minute())
+
+            let total = (dateEnd.diff(now, 'days')+1);
+            let str = '';
+            if (total > 0) {
+                str = '-  Falta(n) ' + total + ' día(s)';
+            } else if (total < 0) {
+                str = '-  Finalizó hace ' + total + ' día(s)';
+            } else {
+                str = '-  Hoy finaliza'
+            }
+            return str
+        },
         convertRequirementsIntoArray(val) {
             return this.form.requirements_id;
 
@@ -539,6 +647,7 @@ export default {
         ChangeSelect() {
             this.setRequirement()
             this.convertRequirementsIntoArray()
+            this.titleDescription = this.getProcessDescription(this.form.documentary_process_id)
         },
         haveObservation(file) {
             if (file === null) return false;
@@ -896,25 +1005,14 @@ export default {
             if (this.data_load == true) {
                 this.showDialogNewProcess = true
             }
-            /*
-            let newGuide = {
-                id: null,
-                guide: '',
-                created_at: moment().format('YYYY-MM-DD HH:mm'),
-                doc_office_id: '',
-                date_take: '',
-                date_end: '',
-                documentary_guides_number_status_id: '',
-                user_id: '',
-                observation: '',
-
-            };
-            this.form.guides.push(newGuide);
-            */
 
         },
         addStep(row) {
-            this.form.guides.push(row);
+            if (row.index !== undefined) {
+                this.form.guides[row.index] = row
+            } else {
+                this.form.guides.push(row);
+            }
             this.editGuide = {};
 
         },
@@ -931,6 +1029,30 @@ export default {
             let retu = '';
             if (stageT !== undefined) {
                 retu = stageT.name
+            }
+            return retu
+        },
+        getStageDescription(doc_office_id) {
+            if (this.offices === undefined) return '';
+            if (this.offices.length < 1) return '';
+            let stageT = this.offices.find((it) => {
+                return it.id === doc_office_id
+            });
+            let retu = '';
+            if (stageT !== undefined) {
+                retu = stageT.description
+            }
+            return retu
+        },
+        getProcessDescription(documentary_process_id) {
+            if (this.processes === undefined) return '';
+            if (this.processes.length < 1) return '';
+            let stageT = this.processes.find((it) => {
+                return it.id === documentary_process_id
+            });
+            let retu = '';
+            if (stageT !== undefined) {
+                retu = stageT.name + ": " + stageT.description
             }
             return retu
         },
@@ -963,9 +1085,10 @@ export default {
             }
             return retu
         },
-        clickEditStep(row) {
+        clickEditStep(row, index) {
             if (this.data_load == true) {
                 this.showDialogNewProcess = true
+                row.index = index
                 this.editGuide = row;
             }
         },
@@ -974,7 +1097,7 @@ export default {
             this.showFileUpload = true;
         },
         clickRemoveItem(index, row) {
-            if(row.id > 0){
+            if (row.id > 0) {
                 this.$http
                     .post(`${this.basePath}/removeStage/${row.id}`, {})
                     .then((response) => {
@@ -987,12 +1110,55 @@ export default {
                     .finally(() => {
 
                     })
-            }else{
+            } else {
                 this.form.guides.splice(index, 1)
 
             }
             // return row;
         },
+        updateStatus(row) {
+            let url = `${this.basePath}/updateStage/${row.id}`;
+            this.$http
+                .post(url, {'id': row.id, 'status': row.documentary_guides_number_status_id})
+                .then(response => {
+                    this.$message.success(response.data.message)
+                    row.color = this.getColorStatus(row.documentary_guides_number_status_id)
+                })
+                .finally(() => {
+                    row.edited = false;
+                })
+            return row;
+        },
+        getColorStatus(documentary_guides_number_status_id) {
+            if (this.statusDocumentary === undefined) return '';
+
+            if (this.statusDocumentary.length < 1) return '';
+
+
+            let stageT = this.statusDocumentary.find((it) => {
+                return it.id === documentary_guides_number_status_id
+            });
+            let retu = "#FFFFFF";
+            if (stageT !== undefined) {
+                retu = stageT.color
+            }
+            // this.color_status = retu;
+            return retu
+        },
+        getColorStage(doc_office_id) {
+            if (this.offices === undefined) return '';
+            if (this.offices.length < 1) return '';
+            let stageT = this.offices.find((it) => {
+                return it.id === doc_office_id
+            });
+            let retu = "#FFFFFF";
+
+            if (stageT !== undefined) {
+                retu = stageT.color
+            }
+            return retu
+        },
+
 
     },
 };

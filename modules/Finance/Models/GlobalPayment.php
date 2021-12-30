@@ -244,8 +244,13 @@
                 $bank_id = $destination->bank_id;
                 $bank = Bank::find($bank_id);
                 if ($bank !== null) {
+
                     try {
-                        return  $destination->cci;
+                        if(!empty($destination->cci)){
+                            return  $destination->cci;
+
+                        }
+                        return  $destination->number;
                     } catch (Exception $e) {
                         // do nothing
                         return '-';

@@ -36,6 +36,7 @@ class DocumentEmail extends Mailable
         $xml = $this->getStorage($this->document->filename, 'signed');
         $cdr = $this->getStorage($this->document->filename, 'cdr');
 
+
         $image_detraction = ($this->document->detraction) ? (($this->document->detraction->image_pay_constancy) ? storage_path('app'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'image_detractions'.DIRECTORY_SEPARATOR.$this->document->detraction->image_pay_constancy):false):false;
 
         $email = $this->subject('Envio de Comprobante de Pago Electrónico')
@@ -45,9 +46,9 @@ class DocumentEmail extends Mailable
                     ->attachData($xml, $this->document->filename.'.xml');
 
 
-        $file = $this->getCdr($this->document);
-        if(!empty($file)){
-            $email->attachData($file, $this->document->filename.'.zip');
+        // $file = $this->getCdr($this->document);
+        if(!empty($cdr) ){
+            $email->attachData($cdr, $this->document->filename.'.zip');
         }
 
         if($image_detraction){

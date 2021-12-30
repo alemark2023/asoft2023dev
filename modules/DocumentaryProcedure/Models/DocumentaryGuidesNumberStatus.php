@@ -12,6 +12,7 @@
      *
      * @property int    $id
      * @property string $name
+     * @property string|null $color
      * @package Modules\DocumentaryProcedure\Models
      * @method static Builder|DocumentaryGuidesNumberStatus newModelQuery()
      * @method static Builder|DocumentaryGuidesNumberStatus newQuery()
@@ -25,7 +26,12 @@
         public $timestamps = false;
         protected $table = 'documentary_guides_number_status';
         protected $fillable = [
-            'name'
+            'name',
+            'color',
         ];
-
+        public function getCollectionData()
+        {
+            $data = $this->toArray();
+            return $data;
+        }
     }

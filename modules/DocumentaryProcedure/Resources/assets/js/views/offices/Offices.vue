@@ -25,7 +25,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-12 col-md-2 mb-3">
+                    <div class="col-12 col-md-4 mb-3">
                         <form class="form-group" @submit.prevent="onFilter">
                             <div class="input-group mb-3">
                                 <input
@@ -66,7 +66,7 @@
                         <tr
                             v-for="(item,index) in items"
                             :key="item.id"
-                            :class="{ 'table-danger': !item.active }"
+                            :style="'background-color:'+ item.color"
                         >
                             <td class="text-right">{{ index + 1 }}</td>
                             <td>{{ item.name }}</td>
@@ -95,6 +95,7 @@
                                 >
                                     <i class="fa fa-edit"></i>
                                 </el-button>
+                                <!--
                                 <el-button
                                     :disabled="loading"
                                     type="danger"
@@ -102,6 +103,7 @@
                                 >
                                     <i class="fa fa-trash"></i>
                                 </el-button>
+                                -->
                             </td>
                         </tr>
                         </tbody>

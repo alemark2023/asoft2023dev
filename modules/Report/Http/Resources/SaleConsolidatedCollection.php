@@ -27,9 +27,19 @@ class SaleConsolidatedCollection extends ResourceCollection
                 'id' => '',
                 'name' => ''
             ];
-            if($row->item) {
-                if ($row->item->presentation) {
-                    $unit_type_id = $row->item->presentation->unit_type_id;
+            if($row->item !== null ) {
+                try {
+                    if (
+                        property_exists($row->item, 'presentation') &&
+                        $row->item->presentation !== null &&
+                        is_object($row->item->presentation) &&
+                        property_exists($row->item->presentation, 'unit_type_id')
+                    ) {
+                        $unit_type_id = $row->item->presentation->unit_type_id;
+                    }
+                } catch (Exception $e) {
+                    $unit_type_id = $row->relation_item->unit_type_id;
+
                 }
                 // unit_price
                 if($unit_type_id !== 'ZZ'){

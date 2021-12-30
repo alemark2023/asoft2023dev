@@ -33,7 +33,7 @@ class ToPay
         $supplier_id = isset($request['supplier_id']) ? (int)$request['supplier_id'] : 0;
         $user = isset($request['user']) ? (int)$request['user'] : 0;
         // Obtendrá todos los establecimientos
-        $stablishmentTopaidAll = $request['stablishmentTopaidAll'] ?? 0;
+        $stablishmentTopaidAll = (int)( $request['stablishmentTopaidAll'] ?? 0);
         $withBankLoan = $request['withBankLoan'] ?? 0;
 
 
@@ -81,8 +81,9 @@ class ToPay
                 $join->on('purchases.id', '=', 'payments.purchase_id');
             });
         if ($stablishmentTopaidAll !== 1) {
-            $purchases
-                ->where('purchases.establishment_id', $establishment_id);
+            if ($establishment_id != 0) {
+                $purchases->where('purchases.establishment_id', $establishment_id);
+            }
 
         }
         $select = DB::raw('purchases.id as id, ' .
@@ -123,8 +124,9 @@ class ToPay
             ->whereIn('state_type_id', ['01', '03', '05', '07', '13']);
 
         if ($stablishmentTopaidAll !== 1) {
-            $expenses
-                ->where('expenses.establishment_id', $establishment_id);
+            if ($establishment_id != 0) {
+                $expenses->where('expenses.establishment_id', $establishment_id);
+            }
         }
         $select = 'expenses.id as id, ' .
             "DATE_FORMAT(expenses.date_of_issue, '%Y/%m/%d') as date_of_issue, " .
@@ -157,6 +159,7 @@ class ToPay
             $expenses = $expenses->where('supplier_id', $supplier_id);
         }
         $bankLoans = null;
+
         /** Prestamos bancarios */
         if ($withBankLoan === 1) {
             $bankLoansPayments = DB::table('bank_loan_payments')
@@ -200,6 +203,7 @@ class ToPay
                 // $bankLoans = $bankLoans->where('bank_loans.bank_id', $supplier_id);
             }
         }
+
         if ($user !== 0) {
             $purchases->where('user_id', $user);
             $expenses->where('user_id', $user);
@@ -228,6 +232,7 @@ class ToPay
         $records = $records->get();
 
         return $records->transform(function($row) {
+
 
                 $total_to_pay = (float)$row->total - (float)$row->total_payment;
                 $total_subtraction = (float)$row->total_payment - (float)$row->total;
