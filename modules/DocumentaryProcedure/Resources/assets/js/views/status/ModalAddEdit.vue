@@ -27,18 +27,18 @@
                 </div>
 
                 <div class="form-group col-md-5">
-                        <label for="color">
-                            Color de fondo<br>
-                        </label>
-                        <el-color-picker
-                            id="color"
-                            v-model="form.color"
-                            :color-format="'true'"
-                            :predefine="predefineColors"
-                            :size="'medium'"
-                            show-alpha
-                        >
-                        </el-color-picker>
+                    <label for="color">
+                        Color de fondo<br>
+                    </label>
+                    <el-color-picker
+                        id="color"
+                        v-model="form.color"
+                        :color-format="'true'"
+                        :predefine="predefineColors"
+                        :size="'medium'"
+                        show-alpha
+                    >
+                    </el-color-picker>
 
                     <div v-if="errors.color"
                          class="invalid-feedback">
@@ -49,9 +49,9 @@
                 <div class="form-group col-md-7">
 
                     <label
-                        class=" badge"
                         :style="'background-color:'+ form.color+
                                              ';font-size: 12px;'"
+                        class=" badge"
                     > Texto de prueba</label>
                 </div>
                 <!--
@@ -144,11 +144,11 @@ export default {
             predefineColors: [
                 '#FF4500',
                 '#FF8C00',
-                '#ffd700',
-                '#90ee90',
+                '#FFD700',
+                '#90EE90',
                 '#00CED1',
                 '#1E90FF',
-                '#c71585',
+                '#C71585',
             ],
         };
     },
@@ -168,13 +168,14 @@ export default {
                     this.$emit("onUpdateItem", response.data.data);
                     this.onClose();
                 })
+
+                .catch((error) => {
+                    this.axiosError(error);
+                })
                 .finally(() => {
                     this.loading = false;
                     this.errors = {};
                 })
-                .catch((error) => {
-                    this.axiosError(error);
-                });
         },
         onStore() {
             this.loading = true;
@@ -188,13 +189,13 @@ export default {
                     this.$emit("onAddItem", response.data.data);
                     this.onClose();
                 })
+                .catch((error) => {
+                    this.axiosError(error);
+                })
                 .finally(() => {
                     this.loading = false;
                     this.errors = {};
                 })
-                .catch((error) => {
-                    this.axiosError(error);
-                });
         },
         onSubmit() {
             if (this.office && this.office.id) {
@@ -215,7 +216,8 @@ export default {
             } else {
                 this.title = "Crear Estado";
                 this.form = {
-                    active: true,
+                    name: '',
+                    color: "#FFFFFF",
                 };
             }
         },

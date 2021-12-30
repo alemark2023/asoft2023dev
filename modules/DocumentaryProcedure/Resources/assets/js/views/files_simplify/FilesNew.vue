@@ -147,7 +147,7 @@
                     <label>
                         Procesos
                     </label>
-                    <div class="table-responsive">
+                    <div class="col-12 table-responsive">
                         <table class="table">
                             <thead>
                             <tr>
@@ -158,7 +158,7 @@
                                 <th>Descripcion</th>
                                 <th>Tiempo Que Toma El Tramite</th>
                                 <th>Fecha Concluida</th>
-                                <th>Estado</th>
+                                <th style="    min-width: 300px;">Estado</th>
                                 <th>Responsable</th>
                                 <th>Observaciones</th>
                                 <th>Acciones</th>
@@ -200,7 +200,7 @@
                                     </td>
                                     <td
 
-                                        class="row"
+                                        class="row col-12"
                                     >
                                         <div class="col-1"
                                              v-for="of in statusDocumentary"

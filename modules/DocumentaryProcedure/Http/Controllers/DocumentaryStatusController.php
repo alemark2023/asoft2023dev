@@ -60,14 +60,28 @@
          */
         public function store(StatusRequest $request)
         {
+            $name =$request->name;
             $find = [
-                'name' => $request->name,
+                'name' => $name,
                 'color' => $request->color,
             ];
-            $office = DocumentaryGuidesNumberStatus::findOrNew(['name' => $request->name], $find);
-
-            $office->fill($find);
-            $office->push();
+            $id = $request->has('id')?$request->id:0;
+            if($id < 1 ){
+                $office = DocumentaryGuidesNumberStatus::where('name',$name)->first();;
+                if(!empty($office)){
+                    return response()->json([
+                        'data' => $office,
+                        'message' => 'El nombre ya se encuentra registrado.',
+                        'succes' => false,
+                    ], 500);
+                }
+                $office = new DocumentaryGuidesNumberStatus($find);
+                $office->push();
+            }else{
+                $office = DocumentaryGuidesNumberStatus::find($id);
+                $office->fill($find);
+                $office->push();
+            }
 
 
             return response()->json([

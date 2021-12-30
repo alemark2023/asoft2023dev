@@ -88,12 +88,12 @@
                     :class="{ 'has-danger': errors.date_take }"
                     class="form-group col-sm-12 col-md-6 col-lg-4 ">
                     <label>
-                        Fecha cuando se toma el etapa
+                        Fecha cuando se toma la etapa
                     </label>
                     <el-date-picker
                         v-model="guide.date_take "
                         format="yyyy/MM/dd HH:mm"
-                        placeholder="Fecha cuando se toma el tramite"
+                        placeholder="Fecha cuando se toma la etapa"
                         type="datetime"
                         value-format="yyyy-MM-dd HH:mm"
                     >
