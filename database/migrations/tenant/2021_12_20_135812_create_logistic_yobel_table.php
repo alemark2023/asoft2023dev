@@ -23,7 +23,8 @@
                 $table->string('order')->nullable()->comment('numero de orden de  importacion');
                 $table->string('reference')->nullable()->comment('Referencia del excel');
                 $table->string('gateway_code')->nullable()->comment('Codigo de pasarela');
-                $table->unsignedInteger('status')->default(0)->nullable()->comment('Relacion con Orders');
+                $table->unsignedInteger('status')->default(0)->nullable();
+                $table->unsignedInteger('confirmation_status')->default(0)->nullable();
 
                 $table->string('PEDCCL')->nullable();
                 $table->string('EMBPRV1')->nullable();

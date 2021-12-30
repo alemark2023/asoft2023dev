@@ -286,24 +286,24 @@
                 this.$eventHub.$emit('reloadData')
             },
 
-            clickProvision(){
-                window.open('/purchases/create')
-            },
             sendYobel(id){
                 this.$http.post(`/${this.resource}/yobelscm/pedido`, {order_note:id})
                     .then(response => {
-                        console.error(response.data)
-                        /*
+
                         if (response.data.success) {
-                            this.$eventHub.$emit('successRegularize', response.data)
-                            // this.$message.success(response.data.message)
-                            this.getRecordsByFilter()
+                            // this.$eventHub.$emit('successRegularize', response.data)
+                            this.$message.success(response.data.message)
+                            // this.getRecordsByFilter()
                         } else {
                             this.$message.error(response.data.message)
                         }
-                        */
+
                     })
                     .catch(error => {
+                        if(error.response.data.message){
+
+                            this.$message.error(error.response.data.message);
+                        }
                         if (error.response.status === 500) {
                             this.$message.error('Error al intentar regularizar');
                         } else {

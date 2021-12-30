@@ -2,6 +2,7 @@
 
     namespace Modules\LogisticOperator\Models;
 
+    use App\Models\Tenant\Item;
     use App\Models\Tenant\ModelTenant;
     use App\Models\Tenant\Order;
     use App\Models\Tenant\Person;
@@ -22,6 +23,7 @@
      *
      * @property int                           $id
      * @property int|null                      $status
+     * @property int|null                      $confirmation_status
      * @property int|null                      $person_id
      * @property int|null                      $order_id
      * @property int|null                      $order_note_id
@@ -57,6 +59,7 @@
 
         protected $casts = [
             'status' => 'int',
+            'confirmation_status' => 'int',
             'order_note_id' => 'int',
             'person_id' => 'int',
             'order_id' => 'int'
@@ -69,6 +72,7 @@
             'reference',
             'gateway_code',
             'status',
+            'confirmation_status',
             'PEDCCL',
             'order_note_id',
             'items'
@@ -229,7 +233,7 @@
 
             }
             $items = $this->items;
-
+            $this->crearProducto();
 
             $data['Mensaje']['Head']["id_mensaje"] = $order->external_id;
             $data['Mensaje']['Head']["sistema_origen"] = "SAP";
@@ -465,6 +469,99 @@
             return $response;
         }
 
+        protected function crearProducto(){
+            $url = "http://yscmserver-test.yobelscm.biz:1973/TI_Logistics/WSYOB_RECEP_LOG/WSYOB_RECEP/CrearProductoHJ";
+            $config = $this->getConfig();
+            $data = $config->setSecurity();
+
+            $now = Carbon::now();
+            /** @var Order $order */
+            $order = Order::find($this->order_id);
+            if (empty($order)) {
+                $order = OrderNote::find($this->order_note_id);
+            }
+
+
+            $data['Mensaje']['Head']["id_mensaje"] = $order->external_id;
+            $data['Mensaje']['Head']["sistema_origen"] = "SAP";
+            $data['Mensaje']['Head']["fecha_origen"] = $now->format('Y-m-d') . "T" . $now->format('H:m:i');
+            $data['Mensaje']['Head']["tipo"] = "RECPRODU";
+            $items = $this->items;
+
+            foreach ($items as $item) {
+                $itemDb = Item::find($item->id);
+                $internalId = null;
+                try{
+                    $internalId = $item->internal_id;
+                }catch (ErrorException $e){
+                    $item =  $itemDb;
+                    $internalId = $item->internal_id;
+
+                }
+                $unitId = 'NIU';
+                try{
+                    $unitId = $item->unit_type_id;
+                }catch (ErrorException $e) {
+                    $unitId = 'NIU';
+
+                }
+                $temp1 = [
+
+                    "PRDCIA"=> self::cutString($data['Seguridad']['compania'] ?? "IRX", 0, 3), // Compañía
+                    "PRDPRO"=> $internalId, // Código de producto
+                    "PRDDES"=> $item->description, //Descripción del producto
+                    "PRDFAM"=> "FAMILIA", //Familia
+                    "PRDSFM"=> "SUBFAMILIA", //SUBFAMILIA
+                    "PRDCB1"=> $itemDb->barcode, //Codigo de barras 1
+                    "PRDCB2"=> $itemDb->barcode, //Codigo de barras 2
+                    "PRDUM1"=> $unitId, // Unidad de medida 1
+                    "PRDUM2"=> $unitId, //Unidad de medida 2
+
+                    "PRDUX1"=> "1234567", //Unidades por empaque 1
+                    "PRDLR1"=> "12345.55", //Largo_1
+                    "PRDAN1"=> "12345.22", //Ancho_1
+                    "PRDAL1"=> "12345.44", //Alto_1
+                    "PRDPE1"=> "1234567.33", //Peso_1
+                    "PRDVO1"=> "12345.999", //Volumen_1
+
+                    "PRDUX2"=> "24", // Unidades por empaque 2
+                    "PRDLR2"=> "", // Largo_2
+                    "PRDAN2"=> "12.00", // Ancho_2
+                    "PRDAL2"=> "2.00", // Alto_2
+                    "PRDPE2"=> "50.00",// Peso_2
+                    "PRDVO2"=> "312.000",// Volumen_2
+
+                    "PRDFML"=> "0",// Flag de Lote
+                    "PRDCSX"=> "$internalId",
+                    "PRDSER"=> "0" // Flag de Control de Serie
+                ];
+                $data['Mensaje']['Body']['Productos'][] = $temp1;
+
+            }
+
+            $response = $this->sendData($url, $data);
+            $responseObject = json_decode($response);
+            $status = 0;
+
+            if ($responseObject && $responseObject->CrearProductoHJResult && $responseObject->CrearProductoHJResult->resultado && $responseObject->CrearProductoHJResult->resultado == 'OK') {
+                $status = 1;
+                // $this->push();
+            }
+            $log = new LogisticYobelApi([
+                'logistic_yobel_id' => $this->id,
+                'command' => 'CrearProductoHJ',
+                'yobel_response' => $response,
+                'yobel_send' => json_encode($data),
+                'status' => $status,
+                'last_check' => $now,
+            ]);
+            $log->push();
+
+            if($status!== 1){
+                throw new \Exception($response);
+            }
+            return $data;
+        }
         public function crearEmbarque()
         {
             $url = "http://yscmserver-test.yobelscm.biz:1973/TI_Logistics/WSYOB_RECEP_LOG/WSYOB_RECEP/CrearEmbarque";
@@ -479,6 +576,7 @@
             }
 
             $this->crearProveedor();
+            $this->crearProducto();
             $cdoClient = $this->getEMBNRO();
 
 

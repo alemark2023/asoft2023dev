@@ -4,6 +4,7 @@
 
     use App\Imports\YobelImport;
     use App\Models\Tenant\Configuration;
+    use App\Models\Tenant\Item;
     use App\Models\Tenant\MigrationConfiguration;
     use Exception;
     use App\Imports\ItemsImport;
@@ -127,18 +128,11 @@
 
         public function crearEmbarque($id = 0)
         {
-            $url = "http://yscmserver-test.yobelscm.biz:1973/TI_Logistics/WSYOB_RECEP_LOG/WSYOB_RECEP/CrearEmbarque";
-            // testing
-            $data = $this->config->setSecurity();
-            $tem = LogisticYobel::find($id);
-            $data = $tem->getDataToCrearEmbarque($data);
 
 
-            $response = $this->sendData($url, $data);
-            dd([
-                'envio' => $data,
-                'respuesta' => json_decode($response)
-            ]);
+            $t = LogisticYobel::where('order_id',$id)->first();
+            $data  =$t->crearEmbarque();
+            dd($data);
 
         }
 
@@ -350,7 +344,9 @@
                         $confirmado[] = $te;
                     }
 
-                    /* "CEMLIN" => "1"
+                    /*
+                    @todo validar como se comportan los items
+                    "CEMLIN" => "1"
             "CEMCPR" => "PRD001"
             "CEMQTY" => "1"
             "CEMUMC" => "UN"
@@ -362,7 +358,8 @@
             "CEMN01" => null*/
 
                 }
-
+                $logiscti->confirmation_status = 1;
+                $logiscti->push();
 
             } else {
                 $err['message'] = 'Hay datos para el embarque ' . $CEMEMB;
@@ -372,5 +369,80 @@
             return $data;
 
 
+        }
+
+
+        public function makeYobelPedido(Request $request){
+            $data = [
+                'success'=>false,
+                'message'=>'',
+            ];
+
+
+            $orderNote = Order::find($request->order);
+            $orderYobel = null;
+            if(!empty($orderNote)){
+                $orderYobel = LogisticYobel::where('order_id',$request->order)->first();
+                if(empty($orderYobel)){
+                    $orderYobel = new LogisticYobel([
+                        'order_id'=>$request->order,
+                        'person_id'=>$orderNote->customer_id,
+                        'status'=>0,
+                    ]);
+                    $items = [];
+                    foreach($orderNote->items as $item){
+                        $items[] = (array)($item->item);
+                    }
+                    $orderYobel->items=$items;
+                    $orderYobel->setOrder();
+                    $orderYobel->push();
+                }
+                $items = [];
+
+                foreach($orderNote->items as $item){
+                    try {
+                        $itemToSave = $item->item;
+
+                    }catch (\ErrorException $e){
+                        $itemToSave = Item::find($item->id);
+                    }
+                    $itemToSave->quantity = $item->quantity;
+
+                    // $itemToSave->internal_id = $i->internal_id;
+                    if(!empty($itemToSave->internal_id)) {
+                        $items[] = (array)($itemToSave->toArray());
+                    }
+                }
+                $orderYobel->items=$items;
+                $orderYobel->push();
+                $data['success'] = false;
+                $currentStatus = (int)$orderYobel->status;
+                $currentCofirmation = (int)$orderYobel->confirmation_status ;
+
+                $data['message'] = 'El status ' . $currentStatus . ' es diferente de la confirmacion ' . $currentCofirmation;
+
+                if(($currentCofirmation == $currentStatus )){
+                    if ($currentStatus == 0 && $currentCofirmation == 0){
+                        $orderYobel->crearEmbarque();
+                        $data['success'] = true;
+                        $data['message'] = 'Se ha creado el embarque';
+                    }
+
+                    if ($currentStatus == 1 && $currentCofirmation == 1){
+                        $orderYobel->crearPedido();
+                        $data['success'] = true;
+                        $data['message'] = 'Se ha creado el pedido ' . "$currentCofirmation == (int)$currentStatus";
+                    }
+                }else{
+                    $data['message'] = "Aun no ha sido confirmado ";
+
+                }
+            }else{
+                $data['message']='No se encontró el registro';
+            }
+            return $data;
+
+            return $orderYobel->toArray();
+            return $request->all();
         }
     }

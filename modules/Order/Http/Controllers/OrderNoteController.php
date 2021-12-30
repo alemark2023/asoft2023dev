@@ -875,6 +875,11 @@
         }
 
         public function makeYobelPedido(Request $request){
+            $data = [
+                'success'=>false,
+                'message'=>'',
+            ];
+
 
             $orderNote = OrderNote::find($request->order_note);
             $orderYobel = null;
@@ -906,14 +911,32 @@
                 }
                 $orderYobel->items=$items;
                 $orderYobel->push();
-                if($orderYobel->status == 0){
-                    $orderYobel->crearEmbarque();
+                $data['success'] = false;
+                $currentStatus = (int)$orderYobel->status;
+                $currentCofirmation = (int)$orderYobel->confirmation_status ;
 
-                }elseif ($orderYobel->status == 1){
-                    $orderYobel->crearPedido();
+                $data['message'] = 'El status ' . $currentStatus . ' es diferente de la confirmacion ' . $currentCofirmation;
+
+                if(($currentCofirmation == $currentStatus )){
+                    if ($currentStatus == 0 && $currentCofirmation == 0){
+                        $orderYobel->crearEmbarque();
+                        $data['success'] = true;
+                        $data['message'] = 'Se ha creado el embarque';
+                    }
+
+                    if ($currentStatus == 1 && $currentCofirmation == 1){
+                        $orderYobel->crearPedido();
+                        $data['success'] = true;
+                        $data['message'] = 'Se ha creado el pedido';
+                    }
+                }else{
+                    $data['message'] = "Aun no ha sido confirmado ";
 
                 }
+            }else{
+                $data['message']='No se encontró el registro';
             }
+            return $data;
 
             return $orderYobel->toArray();
             return $request->all();

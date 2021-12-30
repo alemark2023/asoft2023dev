@@ -31,6 +31,10 @@
                                 Route::get('/records', 'YobelController@records');
                                 Route::post('/items/import', 'YobelController@import');
 
+                                Route::prefix('yobelscm')->group(function () {
+                                    Route::post('/pedido', 'YobelController@makeYobelPedido');
+                                });
+
 
                                 Route::prefix('testing')->group(function () {
                                     Route::get('CrearEmbarque/{id?}', 'YobelController@crearEmbarque')->name('test.yobel.embarque');

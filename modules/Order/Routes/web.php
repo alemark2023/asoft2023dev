@@ -69,10 +69,8 @@ if($current_hostname) {
                 Route::get('document_tables', 'OrderNoteController@document_tables');
 
                 Route::prefix('yobelscm')->group(function () {
-
                     Route::post('/pedido', 'OrderNoteController@makeYobelPedido');
-
-            });
+                });
             });
 
             Route::prefix('order-forms')->group(function () {

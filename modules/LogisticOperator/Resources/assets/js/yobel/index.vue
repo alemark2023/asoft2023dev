@@ -148,17 +148,7 @@
                             <el-button
                                        class="submit"
                                        type="success"
-                                       @click.prevent="openWindow(row.test_embarque)"> Embarque</el-button>
-                            <el-button
-                                       class="submit"
-                                       type="success"
-                                       @click.prevent="openWindow(row.test_cliente)"> cliente</el-button>
-                            <el-button
-                                       class="submit"
-                                       type="success"
-                                       @click.prevent="openWindow(row.test_pedido)"> Pedido</el-button>
-
-
+                                       @click.prevent="sendYobel(row.id)"> Enviar a Yobel</el-button>
 
 
 
@@ -456,6 +446,35 @@ export default {
         },
         openWindow(url){
             window.open(url,'_blank')
+        },
+
+        sendYobel(id){
+            this.$http.post(`/${this.resource}/yobelscm/pedido`, {order:id})
+                .then(response => {
+
+                    if (response.data.success) {
+                        // this.$eventHub.$emit('successRegularize', response.data)
+                        this.$message.success(response.data.message)
+                        // this.getRecordsByFilter()
+                    } else {
+                        this.$message.error(response.data.message)
+                    }
+
+                })
+                .catch(error => {
+                    if(error.response.data.message){
+
+                        this.$message.error(error.response.data.message);
+                    }
+                    if (error.response.status === 500) {
+                        this.$message.error('Error al intentar regularizar');
+                    } else {
+                        console.log(error.response.data.message)
+                    }
+                })
+                .then(()=>{
+                    // this.$eventHub.$emit('valueLoadingRegularize', false)
+                })
         }
 
     },
