@@ -111,10 +111,12 @@
                     </label>
                     <el-input v-model="guide.total_day"
                               type="number"
+                              :disabled="!guide.by_day"
                               @keyup="calculateDays"
                               @change="calculateDays">
                     </el-input>
                 </div>
+
 
                 <div
                     :class="{ 'has-danger': errors.created_at }"
@@ -124,11 +126,13 @@
                     </label>
                     <el-date-picker
                         v-model="guide.date_end "
-                        :disabled="true"
+                        :disabled="guide.by_day"
                         format="yyyy/MM/dd HH:mm"
                         placeholder="Fecha de finalizacion"
                         type="datetime"
                         value-format="yyyy-MM-dd HH:mm"
+                        @keyup="calculateDays"
+                        @change="calculateDays"
                     >
                     </el-date-picker>
                 </div>
@@ -201,6 +205,20 @@
                     </label>
                     <el-input v-model="guide.observation"
                               placeholder="Observaciones"></el-input>
+                </div>
+
+                <div
+                    :class="{ 'has-danger': errors.total_day }"
+                    class="form-group col-sm-6 col-md-3 col-lg-2 ">
+
+                    <label>
+                        Calculo por dias
+                    </label>
+                    <el-checkbox
+                        v-model="guide.by_day"
+                        @change="calculateDays"
+                    ></el-checkbox>
+
                 </div>
 
                 <div class="row text-center col-12 p-t-20">
@@ -337,6 +355,7 @@ export default {
                 id: null,
                 total_day: 1,
                 guide: null,
+                by_day: true,
                 date_take: moment().format('YYYY-MM-DD HH:mm'),
                 date_end: moment().format('YYYY-MM-DD HH:mm'),
                 created_at: moment().format('YYYY-MM-DD HH:mm'),
@@ -467,6 +486,9 @@ export default {
                 .post(`${this.basePath}/calculateDays`, this.guide)
                 .then((response) => {
                     let data = response.data;
+                    if(data.total_day){
+                        this.guide.total_day = data.total_day
+                    }
                     if (data.date_end) {
                         this.guide.date_end = data.date_end;
                     }
@@ -508,6 +530,7 @@ export default {
                 created_at: moment().format('YYYY-MM-DD HH:mm:ss'),
                 date_take: moment().format('YYYY-MM-DD HH:mm:ss'),
                 doc_office_id: null,
+                by_day: true,
                 date_end: null,
                 documentary_guides_number_status_id: null,
                 user_id: null,
@@ -541,7 +564,9 @@ export default {
                 this.ChangeSelect();
                 */
             }
-            this.loading = false;
+            // this.guide.by_day= true;
+
+                this.loading = false;
 
 
         },

@@ -143,6 +143,7 @@
             $this->office = $this->doc_office ;
             $class = 'badge bg-secondary text-white ';
 
+
             if(!empty( $this->date_end )){
                 $now = Carbon::now();
                 $parse = Carbon::createFromFormat('Y-m-d H:i:s',$this->date_end);
@@ -153,6 +154,7 @@
                 }
             }
             $this->class = $class;
+            $this->by_day = true;
             return $this;
 
         }
