@@ -5,7 +5,7 @@
                 <a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a>
             </h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>REGISTRO DE TRÁMITES</span></li>
+                <li class="active"><span>TIPOS DE TRÁMITES</span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <div class="btn-group flex-wrap">
@@ -21,7 +21,7 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Listado de trámites</h3>
+                <h3 class="my-0">Listado de tipos de trámites</h3>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -54,7 +54,7 @@
                             <th>#</th>
                             <th>Trámite</th>
                             <th>Descripción</th>
-                            <th>Visible</th>
+                            <th>Activo</th>
                             <th>Precio</th>
                             <th></th>
                         </tr>

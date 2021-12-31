@@ -64,7 +64,7 @@
                         </div>
 
                         <div class="col-md-12 form-group">
-                            <label>Mostrar trámite</label>
+                            <label>Activo</label>
                             <el-switch v-model="form.active"></el-switch>
                         </div>
                     </div>
