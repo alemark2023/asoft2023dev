@@ -63,29 +63,54 @@
                     route::post('files/addStatus', 'DocumentaryFileController@addStatus');
                     Route::post('files/calculateDays', 'DocumentaryFileController@calculateEndDays');
 
-                    Route::get('files_simplify/create', 'DocumentaryFileController@index_simplify_new');
-                    Route::get('files_simplify/new', 'DocumentaryFileController@index_simplify_new');
-                    Route::get('files_simplify/edit/{id?}', 'DocumentaryFileController@index_simplify_new');
+                    /**
+                    documentary-procedure/files_simplify/create
+                    documentary-procedure/files_simplify/new
+                    documentary-procedure/files_simplify/edit/{id?
+                    documentary-procedure/files_simplify/ask/{id?}
+                    documentary-procedure/files_simplify/destroy/{id?}
+                    documentary-procedure/files_simplify/archive/{id?}
+                    documentary-procedure/files_simplify/reactive/{id?}
+                    documentary-procedure/files_simplify/tables
+                    documentary-procedure/files_simplify/{id}/update
+                    documentary-procedure/files_simplify/document-number
+                    documentary-procedure/files_simplify/store
+                    documentary-procedure/files_simplify/
+                    documentary-procedure/files_simplify/removeStage/{id}
+                    documentary-procedure/files_simplify/updateStage/{id}
+                    documentary-procedure/files_simplify/export_current/{id}
+                    documentary-procedure/files_simplify/export/excel
+                    documentary-procedure/files_simplify/export/pdf
+                    documentary-procedure/files_simplify/upload/{id}/update
+                    documentary-procedure/files_simplify/upload/store
+                    documentary-procedure/files_simplify/search/customers
+                    */
+                    Route::
+                        prefix('files_simplify')
+                        ->group(function () {
+                            Route::get('/create', 'DocumentaryFileController@index_simplify_new');
+                            Route::get('/new', 'DocumentaryFileController@index_simplify_new');
+                            Route::get('/edit/{id?}', 'DocumentaryFileController@index_simplify_new');
+                            Route::post('/ask/{id?}', 'DocumentaryFileController@getDocumentary');
+                            Route::post('/destroy/{id?}', 'DocumentaryFileController@destroy');
+                            Route::post('/archive/{id?}', 'DocumentaryFileController@archive');
+                            Route::post('/reactive/{id?}', 'DocumentaryFileController@reactive');
+                            Route::get('/tables', 'DocumentaryFileController@tables');
+                            Route::post('/{id}/update', 'DocumentaryFileController@store_simplify');
+                            Route::get('/document-number', 'DocumentaryFileController@getDocumentNumber');
+                            Route::post('/store', 'DocumentaryFileController@store_simplify');
+                            Route::get('', 'DocumentaryFileController@index_simplify')->name('documentary.files_simplify');
+                            Route::post('/removeStage/{id}', 'DocumentaryFileController@removeGuide');
+                            Route::post('/updateStage/{id}', 'DocumentaryFileController@updateStatus');
+                            Route::get('/export_current/{id}', 'DocumentaryFileController@pdfIndividual');
+                            Route::get('/export/excel', 'DocumentaryFileController@excel');
+                            Route::get('/export/pdf', 'DocumentaryFileController@pdf');
+                            Route::post('/upload/{id}/update', 'DocumentaryFileController@uploadFile');
+                            Route::post('/upload/store', 'DocumentaryFileController@uploadFile');
+                            Route::get('/search/customers/{id?}', 'DocumentaryFileController@searchCustomerById');
+                        });
 
 
-                    Route::post('files_simplify/ask/{id?}', 'DocumentaryFileController@getDocumentary');
-                    Route::post('files_simplify/destroy/{id?}', 'DocumentaryFileController@destroy');
-                    Route::post('files_simplify/archive/{id?}', 'DocumentaryFileController@archive');
-                    Route::post('files_simplify/reactive/{id?}', 'DocumentaryFileController@reactive');
-                    Route::get('files_simplify/tables', 'DocumentaryFileController@tables');
-                    Route::post('files_simplify/{id}/update', 'DocumentaryFileController@store_simplify');
-                    Route::get('files_simplify/document-number', 'DocumentaryFileController@getDocumentNumber');
-                    Route::post('files_simplify/store', 'DocumentaryFileController@store_simplify');
-
-                    Route::get('files_simplify', 'DocumentaryFileController@index_simplify')->name('documentary.files_simplify');
-                    Route::post('files_simplify/removeStage/{id}', 'DocumentaryFileController@removeGuide');
-                    Route::post('files_simplify/updateStage/{id}', 'DocumentaryFileController@updateStatus');
-                    Route::get('files_simplify/export_current/{id}', 'DocumentaryFileController@pdfIndividual');
-                    Route::get('files_simplify/export/excel', 'DocumentaryFileController@excel');
-                    Route::get('files_simplify/export/pdf', 'DocumentaryFileController@pdf');
-
-                    Route::post('files_simplify/upload/{id}/update', 'DocumentaryFileController@uploadFile');
-                    Route::post('files_simplify/upload/store', 'DocumentaryFileController@uploadFile');
 
 
                 });

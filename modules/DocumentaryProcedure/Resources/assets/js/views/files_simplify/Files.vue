@@ -92,6 +92,7 @@
                             <el-option
                                 v-for="of in offices"
                                 :key="of.id"
+                                :disabed="!of.active"
                                 :label="of.name"
                                 :value="of.id"
                             ></el-option>

@@ -68,6 +68,7 @@
                         <el-option
                             v-for="item in processes"
                             :key="item.id"
+                            :disabled="!item.active"
                             :label="item.name_price"
                             :value="item.id"
                             @change="ChangeSelect"
@@ -369,6 +370,7 @@
                 :stageId="stageId"
                 :visible.sync="showFileUpload"
                 @updateStage="updateData"
+                @closeElement="updateData"
             ></modal-file-upload>
 
 
@@ -483,7 +485,7 @@ export default {
             title: "",
             titleDescription: "",
             loading: false,
-            basePath: "/documentary-procedure/files_simplify",
+            resource: "/documentary-procedure/files_simplify",
             showDialogNewPerson: false,
             showDialogNewProcess: false,
             errors: {},
@@ -663,7 +665,6 @@ export default {
             this.$emit("updateFiles");
         },
         fileAdded(file) {
-            // console.log("File Dropped => ", file);
             let attachment = {};
             attachment._id = file.upload.uuid;
             attachment.title = file.name;
@@ -702,7 +703,6 @@ export default {
 
         },
         errormultiple(file, response, other) {
-            // console.log('errormultiple')
             if (response.message !== undefined) {
                 response.status = 422
                 if (response.data === undefined) {
@@ -833,7 +833,7 @@ export default {
         onUpdate(data) {
             this.loading = true;
             this.$http
-                .post(`${this.basePath}/${this.form.id}/update`, this.form)
+                .post(`${this.resource}/${this.form.id}/update`, this.form)
                 .then((response) => {
                     this.$message({
                         message: response.data.message,
@@ -853,7 +853,7 @@ export default {
         onStore(data) {
             this.loading = true;
             this.$http
-                .post(`${this.basePath}/store`, this.form)
+                .post(`${this.resource}/store`, this.form)
                 .then((response) => {
                     this.$message({
                         message: response.data.message,
@@ -888,7 +888,7 @@ export default {
             };
             this.loading = true;
             this.$http
-                .get(`${this.basePath}/document-number`, {params})
+                .get(`${this.resource}/document-number`, {params})
                 .then((response) => {
                     const data = response.data.data;
                     this.form.number = data.number;
@@ -899,7 +899,7 @@ export default {
         onGetDataForNewFile() {
             this.loading = true;
             this.$http
-                .get(`${this.basePath}/create`)
+                .get(`${this.resource}/create`)
                 .then((response) => {
                     const data = response.data.data;
 
@@ -939,7 +939,7 @@ export default {
             this.loading = true;
             this.tabActive = 'first'
             this.$http
-                .get(`${this.basePath}/tables`)
+                .get(`${this.resource}/tables`)
                 .then((response) => {
                     const data = response.data.data;
                     this.$store.commit('setCustomers', data.customers)
@@ -991,11 +991,12 @@ export default {
 
         },
         updateData() {
-            if (this.recordid > 0) {
-                this.$http
-                    .post(`${this.basePath}/ask/${this.recordid}`)
+         if (this.recordid !== undefined) {
+             this.$http
+                    .post(`${this.resource}/ask/${this.recordid}`)
                     .then((response) => {
                         this.form = response.data;
+                        this.searchCustomer()
                     })
             }
         },
@@ -1099,7 +1100,7 @@ export default {
         clickRemoveItem(index, row) {
             if (row.id > 0) {
                 this.$http
-                    .post(`${this.basePath}/removeStage/${row.id}`, {})
+                    .post(`${this.resource}/removeStage/${row.id}`, {})
                     .then((response) => {
                         this.$message({
                             message: response.data.message,
@@ -1117,7 +1118,7 @@ export default {
             // return row;
         },
         updateStatus(row) {
-            let url = `${this.basePath}/updateStage/${row.id}`;
+            let url = `${this.resource}/updateStage/${row.id}`;
             this.$http
                 .post(url, {'id': row.id, 'status': row.documentary_guides_number_status_id})
                 .then(response => {
@@ -1157,6 +1158,17 @@ export default {
                 retu = stageT.color
             }
             return retu
+        },
+        searchCustomer(){
+            let alt = _.find(this.customers, {'id': this.form.person_id});
+            if (alt === undefined) {
+                this.$http.
+                get(`${this.resource}/search/customers/${this.form.person_id}`).
+                then((response) => {
+                    let data_customer = response.data.customers
+                    this.customers.push(...data_customer)
+                })
+            }
         },
 
 

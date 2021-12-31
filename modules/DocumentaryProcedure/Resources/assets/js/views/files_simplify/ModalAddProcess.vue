@@ -77,6 +77,7 @@
                     >
                         <el-option
                             v-for="of in offices"
+                            :disabled="!of.active"
                             :key="of.id"
                             :label="of.name"
                             :value="of.id"
@@ -110,6 +111,7 @@
                     </label>
                     <el-input v-model="guide.total_day"
                               type="number"
+                              @keyup="calculateDays"
                               @change="calculateDays">
                     </el-input>
                 </div>
@@ -261,7 +263,7 @@
                                     </el-button>
                                     <el-button :loading="borrando"
                                                type="danger"
-                                               @click.prevent="removeFile(archive.id)">Borrar
+                                               @click.prevent="removeFile(archive.id,index)">Borrar
 
                                     </el-button>
                                 </td>
@@ -599,7 +601,7 @@ export default {
         downloadFile(url) {
             window.open(url, '_blank');
         },
-        removeFile(id) {
+        removeFile(id,index) {
             this.borrando = true;
             this.$http
                 .get(`/documentary-procedure/file/remove/${id}`)
@@ -608,6 +610,7 @@ export default {
                     // this.updateFile(documentary_file_id)
                     this.updateFiles()
                     this.borrando = false;
+                    this.guide.files.splice(index, 1)
                 })
                 .catch((err) => {
                     // this.updateFile(documentary_file_id)

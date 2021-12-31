@@ -16,6 +16,7 @@
     use Illuminate\Http\UploadedFile;
     use Illuminate\Routing\Controller;
     use Illuminate\View\View;
+    use InvalidArgumentException;
     use Modules\DocumentaryProcedure\Exports\TramiteExport;
     use Modules\DocumentaryProcedure\Http\Requests\DocumentarySimplifyRequest;
     use Modules\DocumentaryProcedure\Models\DocumentaryAction;
@@ -179,13 +180,13 @@
             }
             $holidays = $this->holidays;
             $processes = Tramite::orderBy('name')
-                ->whereActive(true)
+                // ->whereActive(true)
                 ->get()
                 ->transform(function (Tramite $row) use ($holidays) {
                     return $row->getCollectionData($holidays);
                 });
             $actions = DocumentaryAction::orderBy('name')
-                ->whereActive(true)
+                // ->whereActive(true)
                 ->get()
                 ->transform(function ($row) {
                     /** @var DocumentaryAction $row */
@@ -201,7 +202,7 @@
                 });
 
             $offices = Stage::orderBy('id')
-                ->whereActive(true)
+                // ->whereActive(true)
                 ->get()
                 ->transform(function (Stage $row) {
                     return $row->getCollectionData();
@@ -245,13 +246,13 @@
             }
             $holidays = $this->holidays;
             $processes = Tramite::orderBy('name')
-                ->whereActive(true)
+                // ->whereActive(true)
                 ->get()
                 ->transform(function (Tramite $row) use ($holidays) {
                     return $row->getCollectionData($holidays);
                 });
             $actions = DocumentaryAction::orderBy('name')
-                ->whereActive(true)
+               // ->whereActive(true)
                 ->get()
                 ->transform(function (DocumentaryAction $row) {
                     return $row->getCollectionData();
@@ -266,7 +267,7 @@
                 });
 
             $offices = Stage::orderBy('id')
-                ->whereActive(true)
+            //    ->whereActive(true)
                 ->get()
                 ->transform(function (Stage $row) {
                     return $row->getCollectionData();
@@ -274,7 +275,7 @@
 
 
             $documentTypes = DocumentaryDocument::orderBy('name')
-                ->whereActive(true)
+               ->whereActive(true)
                 ->get()
                 ->transform(function (DocumentaryDocument $row) {
                     return $row->getCollectionData();
@@ -306,13 +307,13 @@
             }
             $holidays = $this->holidays;
             $processes = Tramite::orderBy('name')
-                ->whereActive(true)
+               // ->whereActive(true)
                 ->get()
                 ->transform(function (Tramite $row) use ($holidays) {
                     return $row->getCollectionData($holidays);
                 });
             $actions = DocumentaryAction::orderBy('name')
-                ->whereActive(true)
+            //    ->whereActive(true)
                 ->get()
                 ->transform(function (DocumentaryAction $row) {
                     return $row->getCollectionData();
@@ -327,7 +328,7 @@
                 });
 
             $offices = Stage::orderBy('id')
-                ->whereActive(true)
+            //    ->whereActive(true)
                 ->get()
                 ->transform(function (Stage $row) {
                     return $row->getCollectionData();
@@ -918,14 +919,14 @@
 
             $holiday = $this->holidays;
             $processes = Tramite::orderBy('name')
-                ->whereActive(true)
+               // ->whereActive(true)
                 ->get()
                 ->transform(function ($row) use ($holiday) {
                     return $row->getCollectionData($holiday);
                 });
 
             $actions = DocumentaryAction::orderBy('name')
-                ->whereActive(true)
+                // ->whereActive(true)
                 ->get()
                 ->transform(function ($row) {
                     return $row->getCollectionData();
@@ -941,7 +942,7 @@
                 });
 
             $offices = Stage::orderBy('id')
-                ->whereActive(true)
+                // ->whereActive(true)
                 ->get()
                 ->transform(function (Stage $row) {
                     return $row->getCollectionData();
@@ -1153,7 +1154,12 @@
 
         public function calculateEndDays(Request $request){
 
-            $date = (!$request->has('date_take'))?Carbon::now():Carbon::createFromFormat('Y-m-d H:i',$request->date_take);
+            $date = (!$request->has('date_take'))?Carbon::now()->format('Y-m-d H:i'):$request->date_take;
+            try {
+                $date = Carbon::createFromFormat('Y-m-d H:i:s',$date);
+            }catch (InvalidArgumentException $e){
+                $date = Carbon::createFromFormat('Y-m-d H:i',$date);
+            }
             $totalDays = (!$request->has('total_day'))?1:(int)$request->total_day;
             $currentDay = 1;
             $days = [];
@@ -1175,5 +1181,11 @@
                 'date_end'=>$date->format('Y-m-d H:i:s'),
             ];
             return $days;
+        }
+
+        public function searchCustomerById(Person $id )
+        {
+            $customers = collect([$id->getCollectionData()]);
+            return compact('customers');
         }
     }

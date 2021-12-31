@@ -54,7 +54,7 @@
                             <th>#</th>
                             <th>Etapa</th>
                             <th>Descripción</th>
-                            <th>Visible</th>
+                            <th>Activo</th>
                             <!--
                             <th>Responsable</th>
                             <th>Dias</th>
@@ -95,7 +95,6 @@
                                 >
                                     <i class="fa fa-edit"></i>
                                 </el-button>
-                                <!--
                                 <el-button
                                     :disabled="loading"
                                     type="danger"
@@ -103,7 +102,6 @@
                                 >
                                     <i class="fa fa-trash"></i>
                                 </el-button>
-                                -->
                             </td>
                         </tr>
                         </tbody>
