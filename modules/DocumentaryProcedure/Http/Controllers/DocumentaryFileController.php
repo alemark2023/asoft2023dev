@@ -1155,16 +1155,46 @@
         public function calculateEndDays(Request $request){
 
             $date = (!$request->has('date_take'))?Carbon::now()->format('Y-m-d H:i'):$request->date_take;
+            $endDate = (!$request->has('date_end'))?Carbon::now()->format('Y-m-d H:i'):$request->date_end;
+            $byDay =  ($request->has('by_day'))?$request->by_day:true;
+            if(empty($endDate)){
+                $endDate = Carbon::now()->addDay();
+            }
             try {
                 $date = Carbon::createFromFormat('Y-m-d H:i:s',$date);
             }catch (InvalidArgumentException $e){
                 $date = Carbon::createFromFormat('Y-m-d H:i',$date);
             }
+            try {
+                $endDate = Carbon::createFromFormat('Y-m-d H:i:s',$endDate);
+            }catch (InvalidArgumentException $e){
+                $endDate = Carbon::createFromFormat('Y-m-d H:i',$endDate);
+            }
+             if($byDay === false){
+
+                 $totalDays = 0;
+                 while ($date <= $endDate) {
+                     if ($date->isWeekend()) {
+                         $days[]="Fin de semana ".$date->format('Y-m-d');
+                     } elseif (in_array($date->format('d-m-Y'),$this->holidays)) {
+                         $days[] = 'Feriado '.$date->format('Y-m-d');
+                     } else {
+                         ++$totalDays;
+                         $days[] = 'Normal '.$date->format('Y-m-d');
+
+                     }
+                     $date = $date->addDay();
+                 }
+
+
+                return [
+                    'date_end'=>$endDate->format('Y-m-d H:i:s'),
+                    'total_day'=>$totalDays,
+                ];
+             }
             $totalDays = (!$request->has('total_day'))?1:(int)$request->total_day;
             $currentDay = 1;
             $days = [];
-
-
             while ($currentDay <= $totalDays) {
                 if ($date->isWeekend()) {
                     $days[]="Fin de semana ".$date->format('Y-m-d');
@@ -1180,7 +1210,6 @@
             return [
                 'date_end'=>$date->format('Y-m-d H:i:s'),
             ];
-            return $days;
         }
 
         public function searchCustomerById(Person $id )
