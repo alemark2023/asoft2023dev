@@ -72,7 +72,7 @@
 
 
                 <div class="form-group col-md-6">
-                    <label>Mostrar etapa</label>
+                    <label>Activo</label>
                     <el-switch v-model="form.active"></el-switch>
                 </div>
                 <div class="row text-center col-md-12">

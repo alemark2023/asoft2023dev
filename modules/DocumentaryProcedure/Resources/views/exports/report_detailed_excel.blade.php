@@ -47,7 +47,7 @@
 <br>
 @if(!empty($guides))
     @foreach($guides as $guide)
-        <table width="100%">
+        <table width="100%" >
             <tr>
                 <td width="35%">Secuencia</td>
                 <td>{{$guide->guide}}</td>
@@ -85,15 +85,15 @@
                 <td width="35%">Responsbale</td>
                 <td>{{ $guide->user->name }}  </td>
             </tr>
-            <tr>
-                <td></td>
-                <td></td>
+            <tr  >
+                <td style="border-top: 1px solid black;">&nbsp;</td>
+                <td style="border-top: 1px solid black;">&nbsp;</td>
             </tr>
             <tr>
-                <td></td>
-                <td></td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
             </tr>
-        </table>
+        </table >
     @endforeach
 @endif
 
