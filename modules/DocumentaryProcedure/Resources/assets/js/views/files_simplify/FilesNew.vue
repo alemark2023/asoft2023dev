@@ -592,10 +592,8 @@ export default {
             if (dateEnd === undefined) return ' -';
             if (dateEnd === null) return ' -';
 
-            let now = moment();
-            dateEnd = moment(dateEnd, "YYYY-MM-DD HH:mm:ss");
-            now.hour(dateEnd.hour())
-            now.minute(dateEnd.minute())
+            let now = moment().startOf('day');
+            dateEnd = moment(dateEnd, "YYYY-MM-DD HH:mm:ss").startOf('day');
 
             let total = (dateEnd.diff(now, 'days')+1);
             let str = '';
