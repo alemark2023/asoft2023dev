@@ -406,6 +406,11 @@
                                                     <td>{{ currency_type.symbol }} {{ form.subtotal }}</td>
                                                 </tr>
 
+                                                <tr v-if="form.total_discount > 0">
+                                                    <td>DESCUENTOS TOTALES:</td>
+                                                    <td>{{ currency_type.symbol }} {{ form.total_discount }}</td>
+                                                </tr>
+
                                                 <tr v-if="form.total > 0">
                                                     <td>OTROS CARGOS:</td>
                                                     <td>{{ currency_type.symbol }}
@@ -465,9 +470,9 @@
                                                     <td class="p-0"
                                                         colspan="2">
                                                         <!-- Crédito con cuotas -->
-                                                        <div v-if="form.payment_condition_id === '03'">
+                                                        <div v-if="form.payment_condition_id === '03'" class="table-responsive">
                                                             <table v-if="form.fee.length>0"
-                                                                   class="text-left"
+                                                                   class="text-left table"
                                                                    width="100%">
                                                                 <thead>
                                                                 <tr>
@@ -517,9 +522,9 @@
                                                             </table>
                                                         </div>
                                                         <!-- Credito -->
-                                                        <div v-if="form.payment_condition_id === '02'">
+                                                        <div v-if="form.payment_condition_id === '02'"  class="table-responsive">
                                                             <table v-if="form.fee.length>0"
-                                                                   class="text-left"
+                                                                   class="text-left table"
                                                                    width="100%">
                                                                 <thead>
                                                                 <tr>
@@ -567,8 +572,8 @@
                                                             </table>
                                                         </div>
                                                         <!-- Contado -->
-                                                        <div v-if="!is_receivable && form.payment_condition_id === '01'">
-                                                            <table class="text-left">
+                                                        <div v-if="!is_receivable && form.payment_condition_id === '01'"  class="table-responsive">
+                                                            <table class="text-left table">
                                                                 <thead>
                                                                 <tr>
                                                                     <th v-if="form.payments.length>0"
@@ -752,6 +757,11 @@
                                     <tr v-if="form.subtotal > 0 && form.total_discount > 0">
                                         <td>SUBTOTAL:</td>
                                         <td>{{ currency_type.symbol }} {{ form.subtotal }}</td>
+                                    </tr>
+
+                                    <tr v-if="form.total_discount > 0">
+                                        <td>DESCUENTOS TOTALES:</td>
+                                        <td>{{ currency_type.symbol }} {{ form.total_discount }}</td>
                                     </tr>
 
                                     <tr v-if="form.total > 0">
