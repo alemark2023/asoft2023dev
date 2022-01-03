@@ -67,7 +67,23 @@
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
                 {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
             </td>
-            <td>{{ $row->item->lot_group->date_of_due}}</td>
+            <td>
+                <?php
+                // la fecha de vencimiento por lote se modifica aqui app/CoreFacturalo/Requests/Inputs/DispatchInput.php
+                try {
+                    $date_of_due = $row->item->lot_group->date_of_due;
+                } catch (ErrorException $e) {
+                    try {
+                        $date_of_due = $row->item->date_of_due;
+                    } catch (ErrorException $e) {
+                        $date_of_due = '';
+                    }
+                }
+
+                ?>
+
+                {{$date_of_due}}
+            </td>
         </tr>
     @endforeach
     </tbody>
