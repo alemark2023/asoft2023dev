@@ -2,7 +2,7 @@
 
 $establishment = $cash->user->establishment;
 $title = "Reporte POS - ".$cash->user->name." - ".$cash->date_opening." ".$cash->time_opening;
-$title = \App\CoreFacturalo\Helpers\Template\ReportHelper::getTitleToExcel ($title);
+\App\CoreFacturalo\Helpers\Template\ReportHelper::getTitleToExcel ($title);
 @endphp
 <!DOCTYPE html>
 <html lang="en">
