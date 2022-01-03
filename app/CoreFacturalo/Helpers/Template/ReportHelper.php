@@ -178,13 +178,16 @@
 
         /**
          * @param $title
+         *
+         * @return false|string
          */
-        public static  function getTitleToExcel(&$title): void
+        public static  function getTitleToExcel(&$title)
         {
-            if(empty($title)) {
-                $title = '';
+            if(empty($title)){
+                $title = 'Reporte';
             }
             $title = substr(str_replace(['*', ':', '/', '\\', '?', '[', ']'], '', $title), 0, 31);
+            return $title;
         }
 
         /**

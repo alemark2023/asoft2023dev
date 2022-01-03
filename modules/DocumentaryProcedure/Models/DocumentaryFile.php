@@ -184,6 +184,7 @@
             // $lastGuide->office = $lastGuide->doc_office ;
             $lastGuide = $lastGuide->getCollectionData();
 
+            $data['datetime_register'] = $this->date_register." - ".$this->time_register;
             $data['last_guide'] = $lastGuide;
             $data['last_guide_status'] = $lastGuide->documentary_guides_number_status ?? null;
             $data['documentary_office'] = $documentary_file_office->getCollectionData();

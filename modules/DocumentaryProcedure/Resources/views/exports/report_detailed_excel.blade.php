@@ -71,7 +71,7 @@
             </tr>
 
             <tr>
-                <td width="35%">Fecha de Finalziación</td>
+                <td width="35%">Fecha de Finalización</td>
                 <td>{{ $guide->date_end }} </td>
             </tr>
 
@@ -82,7 +82,7 @@
             </tr>
 
             <tr>
-                <td width="35%">Responsbale</td>
+                <td width="35%">Responsable</td>
                 <td>{{ $guide->user->name }}  </td>
             </tr>
             <tr  >
