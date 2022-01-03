@@ -61,12 +61,25 @@ use Modules\DocumentaryProcedure\Models\DocumentaryGuidesNumber;
                     <th>Fecha/Hora registro</th>
                     <th>Datos del cliente</th>
                     <th>Trámite</th>
+
+                    <th>Secuencia</th>
+                    <th>Etapa</th>
+                    <th>Observación</th>
+                    <th>Fecha de registro</th>
+                    <th>
+                        Fecha que se toma el tramite
+                    </th>
+                    <th>Fecha de Finalización
+                    </th>
+                    <th>Estado</th>
+                    <th>Responsable</th>
+<!--
                     <th>Descripcion Trámite</th>
                     <th>Número Etapa</th>
                     <th>Número de seguimiento</th>
                     <th>Etapa</th>
                     <th>Status de Etapa</th>
-                    <th>Fecha de fin</th>
+                    <th>Fecha de fin</th>-->
                 </tr>
                 </thead>
                 <tbody>
@@ -83,33 +96,33 @@ use Modules\DocumentaryProcedure\Models\DocumentaryGuidesNumber;
 
                         $status = $guide->documentary_guides_number_status;
                         $office = $guide->doc_office;
+                                $senderName = $sender->number ." - ". $sender->name;
                         ?>
 
                         <tr>
                             <td
                                 class="text-right">{{ $key + 1 }}</td>
+
+
                             <td>{{ $value['invoice'] }}</td>
                             <td>{{ $value['date_register'] }}
                                 - {{ $value['time_register'] }}</td>
-                            <td>{{ $sender->name }}</td>
+                            <td>{{ $senderName }}</td>
                             <td>
                                 <span
                                 >
                                      {{ $documentary_process['name']??'' }}
                                 </span>
                             </td>
-                            <td>
-                                <span
-                                >
-                                     {{ $documentary_process['description']??'' }}
-                                </span>
-                            </td>
 
-                            <td>{{$key2 + 1}}</td>
                             <td>{{$guide->guide}}</td>
-                            <td>{{$office->name}}</td>
-                            <td>{{$status->name}}</td>
-                            <td>{{$guide->date_end}}</td>
+                            <td>{{($guide->doc_office_id!== null)?$guide->office->name:'-'}}</td>
+                            <td>{{$guide->observation}}</td>
+                            <td>{{ $guide->created_at }} </td>
+                            <td>{{ $guide->date_take }} </td>
+                            <td>{{ $guide->date_end }} </td>
+                            <td>{{($guide->documentary_guides_number_status_id!== null)?$guide->documentary_guides_number_status->name:'-'}}</td>
+                            <td>{{ $guide->user->name }}  </td>
                         </tr>
                     @endforeach
                     <tr>
