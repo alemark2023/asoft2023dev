@@ -1204,24 +1204,32 @@ export default {
             this.form.item.unit_type_id = this.item_unit_type.unit_type_id;
         },
         selectedPrice(row) {
-            let valor = 0
-            switch (row.price_default) {
-                case 1:
-                    valor = row.price1
-                    break
-                case 2:
-                    valor = row.price2
-                    break
-                case 3:
-                    valor = row.price3
-                    break
+            if (this.isSelectedPrice(row)) {
+                this.form.item_unit_type_id = null
+                this.item_unit_type = {}
+                this.form.unit_price = this.form.item.sale_unit_price
+                this.form.unit_price_value = this.form.item.sale_unit_price
+                this.form.item.unit_type_id = this.form.item.original_unit_type_id
+            } else {
+                let valor = 0
+                switch (row.price_default) {
+                    case 1:
+                        valor = row.price1
+                        break
+                    case 2:
+                        valor = row.price2
+                        break
+                    case 3:
+                        valor = row.price3
+                        break
 
+                }
+                this.form.item_unit_type_id = row.id
+                this.item_unit_type = row
+                this.form.unit_price = valor
+                this.form.unit_price_value = valor
+                this.form.item.unit_type_id = row.unit_type_id
             }
-            this.form.item_unit_type_id = row.id
-            this.item_unit_type = row
-            this.form.unit_price = valor
-            this.form.unit_price_value = valor
-            this.form.item.unit_type_id = row.unit_type_id
             this.calculateQuantity()
             this.getTables()
         },
