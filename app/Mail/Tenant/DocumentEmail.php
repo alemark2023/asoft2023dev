@@ -34,7 +34,10 @@ class DocumentEmail extends Mailable
     {
         $pdf = $this->getStorage($this->document->filename, 'pdf');
         $xml = $this->getStorage($this->document->filename, 'signed');
-        $cdr = $this->getStorage($this->document->filename, 'cdr');
+        $cdr = null;
+        if($this->document_type_id !== '03') {
+            $cdr = $this->getStorage($this->document->filename, 'cdr');
+        }
 
 
         $image_detraction = ($this->document->detraction) ? (($this->document->detraction->image_pay_constancy) ? storage_path('app'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'image_detractions'.DIRECTORY_SEPARATOR.$this->document->detraction->image_pay_constancy):false):false;
@@ -47,6 +50,7 @@ class DocumentEmail extends Mailable
 
 
         // $file = $this->getCdr($this->document);
+
         if(!empty($cdr) ){
             $email->attachData($cdr, $this->document->filename.'.zip');
         }
