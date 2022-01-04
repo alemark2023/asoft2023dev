@@ -5,17 +5,47 @@
             :visible="visible"
             @close="onClose"
             @open="onCreate"
+            width="30%"
+            center
         >
-            <form autocomplete="off"
-                  @submit.prevent="onSubmit">
-                <div class="form-body">
+
+                <div class="form-body text-center">
 
 
                     <div
-                        class="form-group col-12 ">
+                        class="form-group  ">
                         <label>
                             Carga de archivos
                         </label>
+                        <el-upload
+                            class="upload-demo "
+                            drag
+                            :headers="headers"
+                            :action="urlUpload"
+                            :file-list="fileList"
+                            :beforeUpload="onUpdate"
+                            multiple>
+
+                            <!--
+                            :data="{'index': index}"
+                            :headers="headers"
+                            :multiple="false"
+                            :on-remove="handleRemove"
+                            :action="`/finances/payment-file/upload`"
+                            :show-file-list="true"
+                            :file-list="fileList"
+                            :on-success="onSuccess"
+-->
+
+                            <i class="el-icon-upload"></i>
+
+                            <div class="el-upload__text">Suelta tu archivo aquí o <em>haz clic para cargar</em></div>
+                            <!--
+                            <div slot="tip" class="el-upload__tip">Solo archivos jpg/png con un tamaño menor de 500kb</div>
+                            -->
+                        </el-upload>
+
+                        <!--
                         <vue-dropzone
                             id="dropzone"
                             ref="myVueDropzone"
@@ -31,6 +61,7 @@
                             @vdropzone-removed-file="getFileCount"
                             @vdropzone-file-added-manually="getFileCount">
                         </vue-dropzone>
+                        -->
 
                         <div v-if="errors.documentary_process_id"
                              class="invalid-feedback">
@@ -40,26 +71,30 @@
 
 
                     <div class="row text-center col-12 p-t-20">
-
+                        <div class="col-3">&nbsp;</div>
                         <div class="col-6">
                             <el-button class="btn-block"
-                                       @click="onClose">Cancelar
+                                       @click="onClose">
+                                Cerrar
                             </el-button>
                         </div>
-                        <div class="col-6">
-                            <el-button
-                                :disabled="!sendFile"
-                                :loading="loading"
-                                class="btn-block"
-                                native-type="submit"
-                                type="primary"
-                            >Guardar
-                            </el-button
-                            >
-                        </div>
+                        <!--
+                    <div class="col-6">
+                        <el-button
+                            :disabled="!sendFile"
+                            :loading="loading"
+                            class="btn-block"
+                            native-type="submit"
+                            type="primary"
+                        >Guardar
+                        </el-button
+                        >
                     </div>
+                        -->
+                    </div>
+
                 </div>
-            </form>
+
         </el-dialog>
     </div>
 </template>
@@ -87,21 +122,9 @@ export default {
     },
     data() {
         return {
-            dropzoneOptions: {
-                url: 'https://httpbin.org/post',
-                headers: {
-                    "X-Requested-With": "X-Requested-With",
-                    "X-CSRF-TOKEN": document.head.querySelector('meta[name="csrf-token"]').content,
-                },
-                autoProcessQueue: false,
-                paramName: function (n) {
-                    return "file[]";
-                },
-                dictDefaultMessage: "Arrastra y suelta los archivos aqui.",
-                parallelUploads: 10,
-                maxFiles: 10,
-                uploadMultiple: true,
-            },
+            urlUpload: '',
+            headers: headers_token,
+            fileList: [],
             tabActive: "first",
             tempAttachments: [],
             current_files: [],
@@ -129,6 +152,8 @@ export default {
         };
     },
     created() {
+        this.urlUpload= `${this.basePath}/${this.stageId}/update`
+
     },
     mounted() {
         this.onInitializeForm();
@@ -186,70 +211,19 @@ export default {
             if (isNaN(id)) id = 0;
 
             this.sendFile = id !== 0 && !this.loading;
+            this.urlUpload = '';
+            if (this.form && this.stageId) {
+                // this.$refs.myVueDropzone.dropzone.options.url = `${this.basePath}/${this.form.id}/update`
+                this.urlUpload= `${this.basePath}/${this.stageId}/update`
+            } else {
+                // this.$refs.myVueDropzone.dropzone.options.url = `${this.basePath}/store`
+            }
         },
         updateFiles() {
             this.$emit("updateFiles");
         },
-        fileAdded(file) {
-            console.log("File Dropped => ", file);
-            let attachment = {};
-            attachment._id = file.upload.uuid;
-            attachment.title = file.name;
-            attachment.type = "file";
-            attachment.extension = "." + file.type.split("/")[1];
-            attachment.user = JSON.parse(localStorage.getItem("user"));
-            attachment.content = "File Upload by Select or Drop";
-            attachment.thumb = file.dataURL;
-            attachment.thumb_list = file.dataURL;
-            attachment.isLoading = true;
-            attachment.progress = null;
-            attachment.size = file.size;
-            this.tempAttachments = [...this.tempAttachments, attachment];
-        },
-        sendingFiles(files, xhr, formData) {
-            this.current_files = files;
-        },
-        uploadProgress(file, progress, bytesSent) {
-            this.tempAttachments.map(attachment => {
-                if (attachment.title === file.name) {
-                    attachment.progress = `${Math.floor(progress)}`;
-                }
-            });
-        },
-        error(file, response) {
-            if (response !== undefined && response.status !== undefined) {
-                this.axiosError(response)
-            }
-            if (response !== undefined && response.message !== undefined) {
-                this.errors = response.message
-            }
-            let dropzone = this.$refs.myVueDropzone.dropzone;
-            file.previewTemplate.classList.toggle('dz-error');
-            if (file.status === 'error') file.status = 'added';
-            this.addOnError(dropzone, file)
 
-        },
-        errormultiple(file, response, other) {
-            if (response.message !== undefined) {
-                response.status = 422
-                if (response.data === undefined) {
-                    response.data = {
-                        message: response.message,
-                    }
-
-
-                }
-            }
-            if (response !== undefined && response.status !== undefined) {
-                this.axiosError(response)
-            }
-        },
-        addOnError(dropzone, file) {
-            dropzone.enqueueFile(file)
-        },
-        // called on successful upload of a file
         success(file, response) {
-
             this.$emit("onUploadComplete", null);
             this.onClose();
         },
@@ -262,31 +236,6 @@ export default {
             }
             for (let files in this.$refs.myVueDropzone.dropzone.files) {
                 formData.append("attachments[]", this.$refs.myVueDropzone.dropzone.files[files]);
-            }
-        },
-        getFileCount() {
-            if ('undefined' !== typeof this.$refs.myVueDropzone.dropzone) {
-                this.fileCount = this.$refs.myVueDropzone.dropzone.files.length
-            } else {
-                this.fileCount = 0;
-            }
-        },
-        addFile() {
-            var file = {size: 123, name: "XYZ.pdf"};
-            var url = "xyz.pdf";
-            this.$refs.myVueDropzone.manuallyAddFile(file, url);
-        },
-        onSearchFile() {
-            this.$refs.inputFile.click();
-        },
-        onSelectFile(event) {
-            const files = event.target.files;
-            if (files.length > 0) {
-                this.attachFile = files[0];
-                this.filename = this.attachFile.name;
-            } else {
-                this.attachFile = null;
-                this.filename = "";
             }
         },
         onGenerateData() {
@@ -311,10 +260,39 @@ export default {
             if (this.attachFile) {
                 data.append("attachFile", this.attachFile);
             }
+            for (let files in this.fileList) {
+                // let cor = this.$refs.myVueDropzone.dropzone.files[files]
+                data.append("attachments[]", files);
+            }/*
             for (let files in this.$refs.myVueDropzone.dropzone.files) {
                 let cor = this.$refs.myVueDropzone.dropzone.files[files]
                 data.append("attachments[]", cor);
+            }*/
+            return data;
+        },
+        onGenerateData2(File,form) {
+            const data = new FormData();
+
+            data.append("date_register", form.date_register);
+            data.append("time_register", form.time_register);
+            data.append("offices", form.offices);
+            data.append("documentary_process_id", form.documentary_process_id);
+            data.append("person_id", form.person_id);
+            data.append("id", this.stageId);
+            data.append("stage_id", this.stageId);
+            this.urlUpload= `${this.basePath}/${this.stageId}/update`
+
+            data.append("invoice", form.invoice);
+
+            data.append("year", this.currentYear);
+
+            if (form.sender) {
+                data.append("person", JSON.stringify(form.sender));
             }
+            if (form.offices) {
+                data.append("offices", JSON.stringify(form.offices));
+            }
+            data.append("file", File);
             return data;
         },
         changeCustomer() {
@@ -342,29 +320,34 @@ export default {
                     .finally(() => (this.loading = false));
             }
         },
-        onUpdate(data) {
+        onUpdate(file) {
+            const data = this.onGenerateData2(file, this.form);
             this.loading = true;
             this.$http
-                .post(`${this.basePath}/${this.form.id}/update`, data, {
+                .post(`${this.basePath}/${this.stageId}/update`, data, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
                 })
                 .then((response) => {
-                    this.$message({
-                        message: response.data.message,
-                        type: "success",
-                    });
-                    this.$emit("onUpdateItem", response.data.data);
-                    this.$emit("updateStage", true);
-                    this.onClose();
+                    let data = response.data;
+                    if(data.withStage !== 0) {
+                        this.$message({
+                            message: data.message,
+                            type: "success",
+                        });
+                        this.$emit("onUpdateItem", data.data);
+                        this.$emit("updateStage", true);
+                    }
                 })
                 .finally(() => {
                     this.loading = false;
                     this.errors = {};
                 })
                 .catch((error) => {
-                    this.axiosError(error);
+                    if(error ==! undefined && error.response !== undefined) {
+                        this.axiosError(error);
+                    }
                 });
         },
         onStore(data) {
@@ -414,7 +397,7 @@ export default {
         },
         onClose() {
             this.tabActive = 'first';
-            this.$refs.myVueDropzone.dropzone.removeAllFiles(true);
+            this.fileList = [];
             this.$emit("update:visible", false);
             this.$emit("closeElement", false);
         },
@@ -494,6 +477,7 @@ export default {
                 this.number = this.form.number;
                 this.currentYear = this.form.year;
                 this.attachFile = null;
+                this.form.id = this.stageId
                 this.ChangeSelect();
             }
             this.loading = true;
