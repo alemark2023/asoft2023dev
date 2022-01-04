@@ -1128,17 +1128,14 @@
                                            href="{{ route('documentary.status') }}">Listado de Estados</a>
                                     </li>
                                 @endif
-                                {{--
-                                @if(in_array('documentary_requirements', $vc_module_levels))
+                                    @if(in_array('documentary_process', $vc_module_levels))
+
 
                                     <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'requirements')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
                                            href="{{ route('documentary.requirements') }}">Listado de requerimientos</a>
                                     </li>
 
-                                @endif
-                                    --}}
-                                @if(in_array('documentary_process', $vc_module_levels))
                                     <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'processes')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
                                            href="{{ route('documentary.processes') }}">Tipos de tramites</a>

@@ -70,8 +70,8 @@
                     <div class="col-6 col-md-4 mb-3">
                         <el-select
                             v-model="filter.documentary_guides_number_status_id"
-                            filterable
                             clearable
+                            filterable
                             placeholder="Estado de tramite"
                         >
                             <el-option
@@ -85,8 +85,8 @@
                     <div class="col-6 col-md-4 mb-3">
                         <el-select
                             v-model="filter.documentary_office_id"
-                            filterable
                             clearable
+                            filterable
                             placeholder="Etapa"
                         >
                             <el-option
@@ -197,7 +197,7 @@
                             <th>Trámite</th>
                             <th>Cliente</th>
                             <th>Fecha/Hora registro</th>
-<!--                            <th>Datos del cliente</th>-->
+                            <!--                            <th>Datos del cliente</th>-->
                             <th>Ultimo número de seguimiento</th>
                             <th>Etapa</th>
                             <th>Status de Etapa</th>
@@ -211,10 +211,26 @@
                             <td class="text-right">{{ index + 1 }}</td>
                             <td>{{ item.invoice }}</td>
                             <td>
+
+                                <el-tooltip placement="right-start"
+                                            v-if="item.documentary_process.requirements && item.documentary_process.requirements.length > 0"
+                                            >
+                                    <div slot="content">
+                                        Requerimientos:
+                                        <ul v-for="(requirement) in item.documentary_process.requirements">
+                                            <li>
+                                                {{ requirement.requirement_name }}
+                                            </li>
+                                        </ul>
+
+                                    </div>
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
                                 <span
                                     v-if=" item.documentary_process !== undefined && item.documentary_process.name !== undefined ">
                                     {{ item.documentary_process.name }}
                                 </span>
+
                             </td>
                             <td>
                                 <span
@@ -225,13 +241,13 @@
                             <td>
                                 {{ item.datetime_register }}
                             </td>
-<!--                            <td>{{ item.sender.name }}</td>-->
+                            <!--                            <td>{{ item.sender.name }}</td>-->
                             <td>{{ (item.last_guide && item.last_guide.guide) ? item.last_guide.guide : '' }}</td>
                             <td>
                                 <div v-if="item.last_guide && item.last_guide.doc_office && item.last_guide.doc_office.name"
-                                     class="badge"
                                      :style="'background-color:'+ item.last_guide.doc_office.color+
                                              ';font-size: 12px;'"
+                                     class="badge"
                                 >
                                     {{ item.last_guide.doc_office.name }}
                                 </div>
@@ -240,9 +256,9 @@
 
 
                                 <div v-if="item.last_guide_status && item.last_guide_status.name"
-                                     class="badge"
                                      :style="'background-color:'+ item.last_guide_status.color+
                                              ';font-size: 12px;'"
+                                     class="badge"
                                 >
                                     {{ item.last_guide_status.name }}
                                 </div>
@@ -256,18 +272,18 @@
                             </td>
                             <td class="text-center td-btns">
 
-                                    <div class="dropdown">
-                                        <button id="dropdownMenuButton"
-                                                aria-expanded="false"
-                                                aria-haspopup="true"
-                                                class="btn btn-default btn-sm"
-                                                data-toggle="dropdown"
-                                                type="button">
-                                            <i class="fas fa-ellipsis-v"></i>
-                                        </button>
-                                        <div aria-labelledby="dropdownMenuButton"
-                                             class="dropdown-menu">
-                                            <template v-if="!item.is_archive">
+                                <div class="dropdown">
+                                    <button id="dropdownMenuButton"
+                                            aria-expanded="false"
+                                            aria-haspopup="true"
+                                            class="btn btn-default btn-sm"
+                                            data-toggle="dropdown"
+                                            type="button">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div aria-labelledby="dropdownMenuButton"
+                                         class="dropdown-menu">
+                                        <template v-if="!item.is_archive">
 
                                             <button
                                                 class="dropdown-item"
@@ -296,25 +312,25 @@
                                                 Archivar
                                             </button>
 
-                                            </template>
-                                            <template v-else>
-                                                <button
-                                                    class="dropdown-item"
-                                                    type="button"
-                                                    @click.prevent="reactiveFile(item.id)">
-                                                    Retomar Tramite
-                                                </button>
+                                        </template>
+                                        <template v-else>
+                                            <button
+                                                class="dropdown-item"
+                                                type="button"
+                                                @click.prevent="reactiveFile(item.id)">
+                                                Retomar Tramite
+                                            </button>
 
 
-                                            </template>
-                                        </div>
-
+                                        </template>
                                     </div>
 
-                                    <!--
-                                    AGREGAR SECUENCIA DE TRAMITE <br>
-                                    IMPRIMIR ESTADO DE TRAMITE<br>
-                                    -->
+                                </div>
+
+                                <!--
+                                AGREGAR SECUENCIA DE TRAMITE <br>
+                                IMPRIMIR ESTADO DE TRAMITE<br>
+                                -->
                             </td>
                         </tr>
                         </tbody>

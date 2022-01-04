@@ -1073,21 +1073,29 @@
 
         public function uploadFile(Request  $request){
 
-            $stage = $request->stage_id;
-            if ($request->has('file')) {
-                foreach ($request->file as $file) {
-                    /** @var UploadedFile $file */
-                    $data = [
-                        'user_id' => auth()->user()->id,
-                        'documentary_guides_number_id' => $stage,
-                        'attached_file' => $this->storeFile($file),
-                    ];
-                    $newFile = new FilesFolder($data);
-                    $newFile->push();
-                }
+            $stage = (int) $request->stage_id;
+            $resp = $request->all();
+            $resp['success'] = false;
+            $resp['message'] = '';
+            $resp['withStage'] = ($stage != 0)?1:0;
+            if ($request->has('file') && $stage != 0) {
+                $file = $request->file;
+                // foreach ($request->file as $file) {
+                /** @var UploadedFile $file */
+                $data = [
+                    'user_id' => auth()->user()->id,
+                    'documentary_guides_number_id' => $stage,
+                    'attached_file' => $this->storeFile($file),
+                ];
+                $resp = array_merge_recursive($resp, $data);
+                $newFile = new FilesFolder($data);
+                $newFile->push();
+                $resp['files'] = $newFile;
+                $resp['message'] = 'Se ha cargado exitosamente';
+                // }
 
             }
-            return $request->all();
+            return $resp;
         }
 
 

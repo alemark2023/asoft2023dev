@@ -69,6 +69,37 @@
                         </div>
                     </div>
                 </el-tab-pane>
+
+                <el-tab-pane class name="second">
+                    <span slot="label">
+                        Requerimientos
+                    </span>
+                    <div class="form-body row">
+                        <div
+                            :class="{ 'has-danger': errors.created_at }"
+                            class="form-group col-sm-12 col-md-12 ">
+                            <label>
+                                Requerimientos
+                            </label>
+
+                            <el-select
+                                       v-model="form.requirements_id"
+                                       clearable
+                                       filterable
+                                       :multiple="true"
+                                       placeholder="Requerimientos"
+                            >
+                                <el-option
+                                    v-for="of in requirements"
+                                    :key="of.id"
+                                    :label="of.name"
+                                    :value="of.id"
+                                ></el-option>
+                            </el-select>
+                        </div>
+
+                    </div>
+                </el-tab-pane>
                 <!--
                 <el-tab-pane class name="second">
                     <span slot="label">Seleccion de etapas</span>
