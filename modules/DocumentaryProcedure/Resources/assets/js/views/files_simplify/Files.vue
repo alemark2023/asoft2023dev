@@ -216,7 +216,7 @@
                                             v-if="item.documentary_process.requirements && item.documentary_process.requirements.length > 0"
                                             >
                                     <div slot="content">
-                                        Requerimientos:
+                                        Requisitos:
                                         <ul v-for="(requirement) in item.documentary_process.requirements">
                                             <li>
                                                 {{ requirement.requirement_name }}

@@ -71,7 +71,7 @@
                                 <el-tooltip v-if="item.requirements && item.requirements.length > 0"
                                             placement="right-start">
                                     <div slot="content">
-                                        Requerimientos:
+                                        Requisitos:
                                         <ul v-for="(requirement) in item.requirements">
                                             <li>
                                                 {{ requirement.requirement_name }}

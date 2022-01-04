@@ -72,14 +72,14 @@
 
                 <el-tab-pane class name="second">
                     <span slot="label">
-                        Requerimientos
+                        Requisitos
                     </span>
                     <div class="form-body row">
                         <div
                             :class="{ 'has-danger': errors.created_at }"
                             class="form-group col-sm-12 col-md-12 ">
                             <label>
-                                Requerimientos
+                                Requisitos
                             </label>
 
                             <el-select
@@ -87,7 +87,7 @@
                                        clearable
                                        filterable
                                        :multiple="true"
-                                       placeholder="Requerimientos"
+                                       placeholder="Requisitos"
                             >
                                 <el-option
                                     v-for="of in requirements"
@@ -195,7 +195,7 @@ export default {
         return {
             activeName: 'first',
             titles: ['Etapas', 'Seleccionadas'],
-            titles_requirements: ['Requerimientos', 'Seleccionadas'],
+            titles_requirements: ['Requisitos', 'Seleccionadas'],
             form: {},
             title: "",
             errors: {},

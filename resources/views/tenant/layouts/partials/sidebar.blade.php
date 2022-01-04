@@ -1133,7 +1133,7 @@
 
                                     <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'requirements')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
-                                           href="{{ route('documentary.requirements') }}">Listado de requerimientos</a>
+                                           href="{{ route('documentary.requirements') }}">Listado de requisitos</a>
                                     </li>
 
                                     <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'processes')) ? 'nav-active' : '' }}">
