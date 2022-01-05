@@ -391,6 +391,7 @@ export default {
                 //     return this.$message.error('Debe seleccionar un cliente o vendedor')
                 // }
 
+                this.records= []
                 this.loading_submit = await true
                 await this.getRecords()
                 await this.getTotals()
@@ -403,12 +404,17 @@ export default {
             },
             getRecords() {
 
-                return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
-                    this.records = response.data.data
-                    this.pagination = response.data.meta
-                    this.pagination.per_page = parseInt(response.data.meta.per_page)
-                    this.loading_submit = false
-                });
+                return this.$http
+                    .get(`/${this.resource}/records?${this.getQueryParameters()}`)
+                    .then((response) => {
+                        this.records = response.data.data
+                        this.pagination = response.data.meta
+                        this.pagination.per_page = parseInt(response.data.meta.per_page)
+                    })
+                    .finally(()=>{
+                        this.loading_submit = false
+
+                    });
 
 
             },

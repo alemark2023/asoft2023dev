@@ -127,6 +127,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th class="font-weight-bold">Descripción</th>
+                                        <th class="font-weight-bold">Unidad</th>
                                         <th class="text-right font-weight-bold">Entrada</th>
                                         <th class="text-right font-weight-bold">Salida</th>
                                         <th></th>
@@ -136,6 +137,7 @@
                                     <tr v-for="(row, index) in form.items">
                                         <td>{{ index + 1 }}</td>
                                         <td>{{ ItemOptionDescriptionView(row) }}</td>
+                                        <td>{{ ItemUnit(row) }}</td>
                                         <td class="text-right">{{ row.height_to_mill }}</td>
                                         <td class="text-right">{{ row.total_height }}</td>
                                         <td class="text-right">
@@ -223,6 +225,7 @@ export default {
             },
             aux_supplier_id: null,
             mill_types: [],
+            unit_types: [],
             currency_types: [],
             suppliers: [],
             establishment: {},
@@ -249,6 +252,7 @@ export default {
                 // this.form.mill_type_id = (this.mill_types.length > 0) ? this.mill_types[0].id : null
                 // this.form.mill_reason_id = (this.mill_reasons.length > 0) ? this.mill_reasons[0].id : null
                 this.payment_destinations = response.data.payment_destinations
+                this.unit_types = response.data.unit_types
 
                 this.changeDateOfIssue()
 
@@ -397,22 +401,6 @@ export default {
         },
         submit() {
 
-            /*
-
-            if (validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
-                return this.$message.error('Los montos ingresados no coinciden con el monto total o son incorrectos');
-            }
-
-            if (validate.empty_payment_destination > 0) {
-                return this.$message.error('El destino del pago es requerido');
-            }
-
-            if (this.form.mill_type_id != 4) {
-                if (!this.form.number) {
-                    return this.$message.error('El número es obligatorio')
-                }
-            }
-            */
             this.loading_submit = true
             this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
@@ -439,7 +427,7 @@ export default {
                         this.$message.error(error.response.data.message)
                     }
                 })
-                .then(() => {
+                .finally(() => {
                     this.loading_submit = false
                 })
         },
@@ -459,6 +447,14 @@ export default {
         ItemOptionDescriptionView(item) {
             return ItemOptionDescription(item)
         },
+        ItemUnit(row){
+            // unit_types
+            let t = _.find(this.unit_types,{id:row.unit_type_id})
+            if(t !== undefined){
+                return t.description
+            }
+            return row.unit_type_id
+        }
     }
 }
 </script>

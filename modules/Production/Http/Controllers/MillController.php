@@ -10,11 +10,13 @@
     use App\Models\Tenant\Catalogs\OperationType;
     use App\Models\Tenant\Catalogs\PriceType;
     use App\Models\Tenant\Catalogs\SystemIscType;
+    use App\Models\Tenant\Catalogs\UnitType;
     use App\Models\Tenant\Company;
     use App\Models\Tenant\Configuration;
     use App\Models\Tenant\Establishment;
     use App\Models\Tenant\Item;
     use App\Models\Tenant\ItemSupply;
+    use App\Models\Tenant\ItemUnitType;
     use App\Models\Tenant\Person;
     use App\Models\Tenant\Warehouse;
     use App\Traits\OfflineTrait;
@@ -96,49 +98,6 @@
         {
             return view('production::mill.form', compact('id'));
         }
-        /*
-        public function store(MillRequest $request)
-        {
-
-            $data = self::merge_inputs($request);
-            // dd($data);
-
-            $expense = DB::connection('tenant')->transaction(function () use ($data) {
-
-                // $doc = Expense::create($data);
-                $doc = Expense::updateOrCreate(['id' => $data['id']], $data);
-
-                $doc->items()->delete();
-
-                foreach ($data['items'] as $row)
-                {
-                    $doc->items()->create($row);
-                }
-
-                $this->deleteAllPayments($doc->payments);
-
-                foreach ($data['payments'] as $row)
-                {
-                    $record_payment = $doc->payments()->create($row);
-
-                    if($row['expense_method_type_id'] == 1){
-                        $row['payment_destination_id'] = 'cash';
-                    }
-
-                    $this->createGlobalPayment($record_payment, $row);
-                }
-
-                return $doc;
-            });
-
-            return [
-                'success' => true,
-                'data' => [
-                    'id' => $expense->id,
-                ],
-            ];
-        }
-        */
 
         /**
          * Store a newly created resource in storage.
@@ -149,6 +108,8 @@
          */
         public function store(MillRequest $request)
         {
+
+
             $model = Mill::firstOrNew(['id' => null]);
             $model->fill($request->all());
             if(empty($model->user_id)) {
@@ -162,14 +123,19 @@
 
             foreach ($request->items as $item) {
 
+                $quantity = $item['quantity'];
+                $unit_type_id = (int)$item['unit_id'];
+                $unit_type = null;
+                if($unit_type_id != 0){
+                    $unit_type = ItemUnitType::find($unit_type_id);
+                    $quantity *= $unit_type->quantity_unit;
+                }
+
                 $mill_item = new MillItem();
                 $mill_item->fill($item);
                 $mill_item->mill_id = $model->id;
                 $mill_item->save();
 
-                //$id = $item['id'];
-                $quantity = $item['quantity'];
-                //$presentation = $item['presentation'];
 
                 $inventory_transaction = InventoryTransaction::findOrFail('100'); //debe ser ingreso por molino
 
@@ -257,9 +223,18 @@
             $expense_types = ExpenseType::get();
             $expense_method_types = ExpenseMethodType::all();
             $expense_reasons = ExpenseReason::all();
+            $unit_types = UnitType::all();
             $payment_destinations = $this->getBankAccounts();
 
-            return compact('suppliers', 'establishment', 'currency_types', 'expense_types', 'expense_method_types', 'expense_reasons', 'payment_destinations');
+            return compact(
+                'suppliers',
+ 'establishment',
+ 'currency_types',
+ 'expense_types',
+ 'expense_method_types',
+ 'expense_reasons',
+ 'unit_types',
+ 'payment_destinations');
         }
 
         public static function optionsItemSupplies(){
@@ -398,6 +373,7 @@
             $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
             $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
             $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
+            $unit_types = UnitType::all();
 
             $operation_types = OperationType::whereActive()->get();
             $is_client = $this->getIsClient();
@@ -411,6 +387,7 @@
                 'discount_types',
                 'charge_types',
                 'attribute_types',
+                'unit_types',
                 'operation_types',
                 'is_client'
             );

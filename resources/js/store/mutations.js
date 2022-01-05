@@ -58,7 +58,7 @@ export default {
     setExchangeRate(state, exchange_rate) {
         state.exchange_rate = exchange_rate
     },
-    setExchangeRateSale(state, exchange_rate) {
+    setExchangeRateSale(state, exchange_rate_sale) {
         state.exchange_rate_sale = exchange_rate_sale
     },
     setCurrencys(state, currencys) {
