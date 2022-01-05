@@ -203,7 +203,7 @@
 </template>
 <style>
 .font-custom {
-    font-size: 15px !important
+    font-size: 15px !important;
 }
 </style>
 <script>

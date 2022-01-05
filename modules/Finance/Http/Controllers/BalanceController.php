@@ -219,6 +219,7 @@
                 $from = $data['from'];
                 $to = $data['to'];
                 $amount_transform = $data['amount_transform'];
+                $amount_transform_temp = $data['amount_transform_temp'];
                 $transfer = null;
                 $transfer_minus = null;
                 $origin = null;
@@ -235,6 +236,7 @@
 
                     $transfer = new TransferAccountPayment();
                     $transfer_minus = new TransferAccountPayment();
+
                     if (get_class($origin) == get_class($destiny)) {
                         if (get_class($origin) == Cash::class) {
                             $transfer->TransforFromCashToCash(
@@ -245,7 +247,7 @@
                             $transfer_minus->TransforFromCashToCash(
                                 $destiny->id,
                                 $origin->id,
-                                $amount_transform * (-1)
+                                $amount_transform_temp * (-1)
                             );
                         } elseif (get_class($origin) == BankAccount::class) {
                             $transfer->TransforFromBankToBank(
@@ -256,7 +258,7 @@
                             $transfer_minus->TransforFromBankToBank(
                                 $destiny->id,
                                 $origin->id,
-                                $amount_transform * (-1)
+                                $amount_transform_temp * (-1)
                             );
                         }
                     } else {
@@ -269,7 +271,7 @@
                             $transfer_minus->TransforFromBankToCash(
                                 $destiny->id,
                                 $origin->id,
-                                $amount_transform * (-1)
+                                $amount_transform_temp * (-1)
                             );
                         } elseif (get_class($origin) == BankAccount::class) {
                             $transfer->TransforFromBankToCash(
@@ -280,7 +282,7 @@
                             $transfer_minus->TransforFromCashToBank(
                                 $destiny->id,
                                 $origin->id,
-                                $amount_transform * (-1)
+                                $amount_transform_temp * (-1)
                             );
                         }
                     }

@@ -52,12 +52,15 @@
 import DataTable from './partial/Table.vue'
 // import DataTable from '../../components/DataTableWithoutPaging.vue'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+import {exchangeRate, functions} from "../../../../../../../resources/js/mixins/functions";
+import moment from "moment";
 
 export default {
     props: [
         'configuration',
         'user'
     ],
+    mixins: [functions, exchangeRate],
     components: {DataTable},
     data() {
         return {
@@ -69,16 +72,18 @@ export default {
     created() {
         this.loadConfiguration()
         this.$store.commit('setConfiguration', this.configuration)
+        this.getExchangeRate()
         this.CanViewBalance()
     },
     computed: {
 
         ...mapState([
+            'exchange_rate_sale',
             'config',
         ]),
     },
     methods: {
-            ...mapActions([
+        ...mapActions([
             'loadConfiguration',
         ]),
         CanViewBalance() {
@@ -88,6 +93,14 @@ export default {
                 this.seller_can_view_balance = this.config.seller_can_view_balance;
             }
             return this.seller_can_view_balance;
+        },
+        getExchangeRate() {
+            let date = moment().format('YYYY-MM-DD');
+            this.searchExchangeRateByDate(date)
+                .then(response => {
+                    this.$store.commit('setExchangeRateSale', response)
+                });
+
         },
 
     }
