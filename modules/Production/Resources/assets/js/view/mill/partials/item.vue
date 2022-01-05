@@ -9,23 +9,17 @@
               @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
-                    <div class="col-md-7 col-lg-7 col-xl-7 col-sm-7">
+                    <div class="col-md-12">
                         <div id="custom-select"
                              :class="{'has-danger': errors.item_id}"
                              class="form-group">
                             <label class="control-label">
                                 Producto
-                                <!--
-                                <a href="#"
-                                   @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
-                                -->
                             </label>
 
                             <!-- <el-select v-model="form.item_id" @change="changeItem" filterable  ref="selectSearchNormal" @focus="focusSelectItem">
                                 <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                             </el-select> -->
-
-
                             <template id="select-append">
                                 <el-input id="custom-input">
                                     <el-select
@@ -37,7 +31,7 @@
                                         placeholder="Buscar"
                                         popper-class="el-select-items"
                                         @change="changeItem"
-                                        >
+                                    >
                                         <!--@focus="focusSelectItem"-->
                                         <el-option v-for="option in items"
                                                    :key="option.id"
@@ -56,60 +50,18 @@
                                     -->
                                 </el-input>
                             </template>
-                            <!--
-                            <template id="select-append">
-                                <el-input id="custom-input">
-                                    <el-select
-                                        id="select-width"
-                                        ref="selectSearchNormal"
-                                        slot="prepend"
-                                        v-model="form.item_id"
-
-                                        :loading="loading_search"
-                                        :remote-method="searchRemoteItems"
-                                        filterable
-                                        placeholder="Buscar"
-                                        popper-class="el-select-items"
-                                        remote
-                                        @change="changeItem"
-                                        @focus="focusSelectItem">
-
-                                        <el-tooltip
-                                            v-for="option in items"
-                                            :key="option.id"
-                                            placement="left">
-                                            <div
-                                                slot="content"
-                                                v-html="ItemSlotTooltipView(option)"
-                                            ></div>
-                                            <el-option
-                                                :label="ItemOptionDescriptionView(option)"
-                                                :value="option.id"
-                                            ></el-option>
-
-                                        </el-tooltip>
-                                    </el-select>
-                                    <el-tooltip slot="append"
-                                                class="item"
-                                                content="Ver Stock del Producto"
-                                                effect="dark"
-                                                placement="bottom">
-                                        <el-button @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i>
-                                        </el-button>
-                                    </el-tooltip>
-                                </el-input>
-                            </template>
-                            -->
 
                             <small v-if="errors.item_id"
                                    class="form-control-feedback"
                                    v-text="errors.item_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div :class="{'has-danger': errors.height_to_mill}"
                              class="form-group">
-                            <label class="control-label">Cantidad a moler</label>
+                            <label class="control-label">
+                                Cantidad a moler
+                            </label>
                             <el-input-number v-model="form.height_to_mill"
                                              :min="1"></el-input-number>
                             <small v-if="errors.height_to_mill"
@@ -117,10 +69,12 @@
                                    v-text="errors.height_to_mill[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div :class="{'has-danger': errors.total_height}"
                              class="form-group">
-                            <label class="control-label">Cantidad obtenida</label>
+                            <label class="control-label">
+                                Cantidad obtenida
+                            </label>
                             <el-input-number v-model="form.total_height"
                                              :min="0.01"></el-input-number>
                             <small v-if="errors.total_height"
@@ -128,6 +82,40 @@
                                    v-text="errors.total_height[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div :class="{'has-danger': errors.unit_types}"
+                             class="form-group">
+                            <label class="control-label">
+                                Unidades de medida
+                                <el-tooltip
+                                    class="item"
+                                    content="Unidad de medida principal y multiplicacion de unidades de medida de presentacion de producto."
+                                    effect="dark"
+                                    placement="top-start">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
+                            <el-select
+                                v-model="form.unit_type_id"
+                                filterable
+                                @change="selectUnit"
+
+                            >
+                                <el-option v-for="option in unit_types_item"
+                                           :key="option.id"
+                                           :disabled="!option.active"
+                                           :label="option.description"
+                                           :value="option.id"></el-option>
+                            </el-select>
+
+                            <small v-if="errors.unit_type_id"
+                                   class="form-control-feedback"
+                                   v-text="errors.unit_type_id[0]"></small>
+                        </div>
+                    </div>
+
+
+                    <!-- item_unit_types -->
                 </div>
             </div>
             <div class="form-actions text-right pt-2">
@@ -190,6 +178,8 @@ export default {
             form: {
                 height_to_mill: 0,
                 total_height: 0,
+                unit_type_id: null,
+                unit_id: 0,
             },
             all_items: [],
             items: [],
@@ -201,6 +191,8 @@ export default {
             system_isc_types: [],
             discount_types: [],
             charge_types: [],
+            unit_types: [],
+            unit_types_item: [],
             attribute_types: [],
             use_price: 1,
             change_affectation_igv_type_id: false,
@@ -232,6 +224,7 @@ export default {
             this.discount_types = response.data.discount_types
             this.charge_types = response.data.charge_types
             this.attribute_types = response.data.attribute_types
+            this.unit_types = response.data.unit_types
             // this.filterItems()
 
         })
@@ -344,6 +337,8 @@ export default {
                 height_to_mill: 0,
                 total_height: 0,
             };
+            this.form.unit_type_id = null;
+            this.form.unit_id = 0;
         },
         clickRemoveAttribute(index) {
             this.form.attributes.splice(index, 1)
@@ -354,15 +349,20 @@ export default {
         },
         changeItem() {
             this.getItems();
-            let item =  _.find(this.items, {'id': this.form.item_id});;
+            let item = _.find(this.items, {'id': this.form.item_id});
+
             this.form.item = item;
             this.item = item
+            if (item !== undefined) {
+                this.form.unit_type_id= this.item.unit_type_id;
+                this.updateUnitTypes()
+            }
 
         },
         clickAddItem() {
 
             this.form.quantity = this.form.total_height
-            this.form.full_description = ( this.item &&  this.item.description ) ? this.item.description: '';
+            this.form.full_description = (this.item && this.item.description) ? this.item.description : '';
             this.$emit('add', this.form);
             this.initForm();
             this.setFocusSelectItem()
@@ -377,11 +377,39 @@ export default {
         },
         getItems() {
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
+                this.unit_types = response.data.unit_types
                 this.items = response.data.items
             })
         },
         create() {
             //     this.initializeFields()
+        },
+        updateUnitTypes() {
+
+            let unitTypeItem = undefined, unitTypesItem = undefined, unit_types_item_temp = [];
+
+            this.unit_types_item = unit_types_item_temp;
+            if (this.item !== undefined) {
+                if (this.item.unit_type_id !== undefined) {
+                    unitTypeItem = this.item.unit_type_id
+                }
+                if (this.item.item_unit_types !== undefined) {
+                    unitTypesItem = this.item.item_unit_types
+                }
+                this.unit_types.forEach(function (a, b) {
+                    if (a.id === unitTypeItem) {
+                        a.unit_id = 0
+                        unit_types_item_temp.push(a)
+                    } else if (unitTypesItem !== undefined ){
+                        let t =  _.find(unitTypesItem, {unit_type_id: a.id});
+                        if(t !== undefined) {
+                            a.unit_id = t.id
+                            unit_types_item_temp.push(a)
+                        }
+                    }
+                })
+            }
+            this.unit_types_item = unit_types_item_temp;
         },
         reloadDataItems(item_id) {
             this.$http.get(`/${this.resource}/table/items`).then((response) => {
@@ -394,6 +422,14 @@ export default {
 
             })
         },
+        selectUnit(){
+            let t = _.find(this.unit_types_item,{id:this.form.unit_type_id})
+            if(t !== undefined){
+                this.form.unit_id = t.unit_id
+            }else{
+                this.form.unit_id = 0
+            }
+        }
     }
 }
 

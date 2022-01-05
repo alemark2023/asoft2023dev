@@ -150,7 +150,10 @@ class ProductionController extends Controller
         return Item::ProductEnded()
             ->get()
             ->transform(function (Item $row) {
-            return  $row->getCollectionData();
+                $data =   $row->getCollectionData();
+
+
+                return $data;
 
         });
     }
