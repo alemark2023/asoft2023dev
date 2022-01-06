@@ -1,14 +1,16 @@
 <template>
     <div class="card mb-0 pt-2 pt-md-0">
         <div class="card-header bg-info">
-            <h3 class="my-0">Producto Fabricado</h3>
+            <h3 class="my-0">
+                Producto Fabricado
+            </h3>
         </div>
         <div class="tab-content">
             <form autocomplete="off"
                   @submit.prevent="submit">
                 <div class="form-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-sm-12 col-md-3 col-lg-3">
                             <div :class="{'has-danger': errors.item_id}"
                                  class="form-group">
                                 <label class="control-label">Producto </label>
@@ -34,7 +36,7 @@
                                 ></small>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-sm-12 col-md-3 col-lg-3">
                             <div
                                 :class="{'has-danger': errors.warehouse_id}"
                                 class="form-group"
@@ -56,7 +58,7 @@
                                 ></small>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-sm-12 col-md-3 col-lg-3">
                             <div :class="{'has-danger': errors.quantity}"
                                  class="form-group">
                                 <label class="control-label">Cantidad</label>
@@ -73,7 +75,8 @@
                                 ></small>
                             </div>
                         </div>
-                        <div class="col-md-6">
+
+                        <div class="col-sm-12 col-md-3 col-lg-3">
                             <div
                                 :class="{'has-danger': errors.inventory_transaction_id}"
                                 class="form-group"
@@ -87,7 +90,137 @@
                                 />
                             </div>
                         </div>
+                        <div class="col-sm-12 col-md-3 col-lg-3">
+                            <div :class="{'has-danger': errors.name}"
+                                 class="form-group">
+                                <label class="control-label">Número de registro</label>
+                                <el-input v-model="form.name"></el-input>
+                                <small v-if="errors.name"
+                                       class="form-control-feedback"
+                                       v-text="errors.name[0]"></small>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-3 col-lg-3">
+                            <div :class="{'has-danger': errors.comment}"
+                                 class="form-group">
+                                <label class="control-label">Comentario</label>
+                                <el-input v-model="form.comment"></el-input>
+                                <small v-if="errors.comment"
+                                       class="form-control-feedback"
+                                       v-text="errors.comment[0]"></small>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-3 col-lg-3">
+                            <div
+                                :class="{'has-danger': errors.production_order}"
+                                class="form-group"
+                            >
+                                <label class="control-label">Orden de producción</label>
+                                <input
+                                    class="form-control"
+                                    placeholder="Orden de producción"
+                                    type="text"
+                                />
+
+                                <small
+                                    v-if="errors.production_order"
+                                    class="form-control-feedback"
+                                    v-text="errors.production_order[0]"
+                                ></small>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-3 col-lg-3">
+                            <div :class="{'has-danger': errors.machine_id}"
+                                 class="form-group">
+                                <label class="control-label">
+                                    Maquina
+                                </label>
+                                <el-select v-model="form.machine_id">
+                                    <el-option
+                                        v-for="option in machines"
+                                        :key="option.id"
+                                        :label="option.name"
+                                        :value="option.id"></el-option>
+                                </el-select>
+
+                                <small v-if="errors.machine_id"
+                                       class="form-control-feedback"
+                                       v-text="errors.machine_id[0]"></small>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 col-md-6 col-lg-3">
+                            <div class="row">
+                            <div class="col-6">
+                                <div :class="{'has-danger': errors.date_start}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Fecha de inicio
+                                    </label>
+                                    <el-date-picker v-model="form.date_start"
+                                                    :clearable="false"
+                                                    format="dd/MM/yyyy"
+                                                    type="date"
+                                                    value-format="yyyy-MM-dd"></el-date-picker>
+                                    <small v-if="errors.date_start"
+                                           class="form-control-feedback"
+                                           v-text="errors.date_start[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div :class="{'has-danger': errors.time_start}"
+                                     class="form-group">
+                                    <label class="control-label">Hora de Inicio</label>
+                                    <el-time-picker v-model="form.time_start"
+                                                    dusk="time_start"
+                                                    placeholder="Seleccionar"
+                                                    value-format="HH:mm:ss"></el-time-picker>
+                                    <small v-if="errors.time_start"
+                                           class="form-control-feedback"
+                                           v-text="errors.time_start[0]"></small>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 col-md-6 col-lg-3 ">
+                            <div class="row">
+                            <div class="col-6">
+                                <div :class="{'has-danger': errors.date_end}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Fecha de Finalización
+                                    </label>
+                                    <el-date-picker v-model="form.date_end"
+                                                    :clearable="false"
+                                                    format="dd/MM/yyyy"
+                                                    type="date"
+                                                    value-format="yyyy-MM-dd"></el-date-picker>
+                                    <small v-if="errors.date_end"
+                                           class="form-control-feedback"
+                                           v-text="errors.date_end[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div :class="{'has-danger': errors.time_end}"
+                                     class="form-group">
+                                    <label class="control-label">Hora de finalización</label>
+                                    <el-time-picker v-model="form.time_end"
+                                                    dusk="time_end"
+                                                    placeholder="Seleccionar"
+                                                    value-format="HH:mm:ss"></el-time-picker>
+                                    <small v-if="errors.time_end"
+                                           class="form-control-feedback"
+                                           v-text="errors.time_end[0]"></small>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+
+
+
                     </div>
+
                 </div>
                 <div class="form-actions text-right mt-4">
                     <el-button
@@ -97,7 +230,8 @@
                     >Guardar
                     </el-button>
                 </div>
-                <div class="col-12 col-md-12 mt-3"  v-if="supplies.length > 0">
+                <div v-if="supplies.length > 0"
+                     class="col-12 col-md-12 mt-3">
                     <h3 class="my-0">Lista de materiales</h3>
 
                     <div class="col-md-12 mt-3 table-responsive">
@@ -132,7 +266,6 @@
                 </div>
 
 
-
             </form>
         </div>
     </div>
@@ -143,43 +276,49 @@
 
 export default {
 
+    prop: ['id'],
     computed: {},
     data() {
         return {
             resource: 'production',
             loading_submit: false,
             errors: {},
-            supplies : {},
+            supplies: {},
             form: {
                 items: []
             },
             loading_search: false,
             warehouses: [],
             precision: 2,
-            items: []
+            items: [],
+            machines: [],
         }
     },
     created() {
 
+        this.getTable();
         this.initForm()
-        this.$http.get(`/${this.resource}/tables`)
-            .then(response => {
-                let data = response.data
-                this.warehouses = data.warehouses
-                this.items = data.items
-            })
-            .then(() => {
-
-            })
     },
     methods: {
         initForm() {
             this.form = {
+                id: this.id,
                 item_id: null,
                 warehouse_id: null,
-                quantity: 0
+                quantity: 0,
+
             }
             this.supplies = {};
+
+        },
+        getTable() {
+            this.$http.get(`/${this.resource}/tables`)
+                .then(response => {
+                    let data = response.data
+                    this.warehouses = data.warehouses
+                    this.items = data.items
+                    this.machines = data.machines
+                })
 
         },
         async searchRemoteItems(search) {
@@ -199,7 +338,7 @@ export default {
 
             this.loading_submit = true
 
-            this.form.supplies  =this.supplies
+            this.form.supplies = this.supplies
             await this.$http.post(`/${this.resource}/create`, this.form)
                 .then(response => {
                     if (response.data.success) {
@@ -221,7 +360,7 @@ export default {
                 })
         },
         changeItem() {
-            let item =  _.find(this.items, {'id': this.form.item_id})
+            let item = _.find(this.items, {'id': this.form.item_id})
             this.supplies = item.supplies
 
         },

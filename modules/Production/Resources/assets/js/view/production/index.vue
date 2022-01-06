@@ -3,34 +3,22 @@
         <div class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Productos Fabricados</span></li>
+                <li class="active">
+                    <span>
+                        Productos Fabricados
+                    </span>
+                </li>
             </ol>
             <div class="right-wrapper pull-right">
-                <!--
-                <div class="btn-group flex-wrap">
-                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2 dropdown-toggle"
-                            data-toggle="dropdown" aria-expanded="false"><i class="fa fa-upload"></i> Importar <span
-                        class="caret"></span></button>
-                    <div class="dropdown-menu" role="menu" x-placement="bottom-start"
-                         style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
-                        <a class="dropdown-item text-1" href="#" @click.prevent="clickImportSet()">1. Productos
-                            compuestos</a>
-                        <a class="dropdown-item text-1" href="#" @click.prevent="clickImportSetIndividual()">2. Detalle
-                            productos compuestos</a>
-                    </div>
-                </div>
-                -->
                 <template
                 >
-                    <!-- <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button> -->
                     <button
                         type="button"
                         class="btn btn-custom btn-sm  mt-2 mr-2"
                         @click.prevent="clickCreate()"
                     >
-                        <!--
-                        v-if="can_add_new_product"-->
-                        <i class="fa fa-plus-circle"></i> Nuevo
+                        <i class="fa fa-plus-circle"></i>
+                        Nuevo
                     </button>
                 </template>
             </div>
@@ -41,46 +29,58 @@
                     Productos Fabricados
                 </h3>
             </div>
-            <!--
-            <div class="data-table-visible-columns">
-                <el-dropdown :hide-on-click="false">
-                    <el-button type="primary">
-                        Mostrar/Ocultar columnas<i class="el-icon-arrow-down el-icon--right"></i>
-                    </el-button>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item v-for="(column, index) in columnsComputed" :key="index">
-                            <el-checkbox
-                                v-if="column.title !== undefined && column.visible !== undefined"
-                                v-model="column.visible"
-                            >{{ column.title }}
-                            </el-checkbox>
-                        </el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
-            </div>
-            -->
             <div class="card-body">
 
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Cód. Interno</th>
-                        <th>Usuario</th>
-                        <th>Producto</th>
-                        <th>Cantidad</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="(row, index) in records">
-                        <td>{{ index + 1 }}</td>
-                        <td>000{{ row.id }}</td>
-                        <td >{{ row.user }}</td>
-                        <td >{{ row.item_name }}</td>
-                        <td >{{ row.quantity }}</td>
-                    </tr>
-                    </tbody>
-                </table>
+                <div class="row">
+                    <div class="col-12">
+
+                        <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownloadPdf()" >Exportar PDF</el-button>
+
+                        <el-button class="submit" type="success" @click.prevent="clickDownloadExcel()"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button>
+                    </div>
+                    <div class="col-12 p-t-20 table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Número de registro</th>
+                                <th>Cód. Interno</th>
+                                <th>Fecha de inicio</th>
+                                <th>Fecha de fin</th>
+                                <th>Cantidad</th>
+
+                                <th>Maquinaria</th>
+                                <th>Usuario</th>
+                                <th>Producto</th>
+                                <th>Orden de Producción</th>
+                                <th>Comentario</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(row, index) in records">
+                                <td>{{ index + 1 }}</td>
+                                <td>{{ row.name }}</td>
+                                <td>000{{ row.id }}</td>
+                                <td >{{ row.date_start }} - {{row.time_start}}</td>
+                                <td >{{ row.date_end }} - {{row.time_end}}</td>
+                                <td >{{ row.quantity }}</td>
+                                <td >
+                                    <div v-if="row.machine && row.machine.name">
+                                        {{ row.machine.name }}
+                                    </div>
+                                </td>
+                                <td >{{ row.user }}</td>
+                                <td >{{ row.item_name }}</td>
+                                <td >{{ row.production_order }}</td>
+                                <td >{{ row.comment }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
@@ -88,14 +88,8 @@
 </template>
 <script>
 
-import ItemsForm from './form.vue'
-/*
-  import WarehousesDetail from './partials/warehouses.vue'
-import ItemsImport from './import.vue'
-import ItemsImportSetIndividual from './partials/import_set_individual.vue'
-*/
+
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
-//import DataTable from "../../../../../../../resources/js/components/DataTable";
 import {deletable} from "../../../../../../../resources/js/mixins/deletable";
 
 export default {
@@ -105,11 +99,6 @@ export default {
     ],
     mixins: [deletable],
     components: {
-        ItemsForm,
-        // ItemsImport,
-       //DataTable,
-        // WarehousesDetail,
-        // ItemsImportSetIndividual
     },
     computed: {
         ...mapState([
@@ -232,7 +221,13 @@ export default {
             this.destroy(`/${this.resource}/${id}`).then(() =>
                 this.$eventHub.$emit('reloadData')
             )
-        }
+        },
+        clickDownloadPdf() {
+            window.open(`${this.resource}/pdf`, '_blank');
+        },
+        clickDownloadExcel() {
+            window.open(`${this.resource}/excel`, '_blank');
+        },
     }
 }
 </script>

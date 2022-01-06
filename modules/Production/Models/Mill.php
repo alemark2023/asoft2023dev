@@ -20,6 +20,7 @@
      * Class Mill
      *
      * @property string|null               $name
+     * @property string|null               $comment
      * @property int               $id
      * @property Carbon|null       $date_start
      * @property Carbon|null       $time_start
@@ -50,7 +51,8 @@
             'time_start',
             'date_end',
             'time_end',
-            'user_id'
+            'user_id',
+            'comment',
         ];
 
         /**
@@ -71,4 +73,14 @@
                 ->withTimestamps();
         }
 
+        public function getCollectionData(){
+            $data = $this->toArray();
+
+
+            $data['items'] = $this->items;
+            $data['mill_items'] = MillItem::where('mill_id',$this->id)->get();
+            $data['user'] = (!empty($this->user))?$this->user->name:'';
+            $data['created_at'] = $this->created_at->format('Y-m-d H:i:s');
+            return $data;
+        }
     }
