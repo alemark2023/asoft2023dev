@@ -4,6 +4,9 @@
 
 
     <tenant-machine-form
-    :id="{{$id}}"></tenant-machine-form>
+        @if(!empty($id))
+    :id="{{$id}}"
+        @endif
+    ></tenant-machine-form>
 
 @endsection
