@@ -1289,16 +1289,17 @@
                                         Ingreso de Insumos
                                     </a>
                                 </li>
+
+                                <li class="{{ (($firstLevel === 'machine-type-production')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.machine_type_production.index') }}">
+                                        Tipos de maquinaria
+                                    </a>
+                                </li>
                                 <li class="{{ (($firstLevel === 'machine-production')) ? 'nav-active' : '' }}">
                                     <a class="nav-link"
                                         href="{{ route('tenant.machine_production.index') }}">
                                         Maquinaria
-                                    </a>
-                                </li>
-                                <li class="{{ (($firstLevel === 'machine-type-production')) ? 'nav-active' : '' }}">
-                                    <a class="nav-link"
-                                        href="{{ route('tenant.machine_type_production.index') }}">
-                                        Tipos de maquinaria
                                     </a>
                                 </li>
 
