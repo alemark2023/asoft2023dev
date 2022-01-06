@@ -20,7 +20,6 @@
     use App\Models\Tenant\Person;
     use App\Models\Tenant\Warehouse;
     use App\Traits\OfflineTrait;
-    use Barryvdh\DomPDF\Facade as PDF;
     use Carbon\Carbon;
     use Illuminate\Http\Request;
     use Illuminate\Http\Response;
@@ -34,17 +33,21 @@
     use Modules\Finance\Traits\FinanceTrait;
     //use Modules\Inventory\Traits\InventoryTrait;
     use Modules\Inventory\Traits\InventoryTrait;
-    use Modules\Production\Exports\MillExport;
-    use Modules\Production\Http\Requests\MillRequest;
-    use Modules\Production\Http\Resources\MillCollection;
-    use Modules\Production\Models\Mill;
-    use Modules\Production\Models\MillItem;
+    use Modules\Production\Http\Requests\MachineRequest;
+    use Modules\Production\Http\Requests\MachineTypeRequest;
+    use Modules\Production\Http\Resources\MachineCollection;
+    // use Modules\Production\Models\Mill;
+    use Modules\Production\Http\Resources\MachineResource;
+    use Modules\Production\Http\Resources\MachineTypeCollection;
+    use Modules\Production\Models\Machine;
+    use Modules\Production\Models\MachineType;
+    // use Modules\Production\Models\MillItem;
     use Modules\Inventory\Models\InventoryTransaction;
     use Modules\Inventory\Models\Inventory;
 
 
 
-    class MillController extends Controller
+    class MachineController extends Controller
     {
         use InventoryTrait;
         use FinanceTrait;
@@ -72,11 +75,16 @@
         {
             return [
 
-                'name' => 'Numero de registro',
-                'date_start' => 'Fecha de inicio',
-                // 'time_start'=> '',
-                'date_end' => 'Fecha de fin',
-                // 'time_end'=> '',
+                'name' => 'Nombre',
+                'brand' => 'Marca',
+                'model' => 'Modelo',
+                'closing_force' => 'Fuerza de cierre',
+            ];
+        }
+        public function columnsType()
+        {
+            return [
+                'name' => 'Nombre',
             ];
         }
 
@@ -87,7 +95,17 @@
          */
         public function index()
         {
-            return view('production::mill.index');
+            return view('production::machine.index');
+        }
+
+        /**
+         * Display a listing of the resource.
+         *
+         * @return Response
+         */
+        public function indexType()
+        {
+            return view('production::machine.index_type');
         }
 
         /**
@@ -98,64 +116,63 @@
 
         public function create($id = null)
         {
-            return view('production::mill.form', compact('id'));
+            return view('production::machine.form', compact('id'));
+        }
+        /**
+         * Show the form for creating a new resource.
+         *
+         * @return Response
+         */
+
+        public function createType($id = null)
+        {
+            return view('production::machine.form_type', compact('id'));
+        }
+        public function saveType(MachineTypeRequest $request){
+
+            $e = null;
+            if($request->has('id')) {
+                $e = MachineType::find($request->id);
+            }
+            if(empty($e)){
+                $e = new MachineType($request->all());
+            }
+            $e->fill($request->all());
+            $e->push();
+            return [
+                'success' => true,
+                'message' => 'Datos guardada de forma correcta.',
+                'data'=>$e->toArray()
+            ];
+
+
+
         }
 
         /**
          * Store a newly created resource in storage.
          *
-         * @param MillRequest $request
+         * @param MachineRequest $request
          *
          * @return Response
          */
-        public function store(MillRequest $request)
+        public function store(MachineRequest $request)
         {
 
-
-            $model = Mill::firstOrNew(['id' => null]);
+            $model = null;
+            if($request->has('id')){
+                $model = Machine::find($request->id);
+            }
+            if(empty($model)){
+                $model = new Machine($request->all());
+            }
             $model->fill($request->all());
-            if(empty($model->user_id)) {
-                $model->user_id = \Auth::user()->id;
-            }
             $model->save();
-
-            $userWarehouse = \Auth::user()->establishment;
-            $warehouse_id = $request['warehouse_id'] ?? $userWarehouse->id; // si no hay warehuse. pega el establecimiento del usuario
-
-
-            foreach ($request->items as $item) {
-
-                $quantity = $item['quantity'];
-                $unit_type_id = (int)$item['unit_id'];
-                $unit_type = null;
-                if($unit_type_id != 0){
-                    $unit_type = ItemUnitType::find($unit_type_id);
-                    $quantity *= $unit_type->quantity_unit;
-                }
-
-                $mill_item = new MillItem();
-                $mill_item->fill($item);
-                $mill_item->mill_id = $model->id;
-                $mill_item->save();
-
-
-                $inventory_transaction = InventoryTransaction::findOrFail('100'); //debe ser ingreso por molino
-
-                $inventory = new Inventory();
-                $inventory->type = null;
-                $inventory->description = $inventory_transaction->name;
-                $inventory->item_id = $mill_item->item_id;
-                $inventory->warehouse_id = $warehouse_id;
-                $inventory->quantity = $quantity;
-                $inventory->inventory_transaction_id = $inventory_transaction->id;
-                $inventory->save();
-
-
-            }
 
             return [
                 'success' => true,
-                'message' => 'Datos guardada de forma correcta.'
+                'message' => 'Datos guardada de forma correcta.',
+                'data'=>$model->toArray()
             ];
 
         }
@@ -219,24 +236,14 @@
 
         public function tables()
         {
-            $suppliers = $this->table('suppliers');
             $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
-            $currency_types = CurrencyType::whereActive()->get();
-            $expense_types = ExpenseType::get();
-            $expense_method_types = ExpenseMethodType::all();
-            $expense_reasons = ExpenseReason::all();
-            $unit_types = UnitType::all();
-            $payment_destinations = $this->getBankAccounts();
+            $machine_types = MachineType::where('active',1)->get();
+
 
             return compact(
-                'suppliers',
  'establishment',
- 'currency_types',
- 'expense_types',
- 'expense_method_types',
- 'expense_reasons',
- 'unit_types',
- 'payment_destinations');
+ 'machine_types'
+            );
         }
 
         public static function optionsItemSupplies(){
@@ -308,16 +315,27 @@
 
         public function records()
         {
-            $records = Mill::query();
-            return new MillCollection($records->paginate(config('tenant.items_per_page')));
+            $records = Machine::query();
+            return new MachineCollection($records->paginate(config('tenant.items_per_page')));
+
+        }
+
+        public function recordsType()
+        {
+            $records = MachineType::query();
+            return new MachineTypeCollection($records->paginate(config('tenant.items_per_page')));
 
         }
 
         public function record($id)
         {
-            $record = new ExpenseResource(Expense::findOrFail($id));
-
-            return $record;
+            $record = Machine::findOrFail($id);
+            return $record->getCollectionData();
+        }
+        public function recordType($id)
+        {
+            $record = MachineType::findOrFail($id);
+            return $record->toArray();
         }
 
         public function voided($record)
@@ -344,6 +362,25 @@
             }
         }
 
+        public function excel(Request $request)
+        {
+
+            $records = Expense::where($request->column, 'like', "%{$request->value}%")
+                ->whereTypeUser()
+                ->latest()
+                ->get();
+            // dd($records);
+
+            $establishment = auth()->user()->establishment;
+            $balance = new ExpenseExport();
+            $balance
+                ->records($records)
+                ->establishment($establishment);
+
+            // return $balance->View();
+            return $balance->download('Expense_' . Carbon::now() . '.xlsx');
+
+        }
 
         public function item_tables() {
 
@@ -374,49 +411,5 @@
                 'operation_types',
                 'is_client'
             );
-        }
-
-
-
-
-
-        /**
-         * @param Request $request
-         *
-         * @return Response|BinaryFileResponse
-         */
-        public function excel(Request $request)
-        {
-            // $records = $this->getData($request);
-            $records = Mill::query()->get()->transform(function (Mill $row) {
-                return $row->getCollectionData();
-            });
-
-            $MillExport = new MillExport();
-            $MillExport->setCollection($records);
-            $filename = 'Reporte de insumos - ' . date('YmdHis');
-             // return $MillExport->view();
-            return $MillExport->download($filename . '.xlsx');
-
-
-        }
-
-
-        public function pdf(Request $request) {
-            // $records = $this->getData($request);
-            $records = Mill::query()->get()->transform(function (Mill $row) {
-                return $row->getCollectionData();
-            });
-
-            /** @var \Barryvdh\DomPDF\PDF $pdf */
-            $pdf = PDF::loadView('production::mill.partial.export',
-                compact(
-                    'records'
-                ))
-                ->setPaper('a4', 'landscape');
-
-
-            $filename = 'Reporte de insumos - ' . date('YmdHis');
-            return $pdf->stream($filename.'.pdf');
         }
     }

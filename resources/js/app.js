@@ -367,6 +367,11 @@ Vue.component('tenant-bankloans-form', require('../../modules/Expense/Resources/
 /**Molino */
 Vue.component('tenant-mill-index', require('../../modules/Production/Resources/assets/js/view/mill/index.vue'));
 Vue.component('tenant-mill-form', require('../../modules/Production/Resources/assets/js/view/mill/form.vue'));
+/** Maquinaria */
+Vue.component('tenant-machine-index', require('../../modules/Production/Resources/assets/js/view/machine/index.vue'));
+Vue.component('tenant-machine-type-index', require('../../modules/Production/Resources/assets/js/view/machine/index_type.vue'));
+Vue.component('tenant-machine-form', require('../../modules/Production/Resources/assets/js/view/machine/form.vue'));
+Vue.component('tenant-machine-type-form', require('../../modules/Production/Resources/assets/js/view/machine/form_type.vue'));
 /** produccion */
 
 Vue.component('tenant-production-index', require('../../modules/Production/Resources/assets/js/view/production/index.vue'));
