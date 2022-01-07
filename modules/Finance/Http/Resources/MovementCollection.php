@@ -113,8 +113,8 @@
                         $output = number_format(abs($amount), 2, ".", "");
                         $input = '-';
                     }
-                    $timedate = $row->payment->date_of_movement->format('Y-m-d H:i');
-                    $instance_type_description = 'Transferencia bancaria';
+                    $timedate = $row->payment->date_of_movement->format('Y-m-d H:i:s');
+                    $instance_type_description = 'Transferencia Bancaria';
                 }
 
 
