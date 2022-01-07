@@ -1270,10 +1270,17 @@
                         </li>
                     @endif
 
+
+
                     {{-- Produccion --}}
                     @if(in_array('production_app', $vc_modules) )
 
-                        <li class=" nav-parent {{ (($firstLevel === 'production') || ($firstLevel === 'mill-production') ) ? 'nav-active nav-expanded' : '' }}">
+                        <li class=" nav-parent {{ (
+                                                    ($firstLevel === 'production') ||
+                                                    ($firstLevel === 'machine-production') ||
+                                                    ($firstLevel === 'machine-type-production') ||
+                                                    ($firstLevel === 'mill-production')
+                                                ) ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link"
                                 href="#">
                                 <i class="fa fas fa-calendar-check"
@@ -1300,6 +1307,8 @@
                                         Tipos de maquinaria
                                     </a>
                                 </li>
+
+
                                 <li class="{{ (($firstLevel === 'machine-production')) ? 'nav-active' : '' }}">
                                     <a class="nav-link"
                                         href="{{ route('tenant.machine_production.index') }}">
