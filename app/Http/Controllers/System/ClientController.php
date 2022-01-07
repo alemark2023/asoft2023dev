@@ -114,47 +114,16 @@
                     $init = $start_end_date['start_date'];
                     $end = $start_end_date['end_date'];
 
-                    $row->init_cycle = $init;
-                    $row->end_cycle = $end;
+                    // $row->init_cycle = $init;
+                    // $row->end_cycle = $end;
                     // dd($start_end_date);
 
-                    $row->count_doc_month = DB::connection('tenant')
-                                                ->table('documents')
-                                                ->whereBetween('date_of_issue', [$init, $end])
-                                                ->count();
+                    $row->count_doc_month = DB::connection('tenant')->table('documents')->whereBetween('date_of_issue', [$init, $end])->count();
 
                 }
 
-                // if ($row->start_billing_cycle) {
-
-                //     $day_start_billing = date_format($row->start_billing_cycle, 'j');
-
-                //     $day_now = (int)date('j');
-
-                //     if ($day_now <= $day_start_billing) {
-
-                //         $init = Carbon::parse(date('Y') . '-' . ((int)date('n') - 1) . '-' . $day_start_billing);
-                //         $end = Carbon::parse(date('Y-m-d'));
-
-                //         $row->count_doc_month = DB::connection('tenant')
-                //             ->table('documents')
-                //             ->whereBetween('date_of_issue', [$init, $end])
-                //             ->count();
-
-                //     } else {
-
-                //         $init = Carbon::parse(date('Y') . '-' . ((int)date('n')) . '-' . $day_start_billing);
-                //         $end = Carbon::parse(date('Y-m-d'));
-
-                //         $row->count_doc_month = DB::connection('tenant')
-                //             ->table('documents')
-                //             ->whereBetween('date_of_issue', [$init, $end])
-                //             ->count();
-
-                //     }
-
-                // }
             }
+
             return new ClientCollection($records);
         }
 

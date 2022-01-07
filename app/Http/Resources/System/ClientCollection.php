@@ -36,8 +36,8 @@ class ClientCollection extends ResourceCollection
                 
                 // ciclo facturacion
                 'start_billing_cycle' => ( $row->start_billing_cycle ) ? $row->start_billing_cycle->format('Y-m-d') : '',
-                'init_cycle' => optional($row->init_cycle)->format('Y-m-d'),
-                'end_cycle' => optional($row->end_cycle)->format('Y-m-d'),
+                // 'init_cycle' => optional($row->init_cycle)->format('Y-m-d'),
+                // 'end_cycle' => optional($row->end_cycle)->format('Y-m-d'),
                 'count_doc_month' => $row->count_doc_month,
 
                 'select_date_billing' => '',
