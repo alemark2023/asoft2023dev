@@ -1138,7 +1138,7 @@
 
                                     <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'processes')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
-                                           href="{{ route('documentary.processes') }}">Tipos de tramites</a>
+                                           href="{{ route('documentary.processes') }}">Tipos de Trámites</a>
                                     </li>
                                 @endif
                                 {{--
@@ -1157,12 +1157,16 @@
                                     {{--
                                     <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'files')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
-                                           href="{{ route('documentary.files') }}">Listado de tramites</a>
+                                           href="{{ route('documentary.files') }}">Listado de Trámites</a>
                                     </li>
                                     --}}
                                     <li class="{{ (($firstLevel === 'documentary-procedure') &&( ($secondLevel === 'files_simplify')||($secondLevel === 'files'))) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
-                                           href="{{ route('documentary.files_simplify') }}">Listado de tramites</a>
+                                           href="{{ route('documentary.files_simplify') }}">Listado de Trámites</a>
+                                    </li>
+                                    <li class="{{ (($firstLevel === 'documentary-procedure') &&( ($secondLevel === 'stadistic'))) ? 'nav-active' : '' }}">
+                                        <a class="nav-link"
+                                           href="{{ route('documentary.stadistic') }}">Estadisticas de Trámites</a>
                                     </li>
                                 @endif
                             </ul>
@@ -1266,10 +1270,17 @@
                         </li>
                     @endif
 
+
+
                     {{-- Produccion --}}
                     @if(in_array('production_app', $vc_modules) )
 
-                        <li class=" nav-parent {{ (($firstLevel === 'production') || ($firstLevel === 'mill-production') ) ? 'nav-active nav-expanded' : '' }}">
+                        <li class=" nav-parent {{ (
+                                                    ($firstLevel === 'production') ||
+                                                    ($firstLevel === 'machine-production') ||
+                                                    ($firstLevel === 'machine-type-production') ||
+                                                    ($firstLevel === 'mill-production')
+                                                ) ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link"
                                 href="#">
                                 <i class="fa fas fa-calendar-check"
@@ -1296,6 +1307,8 @@
                                         Tipos de maquinaria
                                     </a>
                                 </li>
+
+
                                 <li class="{{ (($firstLevel === 'machine-production')) ? 'nav-active' : '' }}">
                                     <a class="nav-link"
                                         href="{{ route('tenant.machine_production.index') }}">

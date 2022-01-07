@@ -298,6 +298,7 @@ Vue.component('tenant-documentary-documents', require('@viewsModuleDocumentary/d
 Vue.component('tenant-documentary-actions', require('@viewsModuleDocumentary/actions/Actions.vue'));
 Vue.component('tenant-documentary-files', require('@viewsModuleDocumentary/files/Files.vue'));
 Vue.component('tenant-documentary-requirements', require('@viewsModuleDocumentary/requirements/Requirements.vue'));
+Vue.component('tenant-documentary-statistic', require('@viewsModuleDocumentary/statistic/Index.vue'));
 
 // Trámite documentario Simlpificado
 Vue.component('tenant-documentary-files-simplify', require('@viewsModuleDocumentary/files_simplify/Files.vue'));
