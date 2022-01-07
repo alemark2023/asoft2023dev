@@ -639,6 +639,13 @@
             </tr>
         @endif
 
+        @if(($document->retention || $document->detraction) && $document->total_pending_payment > 0)
+            <tr>
+                <td colspan="8" class="text-right font-bold">M. PENDIENTE: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->total_pending_payment, 2) }}</td>
+            </tr>
+        @endif
+
         @if($balance < 0)
 
             <tr>
