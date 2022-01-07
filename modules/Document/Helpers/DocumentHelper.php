@@ -32,6 +32,10 @@ class DocumentHelper
      * 
      * Validar si los documentos emitidos superan el limite permitido por el plan (ciclo facturacion)
      *
+     * Usado en: 
+     * App\Providers\LockedEmissionProvider
+     * App\Http\Controllers\Tenant\DocumentController
+     * 
      * @param  $configuration
      * @return array
      */     
@@ -83,7 +87,6 @@ class DocumentHelper
      *
      * Usado en: 
      * App\Http\Controllers\System\ClientController
-     * App\Providers\LockedEmissionProvider
      * 
      * @param  $start_billing_cycle
      * @return array
