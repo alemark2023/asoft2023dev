@@ -10,7 +10,8 @@
                   @submit.prevent="submit">
                 <div class="form-body">
                     <div class="row">
-                        <div class="col-sm-6 col-md-3">
+
+                        <div class="col-sm-12 col-md-6 col-lg-3 ">
                             <div :class="{'has-danger': errors.date_start}"
                                  class="form-group">
                                 <label class="control-label">
@@ -26,7 +27,8 @@
                                        v-text="errors.date_start[0]"></small>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-md-3">
+
+                        <div class="col-sm-12 col-md-6 col-lg-3 ">
                             <div :class="{'has-danger': errors.time_start}"
                                  class="form-group">
                                 <label class="control-label">Hora de finalizacion</label>
@@ -41,7 +43,7 @@
                         </div>
 
 
-                        <div class="col-sm-6 col-md-3">
+                        <div class="col-sm-12 col-md-6 col-lg-3 ">
                             <div :class="{'has-danger': errors.date_end}"
                                  class="form-group">
                                 <label class="control-label">
@@ -57,7 +59,7 @@
                                        v-text="errors.date_end[0]"></small>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-md-3">
+                        <div class="col-sm-12 col-md-6 col-lg-3 ">
                             <div :class="{'has-danger': errors.time_end}"
                                  class="form-group">
                                 <label class="control-label">Hora de finalizacion</label>
@@ -71,7 +73,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-6 col-md-3">
+                        <div class="col-sm-12 col-md-6 col-lg-3 ">
                             <div :class="{'has-danger': errors.name}"
                                  class="form-group">
                                 <label class="control-label">Número de registro</label>
@@ -79,6 +81,16 @@
                                 <small v-if="errors.name"
                                        class="form-control-feedback"
                                        v-text="errors.name[0]"></small>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-3 ">
+                            <div :class="{'has-danger': errors.comment}"
+                                 class="form-group">
+                                <label class="control-label">Comentario</label>
+                                <el-input v-model="form.comment"></el-input>
+                                <small v-if="errors.comment"
+                                       class="form-control-feedback"
+                                       v-text="errors.comment[0]"></small>
                             </div>
                         </div>
 

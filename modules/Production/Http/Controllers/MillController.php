@@ -20,6 +20,7 @@
     use App\Models\Tenant\Person;
     use App\Models\Tenant\Warehouse;
     use App\Traits\OfflineTrait;
+    use Barryvdh\DomPDF\Facade as PDF;
     use Carbon\Carbon;
     use Illuminate\Http\Request;
     use Illuminate\Http\Response;
@@ -33,6 +34,7 @@
     use Modules\Finance\Traits\FinanceTrait;
     //use Modules\Inventory\Traits\InventoryTrait;
     use Modules\Inventory\Traits\InventoryTrait;
+    use Modules\Production\Exports\MillExport;
     use Modules\Production\Http\Requests\MillRequest;
     use Modules\Production\Http\Resources\MillCollection;
     use Modules\Production\Models\Mill;
@@ -342,25 +344,6 @@
             }
         }
 
-        public function excel(Request $request)
-        {
-
-            $records = Expense::where($request->column, 'like', "%{$request->value}%")
-                ->whereTypeUser()
-                ->latest()
-                ->get();
-            // dd($records);
-
-            $establishment = auth()->user()->establishment;
-            $balance = new ExpenseExport();
-            $balance
-                ->records($records)
-                ->establishment($establishment);
-
-            // return $balance->View();
-            return $balance->download('Expense_' . Carbon::now() . '.xlsx');
-
-        }
 
         public function item_tables() {
 
@@ -391,5 +374,49 @@
                 'operation_types',
                 'is_client'
             );
+        }
+
+
+
+
+
+        /**
+         * @param Request $request
+         *
+         * @return Response|BinaryFileResponse
+         */
+        public function excel(Request $request)
+        {
+            // $records = $this->getData($request);
+            $records = Mill::query()->get()->transform(function (Mill $row) {
+                return $row->getCollectionData();
+            });
+
+            $MillExport = new MillExport();
+            $MillExport->setCollection($records);
+            $filename = 'Reporte de insumos - ' . date('YmdHis');
+             // return $MillExport->view();
+            return $MillExport->download($filename . '.xlsx');
+
+
+        }
+
+
+        public function pdf(Request $request) {
+            // $records = $this->getData($request);
+            $records = Mill::query()->get()->transform(function (Mill $row) {
+                return $row->getCollectionData();
+            });
+
+            /** @var \Barryvdh\DomPDF\PDF $pdf */
+            $pdf = PDF::loadView('production::mill.partial.export',
+                compact(
+                    'records'
+                ))
+                ->setPaper('a4', 'landscape');
+
+
+            $filename = 'Reporte de insumos - ' . date('YmdHis');
+            return $pdf->stream($filename.'.pdf');
         }
     }

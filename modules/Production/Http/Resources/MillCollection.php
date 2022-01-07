@@ -16,7 +16,7 @@ class MillCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->transform(function( Mill $row, $key) {
-            return $row->toArray();
+            return $row->getCollectionData();
             // @todo coleccion de descarga
 
 

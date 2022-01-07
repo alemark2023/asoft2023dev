@@ -55,6 +55,13 @@
         {
             return $this->belongsTo(Item::class);
         }
+        /**
+         * @return BelongsTo
+         */
+        public function item_relation()
+        {
+            return $this->belongsTo(Item::class);
+        }
 
         /**
          * @return BelongsTo
