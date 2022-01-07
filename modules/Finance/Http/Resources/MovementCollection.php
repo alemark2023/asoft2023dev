@@ -52,10 +52,15 @@
                         $amount *= $document->exchange_rate_sale;
                     }
                 }
-                if ($type_movement == 'input') {
-                    self::$balance += $amount;
+                if (get_class($payment) == TransferAccountPayment::class) {
+                    // para que transferencias bancarias. refleje el numero correctamente.
+                    if ($type_movement == 'input') {
+                        self::$balance -= $amount;
+                    } else {
+                        self::$balance += $amount;
+                    }
                 } else {
-                    self::$balance -= $amount;
+                    self::$balance = ($row->type_movement == 'input') ? self::$balance + $amount : self::$balance - $amount;
                 }
 
                 // $timedate = $payment->date_of_payment->format('Y-m-d');
@@ -106,13 +111,13 @@
                     $person_number = $destinationArray['cci'] ?? '-';
                     if ($amount < 0) {
                         // banco destino
-                        $input = number_format(abs($amount), 2, ".", "");
-                        $output = '-';
-                    } else {
-                        // banco de origen
                         $output = number_format(abs($amount), 2, ".", "");
                         $input = '-';
-                    }
+                    } else {
+                        // banco de origen
+
+                        $input = number_format(abs($amount), 2, ".", "");
+                        $output = '-'; }
                     $timedate = $row->payment->date_of_movement->format('Y-m-d H:i:s');
                     $instance_type_description = 'Transferencia Bancaria';
                 }
