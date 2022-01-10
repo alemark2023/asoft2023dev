@@ -208,7 +208,7 @@ class InventoryKardex extends ModelTenant
                 $data['doc_asoc'] = isset($inventory_kardexable->reference_document_id) ? $inventory_kardexable->reference_document->getNumberFullAttribute() : '-';
                 break;
         }
-        $decimalRound = 3; // Cantidad de decimales a aproximar
+        $decimalRound = 6; // Cantidad de decimales a aproximar
         $data['balance'] =$data['balance'] ? round( $data['balance'] ,$decimalRound):0;
         return $data;
     }
