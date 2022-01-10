@@ -40,8 +40,10 @@
     // Pago/Coutas detalladas
     $paymentDetailed= [];
 	if(
+		$document != null  && (
 		get_class($document) == Document::class ||
 		get_class($document) == SaleNote::class
+        )
 	){
         $paymentDetailed = TemplateHelper::getDetailedPayment($document);
 	}
