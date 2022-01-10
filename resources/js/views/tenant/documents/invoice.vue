@@ -1856,7 +1856,9 @@ export default {
             this.form.payments = data.payments;
             this.form.prepayments = data.prepayments || [];
             this.form.legends = [];
-            this.form.detraction = data.detraction;
+            // this.form.detraction = data.detraction;
+            this.form.detraction = data.detraction ? data.detraction : {}
+
             this.form.affectation_type_prepayment = data.affectation_type_prepayment;
             this.form.purchase_order = data.purchase_order;
             this.form.pending_amount_prepayment = data.pending_amount_prepayment || 0;
@@ -2683,6 +2685,7 @@ export default {
                 let legend = await _.find(this.form.legends, {'code': '2006'})
                 if (!legend) this.form.legends.push({code: '2006', value: 'Operación sujeta a detracción'})
                 this.form.detraction.bank_account = this.company.detraction_account
+                // this.form.detraction.detraction_type_id = undefined
 
             } else if (this.form.operation_type_id === '1004') {
 
