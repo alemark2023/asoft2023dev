@@ -106,6 +106,9 @@
                         <th class="text-right"
                             v-if="columns.guides.visible">Guia
                         </th>
+
+                        <th class="text-center" v-if="columns.plate_numbers.visible">Placa</th>
+
                         <th class="text-right"
                             v-if="columns.total_exportation.visible">T.Exportación
                         </th>
@@ -244,6 +247,13 @@
                             {{ item.number }} <br>
                         </span>
                         </td>
+
+                        <td class="text-center" v-if="columns.plate_numbers.visible">
+                            <span v-for="(item, i) in row.plate_numbers" :key="i">
+                                {{ item.description }} <br>
+                            </span>
+                        </td>
+
                         <td class="text-right"
                             v-if="columns.total_exportation.visible">{{ row.total_exportation }}
                         </td>
@@ -546,6 +556,10 @@ export default {
                 },
                 dispatch: {
                     title: 'Guía de Remisión',
+                    visible: false
+                },
+                plate_numbers: {
+                    title: 'Placa',
                     visible: false
                 },
                 user_name: {

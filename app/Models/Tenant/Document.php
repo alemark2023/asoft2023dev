@@ -1037,4 +1037,33 @@
             return (bool)$this->has_cdr;
         }
 
+        /**
+         * Retornar placas registradas
+         *
+         * @return array
+         */
+        public function getPlateNumbers()
+        {
+            $plate_numbers = collect();
+
+            if(in_array($this->document_type_id, ['01', '03'])) 
+            {
+                
+                if($this->plate_number) return $plate_numbers->push(['description' => $this->plate_number]);
+
+                //obtener las placas registradas por cada item
+                $this->items->each(function($item) use($plate_numbers){
+
+                    $item->getPlateNumberByItems()->each(function($row) use($plate_numbers){
+                        $plate_numbers->push(['description' => $row->value]);
+                    });
+
+                });
+
+            }
+
+            return $plate_numbers;
+
+        }
+
     }
