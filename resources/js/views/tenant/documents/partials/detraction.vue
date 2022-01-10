@@ -179,6 +179,7 @@
         methods: {
             async changeDetractionType(){
                 let detraction_type = await _.find(this.detraction_types, {'id':this.detraction.detraction_type_id})
+                // console.log(detraction_type, this.detraction.detraction_type_id)
 
                 if(detraction_type){
 
@@ -206,6 +207,9 @@
 
                 if(this.operationTypeId == '1004'){
 
+                    if(detraction.detraction_type_id != '027')
+                        return {success:false, message:'El campo Bienes y servicios sujetos a detracciones debe ser: Servicio de transporte de carga'}
+
                     if(!detraction.origin_location_id)
                         return {success:false, message:'El campo Ubigeo origen es obligatorio'}
 
@@ -230,6 +234,12 @@
                     if(!detraction.trip_detail)
                         return {success:false, message:'El campo Detalle del viaje es obligatorio'}
 
+
+                }else{
+                    
+                    if(detraction.detraction_type_id == '027')
+                        return {success:false, message:'El campo Bienes y servicios sujetos a detracciones debe ser diferente de: Servicio de transporte de carga'}
+                        
                 }
 
                 return {success:true}
@@ -269,11 +279,12 @@
                     //     if(this.detraction_types.length > 0) this.detraction.detraction_type_id = this.detraction_types[0].id
                     // }
 
-                    let exist_detraction = _.find(this.detraction_types, {id : this.detraction.detraction_type_id})
+                    // let exist_detraction = _.find(this.detraction_types, {id : this.detraction.detraction_type_id})
 
-                    if(!exist_detraction){
-                        if(this.detraction_types.length > 0) this.detraction.detraction_type_id = this.detraction_types[0].id
-                    }
+                    // if(!exist_detraction){
+                        // this.detraction.detraction_type_id = null
+                        // if(this.detraction_types.length > 0) this.detraction.detraction_type_id = this.detraction_types[0].id
+                    // }
 
                 }
 
