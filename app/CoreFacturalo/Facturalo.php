@@ -38,6 +38,8 @@ use App\CoreFacturalo\WS\Validator\XmlErrorCodeProvider;
 use Modules\Inventory\Models\Warehouse;
 use App\CoreFacturalo\Requests\Inputs\Functions;
 use App\Models\Tenant\PurchaseSettlement;
+use App\CoreFacturalo\Services\Helpers\SendDocumentPse;
+
 
 /**
  * Class Facturalo
@@ -73,6 +75,7 @@ class Facturalo
     protected $endpoint;
     protected $response;
     protected $apply_change;
+    protected $sendDocumentPse;
 
     public function __construct()
     {
@@ -82,6 +85,7 @@ class Facturalo
         $this->isOse = ($this->company->soap_send_id === '02')?true:false;
         $this->signer = new XmlSigned();
         $this->wsClient = new WsClient();
+        $this->sendDocumentPse = new SendDocumentPse($this->company);
         $this->setDataSoapType();
     }
 
@@ -222,12 +226,27 @@ class Facturalo
         return $this;
     }
 
+    
+    /**
+     * Firma digital xml
+     */
     public function signXmlUnsigned()
     {
-        $this->setPathCertificate();
-        $this->signer->setCertificateFromFile($this->pathCertificate);
-        $this->xmlSigned = $this->signer->signXml($this->xmlUnsigned);
+
+        //validar si es que el documento se enviara al pse para la agregar la firma
+        if($this->sendToPse()){
+
+            $this->xmlSigned = $this->sendDocumentPse->signXml($this->xmlUnsigned, $this->document);
+
+        }else{
+
+            $this->setPathCertificate();
+            $this->signer->setCertificateFromFile($this->pathCertificate);
+            $this->xmlSigned = $this->signer->signXml($this->xmlUnsigned);
+        }
+
         $this->uploadFile($this->xmlSigned, 'signed');
+
         return $this;
     }
 
@@ -671,13 +690,39 @@ class Facturalo
         $this->onlySenderXmlSignedBill();
 
     }
+    
+    /**
+     * 
+     * Evaluar si se debe firmar el xml y enviar cdr al PSE
+     * Disponible para facturas y boletas
+     * 
+     * @return bool
+     */
+    public function sendToPse()
+    {
+        return ($this->company->send_document_to_pse && $this->type === 'invoice');
+    }
+
+    public function sendCdrToPse($cdr_zip, $document)
+    {
+        if($this->sendToPse())
+        {
+            $this->sendDocumentPse->sendCdr($cdr_zip, $document);
+        }
+    }
 
     public function onlySenderXmlSignedBill()
     {
         $res = $this->senderXmlSigned();
+
         if($res->isSuccess()) {
+
             $cdrResponse = $res->getCdrResponse();
             $this->uploadFile($res->getCdrZip(), 'cdr');
+
+            //enviar cdr a pse
+            $this->sendCdrToPse($res->getCdrZip(), $this->document);
+            //enviar cdr a pse
 
             $code = $cdrResponse->getCode();
             $description = $cdrResponse->getDescription();
