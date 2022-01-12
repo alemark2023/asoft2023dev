@@ -29,6 +29,9 @@ Vue.component('tenant-dashboard-sales-by-product', require('../../modules/Dashbo
 Vue.component('x-graph', require('./components/graph/src/Graph.vue'));
 Vue.component('x-graph-line', require('./components/graph/src/GraphLine.vue'));
 
+// configuracion pse
+Vue.component('tenant-signature-pse-index', require('./views/tenant/companies/signature_pse/index.vue'))
+
 Vue.component('tenant-companies-form', require('./views/tenant/companies/form.vue'));
 Vue.component('tenant-companies-logo', require('./views/tenant/companies/logo.vue'));
 Vue.component('tenant-certificates-index', require('./views/tenant/certificates/index.vue'));

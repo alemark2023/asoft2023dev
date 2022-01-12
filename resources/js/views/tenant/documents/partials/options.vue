@@ -34,6 +34,21 @@
                               type="warning"></el-alert>
                 </div>
             </div>
+
+            <div class="row" v-if="form.send_to_pse">
+
+                <div class="col-lg-12 col-md-12 col-sm-12" v-if="form.response_signature_pse">
+                    <el-alert :title="`Firma Xml PSE: ${form.response_signature_pse}`"
+                              show-icon type="success"></el-alert>
+                </div>
+                
+                <div class="col-lg-12 col-md-12 col-sm-12 mt-3" v-if="form.response_send_cdr_pse">
+                    <el-alert :title="`Envio CDR PSE: ${form.response_send_cdr_pse}`"
+                              show-icon type="success"></el-alert>
+                </div>
+
+            </div>
+
             <div class="row">
 
                 <div class="col text-center font-weight-bold mt-3">
@@ -257,6 +272,9 @@ export default {
                 customer_telephone: null,
                 message_text: null,
                 group_id: null,
+                send_to_pse: false,
+                response_signature_pse: null,
+                response_send_cdr_pse: null,
             };
             this.locked_emission = {
                 success: true,

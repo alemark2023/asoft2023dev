@@ -292,5 +292,9 @@ return [
 		'affectation_igv_type_id'           => 'tipo de afectación',
 		'summary_status_type_id' => 'tipo de estado',
 
+		'send_document_to_pse' => 'envío documento a pse',
+		'url_signature_pse' => 'url firma digital del documento',
+		'url_send_cdr_pse' => 'url envio CDR',
+
 	],
 ];
