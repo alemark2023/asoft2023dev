@@ -346,6 +346,13 @@
                         <br/><small>{{ $dtos->factor * 100 }}% {{$dtos->description }}</small>
                     @endforeach
                 @endif
+                
+                @if($row->charges)
+                    @foreach($row->charges as $charge)
+                        <br/><small>{{ $document->currency_type->symbol}} {{ $charge->amount}} ({{ $charge->factor * 100 }}%) {{$charge->description }}</small>
+                    @endforeach
+                @endif
+                
                 @if($document->has_prepayment)
                     <br>
                     *** Pago Anticipado ***
@@ -421,16 +428,23 @@
         @endif
 
         @if($document->total_charge > 0)
-            @php
-                $total_factor = 0;
-                foreach($document->charges as $charge) {
-                    $total_factor = ($total_factor + $charge->factor) * 100;
-                }
-            @endphp
-            <tr>
-                <td colspan="4" class="text-right font-bold desc">CARGOS ({{$total_factor}}%): {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold desc">{{ number_format($document->total_charge, 2) }}</td>
-            </tr>
+            @if($document->charges)
+                @php
+                    $total_factor = 0;
+                    foreach($document->charges as $charge) {
+                        $total_factor = ($total_factor + $charge->factor) * 100;
+                    }
+                @endphp
+                <tr>
+                    <td colspan="4" class="text-right font-bold desc">CARGOS ({{$total_factor}}%): {{ $document->currency_type->symbol }}</td>
+                    <td class="text-right font-bold desc">{{ number_format($document->total_charge, 2) }}</td>
+                </tr>
+            @else
+                <tr>
+                    <td colspan="4" class="text-right font-bold desc">CARGOS: {{ $document->currency_type->symbol }}</td>
+                    <td class="text-right font-bold desc">{{ number_format($document->total_charge, 2) }}</td>
+                </tr>
+            @endif
         @endif
 
         <tr>

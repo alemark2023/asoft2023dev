@@ -461,6 +461,12 @@
                     @endforeach
                 @endif
 
+                @if($row->charges)
+                    @foreach($row->charges as $charge)
+                        <br/><span style="font-size: 9px">{{ $document->currency_type->symbol}} {{ $charge->amount}} ({{ $charge->factor * 100 }}%) {{$charge->description }}</span>
+                    @endforeach
+                @endif
+
                 @if($row->item->is_set == 1)
                 <br>
                 @inject('itemSet', 'App\Services\ItemSetService')
@@ -607,16 +613,23 @@
         @endif
 
         @if($document->total_charge > 0)
-            @php
-                $total_factor = 0;
-                foreach($document->charges as $charge) {
-                    $total_factor = ($total_factor + $charge->factor) * 100;
-                }
-            @endphp
-            <tr>
-                <td colspan="8" class="text-right font-bold">CARGOS ({{$total_factor}}%): {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_charge, 2) }}</td>
-            </tr>
+            @if($document->charges)
+                @php
+                    $total_factor = 0;
+                    foreach($document->charges as $charge) {
+                        $total_factor = ($total_factor + $charge->factor) * 100;
+                    }
+                @endphp
+                <tr>
+                    <td colspan="8" class="text-right font-bold">CARGOS ({{$total_factor}}%): {{ $document->currency_type->symbol }}</td>
+                    <td class="text-right font-bold">{{ number_format($document->total_charge, 2) }}</td>
+                </tr>
+            @else
+                <tr>
+                    <td colspan="8" class="text-right font-bold">CARGOS: {{ $document->currency_type->symbol }}</td>
+                    <td class="text-right font-bold">{{ number_format($document->total_charge, 2) }}</td>
+                </tr>
+            @endif
         @endif
 
         @if($document->perception)
