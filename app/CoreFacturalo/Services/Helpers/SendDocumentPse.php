@@ -62,7 +62,6 @@ class SendDocumentPse
      */
     public function signXml($xmlUnsigned, $document)
     {
-        // dd($this->company->url_signature_pse);
 
         $params = [
             'cliente_id' => $this->company->client_id_pse,
