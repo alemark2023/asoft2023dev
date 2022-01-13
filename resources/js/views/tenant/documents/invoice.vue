@@ -1405,6 +1405,7 @@
             :showDialog.sync="showDialogDocumentDetraction"
             :total="form.total"
             :isUpdateDocument="isUpdateDocument"
+            :detractionDecimalQuantity="detractionDecimalQuantity"
             @addDocumentDetraction="addDocumentDetraction"></document-detraction>
     </div>
 </template>
@@ -1574,6 +1575,9 @@ export default {
         },
         isCreditPaymentCondition: function () {
             return ['02', '03'].includes(this.form.payment_condition_id)
+        },
+        detractionDecimalQuantity: function () {
+            return (this.configuration.detraction_amount_rounded_int) ? 0 : 2
         },
     },
     async created() {
@@ -2709,16 +2713,19 @@ export default {
         async changeDetractionType() {
 
             if (this.form.detraction) {
-                // this.form.detraction.amount = (this.form.currency_type_id == 'PEN') ? _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage) / 100), 2) : _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage) / 100), 2)
 
                 if (this.form.currency_type_id == 'PEN') {
 
-                    this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage) / 100), 2)
+                    // this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage) / 100), 2)
+                    this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage) / 100), this.detractionDecimalQuantity)
+                    
                     this.form.total_pending_payment = this.form.total - this.form.detraction.amount
 
                 } else {
 
-                    this.form.detraction.amount = _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage) / 100), 2)
+                    // this.form.detraction.amount = _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage) / 100), 2)
+                    this.form.detraction.amount = _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage) / 100), this.detractionDecimalQuantity)
+                    
                     this.form.total_pending_payment = _.round(this.form.total - (this.form.detraction.amount / this.form.exchange_rate_sale), 2)
 
                 }

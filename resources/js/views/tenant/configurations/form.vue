@@ -452,7 +452,6 @@
                     <el-tab-pane class="mb-3" name="third">
                         <span slot="label">Contable</span>
                         <div class="row">
-                            <div class="col-md-2"></div>
                             <div v-if="typeUser != 'integrator'"
                                     class="col-md-4 mt-4">
                                 <label class="control-label">Impuesto bolsa plástica</label>
@@ -469,6 +468,9 @@
                                             v-text="errors.amount_plastic_bag_taxes[0]"></small>
                                 </div>
                             </div>
+
+                            <div class="col-md-2"></div>
+
                             <!-- <div class="col-md-4" v-if="typeUser != 'integrator'"> <br>
                                 <label class="control-label">Cantidad de columnas en productos</label>
                                 <div class="form-group" :class="{'has-danger': errors.amount_plastic_bag_taxes}">
@@ -636,6 +638,29 @@
                                     <small v-if="errors.name_product_pdf_to_xml"
                                             class="form-control-feedback"
                                             v-text="errors.name_product_pdf_to_xml[0]"></small>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Redondear monto de detracción a valor entero
+                                    <el-tooltip
+                                        class="item"
+                                        content="Disponible Nuevo CPE (Facturas/Boletas)"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.detraction_amount_rounded_int}"
+                                        class="form-group">
+                                    <el-switch v-model="form.detraction_amount_rounded_int"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.detraction_amount_rounded_int"
+                                            class="form-control-feedback"
+                                            v-text="errors.detraction_amount_rounded_int[0]"></small>
                                 </div>
                             </div>
 
@@ -1193,6 +1218,7 @@ export default {
                 set_address_by_establishment: false,
                 permission_to_edit_cpe: false,
                 name_product_pdf_to_xml:false,
+                detraction_amount_rounded_int:false,
             };
         },
         UpdateFormPurchase(e) {
