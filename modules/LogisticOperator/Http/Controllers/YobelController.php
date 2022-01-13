@@ -374,14 +374,16 @@
 
 
             $log = new LogisticYobelApi([
-                'logistic_yobel_id' => 0,
-                'command' => 'webServiceConfPedido',
+                'logistic_yobel_id' => 1,
+                'command' => 'webServiceConfPedido - omite el 1',
                 'yobel_response' => json_encode($data),
                 'yobel_send' => '',
                 'status' => 0,
                 'last_check' => $now,
             ]);
-            $log->push();
+
+             $log->push();
+
 
 
 
