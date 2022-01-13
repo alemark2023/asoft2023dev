@@ -141,7 +141,7 @@
 
 <script>
     export default {
-        props: ['showDialog', 'detraction','total', 'currencyTypeIdActive', 'operationTypeId', 'exchangeRateSale', 'isUpdateDocument'],
+        props: ['showDialog', 'detraction','total', 'currencyTypeIdActive', 'operationTypeId', 'exchangeRateSale', 'isUpdateDocument', 'detractionDecimalQuantity'],
         data() {
             return {
                 headers: headers_token,
@@ -184,8 +184,15 @@
                 if(detraction_type){
 
                     this.detraction.percentage = detraction_type.percentage
-                    this.detraction.amount = (this.currencyTypeIdActive == 'PEN') ? _.round(parseFloat(this.total) * (detraction_type.percentage/100),2): _.round((parseFloat(this.total) * this.exchangeRateSale) * (detraction_type.percentage/100),2)
-                    // console.log(detraction_type, this.form.detraction)
+                    // this.detraction.amount = (this.currencyTypeIdActive == 'PEN') ? _.round(parseFloat(this.total) * (detraction_type.percentage/100),2): _.round((parseFloat(this.total) * this.exchangeRateSale) * (detraction_type.percentage/100),2)
+
+                    if(this.currencyTypeIdActive == 'PEN')
+                    {
+                        this.detraction.amount = _.round(parseFloat(this.total) * (detraction_type.percentage/100), this.detractionDecimalQuantity)
+                    }else
+                    {
+                        this.detraction.amount = _.round((parseFloat(this.total) * this.exchangeRateSale) * (detraction_type.percentage/100), this.detractionDecimalQuantity)
+                    }
 
                 }
             },
