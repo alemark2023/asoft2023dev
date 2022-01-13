@@ -664,20 +664,38 @@ class DocumentController extends Controller
             SaleNote::where('id', $request->sale_note_id)
                 ->update(['document_id' => $documentId]);
         }
+        
+        //notas de venta relacionadas cuando se genera cpe desde multiples nv
         $notes = $request->sale_notes_relateds;
+
         if ($notes) {
+
             foreach ($notes as $note) {
-                $noteArray = explode('-', $note);
-                if (count($noteArray) === 2) {
-                    $sale_note = SaleNote::where([
-                                                     'series'=> $noteArray[0],
-                                                     'number'=> $noteArray[1],
-                                                 ])->first();
+
+                $sale_note_id = $note['id'] ?? null;
+
+                if ($sale_note_id) {
+
+                    $sale_note = SaleNote::find($sale_note_id);
+
                     if(!empty($sale_note)) {
                         $sale_note->document_id = $documentId;
                         $sale_note->push();
                     }
+
                 }
+
+                // $noteArray = explode('-', $note);
+                // if (count($noteArray) === 2) {
+                //     $sale_note = SaleNote::where([
+                //                                      'series'=> $noteArray[0],
+                //                                      'number'=> $noteArray[1],
+                //                                  ])->first();
+                //     if(!empty($sale_note)) {
+                //         $sale_note->document_id = $documentId;
+                //         $sale_note->push();
+                //     }
+                // }
             }
         }
     }

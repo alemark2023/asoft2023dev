@@ -247,6 +247,8 @@
             'send_to_pse',
             'response_signature_pse',
             'response_send_cdr_pse',
+
+            'sale_notes_relateds', //generar cpe desde multiples notas de venta
         ];
 
         protected $casts = [
@@ -1118,5 +1120,25 @@
         {
             $this->attributes['response_signature_pse'] = (is_null($value)) ? null : json_encode($value);
         }
+        
+        /**
+         * registros asociados cuando se genera cpe desde multiples notas de venta
+         *
+         * @param $value
+         */
+        public function getSaleNotesRelatedsAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
 
+        /**
+         * registros asociados cuando se genera cpe desde multiples notas de venta
+         *
+         * @param $value
+         */
+        public function setSaleNotesRelatedsAttribute($value)
+        {
+            $this->attributes['sale_notes_relateds'] = (is_null($value)) ? null : json_encode($value);
+        }
+        
     }

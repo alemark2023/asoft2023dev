@@ -130,6 +130,12 @@ export default {
     };
   },
   methods: {
+    getObjectForNote(data){
+      return {
+        number_full : `${data.series}-${data.number}`,
+        id : data.id,
+      }
+    },
     onFetchNoteItems() {
       if (this.form.selecteds.length === 0) {
         this.$message({
@@ -152,7 +158,8 @@ export default {
             const notes = [];
             this.notes.map((d) => {
               if (d.selected) {
-                notes.push(`${d.series}-${d.number}`);
+                // notes.push(`${d.series}-${d.number}`);
+                notes.push(this.getObjectForNote(d))
               }
             });
             const items = response.data.data;
@@ -201,7 +208,8 @@ export default {
             const notes = [];
             this.notes.map((d) => {
               if (d.selected) {
-                notes.push(`${d.series}-${d.number}`);
+                // notes.push(`${d.series}-${d.number}`);
+                notes.push(this.getObjectForNote(d))
               }
             });
 

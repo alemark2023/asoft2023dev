@@ -42,7 +42,7 @@ class InventoryVoidedServiceProvider extends ServiceProvider
 
                             $this->createInventoryKardex($document, $detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
 
-                            if(!$detail->document->sale_note_id && !$detail->document->order_note_id && !$detail->document->dispatch_id){
+                            if(!$detail->document->sale_note_id && !$detail->document->order_note_id && !$detail->document->dispatch_id && !$detail->document->sale_notes_relateds){
 
                                 $this->updateStock($detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
 
