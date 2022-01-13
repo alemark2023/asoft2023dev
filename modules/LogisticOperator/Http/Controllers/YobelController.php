@@ -276,8 +276,8 @@
 
 
             $log = new LogisticYobelApi([
-                'logistic_yobel_id' => 0,
-                'command' => 'webServiceConfEmarque',
+                'logistic_yobel_id' => 1,
+                'command' => 'webServiceConfEmarque - omitr 1',
                 'yobel_response' => json_encode($data),
                 'yobel_send' => '',
                 'status' => 0,
