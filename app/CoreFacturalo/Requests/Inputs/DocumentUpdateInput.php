@@ -31,7 +31,8 @@ class DocumentUpdateInput
 		$offline_configuration = OfflineConfiguration::firstOrFail();
 
 		$establishment = EstablishmentInput::set($inputs['establishment_id']);
-		$customer = PersonInput::set($inputs['customer_id']);
+		// $customer = PersonInput::set($inputs['customer_id']);
+		$customer = PersonInput::set($inputs['customer_id'], isset($inputs['customer_address_id']) ? $inputs['customer_address_id'] : null);
 
 		if (in_array($document_type_id, ['01', '03'])) {
 			$array_partial = self::invoice($inputs);
