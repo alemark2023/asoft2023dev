@@ -1949,7 +1949,8 @@ export default {
         },
         async prepareDataDetraction() {
 
-            this.has_data_detraction = (this.form.detraction) ? true : false
+            // this.has_data_detraction = (this.form.detraction) ? true : false
+            this.has_data_detraction = !_.isEmpty(this.form.detraction)
 
             if (this.has_data_detraction) {
 
