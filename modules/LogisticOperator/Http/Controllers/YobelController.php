@@ -266,6 +266,8 @@
             \Log::debug("Datos de yobel \n\n".var_export($data,true));
             $err = [
                 'success' => false,
+                'resultado'=>0,
+                'mensaje' => '',
                 'message' => ''
             ];
             $seguridad = $data['Seguridad'] ?? [];
@@ -293,6 +295,7 @@
                 empty($password)
             ) {
                 $err['message'] = 'No se encuentra la compañia COD-555';
+                $err['mensaje'] = 'No se encuentra la compañia COD-555';
                 return $err;
             }
 
@@ -303,6 +306,7 @@
 
             if (empty($yobel)) {
                 $err['message'] = 'No se encuentra la compañia';
+                $err['mensaje'] = 'No se encuentra la compañia';
                 return $err;
             }
 
@@ -318,6 +322,7 @@
                 $logiscti = LogisticYobel::where('EMBNRO', $CEMEMB)->first();
                 if (empty($logiscti)) {
                     $err['message'] = 'No se ha encontrado el embarque ' . $CEMEMB;
+                    $err['mensaje'] = 'No se ha encontrado el embarque ' . $CEMEMB;
                     return $err;
                 }
                 $itemYobel = $logiscti->items;
@@ -347,12 +352,16 @@
 
             } else {
                 $err['message'] = 'Hay datos para el embarque ' . $CEMEMB;
+                $err['mensaje'] = 'Hay datos para el embarque ' . $CEMEMB;
 
                 return $err;
             }
             return [
                 'data'=>$data,
                 'success'=>true,
+                'resultado'=>1,
+
+                'mensaje'=>"Se ha confirmado el embarque $CEMEMB",
                 'message'=>"Se ha confirmado el embarque $CEMEMB",
             ];
 
@@ -364,6 +373,8 @@
             \Log::debug("Datos de yobel \n\n".var_export($data,true));
             $err = [
                 'success' => false,
+                'resultado'=>0,
+                'mensaje' => '',
                 'message' => ''
             ];
             $seguridad = $data['Seguridad'] ?? [];
@@ -393,6 +404,7 @@
                 empty($password)
             ) {
                 $err['message'] = 'No se encuentra la compañia COD-555';
+                $err['mensaje'] = 'No se encuentra la compañia COD-555';
                 return $err;
             }
 
@@ -403,6 +415,7 @@
 
             if (empty($yobel)) {
                 $err['message'] = 'No se encuentra la compañia';
+                $err['mensaje'] = 'No se encuentra la compañia';
                 return $err;
             }
 
@@ -415,6 +428,7 @@
                 $logiscti = LogisticYobel::where('order', $CPINRO)->first();
                 if (empty($logiscti)) {
                     $err['message'] = 'No se ha encontrado el pedido ' . $CPINRO;
+                    $err['mensaje'] = 'No se ha encontrado el pedido ' . $CPINRO;
                     return $err;
                 }
                 $itemYobel = $logiscti->items;
@@ -444,12 +458,15 @@
 
             } else {
                 $err['message'] = 'Hay datos para el pedido ' . $CPINRO;
+                $err['mensaje'] = 'Hay datos para el pedido ' . $CPINRO;
 
                 return $err;
             }
             return [
                 'data'=>$data,
                 'success'=>true,
+                'resultado'=>1,
+                'mensaje'=>"Se ha confirmado el pedido $CPINRO",
                 'message'=>"Se ha confirmado el pedido $CPINRO",
             ];
 
