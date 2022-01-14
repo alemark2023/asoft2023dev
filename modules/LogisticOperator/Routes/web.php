@@ -48,8 +48,8 @@
                     });
             });
             Route::prefix('yobel/webservice')->group(function () {
-                Route::post('confEmbarque', 'YobelController@webServiceConfEmarque');
-                Route::post('confPedido', 'YobelController@webServiceConfPedido');
+                Route::post('ConfEmbarque', 'YobelController@webServiceConfEmarque');
+                Route::post('ConfPedido', 'YobelController@webServiceConfPedido');
             });
         });
     }
