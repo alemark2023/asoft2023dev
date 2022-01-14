@@ -134,6 +134,7 @@ export default {
       return {
         number_full : `${data.series}-${data.number}`,
         id : data.id,
+        items : data.items,
       }
     },
     onFetchNoteItems() {
@@ -243,7 +244,16 @@ export default {
         .get(`/sale-notes/list-by-client`, { params })
         .then((response) => {
           this.notes = response.data.data.map((d) => {
+
             d.selected = false;
+
+            d.items = d.items.map((item)=>{
+              return {
+                id: item.id,
+                item_id: item.item_id,
+              }
+            })
+
             return d;
           });
         })

@@ -1572,12 +1572,12 @@ class SaleNoteController extends Controller
             'client_id' => 'required|numeric|min:1',
         ]);
         $clientId = $request->client_id;
-        $records = SaleNote::without(['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments'])
-            ->select('series', 'number', 'id', 'date_of_issue')
-            ->where('customer_id', $clientId)
-            ->whereNull('document_id')
-            ->whereIn('state_type_id', ['01', '03', '05'])
-			->orderBy('number', 'desc');
+        $records = SaleNote::without(['user', 'soap_type', 'state_type', 'currency_type', 'payments'])
+                            ->select('series', 'number', 'id', 'date_of_issue')
+                            ->where('customer_id', $clientId)
+                            ->whereNull('document_id')
+                            ->whereIn('state_type_id', ['01', '03', '05'])
+                            ->orderBy('number', 'desc');
 
         $dateOfIssue = $request->date_of_issue;
         if ($dateOfIssue) {

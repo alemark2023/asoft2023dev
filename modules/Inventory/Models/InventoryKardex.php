@@ -87,7 +87,21 @@ class InventoryKardex extends ModelTenant
 
         if($inventory_kardexable->sale_notes_relateds)
         {
-            $sale_note_asoc = collect($inventory_kardexable->sale_notes_relateds)->implode('number_full', ', ');
+            $data = [];
+
+            foreach ($inventory_kardexable->sale_notes_relateds as $sale_note) 
+            {
+                if(isset($sale_note->items)){
+                    
+                    $exist_sale_note = collect($sale_note->items)->where('item_id', $this->item_id)->first();
+    
+                    if($exist_sale_note) $data [] = $sale_note->number_full;
+                }
+            }
+
+            // $sale_note_asoc = collect($inventory_kardexable->sale_notes_relateds)->implode('number_full', ', ');
+            $sale_note_asoc = count($data) > 0 ? implode(', ', $data) : '-';
+
         }
 
         return $sale_note_asoc;
