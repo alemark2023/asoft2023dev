@@ -2991,7 +2991,10 @@ export default {
                     row.affectation_igv_type_id === '20'  // 20,Exonerado - Operación Onerosa
                     // || row.affectation_igv_type_id === '21' // 21,Exonerado – Transferencia Gratuita
                 ) {
-                    total_exonerated += parseFloat(row.total_value)
+
+                    // total_exonerated += parseFloat(row.total_value)
+                    
+                    total_exonerated += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
 
                 if (
