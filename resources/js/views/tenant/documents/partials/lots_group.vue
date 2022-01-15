@@ -101,9 +101,9 @@ export default {
                 this.lots_group_[index].checked = false;
             } else {
 
-                this.lots_group.forEach((row) => {
+                /*this.lots_group.forEach((row) => {
                     row.checked = false;
-                });
+                });*/
 
                 this.lots_group_.forEach((row) => {
                     row.checked = false;

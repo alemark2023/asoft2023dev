@@ -119,19 +119,103 @@ class InventoryKardexServiceProvider extends ServiceProvider
              */
             if (isset($document_item->item->IdLoteSelected)) {
                 if ($document_item->item->IdLoteSelected != null) {
-                    $lot = ItemLotsGroup::query()->find($document_item->item->IdLoteSelected);
-                    try {
-                        $quantity_unit = $document_item->item->presentation->quantity_unit;
-                    } catch (Exception $e) {
-                        $quantity_unit = 1;
+
+                    if(is_array($document_item->item->IdLoteSelected)) {
+
+                        
+                        try {
+                            $quantity_unit = $document_item->item->presentation->quantity_unit;
+                        } catch (Exception $e) {
+                            $quantity_unit = 1;
+                        }
+
+                        /*if ($document->document_type_id === '07') {
+                            $quantity = $lot1->quantity + ($quantity_unit * $document_item->quantity);
+                        } else {
+                            $quantity = $lot1->quantity - ($quantity_unit * $document_item->quantity);
+                        }*/
+
+                            $lotesSelecteds = $document_item->item->IdLoteSelected;
+                            $count = count($lotesSelecteds);
+                            $quantity =  $quantity_unit * $document_item->quantity;
+    
+                            for ($i = 0; $i < $count; $i++) {
+                               
+                                if ($quantity > 0) {
+
+                                    $idlote = $lotesSelecteds[$i];
+                                    $lot = ItemLotsGroup::query()->find($idlote);
+                                    
+                                    if ($i == $count - 1) {
+            
+                                        $lot->quantity = $quantity;
+                                        $lot->save();
+                                    }
+                                    else {
+                                        $lot->quantity = 0;
+                                        $lot->save();
+                                        $quantity -= $lot->quantity;
+                                    }
+                                }
+                            }
+
+                        if ($document->document_type_id === '07') {
+
+                            $lotesSelecteds = $document_item->item->IdLoteSelected;
+                            $count = count($lotesSelecteds);
+                            $quantity =  $quantity_unit * $document_item->quantity;
+    
+                            for ($i = 0; $i < $count; $i++) {
+                               
+                                if ($quantity > 0) {
+
+                                    $idlote = $lotesSelecteds[$i];
+                                    $lot = ItemLotsGroup::query()->find($idlote);
+                                    
+                                    if ($i == $count - 1) {
+            
+                                        $lot->quantity = $quantity;
+                                        $lot->save();
+            
+                                    }
+                                    else {
+                                        $lot->quantity = 0;
+                                        $lot->save();
+                                        $quantity -= $lot->quantity;
+                                    }
+
+
+                                }
+                               
+    
+                            }
+
+                        }
+
+
+
+
+
                     }
-                    if ($document->document_type_id === '07') {
-                        $quantity = $lot->quantity + ($quantity_unit * $document_item->quantity);
-                    } else {
-                        $quantity = $lot->quantity - ($quantity_unit * $document_item->quantity);
+                    else{
+
+                        $lot = ItemLotsGroup::query()->find($document_item->item->IdLoteSelected);
+                        try {
+                            $quantity_unit = $document_item->item->presentation->quantity_unit;
+                        } catch (Exception $e) {
+                            $quantity_unit = 1;
+                        }
+                        if ($document->document_type_id === '07') {
+                            $quantity = $lot->quantity + ($quantity_unit * $document_item->quantity);
+                        } else {
+                            $quantity = $lot->quantity - ($quantity_unit * $document_item->quantity);
+                        }
+
+                        $lot->quantity = $quantity;
+                        $lot->save();
                     }
-                    $lot->quantity = $quantity;
-                    $lot->save();
+
+                    
                 }
             }
 
