@@ -11,6 +11,15 @@
     >
         <div class="form-body">
             <div class="row">
+                <div class="col-md-6">
+                    <span>Si al seleccionar lotes la cantidad es mayor, el último lote quedara con la diferencia. </span>
+                </div>
+                <div class="col-md-6 text-right">
+                    <h5>Cant. Pedida: {{quantity}}</h5>
+                    <h5 v-bind:class="{ 'text-danger': (toAttend < 0) }">Por Atender: {{toAttend}}</h5>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-lg-5 col-md-5 col-sm-12 pb-2">
                     <el-input placeholder="Buscar código ..."
                         v-model="search"
@@ -27,12 +36,12 @@
                                 <th>Seleccionado</th>
                                 <th>codigo</th>
                                 <th>Cantidad</th>
-                                <th class>Fecha vencimiento</th>
+                                <th>Fecha vencimiento  <el-button icon="el-icon-d-caret" @click="orderData()" plain></el-button> </th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr
-                                v-for="(row, index) in lots_group_"
+                                v-for="(row, index) in lotsGroupOrdered"
                                 :key="index"
                                 v-show="row.quantity > 0"
                             >
@@ -72,18 +81,28 @@ export default {
             states: ["Activo", "Inactivo", "Desactivado", "Voz", "M2m"],
             idSelected: null,
             search: '',
-            lots_group_: []
+            lots_group_: [],
+            orderT: 'desc'
         };
     },
     async created() {
       
     },
     computed: {
+        lotsGroupOrdered() {
+            return _.orderBy(this.lots_group_, 'date_of_due', this.orderT)
+        },
         quantityCompleted(){
             return this.lots_group_.filter(x => x.checked == true).reduce((accum,item) => accum + Number(item.quantity), 0) >= this.quantity 
+        },
+        toAttend() {
+            return this.quantity - this.lots_group_.filter(x => x.checked == true).reduce((accum,item) => accum + Number(item.quantity), 0)
         }
     },
     methods: {
+        orderData() {
+            this.orderT =  this.orderT == 'desc' ? 'asc' : 'desc'
+        },
         filter(){
 
             if(this.search)
@@ -119,6 +138,12 @@ export default {
         },
 
         async submit() {
+
+            let sum = this.lots_group_.filter(x => x.checked == true).reduce((accum,item) => accum + Number(item.quantity), 0)
+            if(this.quantity > sum){
+                return this.$message.warning('Debe seleccionar lotes para cumplir con la cantidad pedida.');
+            }
+
             await this.$emit("addRowLotGroup", this.idSelected);
             await this.$emit("update:showDialog", false);
         },
