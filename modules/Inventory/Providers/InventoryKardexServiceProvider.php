@@ -122,32 +122,26 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
                     if(is_array($document_item->item->IdLoteSelected)) {
 
-                        
+
                         try {
                             $quantity_unit = $document_item->item->presentation->quantity_unit;
                         } catch (Exception $e) {
                             $quantity_unit = 1;
                         }
 
-                        /*if ($document->document_type_id === '07') {
-                            $quantity = $lot1->quantity + ($quantity_unit * $document_item->quantity);
-                        } else {
-                            $quantity = $lot1->quantity - ($quantity_unit * $document_item->quantity);
-                        }*/
-
                             $lotesSelecteds = $document_item->item->IdLoteSelected;
                             $count = count($lotesSelecteds);
                             $quantity =  $quantity_unit * $document_item->quantity;
-    
+
                             for ($i = 0; $i < $count; $i++) {
-                               
+
                                 if ($quantity > 0) {
 
                                     $idlote = $lotesSelecteds[$i];
                                     $lot = ItemLotsGroup::query()->find($idlote);
-                                    
+
                                     if ($i == $count - 1) {
-            
+
                                         $lot->quantity = $quantity;
                                         $lot->save();
                                     }
@@ -164,30 +158,13 @@ class InventoryKardexServiceProvider extends ServiceProvider
                             $lotesSelecteds = $document_item->item->IdLoteSelected;
                             $count = count($lotesSelecteds);
                             $quantity =  $quantity_unit * $document_item->quantity;
-    
+
                             for ($i = 0; $i < $count; $i++) {
-                               
-                                if ($quantity > 0) {
 
-                                    $idlote = $lotesSelecteds[$i];
-                                    $lot = ItemLotsGroup::query()->find($idlote);
-                                    
-                                    if ($i == $count - 1) {
-            
-                                        $lot->quantity = $quantity;
-                                        $lot->save();
-            
-                                    }
-                                    else {
-                                        $lot->quantity = 0;
-                                        $lot->save();
-                                        $quantity -= $lot->quantity;
-                                    }
-
-
-                                }
-                               
-    
+                                $idlote = $lotesSelecteds[$i];
+                                $lot = ItemLotsGroup::query()->find($idlote);
+                                $lot->quantity = $lot->old_quantity;
+                                $lot->save();
                             }
 
                         }
@@ -215,7 +192,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
                         $lot->save();
                     }
 
-                    
+
                 }
             }
 
