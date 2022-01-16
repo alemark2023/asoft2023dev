@@ -38,9 +38,9 @@
                             >
                                 <th align="center">
                                     <el-checkbox
-                                        :disabled="row.quantity  < 0"
+                                        :disabled="quantityCompleted && row.checked == false"
                                         v-model="row.checked"
-                                        @change="changeSelect(index, row.id, row.quantity)"
+                                        @change="changeSelect($event, index)"
                                     ></el-checkbox>
                                 </th>
                                 <th>{{ row.code }}</th>
@@ -76,12 +76,12 @@ export default {
         };
     },
     async created() {
-        // await this.$http.get(`/pos/payment_tables`)
-        //     .then(response => {
-        //         this.payment_method_types = response.data.payment_method_types
-        //         this.cards_brand = response.data.cards_brand
-        //         this.clickAddLot()
-        //     })
+      
+    },
+    computed: {
+        quantityCompleted(){
+            return this.lots_group_.filter(x => x.checked == true).reduce((accum,item) => accum + Number(item.quantity), 0) >= this.quantity 
+        }
     },
     methods: {
         filter(){
@@ -94,24 +94,18 @@ export default {
                 this.lots_group_ = this.lots_group
             }
         },
-        changeSelect(index, id, quantity_lot) {
+        changeSelect(event, index) {
+            /*if(this.quantityCompleted) {
+                this.$message.warning('La cantidad está completada');
+            }*/
 
-            if (this.quantity > quantity_lot) {
-                this.$message.error('La cantidad a vender es superior al stock');
-                this.lots_group_[index].checked = false;
-            } else {
+            this.lots_group_[index].checked = event
+            this.idSelected = this.lots_group_.filter(x => x.checked == true).map( x => x.id);
 
-                /*this.lots_group.forEach((row) => {
-                    row.checked = false;
-                });*/
+            let sum = this.lots_group_.filter(x => x.checked == true).reduce((accum,item) => accum + Number(item.quantity), 0)
 
-                this.lots_group_.forEach((row) => {
-                    row.checked = false;
-                });
-
-                this.lots_group_[index].checked = true;
-
-                this.idSelected = id;
+            if (sum >= this.quantity) {
+                this.$message.warning('La cantidad está completada.');
             }
 
         },
