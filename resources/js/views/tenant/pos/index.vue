@@ -937,6 +937,20 @@
 .el-input-group__append {
     padding: 0 10px !important;
 }
+
+@media only screen and (max-width: 767px)
+{
+    #main-wrapper {
+        padding-top: 175px;
+    }
+}
+@media (max-width: 767px)
+{
+    .page-header {
+        margin: 0px 0px 5px 0px;
+    }
+}
+
 </style>
 
 <script>
