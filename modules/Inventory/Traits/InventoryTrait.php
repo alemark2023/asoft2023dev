@@ -537,7 +537,7 @@ trait InventoryTrait
             $factor = 1;
             $warehouse = $this->findWarehouse();
             $this->createInventoryKardex($document_item->document, $ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
-            if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id) $this->updateStock($ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
+            if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->sale_notes_relateds) $this->updateStock($ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
         }
     }
     /**
@@ -643,6 +643,7 @@ trait InventoryTrait
         $item_warehouse->stock = $item_warehouse->stock + $quantity;
         $item_warehouse->save();
     }
+
     /**
      * Al borrar item, se descuenta el stock
      * @param DocumentItem $document_item
@@ -655,16 +656,21 @@ trait InventoryTrait
         $presentationQuantity = (!empty($document_item->item->presentation)) ? $document_item->item->presentation->quantity_unit : 1;
         $document = $document_item->document;
         $warehouse = ($document_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($document_item->warehouse_id)->establishment_id) : $this->findWarehouse();
+
         $this->createInventoryKardex($document_item->document, $document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
-        if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->dispatch_id) {
+
+        if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->dispatch_id && !$document_item->document->sale_notes_relateds) 
+        {
             $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
-        } else {
+        } else
+        {
             if ($document_item->document->dispatch) {
                 if (!$document_item->document->dispatch->transfer_reason_type->discount_stock) {
                     $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
                 }
             }
         }
+
     }
 
 

@@ -1862,6 +1862,8 @@ export default {
             this.form.legends = [];
             // this.form.detraction = data.detraction;
             this.form.detraction = data.detraction ? data.detraction : {}
+            
+            this.form.sale_notes_relateds = data.sale_notes_relateds ? data.sale_notes_relateds : null
 
             this.form.affectation_type_prepayment = data.affectation_type_prepayment;
             this.form.purchase_order = data.purchase_order;

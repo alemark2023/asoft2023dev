@@ -247,6 +247,8 @@
             'send_to_pse',
             'response_signature_pse',
             'response_send_cdr_pse',
+
+            'sale_notes_relateds', //generar cpe desde multiples notas de venta
         ];
 
         protected $casts = [
@@ -1120,12 +1122,32 @@
         }
         
         /**
+         * registros asociados cuando se genera cpe desde multiples notas de venta
+         *
+         * @param $value
+         */
+        public function getSaleNotesRelatedsAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+
+        /**
+         * registros asociados cuando se genera cpe desde multiples notas de venta
+         *
+         * @param $value
+         */
+        public function setSaleNotesRelatedsAttribute($value)
+        {
+            $this->attributes['sale_notes_relateds'] = (is_null($value)) ? null : json_encode($value);
+        }
+        
+        /**
          * 
          * Filtro para no incluir relaciones en consulta
          *
          * @param \Illuminate\Database\Eloquent\Builder $query
          * @return \Illuminate\Database\Eloquent\Builder
-         */
+         */  
         public function scopeWhereFilterWithOutRelations($query)
         {
             return $query->withOut([
@@ -1142,6 +1164,5 @@
                 'fee'
             ]);
         }
-        
 
     }
