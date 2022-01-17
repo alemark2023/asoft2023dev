@@ -1930,15 +1930,34 @@ export default {
                 this.clickAddInitGuides();
             }
 
-            this.reloadDataCustomers(this.form.customer_id)
+            await this.reloadDataCustomers(this.form.customer_id)
 
             this.establishment = data.establishment;
 
             this.changeDateOfIssue();
-            this.filterCustomers();
+            // await this.filterCustomers();
             this.updateChangeDestinationSale();
+            
+            this.prepareDataCustomer()
+
             this.calculateTotal();
             // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+        },
+        async prepareDataCustomer(){
+            
+            this.customer_addresses = [];
+            let customer = await _.find(this.customers, {'id': this.form.customer_id})
+            this.customer_addresses = customer.addresses
+
+            this.form.customer_address_id = this.form.customer ? this.form.customer.address_id : null
+
+            if (customer.address) {
+                this.customer_addresses.unshift({
+                    id: null,
+                    address: customer.address
+                })
+            }
+
         },
         prepareDataRetention() {
 
@@ -1951,7 +1970,8 @@ export default {
         },
         async prepareDataDetraction() {
 
-            this.has_data_detraction = (this.form.detraction) ? true : false
+            // this.has_data_detraction = (this.form.detraction) ? true : false
+            this.has_data_detraction = !_.isEmpty(this.form.detraction)
 
             if (this.has_data_detraction) {
 
@@ -2993,7 +3013,10 @@ export default {
                     row.affectation_igv_type_id === '20'  // 20,Exonerado - Operación Onerosa
                     // || row.affectation_igv_type_id === '21' // 21,Exonerado – Transferencia Gratuita
                 ) {
-                    total_exonerated += parseFloat(row.total_value)
+
+                    // total_exonerated += parseFloat(row.total_value)
+                    
+                    total_exonerated += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
 
                 if (
@@ -3439,18 +3462,21 @@ export default {
         close() {
             location.href = (this.is_contingency) ? `/contingencies` : `/${this.resource}`
         },
-        reloadDataCustomers(customer_id) {
+        async reloadDataCustomers(customer_id) {
             // this.$http.get(`/${this.resource}/table/customers`).then((response) => {
             //     this.customers = response.data
             //     this.form.customer_id = customer_id
             // })
-            this.$http.get(`/${this.resource}/search/customer/${customer_id}`).then((response) => {
+            await this.$http.get(`/${this.resource}/search/customer/${customer_id}`).then((response) => {
                 this.customers = response.data.customers
                 this.form.customer_id = customer_id
             })
         },
         changeCustomer() {
+
             this.customer_addresses = [];
+            this.form.customer_address_id = null;
+
             let customer = _.find(this.customers, {'id': this.form.customer_id});
             this.customer_addresses = customer.addresses;
             if (customer.address) {
