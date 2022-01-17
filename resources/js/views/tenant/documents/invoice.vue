@@ -1928,15 +1928,34 @@ export default {
                 this.clickAddInitGuides();
             }
 
-            this.reloadDataCustomers(this.form.customer_id)
+            await this.reloadDataCustomers(this.form.customer_id)
 
             this.establishment = data.establishment;
 
             this.changeDateOfIssue();
-            this.filterCustomers();
+            // await this.filterCustomers();
             this.updateChangeDestinationSale();
+            
+            this.prepareDataCustomer()
+
             this.calculateTotal();
             // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+        },
+        async prepareDataCustomer(){
+            
+            this.customer_addresses = [];
+            let customer = await _.find(this.customers, {'id': this.form.customer_id})
+            this.customer_addresses = customer.addresses
+
+            this.form.customer_address_id = this.form.customer ? this.form.customer.address_id : null
+
+            if (customer.address) {
+                this.customer_addresses.unshift({
+                    id: null,
+                    address: customer.address
+                })
+            }
+
         },
         prepareDataRetention() {
 
@@ -3441,18 +3460,21 @@ export default {
         close() {
             location.href = (this.is_contingency) ? `/contingencies` : `/${this.resource}`
         },
-        reloadDataCustomers(customer_id) {
+        async reloadDataCustomers(customer_id) {
             // this.$http.get(`/${this.resource}/table/customers`).then((response) => {
             //     this.customers = response.data
             //     this.form.customer_id = customer_id
             // })
-            this.$http.get(`/${this.resource}/search/customer/${customer_id}`).then((response) => {
+            await this.$http.get(`/${this.resource}/search/customer/${customer_id}`).then((response) => {
                 this.customers = response.data.customers
                 this.form.customer_id = customer_id
             })
         },
         changeCustomer() {
+
             this.customer_addresses = [];
+            this.form.customer_address_id = null;
+
             let customer = _.find(this.customers, {'id': this.form.customer_id});
             this.customer_addresses = customer.addresses;
             if (customer.address) {
