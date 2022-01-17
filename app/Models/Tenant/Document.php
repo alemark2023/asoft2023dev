@@ -1118,5 +1118,30 @@
         {
             $this->attributes['response_signature_pse'] = (is_null($value)) ? null : json_encode($value);
         }
+        
+        /**
+         * 
+         * Filtro para no incluir relaciones en consulta
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public function scopeWhereFilterWithOutRelations($query)
+        {
+            return $query->withOut([
+                'user',
+                'soap_type',
+                'state_type',
+                'document_type',
+                'currency_type',
+                'group',
+                'items',
+                'invoice',
+                'note',
+                'payments',
+                'fee'
+            ]);
+        }
+        
 
     }

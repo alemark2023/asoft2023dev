@@ -538,6 +538,7 @@
             :itemId="form.item_id"
             :lots="lots"
             :showDialog.sync="showDialogSelectLots"
+            :quantity="form.quantity"
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
 
