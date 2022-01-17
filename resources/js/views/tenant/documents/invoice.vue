@@ -1933,10 +1933,10 @@ export default {
             this.establishment = data.establishment;
 
             this.changeDateOfIssue();
-            await this.filterCustomers();
+            // await this.filterCustomers();
             this.updateChangeDestinationSale();
             
-            await this.prepareDataCustomer()
+            this.prepareDataCustomer()
 
             this.calculateTotal();
             // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
@@ -1945,20 +1945,15 @@ export default {
             
             this.customer_addresses = [];
             let customer = await _.find(this.customers, {'id': this.form.customer_id})
-            console.log(customer, this.customers)
-            // this.customer_addresses = customer.addresses
+            this.customer_addresses = customer.addresses
 
-            if(customer){
+            this.form.customer_address_id = this.form.customer ? this.form.customer.address_id : null
 
-                this.form.customer_address_id = this.form.customer ? this.form.customer.address_id : null
-    
-                if (customer.address) {
-                    this.customer_addresses.unshift({
-                        id: null,
-                        address: customer.address
-                    })
-                }
-
+            if (customer.address) {
+                this.customer_addresses.unshift({
+                    id: null,
+                    address: customer.address
+                })
             }
 
         },
@@ -3476,7 +3471,10 @@ export default {
             })
         },
         changeCustomer() {
+
             this.customer_addresses = [];
+            this.form.customer_address_id = null;
+
             let customer = _.find(this.customers, {'id': this.form.customer_id});
             this.customer_addresses = customer.addresses;
             if (customer.address) {
