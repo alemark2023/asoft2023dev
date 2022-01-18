@@ -565,7 +565,7 @@
                 <td class="text-right font-bold">{{ number_format($document->total_exonerated, 2) }}</td>
             </tr>
         @endif
-        
+
         @if ($document->document_type_id === '07')
             @if($document->total_taxed >= 0)
             <tr>
@@ -590,21 +590,21 @@
             <td colspan="8" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
-        
+
         @if($document->total_isc > 0)
         <tr>
             <td colspan="8" class="text-right font-bold">ISC: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_isc, 2) }}</td>
         </tr>
         @endif
-        
+
         @if($document->total_discount > 0 && $document->subtotal > 0)
         <tr>
             <td colspan="8" class="text-right font-bold">SUBTOTAL: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->subtotal, 2) }}</td>
         </tr>
         @endif
-        
+
         @if($document->total_discount > 0)
             <tr>
                 <td colspan="8" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>

@@ -108,6 +108,7 @@
      * @property string|null $url_apiruc
      * @property string|null $token_apiruc
      * @property bool        $use_login_global
+     * @property bool|false  $show_terms_condition_pos
      * @package App\Models\Tenant
      * @mixin ModelTenant
      * @method static Builder|Configuration newModelQuery()
@@ -213,7 +214,7 @@
             'visual',
             'show_totals_on_cpe_list',
             'detraction_amount_rounded_int',
-
+            'show_terms_condition_pos',
         ];
 
         protected $casts = [
@@ -278,6 +279,7 @@
             'show_totals_on_cpe_list' => 'bool',
             'auto_print' => 'bool',
             'detraction_amount_rounded_int' => 'bool',
+            'show_terms_condition_pos' => 'bool',
         ];
 
         protected $hidden = [
@@ -451,7 +453,7 @@
                 'pos_cost_price' => $this->isPosCostPrice(),
                 'show_totals_on_cpe_list' => $this->isShowTotalsOnCpeList(),
                 'detraction_amount_rounded_int' => $this->detraction_amount_rounded_int,
-
+                'show_terms_condition_pos' => (bool)$this->show_terms_condition_pos,
             ];
         }
 

@@ -1025,7 +1025,8 @@
                                             class="form-control-feedback"
                                             v-text="errors.decimal_quantity[0]"></small>
                                 </div>
-                            </div><!-- impresion automatica en pos -->
+                            </div>
+                            <!-- impresion automatica en pos -->
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
                                     <label class="control-label">
@@ -1048,6 +1049,31 @@
                                         <small v-if="errors.auto_print"
                                                 class="form-control-feedback"
                                                 v-text="errors.auto_print[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 mt-4">
+                                <div class="form-group">
+                                    <label>
+                                        Mostrar términos y condiciones
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">
+                                                Añadir texto en el campo de términos y condiciones  (ventas) de la pestaña "PDF"
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.show_terms_condition_pos}"
+                                        class="form-group">
+                                        <el-switch v-model="form.show_terms_condition_pos"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                        <small v-if="errors.show_terms_condition_pos"
+                                            class="form-control-feedback"
+                                            v-text="errors.show_terms_condition_pos[0]"></small>
                                     </div>
                                 </div>
                             </div>

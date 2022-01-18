@@ -18,7 +18,7 @@
                 <h2>
                     <el-switch
                         v-model="search_item_by_barcode"
-                        active-text="Buscar con escaner de código de barras"
+                        active-text="Buscar con escáner de código de barras"
                         @change="changeSearchItemBarcode"
                     ></el-switch>
                 </h2>
@@ -1020,7 +1020,7 @@ export default {
             pagination: {},
             category_selected: "",
             focusClienteSelect: false,
-            itemUnitTypes: []
+            itemUnitTypes: [],
         };
     },
     async created() {
@@ -1522,8 +1522,13 @@ export default {
                     format_pdf: "a4"
                 },
                 reference_data: null,
-                is_print: true
+                is_print: true,
             };
+            console.log(this.configuration.show_terms_condition_pos);
+            if (this.configuration.show_terms_condition_pos) {
+
+                this.form.terms_condition = this.configuration.terms_condition_sale;
+            }
 
             this.initFormItem();
             this.changeDateOfIssue();

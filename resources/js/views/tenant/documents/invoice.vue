@@ -1862,7 +1862,7 @@ export default {
             this.form.legends = [];
             // this.form.detraction = data.detraction;
             this.form.detraction = data.detraction ? data.detraction : {}
-            
+
             this.form.sale_notes_relateds = data.sale_notes_relateds ? data.sale_notes_relateds : null
 
             this.form.affectation_type_prepayment = data.affectation_type_prepayment;
@@ -1937,14 +1937,14 @@ export default {
             this.changeDateOfIssue();
             // await this.filterCustomers();
             this.updateChangeDestinationSale();
-            
+
             this.prepareDataCustomer()
 
             this.calculateTotal();
             // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
         },
         async prepareDataCustomer(){
-            
+
             this.customer_addresses = [];
             let customer = await _.find(this.customers, {'id': this.form.customer_id})
             this.customer_addresses = customer.addresses
@@ -2740,14 +2740,14 @@ export default {
 
                     // this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage) / 100), 2)
                     this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage) / 100), this.detractionDecimalQuantity)
-                    
+
                     this.form.total_pending_payment = this.form.total - this.form.detraction.amount
 
                 } else {
 
                     // this.form.detraction.amount = _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage) / 100), 2)
                     this.form.detraction.amount = _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage) / 100), this.detractionDecimalQuantity)
-                    
+
                     this.form.total_pending_payment = _.round(this.form.total - (this.form.detraction.amount / this.form.exchange_rate_sale), 2)
 
                 }
@@ -3015,7 +3015,7 @@ export default {
                 ) {
 
                     // total_exonerated += parseFloat(row.total_value)
-                    
+
                     total_exonerated += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
 
