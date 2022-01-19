@@ -613,7 +613,9 @@
                             'code' => $row->code,
                             'quantity' => $row->quantity,
                             'date_of_due' => $row->date_of_due,
-                            'checked' => false
+                            'checked' => false,
+                            'compromise_quantity' => 0
+
                         ];
                     }),
                     'lot_code' => $row->lot_code,

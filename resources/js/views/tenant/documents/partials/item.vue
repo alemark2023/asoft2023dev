@@ -1218,7 +1218,7 @@ export default {
 
             if (this.form.item.lots_enabled) {
                 if (!this.form.IdLoteSelected)
-                    return this.$message.error('Debe seleccionar un lote.');
+                    return this.$message.error('Debe seleccionar lote.');
             }
             let extra = this.form.item.extra
 

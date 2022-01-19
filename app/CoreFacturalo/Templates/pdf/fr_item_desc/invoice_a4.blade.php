@@ -302,8 +302,13 @@
                 @else
                     {!!$row->item->description!!}
                 @endif
-                @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
-                <p style="font-size:8px"> LT:{{  $itemLotGroup->getLote($row->item->IdLoteSelected) }}</p>
+
+                @isset($row->item->IdLoteSelected)
+                    @foreach($row->item->IdLoteSelected as $it)
+                    <p style="font-size:8px"> LT:{{ $it->code }} / {{$it->compromise_quantity}}</p>
+                    @endforeach
+                @endisset
+               
 
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 <br/><span style="font-size: 9px">{{$row->m_item->name}}</span>
