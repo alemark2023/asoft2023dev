@@ -69,7 +69,7 @@
                             Placa
                         </th>
                         <th class="text-right">Acciones</th>
-                    <tr>
+                    </tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
                     <td class="text-right"  v-if="columns.seller_name.visible" >{{ row.seller_name }}</td>

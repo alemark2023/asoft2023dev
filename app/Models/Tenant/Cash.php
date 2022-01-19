@@ -127,4 +127,9 @@ class Cash extends ModelTenant
         ]);
     }
 
+    public function cash_documents_credit()
+    {
+        return $this->hasMany(CashDocumentCredit::class);
+    }
+
 }

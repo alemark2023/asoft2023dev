@@ -13,12 +13,15 @@ use App\Models\Tenant\DocumentItem;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\PurchaseItem;
 use App\Models\Tenant\SaleNoteItem;
+use App\Models\Tenant\Salenote;
+use App\Models\Tenant\Document;
 use App\Models\Tenant\User;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Pos\Models\CashTransaction;
+use App\Models\Tenant\CashDocumentCredit;
 
 /**
  * Class CashController
@@ -229,9 +232,45 @@ class CashController extends Controller
                                 ['user_id', auth()->user()->id],
                                 ['state', true],
                             ])->first();
+        
+        $payment_credit = false;
 
-        $cash->cash_documents()->updateOrCreate($request->all());
+        if($request->document_id) {
+            $document =  Document::find($request->document_id);
+                                            //credito
+            if($document->payment_condition_id == '02')  {
+                CashDocumentCredit::create([
+                    'cash_id' => $cash->id,
+                    'document_id' => $request->document_id
+                ]);
 
+                $payment_credit = true;
+            }
+        }
+        else if($request->sale_note_id) {
+            $document =  SaleNote::find($request->sale_note_id);
+                                                //credito
+             if($document->payment_method_type_id == '09')  {
+                CashDocumentCredit::create([
+                    'cash_id' => $cash->id,
+                    'sale_note_id' => $request->sale_note_id
+                ]);
+
+                $payment_credit = true;
+            }
+
+        }
+
+        if(!$payment_credit) {
+
+            $req = [
+                'document_id' => $request->document_id,
+                'sale_note_id' => $request->sale_note_id
+            ];
+
+            $cash->cash_documents()->updateOrCreate($req);
+        }
+        
         return [
             'success' => true,
             'message' => 'Venta con éxito',
