@@ -47,7 +47,7 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 
 [Manual de usuario](https://docs.google.com/document/d/1i7yKGy3rIvv9TrnwRWZifTuZMMnZ8dbWpqcjPZ3ClmE/edit "Clic")<br>
 [Manual de Tareas Programadas](https://docs.google.com/document/d/1Cu3Kpgv9HvMAV4fwVNbR-CFc0uTu_-qEVLT-MIuxBTQ/edit?usp=sharing "Clic")<br>
-[Manual de Cambio de Entorno](https://docs.google.com/document/d/1IBXczY4b1YvSnGdFlIklpb8HGlQcP1lN44rpXbtYyUc/edit "Clic")<br>
+[Manual de Cambio de Entorno (Usuario secundario)](https://docs.google.com/document/d/1IBXczY4b1YvSnGdFlIklpb8HGlQcP1lN44rpXbtYyUc/edit "Clic")<br>
 [Manual de Pruebas](https://docs.google.com/document/d/1ht9JS7VdXiZrPmsqe3Dz-325lN_qEHDVVbieYU4Kay8/edit "Clic")
 
 ## API
