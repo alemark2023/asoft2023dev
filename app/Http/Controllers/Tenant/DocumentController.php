@@ -234,7 +234,10 @@ class DocumentController extends Controller
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
         // $sellers = User::where('establishment_id',$establishment_id)->whereIn('type', ['seller', 'admin'])->orWhere('id', $userId)->get();
-        $sellers = User::getSellersToNvCpe($establishment_id,$userId);
+        $sellers = User::getSellersToNvCpe($establishment_id,$userId)
+            ->transform(function(User $row){
+                return $row->getCollectionData();
+            });
         $payment_method_types = $this->table('payment_method_types');
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
@@ -664,7 +667,7 @@ class DocumentController extends Controller
             SaleNote::where('id', $request->sale_note_id)
                 ->update(['document_id' => $documentId]);
         }
-        
+
         //notas de venta relacionadas cuando se genera cpe desde multiples nv
         $notes = $request->sale_notes_relateds;
 
@@ -1063,7 +1066,7 @@ class DocumentController extends Controller
     public function messageLockedEmission(){
 
         $exceed_limit = DocumentHelper::exceedLimitDocuments();
-        
+
         if($exceed_limit['success'])
         {
             return [

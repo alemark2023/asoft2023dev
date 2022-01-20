@@ -131,7 +131,7 @@
                         <th class="text-center"></th>
                         <th class="text-right" v-if="typeUser != 'integrator'">
                         </th>
-                    <tr>
+                    </tr>
                     <tr slot-scope="{ index, row }"
                         :class="{'text-danger': (row.state_type_id === '11'),
                             'text-warning': (row.state_type_id === '13'),

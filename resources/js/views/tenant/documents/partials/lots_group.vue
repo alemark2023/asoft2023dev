@@ -33,7 +33,8 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Seleccionado</th>
+                                <!--<th>Seleccionado</th>-->
+                                <th width="145">Comprometer</th>
                                 <th>codigo</th>
                                 <th>Cantidad</th>
                                 <th>Fecha vencimiento  <el-button icon="el-icon-d-caret" @click="orderData()" plain></el-button> </th>
@@ -45,12 +46,15 @@
                                 :key="index"
                                 v-show="row.quantity > 0"
                             >
-                                <th align="center">
+                                <!--<th align="center">
                                     <el-checkbox
                                         :disabled="quantityCompleted && row.checked == false"
                                         v-model="row.checked"
                                         @change="changeSelect($event, index)"
                                     ></el-checkbox>
+                                </th>-->
+                                <th>
+                                    <el-input-number v-model="row.compromise_quantity" v-bind:class="{ 'text-danger': (row.compromise_quantity > row.quantity) }" ></el-input-number>
                                 </th>
                                 <th>{{ row.code }}</th>
                                 <th class>{{ row.quantity }}</th>
@@ -96,7 +100,7 @@ export default {
             return this.lots_group_.filter(x => x.checked == true).reduce((accum,item) => accum + Number(item.quantity), 0) >= this.quantity 
         },
         toAttend() {
-            return this.quantity - this.lots_group_.filter(x => x.checked == true).reduce((accum,item) => accum + Number(item.quantity), 0)
+            return this.quantity - this.lots_group_.filter(x => x.compromise_quantity > 0).reduce((accum,item) => accum + Number(item.compromise_quantity), 0)
         }
     },
     methods: {
@@ -138,13 +142,29 @@ export default {
         },
 
         async submit() {
-
-            let sum = this.lots_group_.filter(x => x.checked == true).reduce((accum,item) => accum + Number(item.quantity), 0)
-            if(this.quantity > sum){
-                return this.$message.warning('Debe seleccionar lotes para cumplir con la cantidad pedida.');
+            
+            //validar cantidad comprometida igual a cantidad pedida
+            let compromise_quantity = this.lots_group_.filter(x => x.compromise_quantity > 0).reduce((accum,item) => accum + Number(item.compromise_quantity), 0)
+            if (compromise_quantity != this.quantity) {
+                return this.$message.warning('La suma de cantidades comprometidas de los lotes debe der igual a la cantidad pedida.');
             }
 
-            await this.$emit("addRowLotGroup", this.idSelected);
+            //validar cantridad comprometer en lote
+            const successValid = this.lots_group_.filter(x => x.compromise_quantity > 0).filter( x => x.compromise_quantity > x.quantity )
+            if(successValid.length) {
+                return this.$message.warning('La cantidades comprometida de un lote no debe sobrepasar su capacidad.');
+            }
+
+            const lots_selecteds = this.lots_group_.filter(x => x.compromise_quantity > 0).map(item => {
+                return {
+                    id: item.id,
+                    code: item.code,
+                    compromise_quantity: item.compromise_quantity,
+                    date_of_due: item.date_of_due,
+                }
+            })
+
+            await this.$emit("addRowLotGroup", lots_selecteds);
             await this.$emit("update:showDialog", false);
         },
 

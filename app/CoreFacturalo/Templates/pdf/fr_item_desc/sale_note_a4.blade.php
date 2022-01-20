@@ -132,6 +132,8 @@
             <td class="text-left">
                 {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
 
+              
+
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
@@ -151,13 +153,12 @@
 
             </td>
             <td class="text-center align-top">
-                @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
-                @php
-                    $lot_code = isset($row->item->lots_group) ? collect($row->item->lots_group)->first(function($row){ return $row->checked == true;}):null;
-                @endphp
-                {{
-                    $itemLotGroup->getLote($lot_code ? $lot_code->id : null)
-                }}
+
+                @isset($row->item->lots_group)
+                    @foreach($row->item->lots_group as $it)
+                    <p style="font-size:8px"> LT:{{ $it->code }} / {{$it->compromise_quantity}}</p>
+                    @endforeach
+                @endisset
 
             </td>
             <td class="text-center align-top">

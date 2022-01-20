@@ -933,6 +933,7 @@ class Item extends ModelTenant
                     'quantity'    => $lots_group->quantity,
                     'date_of_due' => $lots_group->date_of_due,
                     'checked'     => false,
+                    'compromise_quantity' => 0
                 ];
             }),
             'lots'           => $lots,
