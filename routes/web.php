@@ -659,7 +659,11 @@ if ($hostname) {
         });
     });
 } else {
-    Route::domain(env('APP_URL_ADMIN','APP_URL_BASE'))->group(function () {
+    $prefix = env('PREFIX_URL',null);
+    $prefix = !empty($prefix)?$prefix.".":'';
+    $app_url = $prefix. env('APP_URL_BASE');
+
+    Route::domain($app_url)->group(function () {
         Route::get('login', 'System\LoginController@showLoginForm')->name('login');
         Route::post('login', 'System\LoginController@login');
         Route::post('logout', 'System\LoginController@logout')->name('logout');
