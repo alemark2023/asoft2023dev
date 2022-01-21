@@ -48,7 +48,7 @@ if($hostname) {
 }
 else {
 
-    Route::domain(env('APP_URL_BASE'))->group(function() {
+    Route::domain(env('APP_URL_ADMIN','APP_URL_BASE'))->group(function() {
 
         Route::middleware('auth:admin')->group(function() {
 
