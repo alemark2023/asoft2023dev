@@ -13,7 +13,7 @@ use App\Models\Tenant\DocumentItem;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\PurchaseItem;
 use App\Models\Tenant\SaleNoteItem;
-use App\Models\Tenant\Salenote;
+use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\User;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -233,21 +233,7 @@ class CashController extends Controller
                                 ['state', true],
                             ])->first();
         
-        $req = [
-            'document_id' => $request->document_id,
-            'sale_note_id' => $request->sale_note_id
-        ];
-
-        $cash->cash_documents()->updateOrCreate($req);
-
-        return [
-            'success' => true,
-            'message' => 'Venta con éxito',
-            'document_id' => [$request->document_id, $request->sale_note_id]
-        ];
-
-        $payment_credit = false;
-        $document_id = null;
+        (int)$payment_credit = 0;
         
 
         if($request->document_id != null) {
@@ -262,7 +248,7 @@ class CashController extends Controller
                     'document_id' => $document_id
                 ]);
 
-                $payment_credit = true;
+                $payment_credit += 1;
             }
         }
         else if($request->sale_note_id != null) {
@@ -278,12 +264,12 @@ class CashController extends Controller
                     'sale_note_id' => $document_id
                 ]);
 
-                $payment_credit = true;
+                $payment_credit += 1;
             }
 
         }
 
-        if(!$payment_credit) {
+        if($payment_credit == 0) {
 
             $req = [
                 'document_id' => $request->document_id,
@@ -296,7 +282,6 @@ class CashController extends Controller
         return [
             'success' => true,
             'message' => 'Venta con éxito',
-            'document_id' => $document_id
         ];
     }
 
