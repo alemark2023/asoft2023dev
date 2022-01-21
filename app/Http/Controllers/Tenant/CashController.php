@@ -236,7 +236,7 @@ class CashController extends Controller
         $payment_credit = false;
 
         if($request->document_id) {
-            $document =  Document::find($request->document_id);
+            $document =  Document::where('id', $request->document_id)->first();
                                             //credito
             if($document->payment_condition_id == '02')  {
                 CashDocumentCredit::create([
@@ -248,7 +248,7 @@ class CashController extends Controller
             }
         }
         else if($request->sale_note_id) {
-            $document =  SaleNote::find($request->sale_note_id);
+            $document =  SaleNote::where('id', $request->sale_note_id)->first();
                                                 //credito
              if($document->payment_method_type_id == '09')  {
                 CashDocumentCredit::create([
