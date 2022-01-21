@@ -134,6 +134,7 @@ class DocumentUpdateInput
 			'show_weight'               => $inputs['show_weight'] ?? false,
 			'weight'                    => $inputs['weight'] ?? 0.00,
 			'filename'                  => Functions::valueKeyInArray($inputs, 'filename'),
+			'unique_filename'           => Functions::valueKeyInArray($inputs, 'filename'),
             'payment_condition_id'		=> key_exists('payment_condition_id', $inputs) ? $inputs['payment_condition_id'] : '01',
             'fee' 						=> Functions::valueKeyInArray($inputs, 'fee', []),
             'pending_amount_detraction' => Functions::valueKeyInArray($inputs, 'pending_amount_detraction', 0),
