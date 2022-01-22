@@ -615,7 +615,6 @@ export default {
             } else {
                 str = 'Hoy finaliza'
             }
-            str+= " "+total
             return str
         },
         convertRequirementsIntoArray(val) {

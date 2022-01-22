@@ -15,7 +15,7 @@
                     class="form-group col-sm-12 col-md-12">
                     <label>
                         Motivo
-                        <span class="text-danger">*</span></label>
+                    </label>
                     <el-input v-model="form.reason"
                               type="textarea"
                               :rows="2"
