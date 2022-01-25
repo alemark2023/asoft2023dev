@@ -33,7 +33,7 @@
         <link rel="stylesheet" href="{{ asset('theme/custom_styles_ecommerce.css') }}" />
     @endif
 
-    <link rel="stylesheet" href="{{ asset('theme/styles_orders.css') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/styles_orders.css') }}" />
 </head>
 <style>
 
