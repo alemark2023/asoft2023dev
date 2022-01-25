@@ -56,8 +56,3 @@ Route::middleware(['locked.tenant'])->prefix('ecommerce')->group(function() {
 
 
 });
-
-Route::middleware(['locked.tenant'])->group(function() {
-    // restaurant
-    Route::get('/menu', 'EcommerceController@menu')->name('tenant.menu.index');
-});

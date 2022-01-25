@@ -154,6 +154,7 @@ class Item extends ModelTenant
         'is_set',
         'sale_unit_price_set',
         'apply_store',
+        'apply_restaurant',
         'brand_id',
         'category_id',
         'lot_code',
@@ -1084,6 +1085,7 @@ class Item extends ModelTenant
                 ];
             }),
             'apply_store' => (bool)$this->apply_store,
+            'apply_restaurant' => (bool)$this->apply_restaurant,
             'image_url' => ($this->image !== 'imagen-no-disponible.jpg')
                 ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image)
                 : asset("/logo/{$this->image}"),
@@ -1213,6 +1215,7 @@ class Item extends ModelTenant
         'percentage_perception',
         'account_id',
         'apply_store',
+        'apply_restaurant',
         'series_enabled',
         'web_platform_id',
         */
