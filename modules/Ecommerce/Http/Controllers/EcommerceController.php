@@ -377,4 +377,11 @@ class EcommerceController extends Controller
         return ['success' => true];
 
     }
+
+    public function menu()
+    {
+      $dataPaginate = Item::where([['apply_store', 1], ['internal_id','!=', null]])->paginate(15);
+      $configuration = InventoryConfiguration::first();
+      return view('ecommerce::restaurant.index', ['dataPaginate' => $dataPaginate, 'configuration' => $configuration->stock_control]);
+    }
 }
