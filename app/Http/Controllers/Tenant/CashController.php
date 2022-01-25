@@ -13,7 +13,7 @@ use App\Models\Tenant\DocumentItem;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\PurchaseItem;
 use App\Models\Tenant\SaleNoteItem;
-use App\Models\Tenant\Salenote;
+use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\User;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -233,35 +233,43 @@ class CashController extends Controller
                                 ['state', true],
                             ])->first();
         
-        $payment_credit = false;
+        (int)$payment_credit = 0;
+        
 
-        if($request->document_id) {
-            $document =  Document::find($request->document_id);
+        if($request->document_id != null) {
+            $document_id = $request->document_id;
+
+            $document =  Document::find((int)$document_id);
+
                                             //credito
             if($document->payment_condition_id == '02')  {
                 CashDocumentCredit::create([
                     'cash_id' => $cash->id,
-                    'document_id' => $request->document_id
+                    'document_id' => $document_id
                 ]);
 
-                $payment_credit = true;
+                $payment_credit += 1;
             }
         }
-        else if($request->sale_note_id) {
-            $document =  SaleNote::find($request->sale_note_id);
+        else if($request->sale_note_id != null) {
+
+             $document_id = $request->sale_note_id;
+
+             $document =  SaleNote::find((int)$document_id);
+
                                                 //credito
              if($document->payment_method_type_id == '09')  {
                 CashDocumentCredit::create([
                     'cash_id' => $cash->id,
-                    'sale_note_id' => $request->sale_note_id
+                    'sale_note_id' => $document_id
                 ]);
 
-                $payment_credit = true;
+                $payment_credit += 1;
             }
 
         }
 
-        if(!$payment_credit) {
+        if($payment_credit == 0) {
 
             $req = [
                 'document_id' => $request->document_id,

@@ -249,6 +249,7 @@
             'response_send_cdr_pse',
 
             'sale_notes_relateds', //generar cpe desde multiples notas de venta
+            'unique_filename', //registra nombre de archivo unico (campo validador para evitar duplicidad)
         ];
 
         protected $casts = [
