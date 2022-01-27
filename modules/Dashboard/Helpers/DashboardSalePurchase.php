@@ -183,7 +183,8 @@ class DashboardSalePurchase
         }
         $purchases_total_perception = round($purchases->sum('total_perception'),2);
         */
-         $purchases = Purchase::DasboardSalePurchase($establishment_id);
+         $purchases = Purchase::DasboardSalePurchase($establishment_id)->OnlyDateOfIssueByYear()->get();
+         /*
          if(!empty($d_start)){
              $purchases->where('date_of_issue','>=',$d_start);
          }
@@ -191,6 +192,8 @@ class DashboardSalePurchase
              $purchases->where('date_of_issue','<=',$d_end);
          }
          $purchases = $purchases->get();
+         */
+
         $purchases_total = $purchases->sum('total_purchase');
         $purchases_total_perception = $purchases->sum('total_perception_purchase');
 
