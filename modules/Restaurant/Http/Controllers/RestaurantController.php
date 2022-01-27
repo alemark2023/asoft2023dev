@@ -59,4 +59,20 @@ class RestaurantController extends Controller
 
         return view('restaurant::categories.index', ['dataPaginate' => $dataPaginate, 'configuration' => $configuration->stock_control])->with('categories', $categories);
     }
+
+    public function items(Request $request){
+        $records = Item::where([['apply_restaurant', 1], ['internal_id','!=', null]])->get();
+        return [
+            'success' => true,
+            'data' => $records
+        ];
+    }
+
+    public function categories(Request $request){
+        $records = Category::all();
+        return [
+            'success' => true,
+            'data' => $records
+        ];
+    }
 }

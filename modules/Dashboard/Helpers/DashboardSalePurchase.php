@@ -117,6 +117,13 @@ class DashboardSalePurchase
             $transaction_quantity = $transaction_quantity_sale - $transaction_quantity_credit_note;
 
             $customer = Person::where('type','customers')->find($customers[0]->customer_id);
+            if(empty($customer)){
+                // Cuando es eliminado un cliente, dara error en el dashboard, por eso se coloca uno nuevo
+                $customer = new Person([
+                    'name'=>'',
+                    'number'=>'',
+                ]);
+            }
 
             $totals = $customers->whereIn('document_type_id', ['01','03','08'])->sum(function ($row) {
                 return $this->calculateTotalCurrency($row->currency_type_id, $row->exchange_rate_sale, $row->total);//count($product['colors']);
@@ -176,7 +183,17 @@ class DashboardSalePurchase
         }
         $purchases_total_perception = round($purchases->sum('total_perception'),2);
         */
-        $purchases = Purchase::DasboardSalePurchase($establishment_id)->OnlyDateOfIssueByYear()->get();
+         $purchases = Purchase::DasboardSalePurchase($establishment_id)->OnlyDateOfIssueByYear()->get();
+         /*
+         if(!empty($d_start)){
+             $purchases->where('date_of_issue','>=',$d_start);
+         }
+         if(!empty($d_end)){
+             $purchases->where('date_of_issue','<=',$d_end);
+         }
+         $purchases = $purchases->get();
+         */
+
         $purchases_total = $purchases->sum('total_purchase');
         $purchases_total_perception = $purchases->sum('total_perception_purchase');
 
@@ -192,6 +209,10 @@ class DashboardSalePurchase
                 'purchases_total_perception' => number_format($purchases_total_perception,2),
                 'purchases_total' => number_format( round($purchases_total, 2),2),
                 'total' => number_format($purchases_total + $purchases_total_perception,2),
+                'date_of_issue'=>[
+                    'start'=>$d_start,
+                    'end'=>$d_end,
+                ]
             ],
             'graph' => [
                 'labels' => $data_array,

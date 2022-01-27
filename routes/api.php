@@ -52,6 +52,8 @@ if ($hostname) {
 
             //Pedidos
             Route::get('orders', 'Tenant\Api\OrderController@records');
+            Route::post('orders', 'Tenant\Api\OrderController@store');
+
 
 
         });

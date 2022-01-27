@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +12,19 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/restaurant', function (Request $request) {
-    return $request->user();
-});
+$hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
+if ($hostname) {
+    Route::domain($hostname->fqdn)->group(function() {
+
+        Route::middleware(['auth:api', 'locked.tenant'])->group(function() {
+
+            Route::prefix('restaurant')->group(function () {
+                Route::get('/items', 'RestaurantController@items');
+                Route::get('/categories', 'RestaurantController@categories');
+
+            });
+
+        });
+
+    });
+}
