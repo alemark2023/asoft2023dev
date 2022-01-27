@@ -381,6 +381,9 @@ Vue.component('tenant-machine-type-form', require('../../modules/Production/Reso
 Vue.component('tenant-production-index', require('../../modules/Production/Resources/assets/js/view/production/index.vue'));
 Vue.component('tenant-production-form', require('../../modules/Production/Resources/assets/js/view/production/form.vue'));
 
+/* Restaurante */
+Vue.component('tenant-restaurant-list-items', require('../../modules/Restaurant/Resources/assets/js/views/items/index.vue'));
+
 
 import moment from 'moment';
 

@@ -1319,6 +1319,34 @@
                             </ul>
                         </li>
                     @endif
+
+                    {{-- Restaurante --}}
+                    @if(in_array('restaurant_app', $vc_modules) && $configuration->isPharmacy())
+                        <li class=" nav-parent {{ ($firstLevel === 'restaurant') ? 'nav-active nav-expanded' : '' }}">
+                            <a class="nav-link"
+                               href="#">
+                                <i class="fas fa-utensils"
+                                   aria-hidden="true"></i>
+                                <span>Restaurante</span>
+                            </a>
+                            <ul class="nav nav-children">
+                                <li class="">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.restaurant.menu') }}"
+                                        target="blank">
+                                        Ver Menu
+                                    </a>
+                                </li>
+                                <li class="{{ (($firstLevel === 'restaurant') ) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.restaurant.list_items') }}">
+                                        Productos de restaurante
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    @endif
+
                     {{-- APP --}}
                     @if(in_array('apps', $vc_modules))
                         <li class="">

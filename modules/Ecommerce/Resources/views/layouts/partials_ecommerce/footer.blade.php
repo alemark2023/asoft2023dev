@@ -95,7 +95,7 @@
 
 <div class="container">
     <div class="footer-bottom">
-        <p class="footer-copyright">Facturador Pro 3. &copy; 2019. Todos los Derechos Reservados</p>
+        <p class="footer-copyright">Facturador Pro 4. &copy; {{ now()->year }}. Todos los Derechos Reservados</p>
 
         <img src="{{ asset('porto-ecommerce/assets/images/payments.png') }}" alt="payment methods"
             class="footer-payments">
