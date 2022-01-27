@@ -124,11 +124,11 @@ class ViewServiceProvider extends ServiceProvider
             'Modules\Ecommerce\Http\ViewComposers\MenuViewComposer'
         );
         view()->composer(
-            'ecommerce::layouts.partials_ecommerce.home_slider',
+            ['ecommerce::layouts.partials_ecommerce.home_slider', 'restaurant::layouts.partials.banner'],
             'Modules\Ecommerce\Http\ViewComposers\PromotionsViewComposer'
         );
         view()->composer(
-            ['ecommerce::layouts.partials_ecommerce.footer', 'ecommerce::layouts.partials_ecommerce.header', 'ecommerce::cart.detail', 'ecommerce::layouts.partials_ecommerce.sidebar_product_right', 'ecommerce::layouts.partials_ecommerce.mobile_menu'],
+            ['restaurant::layouts.partials.footer','ecommerce::layouts.partials_ecommerce.footer', 'ecommerce::layouts.partials_ecommerce.header', 'ecommerce::cart.detail', 'ecommerce::layouts.partials_ecommerce.sidebar_product_right', 'ecommerce::layouts.partials_ecommerce.mobile_menu'],
             'Modules\Ecommerce\Http\ViewComposers\InformationContactViewComposer'
         );
         view()->composer(

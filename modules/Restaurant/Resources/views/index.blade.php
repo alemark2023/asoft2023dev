@@ -1,9 +1,32 @@
 @extends('restaurant::layouts.master')
 
 @section('content')
-    {{-- <h1>Hello World</h1>
-
-    <p>
-        This view is loaded from module: {!! config('restaurant.name') !!}
-    </p> --}}
+<div class="container">
+    <div class="row">
+        <nav class="main-nav flex-grow-1">
+            <ul class="menu sf-arrows sf-js-enabled" style="touch-action: pan-y;">
+                @foreach ($categories as $category)
+                    <li><a href="{{ route('tenant.restaurant.category', ['category_id' => $category->name]) }}">{{$category->name}}</a></li>
+                @endforeach
+            </ul>
+        </nav>
+        <div class="col-lg-12">
+            @php
+                $tagid = Request::segment(3);
+            @endphp
+            @if(!$tagid)
+                @include('restaurant::layouts.partials.banner')
+            @endif
+            <div class="my-3"></div><!-- margin -->
+            <div class="row row-sm mt-4">
+                @include('ecommerce::layouts.partials_ecommerce.list_products')
+            </div>
+            <div class="row float-right">
+              <div class="col-md-12 col-lg-12">
+                {{ $dataPaginate->links() }}
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

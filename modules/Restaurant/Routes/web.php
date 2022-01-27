@@ -21,4 +21,5 @@ Route::prefix('restaurant')->group(function() {
 Route::middleware(['locked.tenant'])->group(function() {
     // restaurant
     Route::get('/menu', 'RestaurantController@menu')->name('tenant.restaurant.menu');
+    Route::get('/menu/category/{name}', 'RestaurantController@category')->name('tenant.restaurant.category');
 });

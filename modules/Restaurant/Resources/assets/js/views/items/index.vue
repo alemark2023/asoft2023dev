@@ -40,7 +40,7 @@
             <th class="text-center">P.Unitario (Venta)</th>
             <th class="text-center">Stock General</th>
             <th class="text-center">Imagen</th>
-            <th class="text-center">Tags</th>
+            <th class="text-center">Categoría</th>
 
             <th class="text-center">Visible en Restaurant</th>
             <th class="text-right">Acciones</th>
@@ -62,7 +62,7 @@
               <!--<img :src="row.image_url_medium"  width="40" height="40" class="img-thumbail img-custom" /> -->
             </td>
             <td>
-              <el-tag style="margin:1px" v-for="tag in row.tags" :key="tag.id">{{tag.tag.name}}</el-tag>
+              {{row.category_description}}
             </td>
             <td class="text-center">
               <el-checkbox

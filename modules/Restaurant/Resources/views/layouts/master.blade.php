@@ -45,42 +45,12 @@
 
         @include('ecommerce::layouts.partials_ecommerce.header')
         <main class="main">
-            <br> <!-- layout-  info_boxez-->
 
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12">
-
-                        @php
-                            $tagid = Request::segment(3);
-                        @endphp
-
-                        @if(!$tagid)
-                            @include('ecommerce::layouts.partials_ecommerce.home_slider')
-                        @endif
-
-                        <div class="my-3"></div><!-- margin -->
-
-                        <div class="row row-sm mt-4">
-                            @include('ecommerce::layouts.partials_ecommerce.list_products')
-                        </div>
-
-                        <div class="row float-right">
-                          <div class="col-md-12 col-lg-12">
-                            {{ $dataPaginate->links() }}
-                          </div>
-                        </div>
-
-                    </div><!-- End .col-lg-9 -->
-
-                </div><!-- End .row -->
-            </div><!-- End .container -->
-
-            <div class="mb-4"></div><!-- margin -->
+            @yield('content')
         </main><!-- End .main -->
 
         <footer class="footer">
-            @include('ecommerce::layouts.partials_ecommerce.footer')
+            @include('restaurant::layouts.partials.footer')
         </footer><!-- End .footer -->
     </div><!-- End .page-wrapper -->
 
@@ -128,12 +98,7 @@
 
     <script src="{{ asset('porto-ecommerce/assets/js/vue.min.js') }}"></script>
 
-
-
     @stack('scripts')
 </body>
-
-<!-- Mirrored from portotheme.com/html/porto_ecommerce/demo-6/ by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 07 Sep 2019 03:39:54 GMT -->
-
 </html>
 
