@@ -15,5 +15,16 @@ class OrderController extends Controller
         $records = Order::latest();
         return new OrderCollection($records->paginate(config('tenant.items_per_page')));
     }
+
+    public function store(Request $request) {
+        $order = Order::findOrFail($request->id);
+        $order->status_order_id = $request->status_order_id;
+        $order->save();
+
+        return [
+            'success' => true,
+            'message' => 'Orden actualizada con éxito'
+        ];
+    }   
     
 }
