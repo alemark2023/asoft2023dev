@@ -7,6 +7,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use App\Models\Tenant\Item;
 use Modules\Inventory\Models\InventoryConfiguration;
+use Modules\Item\Models\Category;
 
 class RestaurantController extends Controller
 {
@@ -46,5 +47,21 @@ class RestaurantController extends Controller
             'id' => $request->id
         ];
 
+    }
+
+    public function items(Request $request){
+        $records = Item::where([['apply_restaurant', 1], ['internal_id','!=', null]])->get();
+        return [
+            'success' => true,
+            'data' => $records
+        ]; 
+    }
+
+    public function categories(Request $request){
+        $records = Category::all();
+        return [
+            'success' => true,
+            'data' => $records
+        ]; 
     }
 }
