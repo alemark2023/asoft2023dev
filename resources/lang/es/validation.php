@@ -296,5 +296,8 @@ return [
 		'url_signature_pse' => 'url firma digital del documento',
 		'url_send_cdr_pse' => 'url envio CDR',
 
+		'related.number' => 'n° documento',
+		'related.document_type_id' => 'tipo documento',
+
 	],
 ];

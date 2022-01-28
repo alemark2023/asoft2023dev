@@ -17,6 +17,7 @@
     use Modules\Inventory\Models\InventoryKardex;
     use Modules\Order\Models\OrderNote;
     use Symfony\Component\HttpFoundation\BinaryFileResponse;
+    use App\Models\Tenant\Catalogs\RelatedDocumentType;
 
     /**
  * Class Dispatch
@@ -115,6 +116,7 @@
             'reference_sale_note_id',
             'soap_shipping_response',
             'data_affected_document',
+            'related',
         ];
 
         protected $casts = [
@@ -200,6 +202,28 @@
         public function setSoapShippingResponseAttribute($value)
         {
             $this->attributes['soap_shipping_response'] = (is_null($value)) ? null : json_encode($value);
+        }
+                
+        /**
+         * Datos del DAM
+         *
+         * @param $value
+         * @return object
+         */
+        public function getRelatedAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+        
+        /**
+         * Datos del DAM
+         *
+         * @param $value
+         * @return void
+         */
+        public function setRelatedAttribute($value)
+        {
+            $this->attributes['related'] = (is_null($value)) ? null : json_encode($value);
         }
 
         /**
@@ -512,6 +536,24 @@
         {
             return DownloadController::getPdf(self::class, $this->external_id);
 
+        }
+
+                
+        /**
+         * Retornar descripción del documento relacionado (DAM)
+         *
+         * @return string|null
+         */
+        public function getRelatedDocumentTypeDescription()
+        {
+
+            if($this->related)
+            {
+                $related_document = RelatedDocumentType::find($this->related->document_type_id);
+                if($related_document) return $related_document->description;
+            }
+
+            return null;
         }
 
     }
