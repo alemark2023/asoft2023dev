@@ -11,12 +11,15 @@ use Modules\Inventory\Models\InventoryConfiguration;
 
 class RestaurantController extends Controller
 {
-    public function menu()
+    public function menu($name = null)
     {
-      $dataPaginate = Item::where([['apply_restaurant', 1], ['internal_id','!=', null]])->paginate(15);
-      $configuration = InventoryConfiguration::first();
-      $categories = Category::get();
-      return view('restaurant::index', ['dataPaginate' => $dataPaginate, 'configuration' => $configuration->stock_control])->with('categories', $categories);
+        $category = Category::where('name', $name)->first();
+        $dataPaginate = Item::where([['apply_restaurant', 1], ['internal_id','!=', null]])
+                                ->category($category ? $category->id : null)
+                                ->paginate(8);
+        $configuration = InventoryConfiguration::first();
+        $categories = Category::get();
+        return view('restaurant::index', ['dataPaginate' => $dataPaginate, 'configuration' => $configuration->stock_control])->with('categories', $categories);
     }
 
     /*

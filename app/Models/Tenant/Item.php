@@ -2052,6 +2052,17 @@ class Item extends ModelTenant
             ->distinct();
     }
 
+    /**
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopeCategory($query, $id = null)
+    {
+        if($id){
+            return $query->where('category_id', $id);
+        }
+    }
 
 
 }

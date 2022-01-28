@@ -1,12 +1,22 @@
 @extends('restaurant::layouts.master')
 
 @section('content')
+@php
+    $path = explode('/', request()->path());
+    $path[1] = (array_key_exists(1, $path)> 0)?$path[1]:'';
+    $path[0] = ($path[0] === '')?'menu':$path[0];
+@endphp
 <div class="container">
     <div class="row">
         <nav class="main-nav flex-grow-1">
             <ul class="menu sf-arrows sf-js-enabled" style="touch-action: pan-y;">
+                <li>
+                    <a href="{{ route('tenant.restaurant.menu') }}" class="{{ $path[1] == '' ? 'bg-success text-light' : '' }}">Todos</a>
+                </li>
                 @foreach ($categories as $category)
-                    <li><a href="{{ route('tenant.restaurant.category', ['category_id' => $category->name]) }}">{{$category->name}}</a></li>
+                    <li>
+                        <a href="{{ route('tenant.restaurant.menu', ['name' => $category->name]) }}"  class="{{ $path[1] == $category->name ? 'bg-success text-light' : '' }}">{{$category->name}}</a>
+                    </li>
                 @endforeach
             </ul>
         </nav>

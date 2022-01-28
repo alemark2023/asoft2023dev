@@ -20,6 +20,6 @@ Route::prefix('restaurant')->group(function() {
 // ruta publica
 Route::middleware(['locked.tenant'])->group(function() {
     // restaurant
-    Route::get('/menu', 'RestaurantController@menu')->name('tenant.restaurant.menu');
-    Route::get('/menu/category/{name}', 'RestaurantController@category')->name('tenant.restaurant.category');
+    Route::get('/menu/{name?}', 'RestaurantController@menu')->name('tenant.restaurant.menu');
+
 });
