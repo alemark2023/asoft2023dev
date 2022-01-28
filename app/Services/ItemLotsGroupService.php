@@ -55,4 +55,26 @@
         }
 
 
+        /**
+         * Devuelve la fecha de vencimiento del lote
+         * @param $id
+         *
+         * @return \Illuminate\Database\Eloquent\HigherOrderBuilderProxy|mixed|string
+         */
+        public function getLotDateOfDue($id){
+            $result = '';
+            if (is_array($id)) {
+                foreach ($id as $item) {
+                    $result .= "/"  . $item->date_of_due;
+                }
+            } else {
+                $record = ItemLotsGroup::where('id', $id)->first();
+
+                if ($record) {
+                    $result = $record->date_of_due;
+                }
+            }
+            return $result;
+
+        }
     }
