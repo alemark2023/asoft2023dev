@@ -1057,6 +1057,7 @@ class Item extends ModelTenant
             'model' => $this->model,
             'barcode' => $this->barcode,
             'brand' => $brand,
+            'category_description' => optional($this->category)->name,
             'warehouse_id' => $this->warehouse_id,
             'internal_id' => $this->internal_id,
             'item_code' => $this->item_code,
@@ -2051,6 +2052,17 @@ class Item extends ModelTenant
             ->distinct();
     }
 
+    /**
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopeCategory($query, $id = null)
+    {
+        if($id){
+            return $query->where('category_id', $id);
+        }
+    }
 
 
 }

@@ -826,6 +826,9 @@ select.form-control, input.form-control, textarea.form-control {
     box-shadow: none;
 }
 
+.bg-success {
+    background-color: #23da95 !important;
+}
 
 
 /* Mobile */

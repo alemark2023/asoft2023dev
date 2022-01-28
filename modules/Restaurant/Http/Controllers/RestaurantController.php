@@ -6,17 +6,21 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use App\Models\Tenant\Item;
-use Modules\Inventory\Models\InventoryConfiguration;
 use Modules\Item\Models\Category;
+use Modules\Inventory\Models\InventoryConfiguration;
 use Modules\Restaurant\Http\Resources\ItemCollection;
 
 class RestaurantController extends Controller
 {
-    public function menu()
+    public function menu($name = null)
     {
-      $dataPaginate = Item::where([['apply_restaurant', 1], ['internal_id','!=', null]])->paginate(15);
-      $configuration = InventoryConfiguration::first();
-      return view('restaurant::index', ['dataPaginate' => $dataPaginate, 'configuration' => $configuration->stock_control]);
+        $category = Category::where('name', $name)->first();
+        $dataPaginate = Item::where([['apply_restaurant', 1], ['internal_id','!=', null]])
+                                ->category($category ? $category->id : null)
+                                ->paginate(8);
+        $configuration = InventoryConfiguration::first();
+        $categories = Category::get();
+        return view('restaurant::index', ['dataPaginate' => $dataPaginate, 'configuration' => $configuration->stock_control])->with('categories', $categories);
     }
 
     /*
@@ -55,7 +59,7 @@ class RestaurantController extends Controller
         return [
             'success' => true,
             'data' => $records
-        ]; 
+        ];
     }
 
     public function categories(Request $request){
@@ -63,6 +67,6 @@ class RestaurantController extends Controller
         return [
             'success' => true,
             'data' => $records
-        ]; 
+        ];
     }
 }
