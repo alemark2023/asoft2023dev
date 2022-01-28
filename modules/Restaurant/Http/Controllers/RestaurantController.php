@@ -53,16 +53,6 @@ class RestaurantController extends Controller
 
     }
 
-    public function category($name) {
-
-        $category = Category::where('name', $name)->first();
-        $dataPaginate = Item::where([['apply_restaurant', 1], ['internal_id','!=', null], ['category_id', $category->id]])->paginate(15);
-        $configuration = InventoryConfiguration::first();
-        $categories = Category::get();
-
-        return view('restaurant::categories.index', ['dataPaginate' => $dataPaginate, 'configuration' => $configuration->stock_control])->with('categories', $categories);
-    }
-
     public function items(Request $request){
         $records = Item::where([['apply_restaurant', 1], ['internal_id','!=', null]])->get();
         return [
