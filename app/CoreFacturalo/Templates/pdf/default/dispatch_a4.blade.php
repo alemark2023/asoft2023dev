@@ -91,6 +91,14 @@
         <td>Motivo Traslado: {{ $document->transfer_reason_type->description }}</td>
         <td>Modalidad de Transporte: {{ $document->transport_mode_type->description }}</td>
     </tr>
+    
+    @if($document->related)
+    <tr>
+        <td>Número de documento (DAM): {{ $document->related->number }}</td>
+        <td>Tipo documento relacionado: {{ $document->getRelatedDocumentTypeDescription() }}</td>
+    </tr>
+    @endif
+
     <tr>
         <td>Peso Bruto Total({{ $document->unit_type_id }}): {{ $document->total_weight }}</td>
         @if($document->packages_number)
