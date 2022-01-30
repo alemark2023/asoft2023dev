@@ -73,6 +73,11 @@ if ($hostname) {
         Route::post('reseller/lockedAdmin', 'System\Api\ResellerController@lockedAdmin');
         Route::post('reseller/lockedTenant', 'System\Api\ResellerController@lockedTenant');
 
+        Route::middleware(['auth:system_api'])->group(function () {
+            Route::get('restaurant/partner/list', 'System\Api\RestaurantPartnerController@list');
+            Route::post('restaurant/partner/store', 'System\Api\RestaurantPartnerController@store');
+            Route::post('restaurant/partner/search', 'System\Api\RestaurantPartnerController@search');
+        });
     });
 
 }

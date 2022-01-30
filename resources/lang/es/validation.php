@@ -299,5 +299,9 @@ return [
 		'related.number' => 'n° documento',
 		'related.document_type_id' => 'tipo documento',
 
+		'full_name' => 'Nombre completo',
+		'gitlab_user' => 'usuario de gitlab.com',
+		'domain' => 'dominio',
+
 	],
 ];
