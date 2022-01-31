@@ -38,11 +38,14 @@
                 $table->string('mill_name')->nullable();
                 $table->string('lot_code')->nullable();
 
-                if(!Schema::hasColumns('mill','comment')) {
-                    $table->longText('comment')->nullable();
-                }
-
             });
+
+            if(!Schema::hasColumn('mill','comment')) {
+                Schema::table('mill', function (Blueprint $table) {
+                    $table->longText('comment')->nullable();
+                });
+            }
+
             Schema::table('mill_items', function (Blueprint $table) {
                 $table->json('item_extra_data')->nullable();
             });
@@ -73,7 +76,7 @@
             Schema::table('mill', function (Blueprint $table) {
                 $table->dropColumn('mill_name');
                 $table->dropColumn('lot_code');
-                if(Schema::hasColumns('mill','comment')) {
+                if(Schema::hasColumn('mill','comment')) {
                     $table->dropColumn('comment');
                 }
 
