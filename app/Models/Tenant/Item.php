@@ -1444,11 +1444,6 @@ class Item extends ModelTenant
     public static function SaveExtraDataToRequest(&$array, $row = [])
     {
 
-        if (
-            is_array($row['item']) &&
-            is_array($row['item']['extra'])
-        ) {
-
             $extra = $row['item']['extra'];
 
 
@@ -1558,7 +1553,6 @@ class Item extends ModelTenant
             $array['item']['extra']["string"]["CatItemStatus"] = $CatItemStatus_string;
             $array['item']['extra']["string"]["CatItemUnitBusiness"] = $CatItemUnitBusiness_string;
             $array['item']['extra']["string"]["CatItemSize"] = $CatItemSize_string;
-        }
     }
 
     /**
