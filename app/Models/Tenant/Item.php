@@ -1444,6 +1444,7 @@ class Item extends ModelTenant
     public static function SaveExtraDataToRequest(&$array, $row = [])
     {
 
+        if(isset($row['item'], $row['item']['extra'])) {
             $extra = $row['item']['extra'];
 
 
@@ -1553,6 +1554,7 @@ class Item extends ModelTenant
             $array['item']['extra']["string"]["CatItemStatus"] = $CatItemStatus_string;
             $array['item']['extra']["string"]["CatItemUnitBusiness"] = $CatItemUnitBusiness_string;
             $array['item']['extra']["string"]["CatItemSize"] = $CatItemSize_string;
+        }
     }
 
     /**
