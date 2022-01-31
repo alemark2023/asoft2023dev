@@ -1079,6 +1079,33 @@
                             </div>
                         </div>
                     </el-tab-pane>
+                    <el-tab-pane class="mb-3"  name="nine">
+                        <span slot="label">Pedidos</span>
+                        <div class="row">
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Habilitar importación de MiTienda.Pe
+                                    <el-tooltip
+                                        class="item"
+                                        content="Requiere modificaciones en configuracion -> avanzado -> pedidos"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.mi_tienda_pe}"
+                                     class="form-group">
+                                    <el-switch v-model="form.mi_tienda_pe"
+                                               active-text="Si"
+                                               inactive-text="No"
+                                               @change="submit"></el-switch>
+                                    <small v-if="errors.mi_tienda_pe"
+                                           class="form-control-feedback"
+                                           v-text="errors.mi_tienda_pe[0]"></small>
+                                </div>
+                            </div>
+                        </div>
+                    </el-tab-pane>
                 </el-tabs>
                 <terms-condition :form="form"
                                     :showClose="false"

@@ -872,4 +872,24 @@
 
             return $id->getCollectionData($company, $configuration, true);
         }
+
+        /**
+         * @return OrderNote
+         */
+        public function getOrderNote()
+        {
+            return $this->order_note;
+        }
+
+        /**
+         * @param OrderNote $order_note
+         *
+         * @return OrderNoteController
+         */
+        public function setOrderNote(OrderNote $order_note)
+        {
+            $this->order_note = $order_note;
+            return $this;
+        }
+
     }

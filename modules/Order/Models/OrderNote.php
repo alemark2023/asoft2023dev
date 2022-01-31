@@ -547,6 +547,16 @@
                 $state_type_description = 'Despachado';
                 // #596
             }
+            $miTiendaPe = MiTiendaPe::where('order_note_id',$this->id)->first();
+            if(empty($miTiendaPe)){
+                $miTiendaPe =[
+                    'order_number'=>null,
+                ];
+            }else{
+                $miTiendaPe=[
+                'order_number'=>$miTiendaPe->order_number,
+                    ];
+            }
 
             return [
                 'id' => $this->id,
@@ -585,6 +595,7 @@
                     ];
                 }),
                 'btn_generate' => $btn_generate,
+                'mi_tienda_pe' => $miTiendaPe,
                 'dispatches' => $dispatches,
                 'created_at' => $this->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),

@@ -455,6 +455,7 @@ if ($hostname) {
             // Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
             Route::get('purchases/search-items', 'Tenant\PurchaseController@searchItems');
             Route::get('purchases/search/item/{item}', 'Tenant\PurchaseController@searchItemById');
+            Route::post('purchases/search/purchase_order','Tenant\PurchaseController@searchPurchaseOrder');
             // Route::get('purchases/item_resource/{id}', 'Tenant\PurchaseController@itemResource');
 
             // Route::get('documents/send/{document}', 'Tenant\DocumentController@send');

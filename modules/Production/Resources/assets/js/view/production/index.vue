@@ -43,16 +43,23 @@
                             <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Número de registro</th>
+                                <th>Número de Ficha</th>
                                 <th>Cód. Interno</th>
-                                <th>Fecha de inicio</th>
-                                <th>Fecha de fin</th>
+                                <th>Prod. F. de inicio </th>
+                                <th>Prod. F. de Fin </th>
+                                <th>Tipo de proceso</th>
                                 <th>Cantidad</th>
-
+                                <th>Conformes</th>
+                                <th>Defectuosas</th>
                                 <th>Maquinaria</th>
+                                <th>Lote</th>
                                 <th>Usuario</th>
+                                <th>Color</th>
                                 <th>Producto</th>
                                 <th>Orden de Producción</th>
+                                <th>Mez. F. de inicio </th>
+                                <th>Mez. F. de Fin </th>
+                                <th>Tipo de proceso</th>
                                 <th>Comentario</th>
                             </tr>
                             </thead>
@@ -63,15 +70,25 @@
                                 <td>000{{ row.id }}</td>
                                 <td >{{ row.date_start }} - {{row.time_start}}</td>
                                 <td >{{ row.date_end }} - {{row.time_end}}</td>
+                                <td >{{ row.proccess_type }}</td>
                                 <td >{{ row.quantity }}</td>
+                                <td >{{ row.agreed }}</td>
+                                <td >{{ row.imperfect }}</td>
                                 <td >
                                     <div v-if="row.machine && row.machine.name">
                                         {{ row.machine.name }}
                                     </div>
                                 </td>
+                                <td >{{ row.lot_code }}</td>
                                 <td >{{ row.user }}</td>
+                                <td >
+                                    {{row.color}}
+                                </td>
                                 <td >{{ row.item_name }}</td>
                                 <td >{{ row.production_order }}</td>
+                                <td >{{ row.mix_date_start }} - {{row.mix_time_start}}</td>
+                                <td >{{ row.mix_date_end }} - {{row.mix_time_end}}</td>
+                                <td >{{ row.proccess_type }}</td>
                                 <td >{{ row.comment }}</td>
                             </tr>
                             </tbody>

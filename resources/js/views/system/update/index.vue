@@ -269,6 +269,9 @@
                     this.pull.error = 'no ha podido finalizar'
                     this.pull.status = 'false'
                     console.log(error)
+                }).finally(()=>{
+                    // ejecuta las migraciones al finalziar. sea exitoso o no
+                    this.execArtisanMigrate()
                 })
             },
             execComposer() {

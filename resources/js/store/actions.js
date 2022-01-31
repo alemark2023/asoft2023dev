@@ -70,13 +70,23 @@ export default {
         if (state.statusDocumentary === undefined) state.statusDocumentary = [];
 
 
-
-
         if (state.parent_customer === undefined) state.parent_customer = {};
         if (state.children_customer === undefined) state.children_customer = {};
 
         if (state.customer_addresses === undefined) state.customer_addresses = [];
         if (state.parentPerson === undefined) state.parentPerson = {};
+
+        if (state.mi_tienda_pe === undefined) {
+            state.mi_tienda_pe = {
+                establishment_id: null,
+                series_order_note_id: null,
+                series_document_id: null,
+                user_id: null,
+                payment_destination_id: null,
+                currency_type_id: 'PEN',
+            };
+        }
+
 
         // Previenete limite de almacen exedido
         /*

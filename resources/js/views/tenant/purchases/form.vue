@@ -152,6 +152,39 @@
                             </div>
                         </div>
 
+                        <div class="col-lg-2"
+                             v-if="purchase_order_id === null">
+                            <div class="form-group">
+                                <label>
+                                    Orden de compra
+                                </label>
+                                <el-select v-model="form.purchase_order_id"
+                                           :loading="loading_search"
+                                           clearable
+                                           filterable
+                                           placeholder="Número de documento"
+                                           >
+                                    <!--
+                                    :remote-method="searchPurchaseOrder"
+                                    remote-->
+                                    <el-option v-for="option in purchase_order_data"
+                                               :key="option.id"
+                                               :label="option.description"
+                                               :value="option.id"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-12 col-md-6 col-lg-4 "
+                            :class="{ 'has-danger': errors.created_at }"
+                            >
+                            <label>
+                                Observaciones
+                            </label>
+                            <el-input v-model="form.observation"
+                                      placeholder="Observaciones"></el-input>
+                        </div>
+                        <div class="col-12">&nbsp;</div>
+
                         <div class="col-md-8 mt-4">
                             <div class="form-group">
                                 <el-checkbox v-model="form.has_client"
@@ -229,7 +262,6 @@
                                         v-text="errors.payment_condition_id[0]"></small>
                                 </div>
                             </div>
-                            
                             <div class="col-md-12 col-lg-12 mt-2">
                                 <!-- Contado -->
                                 <template v-if="form.payment_condition_id === '01'">
@@ -316,10 +348,10 @@
                                             <th class="pb-2" v-if="form.fee.length>0"
                                                 >Método de pago
                                             </th>
-                                            <th class="pb-2" 
+                                            <th class="pb-2"
                                                 >Fecha
                                             </th>
-                                            <th class="pb-2" 
+                                            <th class="pb-2"
                                                 >Monto
                                             </th>
                                             <th class="pb-2" ></th>
@@ -357,7 +389,7 @@
                                     </table>
 
                                 </template>
- 
+
                                 <!-- Crédito con cuotas -->
                                 <template v-else>
                                     <table v-if="form.fee.length > 0">
@@ -647,6 +679,7 @@ export default {
             },
             aux_supplier_id: null,
             total_amount: 0,
+            purchase_order_data: [],
             document_types: [],
             currency_types: [],
             discount_types: [],
@@ -715,6 +748,7 @@ export default {
         this.loadConfiguration()
         this.loadHasGlobalIgv()
         this.loadEstablishment()
+        this.searchPurchaseOrder();
         this.localHasGlobalIgv = this.hasGlobalIgv;
     },
     methods: {
@@ -737,7 +771,7 @@ export default {
                 this.form.payments = []
                 this.form.fee = []
                 this.form.payment_condition_id = '01'
-            
+
             }else{
                 this.changePaymentCondition()
             }
@@ -857,7 +891,7 @@ export default {
                     }
 
                 }
-                
+
                 if(this.isCreditPaymentCondition && this.form.fee.length == 0){
 
                     return {
@@ -961,7 +995,7 @@ export default {
 
         },
         changePaymentMethodType(index) {
-            
+
             let id = '01'
 
             if (this.form.payments.length > 0) {
@@ -991,7 +1025,7 @@ export default {
                 this.readonly_date_of_due = false
 
             }
- 
+
         },
         inputTotalPerception() {
             this.total_amount = parseFloat(this.form.total) + parseFloat(this.form.total_perception)
@@ -1073,11 +1107,11 @@ export default {
                 fee: [],
 
             }
-            
+
             // this.clickAddPayment()
 
             this.initInputPerson()
-            
+
             this.readonly_date_of_due = false
 
         },
@@ -1343,8 +1377,26 @@ export default {
 
 
             return {success: true, message: ''}
-        }
+        },
 
+        async searchPurchaseOrder(input){
+            if(this.purchase_order_id !== null) return false;
+            this.loading = true
+            await this.$http
+                .post(`/${this.resource}/search/purchase_order`,{input})
+                .then((response) => {
+                    this.purchase_order_data = response.data
+                })
+                .catch(error => {
+                    console.error(error)
+
+                })
+                .finally(() => {
+                    this.loading = false
+                })
+
+
+        },
     }
 }
 </script>

@@ -194,6 +194,12 @@
                     Route::get('customers/records', 'ReportCustomerController@records')
                          ->name('tenant.reports.customers.records');
 
+                    /**
+                     * reports/items
+                     * reports/items/excel
+                     * reports/items/filter
+                     * reports/items/records
+                     * */
                     Route::get('items', 'ReportItemController@index')->name('tenant.reports.items.index');
                     Route::get('items/excel', 'ReportItemController@excel')->name('tenant.reports.items.excel');
                     Route::get('items/filter', 'ReportItemController@filter')->name('tenant.reports.items.filter');
