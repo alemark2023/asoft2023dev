@@ -214,9 +214,6 @@
             this.loadConfiguration()
             if(this.config.mi_tienda_pe === true){
                 this.getMiTiendaDataData()
-            }else{
-                // this.columns.mi_tienda_pe.visible = false
-                 delete(this.columns.mi_tienda_pe)
             }
         },
         data() {
