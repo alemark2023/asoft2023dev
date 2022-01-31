@@ -1,6 +1,10 @@
 @extends('tenant.layouts.app')
 
 @section('content')
+    <?php
+    use App\Models\Tenant\Configuration;
+    $configuration = Configuration::first();
+    ?>
 <div class="page-header pr-0">
     <h2>
         <a href="/dashboard">
@@ -162,6 +166,14 @@
                                 <a href="{{route('tenant.sale_notes.configuration')}}">Nota de ventas</a>
                             </li>
                         @endif
+                                @if($configuration->isMiTiendaPe()== true)
+                                    <li>
+                                        <a href="{{route('tenant.mi_tienda_pe.configuration.index')}}">
+                                            MiTienda.PE
+                                        </a>
+                                    </li>
+                                @endif
+
                 </ul>
             </div>
         </div>

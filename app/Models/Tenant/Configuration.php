@@ -19,6 +19,7 @@
      * @property bool        $send_auto
      * @property string      $formats
      * @property bool        $cron
+     * @property bool        $mi_tienda_pe
      * @property bool        $stock
      * @property bool        $sunat_alternate_server
      * @property int         $limit_documents
@@ -213,6 +214,7 @@
             'show_service_on_pos',
             'visual',
             'show_totals_on_cpe_list',
+            'mi_tienda_pe',
             'detraction_amount_rounded_int',
             'show_terms_condition_pos',
         ];
@@ -233,6 +235,7 @@
             'group_items_generate_document' => 'boolean',
             'enabled_global_igv_to_purchase' => 'boolean',
             'show_pdf_name' => 'boolean',
+            'mi_tienda_pe' => 'boolean',
             'dispatches_address_text' => 'boolean',
             'set_address_by_establishment' => 'boolean',
             'show_items_only_user_stablishment' => 'boolean',
@@ -454,6 +457,7 @@
                 'show_totals_on_cpe_list' => $this->isShowTotalsOnCpeList(),
                 'detraction_amount_rounded_int' => $this->detraction_amount_rounded_int,
                 'show_terms_condition_pos' => (bool)$this->show_terms_condition_pos,
+                'mi_tienda_pe' => $this->isMiTiendaPe(),
             ];
         }
 
@@ -1995,5 +1999,25 @@
             $this->show_totals_on_cpe_list = (bool)$show_totals_on_cpe_list;
             return $this;
         }
+
+        /**
+         * @return bool
+         */
+        public function isMiTiendaPe(): bool
+        {
+            return (bool)$this->mi_tienda_pe;
+        }
+
+        /**
+         * @param bool $mi_tienda_pe
+         *
+         * @return Configuration
+         */
+        public function setMiTiendaPe(bool $mi_tienda_pe = false): Configuration
+        {
+            $this->mi_tienda_pe = (bool)$mi_tienda_pe;
+            return $this;
+        }
+
 
     }

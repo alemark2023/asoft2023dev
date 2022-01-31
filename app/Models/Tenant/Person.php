@@ -726,4 +726,18 @@
         {
             return $this->belongsTo(User::class, 'seller_id');
         }
+
+        public function scopeSearchCustomer(Builder $query,$dni_ruc,$name=null,$email=null){
+            $query->where('type','customers');
+            $query->where('number',$dni_ruc);
+            if(!empty($name)) {
+                $query->where('name', 'like', "%$name%");
+            }
+            if(!empty($email)) {
+                $query->where('email', 'like', "%$email%");
+            }
+
+            return $query;
+
+        }
     }

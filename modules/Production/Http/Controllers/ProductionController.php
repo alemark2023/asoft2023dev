@@ -3,8 +3,8 @@
     namespace Modules\Production\Http\Controllers;
 
 
-    use Barryvdh\DomPDF\Facade as PDF;
     use App\Models\Tenant\Item;
+    use Barryvdh\DomPDF\Facade as PDF;
     use Illuminate\Http\Request;
     use Illuminate\Http\Response;
     use Illuminate\Routing\Controller;
@@ -60,17 +60,21 @@
                 $warehouse_id = $request->input('warehouse_id');
                 //$inventory_transaction_id = '19';  //Ingreso de producción
                 $quantity = $request->input('quantity');
+                $informative = ($request->informative) ?: false;
+
 
                 $inventory_transaction = InventoryTransaction::findOrFail(19); //debe ser Ingreso de producción
-
                 $inventory = new Inventory();
-                $inventory->type = null;
-                $inventory->description = $inventory_transaction->name;
-                $inventory->item_id = $item_id;
-                $inventory->warehouse_id = $warehouse_id;
-                $inventory->quantity = $quantity;
-                $inventory->inventory_transaction_id = $inventory_transaction->id;
-                $inventory->save();
+
+                if ($informative !== true) {
+                    $inventory->type = null;
+                    $inventory->description = $inventory_transaction->name;
+                    $inventory->item_id = $item_id;
+                    $inventory->warehouse_id = $warehouse_id;
+                    $inventory->quantity = $quantity;
+                    $inventory->inventory_transaction_id = $inventory_transaction->id;
+                    $inventory->save();
+                }
 
                 $production = Production::firstOrNew(['id' => null]);
                 $production->fill($request->all());
@@ -79,22 +83,22 @@
                 $production->save();
 
 
-                $items_supplies = $request->supplies;
-
-                foreach ($items_supplies as $item) {
-
-                    $supplyWarehouseId = (int)($item['warehouse_id'] ?? $warehouse_id);
-                    $supplyWarehouseId = $supplyWarehouseId !== 0 ? $supplyWarehouseId : $warehouse_id;
-                    $qty = $item['quantity'] ?? 0;
-                    $inventory_transaction_item = InventoryTransaction::findOrFail('101'); //Salida insumos por molino
-                    $inventory_it = new Inventory();
-                    $inventory_it->type = null;
-                    $inventory_it->description = $inventory_transaction_item->name;
-                    $inventory_it->item_id = $item['individual_item_id'];
-                    $inventory_it->warehouse_id = $supplyWarehouseId;
-                    $inventory_it->quantity = (float)($qty * $quantity);
-                    $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
-                    $inventory_it->save();
+                if ($informative !== true) {
+                    $items_supplies = $request->supplies;
+                    foreach ($items_supplies as $item) {
+                        $supplyWarehouseId = (int)($item['warehouse_id'] ?? $warehouse_id);
+                        $supplyWarehouseId = $supplyWarehouseId !== 0 ? $supplyWarehouseId : $warehouse_id;
+                        $qty = $item['quantity'] ?? 0;
+                        $inventory_transaction_item = InventoryTransaction::findOrFail('101'); //Salida insumos por molino
+                        $inventory_it = new Inventory();
+                        $inventory_it->type = null;
+                        $inventory_it->description = $inventory_transaction_item->name;
+                        $inventory_it->item_id = $item['individual_item_id'];
+                        $inventory_it->warehouse_id = $supplyWarehouseId;
+                        $inventory_it->quantity = (float)($qty * $quantity);
+                        $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
+                        $inventory_it->save();
+                    }
                 }
 
                 return [
@@ -237,7 +241,8 @@
         }
 
 
-        public function pdf(Request $request) {
+        public function pdf(Request $request)
+        {
             // $records = $this->getData($request);
             $records = Production::query()->get()->transform(function (Production $row) {
                 return $row->getCollectionData();
@@ -252,6 +257,6 @@
 
 
             $filename = 'Reporte de produccion - ' . date('YmdHis');
-            return $pdf->stream($filename.'.pdf');
+            return $pdf->stream($filename . '.pdf');
         }
     }
