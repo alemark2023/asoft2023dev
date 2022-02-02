@@ -6,7 +6,7 @@
             :show-close="false"
             :title="titleDialog"
             :visible="showDialog"
-            width="30%"
+            width="60%"
             @open="create"
         >
             <div v-show="!showGenerate"
@@ -211,7 +211,7 @@
                 </div>
 
                 <div class="col-lg-4" v-if="document.document_type_id == '03'">
-                    <div 
+                    <div
                          class="form-group">
                         <el-checkbox
                             v-model="document.is_receivable"
@@ -221,7 +221,18 @@
                         >
                     </div>
                 </div>
-                
+
+                <div class="col-lg-6 col-md-6 px-0"
+                     v-if="show_has_retention">
+                    <div class="row no-gutters">
+                        <div class="col-10">¿Tiene retención de igv?</div>
+                        <div class="col-2">
+                            <el-switch v-model="document.has_retention"
+                                        @change="changeRetention"></el-switch>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-lg-6 col-md-6">
                     <div class="form-group" :class="{'has-danger': errors.payment_condition_id}">
                         <label class="control-label">Condición de pago</label>
@@ -368,35 +379,35 @@
 
             <span slot="footer"
                   class="dialog-footer">
-        <template v-if="showClose">
-          <el-button @click="clickClose">Cerrar</el-button>
-          <el-button
-              v-if="generate"
-              :loading="loading_submit"
-              class="submit"
-              type="primary"
-              @click="submit"
-          >Generar</el-button
-          >
-        </template>
-        <template v-else>
-          <el-button
-              v-if="generate"
-              :loading="loading_submit"
-              class="submit"
-              plain
-              type="primary"
-              @click="submit"
-          >Generar comprobante</el-button
-          >
-          <el-button v-else
-                     @click="clickFinalize">Ir al listado</el-button>
-          <el-button type="primary"
-                     @click="clickNewOrderNote"
-          >Nuevo pedido</el-button
-          >
-        </template>
-      </span>
+                <template v-if="showClose">
+                <el-button @click="clickClose">Cerrar</el-button>
+                <el-button
+                    v-if="generate"
+                    :loading="loading_submit"
+                    class="submit"
+                    type="primary"
+                    @click="submit"
+                >Generar</el-button
+                >
+                </template>
+                <template v-else>
+                <el-button
+                    v-if="generate"
+                    :loading="loading_submit"
+                    class="submit"
+                    plain
+                    type="primary"
+                    @click="submit"
+                >Generar comprobante</el-button
+                >
+                <el-button v-else
+                            @click="clickFinalize">Ir al listado</el-button>
+                <el-button type="primary"
+                            @click="clickNewOrderNote"
+                >Nuevo pedido</el-button
+                >
+                </template>
+            </span>
         </el-dialog>
 
         <document-options
@@ -420,6 +431,7 @@ import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
 import {calculateRowItem} from "../../../helpers/functions";
 import {exchangeRate} from "../../../mixins/functions";
 import moment from "moment";
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
     components: {
@@ -436,6 +448,7 @@ export default {
         "showGenerate",
         "type",
         "typeUser",
+        "configuration",
     ],
     data() {
         return {
@@ -468,6 +481,8 @@ export default {
             affectation_igv_type: null,
             currencyTypeIdActive: "PEN",
             exchangeRateSale: 1,
+            show_has_retention: true,
+            currency_type: {},
         };
     },
     created() {
@@ -583,6 +598,60 @@ export default {
         },
         async changeCustomer() {
             await this.validateIdentityDocumentType();
+            // retencion para clientes con ruc
+            this.validateCustomerRetention(this.form.dispatch.customer.identity_document_type_id)
+        },
+        validateCustomerRetention(identity_document_type_id) {
+
+            if (identity_document_type_id != '6') {
+
+                if (this.document.has_retention) {
+                    this.document.has_retention = false
+                    this.changeRetention()
+                }
+
+                this.show_has_retention = false
+
+            } else {
+                this.show_has_retention = true
+            }
+
+        },
+        changeRetention() {
+
+            if (this.document.has_retention) {
+
+                let base = this.document.total
+                let percentage = _.round(parseFloat(this.configuration.igv_retention_percentage) / 100, 5)
+                let amount = _.round(base * percentage, 2)
+
+                this.document.retention = {
+                    base: base,
+                    code: '62', //Código de Retención del IGV
+                    amount: amount,
+                    percentage: percentage
+                }
+
+                this.setTotalPendingAmountRetention(amount)
+
+            } else {
+
+                this.document.retention = {}
+                this.document.total_pending_payment = 0
+                this.calculateAmountToPayments()
+            }
+
+        },
+        calculateAmountToPayments() {
+            this.calculatePayments()
+            this.calculateFee()
+        },
+        setTotalPendingAmountRetention(amount) {
+
+            //monto neto pendiente aplica si la condicion de pago es credito
+            this.form.total_pending_payment = ['02', '03'].includes(this.form.payment_condition_id) ? this.form.total - amount : 0
+            this.calculateAmountToPayments()
+
         },
         searchRemoteCustomers(input) {
             if (input.length > 0) {
@@ -644,7 +713,21 @@ export default {
                 hotel: {},
                 fee: [],
                 payment_condition_id: '01',
+                has_retention: false,
+                retention: {},
             };
+
+            this.prepareDataRetention()
+            this.currency_type = _.find(this.configuration.currency_types, {'id': this.document.currency_type_id})
+        },
+        prepareDataRetention() {
+
+            this.form.has_retention = !_.isEmpty(this.form.retention)
+
+            if (this.form.has_retention) {
+                this.setTotalPendingAmountRetention(this.form.retention.amount)
+            }
+
         },
         changeDateOfIssue() {
             this.document.date_of_due = this.document.date_of_issue;
@@ -919,7 +1002,7 @@ export default {
             this.titleDialog = `Guía ${this.form.dispatch.series}-${this.form.dispatch.number}: Crear comprobante`;
 
             await this.onCalculateTotals();
-            
+
             await this.clickAddPayment();
         },
         changeDocumentType() {
