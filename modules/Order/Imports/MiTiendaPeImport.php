@@ -75,7 +75,16 @@
             unset($rows[0]);
             $orders = [];
             $numberOrders = [];
-            $idsg = 0;
+            $items=[];
+            $order_total=[];
+            $order_total_discount=[];
+            $order_total_taxes=[];
+            $order_unit_value=[];
+            $order_total_base_igv=[];
+            $order_percentage_igv=[];
+            $order_total_igv=[];
+            $order_unit_price=[];
+            $order_total_value=[];
             foreach ($rows as $row) {
                 $documentType = $row[0] ?? null;
                 $miTiendaPeOrder = $row[1] ?? null;
@@ -95,7 +104,7 @@
                     $payment_method_types = PaymentMethodType::where('description', 'Contado')->first();
                 }
 
-                $internal_id = $row[11] ?? null;
+                $internal_id = trim($row[11] ?? null);
                 $quantity = $row[12] ?? null;
 
                 $amountWithOutIGV = $row[13] ?? 0; // precio sin igv
@@ -265,7 +274,6 @@
 
                     ];
                     $itemTo['unit_type_id'] = $cItem['unit_type_id'];
-                    $temp['items'] = [$itemTo];
 
                     if (isset($orders[$miTiendaPeOrder])) {
                         // se busca los item de la orden, para sumar sus totales
@@ -290,6 +298,29 @@
 
                     }
                     $orders[$miTiendaPeOrder] = $temp;
+                    if(!isset($orders[$miTiendaPeOrder]['items']))$orders[$miTiendaPeOrder]['items']=[];
+                    if(!isset($items[$miTiendaPeOrder]))$items[$miTiendaPeOrder]=[];
+                    if(!isset($order_total[$miTiendaPeOrder]))$order_total[$miTiendaPeOrder]=0;
+                    if(!isset($order_total_discount[$miTiendaPeOrder]))$order_total_discount[$miTiendaPeOrder]=0;
+                    if(!isset($order_total_taxes[$miTiendaPeOrder]))$order_total_taxes[$miTiendaPeOrder]=0;
+                    if(!isset($order_unit_value[$miTiendaPeOrder]))$order_unit_value[$miTiendaPeOrder]=0;
+                    if(!isset($order_total_base_igv[$miTiendaPeOrder]))$order_total_base_igv[$miTiendaPeOrder]=0;
+                    if(!isset($order_percentage_igv[$miTiendaPeOrder]))$order_percentage_igv[$miTiendaPeOrder]=0;
+                    if(!isset($order_total_igv[$miTiendaPeOrder]))$order_total_igv[$miTiendaPeOrder]=0;
+                    if(!isset($order_unit_price[$miTiendaPeOrder]))$order_unit_price[$miTiendaPeOrder]=0;
+                    if(!isset($order_total_value[$miTiendaPeOrder]))$order_total_value[$miTiendaPeOrder]=0;
+
+                    $items[$miTiendaPeOrder][]=$itemTo;
+                    $order_total[$miTiendaPeOrder]+=$itemTo['total'];
+                    $order_total_discount[$miTiendaPeOrder]+=$itemTo['total_discount'];
+                    $order_total_taxes[$miTiendaPeOrder]+=$itemTo['total_taxes'];
+                    $order_unit_value[$miTiendaPeOrder]+=$itemTo['unit_value'];
+                    $order_total_base_igv[$miTiendaPeOrder]+=$itemTo['total_base_igv'];
+                    $order_percentage_igv[$miTiendaPeOrder]+=$itemTo['percentage_igv'];
+                    $order_total_igv[$miTiendaPeOrder]+=$itemTo['total_igv'];
+                    $order_unit_price[$miTiendaPeOrder]+=$itemTo['unit_price'];
+                    $order_total_value[$miTiendaPeOrder]+=$itemTo['total_value'];
+                    $orders[$miTiendaPeOrder]['items'][] = $itemTo;
                 }
 
             }
@@ -300,6 +331,16 @@
                 if (isset($orders[$item]) && empty($checkItem)) {
                     $toSave = $orders[$item];
                     $request = new OrderNoteRequest();
+                    $toSave['items']=$items[$item];
+                    $toSave['total']=$order_total[$item];
+                    $toSave['total_discount']=$order_total_discount[$item];
+                    $toSave['total_taxes']=$order_total_taxes[$item];
+                    $toSave['unit_value']=$order_unit_value[$item];
+                    $toSave['total_base_igv']=$order_total_base_igv[$item];
+                    $toSave['percentage_igv']=$order_percentage_igv[$item];
+                    $toSave['total_igv']=$order_total_igv[$item];
+                    $toSave['unit_price']=$order_unit_price[$item];
+                    $toSave['total_value']=$order_total_value[$item];
                     $request->merge($toSave);
                     $orderNotecontroller = new OrderNoteController();
                     $result = $orderNotecontroller->store($request);
