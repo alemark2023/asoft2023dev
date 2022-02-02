@@ -31,11 +31,12 @@
                     <tr slot="heading">
 
                         <th>#</th>
-                        <th class="text-center">Número de registro</th>
+                        <th class="text-center">Número de Ficha</th>
                         <th>Fecha de inicio</th>
                         <th>Hora de inicio</th>
                         <th>Fecha de fin</th>
                         <th>Hora de fin</th>
+                        <th>Insumos</th>
                         <th>Usuario</th>
                         <th>Comentario</th>
 <!--                        <th class="text-right">Acciones</th>-->
@@ -48,6 +49,13 @@
                         <td>{{ row.time_start }}</td>
                         <td>{{ row.date_end }}</td>
                         <td>{{ row.time_end }}</td>
+                        <td>
+                            <span
+                                v-if=" row.mill_items"
+                                v-for="(m_item, index_item) in row.mill_items" :key="index_item">
+                                {{ m_item.item_name }}  <small>{{ m_item.color }}</small> <br>
+                            </span>
+                        </td>
                         <td>{{ row.user }}</td>
                         <td>{{ row.comment }}</td>
                     <!--

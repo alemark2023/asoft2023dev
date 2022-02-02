@@ -110,6 +110,17 @@
                     Route::get('/pdf', 'ProductionController@pdf');
 
                 });
+                Route::prefix('packaging')->group(function () {
+                    Route::get('', 'PackagingController@index')->name('tenant.packaging.index'); // ->middleware('redirect.level');
+                    Route::get('create', 'PackagingController@create')->name('tenant.packaging.new');
+                    Route::post('create', 'PackagingController@store');
+                    Route::post('search_items', 'PackagingController@searchItems');
+                    Route::get('/records', 'PackagingController@records');
+                    Route::get('/tables', 'PackagingController@tables');
+                    Route::get('/excel', 'PackagingController@excel');
+                    Route::get('/pdf', 'PackagingController@pdf');
+
+                });
             });
         });
     }

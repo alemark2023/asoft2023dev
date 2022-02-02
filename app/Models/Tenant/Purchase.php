@@ -29,6 +29,7 @@ use stdClass;
  * @property mixed $perception
  * @property mixed $prepayments
  * @property mixed $related
+ * @property string|null $observation
  * @property \App\Models\Tenant\Person $supplier
  * @property \App\Models\Tenant\Group $group
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\InventoryKardex[] $inventory_kardex
@@ -113,6 +114,7 @@ class Purchase extends ModelTenant
         'customer_id',
         'total_canceled',
         'payment_condition_id',
+        'observation',
     ];
 
     protected $casts = [
@@ -300,7 +302,7 @@ class Purchase extends ModelTenant
     {
         return $this->hasMany(PurchaseItem::class);
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -400,7 +402,7 @@ class Purchase extends ModelTenant
     public function customer() {
         return $this->belongsTo(Person::class, 'customer_id');
     }
-    
+
     /**
      * @return HasMany
      */
@@ -508,6 +510,7 @@ class Purchase extends ModelTenant
             'soap_type_id'                   => $this->soap_type_id,
             'date_of_issue'                  => $this->date_of_issue->format('Y-m-d'),
             'date_of_due'                    => ($this->date_of_due) ? $this->date_of_due->format('Y-m-d') : '-',
+            'purchase_order'                         => $this->purchase_order,
             'number'                         => $this->number_full,
             'supplier_name'                  => $this->supplier->name,
             'supplier_number'                => $this->supplier->number,

@@ -323,10 +323,13 @@
                                         </li>
                                     @endif
                                     @if(in_array('pos', $vc_module_levels))
+                                        {{-- CMAR Inactivo temporalmente --}}
+                                        <!--
                                         <li class="{{ ($firstLevel === 'pos' && $secondLevel === 'fast')?'nav-active':'' }}">
                                             <a class="nav-link"
                                                href="{{route('tenant.pos.fast')}}">Venta rápida</a>
                                         </li>
+                                        -->
                                     @endif
                                     @if(in_array('cash', $vc_module_levels))
                                         <li class="{{ ($firstLevel === 'cash')?'nav-active':'' }}">
@@ -1278,6 +1281,7 @@
                         <li class=" nav-parent {{ (
                                                     ($firstLevel === 'production') ||
                                                     ($firstLevel === 'machine-production') ||
+                                                    ($firstLevel === 'packaging') ||
                                                     ($firstLevel === 'machine-type-production') ||
                                                     ($firstLevel === 'mill-production')
                                                 ) ? 'nav-active nav-expanded' : '' }}">
@@ -1313,6 +1317,12 @@
                                     <a class="nav-link"
                                         href="{{ route('tenant.machine_production.index') }}">
                                         Maquinaria
+                                    </a>
+                                </li>
+                                <li class="{{ (($firstLevel === 'packaging')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.packaging.index') }}">
+                                        Zona de embalaje
                                     </a>
                                 </li>
 
