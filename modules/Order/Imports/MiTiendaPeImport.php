@@ -262,14 +262,14 @@
                         'total_charge' => 0,
 
                         'total_taxes' => $total_igv,
-                        'unit_value' => ($amountWithOutIGV / $quantity),
-                        'total_base_igv' => $amountWithOutIGV,
+                        'unit_value' => ($stotal / $quantity),
+                        'total_base_igv' => $stotal,
                         'percentage_igv' => $igv,
                         'total_igv' => $total_igv,
-                        'unit_price' => ($amountWithOutIGV / $quantity),
-                        'total_value' => ($amountWithOutIGV / $quantity),
+                        'unit_price' => ($stotal / $quantity),
+                        'total_value' => ($stotal / $quantity),
                         'total_discount' => (float)$discount,
-                        'total' => $amountWithOutIGV + $total_igv,
+                        'total' => $stotal + $total_igv,
 
 
                     ];
