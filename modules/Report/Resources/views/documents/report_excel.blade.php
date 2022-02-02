@@ -1,3 +1,8 @@
+<?php
+    use App\Models\Tenant\Document;
+    use App\CoreFacturalo\Helpers\Template\TemplateHelper;
+    use App\Models\Tenant\SaleNote;
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -108,6 +113,7 @@
                     <th>Plataforma</th>
                     <th>Orden de compra</th>
                     <th class="">Forma de pago</th>
+                    <th> MÉTODO DE PAGO </th>
                     <th>Total Exonerado</th>
                     <th>Total Inafecto</th>
                     <th>Total Gratuito</th>
@@ -197,7 +203,27 @@
                         <td class="celda">
                             {{ ($value->payments()->count() > 0) ? $value->payments()->first()->payment_method_type->description : ''}}
                         </td>
+                        <td class="celda">
+                            @php
+                            $payments= [];
+                            if(
+                                get_class($value) == Document::class ||
+                                get_class($value) == SaleNote::class
+                            ){
+                                $payments = TemplateHelper::getDetailedPayment($value);
+                            }
+                            @endphp
 
+                            @foreach ($payments as $payment)
+                                @foreach ($payment as $pay)
+                                    {{ $pay['description'] }}
+                                    @if ($loop->count > 1 && !$loop->last)
+                                        <br>
+                                    @endif
+                                @endforeach
+                            @endforeach
+
+                        </td>
 
                     <!-- <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_exonerated}} </td>
                                 <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_unaffected}}</td>
@@ -357,7 +383,7 @@
                     @endphp
                 @endforeach
                 <tr>
-                    <td colspan="19"></td>
+                    <td colspan="20"></td>
                 <!-- <td >Totales</td>
                                 <td>{{$acum_total_exonerado}}</td>
                                 <td>{{$acum_total_inafecto}}</td>
@@ -375,7 +401,7 @@
                     <td>{{$acum_total}}</td>
                 </tr>
                 <tr>
-                    <td colspan="19"></td>
+                    <td colspan="20"></td>
                     <td>Totales USD</td>
                     <td></td>
                     <td></td>
