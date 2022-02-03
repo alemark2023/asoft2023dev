@@ -349,7 +349,7 @@
                         $orderId = $order->id;
                         $document = new Document();
 
-                        if (isset($toSave['document_type_id']) && !empty($toSave['document_type_id'])) {
+                        if ($configurationMiTienda->getAutogenerate()  === true &&isset($toSave['document_type_id']) && !empty($toSave['document_type_id'])) {
                             $document = $this->setDocument($toSave, $order);
                         }
 

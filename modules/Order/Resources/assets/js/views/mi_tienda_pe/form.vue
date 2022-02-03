@@ -177,6 +177,29 @@
                                     ></small>
                                 </div>
                             </div>
+                            <div class="col-md-6 mt-4">
+
+                                <label class="control-label">
+                                    ¿Generar automaticamente las Boleta/Factura?
+
+                                    <el-tooltip
+                                        class="item"
+                                        content="Si esta activado, se generará automaticamente el documento"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.autogenerate}"
+                                     class="form-group">
+                                    <el-switch v-model="form.autogenerate"
+                                               active-text="Si"
+                                               inactive-text="No"></el-switch>
+                                    <small v-if="errors.autogenerate"
+                                           class="form-control-feedback"
+                                           v-text="errors.autogenerate[0]"></small>
+                                </div>
+                            </div>
 
                             <div class="col-12 text-right mt-4">
                                 <el-button :loading="loading_submit"
@@ -311,14 +334,19 @@ export default {
                 .post(`/${this.resource}/save`, this.form)
                 .then(response => {
 
-                    console.error(response.data);
-                    let data = response.data.data;
-                    console.dir(data);
+                    let data = response.data;
                     //configurationMiTienda
                     if (data.success) {
                         this.$message.success(data.message);
                     } else {
+
+                        if(data.configurationMiTienda !== undefined){
+                            this.$message.success("Se han guardado los datos");
+                            this.$store.commit('setMiTiendaPe', data.configurationMiTienda)
+
+                        }else{
                         this.$message.error(data.message);
+                    }
                     }
                     //   this.$store.commit('setConfiguration', data.configuration)
 

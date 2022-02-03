@@ -80,6 +80,7 @@ export default {
             state.mi_tienda_pe = {
                 establishment_id: null,
                 series_order_note_id: null,
+                autogenerate: false,
                 series_document_id: null,
                 user_id: null,
                 payment_destination_id: null,
