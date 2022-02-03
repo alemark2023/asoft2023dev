@@ -586,6 +586,8 @@ if ($hostname) {
 
             //POS VENTA RAPIDA
             Route::get('pos/fast', 'Tenant\PosController@fast')->name('tenant.pos.fast');
+            Route::get('pos/garage', 'Tenant\PosController@garage')->name('tenant.pos.garage');
+
 
             //Tags
             Route::get('tags', 'Tenant\TagController@index')->name('tenant.tags.index');
