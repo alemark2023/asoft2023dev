@@ -42,6 +42,27 @@
     class MiTiendaPeImport implements ToCollection
     {
         use Importable;
+        /** @var array */
+        protected $process;
+
+        /**
+         * @return array
+         */
+        public function getProcess(): array
+        {
+            return $this->process;
+        }
+
+        /**
+         * @param array $process
+         *
+         * @return MiTiendaPeImport
+         */
+        public function setProcess(array $process): MiTiendaPeImport
+        {
+            $this->process = $process;
+            return $this;
+        }
 
         protected $data;
         /** @var ConfigurationMiTiendaPe  */
@@ -52,7 +73,7 @@
         public function collection(Collection $rows)
         {
             libxml_disable_entity_loader(false);
-
+            $this->process = [];
             $configurationMiTienda = ConfigurationMiTiendaPe::first();
             if(empty($configurationMiTienda)){
                 $configurationMiTienda = new ConfigurationMiTiendaPe();
@@ -85,6 +106,10 @@
             $order_total_igv=[];
             $order_unit_price=[];
             $order_total_value=[];
+
+            $order_total_taxed=[];
+            $order_total_exonerated=[];
+
             foreach ($rows as $row) {
                 $documentType = $row[0] ?? null;
                 $miTiendaPeOrder = $row[1] ?? null;
@@ -95,14 +120,15 @@
                 $region = $row[6] ?? null;
                 $district = $row[7] ?? null;
                 $paymentType = $row[8] ?? 'Contado';
-                $identificationNumber = $row[9] ?? null;
-                $email = $row[10] ?? null;
-
-
+                $paymentType = trim($paymentType);
                 $payment_method_types = PaymentMethodType::where('description', $paymentType)->first();
                 if (empty($payment_method_types)) {
                     $payment_method_types = PaymentMethodType::where('description', 'Contado')->first();
                 }
+
+
+                $identificationNumber = $row[9] ?? null;
+                $email = $row[10] ?? null;
 
                 $internal_id = trim($row[11] ?? null);
                 $quantity = $row[12] ?? null;
@@ -222,7 +248,7 @@
                     "total_taxes" => 0,
                     'total' => $totalImport,
 
-                    'total_exonerated' => $totalImport,
+                    'total_exonerated' => 0,
                     "document_type_id" => $documentType,
                     // "payment_method" => $payment_method_types,
                     "total_value" => $totalImport,
@@ -241,6 +267,7 @@
                     $cItem['lots'] = (array)$cItem['lots'];
 
                     $cItem['quantity'] = $quantity;
+                    $totalItem =$amountWithOutIGV + $total_igv;
                     $itemTo = [
                         'item_id' => $item->id,
                         'item' => (array)$cItem,
@@ -260,19 +287,20 @@
                         'charges' => [],
                         'price_type_id' => '01',
                         'total_charge' => 0,
-
-                        'total_taxes' => $total_igv,
-                        'unit_value' => ($stotal / $quantity),
-                        'total_base_igv' => $stotal,
-                        'percentage_igv' => $igv,
+                        'total_exonerated'=>empty($total_igv)?($totalItem):0,
+                        'total_base_igv' => $amountWithOutIGV,
                         'total_igv' => $total_igv,
-                        'unit_price' => ($stotal / $quantity),
-                        'total_value' => ($stotal / $quantity),
+                        'total_taxed' => !empty($total_igv)?($amountWithOutIGV):0,
+                        'unit_price' => ($totalItem / $quantity),
+                        'total_value' => $amountWithOutIGV,
+                        'total_taxes' => $total_igv,
+                        'unit_value' => ($amountWithOutIGV / $quantity),
+                        'percentage_igv' => $igv,
                         'total_discount' => (float)$discount,
-                        'total' => $stotal + $total_igv,
-
-
+                        'total' => $totalItem,
+                        'transaction_code'=>$transaction_code,
                     ];
+
                     $itemTo['unit_type_id'] = $cItem['unit_type_id'];
 
                     if (isset($orders[$miTiendaPeOrder])) {
@@ -286,7 +314,9 @@
                             'percentage_igv',
                             'total_igv',
                             'unit_price',
+                            'total_taxed',
                             'total_value',
+                            'total_exonerated'
                         ];
 
                         foreach ($checkfield as $field) {
@@ -309,6 +339,8 @@
                     if(!isset($order_total_igv[$miTiendaPeOrder]))$order_total_igv[$miTiendaPeOrder]=0;
                     if(!isset($order_unit_price[$miTiendaPeOrder]))$order_unit_price[$miTiendaPeOrder]=0;
                     if(!isset($order_total_value[$miTiendaPeOrder]))$order_total_value[$miTiendaPeOrder]=0;
+                    if(!isset($order_total_taxed[$miTiendaPeOrder]))$order_total_taxed[$miTiendaPeOrder]=0;
+                    if(!isset($order_total_exonerated[$miTiendaPeOrder]))$order_total_exonerated[$miTiendaPeOrder]=0;
 
                     $items[$miTiendaPeOrder][]=$itemTo;
                     $order_total[$miTiendaPeOrder]+=$itemTo['total'];
@@ -321,6 +353,12 @@
                     $order_unit_price[$miTiendaPeOrder]+=$itemTo['unit_price'];
                     $order_total_value[$miTiendaPeOrder]+=$itemTo['total_value'];
                     $orders[$miTiendaPeOrder]['items'][] = $itemTo;
+
+
+                    $order_total_taxed[$miTiendaPeOrder]+=$itemTo['total_taxed'];
+                    $order_total_exonerated[$miTiendaPeOrder]+=$itemTo['total_exonerated'];
+
+
                 }
 
             }
@@ -341,6 +379,11 @@
                     $toSave['total_igv']=$order_total_igv[$item];
                     $toSave['unit_price']=$order_unit_price[$item];
                     $toSave['total_value']=$order_total_value[$item];
+                    $toSave['total_taxed']=$order_total_taxed[$item];
+                    $toSave['total_exonerated']=$order_total_exonerated[$item];
+
+
+
                     $request->merge($toSave);
                     $orderNotecontroller = new OrderNoteController();
                     $result = $orderNotecontroller->store($request);
@@ -361,6 +404,13 @@
                         ]);
                         $miTiendaPe->push();
                         $total++;
+                        $temp = [
+                            'order'=>$order,
+                            'document'=>$document,
+                            'data'=>$toSave,
+
+                        ];
+                        $this->process[] = $temp;
                     } else {
                         Log::debug(" No se pudo guardar por que no fue exitoso \n" . json_encode($toSave));
                     }
@@ -389,8 +439,11 @@
 
             $data["order_note_id"] = $orderNote->id;
             $data["document_type_id"] = $documentType->id;
-            if($data["document_type_id"] == '03' || $data["document_type_id"] == '01'){
+            if($data["document_type_id"] == '03' ) {
                 $data["series_id"] = $this->configuration->series_document_bt_id;
+                $data["series"] = Series::find($data["series_id"])->number;
+            }elseif($data["document_type_id"] == '01'){
+                $data["series_id"] = $this->configuration->series_document_ft_id;
                 $data["series"] = Series::find($data["series_id"])->number;
             }else{
                 return new Document();
@@ -406,8 +459,8 @@
                 "document_id" => null,
                 "date_of_payment" => $data['date_of_issue'],
                 "payment_method_type_id" => $data['payment_method_type_id'],
+                "reference" => $data['transaction_code']??null,
                 "payment_destination_id" => $this->configuration->payment_destination_id,
-                "reference" => null,
                 "payment" => $data['total'],
             ];
 
