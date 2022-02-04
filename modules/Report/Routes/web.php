@@ -292,6 +292,21 @@
 
                     });
 
+                    Route::prefix('commissions-detail')->group(function () {
+
+                         Route::get('', 'ReportCommissionDetailController@index')
+                              ->name('tenant.reports.commissions_detail.index');
+                         Route::get('/pdf', 'ReportCommissionDetailController@pdf')
+                              ->name('tenant.reports.commissions_detail.pdf');
+                         Route::get('/excel', 'ReportCommissionDetailController@excel')
+                              ->name('tenant.reports.commissions_detail.excel');
+                         Route::get('/filter', 'ReportCommissionDetailController@filter')
+                              ->name('tenant.reports.commissions_detail.filter');
+                         Route::get('/records', 'ReportCommissionDetailController@records')
+                              ->name('tenant.reports.commissions_detail.records');
+ 
+                     });
+
 
                     Route::prefix('fixed-asset-purchases')->group(function () {
 

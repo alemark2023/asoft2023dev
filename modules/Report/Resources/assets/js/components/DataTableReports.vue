@@ -233,6 +233,21 @@
                         </div>
                     </div>
 
+                    <div class="col-lg-4 col-md-6" v-if="resource == 'reports/commissions-detail'">
+                            <div class="form-group">
+                                <label class="control-label">Productos
+                                </label>
+
+                                <el-select v-model="form.item_id" filterable remote popper-class="el-select-customers"  clearable
+                                    placeholder="Código interno o nombre"
+                                    :remote-method="searchRemoteItems"
+                                    :loading="loading_search_items" >
+                                    <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+
+                            </div>
+                    </div>
+
 
                     <div class="col-lg-7 col-md-7 col-md-7 col-sm-12"
                          style="margin-top:29px">
@@ -409,7 +424,10 @@ export default {
                     return this.form.month_start > time
                 }
             },
-            sellers: []
+            sellers: [],
+            items: [],
+            all_items: [],
+            loading_search_items: false
         }
     },
     computed: {
@@ -602,6 +620,7 @@ export default {
                 guides: null,
                 user_type: null,
                 user_id: [],
+                item_id: null
             }
 
         },
@@ -689,6 +708,30 @@ export default {
                 this.form.date_end = moment().endOf('month').format('YYYY-MM-DD');
             }
             // this.loadAll();
+        },
+        searchRemoteItems(input) {
+                if (input.length > 0) {
+
+                    this.loading_search = true
+                    let parameters = `input=${input}`
+
+
+                    this.$http.get(`/reports/data-table/items/?${parameters}`)
+                            .then(response => {
+                                this.items = response.data.items
+                                this.loading_search = false
+
+                                if(this.items.length == 0){
+                                    this.filterItems()
+                                }
+                            })
+                } else {
+                    this.filterItems()
+                }
+
+        },
+        filterItems() {
+            this.items = this.all_items
         },
     }
 }
