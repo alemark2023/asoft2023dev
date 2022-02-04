@@ -700,7 +700,7 @@
                                     @if(in_array('inventory_devolutions', $vc_module_levels))
                                         <li class="{{ ($firstLevel === 'devolutions')?'nav-active':'' }}">
                                             <a class="nav-link"
-                                               href="{{route('devolutions.index')}}">Devoluciones</a>
+                                               href="{{route('devolutions.index')}}">Devolucion a proveedor</a>
                                         </li>
                                     @endif
                                     @if(in_array('inventory_report_kardex', $vc_module_levels))
