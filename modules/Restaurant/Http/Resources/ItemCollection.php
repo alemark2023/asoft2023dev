@@ -20,6 +20,7 @@ class ItemCollection extends ResourceCollection
             return [
                 'id' => $row->id,
                 'unit_type_id' => $row->unit_type_id,
+                'category_id' => $row->category_id,
                 'description' => $row->description,
                 'name' => $row->name,
                 'second_name' => $row->second_name,
