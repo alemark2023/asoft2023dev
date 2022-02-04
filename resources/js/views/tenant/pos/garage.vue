@@ -638,6 +638,7 @@
                             :soapCompany="soapCompany"
                             :businessTurns="businessTurns"
                             :is-print="isPrint"
+                            :rows-items="form.items.length"
                         ></fast-payment>
                     </div>
                 </div>

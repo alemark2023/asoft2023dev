@@ -252,7 +252,7 @@ import MultiplePaymentForm from './multiple_payment.vue'
 export default {
     components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress},
 
-    props: ['form', 'customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany', 'businessTurns', 'isPrint'],
+    props: ['form', 'customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany', 'businessTurns', 'isPrint', 'rowsItems'],
     data() {
         return {
             enabled_discount: false,
@@ -754,6 +754,16 @@ export default {
         },
         async clickPayment() {
             // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
+
+            if(this.businessTurns.active) {
+                if(!this.form.plate_number) {
+                    return this.$message.warning('Debe ingresar placa');
+                }
+            }
+
+            if(this.rowsItems < 1) {
+                return this.$message.warning('Debe agregar productos');
+            }
 
             if (!moment(moment().format("YYYY-MM-DD")).isSame(this.form.date_of_issue)) {
                 return this.$message.error('La fecha de emisión no coincide con la del día actual');
