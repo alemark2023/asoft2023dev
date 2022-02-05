@@ -357,6 +357,10 @@ class PosController extends Controller
             $items->where('unit_type_id', '!=', 'ZZ');
         }
 
+        if($request->garage == 1) {
+            $items->where('calculate_quantity', 1);
+        }
+
         self::FilterItem($items, $request);
 
         return new PosCollection($items->paginate(50));
@@ -448,5 +452,20 @@ class PosController extends Controller
         $business_turns = BusinessTurn::select('active')->where('id', 4)->first();
 
         return view('tenant.pos.fast', compact('configuration', 'soap_company', 'business_turns'));
+    }
+
+    public function garage()
+    {
+        $cash = Cash::where([['user_id', auth()->user()->id],['state', true]])->first();
+
+        if(!$cash) return redirect()->route('tenant.cash.index');
+
+        $configuration = Configuration::first();
+
+        $company = Company::select('soap_type_id')->first();
+        $soap_company  = $company->soap_type_id;
+        $business_turns = BusinessTurn::select('active')->where('id', 4)->first();
+
+        return view('tenant.pos.garage', compact('configuration', 'soap_company', 'business_turns'));
     }
 }

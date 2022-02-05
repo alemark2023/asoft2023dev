@@ -113,6 +113,7 @@ Vue.component('tenant-pos-index', require('./views/tenant/pos/index.vue'));
 Vue.component('cash-index', require('./views/tenant/cash/index.vue'));
 Vue.component('tenant-card-brands-index', require('./views/tenant/card_brands/index.vue'));
 Vue.component('tenant-pos-fast', require('./views/tenant/pos/fast.vue'));
+Vue.component('tenant-pos-garage', require('./views/tenant/pos/garage.vue'));
 
 Vue.component('tenant-payment-method-index', require('./views/tenant/payment_method/index.vue'));
 Vue.component('tenant-payment-method-index', require('./views/tenant/payment_method/index.vue'));
@@ -183,6 +184,7 @@ Vue.component('tenant-report-user-commissions-index', require('../../modules/Rep
 Vue.component('tenant-report-fixed-asset-purchases-index', require('../../modules/Report/Resources/assets/js/views/fixed-asset-purchases/index.vue'));
 Vue.component('tenant-report-massive-downloads-index', require('../../modules/Report/Resources/assets/js/views/massive-downloads/index.vue'));
 Vue.component('tenant-documents-regularize-shipping', require('../../modules/Document/Resources/assets/js/views/documents/regularize_shipping.vue'));
+Vue.component('tenant-report-commissions-detail-index', require('../../modules/Report/Resources/assets/js/views/commissions_detail/index.vue'));    
 
 
 Vue.component('tenant-categories-index', require('../../modules/Item/Resources/assets/js/views/categories/index.vue'));

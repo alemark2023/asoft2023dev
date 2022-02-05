@@ -31,6 +31,7 @@
                             <th>Cotización</th>
                             <th>Caso</th>
                             <th>Cliente</th>
+                            <th>Productos</th>
                             <th>Estado</th>
                             <th>Moneda</th>
                             <th class="text-center" v-if="columns.web_platforms.visible">Plataforma</th>
@@ -43,7 +44,7 @@
                             <th class="">Total IGV</th>
                             <th class="" v-if="columns.total_isc.visible">Total ISC</th>
                             <th class="">Total</th>
-                        <tr>
+                        </tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>
                             <td>{{ row.user_name }}</td>
@@ -65,6 +66,15 @@
                             <td>{{ row.quotation_number_full }}</td>
                             <td>{{ row.sale_opportunity_number_full }}</td>
                             <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
+                            <td class="text-center">
+                                <button
+                                    class="btn waves-effect waves-light btn-xs btn-primary"
+                                    type="button"
+                                    @click.prevent="clickViewProducts(row.items)"
+                                >
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </td>
                             <td>{{ row.state_type_description }}</td>
 
                             <td>{{ row.currency_type_id }}</td>
@@ -128,6 +138,9 @@
                           :showClose="true"
                           :configuration="configuration"
         ></document-options>
+        <product-sale :records="recordsItems" :showDialog.sync="showDialogProducts">
+
+        </product-sale>
     </div>
 </template>
 
@@ -135,10 +148,11 @@
 
     import DataTable from '../../components/DataTableReports.vue'
     import DocumentOptions from '../../../../../../../resources/js/views/tenant/documents/partials/options'
+    import ProductSale from './partials/product_sale.vue'
 
     export default {
         props: ['configuration'],
-        components: {DataTable,DocumentOptions},
+        components: {DataTable,DocumentOptions, ProductSale},
         data() {
             return {
                 showDialogOptions: false,
@@ -162,7 +176,9 @@
                         title: 'Total ISC',
                         visible: false
                     },
-                }
+                },
+                showDialogProducts: false,
+                recordsItems:[]
 
             }
         },
@@ -173,6 +189,10 @@
                 this.recordId = recordId
                 this.showDialogOptions = true
             },
+            clickViewProducts(items = []) {
+                this.recordsItems = items;
+                this.showDialogProducts = true;
+            }
 
         }
     }

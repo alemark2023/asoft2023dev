@@ -166,7 +166,7 @@
                         <el-select v-model="document.payment_condition_id" dusk="document_type_id"
                                    popper-class="el-select-document_type" style="max-width: 200px;"
                                    @change="changePaymentCondition">
-                            <el-option label="Crédito con cuotas"value="03"></el-option>
+                            <el-option label="Crédito con cuotas" value="03"></el-option>
                             <el-option label="Crédito" value="02"></el-option>
                             <el-option label="Contado" value="01"></el-option>
                         </el-select>
