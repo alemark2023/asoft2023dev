@@ -24,6 +24,7 @@
     use Illuminate\Support\Collection;
     use Modules\Inventory\Models\InventoryKardex;
     use Modules\Item\Models\ItemLot;
+    use Modules\Item\Models\ItemLotsGroup;
 
 
     /**
@@ -519,6 +520,20 @@
                         }
                     }
                 }
+
+                if (isset($item->lots_group)) {
+                    if(is_array($item->lots_group) && count($item->lots_group) > 0) {
+                            $lots_group = $item->lots_group;
+    
+                            foreach ($lots_group as $ltg) {
+                                $lot = ItemLotsGroup::query()->find($ltg->id);
+                                $lot->quantity = $lot->quantity + $ltg->compromise_quantity;
+                                $lot->save();
+                            }
+                    }
+                }
+
+
             }
             $this->state_type_id = '11';
             return $this;
