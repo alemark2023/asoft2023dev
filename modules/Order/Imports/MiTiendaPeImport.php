@@ -5,6 +5,7 @@
 
 
     use App\CoreFacturalo\Requests\Inputs\DocumentInput;
+    use App\Http\Controllers\Tenant\Api\ServiceController;
     use App\Http\Controllers\Tenant\DocumentController;
     use App\Http\Requests\Tenant\DocumentRequest;
 
@@ -18,6 +19,7 @@
     use App\Models\Tenant\Item;
     use App\Models\Tenant\PaymentMethodType;
     use App\Models\Tenant\Person;
+    use App\Models\Tenant\PersonAddress;
     use App\Models\Tenant\Series;
     use App\Models\Tenant\User;
     use App\Models\Tenant\Warehouse;
@@ -30,6 +32,7 @@
     use Maatwebsite\Excel\Concerns\Importable;
     use Maatwebsite\Excel\Concerns\ToCollection;
 
+    use Modules\ApiPeruDev\Data\ServiceData;
     use Modules\Order\Http\Controllers\OrderNoteController;
     use Modules\Order\Http\Requests\OrderNoteRequest;
     use Modules\Order\Models\ConfigurationMiTiendaPe;
@@ -173,8 +176,10 @@
                 $customer = Person::SearchCustomer($identificationNumber, $names, $email)->first();
                 // Clientes
                 if (empty($customer)) {
-                    // Crear nuevo cliente
-                    $customer = new Person([
+                    $address = [
+                        'country_id'=>'PE',
+                    ];
+                    $dataCustomer = [
                         'type' => 'customers',
                         'name' => "$lastnames, $names",
                         'number' => $identificationNumber,
@@ -182,10 +187,30 @@
                         'address' => $street,
                         'email' => $email,
                         'telephone' => $phone,
+                    ];
+                    if (strlen($identificationNumber) === 8) {
+                        $dataCustomer = self::getPersonData($identificationNumber);
 
-                    ]);
+                        $address['department_id'] = $dataCustomerT['department_id']??0;
+                        $address['province_id'] = $dataCustomerT['province_id']??0;
+                        $address['district_id'] = $dataCustomerT['district_id']??0;
+
+                    } elseif (strlen($identificationNumber) === 11) {
+                        $dataCustomerT = self::getPersonData($identificationNumber);
+                        $dataCustomer['name']= $dataCustomerT['name']??$dataCustomer['name'];
+                        $dataCustomer['address']= $dataCustomerT['address']??$dataCustomer['address'];
+                        $dataCustomer['trade_name']= $dataCustomerT['trade_name']??null;
+                        $address['department_id'] = $dataCustomerT['department_id']??0;
+                        $address['province_id'] = $dataCustomerT['province_id']??0;
+                        $address['district_id'] = $dataCustomerT['district_id']??0;
+
+                    }
+                    $address['address'] = $dataCustomer['address']??null;
+
+                    // Crear nuevo cliente
+                    $customer = new Person($dataCustomer);
                     $customer->identity_document_type_id = IdentityDocumentType::where('description', 'Doc.trib.no.dom.sin.ruc')->first()->id;
-                    if (strlen($identificationNumber) > 10) {
+                    if (strlen($identificationNumber) == 11) {
                         $customer->identity_document_type_id = IdentityDocumentType::where('description', 'RUC')->first()->id;
                     } elseif (strlen($identificationNumber) == 8) {
                         $customer->identity_document_type_id = IdentityDocumentType::where('description', 'DNI')->first()->id;
@@ -201,6 +226,16 @@
                     }
                     $customer->contact = json_decode(json_encode(["full_name" => $customer->name, "phone" => $customer->telephone,]));
                     $customer->push();
+
+                    $address['person_id'] = $customer->id;
+                    $address['department_id'] = !empty($address['department_id'])?$address['department_id']:$customer->department_id;
+                    $address['province_id'] = !empty($address['province_id'])?$address['province_id']:$customer->province_id;
+                    $address['district_id'] = !empty($address['district_id'])?$address['district_id']:$customer->district_id;
+
+
+                    $addressPerson = new PersonAddress($address);
+                    $addressPerson->push();
+
                 }
 
 
@@ -218,7 +253,6 @@
                     'external_id' => Str::uuid()->toString(),
                     'customer_id' => $customerData['id'],
                     'customer' => $customerData,
-                    'shipping_address' => $customerData['direccion'],
                     "reference_payment" => empty($payment_method_types) ? 'Contado' : $payment_method_types->description,
                     'establishment_id' => $this->configuration->establishment_id,
                     'user_id' => $this->user->id,
@@ -228,6 +262,7 @@
                     'time_of_issue' => Carbon::now()->format('H:i:s'),
                     // 'purchase'
                     "operation_type_id" => null,
+                    "shipping_address" => $street,
                     "date_of_due" => $saleDate,
                     "delivery_date" => null,
                     "charges" => [],
@@ -261,6 +296,10 @@
                     // "payment_method" => $payment_method_types,
                     "total_value" => $totalImport,
                 ];
+                $observation = null;
+                if($customer->name != "$lastnames, $names"){
+                    $observation = "$lastnames, $names";
+                }
 
                 $item = Item::where('internal_id', $internal_id)->first();
 
@@ -281,6 +320,7 @@
                     $itemTo = [
                         'item_id' => $item->id,
                         'item' => (array)$cItem,
+                        'observation' => $observation,
                         'quantity' => $quantity,
                         'currency_type_id' => 'PEN',
                         'affectation_igv_type_id' => $item->sale_affectation_igv_type_id,
@@ -452,6 +492,28 @@
 
             }
             $this->data = compact('total', 'registered');
+
+        }
+
+        public static function getPersonData($number = null)
+        {
+            $service = new ServiceData();
+            $data = [];
+            if (!empty($number)) {
+                if (strlen($number) == 8) {
+                    $ruc = $service->service('dni', $number);
+                    if ($ruc['success'] == true) {
+                        $data = $ruc['data'];
+                    }
+                } else if (strlen($number) == 11) {
+                    $ruc = $service->service('ruc', $number);
+                    if ($ruc['success'] == true) {
+                        $data = $ruc['data'];
+                    }
+                }
+            }
+
+            return $data;
 
         }
 
