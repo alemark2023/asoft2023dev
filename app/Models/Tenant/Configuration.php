@@ -217,6 +217,9 @@
             'mi_tienda_pe',
             'detraction_amount_rounded_int',
             'show_terms_condition_pos',
+            'show_ticket_80',
+            'show_ticket_58',
+            'show_ticket_50',
         ];
 
         protected $casts = [
@@ -458,6 +461,9 @@
                 'detraction_amount_rounded_int' => $this->detraction_amount_rounded_int,
                 'show_terms_condition_pos' => (bool)$this->show_terms_condition_pos,
                 'mi_tienda_pe' => $this->isMiTiendaPe(),
+                'show_ticket_80' => (bool)$this->show_ticket_80,
+                'show_ticket_58' => (bool)$this->show_ticket_58,
+                'show_ticket_50' => (bool)$this->show_ticket_50,
             ];
         }
 
