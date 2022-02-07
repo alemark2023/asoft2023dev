@@ -271,7 +271,7 @@
                     console.log(error)
                 }).finally(()=>{
                     // ejecuta las migraciones al finalziar. sea exitoso o no
-                    this.execArtisanMigrate()
+                    // this.execArtisanMigrate()
                 })
             },
             execComposer() {

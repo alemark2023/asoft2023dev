@@ -756,7 +756,7 @@ export default {
             // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
 
             if(this.businessTurns.active) {
-                if(!this.form.plate_number) {
+                if(this.form.document_type_id == '01' && !this.form.plate_number) {
                     return this.$message.warning('Debe ingresar placa');
                 }
             }

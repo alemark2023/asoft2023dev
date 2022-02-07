@@ -426,6 +426,22 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
             // $this->createInventoryKardex($order_note_item->order_note, $order_note_item->item_id, (-1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
             // $this->updateStock($order_note_item->item_id, (-1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
+            
+            /*
+             * Calculando el stock por lote por factor según la unidad
+             */
+            if (isset($order_note_item->item->lots_group)) {
+                    if(is_array($order_note_item->item->lots_group) && count($order_note_item->item->lots_group) > 0) {
+                            $lots_group = $order_note_item->item->lots_group;
+
+                            foreach ($lots_group as $item) {
+                                $lot = ItemLotsGroup::query()->find($item->id);
+                                $lot->quantity = $lot->quantity - $item->compromise_quantity;
+                                $lot->save();
+                            }
+                    }
+            }
+
 
             if(isset($item->lots) )
             {
@@ -440,6 +456,8 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
                 }
             }
+
+
 
         });
     }
@@ -465,7 +483,24 @@ class InventoryKardexServiceProvider extends ServiceProvider
             $this->updateStock($order_note_item->item_id, (1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
 
 
+            if (isset($order_note_item->item->lots_group)) {
+                if(is_array($order_note_item->item->lots_group) && count($order_note_item->item->lots_group) > 0) {
+                        $lots_group = $order_note_item->item->lots_group;
+
+                        foreach ($lots_group as $item) {
+                            $lot = ItemLotsGroup::query()->find($item->id);
+                            $lot->quantity = $lot->quantity + $item->compromise_quantity;
+                            $lot->save();
+                        }
+                }
+            }
+
+
         });
+
+
+
+
     }
 
     /**

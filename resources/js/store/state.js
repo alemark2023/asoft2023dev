@@ -26,6 +26,7 @@ export default {
         series_document_bt_id:null,
         user_id:null,
         payment_destination_id:null,
+        autogenerate:false,
         currency_type_id:null,
     },
     config: {

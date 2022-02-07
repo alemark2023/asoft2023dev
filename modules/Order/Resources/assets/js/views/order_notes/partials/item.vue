@@ -142,6 +142,11 @@
                                    v-text="errors.unit_price[0]"></small>
                         </div>
                     </div>
+                     <div v-if="showLots" class="col-md-3 col-sm-3" style="padding-top: 1%;">
+                        <a class="text-center font-weight-bold text-info" href="#" @click.prevent="clickLotGroup">[&#10004;
+                                                                                                                  Seleccionar
+                                                                                                                  lote]</a>
+                    </div>
 
                     <div v-if="showSeries"
                          class="col-md-3 col-sm-3"
@@ -442,6 +447,13 @@
         >
         </select-lots-form>
 
+        <lots-group
+            :lots_group="form.lots_group"
+            :quantity="form.quantity"
+            :showDialog.sync="showDialogLots"
+            @addRowLotGroup="addRowLotGroup">
+        </lots-group>
+
     </el-dialog>
 </template>
 <style>
@@ -454,7 +466,7 @@
 
 // import WarehousesDetail from './warehouses.vue'
 import ItemForm from "../../../../../../../../resources/js/views/tenant/items/form";
-import LotsGroup from "../../../../../../../../resources/js/views/tenant/documents/partials/lots_group";
+import LotsGroup from "../../../../../../../../resources/js/views/tenant/sale_notes/partials/lots_group";
 
 import {calculateRowItem} from '@helpers/functions'
 import WarehousesDetail from '@views/documents/partials/select_warehouses.vue'
@@ -545,11 +557,6 @@ export default {
         ]),
 
         showLots() {
-            // if (
-            //     this.form.item_id &&
-            //     this.form.item.lots_enabled &&
-            //     this.form.lots_group.length > 0
-            // )
 
             if (this.form.item_id && this.form.item.lots_enabled) {
                 return true;
@@ -986,6 +993,8 @@ export default {
 
             (this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
 
+            this.form.lots_group = this.form.item.lots_group
+
             this.cleanTotalItem();
         },
 
@@ -1020,6 +1029,13 @@ export default {
         },
         async clickAddItem() {
 
+            this.validateQuantity()
+
+            if (this.form.item.lots_enabled) {
+                if (!this.form.IdLoteSelected)
+                    return this.$message.error('Debe seleccionar un lote.');
+            }
+
             let select_lots = await _.filter(this.form.item.lots, {'has_sale': true})
 
             if (this.form.item.series_enabled) {
@@ -1038,8 +1054,9 @@ export default {
 
             this.form.item.presentation = this.item_unit_type;
             this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
+            let IdLoteSelected = this.form.IdLoteSelected
             this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
-
+            this.row.IdLoteSelected = IdLoteSelected
             this.initForm();
 
             // this.initializeFields()
@@ -1108,8 +1125,6 @@ export default {
                 this.items = response.data.items
             })
         },
-
-
         addRowLotGroup(id) {
             this.form.IdLoteSelected = id
         },
@@ -1129,6 +1144,32 @@ export default {
 
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
 
+        },
+        validateQuantity() {
+
+            if (!this.form.quantity) {
+                this.setMinQuantity()
+            }
+
+            if (isNaN(Number(this.form.quantity))) {
+                this.setMinQuantity()
+            }
+
+            if (typeof parseFloat(this.form.quantity) !== 'number') {
+                this.setMinQuantity()
+            }
+
+            if (this.form.quantity <= this.getMinQuantity()) {
+                this.setMinQuantity()
+            }
+
+            this.calculateTotal()
+        },
+        setMinQuantity() {
+            this.form.quantity = this.getMinQuantity()
+        },
+        getMinQuantity() {
+            return 0.01
         },
     }
 }

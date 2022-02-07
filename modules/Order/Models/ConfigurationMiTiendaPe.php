@@ -15,6 +15,7 @@
      * @property int|null    $series_order_note_id
      * @property int|null    $series_document_ft_id
      * @property int|null    $series_document_bt_id
+     * @property bool|null    $autogenerate
      * @property int|null    $user_id
      * @property int|null    $payment_destination_id
      * @property string|null $currency_type_id
@@ -36,7 +37,8 @@
             'series_document_ft_id' => 'int',
             'series_document_bt_id' => 'int',
             'user_id' => 'int',
-            'payment_destination_id' => 'int'
+            'payment_destination_id' => 'int',
+            'autogenerate' => 'bool',
         ];
 
         protected $fillable = [
@@ -45,8 +47,29 @@
             'series_document_ft_id',
             'series_document_bt_id',
             'user_id',
+            'autogenerate',
             'payment_destination_id',
             'currency_type_id'
         ];
+
+        /**
+         * @return bool
+         */
+        public function getAutogenerate(): bool
+        {
+            return (bool)$this->autogenerate;
+        }
+
+        /**
+         * @param bool|null $autogenerate
+         *
+         * @return ConfigurationMiTiendaPe
+         */
+        public function setAutogenerate(?bool $autogenerate): ConfigurationMiTiendaPe
+        {
+            $this->autogenerate = (bool)$autogenerate;
+            return $this;
+        }
+
     }
 

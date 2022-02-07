@@ -5,6 +5,7 @@
 
 
     use App\CoreFacturalo\Requests\Inputs\DocumentInput;
+    use App\Http\Controllers\Tenant\Api\ServiceController;
     use App\Http\Controllers\Tenant\DocumentController;
     use App\Http\Requests\Tenant\DocumentRequest;
 
@@ -18,6 +19,7 @@
     use App\Models\Tenant\Item;
     use App\Models\Tenant\PaymentMethodType;
     use App\Models\Tenant\Person;
+    use App\Models\Tenant\PersonAddress;
     use App\Models\Tenant\Series;
     use App\Models\Tenant\User;
     use App\Models\Tenant\Warehouse;
@@ -30,6 +32,7 @@
     use Maatwebsite\Excel\Concerns\Importable;
     use Maatwebsite\Excel\Concerns\ToCollection;
 
+    use Modules\ApiPeruDev\Data\ServiceData;
     use Modules\Order\Http\Controllers\OrderNoteController;
     use Modules\Order\Http\Requests\OrderNoteRequest;
     use Modules\Order\Models\ConfigurationMiTiendaPe;
@@ -43,18 +46,39 @@
     {
         use Importable;
 
+        /** @var array */
+        protected $process;
         protected $data;
-        /** @var ConfigurationMiTiendaPe  */
+        /** @var ConfigurationMiTiendaPe */
         protected $configuration;
         /** @var User */
-        protected  $user ;
+        protected $user;
+
+        /**
+         * @return array
+         */
+        public function getProcess(): array
+        {
+            return $this->process;
+        }
+
+        /**
+         * @param array $process
+         *
+         * @return MiTiendaPeImport
+         */
+        public function setProcess(array $process): MiTiendaPeImport
+        {
+            $this->process = $process;
+            return $this;
+        }
 
         public function collection(Collection $rows)
         {
             libxml_disable_entity_loader(false);
-
+            $this->process = [];
             $configurationMiTienda = ConfigurationMiTiendaPe::first();
-            if(empty($configurationMiTienda)){
+            if (empty($configurationMiTienda)) {
                 $configurationMiTienda = new ConfigurationMiTiendaPe();
             }
             $this->configuration = $configurationMiTienda;
@@ -75,16 +99,21 @@
             unset($rows[0]);
             $orders = [];
             $numberOrders = [];
-            $items=[];
-            $order_total=[];
-            $order_total_discount=[];
-            $order_total_taxes=[];
-            $order_unit_value=[];
-            $order_total_base_igv=[];
-            $order_percentage_igv=[];
-            $order_total_igv=[];
-            $order_unit_price=[];
-            $order_total_value=[];
+            $items = [];
+            $order_total = [];
+            $order_total_discount = [];
+            $order_total_taxes = [];
+            $order_unit_value = [];
+            $order_total_base_igv = [];
+            $order_percentage_igv = [];
+            $order_total_igv = [];
+            $order_discounts = [];
+            $order_unit_price = [];
+            $order_total_value = [];
+
+            $order_total_taxed = [];
+            $order_total_exonerated = [];
+
             foreach ($rows as $row) {
                 $documentType = $row[0] ?? null;
                 $miTiendaPeOrder = $row[1] ?? null;
@@ -95,21 +124,25 @@
                 $region = $row[6] ?? null;
                 $district = $row[7] ?? null;
                 $paymentType = $row[8] ?? 'Contado';
-                $identificationNumber = $row[9] ?? null;
-                $email = $row[10] ?? null;
-
-
+                $paymentType = trim($paymentType);
                 $payment_method_types = PaymentMethodType::where('description', $paymentType)->first();
                 if (empty($payment_method_types)) {
                     $payment_method_types = PaymentMethodType::where('description', 'Contado')->first();
                 }
 
+
+                $identificationNumber = $row[9] ?? null;
+                $email = $row[10] ?? null;
+
                 $internal_id = trim($row[11] ?? null);
                 $quantity = $row[12] ?? null;
-
-                $amountWithOutIGV = $row[13] ?? 0; // precio sin igv
+                // $amountWithOutIGV = $row[13] ?? 0; // precio sin igv
+                $amountWithOutIGV = $row[17] ?? 0; // precio sin igv
+                //
                 $total_igv = $row[14] ?? 0; // igv del producto
                 $igv = $row[15] ?? 18; // igv
+
+
                 if (!is_numeric($igv)) {
                     $igv = 18;
                 }
@@ -121,6 +154,10 @@
                 $reference = $row[20] ?? null;
                 $saleDate = $row[21] ?? null;
                 $transaction_code = $row[22] ?? null;
+
+                // $totalImport -=$discount;
+
+
                 if (empty($identificationNumber)) {
                     continue;
                     // si no hay numero de idtenficacion de cliente, se continua
@@ -139,8 +176,10 @@
                 $customer = Person::SearchCustomer($identificationNumber, $names, $email)->first();
                 // Clientes
                 if (empty($customer)) {
-                    // Crear nuevo cliente
-                    $customer = new Person([
+                    $address = [
+                        'country_id'=>'PE',
+                    ];
+                    $dataCustomer = [
                         'type' => 'customers',
                         'name' => "$lastnames, $names",
                         'number' => $identificationNumber,
@@ -148,10 +187,30 @@
                         'address' => $street,
                         'email' => $email,
                         'telephone' => $phone,
+                    ];
+                    if (strlen($identificationNumber) === 8) {
+                        $dataCustomer = self::getPersonData($identificationNumber);
 
-                    ]);
+                        $address['department_id'] = $dataCustomerT['department_id']??0;
+                        $address['province_id'] = $dataCustomerT['province_id']??0;
+                        $address['district_id'] = $dataCustomerT['district_id']??0;
+
+                    } elseif (strlen($identificationNumber) === 11) {
+                        $dataCustomerT = self::getPersonData($identificationNumber);
+                        $dataCustomer['name']= $dataCustomerT['name']??$dataCustomer['name'];
+                        $dataCustomer['address']= $dataCustomerT['address']??$dataCustomer['address'];
+                        $dataCustomer['trade_name']= $dataCustomerT['trade_name']??null;
+                        $address['department_id'] = $dataCustomerT['department_id']??0;
+                        $address['province_id'] = $dataCustomerT['province_id']??0;
+                        $address['district_id'] = $dataCustomerT['district_id']??0;
+
+                    }
+                    $address['address'] = $dataCustomer['address']??null;
+
+                    // Crear nuevo cliente
+                    $customer = new Person($dataCustomer);
                     $customer->identity_document_type_id = IdentityDocumentType::where('description', 'Doc.trib.no.dom.sin.ruc')->first()->id;
-                    if (strlen($identificationNumber) > 10) {
+                    if (strlen($identificationNumber) == 11) {
                         $customer->identity_document_type_id = IdentityDocumentType::where('description', 'RUC')->first()->id;
                     } elseif (strlen($identificationNumber) == 8) {
                         $customer->identity_document_type_id = IdentityDocumentType::where('description', 'DNI')->first()->id;
@@ -167,6 +226,16 @@
                     }
                     $customer->contact = json_decode(json_encode(["full_name" => $customer->name, "phone" => $customer->telephone,]));
                     $customer->push();
+
+                    $address['person_id'] = $customer->id;
+                    $address['department_id'] = !empty($address['department_id'])?$address['department_id']:$customer->department_id;
+                    $address['province_id'] = !empty($address['province_id'])?$address['province_id']:$customer->province_id;
+                    $address['district_id'] = !empty($address['district_id'])?$address['district_id']:$customer->district_id;
+
+
+                    $addressPerson = new PersonAddress($address);
+                    $addressPerson->push();
+
                 }
 
 
@@ -184,16 +253,16 @@
                     'external_id' => Str::uuid()->toString(),
                     'customer_id' => $customerData['id'],
                     'customer' => $customerData,
-                    'shipping_address' => $customerData['direccion'],
                     "reference_payment" => empty($payment_method_types) ? 'Contado' : $payment_method_types->description,
                     'establishment_id' => $this->configuration->establishment_id,
                     'user_id' => $this->user->id,
-                    'currency_type_id' => $this->configuration->currency_type_id??'PEN',
+                    'currency_type_id' => $this->configuration->currency_type_id ?? 'PEN',
                     "purchase_order" => $miTiendaPeOrder,
                     'date_of_issue' => $saleDate,
                     'time_of_issue' => Carbon::now()->format('H:i:s'),
                     // 'purchase'
                     "operation_type_id" => null,
+                    "shipping_address" => $street,
                     "date_of_due" => $saleDate,
                     "delivery_date" => null,
                     "charges" => [],
@@ -222,28 +291,36 @@
                     "total_taxes" => 0,
                     'total' => $totalImport,
 
-                    'total_exonerated' => $totalImport,
+                    'total_exonerated' => 0,
                     "document_type_id" => $documentType,
                     // "payment_method" => $payment_method_types,
                     "total_value" => $totalImport,
                 ];
+                $observation = null;
+                if($customer->name != "$lastnames, $names"){
+                    $observation = "$lastnames, $names";
+                }
+
                 $item = Item::where('internal_id', $internal_id)->first();
 
                 if (!empty($item)) {
 
-
+                    $total_igv = $row[14] ?? 0;
                     if (!isset($orders[$miTiendaPeOrder])) $orders[$miTiendaPeOrder] = [];
                     $numberOrders[] = $miTiendaPeOrder;
                     if ($quantity <= 0) $quantity = 1;
 
                     $cItem = $item->getDataToItemModal($warehouse, false, false);
-                    $cItem['has_igv'] = (array)$cItem['has_igv'];
+                    $cItem['has_igv'] = $cItem['has_igv'];
                     $cItem['lots'] = (array)$cItem['lots'];
 
                     $cItem['quantity'] = $quantity;
+                    $totalItem = $amountWithOutIGV + $total_igv;
+                    $unit_price = ($totalItem / $quantity) - $discount;
                     $itemTo = [
                         'item_id' => $item->id,
                         'item' => (array)$cItem,
+                        'observation' => $observation,
                         'quantity' => $quantity,
                         'currency_type_id' => 'PEN',
                         'affectation_igv_type_id' => $item->sale_affectation_igv_type_id,
@@ -260,20 +337,35 @@
                         'charges' => [],
                         'price_type_id' => '01',
                         'total_charge' => 0,
-
-                        'total_taxes' => $total_igv,
-                        'unit_value' => ($stotal / $quantity),
-                        'total_base_igv' => $stotal,
-                        'percentage_igv' => $igv,
+                        'total_exonerated' => empty($total_igv) ? ($totalItem) : 0,
+                        'total_base_igv' => ($amountWithOutIGV - $discount),
                         'total_igv' => $total_igv,
-                        'unit_price' => ($stotal / $quantity),
-                        'total_value' => ($stotal / $quantity),
+                        'total_taxed' => !empty($total_igv) ? ($amountWithOutIGV - $discount) : 0,
+                        'unit_price' => $unit_price,
+                        'total_value' => $amountWithOutIGV - $discount,
+                        'total_taxes' => $total_igv,
+                        'unit_value' => ($amountWithOutIGV / $quantity),
+                        'percentage_igv' => $igv,
                         'total_discount' => (float)$discount,
-                        'total' => $stotal + $total_igv,
-
-
+                        'total' => $unit_price * $quantity,
+                        'transaction_code' => $transaction_code,
                     ];
+
                     $itemTo['unit_type_id'] = $cItem['unit_type_id'];
+
+
+                    if ($discount != 0) {
+
+
+                        $ds = [
+                            "discount_type_id" => "00",
+                            "description" => "",
+                            "factor" => round((($temp['total_discount'] * 100) / $itemTo['unit_value']) / 100, 2),
+                            "amount" => $temp['total_discount'],
+                            "base" => $itemTo['unit_value'],
+                        ];
+                        $itemTo['discounts'][] = $ds;
+                    }
 
                     if (isset($orders[$miTiendaPeOrder])) {
                         // se busca los item de la orden, para sumar sus totales
@@ -286,7 +378,9 @@
                             'percentage_igv',
                             'total_igv',
                             'unit_price',
+                            'total_taxed',
                             'total_value',
+                            'total_exonerated'
                         ];
 
                         foreach ($checkfield as $field) {
@@ -298,49 +392,71 @@
 
                     }
                     $orders[$miTiendaPeOrder] = $temp;
-                    if(!isset($orders[$miTiendaPeOrder]['items']))$orders[$miTiendaPeOrder]['items']=[];
-                    if(!isset($items[$miTiendaPeOrder]))$items[$miTiendaPeOrder]=[];
-                    if(!isset($order_total[$miTiendaPeOrder]))$order_total[$miTiendaPeOrder]=0;
-                    if(!isset($order_total_discount[$miTiendaPeOrder]))$order_total_discount[$miTiendaPeOrder]=0;
-                    if(!isset($order_total_taxes[$miTiendaPeOrder]))$order_total_taxes[$miTiendaPeOrder]=0;
-                    if(!isset($order_unit_value[$miTiendaPeOrder]))$order_unit_value[$miTiendaPeOrder]=0;
-                    if(!isset($order_total_base_igv[$miTiendaPeOrder]))$order_total_base_igv[$miTiendaPeOrder]=0;
-                    if(!isset($order_percentage_igv[$miTiendaPeOrder]))$order_percentage_igv[$miTiendaPeOrder]=0;
-                    if(!isset($order_total_igv[$miTiendaPeOrder]))$order_total_igv[$miTiendaPeOrder]=0;
-                    if(!isset($order_unit_price[$miTiendaPeOrder]))$order_unit_price[$miTiendaPeOrder]=0;
-                    if(!isset($order_total_value[$miTiendaPeOrder]))$order_total_value[$miTiendaPeOrder]=0;
+                    if (!isset($orders[$miTiendaPeOrder]['items'])) $orders[$miTiendaPeOrder]['items'] = [];
+                    if (!isset($items[$miTiendaPeOrder])) $items[$miTiendaPeOrder] = [];
+                    if (!isset($order_total[$miTiendaPeOrder])) $order_total[$miTiendaPeOrder] = 0;
+                    if (!isset($order_total_discount[$miTiendaPeOrder])) $order_total_discount[$miTiendaPeOrder] = 0;
+                    if (!isset($order_total_taxes[$miTiendaPeOrder])) $order_total_taxes[$miTiendaPeOrder] = 0;
+                    if (!isset($order_unit_value[$miTiendaPeOrder])) $order_unit_value[$miTiendaPeOrder] = 0;
+                    if (!isset($order_total_base_igv[$miTiendaPeOrder])) $order_total_base_igv[$miTiendaPeOrder] = 0;
+                    if (!isset($order_percentage_igv[$miTiendaPeOrder])) $order_percentage_igv[$miTiendaPeOrder] = 0;
+                    if (!isset($order_total_igv[$miTiendaPeOrder])) $order_total_igv[$miTiendaPeOrder] = 0;
+                    if (!isset($order_unit_price[$miTiendaPeOrder])) $order_unit_price[$miTiendaPeOrder] = 0;
+                    if (!isset($order_total_value[$miTiendaPeOrder])) $order_total_value[$miTiendaPeOrder] = 0;
+                    if (!isset($order_total_taxed[$miTiendaPeOrder])) $order_total_taxed[$miTiendaPeOrder] = 0;
+                    if (!isset($order_total_exonerated[$miTiendaPeOrder])) $order_total_exonerated[$miTiendaPeOrder] = 0;
+                    if (!isset($order_discounts[$miTiendaPeOrder])) $order_discounts[$miTiendaPeOrder] = [];
 
-                    $items[$miTiendaPeOrder][]=$itemTo;
-                    $order_total[$miTiendaPeOrder]+=$itemTo['total'];
-                    $order_total_discount[$miTiendaPeOrder]+=$itemTo['total_discount'];
-                    $order_total_taxes[$miTiendaPeOrder]+=$itemTo['total_taxes'];
-                    $order_unit_value[$miTiendaPeOrder]+=$itemTo['unit_value'];
-                    $order_total_base_igv[$miTiendaPeOrder]+=$itemTo['total_base_igv'];
-                    $order_percentage_igv[$miTiendaPeOrder]+=$itemTo['percentage_igv'];
-                    $order_total_igv[$miTiendaPeOrder]+=$itemTo['total_igv'];
-                    $order_unit_price[$miTiendaPeOrder]+=$itemTo['unit_price'];
-                    $order_total_value[$miTiendaPeOrder]+=$itemTo['total_value'];
+                    $items[$miTiendaPeOrder][] = $itemTo;
+                    $order_total[$miTiendaPeOrder] += $itemTo['total'];
+                    $order_total_discount[$miTiendaPeOrder] += $itemTo['total_discount'];
+                    $order_total_taxes[$miTiendaPeOrder] += $itemTo['total_taxes'];
+                    $order_unit_value[$miTiendaPeOrder] += $itemTo['unit_value'];
+                    $order_total_base_igv[$miTiendaPeOrder] += $itemTo['total_base_igv'];
+                    $order_percentage_igv[$miTiendaPeOrder] += $itemTo['percentage_igv'];
+                    $order_total_igv[$miTiendaPeOrder] += $itemTo['total_igv'];
+                    $order_unit_price[$miTiendaPeOrder] += $itemTo['unit_price'];
+                    $order_total_value[$miTiendaPeOrder] += $itemTo['total_value'];
+                    $order_discounts[$miTiendaPeOrder][] = $ds;
                     $orders[$miTiendaPeOrder]['items'][] = $itemTo;
+
+
+                    $order_total_taxed[$miTiendaPeOrder] += $itemTo['total_taxed'];
+                    $order_total_exonerated[$miTiendaPeOrder] += $itemTo['total_exonerated'];
+                    /*
+                    if($order_total_igv[$miTiendaPeOrder] == 5.19){
+                        dd([
+                            $row,
+                            $itemTo
+                        ]);
+                    }
+                    */
+
+
                 }
 
             }
-
             $numberOrders = array_unique($numberOrders);
             foreach ($numberOrders as $item) {
                 $checkItem = MiTiendaPe::where('order_number', $item)->first();
                 if (isset($orders[$item]) && empty($checkItem)) {
                     $toSave = $orders[$item];
                     $request = new OrderNoteRequest();
-                    $toSave['items']=$items[$item];
-                    $toSave['total']=$order_total[$item];
-                    $toSave['total_discount']=$order_total_discount[$item];
-                    $toSave['total_taxes']=$order_total_taxes[$item];
-                    $toSave['unit_value']=$order_unit_value[$item];
-                    $toSave['total_base_igv']=$order_total_base_igv[$item];
-                    $toSave['percentage_igv']=$order_percentage_igv[$item];
-                    $toSave['total_igv']=$order_total_igv[$item];
-                    $toSave['unit_price']=$order_unit_price[$item];
-                    $toSave['total_value']=$order_total_value[$item];
+                    $toSave['items'] = $items[$item];
+                    $toSave['total'] = $order_total[$item];
+                    $toSave['total_discount'] = $order_total_discount[$item];
+                    $toSave['total_taxes'] = $order_total_taxes[$item];
+                    $toSave['unit_value'] = $order_unit_value[$item];
+                    $toSave['total_base_igv'] = $order_total_base_igv[$item];
+                    $toSave['percentage_igv'] = $order_percentage_igv[$item];
+                    $toSave['total_igv'] = $order_total_igv[$item];
+                    $toSave['unit_price'] = $order_unit_price[$item];
+                    $toSave['total_value'] = $order_total_value[$item];
+                    $toSave['total_taxed'] = $order_total_taxed[$item];
+                    $toSave['total_exonerated'] = $order_total_exonerated[$item];
+                    $toSave['discounts'] = $order_discounts[$item];
+
+
                     $request->merge($toSave);
                     $orderNotecontroller = new OrderNoteController();
                     $result = $orderNotecontroller->store($request);
@@ -349,7 +465,7 @@
                         $orderId = $order->id;
                         $document = new Document();
 
-                        if (isset($toSave['document_type_id']) && !empty($toSave['document_type_id'])) {
+                        if ($configurationMiTienda->getAutogenerate() === true && isset($toSave['document_type_id']) && !empty($toSave['document_type_id'])) {
                             $document = $this->setDocument($toSave, $order);
                         }
 
@@ -361,6 +477,13 @@
                         ]);
                         $miTiendaPe->push();
                         $total++;
+                        $temp = [
+                            'order' => $order,
+                            'document' => $document,
+                            'data' => $toSave,
+
+                        ];
+                        $this->process[] = $temp;
                     } else {
                         Log::debug(" No se pudo guardar por que no fue exitoso \n" . json_encode($toSave));
                     }
@@ -369,6 +492,28 @@
 
             }
             $this->data = compact('total', 'registered');
+
+        }
+
+        public static function getPersonData($number = null)
+        {
+            $service = new ServiceData();
+            $data = [];
+            if (!empty($number)) {
+                if (strlen($number) == 8) {
+                    $ruc = $service->service('dni', $number);
+                    if ($ruc['success'] == true) {
+                        $data = $ruc['data'];
+                    }
+                } else if (strlen($number) == 11) {
+                    $ruc = $service->service('ruc', $number);
+                    if ($ruc['success'] == true) {
+                        $data = $ruc['data'];
+                    }
+                }
+            }
+
+            return $data;
 
         }
 
@@ -389,14 +534,17 @@
 
             $data["order_note_id"] = $orderNote->id;
             $data["document_type_id"] = $documentType->id;
-            if($data["document_type_id"] == '03' || $data["document_type_id"] == '01'){
+            if ($data["document_type_id"] == '03') {
                 $data["series_id"] = $this->configuration->series_document_bt_id;
                 $data["series"] = Series::find($data["series_id"])->number;
-            }else{
+            } elseif ($data["document_type_id"] == '01') {
+                $data["series_id"] = $this->configuration->series_document_ft_id;
+                $data["series"] = Series::find($data["series_id"])->number;
+            } else {
                 return new Document();
 
             }
-            $data["establishment_id"] =  $this->configuration->establishment_id;
+            $data["establishment_id"] = $this->configuration->establishment_id;
             $data["number"] = "#";
             $data["operation_type_id"] = '0101';
             $data["prefix"] = null;
@@ -406,8 +554,8 @@
                 "document_id" => null,
                 "date_of_payment" => $data['date_of_issue'],
                 "payment_method_type_id" => $data['payment_method_type_id'],
+                "reference" => $data['transaction_code'] ?? null,
                 "payment_destination_id" => $this->configuration->payment_destination_id,
-                "reference" => null,
                 "payment" => $data['total'],
             ];
 
@@ -416,9 +564,11 @@
             foreach ($items as $item) {
                 $item['item'] = (array)$item['item'];
                 $item['item']['lots'] = (array)$item['item']['lots'];
+
                 $newItems[] = $item;
             }
             $data['items'] = $newItems;
+            if (isset($data['discounts'])) unset($data['discounts']);
 
             $data = DocumentInput::set($data);
             $documentController = new DocumentController();

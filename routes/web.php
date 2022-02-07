@@ -108,6 +108,11 @@ if ($hostname) {
             Route::get('configurations/preprinted/{template}', 'Tenant\ConfigurationController@show');
             Route::get('configurations/change-mode', 'Tenant\ConfigurationController@changeMode')->name('settings.change_mode');
 
+            Route::get('configurations/templates/ticket/refresh', 'Tenant\ConfigurationController@refreshTickets');
+            Route::get('configurations/pdf_templates/ticket', 'Tenant\ConfigurationController@pdfTicketTemplates')->name('tenant.advanced.pdf_ticket_templates');
+            Route::get('configurations/templates/ticket/records', 'Tenant\ConfigurationController@getTicketFormats');
+            Route::post('configurations/templates/ticket/update', 'Tenant\ConfigurationController@changeTicketFormat');
+
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');
             Route::post('certificates/uploads', 'Tenant\CertificateController@uploadFile');

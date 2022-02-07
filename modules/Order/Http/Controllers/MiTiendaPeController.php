@@ -28,10 +28,12 @@
                     $import = new MiTiendaPeImport();
                     $import->import($request->file('file'), null, Excel::XLSX);
                     $data = $import->getData();
+                    $content = $import->getProcess();
                     return [
                         'success' => true,
                         'message' => __('app.actions.upload.success'),
-                        'data' => $data
+                        'data' => $data,
+                        // 'content' => $content,
                     ];
                 } catch (Exception $e) {
                     return [
