@@ -54,6 +54,8 @@ if ($hostname) {
             Route::get('orders', 'Tenant\Api\OrderController@records');
             Route::post('orders', 'Tenant\Api\OrderController@store');
 
+            //Company
+            Route::get('company', 'Tenant\Api\CompanyController@record');
 
 
         });

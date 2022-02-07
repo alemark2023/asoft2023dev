@@ -160,6 +160,9 @@
                         <li>
                             <a href="{{route('tenant.reports.commissions.index')}}">Ventas</a>
                         </li>
+                        <li>
+                            <a href="{{route('tenant.reports.commissions_detail.index')}}">Utilidad detallado</a>
+                        </li>
                     </ul>
                 </div>
             </div>

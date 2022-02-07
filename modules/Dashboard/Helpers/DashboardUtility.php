@@ -169,15 +169,16 @@ class DashboardUtility
 
         if($record->item->unit_type_id != 'ZZ'){
 
-            if($record->relation_item->purchase_unit_price > 0){
+            if(isset($record->item->purchase_unit_price)) {
+                $purchase_unit_price = (float)$record->item->purchase_unit_price;
+            }
+            else if($record->relation_item->purchase_unit_price > 0){ //cambiar por ->item
 
                 $purchase_unit_price = $record->relation_item->purchase_unit_price;
-
             }else{
 
                 $purchase_item = PurchaseItem::select('unit_price')->where('item_id', $record->item_id)->latest('id')->first();
                 $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $record->unit_price;
-
             }
 
         }
