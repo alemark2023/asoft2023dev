@@ -43,7 +43,7 @@
 
     <div class="page-wrapper">
 
-        @include('ecommerce::layouts.partials_ecommerce.header')
+        @include('restaurant::layouts.partials.header')
         <main class="main">
 
             @yield('content')
@@ -58,7 +58,7 @@
 
     <div class="mobile-menu-container">
 
-        @include('ecommerce::layouts.partials_ecommerce.mobile_menu')
+        @include('restaurant::layouts.partials.mobile_menu')
 
     </div><!-- End .mobile-menu-container -->
 

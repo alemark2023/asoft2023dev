@@ -390,6 +390,7 @@ Vue.component('tenant-packaging-form', require('../../modules/Production/Resourc
 
 /* Restaurante */
 Vue.component('tenant-restaurant-list-items', require('../../modules/Restaurant/Resources/assets/js/views/items/index.vue'));
+Vue.component('tenant-restaurant-promotions-index', require('../../modules/Restaurant/Resources/assets/js/views/promotions/index.vue'));
 
 
 import moment from 'moment';

@@ -29,7 +29,7 @@
             @endif
             <div class="my-3"></div><!-- margin -->
             <div class="row row-sm mt-4">
-                @include('ecommerce::layouts.partials_ecommerce.list_products')
+                @include('restaurant::layouts.partials.list_products')
             </div>
             <div class="row float-right">
               <div class="col-md-12 col-lg-12">

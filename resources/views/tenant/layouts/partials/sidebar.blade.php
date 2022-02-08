@@ -1353,11 +1353,15 @@
                                         Ver Menu
                                     </a>
                                 </li>
-                                <li class="{{ (($firstLevel === 'restaurant') ) ? 'nav-active' : '' }}">
+                                <li class="{{ ( $secondLevel != null && $secondLevel == 'list' && $firstLevel === 'restaurant' ) ? 'nav-active' : '' }}">
                                     <a class="nav-link"
                                         href="{{ route('tenant.restaurant.list_items') }}">
                                         Productos de restaurante
                                     </a>
+                                </li>
+                                <li class="{{ ( $secondLevel != null && $secondLevel == 'promotions')?'nav-active':'' }}">
+                                        <a class="nav-link"
+                                           href="{{route('tenant.restaurant.promotion.index')}}">Promociones(Banners)</a>
                                 </li>
                             </ul>
                         </li>
