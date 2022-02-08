@@ -421,6 +421,7 @@
             $contract_payment = $this->getSumPayment($bank_account->global_destination, ContractPayment::class);
             $income_payment = $this->getSumPayment($bank_account->global_destination, IncomePayment::class);
             $technical_service_payment = $this->getSumPayment($bank_account->global_destination, TechnicalServicePayment::class);
+            $transfer_beween_account = $this->getTransferAccountPayment($bank_account);
 
             $entry = $document_payment +
                 $sale_note_payment +
@@ -428,7 +429,8 @@
                 $contract_payment +
                 $income_payment +
                 $cash_pos +
-                $technical_service_payment;
+                $technical_service_payment +
+                $transfer_beween_account;
             $egress = $expense_payment +
                 $purchase_payment;
 
@@ -454,6 +456,7 @@
                 'credits' => self::FormatNumber($entry),
                 'technical_service_payment' => self::FormatNumber($technical_service_payment),
                 'balance' => self::FormatNumber($balance),
+                'transfer_beween_account' => self::FormatNumber($transfer_beween_account),
 
 
             ];
