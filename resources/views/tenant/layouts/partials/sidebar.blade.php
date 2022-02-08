@@ -724,7 +724,7 @@
                                                href="{{route('reports.valued_kardex.index')}}">Kardex valorizado</a>
                                         </li>
                                     @endif
-                                    @if(in_array('inventory_item_extra_data', $vc_module_levels) && $configuration->isShowExtraInfoToItem())
+                                        @if(in_array('production_app', $vc_modules) && $configuration->isShowExtraInfoToItem())
                                         <li class="{{($firstLevel === 'extra_info_items') ? 'nav-active' : ''}}">
                                             <a class="nav-link"
                                                href="{{route('extra_info_items.index')}}">Datos extra de items</a>
