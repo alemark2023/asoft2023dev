@@ -337,7 +337,7 @@
                         'charges' => [],
                         'price_type_id' => '01',
                         'total_charge' => 0,
-                        'total_exonerated' => empty($total_igv) ? ($totalItem) : 0,
+                        'total_exonerated' => empty($total_igv) ? ($totalItem - $discount) : 0,
                         'total_base_igv' => ($amountWithOutIGV - $discount),
                         'total_igv' => $total_igv,
                         'total_taxed' => !empty($total_igv) ? ($amountWithOutIGV - $discount) : 0,
