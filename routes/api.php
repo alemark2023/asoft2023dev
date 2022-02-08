@@ -59,6 +59,7 @@ if ($hostname) {
 
             // Cotizaciones
             Route::get('quotations/list', 'Tenant\Api\QuotationController@list');
+            Route::post('quotations', 'Tenant\Api\QuotationController@store');
 
         });
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
