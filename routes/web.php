@@ -23,6 +23,8 @@ if ($hostname) {
         Route::get('sale-notes/ticket/{external_id}/{format?}', 'Tenant\SaleNoteController@toTicket');
         Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
 
+        Route::get('quotations/print/{external_id}/{format?}', 'Tenant\QuotationController@toPrint');
+
         Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
             // Route::get('catalogs', 'Tenant\CatalogController@index')->name('tenant.catalogs.index');
             Route::get('list-reports', 'Tenant\SettingController@listReports');
@@ -492,7 +494,7 @@ if ($hostname) {
             Route::get('quotations/search/customers', 'Tenant\QuotationController@searchCustomers');
             Route::get('quotations/search/customer/{id}', 'Tenant\QuotationController@searchCustomerById');
             Route::get('quotations/download/{external_id}/{format?}', 'Tenant\QuotationController@download');
-            Route::get('quotations/print/{external_id}/{format?}', 'Tenant\QuotationController@toPrint');
+            // Route::get('quotations/print/{external_id}/{format?}', 'Tenant\QuotationController@toPrint');
             Route::post('quotations/email', 'Tenant\QuotationController@email');
             Route::post('quotations/duplicate', 'Tenant\QuotationController@duplicate');
             Route::get('quotations/record2/{quotation}', 'Tenant\QuotationController@record2');

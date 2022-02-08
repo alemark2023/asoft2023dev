@@ -327,7 +327,7 @@ class QuotationController extends Controller
 
     }
 
-    private function getTermsCondition(){
+    public function getTermsCondition(){
 
         $configuration = Configuration::select('terms_condition')->first();
 
@@ -827,7 +827,7 @@ class QuotationController extends Controller
     }
 
 
-    private function savePayments($quotation, $payments){
+    public function savePayments($quotation, $payments){
 
         foreach ($payments as $payment) {
 
