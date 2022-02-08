@@ -1360,7 +1360,6 @@ export default {
             if (!_.isEmpty(this.item_unit_type)) {
                 return (this.item_unit_type.id === item_unit_type.id)
             }
-
             return false
         },
         selectedPrice(row) {
