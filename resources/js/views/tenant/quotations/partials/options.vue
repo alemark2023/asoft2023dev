@@ -808,7 +808,6 @@ export default {
             }
 
             this.loading_submit = true;
-
             if (this.document.document_type_id === "nv") {
                 this.document.prefix = "NV";
                 this.resource_documents = "sale-notes";
@@ -829,16 +828,24 @@ export default {
                             .then(() => {
                                 this.$eventHub.$emit("reloadData");
                             });
-                        // console.log(this.document.document_type_id)
+
+                        const payloadCash = {
+                            document_id: null,
+                            sale_note_id: null,
+                        }
+
                         if (this.document.document_type_id === "nv") {
                             this.showDialogSaleNoteOptions = true;
+                            payloadCash.sale_note_id = this.documentNewId;
                         } else {
                             this.showDialogDocumentOptions = true;
+                            payloadCash.document_id = this.documentNewId;
                         }
 
                         this.getRecord()
                         this.$eventHub.$emit("reloadData");
                         this.resetDocument();
+                        this.saveCashDocument(payloadCash);
                         this.document.customer_id = this.form.quotation.customer_id;
                         this.changeCustomer();
                     } else {
@@ -1108,6 +1115,20 @@ export default {
 
             }
 
+        },
+        async saveCashDocument(payload){
+            if(!this.id){
+                await this.$http.post(`/cash/cash_document`, payload)
+                    .then(response => {
+                        if (response.data.success) {
+                        } else {
+                            this.$message.error(response.data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+            }
         },
 
     },

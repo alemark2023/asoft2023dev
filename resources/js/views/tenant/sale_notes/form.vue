@@ -869,14 +869,13 @@
 
                 this.setTotalDefaultPayment()
             },
-            async saveCashDocument(sale_note_id, payment_method_type_id){
+            async saveCashDocument(sale_note_id){
 
                 if(!this.id){
 
                     await this.$http.post(`/cash/cash_document`, {
                             document_id: null,
                             sale_note_id: sale_note_id,
-                            payment_method_type_id: payment_method_type_id
                         })
                         .then(response => {
                             if (response.data.success) {
@@ -937,7 +936,6 @@
                 if(!this.enabled_payments){
                     this.form.payments = []
                 }
-                const payment_method_type_id = this.form.payment_method_type_id;
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
@@ -949,7 +947,7 @@
                         this.resetForm();
                         this.saleNotesNewId = response.data.data.id;
                         this.showDialogOptions = true;
-                        this.saveCashDocument(response.data.data.id, payment_method_type_id)
+                        this.saveCashDocument(response.data.data.id)
 
                         this.isUpdate()
 
