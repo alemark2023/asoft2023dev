@@ -33,6 +33,22 @@ Route::prefix('restaurant')->group(function() {
 
     });
 
+    //Orders
+    Route::prefix('orders')->group(function() {
+
+        Route::get('', 'OrderController@index')->name('tenant.restaurant.order.index');
+        Route::get('columns', 'OrderController@columns');
+        Route::get('records', 'OrderController@records');
+        Route::get('record/{order}', 'OrderController@record');
+        Route::get('pdf/{id}', 'OrderController@pdf');
+
+        //warehouse
+        Route::post('warehouse', 'OrderController@searchWarehouse');
+        Route::get('tables', 'OrderController@tables');
+        Route::get('tables/item/{internal_id}', 'OrderController@item');
+
+    });
+
     
 
 });
