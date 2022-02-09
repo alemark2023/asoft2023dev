@@ -32,7 +32,76 @@
             <div class="card-body">
 
                 <div class="row">
-                    <div class="col-12">
+                        <div class="col-md-3">
+                            <label class="control-label">Fecha de envio</label>
+                            <el-select v-model="form.period"
+                                       @change="changePeriod">
+                                <el-option key="month"
+                                           label="Por mes"
+                                           value="month"></el-option>
+                                <el-option key="between_months"
+                                           label="Entre meses"
+                                           value="between_months"></el-option>
+                                <el-option key="date"
+                                           label="Por fecha"
+                                           value="date"></el-option>
+                                <el-option key="between_dates"
+                                           label="Entre fechas"
+                                           value="between_dates"></el-option>
+                            </el-select>
+                        </div>
+                        <template v-if="form.period === 'month' || form.period === 'between_months'">
+                            <div class="col-md-3">
+                                <label class="control-label">Mes de</label>
+                                <el-date-picker v-model="form.month_start"
+                                                :clearable="false"
+                                                format="MM/yyyy"
+                                                type="month"
+                                                value-format="yyyy-MM"
+                                                @change="changeDisabledMonths"></el-date-picker>
+                            </div>
+                        </template>
+                        <template v-if="form.period === 'between_months'">
+                            <div class="col-md-3">
+                                <label class="control-label">Mes al</label>
+                                <el-date-picker v-model="form.month_end"
+                                                :clearable="false"
+                                                :picker-options="pickerOptionsMonths"
+                                                format="MM/yyyy"
+                                                type="month"
+                                                value-format="yyyy-MM"></el-date-picker>
+                            </div>
+                        </template>
+                        <template v-if="form.period === 'date' || form.period === 'between_dates'">
+                            <div class="col-md-3">
+                                <label class="control-label">Fecha del</label>
+                                <el-date-picker v-model="form.date_start"
+                                                :clearable="false"
+                                                format="dd/MM/yyyy"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                @change="changeDisabledDates"></el-date-picker>
+                            </div>
+                        </template>
+                        <template v-if="form.period === 'between_dates'">
+                            <div class="col-md-3">
+                                <label class="control-label">Fecha al</label>
+                                <el-date-picker v-model="form.date_end"
+                                                :clearable="false"
+                                                :picker-options="pickerOptionsDates"
+                                                format="dd/MM/yyyy"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"></el-date-picker>
+                            </div>
+                        </template>
+                    <div class="col-12 mt-4">
+                        <el-button :loading="loading_submit"
+                                   class="submit"
+                                   icon="el-icon-search"
+                                   type="primary"
+                                   @click.prevent="getRecordsByFilter">Buscar
+                        </el-button>
+
 
                         <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownloadPdf()" >Exportar PDF</el-button>
 
@@ -108,6 +177,7 @@
 
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {deletable} from "../../../../../../../resources/js/mixins/deletable";
+import moment from "moment";
 
 export default {
     props: [
@@ -129,11 +199,13 @@ export default {
         return {
             can_add_new_product: false,
             showDialog: false,
+            loading_submit: false,
             showImportSetDialog: false,
             showImportSetIndividualDialog: false,
             showWarehousesDetail: false,
             resource: 'production',
             recordId: null,
+            form: {},
             warehousesDetail: [],
             // config: {},
             columns: {
@@ -175,7 +247,21 @@ export default {
                  */
             },
             pagination: {},
-            records: []
+            records: [],
+
+            pickerOptionsDates: {
+                disabledDate: (time) => {
+                    time = moment(time).format('YYYY-MM-DD')
+                    return this.form.date_start > time
+                }
+            },
+            pickerOptionsMonths: {
+                disabledDate: (time) => {
+                    time = moment(time).format('YYYY-MM')
+                    return this.form.month_start > time
+                }
+            },
+
         }
     },
     created() {
@@ -185,20 +271,12 @@ export default {
             // delete this.columns.sanitary;
             // delete this.columns.cod_digemid;
         }
+        this.initForm();
+        this.$eventHub.$on('reloadData', () => {
+            this.getRecords()
+        })
+        this.getRecords()
 
-        return this.$http
-                .get(`/${this.resource}/records`)
-                .then(response => {
-                    this.records = response.data.data;
-                    this.pagination = response.data.meta;
-                    this.pagination.per_page = parseInt(
-                        response.data.meta.per_page
-                    );
-                })
-                .catch(error => {})
-                .then(() => {
-                    this.loading_submit = false;
-                });
 
         //this.canCreateProduct();
 
@@ -207,6 +285,17 @@ export default {
         ...mapActions([
             'loadConfiguration',
         ]),
+        initForm() {
+
+            this.form = {
+                period: 'month',
+                date_start: moment().format('YYYY-MM-DD'),
+                date_end: moment().format('YYYY-MM-DD'),
+                month_start: moment().format('YYYY-MM'),
+                month_end: moment().format('YYYY-MM'),
+            }
+
+        },
         canCreateProduct() {
             if (this.typeUser === 'admin') {
                 this.can_add_new_product = true
@@ -245,6 +334,67 @@ export default {
         clickDownloadExcel() {
             window.open(`${this.resource}/excel`, '_blank');
         },
+
+        async getRecordsByFilter() {
+            /*
+                          if(!this.form.item_id){
+                              return this.$message.error('Debe seleccionar un producto')
+                          }
+          */
+            this.loading_submit = await true
+            await this.getRecords()
+            this.loading_submit = await false
+
+        },
+        getRecords() {
+            return this.$http
+                .get(`/${this.resource}/records`)
+                .then(response => {
+                    this.records = response.data.data;
+                    this.pagination = response.data.meta;
+                    this.pagination.per_page = parseInt(
+                        response.data.meta.per_page
+                    );
+                })
+                .catch(error => {})
+                .then(() => {
+                    this.loading_submit = false;
+                });
+        },
+        changePeriod() {
+    if (this.form.period === 'month') {
+        this.form.month_start = moment().format('YYYY-MM');
+        this.form.month_end = moment().format('YYYY-MM');
+    }
+    if (this.form.period === 'between_months') {
+        this.form.month_start = moment().startOf('year').format('YYYY-MM'); //'2019-01';
+        this.form.month_end = moment().endOf('year').format('YYYY-MM');
+
+    }
+    if (this.form.period === 'date') {
+        this.form.date_start = moment().format('YYYY-MM-DD');
+        this.form.date_end = moment().format('YYYY-MM-DD');
+    }
+    if (this.form.period === 'between_dates') {
+        this.form.date_start = moment().startOf('month').format('YYYY-MM-DD');
+        this.form.date_end = moment().endOf('month').format('YYYY-MM-DD');
+    }
+    // this.loadAll();
+},
+
+        changeDisabledDates() {
+            if (this.form.date_end < this.form.date_start) {
+                this.form.date_end = this.form.date_start
+            }
+            // this.loadAll();
+        },
+        changeDisabledMonths() {
+            if (this.form.month_end < this.form.month_start) {
+                this.form.month_end = this.form.month_start
+            }
+            // this.loadAll();
+        },
+
     }
 }
 </script>

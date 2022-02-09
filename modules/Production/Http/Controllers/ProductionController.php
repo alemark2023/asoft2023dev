@@ -9,6 +9,7 @@
     use Illuminate\Http\Response;
     use Illuminate\Routing\Controller;
     use Illuminate\Support\Facades\DB;
+    use Modules\Finance\Traits\FinanceTrait;
     use Modules\Inventory\Models\Inventory;
     use Modules\Inventory\Models\InventoryTransaction;
     use Modules\Inventory\Traits\InventoryTrait;
@@ -22,6 +23,7 @@
     class ProductionController extends Controller
     {
         use InventoryTrait;
+        use FinanceTrait;
 
         /**
          * Display a listing of the resource.
@@ -212,13 +214,28 @@
             });
         }
 
-        public function records()
+        public function records(Request $request)
         {
-            $records = Production::query();
+            $records = $this->getRecords($request);
             return new ProductionCollection($records->paginate(config('tenant.items_per_page')));
 
         }
 
+        /**
+         * @param Request $request
+         *
+         * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder|Production
+         */
+        public function getRecords(Request $request)
+        {
+            $data_of_period = $this->getDatesOfPeriod($request);
+
+            $params = [
+                'date_start' => $data_of_period['d_start'],
+                'date_end' => $data_of_period['d_end'],
+            ];
+            return Production::where($params);
+        }
         /**
          * @param Request $request
          *
@@ -227,7 +244,7 @@
         public function excel(Request $request)
         {
             // $records = $this->getData($request);
-            $records = Production::query()->get()->transform(function (Production $row) {
+            $records = $this->getRecords($request)->get()->transform(function (Production $row) {
                 return $row->getCollectionData();
             });
 
@@ -244,7 +261,7 @@
         public function pdf(Request $request)
         {
             // $records = $this->getData($request);
-            $records = Production::query()->get()->transform(function (Production $row) {
+            $records = $this->getRecords($request)->get()->transform(function (Production $row) {
                 return $row->getCollectionData();
             });
 
