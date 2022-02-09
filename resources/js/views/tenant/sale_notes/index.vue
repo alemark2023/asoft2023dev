@@ -198,12 +198,11 @@
                                 class="item"
                                 effect="dark"
                                 content="Generar guía desde Nota Venta"
-                                placement="top-start">
+                                placement="left">
                                 <a :href="`/dispatches/generate/${row.id}`"
                                    class="dropdown-item"
                                 >
-<!--                                    <i class="dropdown-item fas fa-file-alt"></i>-->
-                                    Generar guía desde Nota Venta
+                                    Generar guía
                                 </a>
                             </el-tooltip>
 

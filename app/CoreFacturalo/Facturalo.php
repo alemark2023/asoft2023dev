@@ -226,7 +226,7 @@ class Facturalo
         return $this;
     }
 
-    
+
     /**
      * Firma digital xml
      */
@@ -336,6 +336,12 @@ class Facturalo
 
         // dd($this->document);
         $base_pdf_template = Establishment::find($this->document->establishment_id)->template_pdf;
+        if (($format_pdf === 'ticket') OR
+            ($format_pdf === 'ticket_58') OR
+            ($format_pdf === 'ticket_50'))
+        {
+            $base_pdf_template = Establishment::find($this->document->establishment_id)->template_ticket_pdf;
+        }
 
         $pdf_margin_top = 15;
         $pdf_margin_right = 15;
@@ -361,6 +367,7 @@ class Facturalo
             ($format_pdf === 'ticket_58') OR
             ($format_pdf === 'ticket_50'))
         {
+            $base_pdf_template = Establishment::find($this->document->establishment_id)->template_ticket_pdf;
 
             $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
             if(config('tenant.enabled_template_ticket_80')) $width = 76;
@@ -690,12 +697,12 @@ class Facturalo
         $this->onlySenderXmlSignedBill();
 
     }
-    
+
     /**
-     * 
+     *
      * Evaluar si se debe firmar el xml y enviar cdr al PSE
      * Disponible para facturas y boletas
-     * 
+     *
      * @return bool
      */
     public function sendToPse()

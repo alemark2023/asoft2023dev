@@ -669,6 +669,75 @@
                     <el-tab-pane class="mb-3" name="fourth">
                         <span slot="label">PDF</span>
                         <div class="row">
+                            <div class="col-md-4 mt-4">
+                                <div class="form-group">
+                                    <label class="control-label">Mostrar ticket 80mm
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">Disponible para Ventas (Facturas/Boletas/Notas de Crédito-Débito)
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.show_ticket_80}"
+                                            class="form-group">
+                                        <el-switch v-model="form.show_ticket_80"
+                                                    active-text="Si"
+                                                    inactive-text="No"
+                                                    @change="submit"></el-switch>
+                                        <small v-if="errors.show_ticket_80"
+                                                class="form-control-feedback"
+                                                v-text="errors.show_ticket_80[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <div class="form-group">
+                                    <label class="control-label">Mostrar ticket 58mm
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">Disponible para Ventas (Facturas/Boletas/Notas de Crédito-Débito)
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.show_ticket_58}"
+                                            class="form-group">
+                                        <el-switch v-model="form.show_ticket_58"
+                                                    active-text="Si"
+                                                    inactive-text="No"
+                                                    @change="submit"></el-switch>
+                                        <small v-if="errors.show_ticket_58"
+                                                class="form-control-feedback"
+                                                v-text="errors.show_ticket_58[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <div class="form-group">
+                                    <label class="control-label">Mostrar ticket 50mm
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">Disponible para Ventas (Facturas/Boletas/Notas de Crédito-Débito)
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.show_ticket_50}"
+                                            class="form-group">
+                                        <el-switch v-model="form.show_ticket_50"
+                                                    active-text="Si"
+                                                    inactive-text="No"
+                                                    @change="submit"></el-switch>
+                                        <small v-if="errors.show_ticket_50"
+                                                class="form-control-feedback"
+                                                v-text="errors.show_ticket_50[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">Editar nombre de productos</label>
                                 <div :class="{'has-danger': errors.edit_name_product}"
@@ -751,30 +820,6 @@
                                                         type="primary"></el-button>
                                         </el-upload>
                                     </el-input>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label class="control-label">Mostrar ticket 58mm
-                                        <el-tooltip class="item"
-                                                    effect="dark"
-                                                    placement="top-start">
-                                            <div slot="content">Disponible para Ventas (Facturas/Boletas/Notas
-                                                                de Crédito-Débito)
-                                            </div>
-                                            <i class="fa fa-info-circle"></i>
-                                        </el-tooltip>
-                                    </label>
-                                    <div :class="{'has-danger': errors.ticket_58}"
-                                            class="form-group">
-                                        <el-switch v-model="form.ticket_58"
-                                                    active-text="Si"
-                                                    inactive-text="No"
-                                                    @change="submit"></el-switch>
-                                        <small v-if="errors.ticket_58"
-                                                class="form-control-feedback"
-                                                v-text="errors.ticket_58[0]"></small>
-                                    </div>
                                 </div>
                             </div>
                             <!-- update_document_on_dispaches -->
@@ -1256,7 +1301,9 @@ export default {
                 seller_can_view_balance: true,
                 finances: {},
                 visual: {},
-                ticket_58: false,
+                show_ticket_80: true,
+                show_ticket_58: false,
+                show_ticket_50: false,
                 update_document_on_dispaches: false,
                 auto_send_dispatchs_to_sunat: true,
                 is_pharmacy: false,
