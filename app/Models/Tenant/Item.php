@@ -855,7 +855,10 @@ class Item extends ModelTenant
         }
 
         $stockPerCategory = ItemMovement::getStockByCategory($this->id,auth()->user()->establishment_id);
-
+        $currency = $this->currency_type;
+        if(empty($currency )){
+            $currency = new CurrencyType();
+        }
         $data = [
             'id'                               => $this->id,
             'item_code'                    => $this->item_code,
@@ -880,7 +883,7 @@ class Item extends ModelTenant
             'internal_id'                      => $this->internal_id,
             'description'                      => $this->description,
             'currency_type_id'                 => $this->currency_type_id,
-            'currency_type_symbol'             => $this->currency_type->symbol,
+            'currency_type_symbol'             => $currency->symbol,
             'sale_unit_price'                  => self::getSaleUnitPriceByWarehouse($this, $warehouse->id),
             'purchase_unit_price'              => $this->purchase_unit_price,
             'unit_type_id'                     => $this->unit_type_id,
@@ -1040,6 +1043,10 @@ class Item extends ModelTenant
         }
         $salePriceWithIgv = ($has_igv == true)?$this->sale_unit_price:($this->sale_unit_price * $igv);
         $salePriceWithIgv = number_format($salePriceWithIgv, $configuration->decimal_quantity, '.', '');
+        $currency = $this->currency_type;
+        if(empty($currency )){
+            $currency = new CurrencyType();
+        }
         return [
             'name_disa' => $name_disa,
             'laboratory' => $laboratory,
@@ -1065,7 +1072,7 @@ class Item extends ModelTenant
             'stock' => $this->getStockByWarehouse(),
             'stock_min' => $this->stock_min,
             'currency_type_id' => $this->currency_type_id,
-            'currency_type_symbol' => $this->currency_type->symbol,
+            'currency_type_symbol' => $currency->symbol,
             'sale_affectation_igv_type_id' => $this->sale_affectation_igv_type_id,
             'purchase_affectation_igv_type_id' => $this->purchase_affectation_igv_type_id,
             'amount_sale_unit_price' => $this->sale_unit_price,
@@ -1074,9 +1081,9 @@ class Item extends ModelTenant
             'active' => (bool)$this->active,
             'has_igv_description' => $has_igv_description,
             'purchase_has_igv_description' => $purchase_has_igv_description,
-            'sale_unit_price' => "{$this->currency_type->symbol} {$this->sale_unit_price}",
-            'sale_unit_price_with_igv' => "{$this->currency_type->symbol} $salePriceWithIgv",
-            'purchase_unit_price' => "{$this->currency_type->symbol} {$this->purchase_unit_price}",
+            'sale_unit_price' => "{$currency->symbol} {$this->sale_unit_price}",
+            'sale_unit_price_with_igv' => "{$currency->symbol} $salePriceWithIgv",
+            'purchase_unit_price' => "{$currency->symbol} {$this->purchase_unit_price}",
             'created_at' => ($this->created_at) ? $this->created_at->format('Y-m-d H:i:s') : '',
             'updated_at' => ($this->created_at) ? $this->updated_at->format('Y-m-d H:i:s') : '',
             'warehouses' => collect($this->warehouses)->transform(function ($row) {
@@ -1680,6 +1687,10 @@ class Item extends ModelTenant
      */
     public function getBarCodeData($barCodeHeight = 60 ){
 
+        $currency = $this->currency_type;
+        if(empty($currency )){
+            $currency = new CurrencyType();
+        }
         $data = [];
         $data['internal_id'] = $this->internal_id;
         $data['name'] = $this->getDescription();
@@ -1688,7 +1699,7 @@ class Item extends ModelTenant
         $data['short_name'] = substr($data['name'],0,30);
         $data['short_model'] = substr($data['model'],0,10);
         $data['bar_code'] = $this->getBarCode($barCodeHeight);
-        $data['price'] = $this->currency_type->symbol." ".$this->withoutRounding();
+        $data['price'] = $currency->symbol." ".$this->withoutRounding();
         $data['second_name'] = $this->second_name;
         $data['short_second_name'] = substr($data['second_name'],0,4);
         $data['talla'] = $data['short_second_name'];
