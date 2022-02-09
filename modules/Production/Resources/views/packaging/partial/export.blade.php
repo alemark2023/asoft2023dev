@@ -122,7 +122,7 @@ $half = 50;
                     $row['item_extra_data'] = (array)$row['item_extra_data'];
                     $colorId = (int)$row['item_extra_data']['color'];
                     $itemColor =  \App\Models\Tenant\ItemColor::find($colorId);
-                    $color = " - ". $itemColor->getColor()->name;
+                    $color = " - ".(!empty($itemColor)? $itemColor->getColor()->name:null);
                 }
                 $item =  $row['item'];
                 // dd($item);

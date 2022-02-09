@@ -150,7 +150,9 @@ $half = 50;
                         $row['item_extra_data'] = (array)$row['item_extra_data'];
                         $colorId = (int)$row['item_extra_data']['color'];
                         $itemColor =  \App\Models\Tenant\ItemColor::find($colorId);
-                        $color = $itemColor->getColor()->name;
+                        if(!empty($itemColor)){
+                        	$color = $itemColor->getColor()->name;
+                        }
                     }
                 @endphp
                 {{$color}}
