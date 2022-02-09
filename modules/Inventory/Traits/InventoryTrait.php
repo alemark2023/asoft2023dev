@@ -477,9 +477,24 @@ trait InventoryTrait
         // dd($document_item);
         if (isset($document_item->item->IdLoteSelected)) {
             if ($document_item->item->IdLoteSelected != null) {
-                $lot = ItemLotsGroup::find($document_item->item->IdLoteSelected);
-                $lot->quantity = $lot->quantity + $document_item->quantity;
-                $lot->save();
+
+                if(is_array($document_item->item->IdLoteSelected)) { 
+
+                    $lotesSelecteds = $document_item->item->IdLoteSelected;
+
+                    foreach ($lotesSelecteds as $item) {
+                        $lot = ItemLotsGroup::query()->find($item->id);
+                        $lot->quantity = $lot->quantity + $item->compromise_quantity;
+                        $lot->save();
+                    }
+                    
+                }else {
+                    $lot = ItemLotsGroup::find($document_item->item->IdLoteSelected);
+                    $lot->quantity = $lot->quantity + $document_item->quantity;
+                    $lot->save();
+                }
+
+              
             }
         }
         if (isset($document_item->item->lots)) {
