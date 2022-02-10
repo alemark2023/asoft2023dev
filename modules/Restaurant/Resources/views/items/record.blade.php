@@ -1,4 +1,4 @@
-@extends('ecommerce::layouts.layout_ecommerce_item.record')
+@extends('restaurant::layouts.item.record')
 
 @section('content')
 

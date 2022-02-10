@@ -132,7 +132,7 @@ class ViewServiceProvider extends ServiceProvider
             'Modules\Restaurant\Http\ViewComposers\PromotionsViewComposer'
         );
         view()->composer(
-            ['restaurant::layouts.partials.mobile_menu','restaurant::layouts.partials.header', 'restaurant::layouts.partials.footer','ecommerce::layouts.partials_ecommerce.footer', 'ecommerce::layouts.partials_ecommerce.header', 'ecommerce::cart.detail', 'ecommerce::layouts.partials_ecommerce.sidebar_product_right', 'ecommerce::layouts.partials_ecommerce.mobile_menu'],
+            ['restaurant::layouts.partials.mobile_menu','restaurant::layouts.partials.header', 'restaurant::layouts.partials.footer','ecommerce::layouts.partials_ecommerce.footer', 'ecommerce::layouts.partials_ecommerce.header', 'ecommerce::cart.detail', 'ecommerce::layouts.partials_ecommerce.sidebar_product_right', 'ecommerce::layouts.partials_ecommerce.mobile_menu', 'restaurant::cart.detail'],
             'Modules\Ecommerce\Http\ViewComposers\InformationContactViewComposer'
         );
         view()->composer(

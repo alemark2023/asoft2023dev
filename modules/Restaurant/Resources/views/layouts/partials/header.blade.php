@@ -75,7 +75,7 @@
      <div class="header-middle">
          <div   class="container">
              <div class="header-left">
-                 <a href="{{ route("tenant.ecommerce.index") }}" class="logo" style="max-width: 180px">
+                 <a href="{{ route("tenant.restaurant.menu") }}" class="logo" style="max-width: 180px">
                     @if($information->logo)
                         <img src="{{ asset('storage/uploads/logos/'.$information->logo) }}" alt="Logo" />
                     @else
@@ -116,8 +116,7 @@
                      <i class="fab fa-whatsapp"></i> <a href="#"><strong>{{$information->information_contact_phone}}</strong></a>
                  </div><!-- End .header-contact -->
 
-                @include('ecommerce::layouts.partials_ecommerce.cart_dropdown')
-
+                @include('restaurant::layouts.partials.cart_dropdown')
                 @include('ecommerce::partials.headers.session')
 
              </div><!-- End .header-right -->
