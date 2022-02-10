@@ -34,7 +34,7 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Productos compuestos Restaurante</h3>
+                <h3 class="my-0">Productos compuestos Ecommerce</h3>
             </div>
             <div class="data-table-visible-columns">
                 <el-dropdown :hide-on-click="false">
