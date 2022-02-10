@@ -9,7 +9,7 @@
     </head>
     <body>
         <div>
-            <h3 align="center" class="title"><strong>Reporte de comisión de vendedores - utilidades</strong></h3>
+            <h3 align="center" class="title"><strong>Reporte de comisión de vendedores - utilidades detallado</strong></h3>
         </div>
         <br>
         <div style="margin-top:20px; margin-bottom:15px;">
@@ -39,38 +39,84 @@
         </div>
         <br>
         @if(!empty($records))
+            @php
+                $acum_unit_gain = 0;
+                $acum_overall_profit = 0;
+
+            @endphp
             <div class="">
                 <div class=" "> 
                     <table class="">
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Vendedor</th>
-                                <th class="text-center">Tipo comisión</th>
-                                <th class="text-center">Monto comisión</th>
-                                <th class="text-center">Total utilidad</th>
-                                <th class="text-center">Total comisiones</th>
+                                <th>Fecha</th>
+                                <th class="text-center">Comprobante</th>
+                                <th class="text-center">Serie</th>
+                                <th class="text-center">Ruc/Dni</th>
+
+                                <th class="text-center">Comercial</th>
+                                <th class="text-center">Detalle</th>
+                                <th class="text-center">Cantidad</th>
+                                <th class="text-center">Precio compra</th>
+                                <th class="text-center">Precio venta</th>
+
+                                <th class="text-center">Ganancia unidad</th>
+                                <th class="text-center">Ganancia total</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($records as $row)
                                 @php
 
-                                    $utilities = Modules\Report\Helpers\UserCommissionHelper::getUtilities($row->sale_notes, $row->documents);
-                                    $commission = Modules\Report\Helpers\UserCommissionHelper::getCommission($row, $utilities);
+                                    $type_document = '';
+                                    $relation = $row->document_id ? $row->document : $row->sale_note;
+
+                                    if($row->document_id) {
+                                        $type_document =  $row->document->document_type_id == '03' ? 'FACTURA' : 'BOLETA';
+                                    }
+                                    else if ($row->sale_note_id) {
+                                        $type_document = 'NOTA DE VENTA';
+                                    }
+
+                                    $purchase_unit_price = 0;
+                                    if(isset($row->item->purchase_unit_price)){
+                                        $purchase_unit_price = $row->item->purchase_unit_price;
+                                    }
+                                    $unit_gain = ((float)$row->unit_price - (float)$purchase_unit_price);
+                                    $overall_profit = (((float)$row->unit_price * $row->quantity ) - ((float)$purchase_unit_price * $row->quantity));
+
+                                    $acum_unit_gain += (float)$row->unit_gain;
+                                    $acum_overall_profit += (float)$row->overall_profit;
 
                                 @endphp
                                 
                                 <tr>
-                                    <td class="celda" >{{$loop->iteration}}</td>
-                                    <td class="celda">{{$row->name}}</td>
-                                    <td class="celda">{{($row->user_commission->type == 'amount') ? 'Monto':'Porcentaje'}}</td>
-                                    <td class="celda">{{$row->user_commission->amount}}</td> 
-                                    <td class="celda">{{$utilities['total_utility']}}</td> 
-                                    <td class="celda">{{$commission}}</td> 
+                                <td class="celda" >{{$loop->iteration}}</td>
+                                    <td class="celda">{{$relation->date_of_issue->format('Y-m-d')}}</td>
+                                    <td class="celda">{{$type_document}}</td>
+                                    <td class="celda">{{$relation->number_full}}</td> 
+                                    <td class="celda">{{ $relation->customer->number}}</td> 
+
+                                    <td class="celda">{{$relation->customer->name}}</td> 
+                                    <td class="celda">{{$row->relation_item->name}}</td> 
+
+                                    <td class="celda">{{$row->quantity}}</td> 
+                                    <td class="celda">{{$purchase_unit_price}}</td> 
+                                    <td class="celda">{{$row->unit_price}}</td> 
+
+                                    <td class="celda">{{ $unit_gain }}</td> 
+                                    <td class="celda">{{ $overall_profit }}</td> 
                                 </tr>
                             @endforeach
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td style="text-align:right;" colspan="10">TOTAL:</td>
+                                <td class="text-center">{{ $acum_unit_gain }}</td>
+                                <td class="text-center">{{ $acum_overall_profit }}</td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>

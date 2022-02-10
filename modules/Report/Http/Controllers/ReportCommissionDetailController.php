@@ -5,7 +5,7 @@ namespace Modules\Report\Http\Controllers;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade as PDF;
-use Modules\Report\Exports\UserCommissionExport;
+use Modules\Report\Exports\CommissionDetailExport;
 use Illuminate\Http\Request;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\SaleNoteItem;
@@ -108,8 +108,8 @@ class ReportCommissionDetailController extends Controller
                         ->whereIn('document_type_id', ['01','03'])
                         ->where('establishment_id', $establishment_id)
                         ->whereStateTypeAccepted();
-                    })
-                    ->where('item_id', $item_id);
+                    });
+                    
     
             }else{
     
@@ -119,8 +119,11 @@ class ReportCommissionDetailController extends Controller
                             $query->whereBetween('date_of_issue', [$date_start, $date_end])
                             ->whereIn('document_type_id', ['01','03'])
                             ->whereStateTypeAccepted();
-                        })
-                        ->where('item_id', $item_id);
+                        });
+            }
+
+            if ($item_id) {
+                $data = $data->where('item_id', $item_id);
             }
     
             return $data;
@@ -135,30 +138,26 @@ class ReportCommissionDetailController extends Controller
                     $query->whereBetween('date_of_issue', [$date_start, $date_end])
                         ->where('establishment_id', $establishment_id)
                         ->whereStateTypeAccepted();
-                    })
-                    ->where('item_id', $item_id);
+                    });
     
             }else{
     
                     $data = $model::whereHas('sale_note',function($query) use($date_start, $date_end){
                                 $query->whereBetween('date_of_issue', [$date_start, $date_end])
                                     ->whereStateTypeAccepted();
-                                })
-                                ->where('item_id', $item_id);
+                                });
                         
+            }
+    
+            if ($item_id) {
+                $data = $data->where('item_id', $item_id);
             }
     
             return $data;
 
         }
 
-
-
-        
-
     }
-
-
 
 
     public function pdf(Request $request) {
@@ -190,7 +189,7 @@ class ReportCommissionDetailController extends Controller
         $documents = $this->getRecords($request->all(), DocumentItem::class);
         $records = ($sales_notes->get())->merge($documents->get());
         
-        return (new UserCommissionExport)
+        return (new CommissionDetailExport)
                 ->records($records)
                 ->company($company)
                 ->establishment($establishment)

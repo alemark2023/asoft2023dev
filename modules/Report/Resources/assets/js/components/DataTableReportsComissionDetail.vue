@@ -176,42 +176,9 @@
                             </el-select>
                         </div>
                     </template>
+                   
 
-
-                    <div v-if="resource == 'reports/sales' || resource === 'reports/sale-notes'"
-                         class="col-lg-3 col-md-3">
-                        <label>Orden de compra</label>
-                        <el-input v-model="form.purchase_order"
-                                  clearable></el-input>
-                    </div>
-                    <div v-if="resource == 'reports/sales'"
-                         class="col-lg-3 col-md-3 mt-4">
-                        <div class="form-group">
-                            <el-checkbox v-model="form.include_categories">¿Incluir categorías?</el-checkbox>
-                            <br>
-                        </div>
-                    </div>
-
-                    <div v-if="resource == 'reports/quotations'"
-                         class="col-lg-3 col-md-3">
-                        <div class="form-group">
-                            <label class="control-label">
-                                Estado
-                            </label>
-
-                            <el-select v-model="form.state_type_id"
-                                       clearable
-                                       filterable
-                                       popper-class="el-select-customers"
-                            >
-                                <el-option v-for="option in state_types"
-                                           :key="option.id"
-                                           :label="option.name"
-                                           :value="option.id"></el-option>
-                            </el-select>
-
-                        </div>
-                    </div>
+                   
 
                     <div class="col-lg-4 col-md-6" v-if="resource == 'reports/commissions-detail'">
                             <div class="form-group">
@@ -274,74 +241,26 @@
                               :index="customIndex(index)"
                               :row="row"></slot>
                         </tbody>
-                        <tfoot v-if="resource == 'reports/sales' || resource == 'reports/purchases' || resource == 'reports/fixed-asset-purchases'">
-
-                            <template v-if="resource == 'reports/sales'">
+                        <tfoot>
+                            <template>
                                 <tr>
-                                    <td :colspan="12"></td>
-                                    <td v-if="visibleColumns.guides.visible"></td>
-                                    <td v-if="visibleColumns.options.visible"></td>
-                                    <td v-if="visibleColumns.web_platforms.visible"></td>
-                                    <td><strong>Totales PEN</strong></td>
-                                    <td>{{ totals.acum_total_exonerated }}</td>
-                                    <td>{{ totals.acum_total_unaffected }}</td>
-                                    <td>{{ totals.acum_total_free }}</td>
-
-                                    <td>{{ totals.acum_total_taxed }}</td>
-                                    <td>{{ totals.acum_total_igv }}</td>
-                                    <td v-if="visibleColumns.total_isc.visible"></td>
-                                    <td>{{ totals.acum_total }}</td>
-                                </tr>
-                                <tr>
-                                    <td :colspan="12"></td>
-                                    <td v-if="visibleColumns.guides.visible"></td>
-                                    <td v-if="visibleColumns.options.visible"></td>
-                                    <td v-if="visibleColumns.web_platforms.visible"></td>
-                                    <td><strong>Totales USD</strong></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>{{ totals.acum_total_taxed_usd }}</td>
-                                    <td>{{ totals.acum_total_igv_usd }}</td>
-                                    <td v-if="visibleColumns.total_isc.visible"></td>
-                                    <td>{{ totals.acum_total_usd }}</td>
+                                    <td class="text-right" colspan="10">TOTAL:</td>
+                                    <td class="text-center">{{ totals.acum_unit_gain}}</td>
+                                     <td class="text-center">{{ totals.acum_overall_profit}}</td>
                                 </tr>
 
                             </template>
-                            <template v-else>
-                                <tr>
-                                    <td colspan="8"></td>
-                                    <td><strong>Totales PEN</strong></td>
-                                    <td>{{ totals.acum_total_exonerated }}</td>
-                                    <td>{{ totals.acum_total_unaffected }}</td>
-                                    <td>{{ totals.acum_total_free }}</td>
-
-                                    <td>{{ totals.acum_total_taxed }}</td>
-                                    <td>{{ totals.acum_total_igv }}</td>
-                                    <td>{{ totals.acum_total }}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="8"></td>
-                                    <td><strong>Totales USD</strong></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-
-                                    <td>{{ totals.acum_total_taxed_usd }}</td>
-                                    <td>{{ totals.acum_total_igv_usd }}</td>
-                                    <td>{{ totals.acum_total_usd }}</td>
-                                </tr>
-                            </template>
+                            
                         </tfoot>
                     </table>
                     <div>
-                        <el-pagination
+                        <!--<el-pagination
                             :current-page.sync="pagination.current_page"
                             :page-size="pagination.per_page"
                             :total="pagination.total"
                             layout="total, prev, pager, next"
                             @current-change="getRecords">
-                        </el-pagination>
+                        </el-pagination>-->
                     </div>
                 </div>
             </div>
@@ -490,86 +409,10 @@ export default {
         getTotals(records) {
 
             this.initTotals()
-            // console.log(records)
 
-            records.forEach(row => {
-
-                let signal = row.document_type_id;
-                let state = row.state_type_id;
-
-                if (row.currency_type_id == 'PEN') {
-
-                    if ((signal == '07' && state != '11')) {
-
-                        this.totals.acum_total += parseFloat(-row.total);
-                        this.totals.acum_total_taxed += parseFloat(-row.total_taxed);
-                        this.totals.acum_total_igv += parseFloat(-row.total_igv);
-
-
-                        this.totals.acum_total_exonerated += parseFloat(-row.total_exonerated);
-                        this.totals.acum_total_unaffected += parseFloat(-row.total_unaffected);
-                        this.totals.acum_total_free += parseFloat(-row.total_free);
-
-
-                    } else if (signal != '07' && state == '11') {
-
-                        this.totals.acum_total += 0;
-                        this.totals.acum_total_taxed += 0;
-                        this.totals.acum_total_igv += 0;
-
-                        this.totals.acum_total_exonerated += 0;
-                        this.totals.acum_total_unaffected += 0;
-                        this.totals.acum_total_free += 0;
-
-                    } else {
-
-                        this.totals.acum_total += parseFloat(row.total);
-                        this.totals.acum_total_taxed += parseFloat(row.total_taxed);
-                        this.totals.acum_total_igv += parseFloat(row.total_igv);
-
-                        this.totals.acum_total_exonerated += parseFloat(row.total_exonerated);
-                        this.totals.acum_total_unaffected += parseFloat(row.total_unaffected);
-                        this.totals.acum_total_free += parseFloat(row.total_free);
-                    }
-
-
-                } else if (row.currency_type_id == 'USD') {
-
-                    if ((signal == '07' && state != '11')) {
-
-                        this.totals.acum_total_usd += parseFloat(-row.total);
-                        this.totals.acum_total_taxed_usd += parseFloat(-row.total_taxed);
-                        this.totals.acum_total_igv_usd += parseFloat(-row.total_igv);
-
-
-                    } else if (signal != '07' && state == '11') {
-
-                        this.totals.acum_total_usd += 0;
-                        this.totals.acum_total_taxed_usd += 0;
-                        this.totals.acum_total_igv_usd += 0;
-
-
-                    } else {
-
-                        this.totals.acum_total_usd += parseFloat(row.total);
-                        this.totals.acum_total_taxed_usd += parseFloat(row.total_taxed);
-                        this.totals.acum_total_igv_usd += parseFloat(row.total_igv);
-
-                    }
-
-
-                }
-                this.totals.acum_total_taxed = _.round(this.totals.acum_total_taxed, 2)
-                this.totals.acum_total_igv = _.round(this.totals.acum_total_igv, 2)
-                this.totals.acum_total = _.round(this.totals.acum_total, 2)
-                this.totals.acum_total_exonerated = _.round(this.totals.acum_total_exonerated, 2)
-                this.totals.acum_total_unaffected = _.round(this.totals.acum_total_unaffected, 2)
-                this.totals.acum_total_free = _.round(this.totals.acum_total_free, 2)
-
-                this.totals.acum_total_taxed_usd = _.round(this.totals.acum_total_taxed_usd, 2)
-                this.totals.acum_total_igv_usd = _.round(this.totals.acum_total_igv_usd, 2)
-                this.totals.acum_total_usd = _.round(this.totals.acum_total_usd, 2)
-            })
+            this.totals.acum_unit_gain = records.reduce((accum,item) => accum + Number(item.unit_gain), 0).toFixed(2)
+            this.totals.acum_overall_profit = records.reduce((accum,item) => accum + Number(item.overall_profit), 0).toFixed(2)
+            
         },
         clickDownload(type) {
             let query = queryString.stringify({
@@ -606,16 +449,8 @@ export default {
         initTotals() {
 
             this.totals = {
-                acum_total_taxed: 0,
-                acum_total_igv: 0,
-                acum_total: 0,
-                acum_total_exonerated: 0,
-                acum_total_unaffected: 0,
-                acum_total_free: 0,
-
-                acum_total_taxed_usd: 0,
-                acum_total_igv_usd: 0,
-                acum_total_usd: 0,
+                acum_unit_gain: 0,
+                acum_overall_profit: 0,
             }
         },
         customIndex(index) {
@@ -629,9 +464,9 @@ export default {
 
         },
         getRecords() {
-            if(!this.form.item_id) {
+            /*if(!this.form.item_id) {
                 this.$message.warning('Debe seleccionar un producto');
-            }
+            }*/
 
             return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
                 this.records = response.data.data

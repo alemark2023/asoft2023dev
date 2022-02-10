@@ -74,6 +74,11 @@
             </table>
         </div>
         @if(!empty($records))
+            @php
+                $acum_unit_gain = 0;
+                $acum_overall_profit = 0;
+
+            @endphp
             <div class="">
                 <div class=" ">
                     <table class="">
@@ -116,6 +121,9 @@
                                 $unit_gain = ((float)$row->unit_price - (float)$purchase_unit_price);
                                 $overall_profit = (((float)$row->unit_price * $row->quantity ) - ((float)$purchase_unit_price * $row->quantity));
 
+                                $acum_unit_gain += (float)$row->unit_gain;
+                                $acum_overall_profit += (float)$row->overall_profit;
+
                                 @endphp
                                 
                                 <tr>
@@ -138,6 +146,13 @@
                                 </tr>
                             @endforeach
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td style="text-align:right;" colspan="10">TOTAL:</td>
+                                <td class="text-center">{{ $acum_unit_gain }}</td>
+                                <td class="text-center">{{ $acum_overall_profit }}</td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
