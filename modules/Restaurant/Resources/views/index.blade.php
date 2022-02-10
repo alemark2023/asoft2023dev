@@ -2,6 +2,7 @@
 
 @section('content')
 @php
+    use Illuminate\Support\Str;
     $path = explode('/', request()->path());
     $path[1] = (array_key_exists(1, $path)> 0)?$path[1]:'';
     $path[0] = ($path[0] === '')?'menu':$path[0];
@@ -15,7 +16,7 @@
                 </li>
                 @foreach ($categories as $category)
                     <li>
-                        <a href="{{ route('tenant.restaurant.menu', ['name' => $category->name]) }}"  class="{{ $path[1] == $category->name ? 'bg-success text-light' : '' }}">{{$category->name}}</a>
+                        <a href="{{ route('tenant.restaurant.menu', ['name' => Str::slug($category->name, '-')]) }}"  class="{{ $path[1] == $category->name ? 'bg-success text-light' : '' }}">{{$category->name}}</a>
                     </li>
                 @endforeach
             </ul>

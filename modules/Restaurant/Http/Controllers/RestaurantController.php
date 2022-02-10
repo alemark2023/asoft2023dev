@@ -17,6 +17,10 @@ class RestaurantController extends Controller
 {
     public function menu($name = null)
     {
+        if($name) {
+            $name = str_replace('-', ' ', $name);
+        }
+
         $category = Category::where('name', $name)->first();
         $dataPaginate = Item::where([['apply_restaurant', 1], ['internal_id','!=', null]])
                                 ->category($category ? $category->id : null)
