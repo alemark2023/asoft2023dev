@@ -64,7 +64,7 @@ class PromotionController extends Controller
 
         if(!$id)
         {
-            $count = Promotion::count();
+            $count = Promotion::where('apply_restaurant', 1)->count();
             if($count > 2)
             {
                 return [

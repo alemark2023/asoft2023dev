@@ -8,7 +8,7 @@
     @foreach ($items as $item)
 
     <div class="home-slide">
-        <div class="owl-lazy slide-bg" data-src="{{ asset('storage/uploads/promotions/'.$item->image) }}"></div>
+        <div class="owl-lazy slide-bg" data-src="{{ asset('storage/uploads/promotions/restaurant/'.$item->image) }}"></div>
         <div class="home-slide-content text-white">
 
             {{-- <h1>{{$item->name}}</h1> --}}
