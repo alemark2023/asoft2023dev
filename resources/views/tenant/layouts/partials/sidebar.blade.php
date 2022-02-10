@@ -1359,6 +1359,10 @@
                                         Productos de restaurante
                                     </a>
                                 </li>
+                                <li class="{{ ($secondLevel != null && $secondLevel == 'item-sets' )?'nav-active':'' }}">
+                                        <a class="nav-link"
+                                           href="{{route('tenant.restaurant.item_sets.index')}}">Conjuntos/Packs/Promociones</a>
+                                </li>
                                 <li class="{{ ( $secondLevel != null && $secondLevel == 'promotions')?'nav-active':'' }}">
                                         <a class="nav-link"
                                            href="{{route('tenant.restaurant.promotion.index')}}">Promociones(Banners)</a>
