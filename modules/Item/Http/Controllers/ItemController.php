@@ -4,9 +4,13 @@
 
     use \Exception;
     use App\Models\Tenant\DocumentItem;
+    use App\Models\Tenant\Document;
+    use App\Models\Tenant\SaleNote;
+    use App\Models\Tenant\Quotation;
     use App\Models\Tenant\Item;
     use App\Models\Tenant\PurchaseItem;
     use App\Models\Tenant\SaleNoteItem;
+    use App\Models\Tenant\QuotationItem;
     use Illuminate\Http\Request;
     use Illuminate\Routing\Controller;
     use Illuminate\Support\Facades\DB;
@@ -176,6 +180,43 @@
 
 
             return new ItemHistoryPurchasesCollection($purchases->orderBy('created_at', 'desc')->paginate(config('tenant.items_per_page_simple_d_table_params')));
+
+        }
+
+        public function itemtLastSale(Request $request) {
+            
+            $type_document = $request->type_document;
+            $customer_id = $request->customer_id;
+            $item_id = $request->item_id;
+
+            $item = null;
+            if($type_document == 'CPE') {
+                $document = Document::where('customer_id', $customer_id)->latest()->first();
+                return $document;
+                if($document) {
+                    $item = DocumentItem::where('document_id', $document->id)->where('item_id', $item_id)->orderBy('id', 'desc')->first();
+                }
+
+            }
+            else if($type_document == 'NV') {
+
+                $document = Salenote::where('customer_id', $customer_id)->latest()->first();
+                if($document) {
+                    $item = SaleNoteItem::where('document_id', $document->id)->where('item_id', $item_id)->orderBy('id', 'desc')->first();
+                }
+
+            }
+            else  if($type_document == 'QUOTATION') {
+
+                $document = Quotation::where('customer_id', $customer_id)->latest()->first();
+                if($document) {
+                    $item = QuotationItem::where('quotation_id', $document->id)->where('item_id', $item_id)->orderBy('id', 'desc')->first();
+                }
+            }
+
+            return [
+                'item' => $item ? $item->unit_value: null,
+            ];
 
         }
 

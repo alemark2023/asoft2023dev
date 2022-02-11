@@ -580,6 +580,7 @@ export default {
         'documentTypeId',
         'noteCreditOrDebitTypeId',
         'displayDiscount',
+        'customerId'
     ],
     components: {
         ItemForm,
@@ -1190,6 +1191,8 @@ export default {
                 this.form.name_product_pdf = this.form.item.name_product_pdf;
             }
 
+            this.getLastPriceItem()
+
         },
         focusTotalItem(change) {
             if (!change && this.form.item.calculate_quantity) {
@@ -1538,6 +1541,21 @@ export default {
             if(code === 'Escape'){
                 this.close()
             }
+        },
+        async getLastPriceItem() {
+            if(this.configuration.show_last_price_sale) {
+                if(this.customerId && this.form.item_id) {
+                    const params = {
+                        'type_document': 'CPE',
+                        'customer_id': this.customerId,
+                        'item_id': this.form.item_id
+                    }
+                    await this.$http.get(`/items/last-sale`, {params}).then((response) => {
+                        console.log(response.data)
+                    })
+                }
+            }
+           
         }
     }
 }

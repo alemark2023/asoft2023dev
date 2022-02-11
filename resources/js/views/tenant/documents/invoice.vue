@@ -1369,6 +1369,7 @@
             :recordItem="recordItem"
             :showDialog.sync="showDialogAddItem"
             :typeUser="typeUser"
+            :customer-id="form.customer_id"
             @add="addRow"></document-form-item>
 
         <person-form :document_type_id=form.document_type_id
