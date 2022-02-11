@@ -363,14 +363,11 @@
             },
             refreshSetDataCustomer()
             {
-
                 this.form_document.datos_del_cliente_o_receptor.direccion = this.form_contact.address
                 this.form_document.datos_del_cliente_o_receptor.telefono = this.form_contact.telephone
                 this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad = this.typeDocuments
                 this.form_document.datos_del_cliente_o_receptor.numero_documento = this.numberDocument
-                // this.form_document.datos_del_cliente_o_receptor.identity_document_type_id = this.formIdentity.identity_document_type_id
                 this.form_document.datos_del_cliente_o_receptor.identity_document_type_id = this.typeDocuments
-                
             },
             async getFormPaymentCash() {
                 
@@ -435,7 +432,6 @@
                                 type: "success"
                             }).then((x) => {
                               app_cart.order_generated = order
-                                //askedDocument(response.data.order);
                             })
                         }
                     }).catch(error => {
@@ -465,15 +461,6 @@
                 this.form_document.items = await this.getItemsDocument()
                 this.form_document.totales = await this.getTotales()
 
-                // if (this.formIdentity.identity_document_type_id === '6') {
-                //     this.form_document.serie_documento = 'F001'
-                //     this.form_document.codigo_tipo_documento = '01'
-                // }
-                // if (this.formIdentity.identity_document_type_id === '1') {
-                //     this.form_document.serie_documento = 'B001'
-                //     this.form_document.codigo_tipo_documento = '03'
-                // }
-                
                 if (this.form_document.codigo_tipo_documento == '01')
                 {
                     this.form_document.serie_documento = 'F001'
@@ -699,41 +686,21 @@
                     total += parseFloat(unit_price)
                 })
 
-                // console.log(total_taxed, total_exonerated, total_igv)
-
                 this.summary.total_taxed = total_taxed.toFixed(2)
                 this.summary.total_exonerated = total_exonerated.toFixed(2)
                 this.summary.total_igv = total_igv.toFixed(2)
                 this.summary.total_value = total_value.toFixed(2)
                 this.summary.total = total.toFixed(2)
                 this.aux_totals = this.summary
-                // console.log(this.summary)
 
 
                 $("#total_amount").data('total', this.summary.total);
 
-                // this.formIdentity.identity_document_type_id = ''
                 this.form_document.codigo_tipo_documento = null
                 this.optionDocument()
 
                 this.payment_cash.amount = this.summary.total;
 
-                // let x =
-                // console.log(x)
-
-                // let subtotal = 0.00
-                // this.records.forEach(function (item) {
-                //     //console.log(item)
-                //     subtotal += parseFloat(item.sub_total)
-                // })
-
-                // this.summary.subtotal = subtotal.toFixed(2)
-                // let tax = (subtotal * 0.18)
-                // this.summary.tax = tax.toFixed(2)
-                // this.summary.total = (subtotal + tax).toFixed(2)
-                // $("#total_amount").data('total', this.summary.total);
-
-                // this.payment_cash.amount = this.summary.total
             },
             saveContactDataUser()
             {
@@ -761,15 +728,6 @@
     if(!Culqi.publicKey)
     {
       $('.culqi').hide()
-/*
-        swal({
-            title: "Culqi configuración",
-            text: "El pago con visa aun no esta disponible. Intente con efectivo.",
-            type: "error",
-            position: 'top-end',
-            icon: 'warning',
-        })
-*/
     }
     Culqi.options({
         installments: true
@@ -781,13 +739,6 @@
     }
 
     async function execCulqi() {
-
-       console.log( 'errores', app_cart.errors)
-
-       //app_cart.errors = 'demo'
-
-    //   console.log( 'errores22', app_cart.errors)
-
 
         let precio = Math.round((Number($("#total_amount").data('total')) * 100).toFixed(2));
         if (precio > 0) {
@@ -855,7 +806,6 @@
                     type: "success"
                   }).then((x) => {
                     askedDocument(data.order);
-                    //window.location = "{{ route('tenant.ecommerce.index') }}";
                   })
                 } else {
                   const message = data.message
