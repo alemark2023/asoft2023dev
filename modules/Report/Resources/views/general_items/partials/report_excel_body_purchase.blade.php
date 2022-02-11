@@ -1,4 +1,10 @@
 <?php
+    $iscType = null;
+    if(get_class($value) == \App\Models\Tenant\PurchaseItem::class){
+    /** @var  \App\Models\Tenant\PurchaseItem $value*/
+        $system_isc_type = $value->system_isc_type;
+        $iscType = $system_isc_type->description;
+    }
 ?>
 <tr>
     <td class="celda"> {{$purchase->date_of_issue->format('Y-m-d')}}</td>
@@ -51,7 +57,7 @@
     <td class="celda"> {{$value->total_value}}</td>
     <td class="celda"> {{$value->affectation_igv_type_id}}</td>
     <td class="celda"> {{$value->total_igv}}</td>
-    <td class="celda"> {{$value->system_isc_type_id}}</td>
+    <td class="celda"> {{$iscType}}</td>
     <td class="celda"> {{$value->total_isc}}</td>
     <td class="celda"> {{$value->total_plastic_bag_taxes}}</td>
     <td class="celda"> {{$value->total}}</td>
