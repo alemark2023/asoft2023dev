@@ -76,6 +76,14 @@ class DocumentCollection extends ResourceCollection
                 'sale_opportunity_number_full' => isset($row->quotation->sale_opportunity) ? $row->quotation->sale_opportunity->number_full : '',
                 'web_platforms' => $web_platforms,
                 'plate_number' => $row->plate_number,
+                'items' => $row->items->transform(function($row, $key) {
+                    return [
+                        'key' => $key + 1,
+                        'id' => $row->id,
+                        'description' => $row->item->description,
+                        'quantity' => round($row->quantity,2)
+                    ];
+                }),
 
             ];
         });

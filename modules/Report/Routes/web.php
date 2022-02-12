@@ -74,6 +74,8 @@
                             ->name('tenant.reports.sales.filter');
                        Route::get('/records', 'ReportDocumentController@records')
                             ->name('tenant.reports.sales.records');
+                       Route::get('/pdf-simple', 'ReportDocumentController@pdfSimple')
+                            ->name('tenant.reports.sales.pdfSimple');
                    });
                    /**
                     * /reports/sale-notes
