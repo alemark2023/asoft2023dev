@@ -191,31 +191,29 @@
 
             $item = null;
             if($type_document == 'CPE') {
-                $document = Document::where('customer_id', $customer_id)->latest()->first();
-                return $document;
-                if($document) {
-                    $item = DocumentItem::where('document_id', $document->id)->where('item_id', $item_id)->orderBy('id', 'desc')->first();
-                }
+
+                $item = DocumentItem::whereHas('document', function ($query) use ($customer_id) {
+                    $query->where('customer_id', $customer_id);
+                })->orderBy('id', 'desc')->where('item_id', $item_id)->first();
 
             }
             else if($type_document == 'NV') {
 
-                $document = Salenote::where('customer_id', $customer_id)->latest()->first();
-                if($document) {
-                    $item = SaleNoteItem::where('document_id', $document->id)->where('item_id', $item_id)->orderBy('id', 'desc')->first();
-                }
+                $item = SaleNoteItem::whereHas('sale_note', function ($query) use ($customer_id) {
+                    $query->where('customer_id', $customer_id);
+                })->orderBy('id', 'desc')->where('item_id', $item_id)->first();
 
             }
             else  if($type_document == 'QUOTATION') {
 
-                $document = Quotation::where('customer_id', $customer_id)->latest()->first();
-                if($document) {
-                    $item = QuotationItem::where('quotation_id', $document->id)->where('item_id', $item_id)->orderBy('id', 'desc')->first();
-                }
+                $item = QuotationItem::whereHas('quotation', function ($query) use ($customer_id) {
+                    $query->where('customer_id', $customer_id);
+                })->orderBy('id', 'desc')->where('item_id', $item_id)->first();
             }
 
             return [
-                'item' => $item ? $item->unit_value: null,
+                'item_unit_value' => $item ? $item->unit_value: null,
+                'item_id' => $item ? $item->id: null,
             ];
 
         }

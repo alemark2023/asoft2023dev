@@ -190,7 +190,15 @@
                     <div class="col-md-4 col-sm-4">
                         <div :class="{'has-danger': errors.unit_price_value}"
                              class="form-group">
-                            <label class="control-label">Precio Unitario</label>
+                            <label class="control-label">
+                                Precio Unitario 
+
+                                <el-tooltip v-if="itemLastPrice" class="item" :content="itemLastPrice"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
                             <el-input v-model="form.unit_price_value"
                                       :tabindex="'3'"
                                       :readonly="!edit_unit_price"
@@ -632,7 +640,8 @@ export default {
                 classic: ClassicEditor
             },
             value1: 'hello',
-            readonly_total: 0
+            readonly_total: 0,
+            itemLastPrice: null
             //item_unit_type: {}
         }
     },
@@ -1543,6 +1552,7 @@ export default {
             }
         },
         async getLastPriceItem() {
+            this.itemLastPrice =null
             if(this.configuration.show_last_price_sale) {
                 if(this.customerId && this.form.item_id) {
                     const params = {
@@ -1551,7 +1561,10 @@ export default {
                         'item_id': this.form.item_id
                     }
                     await this.$http.get(`/items/last-sale`, {params}).then((response) => {
-                        console.log(response.data)
+                        if(response.data.item_unit_value) {
+                            this.itemLastPrice = `Último precio de venta: ${response.data.item_unit_value}`
+                        }
+                        
                     })
                 }
             }
