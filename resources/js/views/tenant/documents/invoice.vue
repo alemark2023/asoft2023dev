@@ -256,7 +256,13 @@
                                         {{
                                         row.item.presentation.hasOwnProperty('description') ?
                                         row.item.presentation.description : ''
-                                        }}<br/><small>{{ row.affectation_igv_type.description }}</small>
+                                        }}
+
+                                        <template v-if="row.total_plastic_bag_taxes > 0">
+                                            <br/><small>ICBPER: {{ currency_type.symbol }} {{ row.total_plastic_bag_taxes }}</small>
+                                        </template>
+
+                                        <br/><small>{{ row.affectation_igv_type.description }}</small>
                                     </td>
                                     <td class="text-center">{{ row.item.unit_type_id }}</td>
 
@@ -3122,13 +3128,16 @@ export default {
             this.form.total_value = _.round(total_value, 2)
             // this.form.total_taxes = _.round(total_igv, 2)
 
-            //impuestos (isc + igv)
-            this.form.total_taxes = _.round(total_igv + total_isc, 2);
+            //impuestos (isc + igv + icbper)
+            this.form.total_taxes = _.round(total_igv + total_isc + total_plastic_bag_taxes, 2);
 
             this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
-            // this.form.total = _.round(total, 2)
-            this.form.subtotal = _.round(total + this.form.total_plastic_bag_taxes, 2)
-            this.form.total = _.round(total + this.form.total_plastic_bag_taxes - this.total_discount_no_base, 2)
+
+            this.form.subtotal = _.round(total, 2)
+            this.form.total = _.round(total - this.total_discount_no_base, 2)
+
+            // this.form.subtotal = _.round(total + this.form.total_plastic_bag_taxes, 2)
+            // this.form.total = _.round(total + this.form.total_plastic_bag_taxes - this.total_discount_no_base, 2)
 
             if (this.enabled_discount_global)
                 this.discountGlobal()

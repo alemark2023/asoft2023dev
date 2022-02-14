@@ -317,6 +317,10 @@
 
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
 
+                @if($row->total_plastic_bag_taxes > 0)
+                    <br/><span style="font-size: 9px">ICBPER : {{ $row->total_plastic_bag_taxes }}</span>
+                @endif
+
                 @foreach($row->additional_information as $information)
                     @if ($information)
                         <br/><span style="font-size: 9px">{{ $information }}</span>
