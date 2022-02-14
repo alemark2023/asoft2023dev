@@ -1343,7 +1343,7 @@
                     @endif
 
                     {{-- Restaurante --}}
-                    @if(in_array('restaurant_app', $vc_modules) && $configuration->isPharmacy())
+                    @if(in_array('restaurant_app', $vc_modules))
                         <li class=" nav-parent {{ ($firstLevel === 'restaurant') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link"
                                href="#">
@@ -1365,7 +1365,7 @@
                                         Productos de restaurante
                                     </a>
                                 </li>
-                               
+
                                 <li class="{{ ( $secondLevel != null && $secondLevel == 'promotions')?'nav-active':'' }}">
                                         <a class="nav-link"
                                            href="{{route('tenant.restaurant.promotion.index')}}">Promociones(Banners)</a>
