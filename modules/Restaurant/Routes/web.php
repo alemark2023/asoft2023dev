@@ -17,6 +17,9 @@ Route::prefix('restaurant')->group(function() {
     Route::post('items/visible', 'RestaurantController@is_visible');
     Route::get('item_partial/{id}', 'RestaurantController@partialItem')->name('restaurant.item_partial');
     Route::get('item/{id}/{promotion_id?}', 'RestaurantController@item')->name('restaurant.item');
+    Route::get('cart', 'RestaurantController@detailCart')->name('restaurant.detail.cart');
+    Route::post('payment_cash', 'RestaurantController@paymentCash')->name('restaurant.payment.cash');
+
 
 
     //Promotion
@@ -49,6 +52,8 @@ Route::prefix('restaurant')->group(function() {
 
     });
 
+
+
     
             
 
@@ -58,5 +63,6 @@ Route::prefix('restaurant')->group(function() {
 Route::middleware(['locked.tenant'])->group(function() {
     // restaurant
     Route::get('/menu/{name?}', 'RestaurantController@menu')->name('tenant.restaurant.menu');
+
 
 });

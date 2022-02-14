@@ -220,6 +220,7 @@
             'show_ticket_80',
             'show_ticket_58',
             'show_ticket_50',
+            'show_last_price_sale'
         ];
 
         protected $casts = [
@@ -286,6 +287,7 @@
             'auto_print' => 'bool',
             'detraction_amount_rounded_int' => 'bool',
             'show_terms_condition_pos' => 'bool',
+            'show_last_price_sale' => 'bool',
         ];
 
         protected $hidden = [
@@ -464,6 +466,7 @@
                 'show_ticket_80' => (bool)$this->show_ticket_80,
                 'show_ticket_58' => (bool)$this->show_ticket_58,
                 'show_ticket_50' => (bool)$this->show_ticket_50,
+                'show_last_price_sale' => (bool)$this->show_last_price_sale,
             ];
         }
 

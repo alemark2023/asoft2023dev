@@ -266,6 +266,12 @@
                                        @click.prevent="clickDownload('pdf')">Exportar PDF
                             </el-button>
 
+                            <el-button  v-if="resource == 'reports/sales'" class="submit"
+                                       icon="el-icon-tickets"
+                                       type="danger"
+                                       @click.prevent="clickDownload('pdf-simple')">Exportar PDF Simple
+                            </el-button>
+
                             <el-button class="submit"
                                        type="success"
                                        @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel"></i> Exportal

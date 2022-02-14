@@ -422,6 +422,27 @@
                                             v-text="errors.show_totals_on_cpe_list[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Mostrar precio de última venta
+                                    <el-tooltip class="item"
+                                                content="Muestra el último precio de una venta en formulario producto"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                 <div :class="{'has-danger': errors.show_last_price_sale}"
+                                        class="form-group">
+                                    <el-switch v-model="form.show_last_price_sale"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.show_last_price_sale"
+                                            class="form-control-feedback"
+                                            v-text="errors.show_last_price_sale[0]"></small>
+                                </div>
+                            </div>
 
                             <!--
                             <div class="col-md-6 mt-4">

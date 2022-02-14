@@ -4,9 +4,13 @@
 
     use \Exception;
     use App\Models\Tenant\DocumentItem;
+    use App\Models\Tenant\Document;
+    use App\Models\Tenant\SaleNote;
+    use App\Models\Tenant\Quotation;
     use App\Models\Tenant\Item;
     use App\Models\Tenant\PurchaseItem;
     use App\Models\Tenant\SaleNoteItem;
+    use App\Models\Tenant\QuotationItem;
     use Illuminate\Http\Request;
     use Illuminate\Routing\Controller;
     use Illuminate\Support\Facades\DB;
@@ -176,6 +180,41 @@
 
 
             return new ItemHistoryPurchasesCollection($purchases->orderBy('created_at', 'desc')->paginate(config('tenant.items_per_page_simple_d_table_params')));
+
+        }
+
+        public function itemtLastSale(Request $request) {
+            
+            $type_document = $request->type_document;
+            $customer_id = $request->customer_id;
+            $item_id = $request->item_id;
+
+            $item = null;
+            if($type_document == 'CPE') {
+
+                $item = DocumentItem::whereHas('document', function ($query) use ($customer_id) {
+                    $query->where('customer_id', $customer_id);
+                })->orderBy('id', 'desc')->where('item_id', $item_id)->first();
+
+            }
+            else if($type_document == 'NV') {
+
+                $item = SaleNoteItem::whereHas('sale_note', function ($query) use ($customer_id) {
+                    $query->where('customer_id', $customer_id);
+                })->orderBy('id', 'desc')->where('item_id', $item_id)->first();
+
+            }
+            else  if($type_document == 'QUOTATION') {
+
+                $item = QuotationItem::whereHas('quotation', function ($query) use ($customer_id) {
+                    $query->where('customer_id', $customer_id);
+                })->orderBy('id', 'desc')->where('item_id', $item_id)->first();
+            }
+
+            return [
+                'item_unit_value' => $item ? $item->unit_value: null,
+                'item_id' => $item ? $item->id: null,
+            ];
 
         }
 
