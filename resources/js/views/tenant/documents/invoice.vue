@@ -415,7 +415,7 @@
                                                     <td>OTROS CARGOS:</td>
                                                     <td>{{ currency_type.symbol }}
                                                         <el-input-number v-model="total_global_charge"
-                                                                         :disabled="config.active_allowance_charge == 1 ? true:false"
+                                                                         :disabled="config.active_allowance_charge == true ? true:false"
                                                                          :min="0"
                                                                          class="input-custom"
                                                                          controls-position="right"
@@ -768,7 +768,7 @@
                                         <td>OTROS CARGOS:</td>
                                         <td>{{ currency_type.symbol }}
                                             <el-input-number v-model="total_global_charge"
-                                                             :disabled="config.active_allowance_charge == 1 ? true:false"
+                                                             :disabled="config.active_allowance_charge == true ? true:false"
                                                              :min="0"
                                                              class="input-custom"
                                                              controls-position="right"
