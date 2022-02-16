@@ -417,6 +417,7 @@
                     $order_total_igv[$miTiendaPeOrder] += $itemTo['total_igv'];
                     $order_unit_price[$miTiendaPeOrder] += $itemTo['unit_price'];
                     $order_total_value[$miTiendaPeOrder] += $itemTo['total_value'];
+                    if(!isset($ds)){ $ds = [];}
                     $order_discounts[$miTiendaPeOrder][] = $ds;
                     $orders[$miTiendaPeOrder]['items'][] = $itemTo;
 
