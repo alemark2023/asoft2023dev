@@ -212,7 +212,7 @@
             }
 
             return [
-                'item_unit_value' => $item ? $item->unit_value: null,
+                'unit_price' => $item ? $item->unit_price: null,
                 'item_id' => $item ? $item->id: null,
             ];
 

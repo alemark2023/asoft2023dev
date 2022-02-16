@@ -1561,8 +1561,8 @@ export default {
                         'item_id': this.form.item_id
                     }
                     await this.$http.get(`/items/last-sale`, {params}).then((response) => {
-                        if(response.data.item_unit_value) {
-                            this.itemLastPrice = `Último precio de venta: ${response.data.item_unit_value}`
+                        if(response.data.unit_price) {
+                            this.itemLastPrice = `Último precio de venta: ${response.data.unit_price}`
                         }
                         
                     })

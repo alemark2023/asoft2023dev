@@ -319,7 +319,7 @@
                              :typeUser="typeUser"
                              :recordItem="recordItem"
                              :configuration="config"
-
+                             :customer-id="form.customer_id"
                            @add="addRow"></quotation-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
