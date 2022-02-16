@@ -895,6 +895,31 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        Mostrar Logo por sucursal
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">
+                                                En los documentos PDF(CPE, Notas de venta, Cotizaciones), muestra en la cabecera el logo de la sucusal.
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.show_logo_by_establishment}"
+                                            class="form-group">
+                                        <el-switch v-model="form.show_logo_by_establishment"
+                                                    active-text="Si"
+                                                    inactive-text="No"
+                                                    @change="submit"></el-switch>
+                                        <small v-if="errors.show_logo_by_establishment"
+                                                class="form-control-feedback"
+                                                v-text="errors.show_logo_by_establishment[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="five">
@@ -1340,6 +1365,7 @@ export default {
                 permission_to_edit_cpe: false,
                 name_product_pdf_to_xml:false,
                 detraction_amount_rounded_int:false,
+                show_logo_by_establishment: false
             };
         },
         UpdateFormPurchase(e) {

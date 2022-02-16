@@ -59,6 +59,7 @@ class ConfigurationResource extends JsonResource
             'is_pharmacy' => (bool) $this->is_pharmacy,
             'active_warehouse_prices' => (bool) $this->active_warehouse_prices,
             'show_last_price_sale' => (bool) $this->show_last_price_sale,
+            'show_logo_by_establishment' => (bool)$this->show_logo_by_establishment,
 
         ];
     }

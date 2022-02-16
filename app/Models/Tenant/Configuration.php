@@ -220,7 +220,8 @@
             'show_ticket_80',
             'show_ticket_58',
             'show_ticket_50',
-            'show_last_price_sale'
+            'show_last_price_sale',
+            'show_logo_by_establishment'
         ];
 
         protected $casts = [
@@ -288,6 +289,7 @@
             'detraction_amount_rounded_int' => 'bool',
             'show_terms_condition_pos' => 'bool',
             'show_last_price_sale' => 'bool',
+            'show_logo_by_establishment' => 'bool',
         ];
 
         protected $hidden = [
