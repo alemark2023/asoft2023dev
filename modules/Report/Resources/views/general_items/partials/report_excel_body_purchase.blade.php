@@ -1,10 +1,5 @@
 <?php
-    $iscType = null;
-    if(get_class($value) == \App\Models\Tenant\PurchaseItem::class){
-    /** @var  \App\Models\Tenant\PurchaseItem $value*/
-        $system_isc_type = $value->system_isc_type;
-        $iscType = $system_isc_type->description;
-    }
+    $iscType = $value->system_isc_type;
 ?>
 <tr>
     <td class="celda"> {{$purchase->date_of_issue->format('Y-m-d')}}</td>
