@@ -343,7 +343,8 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         row.price_type_id = '02'
         row.unit_value = 0
         // row.total_value = 0
-        row.total = 0
+        // row.total = 0
+        row.total = 0 + total_plastic_bag_taxes
 
         //valor sin redondeo
         row.total_without_rounding = 0

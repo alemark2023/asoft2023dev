@@ -3091,16 +3091,20 @@ export default {
 
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
+
                 if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
 
                     let unit_value = row.total_value / row.quantity
                     let total_value_partial = unit_value * row.quantity
-                    row.total_taxes = row.total_value - total_value_partial
+                    // row.total_taxes = row.total_value - total_value_partial
+                    row.total_taxes = row.total_value - total_value_partial + parseFloat(row.total_plastic_bag_taxes) //sumar icbper al total tributos
+
                     row.total_igv = total_value_partial * (row.percentage_igv / 100)
                     row.total_base_igv = total_value_partial
                     total_value -= row.total_value
 
                     total_igv_free += row.total_igv
+                    total += parseFloat(row.total) //se agrega suma al total para considerar el icbper
 
                 }
 
