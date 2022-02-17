@@ -1550,20 +1550,16 @@ class SaleNoteController extends Controller
     private function voidedLots($item){
 
         $i_lots_group = isset($item->item->lots_group) ? $item->item->lots_group:[];
+        $lot_group_selecteds_filter = collect($i_lots_group)->where('compromise_quantity', '>', 0);
+        $lot_group_selecteds =  $lot_group_selecteds_filter->all();
 
-        $lot_group_selected = collect($i_lots_group)->first(function($row){
-            return $row->checked;
-        });
-
-        if($lot_group_selected){
-            // @todo Posiblemente validar que exista quantity_unit.
-            $quantity_unit = $item->item->presentation->quantity_unit;
-            //$lot = ItemLotsGroup::find($row['IdLoteSelected']);
-//            $lot->quantity = ($lot->quantity - ($row['quantity'] * $quantity_unit));
-
-            $lot = ItemLotsGroup::find($lot_group_selected->id);
-            $lot->quantity =  $lot->quantity + ($item->quantity * $quantity_unit);
-            $lot->save();
+        if(count($lot_group_selecteds) > 0){
+           
+            foreach ($lot_group_selecteds as $lt) {
+                $lot = ItemLotsGroup::find($lt->id);
+                $lot->quantity = $lot->quantity + $lt->compromise_quantity;
+                $lot->save();
+            }
 
         }
 

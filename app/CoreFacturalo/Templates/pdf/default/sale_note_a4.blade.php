@@ -191,10 +191,14 @@
             <td class="text-center align-top">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
                 @php
-                    $lot_code = isset($row->item->lots_group) ? collect($row->item->lots_group)->first(function($row){ return $row->checked == true;}):null;
+                    $lot_code = [];
+                    if(isset($row->item->lots_group)) {
+                        $lot_codes_compromise = collect($row->item->lots_group)->where('compromise_quantity', '>', 0);
+                        $lot_code =  $lot_codes_compromise->all();
+                    }
                 @endphp
                 {{
-                    $itemLotGroup->getLote($lot_code ? $lot_code->id : null)
+                    $itemLotGroup->getLote($lot_code)
                 }}
 
             </td>

@@ -23,7 +23,7 @@
 <html>
 <head>
     {{--<title>{{ $document_number }}</title>--}}
-    {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
+    {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}  
 </head>
 <body>
 

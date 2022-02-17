@@ -134,16 +134,16 @@
                 $endDate = ($row->relation_item->date_of_due) ? $row->relation_item->date_of_due->format('Y-m-d') :null ;
 
                 if(isset($row->item->lots_group)) {
-                    $lot_code =  collect($row->item->lots_group)->first(function ($row) {
+                    $lot_codes_compromise = collect($row->item->lots_group)->where('compromise_quantity', '>', 0);
+                    /*$lot_code =  collect($row->item->lots_group)->first(function ($row) {
                         return $row->checked == true;
-                    });
-                    if (empty($lot_code) && !empty($row->item->lots_group)){
-                        $lot_code =  collect($row->item->lots_group)->first(function ($row) {
-                            return $row;
-                        });
+                    });*/
+                    $lot_code_group = $lot_codes_compromise->all();
+                    $endDate = '';
+
+                    foreach ($lot_code_group as $lt) {
+                       $endDate .= '/'.$lt->date_of_due;
                     }
-                    $endDate = $itemLotGroup->getLotDateOfDue($lot_code ? $lot_code->id : null); // Si existe, se toma la fecha del lote
-                    $lot_code = $itemLotGroup->getLote($lot_code ? $lot_code->id : null);
                 }
 
                 ?>
