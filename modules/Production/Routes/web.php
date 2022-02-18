@@ -107,6 +107,7 @@
                     Route::get('/records', 'ProductionController@records');
                     Route::get('/tables', 'ProductionController@tables');
                     Route::get('/excel', 'ProductionController@excel');
+                    Route::get('/excel2', 'ProductionController@excel2');
                     Route::get('/pdf', 'ProductionController@pdf');
 
                 });

@@ -26,6 +26,8 @@
      * @property int|null    $machine_id
      * @property string|null $production_order
      * @property string|null $name
+     * @property string|null $production_collaborator
+     * @property string|null $mix_collaborator
      * @property string|null $comment
      * @property Carbon|null $date_start
      * @property Carbon|null $time_start
@@ -93,7 +95,9 @@
             'mix_date_end',
             'mix_time_end',
             'agreed',
-            'imperfect'
+            'imperfect',
+            'production_collaborator',
+            'mix_collaborator',
         ];
 
         /**

@@ -43,7 +43,7 @@
                             <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Número de Ficha</th>
+                                <th>Número de registro</th>
                                 <th>Número de ficha</th>
                                 <th>Producto</th>
                                 <th>Usuario</th>
@@ -53,6 +53,7 @@
                                 <th>Lote</th>
                                 <th>Fecha de inicio</th>
                                 <th>Fecha de fin</th>
+                                <th>Colaborador</th>
                                 <th>Comentario</th>
 
                             </tr>
@@ -70,6 +71,7 @@
                                 <td>{{ row.lot_code}}</td>
                                 <td >{{ row.date_start }} - {{row.time_start}}</td>
                                 <td >{{ row.date_end }} - {{row.time_end}}</td>
+                                <td>{{ row.packaging_collaborator}}</td>
                                 <td>{{ row.observation}}</td>
 
 
