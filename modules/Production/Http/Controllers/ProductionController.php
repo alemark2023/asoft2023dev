@@ -321,8 +321,8 @@
             });
 
             $buildProductsExport = new BuildProductsExport();
-            $buildProductsExport->setCollection($records);
-            $filename = 'Reporte de produccion - ' . date('YmdHis');
+            $buildProductsExport->setCollection($records)->setInProccess(true);
+            $filename = 'Reporte de produccion en proceso- ' . date('YmdHis');
             // return $buildProductsExport->view();
             return $buildProductsExport->download($filename . '.xlsx');
 

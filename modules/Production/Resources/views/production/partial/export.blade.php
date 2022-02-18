@@ -1,6 +1,7 @@
 <?php
 use App\Models\Tenant\Company;
 
+$inProcess = $inProcess??false;
 $code_plant = '';
 $debug = false;
 $min_space = 5;
@@ -76,7 +77,7 @@ $half = 50;
 <body>
 <div>
     <p align="center"
-       class="title"><strong> Reporte de Producción {{$date->firstOfMonth()->format('d-m-Y')}}</strong></p>
+       class="title"><strong> Reporte de Producción {{$inProcess?'En proceso':''}} {{$date->firstOfMonth()->format('d-m-Y')}}</strong></p>
 </div>
 
 <div style="margin-top:20px; margin-bottom:20px;">
@@ -102,7 +103,9 @@ $half = 50;
 
         <th>#</th>
         <th>Número de Ficha</th>
+        @if($inProcess)
         <th>Tipo de proceso</th>
+        @endif
         <th>Cód. Interno</th>
         <th>Prod. F. de inicio </th>
         <th>Prod. F. de Fin </th>
@@ -130,8 +133,10 @@ $half = 50;
             <td class="celda"> {!! $index+1 !!}</td>
 
             <td class="celda">{{ $row['name']??null }}</td>
-            <td class="celda">{{ $row['proccess_type']??null }}</td>
-            <td class="celda">000{{ $row['id']??null }}</td>
+                   @if($inProcess)
+         <td class="celda">{{ $row['proccess_type']??null }}</td>
+                    @endif
+        <td class="celda">000{{ $row['id']??null }}</td>
             <td class="celda">{{ $row['date_start']??null }} - {{$row['time_start']??null}}</td>
             <td class="celda">{{ $row['date_end']??null }} - {{$row['time_end']??null}}</td>
             <td class="celda">{{ $row['production_collaborator']??null }}</td>
