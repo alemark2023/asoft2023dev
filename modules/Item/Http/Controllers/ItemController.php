@@ -22,6 +22,7 @@
     use Modules\Item\Imports\ItemListWithExtraData;
     use Modules\Item\Models\ItemLot;
     use Picqer\Barcode\BarcodeGeneratorPNG;
+    use Illuminate\Support\Carbon;
 
 
     class ItemController extends Controller
@@ -206,9 +207,31 @@
             }
             else  if($type_document == 'QUOTATION') {
 
-                $item = QuotationItem::whereHas('quotation', function ($query) use ($customer_id) {
+                $document_cpe_item = DocumentItem::whereHas('document', function ($query) use ($customer_id) {
                     $query->where('customer_id', $customer_id);
                 })->orderBy('id', 'desc')->where('item_id', $item_id)->first();
+                
+
+                $sale_note_item = SaleNoteItem::whereHas('sale_note', function ($query) use ($customer_id) {
+                    $query->where('customer_id', $customer_id);
+                })->orderBy('id', 'desc')->where('item_id', $item_id)->first();
+
+                if($document_cpe_item && $sale_note_item) {
+
+                    if(Carbon::parse($document_cpe_item->document->created_at)->gte(Carbon::parse($sale_note_item->sale_note->created_at)) ){
+                        $item = $document_cpe_item;
+                    }
+                    else {
+                        $item = $sale_note_item;
+                    }
+                }
+                else {
+                    if ($document_cpe_item) {
+                        $item = $document_cpe_item;
+                    }elseif($sale_note_item){
+                        $item = $sale_note_item;
+                    }
+                }
             }
 
             return [
