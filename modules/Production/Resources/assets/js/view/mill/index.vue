@@ -149,10 +149,10 @@ export default {
 
 
         clickDownloadPdf() {
-            window.open(`${this.resource}/pdf`, '_blank');
+            window.open(`/${this.resource}/pdf`, '_blank');
         },
         clickDownloadExcel() {
-            window.open(`${this.resource}/excel`, '_blank');
+            window.open(`/${this.resource}/excel`, '_blank');
         },
     }
 }

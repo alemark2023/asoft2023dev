@@ -243,7 +243,7 @@
                                     </div>
                         </div>
 
-                        <div class="col-sm-12 col-md-6 ">
+                        <div class="col-sm-12 col-md-4 ">
                             <div class="row">
 
 
@@ -281,7 +281,7 @@
 
                         </div>
 
-                        <div class="col-sm-12 col-md-6 ">
+                        <div class="col-sm-12 col-md-4 ">
                             <div class="row">
                                 <div class="col-6">
                                     <div :class="{'has-danger': errors.date_end}"
@@ -314,6 +314,20 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-sm-12 col-md-4">
+                            <div
+                                :class="{'has-danger': errors.production_collaborator}"
+                                class="form-group"
+                            >
+                                <label class="control-label">Colaborador de producción</label>
+                                <input
+                                    class="form-control"
+                                    v-model="form.production_collaborator"
+                                    type="text"
+                                    value="Colaborador de produccion"
+                                />
+                            </div>
+                        </div>
 
                         <hr>
                         <div class="col-12 mt-3">
@@ -326,11 +340,8 @@
                         </div>
 
 
-                        <div class="col-sm-12 col-md-6 ">
+                        <div class="col-sm-12 col-md-4 ">
                             <div class="row">
-
-
-
                                 <div class="col-6">
                                     <div :class="{'has-danger': errors.mix_date_start}"
                                          class="form-group">
@@ -363,7 +374,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-12 col-md-6 ">
+                        <div class="col-sm-12 col-md-4 ">
                             <div class="row">
                                 <div class="col-6">
                                     <div :class="{'has-danger': errors.mix_date_end}"
@@ -398,6 +409,20 @@
                         </div>
 
 
+                        <div class="col-sm-12 col-md-4">
+                            <div
+                                :class="{'has-danger': errors.mix_collaborator}"
+                                class="form-group"
+                            >
+                                <label class="control-label">Colaborador de Mezcla</label>
+                                <input
+                                    class="form-control"
+                                    v-model="form.mix_collaborator"
+                                    type="text"
+                                    value="Colaborador de Mezcla"
+                                />
+                            </div>
+                        </div>
                                 <div class="col-sm-12 col-md-3">
                                     <label class="control-label">
                                         Ficha Informativa
@@ -581,6 +606,8 @@ export default {
                     if (response.data.success) {
                         this.$message.success(response.data.message)
                         this.initForm()
+                        window.location.href = '/production'
+
                     } else {
                         this.$message.error(response.data.message)
                     }

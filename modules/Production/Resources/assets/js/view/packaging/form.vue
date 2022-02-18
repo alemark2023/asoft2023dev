@@ -174,6 +174,21 @@
                                        v-text="errors.item_extra_data[0]"></small>
                             </div>
                         </div>
+                        <div class="col-sm-12 col-md-3 col-lg-3">
+
+                        <div
+                                :class="{'has-danger': errors.packaging_collaborator}"
+                                class="form-group"
+                            >
+                                <label class="control-label">Colaborador</label>
+                                <input
+                                    class="form-control"
+                                    v-model="form.packaging_collaborator"
+                                    type="text"
+                                    value="Colaborador"
+                                />
+                            </div>
+                        </div>
 
                         <!-- observation -->
                         <div class="col-sm-12 col-md-3 col-lg-3">

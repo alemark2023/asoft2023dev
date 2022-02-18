@@ -5,6 +5,8 @@
 
     use App\Models\Tenant\Item;
     use Barryvdh\DomPDF\Facade as PDF;
+    use Carbon\Carbon;
+    use Illuminate\Database\Query\Builder;
     use Illuminate\Http\Request;
     use Illuminate\Http\Response;
     use Illuminate\Routing\Controller;
@@ -221,21 +223,70 @@
 
         }
 
-        /**
-         * @param Request $request
-         *
-         * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder|Production
-         */
         public function getRecords(Request $request)
         {
             $data_of_period = $this->getDatesOfPeriod($request);
 
-            $params = [
-                'date_start' => $data_of_period['d_start'],
-                'date_end' => $data_of_period['d_end'],
-            ];
-            return Production::where($params);
+            $data = Production::query();
+            if (!empty($data_of_period['d_start'])) {
+                $data->where('date_start', '>=', $data_of_period['d_start']);
+            }
+            if (!empty($data_of_period['d_end'])) {
+                $data->where('date_end', '<=', $data_of_period['d_end']);
+            }
+            return $data;
         }
+
+        /**
+         * @param Request $request
+         *
+         * @return \Illuminate\Database\Eloquent\Builder|Builder|Production
+         */
+        public function getDatesOfPeriod($request)
+        {
+
+            if ($request->has('form')) {
+                $request = json_decode($request->form, true);
+            }
+            $period = $request['period'];
+            $date_start = $request['date_start'];
+            $date_end = $request['date_end'];
+            $month_start = $request['month_start'];
+            $month_end = $request['month_end'];
+
+            $d_start = Carbon::now()->startOfMonth()->format('Y-m-d');
+            $d_end = Carbon::now()->endOfMonth()->format('Y-m-d');
+            /** @todo: Eliminar periodo, fechas y cambiar por
+             * $date_start = $request['date_start'];
+             * $date_end = $request['date_end'];
+             * \App\CoreFacturalo\Helpers\Functions\FunctionsHelper\FunctionsHelper::setDateInPeriod($request, $date_start, $date_end);
+             */
+            switch ($period) {
+                case 'month':
+                    $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                    $d_end = Carbon::parse($month_start . '-01')->endOfMonth()->format('Y-m-d');
+                    break;
+                case 'between_months':
+                    $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                    $d_end = Carbon::parse($month_end . '-01')->endOfMonth()->format('Y-m-d');
+                    break;
+                case 'date':
+                    $d_start = $date_start;
+                    $d_end = $date_start;
+                    break;
+                case 'between_dates':
+                    $d_start = $date_start;
+                    $d_end = $date_end;
+                    break;
+            }
+
+
+            return [
+                'd_start' => $d_start,
+                'd_end' => $d_end
+            ];
+        }
+
         /**
          * @param Request $request
          *
@@ -244,7 +295,28 @@
         public function excel(Request $request)
         {
             // $records = $this->getData($request);
-            $records = $this->getRecords($request)->get()->transform(function (Production $row) {
+            $records = $this->getRecords($request)->where('informative', 0)->get()->transform(function (Production $row) {
+                return $row->getCollectionData();
+            });
+
+            $buildProductsExport = new BuildProductsExport();
+            $buildProductsExport->setCollection($records);
+            $filename = 'Reporte de produccion - ' . date('YmdHis');
+            // return $buildProductsExport->view();
+            return $buildProductsExport->download($filename . '.xlsx');
+
+
+        }
+
+        /**
+         * @param Request $request
+         *
+         * @return Response|BinaryFileResponse
+         */
+        public function excel2(Request $request)
+        {
+            // $records = $this->getData($request);
+            $records = $this->getRecords($request)->where('informative', 1)->get()->transform(function (Production $row) {
                 return $row->getCollectionData();
             });
 

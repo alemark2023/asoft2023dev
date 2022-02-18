@@ -100,16 +100,16 @@ $half = 50;
     <thead>
     <tr>
         <th>#</th>
-        <th>Número de Ficha</th>
+        <th>Número de Registro</th>
         <th>Número de ficha</th>
+        <th>Fecha de inicio</th>
+        <th>Fecha de fin</th>
         <th>Producto</th>
-        <th>Usuario</th>
+        <th>Colaborador</th>
         <th>Establecimiento</th>
         <th>Cantidad</th>
         <th># Paquetes</th>
         <th>Lote</th>
-        <th>Fecha de inicio</th>
-        <th>Fecha de fin</th>
         <th>Comentario</th>
     </tr>
     </thead>
@@ -135,14 +135,14 @@ $half = 50;
 
             <td  class="celda">000{{ $row['id'] }}</td>
             <td  class="celda">{{ $row['name'] }}</td>
+            <td  class="celda">{{ $row['date_start']??null }} - {{ $row['time_start']??null }}</td>
+            <td  class="celda">{{ $row['date_end']??null }} - {{ $row['time_end']??null }}</td>
             <td  class="celda">{{ $name }}</td>
-            <td  class="celda">{{ $row['user'] }}</td>
+            <td  class="celda">{{ $row['packaging_collaborator'] }}</td>
             <td  class="celda">{{ $row['stablishment'] }}</td>
             <td  class="celda">{{ $row['quantity']??null }}</td>
             <td  class="celda">{{ $row['number_packages']??null }}</td>
             <td  class="celda">{{ $row['lot_code'] }}</td>
-            <td  class="celda">{{ $row['date_start']??null }} - {{ $row['time_start']??null }}</td>
-            <td  class="celda">{{ $row['date_end']??null }} - {{ $row['time_end']??null }}</td>
             <td  class="celda">{{ $row['observation'] }}</td>
 
 

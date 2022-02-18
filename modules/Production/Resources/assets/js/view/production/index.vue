@@ -13,8 +13,8 @@
                 <template
                 >
                     <button
-                        type="button"
                         class="btn btn-custom btn-sm  mt-2 mr-2"
+                        type="button"
                         @click.prevent="clickCreate()"
                     >
                         <i class="fa fa-plus-circle"></i>
@@ -32,68 +32,68 @@
             <div class="card-body">
 
                 <div class="row">
+                    <div class="col-md-3">
+                        <label class="control-label">Fecha de envio</label>
+                        <el-select v-model="form.period"
+                                   @change="changePeriod">
+                            <el-option key="month"
+                                       label="Por mes"
+                                       value="month"></el-option>
+                            <el-option key="between_months"
+                                       label="Entre meses"
+                                       value="between_months"></el-option>
+                            <el-option key="date"
+                                       label="Por fecha"
+                                       value="date"></el-option>
+                            <el-option key="between_dates"
+                                       label="Entre fechas"
+                                       value="between_dates"></el-option>
+                        </el-select>
+                    </div>
+                    <template v-if="form.period === 'month' || form.period === 'between_months'">
                         <div class="col-md-3">
-                            <label class="control-label">Fecha de envio</label>
-                            <el-select v-model="form.period"
-                                       @change="changePeriod">
-                                <el-option key="month"
-                                           label="Por mes"
-                                           value="month"></el-option>
-                                <el-option key="between_months"
-                                           label="Entre meses"
-                                           value="between_months"></el-option>
-                                <el-option key="date"
-                                           label="Por fecha"
-                                           value="date"></el-option>
-                                <el-option key="between_dates"
-                                           label="Entre fechas"
-                                           value="between_dates"></el-option>
-                            </el-select>
+                            <label class="control-label">Mes de</label>
+                            <el-date-picker v-model="form.month_start"
+                                            :clearable="false"
+                                            format="MM/yyyy"
+                                            type="month"
+                                            value-format="yyyy-MM"
+                                            @change="changeDisabledMonths"></el-date-picker>
                         </div>
-                        <template v-if="form.period === 'month' || form.period === 'between_months'">
-                            <div class="col-md-3">
-                                <label class="control-label">Mes de</label>
-                                <el-date-picker v-model="form.month_start"
-                                                :clearable="false"
-                                                format="MM/yyyy"
-                                                type="month"
-                                                value-format="yyyy-MM"
-                                                @change="changeDisabledMonths"></el-date-picker>
-                            </div>
-                        </template>
-                        <template v-if="form.period === 'between_months'">
-                            <div class="col-md-3">
-                                <label class="control-label">Mes al</label>
-                                <el-date-picker v-model="form.month_end"
-                                                :clearable="false"
-                                                :picker-options="pickerOptionsMonths"
-                                                format="MM/yyyy"
-                                                type="month"
-                                                value-format="yyyy-MM"></el-date-picker>
-                            </div>
-                        </template>
-                        <template v-if="form.period === 'date' || form.period === 'between_dates'">
-                            <div class="col-md-3">
-                                <label class="control-label">Fecha del</label>
-                                <el-date-picker v-model="form.date_start"
-                                                :clearable="false"
-                                                format="dd/MM/yyyy"
-                                                type="date"
-                                                value-format="yyyy-MM-dd"
-                                                @change="changeDisabledDates"></el-date-picker>
-                            </div>
-                        </template>
-                        <template v-if="form.period === 'between_dates'">
-                            <div class="col-md-3">
-                                <label class="control-label">Fecha al</label>
-                                <el-date-picker v-model="form.date_end"
-                                                :clearable="false"
-                                                :picker-options="pickerOptionsDates"
-                                                format="dd/MM/yyyy"
-                                                type="date"
-                                                value-format="yyyy-MM-dd"></el-date-picker>
-                            </div>
-                        </template>
+                    </template>
+                    <template v-if="form.period === 'between_months'">
+                        <div class="col-md-3">
+                            <label class="control-label">Mes al</label>
+                            <el-date-picker v-model="form.month_end"
+                                            :clearable="false"
+                                            :picker-options="pickerOptionsMonths"
+                                            format="MM/yyyy"
+                                            type="month"
+                                            value-format="yyyy-MM"></el-date-picker>
+                        </div>
+                    </template>
+                    <template v-if="form.period === 'date' || form.period === 'between_dates'">
+                        <div class="col-md-3">
+                            <label class="control-label">Fecha del</label>
+                            <el-date-picker v-model="form.date_start"
+                                            :clearable="false"
+                                            format="dd/MM/yyyy"
+                                            type="date"
+                                            value-format="yyyy-MM-dd"
+                                            @change="changeDisabledDates"></el-date-picker>
+                        </div>
+                    </template>
+                    <template v-if="form.period === 'between_dates'">
+                        <div class="col-md-3">
+                            <label class="control-label">Fecha al</label>
+                            <el-date-picker v-model="form.date_end"
+                                            :clearable="false"
+                                            :picker-options="pickerOptionsDates"
+                                            format="dd/MM/yyyy"
+                                            type="date"
+                                            value-format="yyyy-MM-dd"></el-date-picker>
+                        </div>
+                    </template>
                     <div class="col-12 mt-4">
                         <el-button :loading="loading_submit"
                                    class="submit"
@@ -103,9 +103,21 @@
                         </el-button>
 
 
-                        <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownloadPdf()" >Exportar PDF</el-button>
+                        <!--                        <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownloadPdf()" >Exportar PDF</el-button>-->
 
-                        <el-button class="submit" type="success" @click.prevent="clickDownloadExcel()"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button>
+                        <el-button class="submit"
+                                   type="success"
+                                   @click.prevent="clickDownloadExcel()"><i class="fa fa-file-excel"></i> Exportal Excel
+                                                                                                          (Productos
+                                                                                                          fabricados)
+                        </el-button>
+                        <el-button class="submit"
+                                   type="success"
+                                   @click.prevent="clickDownloadExcel2()"><i class="fa fa-file-excel"></i> Exportal
+                                                                                                           Excel
+                                                                                                           (Productos en
+                                                                                                           proceso)
+                        </el-button>
                     </div>
                     <div class="col-12 p-t-20 table-responsive">
                         <table class="table">
@@ -114,21 +126,21 @@
                                 <th>#</th>
                                 <th>Número de Ficha</th>
                                 <th>Cód. Interno</th>
-                                <th>Prod. F. de inicio </th>
-                                <th>Prod. F. de Fin </th>
                                 <th>Tipo de proceso</th>
+                                <th>Prod. F. de inicio</th>
+                                <th>Prod. F. de Fin</th>
+                                <th>Colaborador de producción</th>
                                 <th>Cantidad</th>
                                 <th>Conformes</th>
                                 <th>Defectuosas</th>
                                 <th>Maquinaria</th>
                                 <th>Lote</th>
-                                <th>Usuario</th>
                                 <th>Color</th>
                                 <th>Producto</th>
                                 <th>Orden de Producción</th>
-                                <th>Mez. F. de inicio </th>
-                                <th>Mez. F. de Fin </th>
-                                <th>Tipo de proceso</th>
+                                <th>Mez. F. de inicio</th>
+                                <th>Mez. F. de Fin</th>
+                                <th>Colaborador de mezcla</th>
                                 <th>Comentario</th>
                             </tr>
                             </thead>
@@ -137,28 +149,26 @@
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ row.name }}</td>
                                 <td>000{{ row.id }}</td>
-                                <td >{{ row.date_start }} - {{row.time_start}}</td>
-                                <td >{{ row.date_end }} - {{row.time_end}}</td>
-                                <td >{{ row.proccess_type }}</td>
-                                <td >{{ row.quantity }}</td>
-                                <td >{{ row.agreed }}</td>
-                                <td >{{ row.imperfect }}</td>
-                                <td >
+                                <td>{{ row.proccess_type }}</td>
+                                <td>{{ row.date_start }} - {{ row.time_start }}</td>
+                                <td>{{ row.date_end }} - {{ row.time_end }}</td>
+                                <td>{{ row.production_collaborator }}</td>
+                                <td>{{ row.quantity }}</td>
+                                <td>{{ row.agreed }}</td>
+                                <td>{{ row.imperfect }}</td>
+                                <td>
                                     <div v-if="row.machine && row.machine.name">
                                         {{ row.machine.name }}
                                     </div>
                                 </td>
-                                <td >{{ row.lot_code }}</td>
-                                <td >{{ row.user }}</td>
-                                <td >
-                                    {{row.color}}
-                                </td>
-                                <td >{{ row.item_name }}</td>
-                                <td >{{ row.production_order }}</td>
-                                <td >{{ row.mix_date_start }} - {{row.mix_time_start}}</td>
-                                <td >{{ row.mix_date_end }} - {{row.mix_time_end}}</td>
-                                <td >{{ row.proccess_type }}</td>
-                                <td >{{ row.comment }}</td>
+                                <td>{{ row.lot_code }}</td>
+                                <td>{{ row.color }}</td>
+                                <td>{{ row.item_name }}</td>
+                                <td>{{ row.production_order }}</td>
+                                <td>{{ row.mix_date_start }} - {{ row.mix_time_start }}</td>
+                                <td>{{ row.mix_date_end }} - {{ row.mix_time_end }}</td>
+                                <td>{{ row.mix_collaborator }}</td>
+                                <td>{{ row.comment }}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -178,6 +188,7 @@
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {deletable} from "../../../../../../../resources/js/mixins/deletable";
 import moment from "moment";
+import queryString from 'query-string'
 
 export default {
     props: [
@@ -185,8 +196,7 @@ export default {
         'typeUser',
     ],
     mixins: [deletable],
-    components: {
-    },
+    components: {},
     computed: {
         ...mapState([
             'config',
@@ -329,10 +339,13 @@ export default {
             )
         },
         clickDownloadPdf() {
-            window.open(`${this.resource}/pdf`, '_blank');
+            window.open(`/${this.resource}/pdf?${this.getQueryParameters()}`, '_blank');
         },
         clickDownloadExcel() {
-            window.open(`${this.resource}/excel`, '_blank');
+            window.open(`/${this.resource}/excel?${this.getQueryParameters()}`, '_blank');
+        },
+        clickDownloadExcel2() {
+            window.open(`/${this.resource}/excel2?${this.getQueryParameters()}`, '_blank');
         },
 
         async getRecordsByFilter() {
@@ -346,9 +359,16 @@ export default {
             this.loading_submit = await false
 
         },
+        getQueryParameters() {
+            return queryString.stringify({
+                page: this.pagination.current_page,
+                form: JSON.stringify(this.form),
+                limit: this.limit
+            })
+        },
         getRecords() {
             return this.$http
-                .get(`/${this.resource}/records`)
+                .get(`/${this.resource}/records?${this.getQueryParameters()}`)
                 .then(response => {
                     this.records = response.data.data;
                     this.pagination = response.data.meta;
@@ -356,31 +376,32 @@ export default {
                         response.data.meta.per_page
                     );
                 })
-                .catch(error => {})
+                .catch(error => {
+                })
                 .then(() => {
                     this.loading_submit = false;
                 });
         },
         changePeriod() {
-    if (this.form.period === 'month') {
-        this.form.month_start = moment().format('YYYY-MM');
-        this.form.month_end = moment().format('YYYY-MM');
-    }
-    if (this.form.period === 'between_months') {
-        this.form.month_start = moment().startOf('year').format('YYYY-MM'); //'2019-01';
-        this.form.month_end = moment().endOf('year').format('YYYY-MM');
+            if (this.form.period === 'month') {
+                this.form.month_start = moment().format('YYYY-MM');
+                this.form.month_end = moment().format('YYYY-MM');
+            }
+            if (this.form.period === 'between_months') {
+                this.form.month_start = moment().startOf('year').format('YYYY-MM'); //'2019-01';
+                this.form.month_end = moment().endOf('year').format('YYYY-MM');
 
-    }
-    if (this.form.period === 'date') {
-        this.form.date_start = moment().format('YYYY-MM-DD');
-        this.form.date_end = moment().format('YYYY-MM-DD');
-    }
-    if (this.form.period === 'between_dates') {
-        this.form.date_start = moment().startOf('month').format('YYYY-MM-DD');
-        this.form.date_end = moment().endOf('month').format('YYYY-MM-DD');
-    }
-    // this.loadAll();
-},
+            }
+            if (this.form.period === 'date') {
+                this.form.date_start = moment().format('YYYY-MM-DD');
+                this.form.date_end = moment().format('YYYY-MM-DD');
+            }
+            if (this.form.period === 'between_dates') {
+                this.form.date_start = moment().startOf('month').format('YYYY-MM-DD');
+                this.form.date_end = moment().endOf('month').format('YYYY-MM-DD');
+            }
+            // this.loadAll();
+        },
 
         changeDisabledDates() {
             if (this.form.date_end < this.form.date_start) {

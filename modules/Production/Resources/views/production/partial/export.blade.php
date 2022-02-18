@@ -102,23 +102,24 @@ $half = 50;
 
         <th>#</th>
         <th>Número de Ficha</th>
+        <th>Tipo de proceso</th>
         <th>Cód. Interno</th>
         <th>Prod. F. de inicio </th>
         <th>Prod. F. de Fin </th>
+        <th>Colaborador de producción</th>
         <th>Cantidad</th>
         <th>Conf.</th>
         <th>Def.</th>
         <th>Maquinaria</th>
         <th>Lote</th>
-        <th>Usuario</th>
         <th>Color</th>
-
         <th>Producto</th>
         <th>Orden de Producción</th>
         <th>Mez. F. de inicio </th>
         <th>Mez. F. de Fin </th>
-<!--        <th>Comentario</th>-->
+        <th>Colaborador de mezcla</th>
         <th>Materia Prima </th>
+        <th>Orden de producción</th>
     </tr>
     </thead>
 
@@ -129,9 +130,11 @@ $half = 50;
             <td class="celda"> {!! $index+1 !!}</td>
 
             <td class="celda">{{ $row['name']??null }}</td>
+            <td class="celda">{{ $row['proccess_type']??null }}</td>
             <td class="celda">000{{ $row['id']??null }}</td>
             <td class="celda">{{ $row['date_start']??null }} - {{$row['time_start']??null}}</td>
             <td class="celda">{{ $row['date_end']??null }} - {{$row['time_end']??null}}</td>
+            <td class="celda">{{ $row['production_collaborator']??null }}</td>
             <td class="celda">{{ $row['quantity']??null }}</td>
             <td class="celda">{{ $row['agreed']??null }}</td>
             <td class="celda">{{ $row['imperfect']??null }}</td>
@@ -142,7 +145,6 @@ $half = 50;
                 @endif
             </td>
             <td class="celda">{{ $row['lot_code']??null }}</td>
-            <td class="celda">{{ $row['user']??null }}</td>
             <td class="celda">
                 @php
                 $color = null;
@@ -161,6 +163,7 @@ $half = 50;
             <td class="celda">{{ $row['production_order']??null }}</td>
             <td class="celda">{{ $row['mix_date_start']??null }} - {{$row['mix_time_start']??null}}</td>
             <td class="celda">{{ $row['mix_date_end']??null }} - {{$row['mix_time_end']??null}}</td>
+            <td class="celda">{{ $row['mix_collaborator']??null }}</td>
 <!--            <td class="celda">{{ $row['comment']??null }}</td>-->
 
             <td class="celda">
@@ -176,6 +179,7 @@ $half = 50;
 
                 @endif
             </td>
+                <td class="celda">{{ $row['production_order']??null }}</td>
         </tr>
 
     @endforeach

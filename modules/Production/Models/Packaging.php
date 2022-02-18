@@ -26,6 +26,7 @@
      * @property string|null $observation
      * @property string|null $item_extra_data
      * @property string|null $lot_code
+     * @property string|null $packaging_collaborator
      * @property Carbon|null $date_start
      * @property Carbon|null $time_start
      * @property Carbon|null $date_end
@@ -64,7 +65,8 @@
             'date_start',
             'time_start',
             'date_end',
-            'time_end'
+            'time_end',
+            'packaging_collaborator',
         ];
 
         /**
