@@ -631,6 +631,8 @@ export default {
             let total_plastic_bag_taxes = 0
             let total_base_isc = 0
             let total_isc = 0
+            let total_igv_free = 0
+
 
             this.form.items.forEach((row) => {
                 total_discount += parseFloat(row.total_discount)
@@ -658,6 +660,21 @@ export default {
                 total_value += parseFloat(row.total_value)
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
+                if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
+
+                    let unit_value = row.total_value / row.quantity
+                    let total_value_partial = unit_value * row.quantity
+                    row.total_taxes = row.total_value - total_value_partial + parseFloat(row.total_plastic_bag_taxes) //sumar icbper al total tributos
+
+                    row.total_igv = total_value_partial * (row.percentage_igv / 100)
+                    row.total_base_igv = total_value_partial
+                    total_value -= row.total_value
+
+                    total_igv_free += row.total_igv
+                    total += parseFloat(row.total) //se agrega suma al total para considerar el icbper
+
+                }
+
                 // isc
                 total_isc += parseFloat(row.total_isc)
                 total_base_isc += parseFloat(row.total_base_isc)
@@ -667,6 +684,8 @@ export default {
             // isc
             this.form.total_base_isc = _.round(total_base_isc, 2)
             this.form.total_isc = _.round(total_isc, 2)
+
+            this.form.total_igv_free = _.round(total_igv_free, 2)
 
             this.form.total_exportation = _.round(total_exportation, 2)
             this.form.total_taxed = _.round(total_taxed, 2)
