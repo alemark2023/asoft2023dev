@@ -30,7 +30,7 @@
             return view('production::production.partial.export',
                 compact(
                     'records',
-                    'inProcess',
+                    'inProcess'
                 ));
 
         }
