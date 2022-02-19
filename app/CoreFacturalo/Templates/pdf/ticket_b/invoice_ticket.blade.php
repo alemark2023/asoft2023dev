@@ -47,9 +47,6 @@
         <td class="text-center" style="text-transform:uppercase;">{{ $company->name }}</td>
     </tr>
     <tr>
-        <td class="text-center">{{ $company->trade_name }}</td>
-    </tr>
-    <tr>
         <td class="text-center">{{ 'RUC '.$company->number }}</td>
     </tr>
     <tr>
