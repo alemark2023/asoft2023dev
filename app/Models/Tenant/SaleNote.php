@@ -535,6 +535,14 @@
         {
             return $this->belongsTo(TechnicalService::class);
         }
+        
+        /**
+         * @return BelongsTo
+         */
+        public function relation_establishment()
+        {
+            return $this->belongsTo(Establishment::class, 'establishment_id');
+        }
 
         /**
          * @return mixed
