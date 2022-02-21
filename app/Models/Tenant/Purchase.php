@@ -348,6 +348,14 @@ class Purchase extends ModelTenant
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function relation_establishment()
+    {
+        return $this->belongsTo(Establishment::class, 'establishment_id');
+    }
+
+    /**
      * @return mixed
      */
     public function getNumberToLetterAttribute()
