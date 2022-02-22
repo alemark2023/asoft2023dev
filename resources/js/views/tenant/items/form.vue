@@ -1553,6 +1553,11 @@ this.activeName =  'first'
         },
         async submit() {
 
+            const stock = parseInt(this.form.stock);
+            if(isNaN(stock)){
+                 return this.$message.error('Stock Inicial debe ser un número entero.');
+            }
+
             if (this.validateItemUnitTypes() > 0) return this.$message.error('El campo factor no puede ser menor a 0.0001');
 
             if (this.fromPharmacy === true) {
@@ -1565,7 +1570,7 @@ this.activeName =  'first'
             }
             if (this.form.has_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
 
-            if (this.form.lots_enabled) {
+            if (this.form.lots_enabled && stock > 0) {
 
                 if (!this.form.lot_code)
                     return this.$message.error('Código de lote es requerido');
