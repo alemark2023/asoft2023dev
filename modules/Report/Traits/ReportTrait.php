@@ -163,7 +163,8 @@ trait ReportTrait
                 }
             }
         } elseif ($establishment_id) {
-            $data->where('establishment_id', 'like', '%'.$establishment_id.'%');
+            // $data->where('establishment_id', 'like', '%'.$establishment_id.'%');
+            $data->where('establishment_id', $establishment_id);
         }
 
 
