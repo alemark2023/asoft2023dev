@@ -698,17 +698,46 @@ class Facturalo
 
     }
 
+
     /**
      *
      * Evaluar si se debe firmar el xml y enviar cdr al PSE
-     * Disponible para facturas y boletas
+     * Disponible para facturas, boletas, anulaciones de facturas
      *
      * @return bool
      */
     public function sendToPse()
     {
-        return ($this->company->send_document_to_pse && $this->type === 'invoice');
+        $send_to_pse = false;
+
+        if($this->company->send_document_to_pse)
+        {
+            if($this->type === 'invoice')
+            {
+                $send_to_pse = true;
+            }
+            elseif($this->type === 'voided')
+            {
+                // validar si los documentos informados en la RA son facturas y fueron enviados a pse
+                $filter_quantity_documents = $this->document->documents->where('document.document_type_id', '01')
+                                                                        ->where('document.send_to_pse', true)
+                                                                        ->count();
+
+                if($this->document->documents->count() === $filter_quantity_documents)
+                {
+                    $send_to_pse = true;
+                }
+                else
+                {
+                    $this->sendDocumentPse->throwException('Documento a anular no es factura o no fue enviado al PSE.');
+                }
+            }
+
+        }
+
+        return $send_to_pse;
     }
+
 
     public function sendCdrToPse($cdr_zip, $document)
     {
@@ -901,6 +930,11 @@ class Facturalo
                 }
 
             } else {
+                
+                //enviar cdr a pse
+                $this->sendCdrToPse($res->getCdrZip(), $this->document);
+                //enviar cdr a pse
+
                 $this->updateStateDocuments(self::VOIDED);
             }
 

@@ -1,7 +1,9 @@
 <?php
     $iscType = $value->system_isc_type;
+    $warehouse_description = \App\CoreFacturalo\Helpers\Template\ReportHelper::getWarehouseDescription($value, $purchase);
 ?>
 <tr>
+    <td class="celda">{{ $loop->iteration }}</td>
     <td class="celda"> {{$purchase->date_of_issue->format('Y-m-d')}}</td>
     {{--
     @if($isSaleNote)
@@ -56,6 +58,10 @@
     <td class="celda"> {{$value->total_isc}}</td>
     <td class="celda"> {{$value->total_plastic_bag_taxes}}</td>
     <td class="celda"> {{$value->total}}</td>
+    
+    <td class="celda">{{ $purchase->exchange_rate_sale }}</td>
+    <td class="celda">{{ $warehouse_description }}</td>
+
     {{--
     <td class="celda">{{ $total_item_purchase }}</td>
     <td class="celda">{{ $utility_item }}</td>

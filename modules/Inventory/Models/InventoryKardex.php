@@ -85,7 +85,7 @@ class InventoryKardex extends ModelTenant
             $sale_note_asoc = optional($inventory_kardexable)->sale_note->number_full;
         }
 
-        if($inventory_kardexable->sale_notes_relateds)
+        if(isset($inventory_kardexable->sale_notes_relateds))
         {
             $data = [];
 

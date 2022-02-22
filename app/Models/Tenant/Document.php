@@ -435,6 +435,14 @@
         /**
          * @return BelongsTo
          */
+        public function relation_establishment()
+        {
+            return $this->belongsTo(Establishment::class, 'establishment_id');
+        }
+
+        /**
+         * @return BelongsTo
+         */
         public function user()
         {
             return $this->belongsTo(User::class);
