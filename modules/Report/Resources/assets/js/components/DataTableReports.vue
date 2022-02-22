@@ -304,7 +304,7 @@
 
                             <template v-if="resource == 'reports/sales'">
                                 <tr>
-                                    <td :colspan="12"></td>
+                                    <td :colspan="13"></td>
                                     <td v-if="visibleColumns.guides.visible"></td>
                                     <td v-if="visibleColumns.options.visible"></td>
                                     <td v-if="visibleColumns.web_platforms.visible"></td>
@@ -319,7 +319,7 @@
                                     <td>{{ totals.acum_total }}</td>
                                 </tr>
                                 <tr>
-                                    <td :colspan="12"></td>
+                                    <td :colspan="13"></td>
                                     <td v-if="visibleColumns.guides.visible"></td>
                                     <td v-if="visibleColumns.options.visible"></td>
                                     <td v-if="visibleColumns.web_platforms.visible"></td>
