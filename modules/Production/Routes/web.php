@@ -51,7 +51,7 @@
 
                 Route::prefix('mill-production')->group(function () {
 
-                    // @todo Pasar al modulo de produccion
+                    // modulo de insumos
                     Route::get('', 'MillController@index')->name('tenant.mill_production.index'); // ->middleware('redirect.level');
                     Route::get('/create/{id?}', 'MillController@create');
                     Route::post('/create', 'MillController@create');
