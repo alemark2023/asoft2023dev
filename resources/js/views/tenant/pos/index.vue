@@ -585,10 +585,10 @@
                             <table class="table table-sm table-borderless mb-0 pos-list-items">
                                 <template v-for="(item, index) in form.items">
                                     <tr :key="index">
-                                        <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
+                                        <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label font-weight-semibold">
                                             {{ item.unit_type_id }}
                                         </td>
-                                        <td style="width: 80px; vertical-align: top">
+                                        <td class="font-weight-semibold" style="width: 80px; vertical-align: top">
                                             <el-input v-model="item.item.aux_quantity"
                                                       @input="clickAddItem(item, index, true)"
                                                       @keyup.enter.native="keyupEnterQuantity"></el-input>
@@ -611,7 +611,7 @@
                                             ></el-input> -->
                                             <!-- <el-input-number v-model="item.item.aux_quantity" @change="clickAddItem(item,index,true)" :min="1" :max="10"></el-input-number> -->
                                         </td>
-                                        <td>
+                                        <td class="font-weight-semibold">
                                             <p class="item-description">
                                                 {{ item.item.description }}
                                             </p>
@@ -633,14 +633,14 @@
                       </p>
                     </td> -->
 
-                                        <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
+                                        <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label font-weight-semibold">
 <!--                                            <p-->
 <!--                                                class="font-weight-semibold m-0 text-center"-->
 <!--                                            >-->
                                                 {{ currency_type.symbol }}
 <!--                                            </p>-->
                                         </td>
-                                        <td style="width: 80px; vertical-align: top">
+                                        <td  class="font-weight-semibold" style="width: 80px; vertical-align: top">
 <!--                                            <p class="font-weight-semibold m-0 text-center">-->
                                                 <!-- {{currency_type.symbol}} {{item.total}} -->
                                             <template v-if="edit_unit_price">
