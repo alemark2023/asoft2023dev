@@ -139,7 +139,7 @@ $half = 50;
 
                     </td>
                     <td class="celda">
-                         {{$itemCollection['color']}}
+                         {{isset($itemCollection['color'])?$itemCollection['color']:'-'}}
 
                     </td>
                     <td class="celda">{{$itemCollection['total_to_mill']}} </td>
