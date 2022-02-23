@@ -759,7 +759,7 @@
 <script>
 import Keypress from "vue-keypress";
 import {calculateRowItem} from "../../../helpers/functions";
-import FastPayment from "./partials/fast_payment.vue";
+import FastPayment from "./partials/fast_payment_garage.vue";
 import ItemForm from "./partials/form.vue";
 import {functions, exchangeRate} from "../../../mixins/functions";
 import HistorySalesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
@@ -988,14 +988,14 @@ export default {
             });
         },
         getFormPosLocalStorage() {
-            let form_pos = localStorage.getItem("form_pos");
+            let form_pos = localStorage.getItem("form_pos_garage");
             form_pos = JSON.parse(form_pos);
             if (form_pos) {
                 this.form = form_pos;
                 this.initDateTimeIssue();
                 // this.calculateTotal()
             }
-            let amount = localStorage.setItem('amount', JSON.stringify(this.form.total))
+            let amount = localStorage.setItem('amount_garage', JSON.stringify(this.form.total))
         },
         initDateTimeIssue() {
             this.form.date_of_issue = moment().format("YYYY-MM-DD");
@@ -1004,14 +1004,14 @@ export default {
         },
         setFormPosLocalStorage(form_param = null) {
             if (form_param) {
-                localStorage.setItem("form_pos", JSON.stringify(form_param));
+                localStorage.setItem("form_pos_garage", JSON.stringify(form_param));
             } else {
-                localStorage.setItem("form_pos", JSON.stringify(this.form));
+                localStorage.setItem("form_pos_garage", JSON.stringify(this.form));
             }
         },
         cancelFormPosLocalStorage() {
-            localStorage.setItem("form_pos", JSON.stringify(null));
-            this.setLocalStorageIndex("customer", null);
+            localStorage.setItem("form_pos_garage", JSON.stringify(null));
+            this.setLocalStorageIndex("customer_garage", null);
         },
         clickOpenInputEditUP(index) {
             this.items[index].edit_unit_price = true;
@@ -1201,13 +1201,13 @@ export default {
             });
 
             await this.$eventHub.$on(
-                "eventSetFormPosLocalStorage",
+                "eventSetFormPosLocalStorageGarage",
                 form_param => {
                     this.setFormPosLocalStorage(form_param);
                 }
             );
 
-            await this.$eventHub.$on("cancelSale", () => {
+            await this.$eventHub.$on("cancelSaleGarage", () => {
                 this.is_payment = false;
                 this.initForm();
                 this.changeExchangeRate();

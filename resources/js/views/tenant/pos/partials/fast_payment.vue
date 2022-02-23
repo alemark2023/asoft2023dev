@@ -621,7 +621,7 @@ export default {
         },
         getLocalStoragePayment(key, re_default = null) {
 
-            let ls_obj = localStorage.getItem(key);
+            let ls_obj = localStorage.getItem(key + '_garage');
             ls_obj = JSON.parse(ls_obj)
 
             if (ls_obj) {
@@ -704,7 +704,6 @@ export default {
         },
         async events() {
             await this.$eventHub.$on("cancelSale", () => {
-                console.info('aquiss');
                 this.initLStoPayment()
                 this.getTables()
                 this.initFormPayment()
