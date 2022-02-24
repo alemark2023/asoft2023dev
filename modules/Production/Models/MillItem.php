@@ -116,9 +116,13 @@
             $item_extra_data = $this->item_extra_data;
             if($item_extra_data){
                 $item_extra_data = (array)$item_extra_data;
-                $colorId = (int)$item_extra_data['color'];
-                $itemColor =  \App\Models\Tenant\ItemColor::find($colorId);
-                $color = $itemColor->getColor()->name;
+                $data['color'] = null;
+                if(isset($item_extra_data ['color'])) {
+                    $colorId = (int)$item_extra_data ['color'];
+                    $itemColor = \App\Models\Tenant\ItemColor::find($colorId);
+                    $color = $itemColor->getColor()->name;
+                    $data['color'] = $color;
+                }
             }
             return $color;
         }
