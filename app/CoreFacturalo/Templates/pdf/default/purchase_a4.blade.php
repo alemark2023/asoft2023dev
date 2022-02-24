@@ -135,6 +135,11 @@
             <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left">
                 {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
+                
+                @if($row->total_isc > 0)
+                    <br/><span style="font-size: 9px">ISC : {{ $row->total_isc }} ({{ $row->percentage_isc }}%)</span>
+                @endif
+
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
@@ -206,6 +211,14 @@
             <td colspan="5" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
+
+        @if($document->total_isc > 0)
+        <tr>
+            <td colspan="5" class="text-right font-bold">ISC: {{ $document->currency_type->symbol }}</td>
+            <td class="text-right font-bold">{{ number_format($document->total_isc, 2) }}</td>
+        </tr>
+        @endif
+
         <tr>
             <td colspan="5" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>

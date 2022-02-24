@@ -54,7 +54,8 @@
     <td class="celda"> {{$value->total_value}}</td>
     <td class="celda"> {{$value->affectation_igv_type_id}}</td>
     <td class="celda"> {{$value->total_igv}}</td>
-    <td class="celda"> {{$iscType}}</td>
+    {{-- <td class="celda"> {{$iscType}}</td> --}}
+    <td class="celda">{{optional($value->system_isc_type)->description}}</td>
     <td class="celda"> {{$value->total_isc}}</td>
     <td class="celda"> {{$value->total_plastic_bag_taxes}}</td>
     <td class="celda"> {{$value->total}}</td>

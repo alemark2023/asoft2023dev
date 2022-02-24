@@ -336,7 +336,7 @@
                             </template>
                             <template v-else>
                                 <tr>
-                                    <td colspan="8"></td>
+                                    <td :colspan="colspanFootPurchase"></td>
                                     <td><strong>Totales PEN</strong></td>
                                     <td>{{ totals.acum_total_exonerated }}</td>
                                     <td>{{ totals.acum_total_unaffected }}</td>
@@ -347,7 +347,7 @@
                                     <td>{{ totals.acum_total }}</td>
                                 </tr>
                                 <tr>
-                                    <td colspan="8"></td>
+                                    <td :colspan="colspanFootPurchase"></td>
                                     <td><strong>Totales USD</strong></td>
                                     <td></td>
                                     <td></td>
@@ -393,7 +393,12 @@ export default {
             required: false,
             default: false
         },
-        visibleColumns: Object
+        visibleColumns: Object,
+        colspanFootPurchase: {
+            type: Number,
+            required: false,
+            default: 8
+        },
     },
     data() {
         return {

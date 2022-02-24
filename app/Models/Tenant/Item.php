@@ -169,12 +169,18 @@ class Item extends ModelTenant
         'sanitary',
         'cod_digemid',
         'is_for_production',
+
+        'purchase_percentage_isc',
+        'purchase_system_isc_type_id',
+        'purchase_has_isc',
+
         // 'warehouse_id'
     ];
 
     protected $casts = [
         'date_of_due' => 'date',
         'is_for_production' => 'bool',
+        'purchase_has_isc' => 'bool',
     ];
 
     /**
@@ -285,7 +291,15 @@ class Item extends ModelTenant
     {
         return $this->belongsTo(SystemIscType::class, 'system_isc_type_id');
     }
-
+    
+    /**
+     * @return BelongsTo
+     */
+    public function purchase_system_isc_type()
+    {
+        return $this->belongsTo(SystemIscType::class, 'purchase_system_isc_type_id');
+    }
+    
     /**
      * @return HasMany
      */

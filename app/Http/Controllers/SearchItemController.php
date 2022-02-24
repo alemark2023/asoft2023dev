@@ -1000,6 +1000,11 @@
                         return $row;
                     }),
                     'series_enabled' => (bool)$row->series_enabled,
+                    
+                    'purchase_has_isc' => $row->purchase_has_isc,
+                    'purchase_system_isc_type_id' => $row->purchase_system_isc_type_id,
+                    'purchase_percentage_isc' => $row->purchase_percentage_isc,
+
                 ];
                 foreach ($temp as $k => $v) {
                     if (!isset($data[$k])) {

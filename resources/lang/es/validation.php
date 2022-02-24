@@ -288,6 +288,11 @@ return [
 		'system_isc_type_id'           => 'tipo de sistema ISC',
 		'has_isc'           => 'incluye ISC',
 		'percentage_isc'           => 'porcentaje ISC',
+
+		'purchase_system_isc_type_id'           => 'tipo de sistema ISC',
+		'purchase_has_isc'           => 'incluye ISC',
+		'purchase_percentage_isc'           => 'porcentaje ISC',
+
 		'movement_type'           => 'tipo movimiento',
 		'affectation_igv_type_id'           => 'tipo de afectación',
 		'summary_status_type_id' => 'tipo de estado',
