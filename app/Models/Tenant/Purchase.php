@@ -529,6 +529,7 @@ class Purchase extends ModelTenant
             'total_exonerated'               => self::NumberFormat($this->total_exonerated),
             'total_taxed'                    => self::NumberFormat($this->total_taxed),
             'total_igv'                      => self::NumberFormat($this->total_igv),
+            'total_isc'                      => self::NumberFormat($this->total_isc),
             'total_perception'               => self::NumberFormat($this->total_perception),
             'total'                          => self::NumberFormat($total),
             'state_type_id'                  => $this->state_type_id,
