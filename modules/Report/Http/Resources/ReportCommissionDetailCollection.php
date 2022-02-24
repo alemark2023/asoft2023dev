@@ -39,7 +39,7 @@ class ReportCommissionDetailCollection extends ResourceCollection
                 'serie' => $relation->number_full,
                 'customer_number' => $relation->customer->number,
                 'customer_name' => $relation->customer->name,
-                'name' => $row->relation_item->name,
+                'name' => $row->relation_item->description,
                 'quantity' => $row->quantity,
                 'purchase_unit_price' => $purchase_unit_price,
                 'unit_price' => $row->unit_price,
