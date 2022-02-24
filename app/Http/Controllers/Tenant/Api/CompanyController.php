@@ -20,7 +20,7 @@ class CompanyController extends Controller
         }
 
         $establishment_id =  $user->establishment_id;
-        $establishments = Establishment::where('id', $establishment_id)->get();
+        $establishments = Establishment::without(['country', 'department', 'province', 'district'])->where('id', $establishment_id)->get();
         $series = $user->getSeries();
 
         return [
