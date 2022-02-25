@@ -64,6 +64,11 @@ class ViewServiceProvider extends ServiceProvider
         );
 
         view()->composer(
+            'tenant.reports.list',
+            'App\Http\ViewComposers\Tenant\ModuleViewComposer'
+        );
+
+        view()->composer(
             'tenant.settings.list_settings',
             'App\Http\ViewComposers\Tenant\ModuleViewComposer'
         );
@@ -143,6 +148,11 @@ class ViewServiceProvider extends ServiceProvider
 
         view()->composer(
             'tenant.layouts.partials.sidebar',
+            'Modules\LevelAccess\Http\ViewComposers\ModuleLevelViewComposer'
+        );
+
+        view()->composer(
+            'tenant.reports.list',
             'Modules\LevelAccess\Http\ViewComposers\ModuleLevelViewComposer'
         );
 
