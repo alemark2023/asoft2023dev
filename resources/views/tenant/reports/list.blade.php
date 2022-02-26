@@ -63,7 +63,7 @@
                         </li>
                         <li>
                             <a href="{{route('tenant.reports.download-tray.index')}}">
-                                Bandeja descarga de una de Reportes
+                                Bandeja descarga de reportes
                             </a>
                         </li>
                     </ul>
