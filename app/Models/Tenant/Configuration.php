@@ -96,6 +96,7 @@
      * @property bool        $name_product_pdf_to_xml
      * @property int         $item_name_pdf_description
      * @property bool        $auto_print
+     * @property bool        $print_new_line_to_observation
      * @property bool        $show_service_on_pos
      * @property bool        $locked_admin
      * @property string|null $certificate
@@ -221,6 +222,7 @@
             'show_ticket_58',
             'show_ticket_50',
             'show_last_price_sale',
+            'print_new_line_to_observation',
             'show_logo_by_establishment'
         ];
 
@@ -290,6 +292,7 @@
             'show_terms_condition_pos' => 'bool',
             'show_last_price_sale' => 'bool',
             'show_logo_by_establishment' => 'bool',
+            'print_new_line_to_observation' => 'bool',
         ];
 
         protected $hidden = [

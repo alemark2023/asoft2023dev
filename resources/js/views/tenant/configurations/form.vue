@@ -920,6 +920,32 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        Permite imprimir linea en el campo de observación
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">
+                                                En los documentos que tengan observación, permite ajustar salto de linea.<br>
+                                                No aplica a tickets
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.print_new_line_to_observation}"
+                                            class="form-group">
+                                        <el-switch v-model="form.print_new_line_to_observation"
+                                                    active-text="Si"
+                                                    inactive-text="No"
+                                                    @change="submit"></el-switch>
+                                        <small v-if="errors.print_new_line_to_observation"
+                                                class="form-control-feedback"
+                                                v-text="errors.print_new_line_to_observation[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="five">
