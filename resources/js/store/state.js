@@ -36,6 +36,7 @@ export default {
         pos_history:true,
         production_app:false,
         pos_cost_price:true,
+        print_new_line_to_observation:true,
         company: {},
         establishment: {
             id: null,

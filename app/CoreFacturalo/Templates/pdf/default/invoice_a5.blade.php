@@ -323,7 +323,11 @@
 
                 @foreach($row->additional_information as $information)
                     @if ($information)
-                        <br/><span style="font-size: 9px">{{ $information }}</span>
+                        <br/><span style="font-size: 9px">@if(\App\CoreFacturalo\Helpers\Template\TemplateHelper::canShowNewLineOnObservation())
+                            {!! \App\CoreFacturalo\Helpers\Template\TemplateHelper::SetHtmlTag($information) !!}
+                        @else
+                            {{$information}}
+                        @endif</span>
                     @endif
                 @endforeach
 
@@ -337,7 +341,7 @@
                         <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
                     @endforeach
                 @endif
-                
+
                 @if($row->charges)
                     @foreach($row->charges as $charge)
                         <br/><span style="font-size: 9px">{{ $document->currency_type->symbol}} {{ $charge->amount}} ({{ $charge->factor * 100 }}%) {{$charge->description }}</span>
@@ -495,7 +499,7 @@
             <td colspan="6" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
         </tr>
-        
+
         @if(($document->retention || $document->detraction) && $document->total_pending_payment > 0)
             <tr>
                 <td colspan="6" class="text-right font-bold">M. PENDIENTE: {{ $document->currency_type->symbol }}</td>
@@ -554,7 +558,11 @@
                     @if ($loop->first)
                         <strong>Información adicional</strong>
                     @endif
-                    <p>{{ $information }}</p>
+                    <p>@if(\App\CoreFacturalo\Helpers\Template\TemplateHelper::canShowNewLineOnObservation())
+                            {!! \App\CoreFacturalo\Helpers\Template\TemplateHelper::SetHtmlTag($information) !!}
+                        @else
+                            {{$information}}
+                        @endif</p>
                 @endif
             @endforeach
             <br>
