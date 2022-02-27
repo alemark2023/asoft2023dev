@@ -179,7 +179,7 @@ class ReportInventoryController extends Controller
         $client = Client::where('number', $company->number)->first();
         $website_id = $client->hostname->website_id;
 
-        ProcessInventoryReport::dispatch($website_id, $tray->id)->onQueue('process_inventory_report');
+        ProcessInventoryReport::dispatch($website_id, $tray->id);
 
         return  [
             'success' => true,
