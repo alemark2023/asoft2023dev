@@ -120,7 +120,7 @@ class ProcessInventoryReport implements ShouldQueue
 
         $data = [];
 
-        $records = $records->latest()->get()->transform(function($row) use ($filter,&$data) {
+        $records = $records->latest()->take(40)->get()->transform(function($row) use ($filter,&$data) {
             /** @var \Modules\Inventory\Models\ItemWarehouse $row */
 
             $stock = $row->stock;
