@@ -337,6 +337,17 @@
 
                     });
 
+
+                    Route::prefix('download-tray')->group(function () {
+
+                         Route::get('', 'DownloadTrayController@index')->name('tenant.reports.download-tray.index');
+                         Route::get('records', 'DownloadTrayController@records');
+                         Route::get('download/{id}', 'DownloadTrayController@download');
+                         
+
+                     });
+
+
                 });
 
                 Route::get('cash/report/income-summary/{cash}', 'ReportIncomeSummaryController@pdf')

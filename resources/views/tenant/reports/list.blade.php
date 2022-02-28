@@ -61,6 +61,11 @@
                                 Descarga masiva - documentos
                             </a>
                         </li>
+                        <li>
+                            <a href="{{route('tenant.reports.download-tray.index')}}">
+                                Bandeja descarga de reportes
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>

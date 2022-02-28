@@ -19,7 +19,7 @@
     $total_payment = $document->payments->sum('payment');
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
-    
+
     $logo = "storage/uploads/logos/{$company->logo}";
     if($establishment->logo) {
         $logo = "{$establishment->logo}";
@@ -452,7 +452,7 @@
                         <br/><small>{{ $document->currency_type->symbol}} {{ $charge->amount}} ({{ $charge->factor * 100 }}%) {{$charge->description }}</small>
                     @endforeach
                 @endif
-                
+
                 @if($row->item->is_set == 1)
 
                  <br>
@@ -590,14 +590,14 @@
             <td colspan="4" class="text-right font-bold desc">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold desc">{{ number_format($document->total, 2) }}</td>
         </tr>
-        
+
         @if(($document->retention || $document->detraction) && $document->total_pending_payment > 0)
             <tr>
                 <td colspan="4" class="text-right font-bold desc">M. PENDIENTE: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold desc">{{ number_format($document->total_pending_payment, 2) }}</td>
             </tr>
         @endif
-        
+
         @if($balance < 0)
            <tr>
                <td colspan="4" class="text-right font-bold desc">VUELTO: {{ $document->currency_type->symbol }}</td>
@@ -639,7 +639,11 @@
                     @if ($loop->first)
                         <strong>Información adicional</strong>
                     @endif
-                    <p class="desc">{{ $information }}</p>
+                    <p class="desc">@if(\App\CoreFacturalo\Helpers\Template\TemplateHelper::canShowNewLineOnObservation())
+                            {!! \App\CoreFacturalo\Helpers\Template\TemplateHelper::SetHtmlTag($information) !!}
+                        @else
+                            {{$information}}
+                        @endif</p>
                 @endif
             @endforeach
             <br>

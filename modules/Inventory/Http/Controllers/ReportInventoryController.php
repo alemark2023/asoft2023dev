@@ -5,9 +5,9 @@ namespace Modules\Inventory\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Establishment;
+use App\Models\Tenant\DownloadTray;
 use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
-use DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Modules\Inventory\Exports\InventoryExport;
@@ -15,6 +15,9 @@ use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Inventory\Models\Warehouse;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
+use App\Models\System\Client;
+use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Jobs\ProcessInventoryReport;
 
 class ReportInventoryController extends Controller
 {
@@ -73,6 +76,8 @@ class ReportInventoryController extends Controller
         }
         $records->orderBy('items.name', 'desc');
 
+        $data = [];
+
         $records = $records->latest()->get()->transform(function($row) use ($filter,&$data) {
             /** @var \Modules\Inventory\Models\ItemWarehouse $row */
 
@@ -112,53 +117,9 @@ class ReportInventoryController extends Controller
         });
 
         return $data;
-//        return $records;
 
-        $data = [];
-        foreach ($records as $row) {
-            $add = true;
-            if ($filter === '02') {
-                $add = ($row->stock < 0);
-            }
-            if ($filter === '03') {
-                $add = ($row->stock == 0);
-            }
-            if ($filter === '04') {
-                $add = ($row->stock > 0 && $row->stock <= $row->item->stock_min);
-            }
-            if ($filter === '05') {
-                $add = ($row->stock > $row->item->stock_min);
-            }
-            if ($add) {
-                $data[] = [
-                    'barcode' => $row->item->barcode,
-                    'internal_id' => $row->item->internal_id,
-                    'name' => $row->item->description,
-                    'item_category_name' => optional($row->item->category)->name,
-                    'stock_min' => $row->item->stock_min,
-                    'stock' => $row->stock,
-                    'sale_unit_price' => $row->item->sale_unit_price,
-                    'purchase_unit_price' => $row->item->purchase_unit_price,
-                    'brand_name' => $row->item->brand->name,
-                    'date_of_due' => optional($row->item->date_of_due)->format('d/m/Y'),
-                    'warehouse_name' => $row->warehouse->description
-                ];
-            }
-        }
+        
 
-        return $data;
-//        return $this->getRecords($warehouse_id, $filter)->get()->transform(function($row) {
-//            return [
-//                'name' => $row->item->description,
-//                'item_category_name' => optional($row->item->category)->name,
-//                'stock' => $row->stock,
-//                'sale_unit_price' => $row->item->sale_unit_price,
-//                'purchase_unit_price' => $row->item->purchase_unit_price,
-//                'brand_name' => $row->item->brand->name,
-//                'date_of_due' => optional($row->item->date_of_due)->format('d/m/Y'),
-//                'warehouse_name' => $row->warehouse->description
-//            ];
-//        });
     }
 
     /**
@@ -185,10 +146,48 @@ class ReportInventoryController extends Controller
 
     }
 
+    public function downLoadTrayReport(Request $request){
+        $tray = DownloadTray::create([
+            'user_id' => auth()->user()->id,
+            'module' => 'INVENTORY',
+            'path' => $request->path,
+            'format' => 'pdf',
+        ]);
+
+        $company = Company::active();
+        $client = Client::where('number', $company->number)->first();
+        $website_id = $client->hostname->website_id;
+
+        ProcessInventoryReport::dispatch($website_id, $tray->id)->onQueue('process_inventory_report');
+
+        return  [
+            'success' => true,
+            'message' => 'El reporte se esta procesando; puede ver el proceso en bandeja de descargas.'
+        ];
+    }
+
     public function export(Request $request)
     {
+        $tray = DownloadTray::create([
+            'user_id' => auth()->user()->id,
+            'module' => 'INVENTORY',
+            'format' => $request->format,
+            'date_init' => date('Y-m-d H:i:s'),
+        ]);
 
-        try {
+        $company = Company::active();
+        $client = Client::where('number', $company->number)->first();
+        $website_id = $client->hostname->website_id;
+
+        ProcessInventoryReport::dispatch($website_id, $tray->id);
+
+        return  [
+            'success' => true,
+            'message' => 'El reporte se esta procesando; puede ver el proceso en bandeja de descargas.'
+        ];
+        
+
+        /*try {
             $company = Company::query()->first();
             $establishment = Establishment::query()->first();
             ini_set('max_execution_time', 0);
@@ -218,7 +217,7 @@ class ReportInventoryController extends Controller
                 'success' => false,
                 'message' => $e->getMessage()
             ];
-        }
+        }*/
     }
 
     /**

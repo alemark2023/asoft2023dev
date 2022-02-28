@@ -400,24 +400,22 @@ export default {
             await this.$http({
                 url: `/${this.resource}/export`,
                 method: 'POST',
-                responseType: 'blob',
                 data: {
-                    'records': this.records,
-                    'totals': this.totals,
                     'format': format,
-                }
+                },
             })
                 .then(response => {
                     let res = response.data;
-                    if (res.type === 'application/json') {
-                        this.$message.error('Error al exportar');
+                    if (res.success) {
+                        this.$message.success(res.message);
                     } else {
-                        const url = window.URL.createObjectURL(new Blob([res]));
+                        this.$message.error('Error al exportar');
+                        /*const url = window.URL.createObjectURL(new Blob([res]));
                         const link = document.createElement('a');
                         link.href = url;
                         link.setAttribute('download', 'ReporteInv_' + moment().format('HHmmss') + '.' + format);
                         document.body.appendChild(link);
-                        link.click();
+                        link.click();*/
                     }
                 })
                 .catch(error => {

@@ -134,7 +134,7 @@ class ReportDocumentController extends Controller
 
 
     public function excel(Request $request) {
-
+        
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
 
