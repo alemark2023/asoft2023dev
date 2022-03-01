@@ -58,7 +58,7 @@ class ProcessInventoryReport implements ShouldQueue
         try {
             $company = Company::query()->first();
             $establishment = Establishment::query()->first();
-            ini_set('max_execution_time', 0);
+            //ini_set('max_execution_time', 0);
 
             $records = $this->getRecordsTranform(1, '01');
             $format = $tray->format;
@@ -95,7 +95,7 @@ class ProcessInventoryReport implements ShouldQueue
                 Log::debug("Render excel finish");
 
                 Log::debug("Upload excel init");
-                
+
                     $inventoryExport->store(DIRECTORY_SEPARATOR."download_tray_xlsx".DIRECTORY_SEPARATOR . $filename.'.xlsx', 'tenant');
 
                 Log::debug("Upload excel finish");
