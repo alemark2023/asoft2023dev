@@ -68,26 +68,39 @@ class ProcessInventoryReport implements ShouldQueue
             ];
 
             if ($format === 'pdf') {
+                Log::debug("Render pdf init");
                 $pdf = PDF::loadView('inventory::reports.inventory.report', compact('records', 'company', 'establishment', 'format', 'totals'));
                 $pdf->setPaper('A4', 'landscape');
                 $filename = 'INVENTORY_ReporteInv_' . date('YmdHis') . '-' . $tray->user_id;
+
+                Log::debug("Render pdf finish");
+
+                Log::debug("Upload pdf init");
                 $this->uploadStorage($filename, $pdf->output('', 'S'), 'download_tray_pdf');
+                Log::debug("Upload pdf finish");
                 $tray->file_name = $filename;
                 $path = 'download_tray_pdf';
 
             }
             else {
-                 $filename = 'INVENTORY_ReporteInv_' . date('YmdHis') . '-' . $tray->user_id;
-                 $inventoryExport = new InventoryExport();
+                $filename = 'INVENTORY_ReporteInv_' . date('YmdHis') . '-' . $tray->user_id;
+                Log::debug("Render excel init");
+                $inventoryExport = new InventoryExport();
                     $inventoryExport
                         ->records($records)
                         ->company($company)
                         ->establishment($establishment)
                         ->format($format)
                         ->totals($totals);
+                Log::debug("Render excel finish");
+
+                Log::debug("Upload excel init");
+                
                     $inventoryExport->store(DIRECTORY_SEPARATOR."download_tray_xlsx".DIRECTORY_SEPARATOR . $filename.'.xlsx', 'tenant');
-                    $tray->file_name = $filename;
-                    $path = 'download_tray_xlsx';
+
+                Log::debug("Upload excel finish");
+                $tray->file_name = $filename;
+                $path = 'download_tray_xlsx';
             }
             $tray->date_end = date('Y-m-d H:i:s');
             $tray->status = 'FINISHED';
@@ -114,13 +127,14 @@ class ProcessInventoryReport implements ShouldQueue
 
     public function getRecordsTranform($warehouse_id, $filter){
        
+        Log::debug("getRecordsTranform init");
         $records = $this->getRecords($warehouse_id);
 
         $records->orderBy('items.name', 'desc');
 
         $data = [];
 
-        $records = $records->latest()->take(40)->get()->transform(function($row) use ($filter,&$data) {
+        $records = $records->latest()->get()->transform(function($row) use ($filter,&$data) {
             /** @var \Modules\Inventory\Models\ItemWarehouse $row */
 
             $stock = $row->stock;
@@ -157,6 +171,8 @@ class ProcessInventoryReport implements ShouldQueue
                 ];
             }
         });
+
+        Log::debug("getRecordsTranform finish");
 
         return $data;
     }
