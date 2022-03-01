@@ -53,7 +53,7 @@ class ReportInventoryController extends Controller
         /** @var Builder $records */
         $records = $this->getRecords($warehouse_id);
 
-        if ($brand_id != 0) {
+        /*if ($brand_id != 0) {
             $records->where('items.brand_id', $brand_id);
         }
         if ($category_id != 0) {
@@ -74,7 +74,7 @@ class ReportInventoryController extends Controller
             $date_end = Carbon::createFromFormat('Y-m-d', $request->date_end);
             $records->where('items.date_of_due', '<=', $date_end);
         }
-        $records->orderBy('items.name', 'desc');
+        $records->orderBy('items.name', 'desc');*/
 
         $data = [];
 
@@ -108,7 +108,7 @@ class ReportInventoryController extends Controller
                     'purchase_unit_price' => $item->purchase_unit_price,
                     'profit'=>number_format($item->sale_unit_price-$item->purchase_unit_price,2,'.',''),
                     'model' => $item->model,
-                    'brand' => optional($item->brand),
+                    //'brand' => optional($item->brand),
                     'brand_name' => $item->brand->name,
                     'date_of_due' => optional($item->date_of_due)->format('d/m/Y'),
                     'warehouse_name' => $row->warehouse->description
@@ -135,9 +135,9 @@ class ReportInventoryController extends Controller
                                                 ['unit_type_id', '!=', 'ZZ'],
                                             ])
                                     ->whereNotIsSet();
-                              })
-                              ->join('items', 'items.id', 'item_warehouse.item_id')
-                              ->select(DB::raw('item_warehouse.*'));
+                              });
+                              //->join('items', 'items.id', 'item_warehouse.item_id')
+                              //->select(DB::raw('item_warehouse.*'));
         if ($warehouse_id != 0) {
             $query->where('item_warehouse.warehouse_id', $warehouse_id);
         }
