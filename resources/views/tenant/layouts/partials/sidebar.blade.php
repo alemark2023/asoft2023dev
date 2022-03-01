@@ -317,24 +317,13 @@
                                 </a>
                                 <ul class="nav nav-children">
                                     @if(in_array('pos', $vc_module_levels))
-                                        <li class="{{ ($firstLevel === 'pos'  )?'nav-active':'' }}">
+                                        <li class="{{ ($firstLevel === 'pos' && !$secondLevel )?'nav-active':'' }}">
                                             <a class="nav-link"
                                                href="{{route('tenant.pos.index')}}">Punto de venta</a>
                                         </li>
-                                    @endif
-                                    @if(in_array('pos', $vc_module_levels))
-                                        {{-- CMAR Inactivo temporalmente --}}
-                                        <!--
-                                        <li class="{{ ($firstLevel === 'pos' && $secondLevel === 'fast')?'nav-active':'' }}">
-                                            <a class="nav-link"
-                                               href="{{route('tenant.pos.fast')}}">Venta rápida</a>
-                                        </li>
-                                        -->
-                                    @endif
-                                    @if(in_array('tap', $vc_business_turns))
-                                        <li class="{{ ($firstLevel === 'pos' && $secondLevel === 'fast')?'nav-active':'' }}">
+                                        <li class="{{ ($firstLevel === 'pos' && $secondLevel === 'garage')?'nav-active':'' }}">
                                                 <a class="nav-link"
-                                                href="{{route('tenant.pos.garage')}}">Grifo</a>
+                                                href="{{route('tenant.pos.garage')}}">Venta rápida <span style="font-size:.65rem;">(Grifos y Markets)</span></a>
                                         </li>
                                     @endif
                                     @if(in_array('cash', $vc_module_levels))
