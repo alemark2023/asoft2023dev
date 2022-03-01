@@ -236,14 +236,25 @@
 
                         @if($signal == '07')
 
-                            <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_exonerated}}</td>
-                            <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_unaffected}}</td>
-                            <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_free}}</td>
-                            <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_taxed}}</td>
-                            <td class="celda">{{$value->total_discount}}</td>
-                            <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_igv}}</td>
-                            <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_isc}}</td>
-                            <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
+                            @if(in_array($value->state_type_id,['09','11']))
+                                <td class="celda">0</td>
+                                <td class="celda">0</td>
+                                <td class="celda">0</td>
+                                <td class="celda">0</td>
+                                <td class="celda">0</td>
+                                <td class="celda">0</td>
+                                <td class="celda">0</td>
+                                <td class="celda">0</td>
+                            @else
+                                <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_exonerated}}</td>
+                                <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_unaffected}}</td>
+                                <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_free}}</td>
+                                <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_taxed}}</td>
+                                <td class="celda">{{$value->total_discount}}</td>
+                                <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_igv}}</td>
+                                <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_isc}}</td>
+                                <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
+                            @endif
 
                         @else
                             <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_exonerated}}</td>
@@ -292,13 +303,13 @@
 
                         @php
 
-                            $value->total_exonerated = (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_exonerated;
-                            $value->total_unaffected = (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_unaffected;
-                            $value->total_free = (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_free;
+                            $value->total_exonerated = (in_array($document_type->id,['01','03', '07']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_exonerated;
+                            $value->total_unaffected = (in_array($document_type->id,['01','03', '07']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_unaffected;
+                            $value->total_free = (in_array($document_type->id,['01','03', '07']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_free;
 
-                            $value->total_taxed = (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_taxed;
-                            $value->total_igv = (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_igv;
-                            $value->total = (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total;
+                            $value->total_taxed = (in_array($document_type->id,['01','03', '07']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_taxed;
+                            $value->total_igv = (in_array($document_type->id,['01','03', '07']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_igv;
+                            $value->total = (in_array($document_type->id,['01','03', '07']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total;
                         @endphp
 
                         @php
