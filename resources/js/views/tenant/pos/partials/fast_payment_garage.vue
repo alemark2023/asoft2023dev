@@ -25,14 +25,14 @@
                 <div class="col-3">
                     <el-switch v-model="enabled_discount"
                                         active-text="Descuento"
-                                        class="control-label font-weight-semibold m-0 text-center m-b-0"
+                                        class="control-label mb-0 font-weight-semibold m-0 text-center m-b-0"
                                         @change="changeEnabledDiscount"></el-switch>
                 </div>
             </div>
-            <div class="row d-flex align-items-end">
+            <div class="row d-flex align-items-end mb-1">
                 <div class="col-4">
                     <div class="form-group">
-                        <label class="control-label">Ingrese monto</label>
+                        <label class="control-label mb-0">Ingrese monto</label>
                         <el-input ref="enter_amount"
                                     v-model="enter_amount"
                                     @input="enterAmount()"
@@ -44,12 +44,12 @@
                 <div class="col-3">
                     <div :class="{'has-danger': difference < 0}"
                             class="form-group">
-                        <label class="control-label"
+                        <label class="control-label mb-0"
                                 v-text="(difference <0) ? 'Faltante' :'Vuelto'"></label>
                         <!-- <el-input v-model="difference" :disabled="true">
                             <template slot="prepend">{{currencyTypeActive.symbol}}</template>
                         </el-input> -->
-                        <h4 class="control-label font-weight-semibold m-0 text-center m-b-0">
+                        <h4 class="control-label mb-0 font-weight-semibold m-0 text-center m-b-0">
                             {{ currencyTypeActive.symbol }} {{ difference }}</h4>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
             <div class="row" v-if="enabled_discount">
                 <div class="col-12">
                     <div class="form-group">
-                        <label class="control-label">Monto descuento</label>
+                        <label class="control-label mb-0">Monto descuento</label>
                         <el-input v-model="discount_amount"
                                     :disabled="!enabled_discount"
                                     @input="inputDiscountAmount()">
@@ -88,23 +88,18 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-12">
-                    <div v-if="businessTurns.active" class="row col-md-12 col-lg-12">
-                        <div class="col-md-6 col-lg-6"></div>
-                        <div class="col-md-6 col-lg-6">
-                            <div class="form-group">
-                                <label class="control-label">N° Placa</label>
-                                <el-input v-model="form.plate_number" type="textarea"></el-input>
-                            </div>
-                        </div>
+            <div class="row" v-if="businessTurns.active">
+                <div class="col-md-12 col-lg-12">
+                    <div class="form-group">
+                        <label class="control-label mb-0">Número de Placa</label>
+                        <el-input v-model="form.plate_number" type="text"></el-input>
                     </div>
                 </div>
             </div>
             <div>
                 <div>
                     <template v-if="form.total_plastic_bag_taxes > 0">
-                        <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
+                        <div class="row m-0 p-0 h-17 d-flex align-items-center">
                             <div class="col-sm-6 py-1">
                                 <p class="font-weight-semibold mb-0">SUBTOTAL</p>
                             </div>
@@ -115,7 +110,7 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
+                        <div class="row m-0 p-0 h-17 d-flex align-items-center">
                             <div class="col-sm-6 py-1">
                                 <p class="font-weight-semibold mb-0">IGV</p>
                             </div>
@@ -126,7 +121,7 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
+                        <div class="row m-0 p-0 h-17 d-flex align-items-center">
                             <div class="col-sm-6 py-1">
                                 <p class="font-weight-semibold mb-0">ICBPER</p>
                             </div>
@@ -139,7 +134,7 @@
                         </div>
                     </template>
                     <template v-else>
-                        <div class="row m-0 p-0 bg-white h-25 d-flex align-items-center">
+                        <div class="row m-0 p-0 h-25 d-flex align-items-center">
                             <div class="col-sm-6 py-1">
                                 <p class="font-weight-semibold mb-0">SUBTOTAL</p>
                             </div>
@@ -149,7 +144,7 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="row m-0 p-0 bg-white h-25 d-flex align-items-center">
+                        <div class="row m-0 p-0 h-25 d-flex align-items-center">
                             <div class="col-sm-6 py-1">
                                 <p class="font-weight-semibold mb-0">IGV</p>
                             </div>
@@ -165,10 +160,10 @@
                             <p class="font-weight-semibold mb-0">TOTAL</p>
                         </div>
                         <div class="col-sm-6 py-2 text-right">
-                            <h4 class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }} {{form.total}}</h4>
+                            <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }} {{form.total}}</p>
                         </div>
                     </div>
-                    <div class="row m-0 p-0 h-25 d-flex align-items-center bg-white">
+                    <div class="row m-0 p-0 h-25 d-flex align-items-center">
                         <div class="col-lg-6">
                             <button :disabled="button_payment"
                                     class="btn btn-block btn-primary"
@@ -238,6 +233,14 @@
 .el-radio-button--small .el-radio-button__inner {
     padding: 9px 6px;
     font-size: 10px;
+}
+
+.el-switch__label * {
+    font-size: .65rem;
+}
+
+.el-radio-button {
+    margin-bottom: 0px;
 }
 </style>
 
