@@ -317,7 +317,7 @@
                                 </a>
                                 <ul class="nav nav-children">
                                     @if(in_array('pos', $vc_module_levels))
-                                        <li class="{{ ($firstLevel === 'pos'  )?'nav-active':'' }}">
+                                        <li class="{{ ($firstLevel === 'pos' && !$secondLevel )?'nav-active':'' }}">
                                             <a class="nav-link"
                                                href="{{route('tenant.pos.index')}}">Punto de venta</a>
                                         </li>
