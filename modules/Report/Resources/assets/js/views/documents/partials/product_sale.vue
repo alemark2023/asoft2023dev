@@ -39,6 +39,7 @@
         },
         data() {
             return {
+                titleDialog: null
             }
         },
         created() {
