@@ -611,8 +611,8 @@
                                             ></el-input> -->
                                             <!-- <el-input-number v-model="item.item.aux_quantity" @change="clickAddItem(item,index,true)" :min="1" :max="10"></el-input-number> -->
                                         </td>
-                                        <td>
-                                            <p class="item-description font-weight-semibold">
+                                        <td class="font-weight-semibold">
+                                            <p class="item-description">
                                                 {{ item.item.description }}
                                             </p>
                                             <small>
