@@ -129,136 +129,103 @@ class ProcessInventoryReport implements ShouldQueue
         Log::debug("warehouse_id". $warehouse_id);
 
         Log::debug("getRecordsTranform init". date('H:i:s'));
-        $records = $this->getRecords($warehouse_id);
+        $records = $this->getRecords($warehouse_id, $filter);
 
         $data = [];
 
-        Log::debug("chunck 1000");
-
-        $records->chunk(1000, function ($items) use (&$data, $filter){
+        $records->chunk(1000, function ($items) use (&$data){
             foreach ($items as $row) {
-                $stock = $row->stock;
-                $add = true;
                 $item = $row->item;
-                if ($filter === '02') {
-                    $add = ($stock < 0);
-                }
-                if ($filter === '03') {
-                    $add = ($stock == 0);
-                }
-                if ($filter === '04') {
-                    $add = ($stock > 0 && $stock <= $item->stock_min);
-                }
-                if ($filter === '05') {
-                    $add = ($stock > $item->stock_min);
-                }
-                if ($add) {
-                    $data[] = [
-                        'barcode' => $item->barcode,
-                        'internal_id' => $item->internal_id,
-                        'name' => $item->description,
-                        'item_category_name' => optional($item->category)->name,
-                        'stock_min' => $item->stock_min,
-                        'stock' => $stock,
-                        'sale_unit_price' => $item->sale_unit_price,
-                        'purchase_unit_price' => $item->purchase_unit_price,
-                        'profit'=>number_format($item->sale_unit_price-$item->purchase_unit_price,2,'.',''),
-                        'model' => $item->model,
-                        'brand_name' => optional($item->brand)->name,
-                        'date_of_due' => optional($item->date_of_due)->format('d/m/Y'),
-                        'warehouse_name' => $row->warehouse->description
-                    ];
-                }
+                $data[] = [
+                    'barcode' => $item->barcode,
+                    'internal_id' => $item->internal_id,
+                    'name' => $item->description,
+                    'item_category_name' => optional($item->category)->name,
+                    'stock_min' => $item->stock_min,
+                    'stock' => $row->stock,
+                    'sale_unit_price' => $item->sale_unit_price,
+                    'purchase_unit_price' => $item->purchase_unit_price,
+                    'profit'=>number_format($item->sale_unit_price-$item->purchase_unit_price,2,'.',''),
+                    'model' => $item->model,
+                    'brand_name' => $item->brand->name,
+                    'date_of_due' => optional($item->date_of_due)->format('d/m/Y'),
+                    'warehouse_name' => $row->warehouse->description
+                ];
+                   
             }
         });
-
-        /*foreach ($records->latest()->cursor() as $row) {
-            $stock = $row->stock;
-            $add = true;
-            $item = $row->item;
-            if ($filter === '02') {
-                $add = ($stock < 0);
-            }
-            if ($filter === '03') {
-                $add = ($stock == 0);
-            }
-            if ($filter === '04') {
-                $add = ($stock > 0 && $stock <= $item->stock_min);
-            }
-            if ($filter === '05') {
-                $add = ($stock > $item->stock_min);
-            }
-            if ($add) {
-                $data[] = [
-                    'barcode' => $item->barcode,
-                    'internal_id' => $item->internal_id,
-                    'name' => $item->description,
-                    'item_category_name' => optional($item->category)->name,
-                    'stock_min' => $item->stock_min,
-                    'stock' => $stock,
-                    'sale_unit_price' => $item->sale_unit_price,
-                    'purchase_unit_price' => $item->purchase_unit_price,
-                    'profit'=>number_format($item->sale_unit_price-$item->purchase_unit_price,2,'.',''),
-                    'model' => $item->model,
-                    'brand_name' => $item->brand->name,
-                    'date_of_due' => optional($item->date_of_due)->format('d/m/Y'),
-                    'warehouse_name' => $row->warehouse->description
-                ];
-            }
-        }*/
-
-        /*$records = $records->latest()->get()->transform(function($row) use ($filter,&$data) {
-
-            $stock = $row->stock;
-            $add = true;
-            $item = $row->item;
-            if ($filter === '02') {
-                $add = ($stock < 0);
-            }
-            if ($filter === '03') {
-                $add = ($stock == 0);
-            }
-            if ($filter === '04') {
-                $add = ($stock > 0 && $stock <= $item->stock_min);
-            }
-            if ($filter === '05') {
-                $add = ($stock > $item->stock_min);
-            }
-            if ($add) {
-                $data[] = [
-                    'barcode' => $item->barcode,
-                    'internal_id' => $item->internal_id,
-                    'name' => $item->description,
-                    'item_category_name' => optional($item->category)->name,
-                    'stock_min' => $item->stock_min,
-                    'stock' => $stock,
-                    'sale_unit_price' => $item->sale_unit_price,
-                    'purchase_unit_price' => $item->purchase_unit_price,
-                    'profit'=>number_format($item->sale_unit_price-$item->purchase_unit_price,2,'.',''),
-                    'model' => $item->model,
-                    //'brand' => optional($item->brand),
-                    'brand_name' => $item->brand->name,
-                    'date_of_due' => optional($item->date_of_due)->format('d/m/Y'),
-                    'warehouse_name' => $row->warehouse->description
-                ];
-            }
-        });*/
 
         Log::debug("getRecordsTranform finish". date('H:i:s'));
 
         return $data;
     }
 
-    private function getRecords($warehouse_id = 0) {
-        $query = ItemWarehouse::with(['item'])
-                              ->whereHas('item', function ($q) {
-                                  $q->where([
-                                                ['item_type_id', '01'],
-                                                ['unit_type_id', '!=', 'ZZ'],
-                                            ])
-                                    ->whereNotIsSet();
-                              });
-                             
+    private function getRecords($warehouse_id = 0, $filter) {
+        
+        $query = ItemWarehouse::with(['warehouse', 'item'=> function ($query){
+            $query->select('id', 'barcode', 'internal_id', 'description', 'category_id', 'brand_id','stock_min', 'sale_unit_price', 'purchase_unit_price', 'model', 'date_of_due' );
+            $query->with(['category', 'brand']);
+            $query->without(['item_type', 'unit_type', 'currency_type', 'warehouses', 'item_unit_types', 'tags']);
+           }])
+          ->whereHas('item', function ($q) {
+              $q->where([
+                            ['item_type_id', '01'],
+                            ['unit_type_id', '!=', 'ZZ'],
+                        ])
+                ->whereNotIsSet();
+          });
+
+        if ($filter === '02') {
+            //$add = ($stock < 0);
+            $query->where('stock', '<=', 0);
+
+        }
+
+        if ($filter === '03') {
+            //$add = ($stock == 0);
+            $query->where('stock', 0);
+        }
+
+        if ($filter === '04') {
+            //$add = ($stock > 0 && $stock <= $item->stock_min);
+            //$query->where('stock', 0);
+
+            $query = ItemWarehouse::with(['warehouse', 'item'=> function ($query){
+            $query->select('id', 'barcode', 'internal_id', 'description', 'category_id', 'brand_id','stock_min', 'sale_unit_price', 'purchase_unit_price', 'model', 'date_of_due' );
+            $query->with(['category', 'brand']);
+            $query->without(['item_type', 'unit_type', 'currency_type', 'warehouses', 'item_unit_types', 'tags']);
+            }])
+            ->whereHas('item', function ($q) {
+            $q->where([
+                        ['item_type_id', '01'],
+                        ['unit_type_id', '!=', 'ZZ'],
+                    ])
+            ->whereNotIsSet()
+            ->whereStockMin();
+            })->where('stock', '>', 0);
+
+        }
+
+
+        if ($filter === '05') {
+            //$add = ($stock > $item->stock_min);
+
+            $query = ItemWarehouse::with(['warehouse', 'item'=> function ($query){
+            $query->select('id', 'barcode', 'internal_id', 'description', 'category_id', 'brand_id','stock_min', 'sale_unit_price', 'purchase_unit_price', 'model', 'date_of_due' );
+            $query->with(['category', 'brand']);
+            $query->without(['item_type', 'unit_type', 'currency_type', 'warehouses', 'item_unit_types', 'tags']);
+            }])
+            ->whereHas('item', function ($q) {
+            $q->where([
+                        ['item_type_id', '01'],
+                        ['unit_type_id', '!=', 'ZZ'],
+                    ])
+            ->whereNotIsSet()
+            ->whereStockMinValidate();
+            });
+        }
+
+
         if ($warehouse_id != 0) {
             $query->where('item_warehouse.warehouse_id', $warehouse_id);
         }

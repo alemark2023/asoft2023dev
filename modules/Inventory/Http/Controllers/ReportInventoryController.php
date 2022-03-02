@@ -65,7 +65,11 @@ class ReportInventoryController extends Controller
      * @return Builder
      */
     private function getRecords($warehouse_id = 0, $filter) {
-        $query = ItemWarehouse::with(['item', 'item.category', 'item.brand'])
+        $query = ItemWarehouse::with(['warehouse', 'item'=> function ($query){
+                                $query->select('id', 'barcode', 'internal_id', 'description', 'category_id', 'brand_id','stock_min', 'sale_unit_price', 'purchase_unit_price', 'model', 'date_of_due' );
+                                $query->with(['category', 'brand']);
+                                $query->without(['item_type', 'unit_type', 'currency_type', 'warehouses', 'item_unit_types', 'tags']);
+                               }])
                               ->whereHas('item', function ($q) {
                                   $q->where([
                                                 ['item_type_id', '01'],
@@ -89,34 +93,39 @@ class ReportInventoryController extends Controller
             //$add = ($stock > 0 && $stock <= $item->stock_min);
             //$query->where('stock', 0);
 
-            $query = ItemWarehouse::with(['item'])
-            ->whereHas('item', function ($q) {
-                $q->where([
-                              ['item_type_id', '01'],
-                              ['unit_type_id', '!=', 'ZZ'],
+            $query = ItemWarehouse::with(['warehouse', 'item'=> function ($query){
+                $query->select('id', 'barcode', 'internal_id', 'description', 'category_id', 'brand_id','stock_min', 'sale_unit_price', 'purchase_unit_price', 'model', 'date_of_due' );
+                $query->with(['category', 'brand']);
+                $query->without(['item_type', 'unit_type', 'currency_type', 'warehouses', 'item_unit_types', 'tags']);
+               }])
+              ->whereHas('item', function ($q) {
+                  $q->where([
+                                ['item_type_id', '01'],
+                                ['unit_type_id', '!=', 'ZZ'],
+                            ])
+                    ->whereNotIsSet()
+                    ->whereStockMin();
+              })->where('stock', '>', 0);
 
-                          ])
-                  ->whereNotIsSet()
-                  ->whereStockMin();
-
-            })->where('stock', '>', 0);
         }
 
 
         if ($filter === '05') {
             //$add = ($stock > $item->stock_min);
 
-            $query = ItemWarehouse::with(['item'])
-            ->whereHas('item', function ($q) {
-                $q->where([
-                              ['item_type_id', '01'],
-                              ['unit_type_id', '!=', 'ZZ'],
-
-                          ])
-                  ->whereNotIsSet()
-                  ->whereStockMinValidate();
-
-            });
+            $query = ItemWarehouse::with(['warehouse', 'item'=> function ($query){
+                $query->select('id', 'barcode', 'internal_id', 'description', 'category_id', 'brand_id','stock_min', 'sale_unit_price', 'purchase_unit_price', 'model', 'date_of_due' );
+                $query->with(['category', 'brand']);
+                $query->without(['item_type', 'unit_type', 'currency_type', 'warehouses', 'item_unit_types', 'tags']);
+               }])
+              ->whereHas('item', function ($q) {
+                  $q->where([
+                                ['item_type_id', '01'],
+                                ['unit_type_id', '!=', 'ZZ'],
+                            ])
+                    ->whereNotIsSet()
+                    ->whereStockMinValidate();
+              });
         }
 
         
@@ -149,6 +158,7 @@ class ReportInventoryController extends Controller
 
     public function export(Request $request)
     {
+        
         $tray = DownloadTray::create([
             'user_id' => auth()->user()->id,
             'module' => 'INVENTORY',
@@ -166,39 +176,36 @@ class ReportInventoryController extends Controller
             'success' => true,
             'message' => 'El reporte se esta procesando; puede ver el proceso en bandeja de descargas.'
         ];
-        
 
-        /*try {
-            $company = Company::query()->first();
-            $establishment = Establishment::query()->first();
-            ini_set('max_execution_time', 0);
+        /*$data = [];
+        $filter = '05';
+        $records = $this->getRecords(1, $filter);//->take(200)->get();
 
-            $records = $request->input('records');
-            $format = $request->input('format');
-            $totals = $request->input('totals');
-
-            if ($format === 'pdf') {
-                $pdf = PDF::loadView('inventory::reports.inventory.report', compact('records', 'company', 'establishment', 'format', 'totals'));
-                $pdf->setPaper('A4', 'landscape');
-                $filename = 'ReporteInv_' . date('YmdHis');
-                return $pdf->download($filename . '.pdf');
+        $records->chunk(1000, function ($items) use (&$data){
+            foreach ($items as $row) {
+                $item = $row->item;
+                $data[] = [
+                    'barcode' => $item->barcode,
+                    'internal_id' => $item->internal_id,
+                    'name' => $item->description,
+                    'item_category_name' => optional($item->category)->name,
+                    'stock_min' => $item->stock_min,
+                    'stock' => $row->stock,
+                    'sale_unit_price' => $item->sale_unit_price,
+                    'purchase_unit_price' => $item->purchase_unit_price,
+                    'profit'=>number_format($item->sale_unit_price-$item->purchase_unit_price,2,'.',''),
+                    'model' => $item->model,
+                    'brand_name' => $item->brand->name,
+                    'date_of_due' => optional($item->date_of_due)->format('d/m/Y'),
+                    'warehouse_name' => $row->warehouse->description
+                ];
+                   
             }
-            $inventoryExport = new InventoryExport();
-            $inventoryExport
-                ->records($records)
-                ->company($company)
-                ->establishment($establishment)
-                ->format($format)
-                ->totals($totals);
-            // return $inventoryExport->view();
-            return $inventoryExport->download('ReporteInv_' . Carbon::now() . '.xlsx');
+        });
 
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'message' => $e->getMessage()
-            ];
-        }*/
+        return $data;*/
+
+      
     }
 
     /**
