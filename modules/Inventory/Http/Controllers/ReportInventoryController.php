@@ -18,6 +18,9 @@ use Modules\Item\Models\Category;
 use App\Models\System\Client;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Jobs\ProcessInventoryReport;
+use Modules\Inventory\Http\Resources\ReportInventoryCollection;
+
+
 
 class ReportInventoryController extends Controller
 {
@@ -44,81 +47,15 @@ class ReportInventoryController extends Controller
     public function records(Request $request)
     {
         $warehouse_id = $request->input('warehouse_id');
-        $brand_id = (int)$request->brand_id;
-        $category_id = (int)$request->category_id;
-        $active = $request->active;
+        //$brand_id = (int)$request->brand_id;
+        //$category_id = (int)$request->category_id;
+        //$active = $request->active;
         $filter = $request->input('filter');
-        $date_end = $request->has('date_end') ? $request->date_end : null;
-        $date_start = $request->has('date_start') ? $request->date_start : null;
-        /** @var Builder $records */
-        $records = $this->getRecords($warehouse_id);
+        //$date_end = $request->has('date_end') ? $request->date_end : null;
+        //$date_start = $request->has('date_start') ? $request->date_start : null;
+        $records = $this->getRecords($warehouse_id, $filter);
 
-        /*if ($brand_id != 0) {
-            $records->where('items.brand_id', $brand_id);
-        }
-        if ($category_id != 0) {
-            $records->where('items.category_id', $category_id);
-        }
-
-        if (!is_null($active)) {
-            $records->where('items.active', $active == '01' ? true : false);
-        }
-        if (!empty($date_start) && !empty($date_end)) {
-            $date_end = Carbon::createFromFormat('Y-m-d', $request->date_end);
-            $date_start = Carbon::createFromFormat('Y-m-d', $request->date_start);
-            $records->whereBetween('items.date_of_due', [$date_start, $date_end]);
-        } elseif (!empty($date_start)) {
-            $date_start = Carbon::createFromFormat('Y-m-d', $request->date_start);
-            $records->where('items.date_of_due', '>=', $date_start);
-        } elseif (!empty($date_end)) {
-            $date_end = Carbon::createFromFormat('Y-m-d', $request->date_end);
-            $records->where('items.date_of_due', '<=', $date_end);
-        }
-        $records->orderBy('items.name', 'desc');*/
-
-        $data = [];
-
-        $records = $records->latest()->get()->transform(function($row) use ($filter,&$data) {
-            /** @var \Modules\Inventory\Models\ItemWarehouse $row */
-
-            $stock = $row->stock;
-            $add = true;
-            $item = $row->item;
-            if ($filter === '02') {
-                $add = ($stock < 0);
-            }
-            if ($filter === '03') {
-                $add = ($stock == 0);
-            }
-            if ($filter === '04') {
-                $add = ($stock > 0 && $stock <= $item->stock_min);
-            }
-            if ($filter === '05') {
-                $add = ($stock > $item->stock_min);
-            }
-            if ($add) {
-                $data[] = [
-                    'barcode' => $item->barcode,
-                    'internal_id' => $item->internal_id,
-                    'name' => $item->description,
-                    'item_category_name' => optional($item->category)->name,
-                    'stock_min' => $item->stock_min,
-                    'stock' => $stock,
-                    'sale_unit_price' => $item->sale_unit_price,
-                    'purchase_unit_price' => $item->purchase_unit_price,
-                    'profit'=>number_format($item->sale_unit_price-$item->purchase_unit_price,2,'.',''),
-                    'model' => $item->model,
-                    //'brand' => optional($item->brand),
-                    'brand_name' => $item->brand->name,
-                    'date_of_due' => optional($item->date_of_due)->format('d/m/Y'),
-                    'warehouse_name' => $row->warehouse->description
-                ];
-            }
-        });
-
-        return $data;
-
-        
+        return new ReportInventoryCollection($records->paginate(50), $filter);
 
     }
 
@@ -127,7 +64,7 @@ class ReportInventoryController extends Controller
      *
      * @return Builder
      */
-    private function getRecords($warehouse_id = 0) {
+    private function getRecords($warehouse_id = 0, $filter) {
         $query = ItemWarehouse::with(['item', 'item.category', 'item.brand'])
                               ->whereHas('item', function ($q) {
                                   $q->where([
@@ -136,12 +73,56 @@ class ReportInventoryController extends Controller
                                             ])
                                     ->whereNotIsSet();
                               });
-                              //->join('items', 'items.id', 'item_warehouse.item_id')
-                              //->select(DB::raw('item_warehouse.*'));
+
+        if ($filter === '02') {
+            //$add = ($stock < 0);
+            $query->where('stock', '<=', 0);
+            
+        }
+
+        if ($filter === '03') {
+            //$add = ($stock == 0);
+            $query->where('stock', 0);
+        }
+
+        if ($filter === '04') {
+            //$add = ($stock > 0 && $stock <= $item->stock_min);
+            //$query->where('stock', 0);
+
+            $query = ItemWarehouse::with(['item'])
+            ->whereHas('item', function ($q) {
+                $q->where([
+                              ['item_type_id', '01'],
+                              ['unit_type_id', '!=', 'ZZ'],
+
+                          ])
+                  ->whereNotIsSet()
+                  ->whereStockMin();
+
+            })->where('stock', '>', 0);
+        }
+
+
+        if ($filter === '05') {
+            //$add = ($stock > $item->stock_min);
+
+            $query = ItemWarehouse::with(['item'])
+            ->whereHas('item', function ($q) {
+                $q->where([
+                              ['item_type_id', '01'],
+                              ['unit_type_id', '!=', 'ZZ'],
+
+                          ])
+                  ->whereNotIsSet()
+                  ->whereStockMinValidate();
+
+            });
+        }
+
+        
         if ($warehouse_id != 0) {
             $query->where('item_warehouse.warehouse_id', $warehouse_id);
         }
-        //dd($query);
         return $query;
 
     }
