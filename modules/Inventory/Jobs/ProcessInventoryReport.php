@@ -127,15 +127,49 @@ class ProcessInventoryReport implements ShouldQueue
 
     public function getRecordsTranform($warehouse_id, $filter){
        
-        Log::debug("getRecordsTranform init");
+        Log::debug("getRecordsTranform init". date('H:i:s'));
         $records = $this->getRecords($warehouse_id);
 
         // $records->orderBy('items.name', 'desc');
 
         $data = [];
 
-        $records = $records->latest()->get()->transform(function($row) use ($filter,&$data) {
-            /** @var \Modules\Inventory\Models\ItemWarehouse $row */
+        foreach ($records->latest()->cursor() as $row) {
+            $stock = $row->stock;
+            $add = true;
+            $item = $row->item;
+            if ($filter === '02') {
+                $add = ($stock < 0);
+            }
+            if ($filter === '03') {
+                $add = ($stock == 0);
+            }
+            if ($filter === '04') {
+                $add = ($stock > 0 && $stock <= $item->stock_min);
+            }
+            if ($filter === '05') {
+                $add = ($stock > $item->stock_min);
+            }
+            if ($add) {
+                $data[] = [
+                    'barcode' => $item->barcode,
+                    'internal_id' => $item->internal_id,
+                    'name' => $item->description,
+                    'item_category_name' => optional($item->category)->name,
+                    'stock_min' => $item->stock_min,
+                    'stock' => $stock,
+                    'sale_unit_price' => $item->sale_unit_price,
+                    'purchase_unit_price' => $item->purchase_unit_price,
+                    'profit'=>number_format($item->sale_unit_price-$item->purchase_unit_price,2,'.',''),
+                    'model' => $item->model,
+                    'brand_name' => $item->brand->name,
+                    'date_of_due' => optional($item->date_of_due)->format('d/m/Y'),
+                    'warehouse_name' => $row->warehouse->description
+                ];
+            }
+        }
+
+        /*$records = $records->latest()->get()->transform(function($row) use ($filter,&$data) {
 
             $stock = $row->stock;
             $add = true;
@@ -170,9 +204,9 @@ class ProcessInventoryReport implements ShouldQueue
                     'warehouse_name' => $row->warehouse->description
                 ];
             }
-        });
+        });*/
 
-        Log::debug("getRecordsTranform finish");
+        Log::debug("getRecordsTranform finish". date('H:i:s'));
 
         return $data;
     }
