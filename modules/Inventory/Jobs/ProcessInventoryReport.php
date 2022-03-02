@@ -126,11 +126,14 @@ class ProcessInventoryReport implements ShouldQueue
     }
 
     public function getRecordsTranform($warehouse_id, $filter){
-       
+        Log::debug("warehouse_id". $warehouse_id);
+
         Log::debug("getRecordsTranform init". date('H:i:s'));
         $records = $this->getRecords($warehouse_id);
 
         $data = [];
+
+        Log::debug("chunck 5000");
 
         $records->chunk(5000, function ($items) use (&$data, $filter){
             foreach ($items as $row) {
