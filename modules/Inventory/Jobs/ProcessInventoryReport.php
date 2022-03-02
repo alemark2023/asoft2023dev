@@ -133,9 +133,9 @@ class ProcessInventoryReport implements ShouldQueue
 
         $data = [];
 
-        Log::debug("chunck 5000");
+        Log::debug("chunck 1000");
 
-        $records->chunk(5000, function ($items) use (&$data, $filter){
+        $records->chunk(1000, function ($items) use (&$data, $filter){
             foreach ($items as $row) {
                 $stock = $row->stock;
                 $add = true;
