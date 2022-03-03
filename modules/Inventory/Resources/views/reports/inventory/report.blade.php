@@ -110,6 +110,8 @@
     </thead>
     <tbody>
     @php
+        $total_purchase_unit_price = 0;
+        $total_sale_unit_price = 0;
         $total = 0;
         $total_profit = 0;
         $total_all_profit = 0
@@ -121,7 +123,11 @@
             $total += $total_line;
             $total_profit += $profit;
             $total_all_profit+= ($profit * $row['stock']);
-            $profit = number_format($profit,2,'.','')
+            $profit = number_format($profit,2,'.','');
+
+            $total_purchase_unit_price += $row['purchase_unit_price'];
+            $total_sale_unit_price += $row['sale_unit_price'];
+
         @endphp
         <tr>
             <td>{{ $loop->iteration}}</td>
@@ -162,10 +168,10 @@
     <tr>
         <td colspan="7"
             class="celda"></td>
-        <td class="celda">{{$totals['purchase_unit_price']}}</td>
-        <td class="celda">{{$total}}</td>
-        <td class="celda">{{$totals['sale_unit_price']}}</td>
-        <td class="celda">S/ {{number_format($total_profit,2,'.','')}}</td>
+        <td class="celda">{{ number_format($total_purchase_unit_price, 2, '.','') }}</td>
+        <td class="celda">{{ $total}}</td>
+        <td class="celda">{{ number_format($total_sale_unit_price, 2, '.','') }}</td>
+        <td class="celda">S/ {{ number_format($total_profit,2,'.','') }} </td>
         <td class="celda">S/ {{number_format($total_all_profit,2,'.','')}}</td>
         <td colspan="4"
             class="celda"></td>
