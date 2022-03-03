@@ -262,6 +262,7 @@
 
                    Route::get('order-notes-general', 'ReportOrderNoteGeneralController@index')
                          ->name('tenant.reports.order_notes_general.index');
+                    Route::get('order-notes-general/excel', 'ReportOrderNoteGeneralController@excel');
                     Route::get('order-notes-general/pdf', 'ReportOrderNoteGeneralController@pdf');
                     Route::get('order-notes-general/filter', 'ReportOrderNoteGeneralController@filter');
                     Route::get('order-notes-general/records', 'ReportOrderNoteGeneralController@records');
