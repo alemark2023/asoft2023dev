@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tenant;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Item;
+use App\Models\Tenant\ItemUnitType;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Establishment;
@@ -57,6 +58,7 @@ class PosController extends Controller
 
     public function search_items(Request $request)
     {
+        //
         $configuration =  Configuration::first();
 
         $items = Item::where('description','like', "%{$request->input_item}%")
@@ -118,8 +120,83 @@ class PosController extends Controller
                                     'percentage_isc' => $row->percentage_isc,
                                 ];
                             });
+        
+        
 
         return compact('items');
+
+    }
+
+    public function search_items_unit_types(Request $request) {
+
+        $configuration =  Configuration::first();
+
+        $items = ItemUnitType::where('barcode','like', "%{$request->input_item}%")->get()->transform(function($item_unit) use ($configuration){
+            $row = $item_unit->item;
+            $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
+
+            $sale_unit_price = 0;
+            $price_default = $item_unit->price_default;
+            switch($price_default) {
+                case 1:
+                    $sale_unit_price = $item_unit->price1;
+                    break;
+                case 2:
+                    $sale_unit_price = $item_unit->price2;
+                    break;
+                case 3:
+                    $sale_unit_price = $item_unit->price3;
+                    break;
+            }
+
+
+            return [
+                'id' => $row->id,
+                'item_id' => $row->id,
+                'full_description' => $full_description,
+                'description' => (($row->brand->name) ? $row->description.' - '.$row->brand->name : $row->description).' | ' . $item_unit->description.'-'.$item_unit->unit_type_id,
+                'currency_type_id' => $row->currency_type_id,
+                'internal_id' => $row->internal_id,
+                'currency_type_symbol' => $row->currency_type->symbol,
+                'sale_unit_price' => $sale_unit_price,
+                'purchase_unit_price' => $row->purchase_unit_price,
+                'unit_type_id' => $row->unit_type_id,
+                'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                'calculate_quantity' => (bool) $row->calculate_quantity,
+                'is_set' => (bool) $row->is_set,
+                'edit_unit_price' => false,
+                'has_igv' => (bool) $row->has_igv,
+                'aux_quantity' => 1,
+                'aux_sale_unit_price' => number_format($sale_unit_price, $configuration->decimal_quantity, ".",""),
+                'edit_sale_unit_price' => number_format($sale_unit_price, $configuration->decimal_quantity, ".",""),
+                'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
+                'sets' => collect($row->sets)->transform(function($r){
+                    return [
+                        $r->individual_item->description
+                    ];
+                }),
+                'warehouses' => collect($row->warehouses)->transform(function ($row) {
+                    return [
+                        'warehouse_description' => $row->warehouse->description,
+                        'stock' => $row->stock,
+                    ];
+                }),
+                'unit_type' => [$item_unit],
+                'category' => ($row->category) ? $row->category->name : null,
+                'brand' => ($row->brand) ? $row->brand->name : null,
+                'has_plastic_bag_taxes' => (bool) $row->has_plastic_bag_taxes,
+                'amount_plastic_bag_taxes' => $row->amount_plastic_bag_taxes,
+
+                'has_isc' => (bool)$row->has_isc,
+                'system_isc_type_id' => $row->system_isc_type_id,
+                'percentage_isc' => $row->percentage_isc,
+                'item_unit_barcode' => true
+            ];
+        });
+
+        return compact('items');
+        
 
     }
 
