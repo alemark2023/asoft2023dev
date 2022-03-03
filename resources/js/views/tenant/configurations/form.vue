@@ -685,6 +685,32 @@
                                 </div>
                             </div>
 
+                            
+                            <div class="col-md-6 mt-4">
+                                <div :class="{'has-danger': errors.global_discount_type_id}"
+                                        class="form-group">
+                                    <label class="control-label">Tipo de descuento global
+                                        <el-tooltip class="item"
+                                                    content="Tipo de descuento predeterminado en POS"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <el-select v-model="form.global_discount_type_id"
+                                                filterable
+                                                @change="submit">
+                                        <el-option v-for="option in global_discount_types"
+                                                    :key="option.id"
+                                                    :label="option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small v-if="errors.global_discount_type_id"
+                                            class="form-control-feedback"
+                                            v-text="errors.global_discount_type_id[0]"></small>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="fourth">
@@ -1284,6 +1310,7 @@ export default {
                 dispatches_address_text:false,
             },
             affectation_igv_types: [],
+            global_discount_types: [],
             placeholder: '',
             activeName: 'first'
         }
@@ -1343,6 +1370,7 @@ export default {
 
             await this.$http.get(`/${this.resource}/tables`).then(response => {
                 this.affectation_igv_types = response.data.affectation_igv_types
+                this.global_discount_types = response.data.global_discount_types
             })
 
         },
@@ -1359,6 +1387,7 @@ export default {
                 amount_plastic_bag_taxes: 0.1,
                 colums_grid_item: 4,
                 affectation_igv_type_id: '10',
+                global_discount_type_id: '03',
                 terms_condition: null,
                 header_image: null,
                 legend_footer: false,
