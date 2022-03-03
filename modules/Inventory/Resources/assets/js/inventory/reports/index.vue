@@ -418,6 +418,8 @@ export default {
                 method: 'POST',
                 data: {
                     'format': format,
+                    'filter': this.form.filter,
+                    'warehouse_id': this.form.warehouse_id,
                 },
             })
                 .then(response => {

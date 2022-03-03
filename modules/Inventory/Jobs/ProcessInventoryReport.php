@@ -27,6 +27,8 @@ class ProcessInventoryReport implements ShouldQueue
 
     public $website_id;
     public $tray_id;
+    public $warehouse_id;
+    public $filter;
 
 
     /**
@@ -34,9 +36,11 @@ class ProcessInventoryReport implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(int $website_id, int $tray_id) {
+    public function __construct(int $website_id, int $tray_id, int $warehouse_id, string $filter) {
         $this->website_id = $website_id;
         $this->tray_id = $tray_id;
+        $this->warehouse_id = $warehouse_id;
+        $this->filter = $filter;
     }
 
     /**
@@ -60,16 +64,12 @@ class ProcessInventoryReport implements ShouldQueue
             $establishment = Establishment::query()->first();
             //ini_set('max_execution_time', 0);
 
-            $records = $this->getRecordsTranform(1, '01');
+            $records = $this->getRecordsTranform($this->warehouse_id, $this->filter);
             $format = $tray->format;
-            $totals = [
-                'purchase_unit_price' => '85.000000',
-                'sale_unit_price' => '140.000000',
-            ];
 
             if ($format === 'pdf') {
                 Log::debug("Render pdf init");
-                $pdf = PDF::loadView('inventory::reports.inventory.report', compact('records', 'company', 'establishment', 'format', 'totals'));
+                $pdf = PDF::loadView('inventory::reports.inventory.report', compact('records', 'company', 'establishment', 'format'));
                 $pdf->setPaper('A4', 'landscape');
                 $filename = 'INVENTORY_ReporteInv_' . date('YmdHis') . '-' . $tray->user_id;
 
@@ -90,8 +90,7 @@ class ProcessInventoryReport implements ShouldQueue
                         ->records($records)
                         ->company($company)
                         ->establishment($establishment)
-                        ->format($format)
-                        ->totals($totals);
+                        ->format($format);
                 Log::debug("Render excel finish");
 
                 Log::debug("Upload excel init");
@@ -102,6 +101,7 @@ class ProcessInventoryReport implements ShouldQueue
                 $tray->file_name = $filename;
                 $path = 'download_tray_xlsx';
             }
+
             $tray->date_end = date('Y-m-d H:i:s');
             $tray->status = 'FINISHED';
             $tray->path = $path;

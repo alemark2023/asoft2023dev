@@ -170,42 +170,12 @@ class ReportInventoryController extends Controller
         $client = Client::where('number', $company->number)->first();
         $website_id = $client->hostname->website_id;
 
-        ProcessInventoryReport::dispatch($website_id, $tray->id);
+        ProcessInventoryReport::dispatch($website_id, $tray->id, $request->warehouse_id, $request->format );
 
         return  [
             'success' => true,
             'message' => 'El reporte se esta procesando; puede ver el proceso en bandeja de descargas.'
         ];
-
-        /*$data = [];
-        $filter = '05';
-        $records = $this->getRecords(1, $filter);//->take(200)->get();
-
-        $records->chunk(1000, function ($items) use (&$data){
-            foreach ($items as $row) {
-                $item = $row->item;
-                $data[] = [
-                    'barcode' => $item->barcode,
-                    'internal_id' => $item->internal_id,
-                    'name' => $item->description,
-                    'item_category_name' => optional($item->category)->name,
-                    'stock_min' => $item->stock_min,
-                    'stock' => $row->stock,
-                    'sale_unit_price' => $item->sale_unit_price,
-                    'purchase_unit_price' => $item->purchase_unit_price,
-                    'profit'=>number_format($item->sale_unit_price-$item->purchase_unit_price,2,'.',''),
-                    'model' => $item->model,
-                    'brand_name' => $item->brand->name,
-                    'date_of_due' => optional($item->date_of_due)->format('d/m/Y'),
-                    'warehouse_name' => $row->warehouse->description
-                ];
-                   
-            }
-        });
-
-        return $data;*/
-
-      
     }
 
     /**
