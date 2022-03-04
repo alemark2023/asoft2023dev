@@ -61,7 +61,13 @@ class ProcessInventoryReport implements ShouldQueue
 
         try {
             $company = Company::query()->first();
-            $establishment = Establishment::query()->first();
+            $establishment = null;
+
+            if ($this->warehouse_id != 0) { 
+                $establishment = Establishment::find($this->warehouse_id);
+            }else {
+                $establishment = Establishment::query()->first();
+            }
             //ini_set('max_execution_time', 0);
 
             $records = $this->getRecordsTranform($this->warehouse_id, $this->filter);
