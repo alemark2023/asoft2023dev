@@ -691,10 +691,16 @@
                                         class="form-group">
                                     <label class="control-label">Tipo de descuento global
                                         <el-tooltip class="item"
-                                                    content="Tipo de descuento predeterminado en POS"
                                                     effect="dark"
                                                     placement="top-start">
                                             <i class="fa fa-info-circle"></i>
+ 
+                                            <div slot="content">
+                                                <strong>Tipo de descuento predeterminado en POS</strong><br/><br/>
+                                                Sugerencias:<br/>
+                                                Si la venta tiene op. gravadas utilice el descuento que afecta a la base imponible del IGV/IVAP.<br/>
+                                                Si la venta no tiene op. gravadas utilice el descuento que no afecta a la base imponible del IGV/IVAP.<br/>
+                                            </div>
                                         </el-tooltip>
                                     </label>
                                     <el-select v-model="form.global_discount_type_id"
