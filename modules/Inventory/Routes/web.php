@@ -160,7 +160,7 @@
                      */
                     Route::prefix('report')->group(function () {
                         Route::get('tables', 'ReportInventoryController@tables');
-                        Route::post('records', 'ReportInventoryController@records');
+                        Route::get('records', 'ReportInventoryController@records');
                         Route::post('export', 'ReportInventoryController@export');
                     });
 

@@ -2094,6 +2094,21 @@ class Item extends ModelTenant
         }
     }
 
+    public function scopeWhereStockMin($query)
+    {
+        $stockmin = (int)$this->stock_min;
+        return $query->whereHas('warehouses', function($query) use($stockmin) {
+            $query->where('stock', '<=', $stockmin);
+        });
+    }
+
+    public function scopeWhereStockMinValidate($query)
+    {
+        $stockmin = (int)$this->stock_min;
+        return $query->whereHas('warehouses', function($query) use($stockmin) {
+            $query->where('stock', '>', $stockmin);
+        });
+    }
 
 }
 

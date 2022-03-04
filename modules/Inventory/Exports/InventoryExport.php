@@ -39,12 +39,6 @@ class InventoryExport implements  FromView, ShouldAutoSize
         return $this;
     }
 
-    public function totals($totals) {
-        $this->totals = $totals;
-
-        return $this;
-    }
-
     public function view(): View {
 
         return view('inventory::reports.inventory.report', [
@@ -52,7 +46,6 @@ class InventoryExport implements  FromView, ShouldAutoSize
             'company' => $this->company,
             'establishment' => $this->establishment,
             'format' => $this->format,
-            'totals' => $this->totals
         ]);
     }
 }

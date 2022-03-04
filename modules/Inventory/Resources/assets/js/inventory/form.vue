@@ -200,7 +200,8 @@ export default {
                 series_enabled: false,
                 lots: [],
                 date_of_due: null,
-                created_at: null
+                created_at: null,
+                comments: null
 
             }
         },
