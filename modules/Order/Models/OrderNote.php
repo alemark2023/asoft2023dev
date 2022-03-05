@@ -617,6 +617,13 @@
                         'state_type_id' => $row->state_type_id,
                     ];
                 }),
+                'items' => $this->items->transform(function ($row) {
+                    /** @var Document $row */
+                    return [
+                        'quantity' => $row->quantity,
+                        'unit_price' => $row->unit_price,
+                    ];
+                }),
                 'btn_generate' => $btn_generate,
                 'mi_tienda_pe' => $miTiendaPe,
                 'dispatches' => $dispatches,
