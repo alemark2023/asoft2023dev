@@ -1,4 +1,9 @@
-{!! '<?xml version="1.0" encoding="utf-8" standalone="no"?>' !!}
+<?php
+    $companyName = e(trim($company->name));
+    if(strlen($companyName)> 100){
+        $companyName = substr($companyName,0,100);
+    }
+?>{!! '<?xml version="1.0" encoding="utf-8" standalone="no"?>' !!}
 <VoidedDocuments xmlns="urn:sunat:names:specification:ubl:peru:schema:xsd:VoidedDocuments-1"
                  xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
                  xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
@@ -37,7 +42,7 @@
         <cbc:AdditionalAccountID>6</cbc:AdditionalAccountID>
         <cac:Party>
             <cac:PartyLegalEntity>
-                <cbc:RegistrationName><![CDATA[{{ $company->name }}]]></cbc:RegistrationName>
+                <cbc:RegistrationName><![CDATA[{!!  $companyName !!}]]></cbc:RegistrationName>
             </cac:PartyLegalEntity>
         </cac:Party>
     </cac:AccountingSupplierParty>
