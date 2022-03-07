@@ -106,6 +106,7 @@
                     <th>DPTO</th>
                     <th>PROV</th>
 
+                    <th>Direccion de cliente</th>
                     <th>Cliente</th>
                     <th>RUC</th>
                     <th>Estado</th>
@@ -122,6 +123,7 @@
                     <th>Total IGV</th>
                     <th>Total ISC</th>
                     <th>Total</th>
+                    <th>Total de productos</th>
 
                     @foreach ($categories as $category)
                         <th>{{$category->name}}</th>
@@ -183,6 +185,7 @@
                         <td class="celda">{{$stablihsment['department']}}</td>
                         <td class="celda">{{$stablihsment['province']}}</td>
 
+                        <td class="celda">{{$value->customer->address}}</td>
                         <td class="celda">{{$value->customer->name}}</td>
                         <td class="celda">{{$value->customer->number}}</td>
                         <td class="celda">{{$value->state_type->description}}</td>
@@ -316,8 +319,13 @@
 
                             $serie_affec =  '';
 
-                        @endphp
+                            $quality_item=0;
+                            foreach ($value->items as $itm) {
+                                $quality_item+=$itm->quantity;
+                            }
 
+                        @endphp
+                        <td>{{$quality_item}}</td>
                     </tr>
                     @php
                         if($value->currency_type_id == 'PEN'){
@@ -391,6 +399,7 @@
 
 
                         }
+                        
                     @endphp
                 @endforeach
                 <tr>
@@ -423,6 +432,7 @@
                     <td></td>
                     <td>{{$acum_total_usd}}</td>
                 </tr>
+                
                 </tbody>
             </table>
         </div>
