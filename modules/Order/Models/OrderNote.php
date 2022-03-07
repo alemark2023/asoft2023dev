@@ -116,7 +116,8 @@
             'soap_type',
             'state_type',
             'currency_type',
-            'items'
+            'items',
+            'dispatchs'
         ];
 
         protected $fillable = [
@@ -387,6 +388,11 @@
             return $this->hasMany(SaleNote::class);
         }
 
+        public function dispatchs()
+        {
+            return $this->hasMany(Dispatch::class,'reference_order_note_id');
+        }
+
         /**
          * @return BelongsTo
          */
@@ -627,6 +633,7 @@
                 'btn_generate' => $btn_generate,
                 'mi_tienda_pe' => $miTiendaPe,
                 'dispatches' => $dispatches,
+                'dispatchs' => $this->dispatchs,
                 'created_at' => $this->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
                 'print_a4' => url('') . "/order-notes/print/{$this->external_id}/a4",

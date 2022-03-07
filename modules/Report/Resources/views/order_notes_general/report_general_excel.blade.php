@@ -44,6 +44,7 @@
                                 $discount_description="";
                                 $total_prev=0;
                                 $guide_remision=0;
+                                $brand_items=0;
 
                                 $acum_total_taxed=0;
                                 $acum_total_igv=0;
@@ -54,8 +55,6 @@
                                 $acum_total_inafecto=0;
 
                                 $acum_total_free=0;
-
-                                dd($records);
                             @endphp
                             @foreach($records as $key => $value)
                             @php
@@ -75,10 +74,11 @@
                                 $total_prev = $acum_total+$acum_total_igv+$acum_total_exonerado+$acum_total_free+$acum_total_inafecto;
 
                                 $state_type_description=$value->state_type->description;
-                                if (!empty($value->dispatches) && count($value->dispatches) != 0) {
+                                if (!empty($value->dispatchs) && count($value->dispatchs) != 0) {
                                     $state_type_description = 'Despachado';
                                     // #596
                                 }
+
                             @endphp
                                 <tr>
                                     <td class="celda">{{$loop->iteration}}</td>
@@ -112,23 +112,33 @@
                                         @endphp
                                     @endforeach
                                     <td  class="celda">{{$value->prefix."-".$value->id}}</td>
-                                    <td  class="celda"></td>
+                                    
                                     @foreach ($value->items as $itm)
                                         @php 
                                             if($itm->order_note_id==$value->id){
                                                 $items_order+=$itm->quantity;
                                                 $acum_price+=($itm->unit_price*$itm->quantity);
                                                 $acum_discount+=$itm->total_discount;
+                                                $brand_items=$itm->brand;
+                                                if($brand_items!=$itm->brand){
+                                                    $brand_items.=$itm->brand;
+                                                }
                                             }
                                         @endphp
                                     @endforeach
+                                    <td  class="celda">{{$brand_items}}</td>
                                     <td  class="celda">{{$items_order}}</td>
                                     <td  class="celda">{{$acum_price}}</td>
                                     <td  class="celda">{{$acum_discount}}</td>
                                     <td  class="celda">{{$serie_document}}</td>
-                                    @foreach ($value->dispatches as $disp)
-                                    <td  class="celda">{{$disp->series}}</td>
+                                    @foreach ($value->dispatchs as $disp)
+                                    @php 
+                                        if($isp->reference_order_note_id==$value->id){
+                                            $guide_remision=$disp->series;
+                                        }
+                                    @endphp
                                     @endforeach
+                                    <td  class="celda">{{$guide_remision}}</td>
                                     
                                 </tr>
  
