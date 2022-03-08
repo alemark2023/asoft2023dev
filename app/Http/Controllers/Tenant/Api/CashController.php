@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenant\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Tenant\Cash;
+use App\Models\Tenant\CashDocument;
 use App\Models\Tenant\Document;
 
 
@@ -29,11 +30,20 @@ class CashController extends Controller
 
             $document = Document::where('external_id', $external_id)->first();
             $total_documents += (float)$document->total;
+
+            CashDocument::create([
+                'cash_id' => $cash->id,
+                'document_id' => $document->id,
+            ]);
         }
 
         $cash->income = $total_documents;
         $cash->final_balance = $cash->beginning_balance + $cash->income;
         $cash->save();
+
+
+
+
 
         return [
             'success' => true,
