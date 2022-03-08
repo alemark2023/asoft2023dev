@@ -145,10 +145,11 @@
                 this.$emit('add', this.payments);
             },
             async events() {
-                await this.$eventHub.$on("cancelSale", () => {
-                    console.info('multiplepayment');
-                    this.getFormPosLocalStorage()
-                });
+                // se elimina porque genera error, registro de pagos duplicados
+                // await this.$eventHub.$on("cancelSale", () => {
+                //     console.info('multiplepayment');
+                //     this.getFormPosLocalStorage()
+                // });
             },
         }
     }
