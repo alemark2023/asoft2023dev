@@ -25,7 +25,7 @@ class CashController extends Controller
         $cash->save();
 
         $total_documents = 0;
-        foreach ($request->internals_id as $external_id) {
+        foreach ($request->internalsId as $external_id) {
 
             $document = Document::where('external_id', $external_id)->first();
             $total_documents += (float)$document->total;
