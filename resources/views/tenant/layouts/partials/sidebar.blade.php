@@ -1363,6 +1363,10 @@
                                         <a class="nav-link"
                                            href="{{route('tenant.restaurant.order.index')}}">Pedidos</a>
                                 </li>
+                                <li class="{{ ( $secondLevel != null && $secondLevel == 'cash')?'nav-active':'' }}">
+                                        <a class="nav-link"
+                                           href="{{route('tenant.restaurant.cash.index')}}">Caja Chica</a>
+                                </li>
                             </ul>
                         </li>
                     @endif
