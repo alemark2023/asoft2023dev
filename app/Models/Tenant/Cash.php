@@ -40,8 +40,8 @@ class Cash extends ModelTenant
         'final_balance',
         'income',
         'state',
-        'reference_number'
-
+        'reference_number',
+        'apply_restaurant'
     ];
 
 

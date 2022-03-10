@@ -23,6 +23,8 @@ class CashController extends Controller
         $cash->final_balance = 0;
         $cash->income = 0;
         $cash->state = 0;
+        $cash->apply_restaurant = 1;
+
         $cash->save();
 
         $total_documents = 0;
