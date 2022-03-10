@@ -223,7 +223,8 @@
             'show_ticket_50',
             'show_last_price_sale',
             'print_new_line_to_observation',
-            'show_logo_by_establishment'
+            'show_logo_by_establishment',
+            'shipping_time_days',
         ];
 
         protected $casts = [
@@ -293,6 +294,7 @@
             'show_last_price_sale' => 'bool',
             'show_logo_by_establishment' => 'bool',
             'print_new_line_to_observation' => 'bool',
+            'shipping_time_days' => 'int',
         ];
 
         protected $hidden = [
@@ -472,6 +474,7 @@
                 'show_ticket_58' => (bool)$this->show_ticket_58,
                 'show_ticket_50' => (bool)$this->show_ticket_50,
                 'show_last_price_sale' => (bool)$this->show_last_price_sale,
+                'shipping_time_days' => $this->shipping_time_days,
             ];
         }
 
