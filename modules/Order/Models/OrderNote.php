@@ -117,7 +117,6 @@
             'state_type',
             'currency_type',
             'items',
-            'dispatchs'
         ];
 
         protected $fillable = [
@@ -388,11 +387,6 @@
             return $this->hasMany(SaleNote::class);
         }
 
-        public function dispatchs()
-        {
-            return $this->hasMany(Dispatch::class,'reference_order_note_id');
-        }
-
         /**
          * @return BelongsTo
          */
@@ -612,28 +606,18 @@
                 'documents' => $this->documents->transform(function ($row) {
                     /** @var Document $row */
                     return [
+                        'id' => $row->id,
                         'number_full' => $row->number_full,
                         'state_type_id' => $row->state_type_id,
+                        'order_note_id' => $row->order_note_id,
+                        'series' => $row->series,
                     ];
                 }),
-                'sale_notes' => $this->sale_notes->transform(function ($row) {
-                    /** @var SaleNote $row */
-                    return [
-                        'identifier' => $row->identifier,
-                        'state_type_id' => $row->state_type_id,
-                    ];
-                }),
-                'items' => $this->items->transform(function ($row) {
-                    /** @var Document $row */
-                    return [
-                        'quantity' => $row->quantity,
-                        'unit_price' => $row->unit_price,
-                    ];
-                }),
+                'sale_notes' => $this->sale_notes,
+                'items' => $this->items,
                 'btn_generate' => $btn_generate,
                 'mi_tienda_pe' => $miTiendaPe,
                 'dispatches' => $dispatches,
-                'dispatchs' => $this->dispatchs,
                 'created_at' => $this->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
                 'print_a4' => url('') . "/order-notes/print/{$this->external_id}/a4",

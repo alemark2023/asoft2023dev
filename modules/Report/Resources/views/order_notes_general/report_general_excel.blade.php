@@ -23,7 +23,7 @@
                                 <th  class="celda">Dirección</th>
                                 <th  class="celda">Total</th>
                                 <th  class="celda" >Estado</th>
-                                <th  class="celda" >Devolución</th>
+                                <th  class="celda">Descuento</th>
                                 <th  class="celda" >Total venta</th>
                                 <th  class="celda">Tipo de pago</th>
                                 <th  class="celda">Repartidor</th>
@@ -33,18 +33,17 @@
                                 <th  class="celda">Marca</th>
                                 <th  class="celda">Cantidad de producto</th>
                                 <th  class="celda">Precio unitario</th>
-                                <th  class="celda">descuento</th>
+                                
                                 <th  class="celda">Documento Asociado</th>
                                 <th  class="celda">Guia de remision</th>
                             </tr>
                         </thead>
                         <tbody>
                             @php
-                                $serie_document="";
-                                $discount_description="";
+                                
+                                
                                 $total_prev=0;
-                                $guide_remision=0;
-                                $brand_items=0;
+                                
 
                                 $acum_total_taxed=0;
                                 $acum_total_igv=0;
@@ -58,7 +57,15 @@
                             @endphp
                             @foreach($records as $key => $value)
                             @php
+                                $serie_document=0;
+                                $discount_description=0;
+                                $guide_remision=0;
+                                $brand_items=0;
+                                $data = $value->getCollectionData();
+                                /* dd($data); */
                                 $items_order=0;
+                                $identifier_order=0;
+                                $guide_remision=0;
                                 $acum_price=0;
                                 $acum_discount=0;
 
@@ -73,12 +80,33 @@
 
                                 $total_prev = $acum_total+$acum_total_igv+$acum_total_exonerado+$acum_total_free+$acum_total_inafecto;
 
-                                $state_type_description=$value->state_type->description;
-                                if (!empty($value->dispatchs) && count($value->dispatchs) != 0) {
-                                    $state_type_description = 'Despachado';
-                                    // #596
-                                }
+                                $state_type_description=$data['state_type_description'];
+                                $guide_remision=empty($data['dispatches'][0])?0:$data['dispatches'][0]['number'];
+                                $identifier_order=$data['identifier'];
+                                /* dd(empty($data['sale_notes'][0])); */
+                                $documents_order_id = empty($data['documents'][0]) ? 0 : $data['documents'][0]['series'].'-'.$data['documents'][0]['id'];
+                                $sale_order_id= empty($data['sale_notes'][0]) ? 0 : $data['sale_notes'][0]['series'].'-'.$data['sale_notes'][0]['id'];
+                                /* dd($guide_remision); */
+                                $items_brand='';
+                                $serie_document=(!$documents_order_id) ? $sale_order_id : $documents_order_id;
+                                foreach ($value->items as $itm) {
+                                    $discount=json_encode($itm->discounts,true);
+                                    $discount_array=json_decode($discount,true);
+                                    $items_order+=$itm->quantity;
+                                    if (!empty($itm->item->brand)) {
+                                        $stringer = $itm->item->brand;
+                                        $items_brand= (stripos($items_brand,$itm->item->brand)) ? '' : $items_brand.=$itm->item->brand.' - ';
 
+                                        $brand_items = trim($items_brand,' - ');
+                                    }
+
+                                    $acum_price += ($itm->unit_price*$itm->quantity);
+                                    $acum_discount += $itm->total_discount;
+                                    if (!empty($discount_array[0]['description'])) {
+                                        $discount_description = ($discount_array[0]['description']===$discount_description) ? $discount_array[0]['description'] : $discount_description.=$discount_array[0]['description'];
+                                    }
+                                    
+                                }
                             @endphp
                                 <tr>
                                     <td class="celda">{{$loop->iteration}}</td>
@@ -86,58 +114,19 @@
                                     <td  class="celda">{{$value->shipping_address}}</td>
                                     <td  class="celda" >{{$total_prev}}</td>
                                     <td  class="celda">{{$state_type_description}}</td>
-                                    <td class="celda" >{{ $value->total_discount }}</td>
+                                    <td  class="celda">{{number_format($acum_discount,2)}}</td>
                                     <td class="celda" >{{ $value->total }}</td>
                                     <td class="celda" >{{ $value->payment_method_type->description }}</td>
                                     <td class="celda" >{{ $value->user->name }}</td>
-                                    @foreach ($value->discounts as $dis)
-                                        @php
-                                            $discount_description = $dis->description;
-                                        @endphp
-                                    @endforeach
                                     <td  class="celda">{{$discount_description}}</td>
                                     <td  class="celda">{{$value->observation}}</td>
-                                    @foreach ($value->documents as $doc)
-                                        @php
-                                            if($doc->order_note_id==$value->id){
-                                                $serie_document=$doc->series;
-                                            }
-                                        @endphp
-                                    @endforeach
-                                    @foreach ($value->sale_notes as $not)
-                                        @php 
-                                            if($not->order_note_id==$value->id){
-                                            $serie_document=$not->series;
-                                            }
-                                        @endphp
-                                    @endforeach
-                                    <td  class="celda">{{$value->prefix."-".$value->id}}</td>
+                                    <td  class="celda">{{$identifier_order}}</td>
                                     
-                                    @foreach ($value->items as $itm)
-                                        @php 
-                                            if($itm->order_note_id==$value->id){
-                                                $items_order+=$itm->quantity;
-                                                $acum_price+=($itm->unit_price*$itm->quantity);
-                                                $acum_discount+=$itm->total_discount;
-                                                $brand_items=$itm->brand;
-                                                if($brand_items!=$itm->brand){
-                                                    $brand_items.=$itm->brand;
-                                                }
-                                            }
-                                        @endphp
-                                    @endforeach
                                     <td  class="celda">{{$brand_items}}</td>
                                     <td  class="celda">{{$items_order}}</td>
-                                    <td  class="celda">{{$acum_price}}</td>
-                                    <td  class="celda">{{$acum_discount}}</td>
+                                    <td  class="celda">{{number_format($acum_price,2)}}</td>
+                                    
                                     <td  class="celda">{{$serie_document}}</td>
-                                    @foreach ($value->dispatchs as $disp)
-                                    @php 
-                                        if($isp->reference_order_note_id==$value->id){
-                                            $guide_remision=$disp->series;
-                                        }
-                                    @endphp
-                                    @endforeach
                                     <td  class="celda">{{$guide_remision}}</td>
                                     
                                 </tr>
