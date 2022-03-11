@@ -225,6 +225,8 @@
             'print_new_line_to_observation',
             'show_logo_by_establishment',
             'shipping_time_days',
+            'url_apiruc',
+            'token_apiruc',
         ];
 
         protected $casts = [
@@ -2036,5 +2038,13 @@
             return $this;
         }
 
+        /**
+         * Permite usar configuracion personalizada del token de apiperu
+         * @return bool
+         */
+        public function UseCustomApiPeruToken(){
+            // .env ALLOW_CLIENT_USE_OWN_APIPERU_TOKEN
+            return (bool)\Config('extra.AllowClientUseOwnApiperuToken');
+        }
 
     }
