@@ -64,7 +64,7 @@
          * @param int $service
          */
         public function saveService($service =0,$response = []){
-            if($response['message']) {
+            if(isset($response['message']) ) {
                 if (strpos($response['message'], 'Ha superado la cantidad de consultas mensuales') !== false) {
                     // Si se ha superado la cantidad, no hace nada.
                     return $this;
