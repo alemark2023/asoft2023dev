@@ -701,10 +701,10 @@ export default {
             // this.form.total_taxes = _.round(total_igv + total_isc, 2);
 
             this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
-            
+
             this.form.total = _.round(total, 2)
             this.form.subtotal = this.form.total
-            
+
             // this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
             // this.form.subtotal = _.round(total + this.form.total_plastic_bag_taxes, 2)
 

@@ -37,6 +37,69 @@
                         </el-tab-pane>
                     </el-tabs>
                 </div>
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col text-center font-weight-bold mt-3">
+                            <button class="btn btn-lg btn-info waves-effect waves-light"
+                                        type="button"
+                                        @click="clickPrint('a4')">
+                                    <i class="fa fa-file-alt"></i>
+                            </button>
+                            <p>A4</p>
+                        </div>
+
+                        <div
+                            class="col text-center font-weight-bold mt-3">
+
+                            <button class="btn btn-lg btn-info waves-effect waves-light"
+                                    type="button"
+                                    @click="clickPrint('ticket')">
+                                <i class="fa fa-receipt"></i>
+                            </button>
+                            <p>80MM</p>
+                        </div>
+
+                        <div
+                            class="col text-center font-weight-bold mt-3">
+
+                            <button class="btn btn-lg btn-info waves-effect waves-light"
+                                    type="button"
+                                    @click="clickPrint('ticket_58')">
+                                <i class="fa fa-receipt"></i>
+                            </button>
+                            <p>58MM</p>
+                        </div>
+
+                        <div
+                            class="col text-center font-weight-bold mt-3">
+
+                            <el-popover
+                                placement="top-start"
+                                :open-delay="1000"
+                                width="145"
+                                trigger="hover"
+                                content="Presiona ALT + P">
+                                <el-button slot="reference"
+                                        class="btn btn-lg btn-info waves-effect waves-light"
+                                        type="button"
+                                        @click="clickPrint('ticket_50')">
+                                    <i class="fa fa-receipt"></i>
+                                </el-button>
+                            </el-popover>
+                            <p>50MM</p>
+                        </div>
+
+                        <div class="col text-center font-weight-bold mt-3">
+
+                            <button class="btn btn-lg btn-info waves-effect waves-light"
+                                    type="button"
+                                    @click="clickPrint('a5')">
+                                <i class="fa fa-file-alt"></i>
+                            </button>
+                            <p>A5</p>
+                        </div>
+                    </div>
+                </div>
                 <div class="row col-md-12">
                     <div class="col-md-6">
                         <el-input v-model="form.customer_email" ref="ref_customer_email" @keyup.native="keyupCustomerEmail">
@@ -211,6 +274,9 @@
                     .then(() => {
                         this.loading = false
                     })
+            },
+            clickPrint(format) {
+                window.open(`/print/document/${this.form.external_id}/${format}`, '_blank');
             },
             // clickConsultCdr(document_id) {
             //     this.$http.get(`/${this.resource}/consult_cdr/${document_id}`)
