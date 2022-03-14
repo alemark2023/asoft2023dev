@@ -61,6 +61,7 @@
                                 $discount_description=0;
                                 $guide_remision=0;
                                 $brand_items=0;
+                                $obs=0;
                                 $data = $value->getCollectionData();
                                 /* dd($data); */
                                 $items_order=0;
@@ -88,25 +89,26 @@
                                 $sale_order_id= empty($data['sale_notes'][0]) ? 0 : $data['sale_notes'][0]['series'].'-'.$data['sale_notes'][0]['id'];
                                 /* dd($guide_remision); */
                                 $items_brand='';
+                                $discount_string='';
                                 $serie_document=(!$documents_order_id) ? $sale_order_id : $documents_order_id;
                                 foreach ($value->items as $itm) {
-                                    $discount=json_encode($itm->discounts,true);
-                                    $discount_array=json_decode($discount,true);
+                                    $discount=(array) $itm->discounts;
                                     $items_order+=$itm->quantity;
                                     if (!empty($itm->item->brand)) {
-                                        $stringer = $itm->item->brand;
-                                        $items_brand= (stripos($items_brand,$itm->item->brand)) ? '' : $items_brand.=$itm->item->brand.' - ';
-
+                                        $items_brand= str_contains($brand_items,$itm->item->brand) ? $itm->item->brand : $items_brand.=$itm->item->brand.' - ';
                                         $brand_items = trim($items_brand,' - ');
                                     }
 
                                     $acum_price += ($itm->unit_price*$itm->quantity);
                                     $acum_discount += $itm->total_discount;
-                                    if (!empty($discount_array[0]['description'])) {
-                                        $discount_description = ($discount_array[0]['description']===$discount_description) ? $discount_array[0]['description'] : $discount_description.=$discount_array[0]['description'];
+                                    if (!empty($discount)) {
+                                        $discount_format=(array) $discount[0];
+                                        $discount_string = str_contains($discount_description, $discount_format['description']) ? $discount_format['description'] : $discount_string.=$discount_format['description'].' - ';
+                                        $discount_description = trim($discount_string,' - ');
                                     }
                                     
                                 }
+                                $obs=$value->observation;
                             @endphp
                                 <tr>
                                     <td class="celda">{{$loop->iteration}}</td>
@@ -119,7 +121,7 @@
                                     <td class="celda" >{{ $value->payment_method_type->description }}</td>
                                     <td class="celda" >{{ $value->user->name }}</td>
                                     <td  class="celda">{{$discount_description}}</td>
-                                    <td  class="celda">{{$value->observation}}</td>
+                                    <td  class="celda">{{$obs}}</td>
                                     <td  class="celda">{{$identifier_order}}</td>
                                     
                                     <td  class="celda">{{$brand_items}}</td>
