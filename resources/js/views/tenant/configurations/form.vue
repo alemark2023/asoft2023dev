@@ -722,7 +722,7 @@
                                             <i class="fa fa-info-circle"></i>
  
                                             <div slot="content">
-                                                <strong>Tipo de descuento predeterminado en POS</strong><br/><br/>
+                                                <strong>Tipo de descuento predeterminado en POS - Ventas/Comprobante electrónico</strong><br/><br/>
                                                 Sugerencias:<br/>
                                                 Si la venta tiene op. gravadas utilice el descuento que afecta a la base imponible del IGV/IVAP.<br/>
                                                 Si la venta no tiene op. gravadas utilice el descuento que no afecta a la base imponible del IGV/IVAP.<br/>

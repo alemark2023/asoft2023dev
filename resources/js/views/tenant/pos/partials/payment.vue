@@ -639,7 +639,7 @@ export default {
                 // descuentos que no afectan la bi
                 else
                 {
-                    this.form.total_discount = _.round(amount, 2)
+                    // this.form.total_discount = _.round(amount, 2)
                     this.form.total = _.round(this.form.total - amount, 2)
                 }
 
