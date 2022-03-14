@@ -712,7 +712,7 @@ class Facturalo
 
         if($this->company->send_document_to_pse)
         {
-            if($this->type === 'invoice')
+            if(in_array($this->type, ['invoice', 'dispatch']))
             {
                 $send_to_pse = true;
             }

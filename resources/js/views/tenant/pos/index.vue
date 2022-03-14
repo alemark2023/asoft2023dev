@@ -1901,7 +1901,7 @@ export default {
 
             this.form.total = _.round(total, 2)
             // this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
-            
+
             this.form.subtotal = this.form.total
 
         },

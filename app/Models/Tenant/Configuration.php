@@ -225,6 +225,9 @@
             'print_new_line_to_observation',
             'show_logo_by_establishment',
             'global_discount_type_id',
+            'shipping_time_days',
+            'url_apiruc',
+            'token_apiruc',
         ];
 
         protected $casts = [
@@ -294,6 +297,7 @@
             'show_last_price_sale' => 'bool',
             'show_logo_by_establishment' => 'bool',
             'print_new_line_to_observation' => 'bool',
+            'shipping_time_days' => 'int',
         ];
 
         protected $hidden = [
@@ -474,6 +478,7 @@
                 'show_ticket_58' => (bool)$this->show_ticket_58,
                 'show_ticket_50' => (bool)$this->show_ticket_50,
                 'show_last_price_sale' => (bool)$this->show_last_price_sale,
+                'shipping_time_days' => $this->shipping_time_days,
             ];
         }
 
@@ -2035,5 +2040,13 @@
             return $this;
         }
 
+        /**
+         * Permite usar configuracion personalizada del token de apiperu
+         * @return bool
+         */
+        public function UseCustomApiPeruToken(){
+            // .env ALLOW_CLIENT_USE_OWN_APIPERU_TOKEN
+            return (bool)\Config('extra.AllowClientUseOwnApiperuToken');
+        }
 
     }

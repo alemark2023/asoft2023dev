@@ -444,6 +444,32 @@
                                 </div>
                             </div>
 
+                            <template>
+                                <div v-if="typeUser != 'integrator'" class="col-md-4 mt-4">
+                                    <label class="control-label">
+                                        Días de plazo de envío
+                                        <el-tooltip class="item"
+                                                    content="Validar fecha de emisión en Ventas/Comprobante electrónico"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.shipping_time_days}"
+                                            class="form-group">
+                                        <el-input-number v-model="form.shipping_time_days"
+                                                            :min="1"
+                                                            :precision="0"
+                                                            :step="1"
+                                                            @change="submit"></el-input-number>
+                                        <small v-if="errors.shipping_time_days"
+                                                class="form-control-feedback"
+                                                v-text="errors.shipping_time_days[0]"></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-2"></div>
+                            </template>
+
                             <!--
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">Mostrar item de solo el almacen de usuario
@@ -1426,7 +1452,8 @@ export default {
                 permission_to_edit_cpe: false,
                 name_product_pdf_to_xml:false,
                 detraction_amount_rounded_int:false,
-                show_logo_by_establishment: false
+                show_logo_by_establishment: false,
+                shipping_time_days: 0
             };
         },
         UpdateFormPurchase(e) {
