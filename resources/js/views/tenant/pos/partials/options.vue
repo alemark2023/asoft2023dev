@@ -25,9 +25,9 @@
         <div class="form-body el-dialog__body_custom">
             <div class="row">
                 <div class="col-md-12 m-bottom">
-                    <el-tabs v-model="activeName"  >
-                        <el-tab-pane label="Imprimir Ticket" name="first">
-                            <embed id="nemo" :src="form.print_ticket" type="application/pdf" width="100%" height="450px"/>
+                    <el-tabs v-model="activeName">
+                        <el-tab-pane label="Imprimir Ticket" name="first" v-if="ShowTicket80">
+                            <embed v-if="ShowTicket80" id="nemo" :src="form.print_ticket" type="application/pdf" width="100%" height="450px"/>
                         </el-tab-pane>
                         <el-tab-pane label="Imprimir A4" name="second">
                             <embed :src="form.print_a4" type="application/pdf" width="100%" height="450px"/>
@@ -37,63 +37,30 @@
                         </el-tab-pane>
                     </el-tabs>
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-12 d-none d-sm-block">
                     <div class="row">
                         <div class="col text-center font-weight-bold mt-3">
                             <button class="btn btn-lg btn-info waves-effect waves-light"
                                         type="button"
-                                        @click="clickPrint('a4')">
+                                        @click="clickPrint(form.print_a4)">
                                     <i class="fa fa-file-alt"></i>
                             </button>
                             <p>A4</p>
                         </div>
-
                         <div
+                            v-if="ShowTicket80"
                             class="col text-center font-weight-bold mt-3">
-
                             <button class="btn btn-lg btn-info waves-effect waves-light"
                                     type="button"
-                                    @click="clickPrint('ticket')">
+                                    @click="clickPrint(form.print_ticket)">
                                 <i class="fa fa-receipt"></i>
                             </button>
-                            <p>80MM</p>
+                            <p>Ticket</p>
                         </div>
-
-                        <div
-                            class="col text-center font-weight-bold mt-3">
-
-                            <button class="btn btn-lg btn-info waves-effect waves-light"
-                                    type="button"
-                                    @click="clickPrint('ticket_58')">
-                                <i class="fa fa-receipt"></i>
-                            </button>
-                            <p>58MM</p>
-                        </div>
-
-                        <div
-                            class="col text-center font-weight-bold mt-3">
-
-                            <el-popover
-                                placement="top-start"
-                                :open-delay="1000"
-                                width="145"
-                                trigger="hover"
-                                content="Presiona ALT + P">
-                                <el-button slot="reference"
-                                        class="btn btn-lg btn-info waves-effect waves-light"
-                                        type="button"
-                                        @click="clickPrint('ticket_50')">
-                                    <i class="fa fa-receipt"></i>
-                                </el-button>
-                            </el-popover>
-                            <p>50MM</p>
-                        </div>
-
                         <div class="col text-center font-weight-bold mt-3">
-
                             <button class="btn btn-lg btn-info waves-effect waves-light"
                                     type="button"
-                                    @click="clickPrint('a5')">
+                                    @click="clickPrint(form.print_a5)">
                                 <i class="fa fa-file-alt"></i>
                             </button>
                             <p>A5</p>
@@ -133,6 +100,7 @@
 </template>
 
 <script>
+    import {mapState, mapActions} from "vuex/dist/vuex.mjs";
     import Keypress from 'vue-keypress'
     export default {
         props: ['showDialog', 'recordId', 'statusDocument','resource'],
@@ -151,12 +119,58 @@
 
             }
         },
-        async created() {
+        created() {
             this.initForm()
+            this.loadConfiguration();
+            this.$http.get(`/pos/status_configuration`).then(response => {
+                this.$store.commit('setConfiguration', response.data)
+            });
         },
         mounted(){
         },
+        computed: {
+            ...mapState([
+                'config',
+            ]),
+            ShowTicket58: function () {
+                if (this.config === undefined) return false;
+                if (this.config == null) return false;
+                if (this.config.show_ticket_58 === undefined) return false;
+                if (this.config.show_ticket_58 == null) return false;
+                if (
+                    this.config.show_ticket_58 !== undefined &&
+                    this.config.show_ticket_58 !== null) {
+                    return this.config.show_ticket_58;
+                }
+                return false;
+            },
+            ShowTicket80: function () {
+                if (this.config === undefined) return false;
+                if (this.config == null) return false;
+                if (this.config.show_ticket_80 === undefined) return false;
+                if (this.config.show_ticket_80 == null) return false;
+                if (
+                    this.config.show_ticket_80 !== undefined &&
+                    this.config.show_ticket_80 !== null) {
+                    return this.config.show_ticket_80;
+                }
+                return false;
+            },
+            ShowTicket50: function () {
+                if (this.config === undefined) return false;
+                if (this.config == null) return false;
+                if (this.config.show_ticket_50 === undefined) return false;
+                if (this.config.show_ticket_50 == null) return false;
+                if (
+                    this.config.show_ticket_50 !== undefined &&
+                    this.config.show_ticket_50 !== null) {
+                    return this.config.show_ticket_50;
+                }
+                return false;
+            }
+        },
         methods: {
+            ...mapActions(['loadConfiguration']),
             clickSendWhatsapp() {
 
                 if(!this.form.customer_telephone){
@@ -180,10 +194,10 @@
                 switch(this.activeName)
                 {
                     case 'first':
-                       format = 'ticket'
+                        format = 'ticket'
                         break;
                     case 'second':
-                       format = 'a4'
+                        format = 'a4'
                         break;
                     case 'third':
                         format= 'a5'
@@ -233,6 +247,8 @@
                     message_text:null,
                     id: null
                 }
+
+                this.changeActiveName();
             },
             create() {
                 this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
@@ -275,9 +291,12 @@
                         this.loading = false
                     })
             },
-            clickPrint(format) {
-                window.open(`/print/document/${this.form.external_id}/${format}`, '_blank');
+            clickPrint(url) {
+                window.open(`${url}`, '_blank');
             },
+            changeActiveName() {
+                this.activeName = this.config.show_ticket_80 ? 'first' : 'second';
+            }
             // clickConsultCdr(document_id) {
             //     this.$http.get(`/${this.resource}/consult_cdr/${document_id}`)
             //         .then(response => {
