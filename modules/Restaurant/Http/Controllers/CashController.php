@@ -50,7 +50,8 @@ class CashController extends Controller
     {
         $records = Cash::where('apply_restaurant', 1)->where($request->column, 'like', "%{$request->value}%")
                         ->whereTypeUser()
-                        ->orderBy('date_closed', 'DESC');
+                        ->orderBy('date_closed', 'DESC')
+                        ->orderBy('time_closed', 'DESC');
 
 
         return new CashCollection($records->paginate(config('tenant.items_per_page')));
