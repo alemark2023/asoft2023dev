@@ -3360,44 +3360,6 @@ export default {
 
             }
 
-
-
-
-            // this.deleteDiscountGlobal()
-
-            // //input donde se ingresa monto o porcentaje
-            // let input_global_discount = parseFloat(this.total_global_discount)
-
-            // if (input_global_discount > 0) {
-
-            //     let base = parseFloat(this.form.total)
-            //     let amount = 0
-            //     let factor = 0
-
-            //     if (this.is_amount) {
-
-            //         amount = input_global_discount
-            //         factor = _.round(amount / base, 5)
-
-            //     } else {
-
-            //         factor = _.round(input_global_discount / 100, 5)
-            //         amount = factor * base
-            //     }
-
-            //     this.form.total_discount = _.round(amount, 2)
-            //     this.form.total = _.round(this.form.total - amount, 2)
-
-            //     this.form.discounts.push({
-            //         discount_type_id: '03',
-            //         description: 'Descuentos globales que no afectan la base imponible del IGV/IVAP',
-            //         factor: factor,
-            //         amount: _.round(amount, 2),
-            //         base: base
-            //     })
-
-            // }
-
         },
         async deleteInitGuides() {
             await _.remove(this.form.guides, {'number': null})

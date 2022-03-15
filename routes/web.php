@@ -772,6 +772,8 @@ if ($hostname) {
             Route::get('configurations/apiruc', 'System\ConfigurationController@apiruc');
             Route::get('configurations/apkurl', 'System\ConfigurationController@apkurl');
 
+            Route::get('configurations/update-tenant-discount-type-base', 'System\ConfigurationController@updateTenantDiscountTypeBase');
+
             // backup
             Route::get('backup', 'System\BackupController@index')->name('system.backup');
             Route::post('backup/db', 'System\BackupController@db')->name('system.backup.db');
