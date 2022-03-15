@@ -381,8 +381,6 @@ class CashController extends Controller
 
     }
 
-
-
     public function report_products_excel($id)
     {
 

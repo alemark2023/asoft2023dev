@@ -114,6 +114,7 @@ if ($hostname) {
             Route::get('configurations/pdf_templates/ticket', 'Tenant\ConfigurationController@pdfTicketTemplates')->name('tenant.advanced.pdf_ticket_templates');
             Route::get('configurations/templates/ticket/records', 'Tenant\ConfigurationController@getTicketFormats');
             Route::post('configurations/templates/ticket/update', 'Tenant\ConfigurationController@changeTicketFormat');
+            Route::get('configurations/apiruc', 'Tenant\ConfigurationController@apiruc');
 
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');
@@ -772,6 +773,8 @@ if ($hostname) {
             Route::get('status/cpu', 'System\StatusController@cpu')->name('system.status.cpu');
             Route::get('configurations/apiruc', 'System\ConfigurationController@apiruc');
             Route::get('configurations/apkurl', 'System\ConfigurationController@apkurl');
+
+            Route::get('configurations/update-tenant-discount-type-base', 'System\ConfigurationController@updateTenantDiscountTypeBase');
 
             // backup
             Route::get('backup', 'System\BackupController@index')->name('system.backup');

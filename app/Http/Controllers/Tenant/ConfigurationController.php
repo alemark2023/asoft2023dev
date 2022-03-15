@@ -456,4 +456,15 @@ class ConfigurationController extends Controller
 
         return redirect()->back();
     }
+
+
+    public function apiruc()
+    {
+        $configuration = Configuration::first();
+        return [
+            'url_apiruc' => $configuration->url_apiruc,
+            'token_apiruc' => $configuration->token_apiruc,
+            'token_false' => !$configuration->UseCustomApiPeruToken(),
+        ];
+    }
 }
