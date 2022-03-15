@@ -17,6 +17,8 @@
     use Modules\Sale\Models\ContractPayment;
     use Modules\Sale\Models\QuotationPayment;
     use Modules\Sale\Models\TechnicalServicePayment;
+    use App\Models\Tenant\ExchangeRate;
+
 
     trait FinanceTrait
     {
@@ -469,7 +471,10 @@
          */
         public function getBalanceByBankAcounts($bank_accounts)
         {
-            $records = $bank_accounts->map(function (\App\Models\Tenant\BankAccount  $row) {
+
+            $exchangeRate = ExchangeRate::where('date', date('Y-m-d'))->first();
+
+            $records = $bank_accounts->map(function (\App\Models\Tenant\BankAccount  $row) use ($exchangeRate) {
                 $document_payment = $this->getSumPayment($row->global_destination, DocumentPayment::class);
                 $expense_payment = $this->getSumPayment($row->global_destination, ExpensePayment::class);
                 $sale_note_payment = $this->getSumPayment($row->global_destination, SaleNotePayment::class);
@@ -502,7 +507,13 @@
                     $purchase_payment +
                     $bankLoanPayment
                 ;
-                $balance = $row->initial_balance +
+
+                $initial_balance = $row->initial_balance;
+                if($row->currency_type_id == 'USD') {
+                    $initial_balance = $exchangeRate->sale_original * $row->initial_balance;
+                }
+
+                $balance = $initial_balance +
                     $entry -
                     $egress +
                     $transfer_beween_account;
