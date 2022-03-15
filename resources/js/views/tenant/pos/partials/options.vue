@@ -26,8 +26,8 @@
             <div class="row">
                 <div class="col-md-12 m-bottom">
                     <el-tabs v-model="activeName">
-                        <el-tab-pane label="Imprimir Ticket" name="first" v-if="ShowTicket80">
-                            <embed v-if="ShowTicket80" id="nemo" :src="form.print_ticket" type="application/pdf" width="100%" height="450px"/>
+                        <el-tab-pane label="Imprimir Ticket" name="first" v-if="config.show_ticket_80">
+                            <embed v-if="config.show_ticket_80" id="nemo" :src="form.print_ticket" type="application/pdf" width="100%" height="450px"/>
                         </el-tab-pane>
                         <el-tab-pane label="Imprimir A4" name="second">
                             <embed :src="form.print_a4" type="application/pdf" width="100%" height="450px"/>
@@ -48,7 +48,7 @@
                             <p>A4</p>
                         </div>
                         <div
-                            v-if="ShowTicket80"
+                            v-if="config.show_ticket_80"
                             class="col text-center font-weight-bold mt-3">
                             <button class="btn btn-lg btn-info waves-effect waves-light"
                                     type="button"
@@ -122,9 +122,11 @@
         created() {
             this.initForm()
             this.loadConfiguration();
+            /*
             this.$http.get(`/pos/status_configuration`).then(response => {
                 this.$store.commit('setConfiguration', response.data)
             });
+            */
         },
         mounted(){
         },
@@ -132,42 +134,6 @@
             ...mapState([
                 'config',
             ]),
-            ShowTicket58: function () {
-                if (this.config === undefined) return false;
-                if (this.config == null) return false;
-                if (this.config.show_ticket_58 === undefined) return false;
-                if (this.config.show_ticket_58 == null) return false;
-                if (
-                    this.config.show_ticket_58 !== undefined &&
-                    this.config.show_ticket_58 !== null) {
-                    return this.config.show_ticket_58;
-                }
-                return false;
-            },
-            ShowTicket80: function () {
-                if (this.config === undefined) return false;
-                if (this.config == null) return false;
-                if (this.config.show_ticket_80 === undefined) return false;
-                if (this.config.show_ticket_80 == null) return false;
-                if (
-                    this.config.show_ticket_80 !== undefined &&
-                    this.config.show_ticket_80 !== null) {
-                    return this.config.show_ticket_80;
-                }
-                return false;
-            },
-            ShowTicket50: function () {
-                if (this.config === undefined) return false;
-                if (this.config == null) return false;
-                if (this.config.show_ticket_50 === undefined) return false;
-                if (this.config.show_ticket_50 == null) return false;
-                if (
-                    this.config.show_ticket_50 !== undefined &&
-                    this.config.show_ticket_50 !== null) {
-                    return this.config.show_ticket_50;
-                }
-                return false;
-            }
         },
         methods: {
             ...mapActions(['loadConfiguration']),
