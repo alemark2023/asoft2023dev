@@ -106,6 +106,7 @@
                     <th>DPTO</th>
                     <th>PROV</th>
 
+                    <th>Direccion de cliente</th>
                     <th>Cliente</th>
                     <th>RUC</th>
                     <th>Estado</th>
@@ -122,6 +123,7 @@
                     <th>Total IGV</th>
                     <th>Total ISC</th>
                     <th>Total</th>
+                    <th>Total de productos</th>
 
                     @foreach ($categories as $category)
                         <th>{{$category->name}}</th>
@@ -137,14 +139,14 @@
                     <?php
                     /** @var \App\Models\Tenant\Document|App\Models\Tenant\SaleNote  $value */
                     $iteration = $loop->iteration;
-                                    // $user = $value->user->name;
+                                    $user = $value->user->name;
                     $document_type = $value->getDocumentType();
-                    $seller = \App\CoreFacturalo\Helpers\Template\ReportHelper::getSellerData($value);
+                    /* $seller = \App\CoreFacturalo\Helpers\Template\ReportHelper::getSellerData($value);
                     try{
                         $user = $seller->name;
                     }catch (ErrorException $e){
                         $user = '';
-                    }
+                    } */
 
                     ?>
 
@@ -183,6 +185,7 @@
                         <td class="celda">{{$stablihsment['department']}}</td>
                         <td class="celda">{{$stablihsment['province']}}</td>
 
+                        <td class="celda">{{$value->customer->address}}</td>
                         <td class="celda">{{$value->customer->name}}</td>
                         <td class="celda">{{$value->customer->number}}</td>
                         <td class="celda">{{$value->state_type->description}}</td>
@@ -316,8 +319,13 @@
 
                             $serie_affec =  '';
 
-                        @endphp
+                            $quality_item=0;
+                            foreach ($value->items as $itm) {
+                                $quality_item+=$itm->quantity;
+                            }
 
+                        @endphp
+                        <td>{{$quality_item}}</td>
                     </tr>
                     @php
                         if($value->currency_type_id == 'PEN'){
@@ -391,10 +399,11 @@
 
 
                         }
+                        
                     @endphp
                 @endforeach
                 <tr>
-                    <td colspan="20"></td>
+                    <td colspan="21"></td>
                 <!-- <td >Totales</td>
                                 <td>{{$acum_total_exonerado}}</td>
                                 <td>{{$acum_total_inafecto}}</td>
@@ -412,7 +421,7 @@
                     <td>{{$acum_total}}</td>
                 </tr>
                 <tr>
-                    <td colspan="20"></td>
+                    <td colspan="21"></td>
                     <td>Totales USD</td>
                     <td></td>
                     <td></td>
@@ -423,6 +432,7 @@
                     <td></td>
                     <td>{{$acum_total_usd}}</td>
                 </tr>
+                
                 </tbody>
             </table>
         </div>
