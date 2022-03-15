@@ -966,9 +966,17 @@ import WarehousesDetail from "../items/partials/warehouses.vue";
 import queryString from "query-string";
 import TableItems from "./partials/table.vue";
 import ItemUnitTypes from "./partials/item_unit_types.vue";
+import {mapState, mapActions} from "vuex/dist/vuex.mjs";
 
 export default {
-    props: ["configuration", "soapCompany", "businessTurns", "typeUser", "isPrint"],
+    props: [
+        "configuration2",
+        "configuration",
+        "soapCompany",
+        "businessTurns",
+        "typeUser",
+        "isPrint"
+    ],
     components: {
         PaymentForm,
         ItemForm,
@@ -980,7 +988,10 @@ export default {
         Keypress,
         TableItems
     },
-    mixins: [functions, exchangeRate],
+    mixins: [
+        functions,
+        exchangeRate
+    ],
 
     data() {
         return {
@@ -1024,6 +1035,8 @@ export default {
         };
     },
     async created() {
+        this.loadConfiguration();
+        this.$store.commit('setConfiguration', this.configuration2)
         await this.initForm();
         await this.getTables();
         this.events();
@@ -1042,6 +1055,9 @@ export default {
     },
 
     computed: {
+            ...mapState([
+                'config',
+            ]),
         canSeeHistoryPurchase: function () {
             if(this.typeUser !=='admin'){
                 return this.configuration.pos_history
@@ -1096,6 +1112,7 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['loadConfiguration']),
         enabledSearchItemByBarcode(){
 
             if (this.configuration.search_item_by_barcode) {
@@ -1525,7 +1542,7 @@ export default {
                 reference_data: null,
                 is_print: true,
             };
-            console.log(this.configuration.show_terms_condition_pos);
+            // console.log(this.configuration.show_terms_condition_pos);
             if (this.configuration.show_terms_condition_pos) {
 
                 this.form.terms_condition = this.configuration.terms_condition_sale;
