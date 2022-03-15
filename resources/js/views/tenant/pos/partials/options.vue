@@ -37,7 +37,7 @@
                         </el-tab-pane>
                     </el-tabs>
                 </div>
-                <div class="col-md-12 d-none d-sm-block">
+                <div class="col-md-12 d-sm-block d-md-block d-lg-none">
                     <div class="row">
                         <div class="col text-center font-weight-bold mt-3">
                             <button class="btn btn-lg btn-info waves-effect waves-light"
