@@ -129,7 +129,7 @@
   font-size: 0.7rem;
   line-height: 24px;
   line-height: 1.5rem;
-  padding: 8px 6px 8px 12px;
+  padding: 0px 6px 5px 12px;
   text-transform: uppercase;
 }
 
@@ -266,9 +266,9 @@
 .notifications .notification-menu {
     width: 280px;
 }
-.notifications .notification-menu .notification-title {
+/* .notifications .notification-menu .notification-title {
     border-radius: 3px;
-}
+} */
 
 .widget-summary .summary {
     word-break: break-word;
