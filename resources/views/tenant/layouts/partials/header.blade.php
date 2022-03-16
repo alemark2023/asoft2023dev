@@ -98,7 +98,7 @@
                             <li>
                                 <a href="{{route('tenant.documents.not_sent')}}" class="clearfix">
                                     <div class="image">
-                                        <div class="badge badge-pill badge-info text-light">{{ $vc_document }}</div>
+                                        <div class="badge badge-pill badge-danger text-light">{{ $vc_document }}</div>
                                     </div>
                                     <span class="title">Comprobantes enviados/por enviar</span>
                                 </a>
@@ -113,6 +113,18 @@
                                         </div>
                                     </div>
                                     <span class="title">Comprobantes pendientes de rectificación</span>
+                                </a>
+                            </li>
+                            @endif
+                            @if($vc_finished_downloads > 0)
+                            <li>
+                                <a href="{{route('tenant.reports.download-tray.index')}}" class="clearfix">
+                                    <div class="image">
+                                        <div class="badge badge-pill badge-info text-light">
+                                            {{ $vc_finished_downloads }}
+                                        </div>
+                                    </div>
+                                    <span class="title">Bandeja de descargas</span>
                                 </a>
                             </li>
                             @endif

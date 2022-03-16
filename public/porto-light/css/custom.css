@@ -504,3 +504,21 @@ html.fixed.sidebar-ligth-blue .sidebar-left a:hover {
 .custom-mt-button{
   margin-top: 1.9rem !important;
 }
+
+/* header notificacion */
+.notifications .notification-menu .content {
+  padding: 0px;
+}
+.notification-menu li {
+  padding: 10px;
+  margin-bottom: 0px;
+}
+.notification-menu li:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+@media only screen and (max-width: 767px){
+  .notifications > li .notification-menu {
+    -webkit-transform: translate3d(-50%, 10px, 0px) !important;
+    transform: translate3d(-50%, 10px, 0px) !important;
+  }
+}
