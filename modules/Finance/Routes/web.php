@@ -105,7 +105,7 @@ if($hostname) {
                     Route::get('pdf', 'MovementController@pdf');
                     Route::post('pdf', 'MovementController@postPdf');
                     Route::get('excel', 'MovementController@excel');
-                    Route::post('excel', 'MovementController@excel');
+                    //Route::post('excel', 'MovementController@excel');
                     Route::post('excel', 'MovementController@postExcel');
                     Route::get('records', 'MovementController@records');
                 });

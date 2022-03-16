@@ -386,7 +386,7 @@ class QuotationController extends Controller
         $values = [
             'user_id' => auth()->id(),
             'external_id' => Str::uuid()->toString(),
-            'customer' => PersonInput::set($inputs['customer_id'], isset($inputs['customer_address_id']) ? $inputs['customer_address_id']: null  ),
+        'customer' => PersonInput::set($inputs['customer_id'], isset($inputs['customer_address_id']) ? $inputs['customer_address_id']: null  ),
             'establishment' => EstablishmentInput::set($inputs['establishment_id']),
             'soap_type_id' => $this->company->soap_type_id,
             'state_type_id' => '01'

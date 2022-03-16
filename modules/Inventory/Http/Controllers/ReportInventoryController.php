@@ -142,6 +142,7 @@ class ReportInventoryController extends Controller
             'module' => 'INVENTORY',
             'path' => $request->path,
             'format' => 'pdf',
+            'type' => 'Reporte Inventario'
         ]);
 
         $company = Company::active();
@@ -164,6 +165,7 @@ class ReportInventoryController extends Controller
             'module' => 'INVENTORY',
             'format' => $request->format,
             'date_init' => date('Y-m-d H:i:s'),
+            'type' => 'Reporte Inventario'
         ]);
 
         $company = Company::active();

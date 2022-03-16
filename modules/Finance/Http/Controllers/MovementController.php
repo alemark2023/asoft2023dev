@@ -14,6 +14,9 @@ use Modules\Finance\Http\Resources\MovementCollection;
 use Modules\Finance\Models\GlobalPayment;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Pos\Models\CashTransaction;
+use App\Models\Tenant\DownloadTray;
+use Modules\Finance\Jobs\ProcessMovementsReport;
+use App\Models\System\Client;
 
 class MovementController extends Controller
 {
@@ -38,6 +41,7 @@ class MovementController extends Controller
         ini_set('max_execution_time', 0);
         $records = $this->getRecords($request->all(), GlobalPayment::class);
         $records->orderBy('id');
+
         if($request->has('paginate')){
             return new MovementCollection($records->paginate(1000));
         }
@@ -72,11 +76,11 @@ class MovementController extends Controller
 
             if($cash){
 
-                $last_cash = GlobalPayment::wherePaymentType(CashTransaction::class)
+                /*$last_cash = GlobalPayment::wherePaymentType(CashTransaction::class)
                                             ->whereDestinationType(Cash::class)
                                             ->where('destination_id', $cash->id)
                                             ->latest()
-                                            ->first();
+                                            ->first();*/
                 /** @var \Illuminate\Database\Eloquent\Builder  $records */
 
                 return $records->whereDestinationType(Cash::class)
@@ -122,7 +126,7 @@ class MovementController extends Controller
     }
 
     public function postExcel(Request $request) {
-
+        
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id)
             : auth()->user()->establishment;
@@ -138,7 +142,31 @@ class MovementController extends Controller
     }
     public function excel(Request $request) {
 
-        $company = Company::first();
+        /*$params = (object)$request->all();
+        return $params->date_end;*/
+
+        $company = Company::active();
+        $client = Client::where('number', $company->number)->first();
+        $website_id = $client->hostname->website_id;
+
+        $records = $this->getRecords($request->all(), GlobalPayment::class);
+        $records->orderBy('id');
+
+        $tray = DownloadTray::create([
+            'user_id' => auth()->user()->id,
+            'module' => 'INVENTORY',
+            'path' => $request->path,
+            'format' => 'xlsx',
+            'type' => 'Reporte Movimientos ingresos-egresos'
+        ]);
+
+        $params = (object)$request->all();
+
+        ProcessMovementsReport::dispatch($params, $tray->id, $website_id)->onQueue('process_movements_report');
+
+        return 'ok';
+
+        /*$company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = $this->getRecords($request->all(), GlobalPayment::class)->get();
 
@@ -148,7 +176,7 @@ class MovementController extends Controller
             ->company($company)
             ->establishment($establishment);
         return $movementExport->view();
-        return $movementExport->download('Reporte_Movimientos_'.Carbon::now().'.xlsx');
+        return $movementExport->download('Reporte_Movimientos_'.Carbon::now().'.xlsx');*/
 
     }
 

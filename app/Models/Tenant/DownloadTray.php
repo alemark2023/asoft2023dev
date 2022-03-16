@@ -15,7 +15,13 @@ class DownloadTray extends ModelTenant
         'date_init',
         'date_end',
         'payload_request',
-        'path'
+        'path',
+        'type'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
 }
