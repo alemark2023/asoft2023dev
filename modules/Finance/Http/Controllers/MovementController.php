@@ -20,7 +20,7 @@ use App\Models\System\Client;
 
 class MovementController extends Controller
 {
-
+    
     use FinanceTrait;
 
     public function index(){
@@ -44,6 +44,7 @@ class MovementController extends Controller
 
         if($request->has('paginate')){
             return new MovementCollection($records->paginate(1000));
+            //$collec
         }
         return new MovementCollection($records->paginate(config('tenant.items_per_page')));
 
@@ -142,15 +143,16 @@ class MovementController extends Controller
     }
     public function excel(Request $request) {
 
-        /*$params = (object)$request->all();
-        return $params->date_end;*/
+        /*$params = (object) array_merge( $request->all(), ['user_id' => auth()->user()->id]);
+        return json_encode($params);*/
 
         $company = Company::active();
         $client = Client::where('number', $company->number)->first();
         $website_id = $client->hostname->website_id;
 
-        $records = $this->getRecords($request->all(), GlobalPayment::class);
-        $records->orderBy('id');
+       // $records = $this->getRecords($request->all(), GlobalPayment::class);
+        //$records->orderBy('id');
+        
 
         $tray = DownloadTray::create([
             'user_id' => auth()->user()->id,
@@ -160,7 +162,7 @@ class MovementController extends Controller
             'type' => 'Reporte Movimientos ingresos-egresos'
         ]);
 
-        $params = (object)$request->all();
+        $params = (object)array_merge($request->all(), ['user_id' => auth()->user()->id, 'type' => auth()->user()->type, 'establishment_id' => auth()->user()->establishment_id]);
 
         ProcessMovementsReport::dispatch($params, $tray->id, $website_id)->onQueue('process_movements_report');
 

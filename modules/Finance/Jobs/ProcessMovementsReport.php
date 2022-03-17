@@ -22,6 +22,7 @@ use Carbon\Carbon;
 use App\Models\Tenant\Cash;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Finance\Models\GlobalPayment;
+use Modules\Finance\Exports\MovementExport;
 
 
 class ProcessMovementsReport implements ShouldQueue
@@ -32,13 +33,12 @@ class ProcessMovementsReport implements ShouldQueue
     public $tray_id;
     public $website_id;
 
-
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Object $params, int $tray_id, int $website_id) {
+    public function __construct( Object $params, int $tray_id, int $website_id ) {
         $this->params = $params;
         $this->tray_id = $tray_id;
         $this->website_id = $website_id;
@@ -57,16 +57,43 @@ class ProcessMovementsReport implements ShouldQueue
         $tenancy = app(Environment::class);
         $tenancy->tenant($website);
 
-
+        $path = null;
         try {
 
-            $records = $this->getRecords($this->params ,GlobalPayment::class);
-            $records->orderBy('id');
-    
-            Log::debug($records);
+            $tray = DownloadTray::find($this->tray_id);
+
+            $qery = $this->getRecords($this->params ,GlobalPayment::class);
+            $qery->orderBy('id');
+            $records = $qery->get();
             
-            Log::debug($records->get());
-           
+            $company = Company::first();
+            $establishment = Establishment::findOrFail($this->params->establishment_id);
+
+            Log::debug("Render excel init");
+            $MovementExport = new MovementExport();
+            $MovementExport
+            ->records($records)
+            ->company($company)
+            ->setNewFormat(true)
+            ->establishment($establishment);
+
+            Log::debug("Render excel finish");
+
+            Log::debug("Upload excel init");
+
+            $filename = 'FINANCES_Reporte_Movimientos__' . date('YmdHis').'.xlsx';
+
+            $MovementExport->store(DIRECTORY_SEPARATOR."download_tray_xlsx".DIRECTORY_SEPARATOR . $filename, 'tenant');
+
+            $tray->file_name = $filename;
+            $path = 'download_tray_xlsx';
+
+
+            
+            $tray->date_end = date('Y-m-d H:i:s');
+            $tray->status = 'FINISHED';
+            $tray->path = $path;
+            $tray->save();
 
         } catch (\Exception $e) {
             Log::debug("ProcessMovementsReport Error transaction ". $e);
@@ -97,13 +124,14 @@ class ProcessMovementsReport implements ShouldQueue
         $params = (object)[
             'date_start' => $data_of_period['d_start'],
             'date_end' => $data_of_period['d_end'],
+            'user_id' => $request->user_id
         ];
 
-        $records = $model::whereFilterPaymentType($params);
+        $records = GlobalPayment::WhereFilterPaymentType($params);
 
         if($last_cash_opening == 'true'){
 
-            $cash =  Cash::where([['user_id',auth()->user()->id],['state',true]])->first();
+            $cash =  Cash::where([['user_id', $request->user_id],['state',true]])->first();
 
             if($cash){
 
@@ -112,5 +140,138 @@ class ProcessMovementsReport implements ShouldQueue
             }
         }
         return $records->latest();
+    }
+
+    private function transformRecords($records) {
+
+        $data = $records->transform(function (GlobalPayment $row, $key) {
+            $index = $key + 1;
+            $data_person = $row->data_person;
+            $timedate = null;
+            $type_movement = $row->type_movement;
+            $payment = $row->payment;
+            $amount = $row->payment->payment * 1;
+            $instance_type_description = $row->instance_type_description;
+            if (get_class($payment) == TransferAccountPayment::class) {
+                $amount = $payment->amount * 1;
+            }
+            $document = $row->payment->document;
+            $document_type = '';
+            $payments = $payment->payment;
+
+            // Convirtiendo el documento que esta hecho en dolares a soles
+            if ($document) {
+                if ($document->currency_type_id === 'USD') {
+                    $amount *= $document->exchange_rate_sale;
+                }
+            }
+            if (get_class($payment) == TransferAccountPayment::class) {
+                // para que transferencias bancarias. refleje el numero correctamente.
+                if ($type_movement == 'input') {
+                    self::$balance -= $amount;
+                } else {
+                    self::$balance += $amount;
+                }
+            } else {
+                self::$balance = ($row->type_movement == 'input') ? self::$balance + $amount : self::$balance - $amount;
+            }
+
+            // $timedate = $payment->date_of_payment->format('Y-m-d');
+            if ($payment->date_of_payment && $payment->date_of_payment != null) {
+                $timedate = $payment->date_of_payment->toDateTimeString();
+
+            }
+
+
+            if ($payment->associated_record_payment) {
+                if ($payment->associated_record_payment->date_of_issue) {
+                    $timedate = $payment->associated_record_payment->date_of_issue->format('Y-m-d') . " " . $payment->associated_record_payment->time_of_issue;
+                    $timedate = Carbon::createFromFormat('Y-m-d H:i:s', $timedate)->toDateTimeString();
+                }
+
+                if ($payment->associated_record_payment->document_type) {
+                    $document_type = $payment->associated_record_payment->document_type->description;
+                } elseif (isset($payment->associated_record_payment->prefix)) {
+                    $document_type = $payment->associated_record_payment->prefix;
+                }
+            }
+            $destinationArray = $row->getDestinationWithCci();
+            $destinationName = $destinationArray['name'] . " - " . $destinationArray['description'];
+
+            $person_name = $data_person->name;
+            $person_number = $data_person->number;
+            $numberFull = $payment->associated_record_payment->number_full ?? null;
+            if ($row->instance_type == 'bank_loan_payment') {
+                $person_name = $person_name->description;
+                $document_type = $row->instance_type_description;
+                // $person_name = $person_name->description;
+                $person_number = '';
+                // dd($row->payment->associated_record_payment);
+                $numberFull = $row->payment->associated_record_payment->getNumberFull();
+            }
+
+            $input = '-';
+            $output = $input;
+
+            if ($type_movement == 'input') {
+                $input = number_format($amount, 2, ".", "");
+            } else {
+                $output = number_format($amount, 2, ".", "");
+            }
+            if (get_class($payment) == TransferAccountPayment::class) {
+                // transferencia bancaria
+                $person_name = $destinationArray['name'] ?? '-';
+                $person_number = $destinationArray['cci'] ?? '-';
+                if ($amount < 0) {
+                    // banco destino
+                    $output = number_format(abs($amount), 2, ".", "");
+                    $input = '-';
+                } else {
+                    // banco de origen
+
+                    $input = number_format(abs($amount), 2, ".", "");
+                    $output = '-'; }
+                $timedate = $row->payment->date_of_movement->format('Y-m-d H:i:s');
+                $instance_type_description = 'Transferencia Bancaria';
+            }
+
+
+            return [
+                'index' => $index,
+                //'data' => $row,
+                'payments' => $payments,
+                'document_type' => $document_type,
+                'id' => $row->id,
+                'destination_description' => $row->destination_description,
+                'destination_array' => $destinationArray,
+                'destination_name' => $destinationName,
+                'date_of_payment_class' => get_class($payment),
+                'date_of_payment' => $timedate,
+                'payment_method_type_description' => $this->getPaymentMethodTypeDescription($row),
+                'reference' => $payment->reference,
+                'total' => $amount,
+                'number_full' => $numberFull,
+                'currency_type_id' => $payment->associated_record_payment->currency_type_id ?? 'PEN',
+                // 'document_type_description' => ($payment->associated_record_payment->document_type) ? $payment->associated_record_payment->document_type->description:'NV',
+                'document_type_description' => $this->getDocumentTypeDescription($row),
+                'person_name' => $person_name,
+                'person_number' => $person_number,
+                // 'payment' => $row->payment,
+                // 'payment_type' => $row->payment_type,
+                'instance_type' => $row->instance_type,
+                'instance_type_description' => $instance_type_description,
+                'user_id' => $row->user_id,
+                'user_name' => optional($row->user)->name,
+                'type_movement' => $type_movement,
+                'input' => $input,
+                'output' => $output,
+                'balance' => number_format(self::$balance, 2, ".", ""),
+                'items' => $this->getItems($row),
+
+
+            ];
+        });
+
+        return $data;
     }
 }

@@ -101,7 +101,7 @@ class ProcessInventoryReport implements ShouldQueue
 
                 Log::debug("Upload excel init");
 
-                    $inventoryExport->store(DIRECTORY_SEPARATOR."download_tray_xlsx".DIRECTORY_SEPARATOR . $filename.'.xlsx', 'tenant');
+                $inventoryExport->store(DIRECTORY_SEPARATOR."download_tray_xlsx".DIRECTORY_SEPARATOR . $filename.'.xlsx', 'tenant');
 
                 Log::debug("Upload excel finish");
                 $tray->file_name = $filename;
