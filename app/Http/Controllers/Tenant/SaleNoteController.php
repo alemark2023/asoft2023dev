@@ -880,8 +880,8 @@ class SaleNoteController extends Controller
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
-                    130 +
-                    (($quantity_rows * 8) + $extra_by_item_description) +
+                    100 +
+                    $quantity_rows + $extra_by_item_description +
                     ($discount_global * 3) +
                     $company_logo +
                     $payments +
@@ -898,7 +898,7 @@ class SaleNoteController extends Controller
                     $total_unaffected +
                     $total_exonerated +
                     $total_taxed],
-                'margin_top' => 0,
+                'margin_top' => 5,
                 'margin_right' => 2,
                 'margin_bottom' => 0,
                 'margin_left' => 2
@@ -996,7 +996,7 @@ class SaleNoteController extends Controller
         $stylesheet = file_get_contents($path_css);
 
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
-        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+        /* $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY); */
 
         if(config('tenant.pdf_template_footer')) {
             // if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
@@ -1022,6 +1022,8 @@ class SaleNoteController extends Controller
                 $pdf->SetHTMLFooter("");
             }
         }
+
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         $this->uploadFile($this->document->filename, $pdf->output('', 'S'), 'sale_note');
     }
