@@ -132,6 +132,7 @@ class UserController extends Controller
         // {
             $user->recreate_documents = $request->input('recreate_documents');
             $user->permission_edit_cpe = $request->input('permission_edit_cpe');
+            $user->permission_override_cpe = $request->input('permission_override_cpe');
         // }
 
         $user->save();

@@ -340,7 +340,7 @@
                                     </a>
                                     <button class="dropdown-item"
                                         @click.prevent="clickVoided(row.id)"
-                                        v-if="row.btn_voided">
+                                        v-if="userPermissionOverrideCpe&&row.btn_voided">
                                         Anular
                                     </button>
                                     <a type="button"
@@ -514,6 +514,7 @@ export default {
         'userId',
         'configuration',
         'userPermissionEditCpe',
+        'userPermissionOverrideCpe',
         'view_apiperudev_validator_cpe',
         'view_validator_cpe'
     ],
