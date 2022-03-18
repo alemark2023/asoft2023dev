@@ -45,7 +45,7 @@ class CashController extends Controller
         // se recorren todos los externals id de la caja anteriormente creada
         // para registrar la relación con ella y acumular el monto total
         foreach ($request->internalsId as $row) {
-            if($row['type'] = 'NOTA'){
+            if($row['type'] == 'NOTA'){
                 $sale_note = SaleNote::where('external_id', $row['external_id'])->first();
                 $total_documents += (float)$sale_note->total;
 
