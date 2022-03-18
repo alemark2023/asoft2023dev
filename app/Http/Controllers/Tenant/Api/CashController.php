@@ -45,8 +45,8 @@ class CashController extends Controller
         // se recorren todos los externals id de la caja anteriormente creada
         // para registrar la relación con ella y acumular el monto total
         foreach ($request->internalsId as $row) {
-            if($row->type = 'NOTA'){
-                $sale_note = SaleNote::where('external_id', $row->external_id)->first();
+            if($row['type'] = 'NOTA'){
+                $sale_note = SaleNote::where('external_id', $row['external_id'])->first();
                 $total_documents += (float)$sale_note->total;
 
                 CashDocument::create([
@@ -54,7 +54,7 @@ class CashController extends Controller
                     'sale_note_id' => $sale_note->id,
                 ]);
             } else {
-                $document = Document::where('external_id', $external_id)->first();
+                $document = Document::where('external_id', $row['external_id'])->first();
                 $total_documents += (float)$document->total;
 
                 CashDocument::create([
