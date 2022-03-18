@@ -174,7 +174,7 @@ class ReportInventoryController extends Controller
             $client = Client::where('number', $number)->first();
             $website_id = $client->hostname->website_id;
         }else{
-            $website_id = $hostname->id;
+            $website_id = $hostname->website_id;
         }
         ProcessInventoryReport::dispatch($website_id,$trayId, ($request->warehouse_id == 'all' ? 0 :  $request->warehouse_id), $request->format );
 
