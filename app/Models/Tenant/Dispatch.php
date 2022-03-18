@@ -119,11 +119,17 @@
             'soap_shipping_response',
             'data_affected_document',
             'related',
+            
+            'send_to_pse',
+            'response_signature_pse',
+            'response_send_cdr_pse',
+
         ];
 
         protected $casts = [
             'date_of_issue' => 'date',
             'date_of_shipping' => 'date',
+            'send_to_pse' => 'bool',
         ];
 
         public function getEstablishmentAttribute($value)
@@ -559,6 +565,40 @@
             }
 
             return null;
+        }
+
+        
+        /**
+         * Obtener tipo de documento válido para enviar el xml a firmar al pse
+         *
+         * Usado en:
+         * App\CoreFacturalo\Services\Helpers\SendDocumentPse
+         * 
+         * @return string
+         */
+        public function getDocumentTypeForPse()
+        {
+            return 'GUIA';
+        }
+        
+        public function getResponseSendCdrPseAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+
+        public function setResponseSendCdrPseAttribute($value)
+        {
+            $this->attributes['response_send_cdr_pse'] = (is_null($value)) ? null : json_encode($value);
+        }
+
+        public function getResponseSignaturePseAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+
+        public function setResponseSignaturePseAttribute($value)
+        {
+            $this->attributes['response_signature_pse'] = (is_null($value)) ? null : json_encode($value);
         }
 
     }

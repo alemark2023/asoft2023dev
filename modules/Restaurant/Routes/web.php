@@ -52,10 +52,34 @@ Route::prefix('restaurant')->group(function() {
 
     });
 
+    //Cash
+    Route::prefix('cash')->group(function() {
+
+        Route::get('', 'CashController@index')->name('tenant.restaurant.cash.index');
+        Route::get('records', 'CashController@records');
+        Route::get('report', 'CashController@report_general');
+        Route::get('columns', 'CashController@columns');
+
+        Route::get('tables', 'CashController@tables');
+        Route::get('opening_cash', 'CashController@opening_cash');
+        Route::get('opening_cash_check/{user_id}', 'CashController@opening_cash_check');
+        Route::post('cash', 'Tenant\CashController@store');
+        Route::post('cash_document', 'CashController@cash_document');
+        Route::get('close/{cash}', 'CashController@close');
+        Route::get('report/{cash}', 'CashController@report');
+        Route::get('report', 'CashController@report_general');
+        Route::get('record/{cash}', 'CashController@record');
+        Route::delete('{cash}', 'CashController@destroy');
+        Route::get('item/tables', 'CashController@item_tables');
+        Route::get('search/customers', 'CashController@searchCustomers');
+        Route::get('search/customer/{id}', 'CashController@searchCustomerById');
+        Route::get('report/products/{cash}', 'CashController@report_products');
+        Route::get('report/products-excel/{cash}', 'CashController@report_products_excel');
 
 
-    
-            
+    });
+
+                
 
 });
 

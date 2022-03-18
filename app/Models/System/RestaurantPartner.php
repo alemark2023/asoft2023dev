@@ -17,6 +17,8 @@ class RestaurantPartner extends Model
         'gitlab_user',
         'domain',
         'status',
+        'department_id',
+        'zone'
     ];
 
     /**
