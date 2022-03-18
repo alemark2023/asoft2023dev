@@ -26,8 +26,8 @@
             <div class="row">
                 <div class="col-md-12 m-bottom">
                     <el-tabs v-model="activeName">
-                        <el-tab-pane label="Imprimir Ticket" name="first" v-if="config.show_ticket_80">
-                            <embed v-if="config.show_ticket_80" id="nemo" :src="form.print_ticket" type="application/pdf" width="100%" height="450px"/>
+                        <el-tab-pane label="Imprimir Ticket" name="first" v-if="config !== null  && config.show_ticket_80">
+                            <embed v-if="config !== null  && config.show_ticket_80" id="nemo" :src="form.print_ticket" type="application/pdf" width="100%" height="450px"/>
                         </el-tab-pane>
                         <el-tab-pane label="Imprimir A4" name="second">
                             <embed :src="form.print_a4" type="application/pdf" width="100%" height="450px"/>
@@ -48,7 +48,7 @@
                             <p>A4</p>
                         </div>
                         <div
-                            v-if="config.show_ticket_80"
+                            v-if="config !== null  && config.show_ticket_80"
                             class="col text-center font-weight-bold mt-3">
                             <button class="btn btn-lg btn-info waves-effect waves-light"
                                     type="button"
@@ -261,7 +261,8 @@
                 window.open(`${url}`, '_blank');
             },
             changeActiveName() {
-                this.activeName = this.config.show_ticket_80 ? 'first' : 'second';
+                this.loadConfiguration();
+                this.activeName =( this.config!== null && this.config.show_ticket_80) ? 'first' : 'second';
             }
             // clickConsultCdr(document_id) {
             //     this.$http.get(`/${this.resource}/consult_cdr/${document_id}`)
