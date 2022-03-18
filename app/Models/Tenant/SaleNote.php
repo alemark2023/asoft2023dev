@@ -214,6 +214,7 @@
             // 'changed',
             'user_rel_suscription_plan_id',
             'subtotal',
+            'total_igv_free',
         ];
 
         protected $casts = [
@@ -234,6 +235,7 @@
             'total_unaffected' => 'float',
             'total_exonerated' => 'float',
             'total_igv' => 'float',
+            'total_igv_free' => 'float',
             'total_base_isc' => 'float',
             'total_isc' => 'float',
             'total_base_other_taxes' => 'float',
