@@ -189,14 +189,14 @@
                         'telephone' => $phone,
                     ];
                     if (strlen($identificationNumber) === 8) {
-                        $dataCustomer = self::getPersonData($identificationNumber);
+                        $dataCustomer = self::getPersonData($identificationNumber, $dataCustomer);
 
                         $address['department_id'] = $dataCustomerT['department_id']??0;
                         $address['province_id'] = $dataCustomerT['province_id']??0;
                         $address['district_id'] = $dataCustomerT['district_id']??0;
 
                     } elseif (strlen($identificationNumber) === 11) {
-                        $dataCustomerT = self::getPersonData($identificationNumber);
+                        $dataCustomerT = self::getPersonData($identificationNumber, $dataCustomer);
                         $dataCustomer['name']= $dataCustomerT['name']??$dataCustomer['name'];
                         $dataCustomer['address']= $dataCustomerT['address']??$dataCustomer['address'];
                         $dataCustomer['trade_name']= $dataCustomerT['trade_name']??null;
@@ -496,21 +496,46 @@
 
         }
 
-        public static function getPersonData($number = null)
+        public static function getPersonData($number = null, $data = [])
         {
             $service = new ServiceData();
-            $data = [];
             if (!empty($number)) {
+                $ruc = ['success' => false];
                 if (strlen($number) == 8) {
                     $ruc = $service->service('dni', $number);
-                    if ($ruc['success'] == true) {
-                        $data = $ruc['data'];
-                    }
                 } else if (strlen($number) == 11) {
                     $ruc = $service->service('ruc', $number);
-                    if ($ruc['success'] == true) {
-                        $data = $ruc['data'];
+                }
+                if ($ruc['success'] == true) {
+                    $temp = $ruc['data'];
+                    if (isset($data["name"])) {
+                        $data["name"] = !empty($temp["name"] && isset($temp["name"])) ? $temp["name"] : $data["name"];
                     }
+                    if (isset($data["trade_name"])) {
+                        $data["trade_name"] = !empty($temp["trade_name"] && isset($temp["trade_name"])) ? $temp["trade_name"] : $data["trade_name"];
+                    }
+                    if (isset($data["location_id"])) {
+                        $data["location_id"] = !empty($temp["location_id"] && isset($temp["location_id"])) ? $temp["location_id"] : $data["location_id"];
+                    }
+                    if (isset($data["address"])) {
+                        $data["address"] = !empty($temp["address"] && isset($temp["address"])) ? $temp["address"] : $data["address"];
+                    }
+                    if (isset($data["department_id"])) {
+                        $data["department_id"] = !empty($temp["department_id"] && isset($temp["department_id"])) ? $temp["department_id"] : $data["department_id"];
+                    }
+                    if (isset($data["province_id"])) {
+                        $data["province_id"] = !empty($temp["province_id"] && isset($temp["province_id"])) ? $temp["province_id"] : $data["province_id"];
+                    }
+                    if (isset($data["district_id"])) {
+                        $data["district_id"] = !empty($temp["district_id"] && isset($temp["district_id"])) ? $temp["district_id"] : $data["district_id"];
+                    }
+                    if (isset($data["condition"])) {
+                        $data["condition"] = !empty($temp["condition"] && isset($temp["condition"])) ? $temp["condition"] : $data["condition"];
+                    }
+                    if (isset($data["state"])) {
+                        $data["state"] = !empty($temp["state"] && isset($temp["state"])) ? $temp["state"] : $data["state"];
+                    }
+
                 }
             }
 

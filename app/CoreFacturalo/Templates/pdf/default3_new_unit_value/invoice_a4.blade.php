@@ -231,6 +231,16 @@
                         {{ $item->document_type_description }}:  {{ $item->number }}<br>
                         @endforeach
                     </td>
+                    @elseif($document->dispatch)
+
+                        <td class="font-sm" width="100px">
+                            <strong>Guía de Remisión</strong>
+                        </td>
+                        <td class="font-sm" width="8px">:</td>
+                        <td class="font-sm" colspan="4">
+                            {{ $document->dispatch->number_full }}
+                        </td>
+
                     @endif
 
                     @if ($document->reference_guides)
@@ -274,7 +284,7 @@
                     @endif
                 </tr>
 
-                <tr>
+                {{-- <tr>
                     @if ($document->retention)
                     <td class="font-sm" colspan="6">
                         <strong>Información de la retención</strong>
@@ -308,7 +318,7 @@
                             {{ $document->currency_type->symbol}} {{ $document->retention->amount }}
                         </td>
                     </tr>
-                @endif
+                @endif --}}
             </table>
         </td>
         {{-- <td width="5%" class="p-0 m-0">
@@ -476,6 +486,16 @@
                     </ul>
                 @endif
                 <br>
+
+                {{-- retencion --}}
+                @if ($document->retention)
+                    <strong>Información de la retención</strong><br>
+                    <span>Base imponible: </span>{{ $document->currency_type->symbol}} {{ $document->retention->base }}<br>
+                    <span>Porcentaje: </span>{{ $document->retention->percentage * 100 }}%<br>
+                    <span>Monto: </span>{{ $document->currency_type->symbol}} {{ $document->retention->amount }}<br><br>
+                @endif
+                {{-- retencion --}}
+
 
                 @if(($document->retention || $document->detraction) && $document->total_pending_payment > 0)
                     <strong>M. PENDIENTE: </strong>{{ $document->currency_type->symbol }} {{ number_format($document->total_pending_payment, 2) }}
