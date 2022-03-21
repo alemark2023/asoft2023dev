@@ -568,6 +568,8 @@ if ($hostname) {
             Route::get('pos/validate_stock/{item}/{quantity}', 'Tenant\PosController@validate_stock');
             Route::get('pos/items', 'Tenant\PosController@item');
             Route::get('pos/search_items_cat', 'Tenant\PosController@search_items_cat');
+            Route::get('pos/search_items_unit_types', 'Tenant\PosController@search_items_unit_types');
+
 
             Route::get('cash', 'Tenant\CashController@index')->name('tenant.cash.index');
             Route::get('cash/columns', 'Tenant\CashController@columns');
@@ -771,6 +773,8 @@ if ($hostname) {
             Route::get('status/cpu', 'System\StatusController@cpu')->name('system.status.cpu');
             Route::get('configurations/apiruc', 'System\ConfigurationController@apiruc');
             Route::get('configurations/apkurl', 'System\ConfigurationController@apkurl');
+
+            Route::get('configurations/update-tenant-discount-type-base', 'System\ConfigurationController@updateTenantDiscountTypeBase');
 
             // backup
             Route::get('backup', 'System\BackupController@index')->name('system.backup');
