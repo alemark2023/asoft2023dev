@@ -17,7 +17,6 @@ class RestaurantConfiguration extends ModelTenant
 
     public function getCollectionData() {
         return [
-            'id' => $this->id,
             'menu_pos' => (bool)$this->menu_pos,
             'menu_order' => (bool)$this->menu_order,
             'menu_tables' => (bool)$this->menu_tables,

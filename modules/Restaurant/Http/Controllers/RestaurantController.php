@@ -238,7 +238,10 @@ class RestaurantController extends Controller
     public function record(){
         $configurations = RestaurantConfiguration::first();
 
-        return $configurations->getCollectionData();
+        return [
+            'success' => true,
+            'data' => $configurations->getCollectionData()
+        ];
     }
 
     /**

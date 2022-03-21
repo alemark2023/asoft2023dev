@@ -94,17 +94,9 @@
 
 <script>
 
-import {mapActions, mapState} from "vuex";
-
 export default {
-    computed: {
-      ...mapState([
-        'config',
-      ]),
-    },
     data() {
       return {
-        loading_submit: false,
         resource: 'restaurant',
         errors: {},
         form: {
@@ -121,42 +113,15 @@ export default {
         ]
       }
     },
-    created() {
-      this.$store.commit('setConfiguration',this.configuration)
-      this.loadConfiguration()
-      this.form = this.config;
-    },
     mounted() {
-      this.initForm();
       this.$http.get(`/${this.resource}/configuration/record`).then(response => {
         if (response.data !== '') {
           this.form = response.data.data;
-          this.$store.commit('setConfiguration', this.form)
         }
       });
     },
     methods: {
-      ...mapActions([
-        'loadConfiguration',
-      ]),
-      async getRecord() {
-        await this.$http.get(`/${this.resource}/configuration/record`).then(response => {
-          if (response.data !== '') {
-            this.form = response.data.data;
-          }
-        });
-      },
-      initForm() {
-        this.errors = {};
-        this.form = {
-          menu_pos: true,
-          menu_order: true,
-          menu_tables: true,
-          first_menu: 'POS'
-        };
-      },
       submit() {
-        this.loading_submit = true;
         this.$http.post(`/${this.resource}/configuration`, this.form).then(response => {
           let data = response.data;
           if (data.success) {
@@ -174,7 +139,7 @@ export default {
             console.log(error);
           }
         }).then(() => {
-          this.loading_submit = false;
+          // this.loading_submit = false;
         });
       }
     }
