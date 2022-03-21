@@ -56,7 +56,7 @@
             $this->ruc = $ruc;
             $client = Client::where('number',$ruc)->first();
             if(empty($client)) $client = new Client();
-            $this->client_id = $client->id;
+            $this->client_id = (int)$client->id;
 
             return $this;
         }

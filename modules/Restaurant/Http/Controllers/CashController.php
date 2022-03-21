@@ -50,7 +50,8 @@ class CashController extends Controller
     {
         $records = Cash::where('apply_restaurant', 1)->where($request->column, 'like', "%{$request->value}%")
                         ->whereTypeUser()
-                        ->orderBy('date_opening', 'DESC');
+                        ->orderBy('date_closed', 'DESC')
+                        ->orderBy('time_closed', 'DESC');
 
 
         return new CashCollection($records->paginate(config('tenant.items_per_page')));
@@ -194,7 +195,7 @@ class CashController extends Controller
                     if($cash_document->purchase->total_canceled == 1) {
                         $final_balance -= ($cash_document->purchase->currency_type_id == 'PEN') ? $cash_document->purchase->total : ($cash_document->purchase->total * $cash_document->purchase->exchange_rate_sale);
                     }
-                    
+
                 }
             }
 
@@ -230,9 +231,9 @@ class CashController extends Controller
                                 ['user_id', auth()->user()->id],
                                 ['state', true],
                             ])->first();
-        
+
         (int)$payment_credit = 0;
-        
+
 
         if($request->document_id != null) {
             $document_id = $request->document_id;
@@ -279,7 +280,7 @@ class CashController extends Controller
 
             $cash->cash_documents()->updateOrCreate($req);
         }
-        
+
         return [
             'success' => true,
             'message' => 'Venta con éxito',
@@ -328,7 +329,7 @@ class CashController extends Controller
 
 
     public function report($cash) {
-        
+
 
         $cash = Cash::query()->findOrFail($cash);
         $company = Company::query()->first();

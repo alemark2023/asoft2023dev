@@ -9,6 +9,7 @@
     use App\Models\Tenant\Configuration as TenantConfig;
     use App\Models\System\TrackApiPeruServices as SystemTrackApiPeruService;
     use App\Models\Tenant\TrackApiPeruServices as TenantTrackApiPeruService;
+    use Illuminate\Support\Facades\URL;
 
     class ServiceData
     {
@@ -27,13 +28,24 @@
 
         public function __construct()
         {
-            $configuration = TenantConfig::query()->first();
-            $trackApi = new TenantTrackApiPeruService();
-            $company = Company::first();
+            $prefix = env('PREFIX_URL',null);
+            $prefix = !empty($prefix)?$prefix.".":'';
+            $app_url = $prefix. env('APP_URL_BASE');
+            $url =  $_SERVER['HTTP_HOST']??null;
+            $company = null;
+            // Desde admin
+            $configuration = SystemConfiguration::query()->first();
+            $trackApi = new SystemTrackApiPeruService();
 
-            if ($configuration->UseCustomApiPeruToken() == false) {
-                $configuration = SystemConfiguration::query()->first();
-                $trackApi = new SystemTrackApiPeruService();
+            if($url !== $app_url) {
+                // desde cliente
+                $configuration = TenantConfig::query()->first();
+                $trackApi = new TenantTrackApiPeruService();
+                $company = Company::first();
+                if ($configuration->UseCustomApiPeruToken() == false) {
+                    $configuration = SystemConfiguration::query()->first();
+                    $trackApi = new SystemTrackApiPeruService();
+                }
             }
 
             $url = $configuration->url_apiruc = !'' ? $configuration->url_apiruc : config('configuration.api_service_url');
@@ -72,7 +84,11 @@
                 return $this;
 
             }
-            $this->trackApi->setService($this->company->number, $service);
+            $number = null;
+            if(!empty($this->company)){
+                $number = $this->company->number;
+            }
+            $this->trackApi->setService($number, $service);
             $this->trackApi->push();
             return $this;
 
