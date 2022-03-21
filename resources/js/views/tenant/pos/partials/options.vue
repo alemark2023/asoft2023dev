@@ -63,6 +63,26 @@
                             </button>
                             <p>Ticket</p>
                         </div>
+                        <div
+                            v-if="config.show_ticket_58"
+                            class="col text-center font-weight-bold mt-3">
+                            <button class="btn btn-lg btn-info waves-effect waves-light"
+                                    type="button"
+                                    @click="clickPrint(form.print_ticket_58)">
+                                <i class="fa fa-receipt"></i>
+                            </button>
+                            <p>Ticket 58</p>
+                        </div>
+                        <div
+                            v-if="config.show_ticket_50&& this.resource=='documents'"
+                            class="col text-center font-weight-bold mt-3">
+                            <button class="btn btn-lg btn-info waves-effect waves-light"
+                                    type="button"
+                                    @click="clickPrint(form.print_ticket_50)">
+                                <i class="fa fa-receipt"></i>
+                            </button>
+                            <p>Ticket 50</p>
+                        </div>
                         <div class="col text-center font-weight-bold mt-3">
                             <button class="btn btn-lg btn-info waves-effect waves-light"
                                     type="button"
