@@ -493,7 +493,28 @@
                                 </div>
                             </div>
                             -->
-
+                            <div  class="col-md-4 mt-4">
+                                <label class="control-label">
+                                    Cantidad de elementos en el validador
+                                    <el-tooltip class="item"
+                                                content="Aplica en el nuevo validador ./reports/validate-documents"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.new_validator_pagination}"
+                                     class="form-group">
+                                    <el-input-number v-model="form.new_validator_pagination"
+                                                     :min="1"
+                                                     :precision="0"
+                                                     :step="1"
+                                                     @change="submit"></el-input-number>
+                                    <small v-if="errors.new_validator_pagination"
+                                           class="form-control-feedback"
+                                           v-text="errors.new_validator_pagination[0]"></small>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="third">
