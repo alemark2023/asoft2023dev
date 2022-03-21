@@ -19,6 +19,7 @@ use stdClass;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Tenant\EmailController;
 use App\Mail\Tenant\CulqiEmail;
+use Modules\Restaurant\Models\RestaurantConfiguration;
 
 
 
@@ -92,7 +93,7 @@ class RestaurantController extends Controller
         return view('restaurant::items.partial', compact('record'));
     }
 
-    
+
     public function item($id, $promotion_id = null)
     {
         $row = Item::find($id);
@@ -128,7 +129,7 @@ class RestaurantController extends Controller
         return view('restaurant::items.record', compact('record'));
     }
 
-    
+
     private function getExchangeRateSale(){
         $exchange_rate = app(ServiceController::class)->exchangeRateTest(date('Y-m-d'));
         return (array_key_exists('sale', $exchange_rate)) ? $exchange_rate['sale'] : 1;
@@ -221,6 +222,41 @@ class RestaurantController extends Controller
         {
             return true;
         }
+    }
+
+    /**
+     * muestra vista para utilizar en mozo
+     */
+    public function configuration(){
+        // RestaurantConfiguration::first();
+        return view('restaurant::configuration.index');
+    }
+
+    /**
+     * obtiene configuración para utilizar en mozo
+     */
+    public function record(){
+        $configurations = RestaurantConfiguration::first();
+
+        return $configurations->getCollectionData();
+    }
+
+    /**
+     * guarda cada nueva configuración para utilizar en mozo
+     */
+    public function setConfiguration(Request $request) {
+        $configuration = RestaurantConfiguration::first();
+        $configuration->fill($request->all());
+        if(!$configuration->menu_pos && !$configuration->menu_order && !$configuration->menu_tables){
+            $configuration->menu_pos = true;
+        }
+        $configuration->save();
+
+        return [
+            'success' => true,
+            'configuration' => $configuration->getCollectionData(),
+            'message' => 'Configuración actualizada',
+        ];
     }
 
 }

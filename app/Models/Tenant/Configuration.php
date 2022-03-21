@@ -224,7 +224,10 @@
             'show_last_price_sale',
             'print_new_line_to_observation',
             'show_logo_by_establishment',
+            'global_discount_type_id',
             'shipping_time_days',
+            'url_apiruc',
+            'token_apiruc',
         ];
 
         protected $casts = [
@@ -468,6 +471,7 @@
                 'pos_cost_price' => $this->isPosCostPrice(),
                 'show_totals_on_cpe_list' => $this->isShowTotalsOnCpeList(),
                 'detraction_amount_rounded_int' => $this->detraction_amount_rounded_int,
+                'global_discount_type_id' => $this->global_discount_type_id,
                 'show_terms_condition_pos' => (bool)$this->show_terms_condition_pos,
                 'mi_tienda_pe' => $this->isMiTiendaPe(),
                 'show_ticket_80' => (bool)$this->show_ticket_80,
@@ -2036,5 +2040,13 @@
             return $this;
         }
 
+        /**
+         * Permite usar configuracion personalizada del token de apiperu
+         * @return bool
+         */
+        public function UseCustomApiPeruToken(){
+            // .env ALLOW_CLIENT_USE_OWN_APIPERU_TOKEN
+            return (bool)\Config('extra.AllowClientUseOwnApiperuToken');
+        }
 
     }

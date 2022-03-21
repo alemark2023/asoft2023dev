@@ -121,8 +121,9 @@
                         <th class="text-right"
                             v-if="columns.total_exonerated.visible">T.Exonerado
                         </th>
-
-
+                        <th class="text-right"
+                            v-if="columns.total_charge.visible">{{columns.total_charge.title}}
+                        </th>
                         <th class="text-right">T.Gravado</th>
                         <th class="text-right">T.Igv</th>
                         <th class="text-right" v-if="columns.total.visible" >Total</th>
@@ -267,6 +268,9 @@
                         </td>
                         <td class="text-right"
                             v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}
+                        </td>
+                        <td class="text-right"
+                            v-if="columns.total_charge.visible">{{ row.total_charge }}
                         </td>
                         <td class="text-right">{{ row.total_taxed }}</td>
                         <td class="text-right">{{ row.total_igv }}</td>
@@ -622,6 +626,10 @@ export default {
                 balance: {
                     title: 'Saldo',
                     visible: true
+                },
+                total_charge: {
+                    title: 'T.Cargos',
+                    visible: false
                 },
 
             }
