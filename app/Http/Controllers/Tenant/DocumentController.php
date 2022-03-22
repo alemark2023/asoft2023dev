@@ -268,6 +268,8 @@ class DocumentController extends Controller
         $payment_destinations = $this->getPaymentDestinations();
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $user = $userType;
+        $global_discount_types = ChargeDiscountType::whereIn('id', ['02', '03'])->whereActive()->get();
+
         return compact(
             'document_id',
             'series_id',
@@ -294,6 +296,7 @@ class DocumentController extends Controller
             'select_first_document_type_03',
             'payment_destinations',
             'payment_conditions',
+            'global_discount_types',
             'affectation_igv_types'
         );
 
