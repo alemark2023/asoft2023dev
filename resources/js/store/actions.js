@@ -1,7 +1,10 @@
 import state from './state'
 
-function readStorageData(variable, json = false) {
+function readStorageData(variable, json = false, defaultv = undefined) {
     let w = localStorage.getItem(variable)
+    if (w === 'undefined' && defaultv != undefined) {
+        w =  defaultv
+    }
     if (w === 'undefined') {
         w = null;
     }
@@ -13,11 +16,11 @@ function readStorageData(variable, json = false) {
 
 export default {
     loadConfiguration(store) {
-        state.config = readStorageData('config', true);
-        state.customers = readStorageData('customers', true);
-        state.userType = readStorageData('userType', false);
-        state.company = readStorageData('company', true);
-        state.establishment = readStorageData('establishment', true);
+        state.config = readStorageData('config', true,state.config);
+        state.customers = readStorageData('customers', true,state.customers);
+        state.userType = readStorageData('userType', false,state.userType);
+        state.company = readStorageData('company', true,state.company);
+        state.establishment = readStorageData('establishment', true,state.establishment);
         if (state.deb === undefined) state.deb = {};
         if (state.colors === undefined) state.colors = [];
         if (state.CatItemSize === undefined) state.CatItemSize = [];

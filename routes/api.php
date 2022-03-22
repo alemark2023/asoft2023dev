@@ -61,6 +61,9 @@ if ($hostname) {
             Route::get('quotations/list', 'Tenant\Api\QuotationController@list');
             Route::post('quotations', 'Tenant\Api\QuotationController@store');
 
+            //Caja
+            Route::post('cash/restaurant', 'Tenant\Api\CashController@storeRestaurant');
+
         });
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
 

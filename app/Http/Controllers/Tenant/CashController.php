@@ -269,6 +269,8 @@ class CashController extends Controller
 
                 $payment_credit += 1;
             }
+        }
+        else if($request->quotation_id != null) {
 
         }
 
@@ -276,7 +278,8 @@ class CashController extends Controller
 
             $req = [
                 'document_id' => $request->document_id,
-                'sale_note_id' => $request->sale_note_id
+                'sale_note_id' => $request->sale_note_id,
+                'quotation_id' => $request->quotation_id,
             ];
 
             $cash->cash_documents()->updateOrCreate($req);
@@ -330,6 +333,7 @@ class CashController extends Controller
 
 
     public function report($cash) {
+        
 
         $cash = Cash::query()->findOrFail($cash);
         $company = Company::query()->first();
@@ -376,8 +380,6 @@ class CashController extends Controller
         return $pdf->stream($filename.'.pdf');
 
     }
-
-
 
     public function report_products_excel($id)
     {
