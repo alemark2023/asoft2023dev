@@ -308,6 +308,7 @@
                                     <td v-if="visibleColumns.guides.visible"></td>
                                     <td v-if="visibleColumns.options.visible"></td>
                                     <td v-if="visibleColumns.web_platforms.visible"></td>
+                                    <td v-if="visibleColumns.total_charge.visible"></td>
                                     <td><strong>Totales PEN</strong></td>
                                     <td>{{ totals.acum_total_exonerated }}</td>
                                     <td>{{ totals.acum_total_unaffected }}</td>
@@ -323,6 +324,7 @@
                                     <td v-if="visibleColumns.guides.visible"></td>
                                     <td v-if="visibleColumns.options.visible"></td>
                                     <td v-if="visibleColumns.web_platforms.visible"></td>
+                                    <td v-if="visibleColumns.total_charge.visible"></td>
                                     <td><strong>Totales USD</strong></td>
                                     <td></td>
                                     <td></td>
