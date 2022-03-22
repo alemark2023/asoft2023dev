@@ -3,6 +3,35 @@
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group" :class="{'has-danger': errors.series_id}">
+                            <label class="control-label">Serie</label>
+                            <el-select v-model="document.series_id">
+                                <el-option v-for="option in series" :key="option.id" :value="option.id" :label="option.number"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.series_id" v-text="errors.series_id[0]"></small>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Numero Inicial</label>
+                            <el-input></el-input>
+                            <small class="form-control-feedback" v-if="errors.series_id" v-text="errors.series_id[0]"></small>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Numero Final</label>
+                            <el-input></el-input>
+                            <small class="form-control-feedback" v-if="errors.series_id" v-text="errors.series_id[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="form-group" :class="{'has-danger': errors.document_type_id}">
+                            <label class="control-label">Tipo comprobante</label>
+                            <el-select v-model="document.document_type_id" @change="changeDocumentType" popper-class="el-select-document_type" dusk="document_type_id" class="border-left rounded-left border-info">
+                                <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.document_type_id" v-text="errors.document_type_id[0]"></small>
+                            <!-- <el-checkbox  v-model="generate_dispatch">Generar Guía Remisión</el-checkbox> -->
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.date_of_reference}">
                             <label class="control-label">Fecha de emisión de comprobantes</label>
@@ -94,6 +123,10 @@
                 resource: 'summaries',
                 errors: {},
                 form: {},
+                document_types: [],
+                all_document_types: [],
+                all_series: [],
+                series: [],
                 summary_status_types: [],
                 show_summary_status_type: false,
             }
