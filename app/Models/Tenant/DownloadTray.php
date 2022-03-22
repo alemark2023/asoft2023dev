@@ -36,7 +36,8 @@ class DownloadTray extends ModelTenant
         'date_init',
         'date_end',
         'payload_request',
-        'path'
+        'path',
+        'type'
     ];
 
     protected $casts = [
