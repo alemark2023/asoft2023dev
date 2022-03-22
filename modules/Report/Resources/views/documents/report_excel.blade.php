@@ -74,6 +74,7 @@
     <div class="">
         <div class=" ">
             @php
+                $acum_total_charges=0;
                 $acum_total_taxed=0;
                 $acum_total_igv=0;
                 $acum_total=0;
@@ -115,6 +116,7 @@
                     <th>Orden de compra</th>
                     <th class="">Forma de pago</th>
                     <th> MÉTODO DE PAGO </th>
+                    <th>Total Cargos</th>
                     <th>Total Exonerado</th>
                     <th>Total Inafecto</th>
                     <th>Total Gratuito</th>
@@ -248,7 +250,9 @@
                                 <td class="celda">0</td>
                                 <td class="celda">0</td>
                                 <td class="celda">0</td>
+                                <td class="celda">0</td>
                             @else
+                                <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_charge}}</td>
                                 <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_exonerated}}</td>
                                 <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_unaffected}}</td>
                                 <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_free}}</td>
@@ -260,6 +264,7 @@
                             @endif
 
                         @else
+                            <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_charge}}</td>
                             <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_exonerated}}</td>
                             <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_unaffected}}</td>
                             <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_free}}</td>
@@ -344,7 +349,7 @@
                                 $acum_total_taxed += -$value->total_taxed;
                                 $acum_total_igv += -$value->total_igv;
 
-
+                                $acum_total_charges += -$value->total_charge;
                                 $acum_total_exonerado += -$value->total_exonerated;
                                 $acum_total_inafecto += -$value->total_unaffected;
                                 $acum_total_free += -$value->total_free;
@@ -356,6 +361,7 @@
                                 $acum_total_taxed += 0;
                                 $acum_total_igv += 0;
 
+                                $acum_total_charges += 0;
                                 $acum_total_exonerado += 0;
                                 $acum_total_inafecto += 0;
                                 $acum_total_free += 0;
@@ -366,6 +372,7 @@
                                 $acum_total_taxed += $value->total_taxed;
                                 $acum_total_igv += $value->total_igv;
 
+                                $acum_total_charges += $value->total_charge;
                                 $acum_total_exonerado += $value->total_exonerated;
                                 $acum_total_inafecto += $value->total_unaffected;
                                 $acum_total_free += $value->total_free;
@@ -399,7 +406,7 @@
 
 
                         }
-                        
+
                     @endphp
                 @endforeach
                 <tr>
@@ -409,7 +416,7 @@
                                 <td>{{$acum_total_inafecto}}</td>
                                 <td>{{$acum_total_free}}</td> -->
                     <td>Totales PEN</td>
-
+                    <td>{{number_format($acum_total_charges, 2)}}</td>
                     <td>{{number_format($acum_total_exonerado, 2)}}</td>
                     <td>{{number_format ($acum_total_inafecto, 2 )}}</td>
                     <td>{{number_format($acum_total_free, 2)}}</td>
@@ -432,7 +439,7 @@
                     <td></td>
                     <td>{{$acum_total_usd}}</td>
                 </tr>
-                
+
                 </tbody>
             </table>
         </div>
