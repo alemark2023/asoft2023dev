@@ -24,7 +24,9 @@ use Modules\Finance\Traits\FinanceTrait;
 use App\Models\Tenant\Company;
 use Modules\BusinessTurn\Models\BusinessTurn;
 use App\Http\Resources\Tenant\PosCollection;
-
+use App\Models\Tenant\Catalogs\{
+    ChargeDiscountType
+};
 
 class PosController extends Controller
 {
@@ -158,9 +160,10 @@ class PosController extends Controller
         $payment_method_types = PaymentMethodType::all();
         $cards_brand = CardBrand::all();
         $payment_destinations = $this->getPaymentDestinations();
+        $global_discount_types = ChargeDiscountType::whereIn('id', ['02', '03'])->whereActive()->get();
 
 
-        return compact('series','payment_method_types','cards_brand', 'payment_destinations');
+        return compact('series','payment_method_types','cards_brand', 'payment_destinations', 'global_discount_types');
 
     }
 
