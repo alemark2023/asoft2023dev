@@ -65,6 +65,10 @@ class ProcessMovementsReport implements ShouldQueue
             $qery = $this->getRecords($this->params ,GlobalPayment::class);
             $qery->orderBy('id');
             $records = $qery->get();
+
+            $calculateResiduary = $this->calculateResiduary($this->params);
+
+            $transformRecords = $this->transformRecords($records, (object)$calculateResiduary);
             
             $company = Company::first();
             $establishment = Establishment::findOrFail($this->params->establishment_id);
@@ -72,7 +76,7 @@ class ProcessMovementsReport implements ShouldQueue
             Log::debug("Render excel init");
             $MovementExport = new MovementExport();
             $MovementExport
-            ->records($records)
+            ->records($transformRecords)
             ->company($company)
             ->setNewFormat(true)
             ->establishment($establishment);
@@ -81,9 +85,9 @@ class ProcessMovementsReport implements ShouldQueue
 
             Log::debug("Upload excel init");
 
-            $filename = 'FINANCES_Reporte_Movimientos__' . date('YmdHis').'.xlsx';
+            $filename = 'FINANCES_Reporte_Movimientos__' . date('YmdHis');
 
-            $MovementExport->store(DIRECTORY_SEPARATOR."download_tray_xlsx".DIRECTORY_SEPARATOR . $filename, 'tenant');
+            $MovementExport->store(DIRECTORY_SEPARATOR."download_tray_xlsx".DIRECTORY_SEPARATOR . $filename.'.xlsx', 'tenant');
 
             $tray->file_name = $filename;
             $path = 'download_tray_xlsx';
@@ -142,9 +146,9 @@ class ProcessMovementsReport implements ShouldQueue
         return $records->latest();
     }
 
-    private function transformRecords($records) {
+    private function transformRecords($records, $calculateResiduary) {
 
-        $data = $records->transform(function (GlobalPayment $row, $key) {
+        $data = $records->transform(function (GlobalPayment $row, $key) use (&$calculateResiduary) {
             $index = $key + 1;
             $data_person = $row->data_person;
             $timedate = null;
@@ -168,12 +172,12 @@ class ProcessMovementsReport implements ShouldQueue
             if (get_class($payment) == TransferAccountPayment::class) {
                 // para que transferencias bancarias. refleje el numero correctamente.
                 if ($type_movement == 'input') {
-                    self::$balance -= $amount;
+                    $calculateResiduary->balance = $calculateResiduary->balance - $amount;
                 } else {
-                    self::$balance += $amount;
+                    $calculateResiduary->balance = $calculateResiduary->balance + $amount;
                 }
             } else {
-                self::$balance = ($row->type_movement == 'input') ? self::$balance + $amount : self::$balance - $amount;
+                $calculateResiduary->balance = ($row->type_movement == 'input') ? $calculateResiduary->balance + $amount : $calculateResiduary->balance - $amount;
             }
 
             // $timedate = $payment->date_of_payment->format('Y-m-d');
@@ -265,13 +269,84 @@ class ProcessMovementsReport implements ShouldQueue
                 'type_movement' => $type_movement,
                 'input' => $input,
                 'output' => $output,
-                'balance' => number_format(self::$balance, 2, ".", ""),
+                'balance' => number_format($calculateResiduary->balance, 2, ".", ""),
                 'items' => $this->getItems($row),
-
 
             ];
         });
 
         return $data;
     }
+
+    private function calculateResiduary($request){
+        $residuary = 0;
+        $balance = 0;
+        if ($request->page >= 2) {
+
+            $data = app(MovementController::class)->getRecords($request, GlobalPayment::class)
+                ->limit(($request->page * 20) - 20)->get();
+
+            $input = $data->where('type_movement', 'input')->sum('payment.payment');
+            $output = $data->where('type_movement', 'output')->sum('payment.payment');
+
+            $residuary += $input - $output;
+            $balance = $residuary;
+        }
+
+        return [
+            'residuary' => $residuary,
+            'balance' => $balance,
+        ];
+    }
+
+    private function getPaymentMethodTypeDescription(GlobalPayment $row)
+    {
+
+        $payment_method_type_description = '';
+
+        if ($row->payment->payment_method_type) {
+
+            $payment_method_type_description = $row->payment->payment_method_type->description;
+
+        } elseif ($row->payment->expense_method_type) {
+            $payment_method_type_description = $row->payment->expense_method_type->description;
+        }
+
+        return $payment_method_type_description;
+    }
+
+    public function getDocumentTypeDescription(GlobalPayment $row)
+    {
+
+        $document_type = '';
+
+        if ($row->payment->associated_record_payment) {
+            if ($row->payment->associated_record_payment->document_type) {
+
+                $document_type = $row->payment->associated_record_payment->document_type->description;
+
+            } elseif (isset($row->payment->associated_record_payment->prefix)) {
+
+                $document_type = $row->payment->associated_record_payment->prefix;
+
+            }
+        }
+        return $document_type;
+
+    }
+
+    public function getItems(GlobalPayment $row)
+        {
+            $instanceType = $row->instance_type;
+            if (in_array($instanceType, ['expense', 'income', 'bank_loan_payment'])) {
+
+                return $row->payment->associated_record_payment->items->transform(function ($row, $key) {
+                    return [
+                        'description' => $row->description,
+                    ];
+                });
+            }
+
+            return [];
+        }
 }

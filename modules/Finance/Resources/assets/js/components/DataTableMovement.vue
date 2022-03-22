@@ -67,12 +67,12 @@
 
                         <template v-if="records.length>0">
 
-                            <el-button :loading="loading_submit" class="submit" icon="el-icon-tickets" type="danger"
+                            <!--<el-button :loading="loading_submit" class="submit" icon="el-icon-tickets" type="danger"
                                        @click.prevent="clickDownload('pdf')">Exportar PDF
-                            </el-button>
+                            </el-button>-->
 
                             <el-button :loading="loading_submit" class="submit" type="success"
-                                       @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel"></i> Exportal
+                                       @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel"></i> Exportar
                                                                                                                 Excel
                             </el-button>
 

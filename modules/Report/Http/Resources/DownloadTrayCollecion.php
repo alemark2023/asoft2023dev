@@ -22,6 +22,8 @@ class DownloadTrayCollecion extends ResourceCollection
                 'date_init' => $row->date_init,
                 'date_end' => $row->date_end,
                 'user' => $row->user->name,
+                'type' => $row->type,
+
             ];
         });
     }

@@ -152,13 +152,13 @@ class MovementController extends Controller
 
        // $records = $this->getRecords($request->all(), GlobalPayment::class);
         //$records->orderBy('id');
-        
 
         $tray = DownloadTray::create([
             'user_id' => auth()->user()->id,
             'module' => 'INVENTORY',
             'path' => $request->path,
             'format' => 'xlsx',
+            'date_init' => date('Y-m-d H:i:s'),
             'type' => 'Reporte Movimientos ingresos-egresos'
         ]);
 
@@ -166,7 +166,10 @@ class MovementController extends Controller
 
         ProcessMovementsReport::dispatch($params, $tray->id, $website_id)->onQueue('process_movements_report');
 
-        return 'ok';
+        return [
+            'success' => true,
+            'message' => 'El reporte se esta procesando; puede ver el proceso en bandeja de descargas.'
+        ];
 
         /*$company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
