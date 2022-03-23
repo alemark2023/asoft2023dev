@@ -879,7 +879,7 @@ class SaleNoteController extends Controller
                     $discount_global = $discount_global + 1;
                 }
                 /* dd(isset($it->item->name_product_pdf)); */
-                $item_name_product = isset($it->item->name_product_pdf) ? (strlen($it->item->name_product_pdf)/50) * 10 : 0;
+                $item_name_product = isset($it->item->name_product_pdf) ? (strlen($it->item->name_product_pdf)/30) * 10 : 0;
                 $item_name_product += $item_name_product;
             }
             $legends = $this->document->legends != '' ? '10' : '0';
