@@ -141,14 +141,14 @@
                     <?php
                     /** @var \App\Models\Tenant\Document|App\Models\Tenant\SaleNote  $value */
                     $iteration = $loop->iteration;
-                                    $userCreator = $value->user->name;
+                                    $user = $value->user->name;
                     $document_type = $value->getDocumentType();
-                    $seller = \App\CoreFacturalo\Helpers\Template\ReportHelper::getSellerData($value);
+                    /* $seller = \App\CoreFacturalo\Helpers\Template\ReportHelper::getSellerData($value);
                     try{
                         $user = $seller->name;
                     }catch (ErrorException $e){
                         $user = '';
-                    }
+                    } */
 
                     ?>
 
@@ -412,7 +412,11 @@
 
 
                         }
+<<<<<<< HEAD
 
+=======
+                        
+>>>>>>> 9b69e3c19d59a385b5966651b2ba9bf251091650
                     @endphp
                 @endforeach
                 <tr>
@@ -445,7 +449,11 @@
                     <td></td>
                     <td>{{$acum_total_usd}}</td>
                 </tr>
+<<<<<<< HEAD
 
+=======
+                
+>>>>>>> 9b69e3c19d59a385b5966651b2ba9bf251091650
                 </tbody>
             </table>
         </div>
