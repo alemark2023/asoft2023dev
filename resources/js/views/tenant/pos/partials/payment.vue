@@ -604,7 +604,7 @@ export default {
                 discount_type_id: this.global_discount_type.id,
                 description: this.global_discount_type.description,
                 factor: factor,
-                amount: amount,
+                amount: _.round(amount, 2),
                 base: base
             })
         },
