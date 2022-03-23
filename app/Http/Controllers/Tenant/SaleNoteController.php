@@ -1023,19 +1023,10 @@ class SaleNoteController extends Controller
                         $html_footer_legend = $template->pdfFooterLegend($base_template, $this->document);
                     }
                 }
-<<<<<<< HEAD
                 
                 $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
                 $pdf->setAutoBottomMargin = 'stretch';
                 $pdf->setAutoTopMargin = 'stretch';
-=======
-
-                $pdf->setAutoBottomMargin = 'stretch';
-                $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
-            //
-
-            
->>>>>>> 16836d3eb1bf0e2465f666179c290278c0751f06
         }
 
         if ($base_template === 'brand') {
@@ -1045,11 +1036,7 @@ class SaleNoteController extends Controller
                 $pdf->SetHTMLFooter("");
             }
         }
-<<<<<<< HEAD
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
-=======
-        
->>>>>>> 16836d3eb1bf0e2465f666179c290278c0751f06
         $this->uploadFile($this->document->filename, $pdf->output('', 'S'), 'sale_note');
     }
 
