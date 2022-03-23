@@ -65,6 +65,7 @@ class SummaryController extends Controller
     }
 
     public function documents(SummaryDocumentsRequest $request) {
+        /* dd($request->input('series_number')); */
         $company = Company::active();
         $date_of_reference = $request->input('date_of_reference');
         
@@ -73,7 +74,9 @@ class SummaryController extends Controller
             ->where('soap_type_id', $company->soap_type_id)
             ->where('group_id', '02')
             ->where('state_type_id', '01')
-            ->take(500)
+            ->where('document_type_id', $request->input('document_type_id'))
+            ->where('series', $request->input('series_number'))
+            ->whereBetween('number', [ $request->input('initInterval') , $request->input('endInterval')])
             ->get();
             
         if (count($documents) === 0) {

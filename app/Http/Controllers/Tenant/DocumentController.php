@@ -225,6 +225,7 @@ class DocumentController extends Controller
         $establishments = Establishment::where('id', $establishment_id)->get();// Establishment::all();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
         $document_types_note = DocumentType::whereIn('id', ['07', '08'])->get();
+        $document_types_summaries = DocumentType::whereIn('id', ['03', '07', '08'])->get();
         $note_credit_types = NoteCreditType::whereActive()->orderByDescription()->get();
         $note_debit_types = NoteDebitType::whereActive()->orderByDescription()->get();
         $currency_types = CurrencyType::whereActive()->get();
@@ -276,6 +277,7 @@ class DocumentController extends Controller
             'series',
             'document_types_invoice',
             'document_types_note',
+            'document_types_summaries',
             'note_credit_types',
             'note_debit_types',
             'currency_types',
