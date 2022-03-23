@@ -311,8 +311,14 @@ class PosController extends Controller
 
         }else{
 
+            if($item->unit_type_id == 'ZZ') {
+                return [
+                    'success' => true,
+                    'message' => ''
+                ];
+            }
 
-            if(!$item_warehouse)
+            if(!$item_warehouse && $item->unit_type_id !== 'ZZ')
                 return [
                     'success' => false,
                     'message' => "El producto seleccionado no está disponible en su almacén!"
@@ -332,13 +338,10 @@ class PosController extends Controller
 
         }
 
-
-
         return [
             'success' => true,
             'message' => ''
         ];
-
 
     }
 
