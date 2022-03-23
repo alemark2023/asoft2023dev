@@ -141,14 +141,14 @@
                     <?php
                     /** @var \App\Models\Tenant\Document|App\Models\Tenant\SaleNote  $value */
                     $iteration = $loop->iteration;
-                                    $user = $value->user->name;
+                                    $userCreator = $value->user->name;
                     $document_type = $value->getDocumentType();
-                    /* $seller = \App\CoreFacturalo\Helpers\Template\ReportHelper::getSellerData($value);
+                    $seller = \App\CoreFacturalo\Helpers\Template\ReportHelper::getSellerData($value);
                     try{
                         $user = $seller->name;
                     }catch (ErrorException $e){
                         $user = '';
-                    } */
+                    }
 
                     ?>
 
