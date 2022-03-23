@@ -50,6 +50,11 @@ class ViewServiceProvider extends ServiceProvider
 
         view()->composer(
             'tenant.layouts.partials.header',
+            'Modules\Report\Http\ViewComposers\DownloadTryViewComposer'
+        );
+
+        view()->composer(
+            'tenant.layouts.partials.header',
             'App\Http\ViewComposers\Tenant\ModuleViewComposer'
         );
 
@@ -60,6 +65,11 @@ class ViewServiceProvider extends ServiceProvider
 
         view()->composer(
             'tenant.layouts.partials.sidebar',
+            'App\Http\ViewComposers\Tenant\ModuleViewComposer'
+        );
+
+        view()->composer(
+            'tenant.reports.list',
             'App\Http\ViewComposers\Tenant\ModuleViewComposer'
         );
 
@@ -143,6 +153,11 @@ class ViewServiceProvider extends ServiceProvider
 
         view()->composer(
             'tenant.layouts.partials.sidebar',
+            'Modules\LevelAccess\Http\ViewComposers\ModuleLevelViewComposer'
+        );
+
+        view()->composer(
+            'tenant.reports.list',
             'Modules\LevelAccess\Http\ViewComposers\ModuleLevelViewComposer'
         );
 

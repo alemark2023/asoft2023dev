@@ -121,8 +121,9 @@
                         <th class="text-right"
                             v-if="columns.total_exonerated.visible">T.Exonerado
                         </th>
-
-
+                        <th class="text-right"
+                            v-if="columns.total_charge.visible">{{columns.total_charge.title}}
+                        </th>
                         <th class="text-right">T.Gravado</th>
                         <th class="text-right">T.Igv</th>
                         <th class="text-right" v-if="columns.total.visible" >Total</th>
@@ -268,6 +269,9 @@
                         <td class="text-right"
                             v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}
                         </td>
+                        <td class="text-right"
+                            v-if="columns.total_charge.visible">{{ row.total_charge }}
+                        </td>
                         <td class="text-right">{{ row.total_taxed }}</td>
                         <td class="text-right">{{ row.total_igv }}</td>
                         <td class="text-right" v-if="columns.total.visible">{{ row.total }}</td>
@@ -340,7 +344,7 @@
                                     </a>
                                     <button class="dropdown-item"
                                         @click.prevent="clickVoided(row.id)"
-                                        v-if="row.btn_voided">
+                                        v-if="userPermissionOverrideCpe&&row.btn_voided">
                                         Anular
                                     </button>
                                     <a type="button"
@@ -514,6 +518,7 @@ export default {
         'userId',
         'configuration',
         'userPermissionEditCpe',
+        'userPermissionOverrideCpe',
         'view_apiperudev_validator_cpe',
         'view_validator_cpe'
     ],
@@ -621,6 +626,10 @@ export default {
                 balance: {
                     title: 'Saldo',
                     visible: true
+                },
+                total_charge: {
+                    title: 'T.Cargos',
+                    visible: false
                 },
 
             }

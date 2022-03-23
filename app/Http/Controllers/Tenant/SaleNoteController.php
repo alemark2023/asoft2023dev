@@ -866,6 +866,7 @@ class SaleNoteController extends Controller
             if (strlen($this->document->observation)>100) {
                 $document_observation = (strlen($this->document->observation)/100) * 10;
             }
+            
 
             $extra_by_item_description = 0;
             $discount_global = 0;

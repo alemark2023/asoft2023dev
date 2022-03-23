@@ -133,10 +133,10 @@
 
                         <div class="col-12">&nbsp;</div>
                         <div class="col-auto">
-                            <el-button :disabled="records.length <= 0"
+                            <!--<el-button :disabled="records.length <= 0"
                                        :loading="loadingPdf"
                                        @click="clickExport('pdf')"><i class="fa fa-file-pdf"></i> Exportar PDF
-                            </el-button>
+                            </el-button> -->
                         </div>
                         <div class="col-auto">
                             <el-button :disabled="records.length <= 0"

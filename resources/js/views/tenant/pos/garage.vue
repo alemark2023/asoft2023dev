@@ -592,9 +592,9 @@
                                             <small>
                                                 {{ nameSets(item.item_id) }}
                                             </small>
-                                          
+
                                         </td>
-                                       
+
 
                                         <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
                                             {{ currency_type.symbol }}
@@ -607,7 +607,7 @@
                                                     @input="calculateQuantity(index)"
                                                     @blur="blurCalculateQuantity(index)"
                                                     :readonly="!item.item.calculate_quantity">
-                                                   
+
                                                 </el-input>
                                             </template>
                                             <template v-else>
@@ -769,9 +769,11 @@ import WarehousesDetail from "../items/partials/warehouses.vue";
 import queryString from "query-string";
 import TableItems from "./partials/table.vue";
 import ItemUnitTypes from "./partials/item_unit_types.vue";
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
     props: ["configuration", "soapCompany", "businessTurns", "typeUser", "isPrint"],
+
     components: {
         FastPayment,
         ItemForm,
@@ -826,6 +828,7 @@ export default {
         };
     },
     async created() {
+        this.loadConfiguration()
         await this.initForm();
         await this.getTables();
         this.events();
@@ -840,6 +843,9 @@ export default {
     },
 
     computed: {
+            ...mapState([
+                'config',
+            ]),
         classObjectCol() {
             let cols = this.configuration.colums_grid_item;
 
@@ -882,6 +888,7 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['loadConfiguration']),
         keyupEnterQuantity() {
             this.initFocus();
         },

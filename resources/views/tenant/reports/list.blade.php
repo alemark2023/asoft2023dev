@@ -22,6 +22,7 @@
 
     <div class="row">
         <!-- General -->
+        @if(in_array('reports_app_general', $vc_module_levels))
         <div class="col-6 col-md-4 mb-4">
             <div class="card card-dashboard card-reports">
                 <div class="card-body">
@@ -70,7 +71,9 @@
                 </div>
             </div>
         </div>
+        @endif
         <!-- Compras -->
+        @if(in_array('reports_app_shopping', $vc_module_levels))
         <div class="col-6 col-md-4 mb-4">
             <div class="card card-dashboard card-reports">
                 <div class="card-body">
@@ -101,7 +104,9 @@
                 </div>
             </div>
         </div>
+        @endif
         <!-- Ventas -->
+        @if(in_array('reports_app_sales', $vc_module_levels))
         <div class="col-6 col-md-4 mb-4">
             <div class="card card-dashboard card-reports">
                 <div class="card-body">
@@ -153,7 +158,9 @@
                 </div>
             </div>
         </div>
+        @endif
         <!-- Ventas/Comisiones -->
+        @if(in_array('reports_app_sales_commissions', $vc_module_levels))
         <div class="col-6 col-md-4 mb-4">
             <div class="card card-dashboard card-reports">
                 <div class="card-body">
@@ -172,7 +179,9 @@
                 </div>
             </div>
         </div>
+        @endif
         <!-- Pedidos -->
+        @if(in_array('reports_app_sales_orders', $vc_module_levels))
         <div class="col-6 col-md-4 mb-4">
             <div class="card card-dashboard card-reports">
                 <div class="card-body">
@@ -190,7 +199,9 @@
                 </div>
             </div>
         </div>
+        @endif
         <!-- Guias -->
+        @if(in_array('reports_app_guides', $vc_module_levels))
         <div class="col-6 col-md-4 mb-4">
             <div class="card card-dashboard card-reports">
                 <div class="card-body">
@@ -205,5 +216,6 @@
                 </div>
             </div>
         </div>
+        @endif
     </div>
 @endsection
