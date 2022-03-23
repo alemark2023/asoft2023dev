@@ -291,7 +291,11 @@
                             this.pull.status = 'success'
                         }
                         let pullContent = this.pull.content
-                        if (pullContent.includes('Already up to date.') === true ) {
+
+                        if (
+                            pullContent.includes('Already up to date.') === true |
+                            pullContent.includes('Already up-to-date.') === true
+                        ) {
                             this.messajeOk('Todo esta correcto')
                             this.hideInfo()
                             this.loading_submit = false
@@ -333,7 +337,7 @@
                     } else {
                         console.log(error)
                     }
-                    this.messajeOk('Ha ocurrido un error al instalar las dependencias Composer')
+                    this.messajeFail('Ha ocurrido un error al instalar las dependencias Composer')
                 })
 
                 this.loading_submit = false
