@@ -656,10 +656,22 @@
          *
          * @return null
          */
-        public function scopeWhereTypeUser($query)
+        public function scopeWhereTypeUser($query, $params = [])
         {
             /** @var User $user */
-            $user = auth()->user();
+            //$user_id = null;
+
+            if(isset($params['user_id'])) {
+                $user_id = (int)$params['user_id'];
+                $user = User::find($user_id);
+                if(!$user) {
+                    $user = new User();
+                }
+            }
+            else { 
+                $user = auth()->user();
+            }
+           
             return ($user->type === 'admin') ? null : $query->where('user_id', $user->id)->orWhere('seller_id', $user->id)->latest();
             // return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
         }

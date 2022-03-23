@@ -93,6 +93,7 @@
      * @property int|null    $show_pdf_name
      * @property int|null    $dispatches_address_text
      * @property int|null    $show_items_only_user_stablishment
+     * @property int|null    $new_validator_pagination
      * @property bool        $name_product_pdf_to_xml
      * @property int         $item_name_pdf_description
      * @property bool        $auto_print
@@ -224,8 +225,10 @@
             'show_last_price_sale',
             'print_new_line_to_observation',
             'show_logo_by_establishment',
+            'global_discount_type_id',
             'shipping_time_days',
             'url_apiruc',
+            'new_validator_pagination',
             'token_apiruc',
         ];
 
@@ -297,6 +300,7 @@
             'show_logo_by_establishment' => 'bool',
             'print_new_line_to_observation' => 'bool',
             'shipping_time_days' => 'int',
+            'new_validator_pagination' => 'int',
         ];
 
         protected $hidden = [
@@ -470,6 +474,7 @@
                 'pos_cost_price' => $this->isPosCostPrice(),
                 'show_totals_on_cpe_list' => $this->isShowTotalsOnCpeList(),
                 'detraction_amount_rounded_int' => $this->detraction_amount_rounded_int,
+                'global_discount_type_id' => $this->global_discount_type_id,
                 'show_terms_condition_pos' => (bool)$this->show_terms_condition_pos,
                 'mi_tienda_pe' => $this->isMiTiendaPe(),
                 'show_ticket_80' => (bool)$this->show_ticket_80,
@@ -477,6 +482,7 @@
                 'show_ticket_50' => (bool)$this->show_ticket_50,
                 'show_last_price_sale' => (bool)$this->show_last_price_sale,
                 'shipping_time_days' => $this->shipping_time_days,
+                'new_validator_pagination' => $this->getNewValidatorPagination(),
             ];
         }
 
@@ -2045,6 +2051,26 @@
         public function UseCustomApiPeruToken(){
             // .env ALLOW_CLIENT_USE_OWN_APIPERU_TOKEN
             return (bool)\Config('extra.AllowClientUseOwnApiperuToken');
+        }
+
+        /**
+         * @return int|null
+         */
+        public function getNewValidatorPagination(): ?int
+        {
+            $val = (int)$this->new_validator_pagination;
+            return $val==0?(int)config('tenant.items_per_page'):$val;
+        }
+
+        /**
+         * @param int|null $new_validator_pagination
+         *
+         * @return CatItemSize
+         */
+        public function setNewValidatorPagination(?int $new_validator_pagination): CatItemSize
+        {
+            $this->new_validator_pagination = (int)$new_validator_pagination;
+            return $this;
         }
 
     }

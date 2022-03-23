@@ -844,6 +844,7 @@
                 :soapCompany="soapCompany"
                 :businessTurns="businessTurns"
                 :is-print="isPrint"
+                :globalDiscountTypeId="configuration.global_discount_type_id"
             ></payment-form>
         </template>
 

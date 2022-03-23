@@ -8,7 +8,6 @@
     use Illuminate\Contracts\Queue\ShouldQueue;
     use Illuminate\Foundation\Bus\Dispatchable;
     use Hyn\Tenancy\Models\Website;
-    use Illuminate\Support\Facades\DB;
     use Illuminate\Support\Facades\Log;
     use Exception;
     use App\Models\Tenant\DownloadTray;
@@ -18,8 +17,11 @@
     use App\Models\Tenant\Establishment;
     use Modules\Inventory\Exports\InventoryExport;
     use Barryvdh\DomPDF\Facade as PDF;
-    use Carbon\Carbon;
     use Modules\Inventory\Models\ItemWarehouse;
+    use Mpdf\HTMLParserMode;
+    use Mpdf\Mpdf;
+    use Mpdf\Config\ConfigVariables;
+    use Mpdf\Config\FontVariables;
 
     class ProcessInventoryReport implements ShouldQueue
     {
@@ -71,11 +73,11 @@
             if (empty($tray)) {
 
                 \Log::debug("No hay datos
-            $ website_id        =>" . var_export($website_id, true) . "
-            $ tray_id       =>" . var_export($tray_id, true) . "
-            $ warehouse_id      =>" . var_export($warehouse_id, true) . "
-            $ filter        =>" . var_export($filter, true) . "
-            ");
+                    $ website_id        =>" . var_export($website_id, true) . "
+                    $ tray_id       =>" . var_export($tray_id, true) . "
+                    $ warehouse_id      =>" . var_export($warehouse_id, true) . "
+                    $ filter        =>" . var_export($filter, true) . "
+                    ");
 
             } else {
                 try {
@@ -97,18 +99,67 @@
                     $format = $tray->format;
 
                     if ($format === 'pdf') {
-                        Log::debug("Render pdf init");
-                        $pdf = PDF::loadView('inventory::reports.inventory.report', compact('records', 'company', 'establishment', 'format'));
-                        $pdf->setPaper('A4', 'landscape');
-                        $filename = 'INVENTORY_ReporteInv_' . date('YmdHis') . '-' . $tray->user_id;
 
+                        ini_set("pcre.backtrack_limit", "50000000");
+
+                        Log::debug("Render pdf init");
+                        
+                        $html = view('inventory::reports.inventory.report', compact('records', 'company', 'establishment', 'format'))->render();
+
+                        ////////////////////////////////
+
+                        $base_template = $establishment->template_pdf;
+
+
+                        $defaultConfig = (new ConfigVariables())->getDefaults();
+                        $fontDirs = $defaultConfig['fontDir'];
+        
+                        $defaultFontConfig = (new FontVariables())->getDefaults();
+                        $fontData = $defaultFontConfig['fontdata'];
+
+                        $pdf_font_regular = config('tenant.pdf_name_regular');
+                        $pdf_font_bold = config('tenant.pdf_name_bold');
+        
+                        $pdf = new Mpdf([
+                            'format' => 'A4-L',
+                            'fontDir' => array_merge($fontDirs, [
+                                app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                                        DIRECTORY_SEPARATOR.'pdf'.
+                                                        DIRECTORY_SEPARATOR.$base_template.
+                                                        DIRECTORY_SEPARATOR.'font')
+                            ]),
+                            'fontdata' => $fontData + [
+                                'custom_bold' => [
+                                    'R' => $pdf_font_bold.'.ttf',
+                                ],
+                                'custom_regular' => [
+                                    'R' => $pdf_font_regular.'.ttf',
+                                ],
+                            ]
+                        ]);
+
+                        $path_css = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                             DIRECTORY_SEPARATOR.'pdf'.
+                                             DIRECTORY_SEPARATOR.'default'.
+                                             DIRECTORY_SEPARATOR.'style.css');
+
+                        $stylesheet = file_get_contents($path_css);
+                        
+                        $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
+                        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+            
+                        $filename = 'INVENTORY_ReporteInv_' . date('YmdHis') . '-' . $tray->user_id;
                         Log::debug("Render pdf finish");
 
                         Log::debug("Upload pdf init");
+
+                      
                         $this->uploadStorage($filename, $pdf->output('', 'S'), 'download_tray_pdf');
                         Log::debug("Upload pdf finish");
+                        
                         $tray->file_name = $filename;
                         $path = 'download_tray_pdf';
+                        
 
                     } else {
                         $filename = 'INVENTORY_ReporteInv_' . date('YmdHis') . '-' . $tray->user_id;

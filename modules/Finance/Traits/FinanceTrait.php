@@ -327,7 +327,7 @@
 
             $credit_notes = $record->affected_documents->where('note_type', 'credit');
 
-            $total_credit_notes = $credit_notes->sum(function ($note, $requestCurrencyTipeId) {
+            $total_credit_notes = $credit_notes->sum(function ($note) use ($requestCurrencyTipeId) {
 
                 if (in_array($note->document->state_type_id, ['01', '03', '05', '07', '13'])) {
                     return $this->calculateTotalCurrencyType($note->document, $note->document->total, $requestCurrencyTipeId);
