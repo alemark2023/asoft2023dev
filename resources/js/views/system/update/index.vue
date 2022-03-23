@@ -337,7 +337,19 @@
                     } else {
                         console.log(error)
                     }
-                    this.messajeFail('Ha ocurrido un error al instalar las dependencias Composer')
+
+                    if (
+                        error !== undefined &&
+                        error.response !== undefined &&
+                        error.response.status !== undefined &&
+                        error.response.status === 504){
+                        // error de tiempo 504 de servidor nginx
+                        this.execArtisanMigrate()
+
+                    }else{
+                        this.messajeFail('Ha ocurrido un error al instalar las dependencias Composer')
+
+                    }
                 })
 
                 this.loading_submit = false
