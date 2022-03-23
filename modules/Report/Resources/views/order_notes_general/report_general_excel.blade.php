@@ -26,10 +26,12 @@
                                 <th  class="celda">Descuento</th>
                                 <th  class="celda" >Total venta</th>
                                 <th  class="celda">Tipo de pago</th>
-                                <th  class="celda">Repartidor</th>
+                                <th  class="celda">Vendedor</th>
                                 <th  class="celda" >Motivo</th>
                                 <th  class="celda">Detalle</th>
                                 <th  class="celda">Codigo interno</th>
+                                <th  class="celda">Nombre de producto</th>
+                                <th  class="celda">Categoria</th>
                                 <th  class="celda">Marca</th>
                                 <th  class="celda">Cantidad de producto</th>
                                 <th  class="celda">Precio unitario</th>
@@ -61,9 +63,11 @@
                                 $discount_description=0;
                                 $guide_remision=0;
                                 $brand_items=0;
+                                $category_items=0;
+                                $name_items=0;
                                 $obs=0;
                                 $data = $value->getCollectionData();
-                                /* dd($data); */
+                                dd($value);
                                 $items_order=0;
                                 $identifier_order=0;
                                 $guide_remision=0;
@@ -89,6 +93,7 @@
                                 $sale_order_id= empty($data['sale_notes'][0]) ? 0 : $data['sale_notes'][0]['series'].'-'.$data['sale_notes'][0]['id'];
                                 /* dd($guide_remision); */
                                 $items_brand='';
+                                $category_string='';
                                 $discount_string='';
                                 $serie_document=(!$documents_order_id) ? $sale_order_id : $documents_order_id;
                                 foreach ($value->items as $itm) {
@@ -97,6 +102,11 @@
                                     if (!empty($itm->item->brand)) {
                                         $items_brand= str_contains($brand_items,$itm->item->brand) ? $itm->item->brand : $items_brand.=$itm->item->brand.' - ';
                                         $brand_items = trim($items_brand,' - ');
+                                    }
+
+                                    if (!empty($itm->item->category)) {
+                                        $category_string= str_contains($category_items,$itm->item->category) ? $itm->item->category : $category_string.=$itm->item->category.' - ';
+                                        $category_items = trim($items_brand,' - ');
                                     }
 
                                     $acum_price += ($itm->unit_price*$itm->quantity);
@@ -123,7 +133,8 @@
                                     <td  class="celda">{{$discount_description}}</td>
                                     <td  class="celda">{{$obs}}</td>
                                     <td  class="celda">{{$identifier_order}}</td>
-                                    
+                                    <td  class="celda">{{$name_items}}</td>
+                                    <td  class="celda">{{$category_items}}</td>
                                     <td  class="celda">{{$brand_items}}</td>
                                     <td  class="celda">{{$items_order}}</td>
                                     <td  class="celda">{{number_format($acum_price,2)}}</td>
