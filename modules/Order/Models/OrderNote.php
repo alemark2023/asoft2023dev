@@ -416,6 +416,14 @@
             return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
         }
 
+        public function scopeSearchByDate(Builder $query, $params)
+        {
+            if ($params['date_start'] !== null && $params['date_end'] !== null) {
+                $query->where([['date_of_issue', '>=', $params['date_start']], ['date_of_due', '<=', $params['date_end']]]);
+            }
+
+            return $query;
+        }
 
         /**
          * Se usa en la relacion con el inventario kardex en modules/Inventory/Traits/InventoryTrait.php.

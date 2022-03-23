@@ -214,6 +214,7 @@
             // 'changed',
             'user_rel_suscription_plan_id',
             'subtotal',
+            'total_igv_free',
         ];
 
         protected $casts = [
@@ -234,6 +235,7 @@
             'total_unaffected' => 'float',
             'total_exonerated' => 'float',
             'total_igv' => 'float',
+            'total_igv_free' => 'float',
             'total_base_isc' => 'float',
             'total_isc' => 'float',
             'total_base_other_taxes' => 'float',
@@ -570,9 +572,18 @@
          *
          * @return null
          */
-        public function scopeWhereTypeUser($query)
+        public function scopeWhereTypeUser($query, $params= [])
         {
-            $user = auth()->user();
+            if(isset($params['user_id'])) {
+                $user_id = (int)$params['user_id'];
+                $user = User::find($user_id);
+                if(!$user) {
+                    $user = new User();
+                }
+            }
+            else { 
+                $user = auth()->user();
+            }
             return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
         }
 

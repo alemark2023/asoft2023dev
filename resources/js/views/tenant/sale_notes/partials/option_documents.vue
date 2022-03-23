@@ -398,6 +398,7 @@
                     total_taxes: 0,
                     total_value: 0,
                     subtotal: 0,
+                    total_igv_free: 0,
                     total: 0,
                     operation_type_id: null,
                     date_of_due: null,
@@ -545,6 +546,7 @@
                 this.document.total_unaffected = q.total_unaffected
                 this.document.total_exonerated = q.total_exonerated
                 this.document.total_igv = q.total_igv
+                this.document.total_igv_free = q.total_igv_free
                 this.document.total_base_isc = q.total_base_isc
                 this.document.total_isc = q.total_isc
                 this.document.total_base_other_taxes = q.total_base_other_taxes
