@@ -879,7 +879,7 @@ class SaleNoteController extends Controller
                 }
                 /* dd(isset($it->item->name_product_pdf)); */
                 $item_name_product = isset($it->item->name_product_pdf) ? (strlen($it->item->name_product_pdf)/50) * 10 : 0;
-                
+                $item_name_product += $item_name_product;
             }
             $legends = $this->document->legends != '' ? '10' : '0';
             $bank_accounts = BankAccount::count() * 6;
@@ -1007,7 +1007,7 @@ class SaleNoteController extends Controller
         $stylesheet = file_get_contents($path_css);
 
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
-        
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         if(config('tenant.pdf_template_footer')) {
             /* if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) */
@@ -1023,7 +1023,11 @@ class SaleNoteController extends Controller
                     }
                 }
                 
-                $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
+                if ($format_pdf === 'ticket') {
+                    $pdf->WriteHTML($html_footer.$html_footer_legend, HTMLParserMode::HTML_BODY);
+                }else{
+                    $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
+                }
                 $pdf->setAutoBottomMargin = 'stretch';
                 $pdf->setAutoTopMargin = 'stretch';
         }
@@ -1035,7 +1039,7 @@ class SaleNoteController extends Controller
                 $pdf->SetHTMLFooter("");
             }
         }
-        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+        
         $this->uploadFile($this->document->filename, $pdf->output('', 'S'), 'sale_note');
     }
 
