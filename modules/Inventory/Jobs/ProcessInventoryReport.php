@@ -94,7 +94,7 @@
                     $records = $this->getRecordsTranform($this->warehouse_id, $this->filter);
 
                     if (!is_object($tray)) {
-                        \Log::debug('DE ' . var_export($tray, true));
+                        //Log::debug('DE ' . var_export($tray, true));
                     }
                     $format = $tray->format;
 
@@ -162,6 +162,8 @@
                         
 
                     } else {
+
+                        Log::debug($records);
                         $filename = 'INVENTORY_ReporteInv_' . date('YmdHis') . '-' . $tray->user_id;
                         Log::debug("Render excel init");
                         $inventoryExport = new InventoryExport();
