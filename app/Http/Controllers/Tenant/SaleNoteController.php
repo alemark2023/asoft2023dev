@@ -866,22 +866,15 @@ class SaleNoteController extends Controller
             if (strlen($this->document->observation)>100) {
                 $document_observation = (strlen($this->document->observation)/100) * 10;
             }
-
-            $extra_by_item_description = 0;
             $discount_global = 0;
-            $item_name_product = 0;
+            $extra_by_item_description = 0;
             foreach ($this->document->items as $it) {
-                /* if(strlen($it->item->description)>100){
+                if(strlen($it->item->description)>100){
                     $extra_by_item_description +=24;
-                } */
-                $extra_by_item_description = isset($it->item->description) ? (strlen($it->item->description)/10) * 10 : 0;
-                $extra_by_item_description += $extra_by_item_description;
+                }
                 if ($it->discounts) {
                     $discount_global = $discount_global + 1;
                 }
-                /* dd(isset($it->item->name_product_pdf)); */
-                $item_name_product = isset($it->item->name_product_pdf) ? (strlen($it->item->name_product_pdf)/30) * 10 : 0;
-                $item_name_product += $item_name_product;
             }
             $legends = $this->document->legends != '' ? '10' : '0';
             $bank_accounts = BankAccount::count() * 6;
@@ -891,10 +884,8 @@ class SaleNoteController extends Controller
                 'format' => [
                     $width,
                     120 +
-                    $quantity_rows  +
+                    ($quantity_rows * 8)+
                     ($discount_global * 3) +
-                    $item_name_product +
-                    $document_observation +
                     $company_logo +
                     $payments +
                     $company_name +
@@ -1030,8 +1021,6 @@ class SaleNoteController extends Controller
                 }else{
                     $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
                 }
-                $pdf->setAutoBottomMargin = 'stretch';
-                $pdf->setAutoTopMargin = 'stretch';
         }
 
         if ($base_template === 'brand') {
