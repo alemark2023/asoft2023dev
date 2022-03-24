@@ -41,7 +41,7 @@ class InventoryExport implements  FromView, ShouldAutoSize
 
     public function view(): View {
 
-        return view('inventory::reports.inventory.report', [
+        return view('inventory::reports.inventory.report_excel', [
             'records' => $this->records,
             'company' => $this->company,
             'establishment' => $this->establishment,

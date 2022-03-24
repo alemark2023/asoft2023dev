@@ -243,18 +243,30 @@
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label class="control-label">Monto descuento
+                                        <label class="control-label">
+                                            
+                                            <el-checkbox v-model="is_discount_amount"
+                                                            class="ml-1 mr-1"
+                                                            @change="changeTypeDiscount"></el-checkbox>
+
+                                            <template>{{ (is_discount_amount) ? 'Monto' : 'Porcentaje'}} descuento</template>
+                                            
                                             <el-tooltip class="item"
                                                         :content="global_discount_type.description"
                                                         effect="dark"
                                                         placement="top">
                                                 <i class="fa fa-info-circle"></i>
                                             </el-tooltip>
+
                                         </label>
                                         <el-input v-model="discount_amount"
                                                   :disabled="!enabled_discount"
-                                                  @input="inputDiscountAmount()">
-                                            <template slot="prepend">{{ currencyTypeActive.symbol }}</template>
+                                                  @change="inputDiscountAmount()"
+                                                  >
+
+                                            <template slot="prepend" v-if="is_discount_amount">{{ currencyTypeActive.symbol }}</template>
+                                            <template slot="append" v-else>%</template>
+
                                         </el-input>
                                     </div>
                                 </div>
@@ -490,6 +502,7 @@ export default {
             global_discount_types: [],
             global_discount_type: {},
             error_global_discount: false,
+            is_discount_amount: false,
         }
     },
     async created() {
@@ -519,6 +532,11 @@ export default {
     },
     mounted() {
         // console.log(this.currencyTypeActive)
+    },
+    computed: {
+        isGlobalDiscountBase: function () {
+            return (this.globalDiscountTypeId === '02')
+        },
     },
     methods: {
         handleFn113() {
@@ -563,14 +581,20 @@ export default {
             }
 
         },
+        changeTypeDiscount() {
+            this.inputDiscountAmount()
+        },
         inputDiscountAmount() {
 
             if (this.enabled_discount) {
 
                 if (this.discount_amount && !isNaN(this.discount_amount) && parseFloat(this.discount_amount) > 0) {
 
-                    if (this.discount_amount >= this.form.total)
-                        return this.$message.error("El monto de descuento debe ser menor al total de venta")
+                    if(this.is_discount_amount)
+                    {
+                        if (this.discount_amount >= this.form.total)
+                            return this.$message.error("El monto de descuento debe ser menor al total de venta")
+                    }
 
                     this.deleteDiscountGlobal()
                     this.reCalculateTotal()
@@ -604,25 +628,43 @@ export default {
                 discount_type_id: this.global_discount_type.id,
                 description: this.global_discount_type.description,
                 factor: factor,
-                amount: amount,
+                amount: _.round(amount, 2),
                 base: base
             })
         },
         async discountGlobal() {
 
-            let percentage_igv = 18
-            let amount = parseFloat(this.discount_amount)
-            let base = (this.globalDiscountTypeId === '02') ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
-            let factor = _.round(amount / base, 5)
+            // let percentage_igv = 18
+            // let amount = parseFloat(this.discount_amount)
+            const input_global_discount = parseFloat(this.discount_amount) //input se usa para monto y porcentaje
+            // let base = (this.globalDiscountTypeId === '02') ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
+            // let factor = _.round(amount / base, 5)
 
             let discount = _.find(this.form.discounts, {'discount_type_id': this.globalDiscountTypeId})
     
-            if (amount > 0 && !discount)
+            if (input_global_discount > 0 && !discount)
             {
+
+                const percentage_igv = 18
+                let base = (this.isGlobalDiscountBase) ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
+                let amount = 0
+                let factor = 0
+                
+                if (this.is_discount_amount) 
+                {
+                    amount = input_global_discount
+                    factor = _.round(amount / base, 5)
+                }
+                else 
+                {
+                    factor = _.round(input_global_discount / 100, 5)
+                    amount = factor * base
+                }
+
                 this.form.total_discount = _.round(amount, 2)
 
                 // descuentos que afectan la bi
-                if(this.globalDiscountTypeId === '02')
+                if(this.isGlobalDiscountBase)
                 {
                     this.form.total_taxed = _.round(base - this.form.total_discount, 2)
                     this.form.total_value = this.form.total_taxed
@@ -675,26 +717,34 @@ export default {
                 total_charge += parseFloat(row.total_charge)
 
                 if (row.affectation_igv_type_id === '10') {
-                    total_taxed += parseFloat(row.total_value)
+                    total_taxed += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
+
                 if (row.affectation_igv_type_id === '20') {
-                    total_exonerated += parseFloat(row.total_value)
+                    total_exonerated += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
+
                 if (row.affectation_igv_type_id === '30') {
                     total_unaffected += parseFloat(row.total_value)
                 }
+
                 if (row.affectation_igv_type_id === '40') {
                     total_exportation += parseFloat(row.total_value)
                 }
+
                 if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
                     total_free += parseFloat(row.total_value)
                 }
+
                 if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
-                    total_igv += parseFloat(row.total_igv)
-                    total += parseFloat(row.total)
+                    total_igv += (row.total_igv_without_rounding) ? parseFloat(row.total_igv_without_rounding) : parseFloat(row.total_igv)
+                    total += (row.total_without_rounding) ? parseFloat(row.total_without_rounding) : parseFloat(row.total)
                 }
-                total_value += parseFloat(row.total_value)
+
+                total_value += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
+
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
+
 
                 if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
 
@@ -937,6 +987,8 @@ export default {
                 document_id: null,
                 sale_note_id: null
             }
+
+            this.is_discount_amount = true
 
         },
 
