@@ -1341,27 +1341,74 @@
                                 <span>Restaurante</span>
                             </a>
                             <ul class="nav nav-children">
-                                <li class="">
+                                <li class="nav-parent
+                                {{ ($secondLevel != null && $secondLevel == 'cash')?'nav-active nav-expanded':'' }}">
                                     <a class="nav-link"
-                                        href="{{ route('tenant.restaurant.menu') }}"
-                                        target="blank">
-                                        Ver Menu
+                                        href="#">
+                                        POS
                                     </a>
+                                    <ul class="nav nav-children">
+                                        <li class="{{ ($secondLevel != null && $secondLevel == 'cash')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                                href="{{route('tenant.restaurant.cash.index')}}">
+                                                Caja Chica
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-parent">
+                                    <a class="nav-link"
+                                        href="#">
+                                        Mesas
+                                    </a>
+                                    <ul class="nav nav-children">
+                                        <li class="">
+                                            <a class="nav-link"
+                                                href="#">
+                                                Cantidad mesas
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-parent
+                                {{ ( $secondLevel != null && $secondLevel == 'promotions') || ( $secondLevel != null && $secondLevel == 'orders') ?'nav-active nav-expanded':'' }}">
+                                    <a class="nav-link"
+                                        href="#">
+                                        Pedidos
+                                    </a>
+                                    <ul class="nav nav-children">
+                                        <li class="">
+                                            <a class="nav-link"
+                                                href="{{ route('tenant.restaurant.menu') }}"
+                                                target="blank">
+                                                Ver Menu
+                                            </a>
+                                        </li>
+                                        <li class="{{ ( $secondLevel != null && $secondLevel == 'promotions')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                                href="{{route('tenant.restaurant.promotion.index')}}">
+                                                Promociones(Banners)
+                                            </a>
+                                        </li>
+                                        <li class="{{ ( $secondLevel != null && $secondLevel == 'orders')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                                href="{{route('tenant.restaurant.order.index')}}">
+                                                Pedidos
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
                                 <li class="{{ ( $secondLevel != null && $secondLevel == 'list' && $firstLevel === 'restaurant' ) ? 'nav-active' : '' }}">
                                     <a class="nav-link"
                                         href="{{ route('tenant.restaurant.list_items') }}">
-                                        Productos de restaurante
+                                        Productos
                                     </a>
                                 </li>
-
-                                <li class="{{ ( $secondLevel != null && $secondLevel == 'promotions')?'nav-active':'' }}">
-                                        <a class="nav-link"
-                                           href="{{route('tenant.restaurant.promotion.index')}}">Promociones(Banners)</a>
-                                </li>
-                                <li class="{{ ( $secondLevel != null && $secondLevel == 'orders')?'nav-active':'' }}">
-                                        <a class="nav-link"
-                                           href="{{route('tenant.restaurant.order.index')}}">Pedidos</a>
+                                <li class="{{ ( $secondLevel != null && $secondLevel == 'configuration' && $firstLevel === 'restaurant' ) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.restaurant.configuration') }}">
+                                        Configuración
+                                    </a>
                                 </li>
                             </ul>
                         </li>

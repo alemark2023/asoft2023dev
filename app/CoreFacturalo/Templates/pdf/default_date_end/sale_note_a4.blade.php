@@ -160,7 +160,8 @@
             </td>
             <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left">
-                {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
+                {{$row->item->description}}
+                @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
 
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
@@ -195,7 +196,8 @@
             </td>
             <td class="text-center align-top">
                 @if(isset($row->item) && isset($row->item->date_of_due))
-                    <span style="font-size: 9px"> {{ $row->item->date_of_due }}</span><br>
+                    {{-- estaba genera error especialchart --}}
+                    <span style="font-size: 9px"> {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s.u',$row->item->date_of_due->date)->format('Y-m-d') }}</span><br>
                 @endif
 
             </td>
@@ -218,6 +220,7 @@
         <tr>
             <td colspan="8" class="border-bottom"></td>
         </tr>
+
     @endforeach
         @if($document->total_exportation > 0)
             <tr>

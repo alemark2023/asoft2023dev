@@ -36,6 +36,7 @@
                             <th>Moneda</th>
                             <th class="text-center" v-if="columns.web_platforms.visible">Plataforma</th>
                             <th>Orden de compra</th>
+                            <th v-if="columns.total_charge.visible">Total Cargos</th>
                             <th>Total Exonerado</th>
                             <th>Total Inafecto</th>
                             <th>Total Gratuito</th>
@@ -79,13 +80,17 @@
 
                             <td>{{ row.currency_type_id }}</td>
 
-
-                        <td  v-if="columns.web_platforms.visible">
-                            <template v-for="(platform,i) in row.web_platforms" v-if="row.web_platforms !== undefined">
-                                <label class="d-block"  :key="i">{{platform.name}}</label>
-                            </template>
-                        </td>
+                            <td  v-if="columns.web_platforms.visible">
+                                <template v-for="(platform,i) in row.web_platforms" v-if="row.web_platforms !== undefined">
+                                    <label class="d-block"  :key="i">{{platform.name}}</label>
+                                </template>
+                            </td>
                             <td>{{ row.purchase_order }}</td>
+                            <td v-if="columns.total_charge.visible">
+                                {{
+                                    (row.document_type_id == '07') ? ((row.total_charge == 0) ? '0.00' : '-' + row.total_charge) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_charge)
+                                }}
+                            </td>
 
 
                             <td>{{
@@ -174,6 +179,10 @@
                     },
                     total_isc: {
                         title: 'Total ISC',
+                        visible: false
+                    },
+                    total_charge: {
+                        title: 'Total Cargos',
                         visible: false
                     },
                 },

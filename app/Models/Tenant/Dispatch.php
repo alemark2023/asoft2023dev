@@ -85,6 +85,7 @@
             'observations',
             'transport_mode_type_id',
             'transfer_reason_type_id',
+            'transfer_reason_type',
             'transfer_reason_description',
             'date_of_shipping',
             'transshipment_indicator',
@@ -109,6 +110,7 @@
             'has_cdr',
 
             'reference_document_id',
+            'reference_order_note_id',
             'reference_quotation_id',
             'reference_order_note_id',
             'reference_order_form_id',
@@ -117,11 +119,17 @@
             'soap_shipping_response',
             'data_affected_document',
             'related',
+            
+            'send_to_pse',
+            'response_signature_pse',
+            'response_send_cdr_pse',
+
         ];
 
         protected $casts = [
             'date_of_issue' => 'date',
             'date_of_shipping' => 'date',
+            'send_to_pse' => 'bool',
         ];
 
         public function getEstablishmentAttribute($value)
@@ -455,10 +463,13 @@
                 'download_external_pdf' => $this->download_external_pdf,
                 'download_external_cdr' => $this->download_external_cdr,
                 'reference_document_id' => $this->reference_document_id,
+                'reference_order_note_id' => $this->reference_order_note_id,
+                'order_notes' => $this->order_note,
                 'created_at' => $this->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
                 'soap_shipping_response' => $this->soap_shipping_response,
                 'btn_generate_document' => $this->generate_document || $this->reference_document_id ? false : true,
+                'transfer_reason_type' => $this->transfer_reason_type,
                 'documents' => $documents
             ];
 
@@ -554,6 +565,40 @@
             }
 
             return null;
+        }
+
+        
+        /**
+         * Obtener tipo de documento válido para enviar el xml a firmar al pse
+         *
+         * Usado en:
+         * App\CoreFacturalo\Services\Helpers\SendDocumentPse
+         * 
+         * @return string
+         */
+        public function getDocumentTypeForPse()
+        {
+            return 'GUIA';
+        }
+        
+        public function getResponseSendCdrPseAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+
+        public function setResponseSendCdrPseAttribute($value)
+        {
+            $this->attributes['response_send_cdr_pse'] = (is_null($value)) ? null : json_encode($value);
+        }
+
+        public function getResponseSignaturePseAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+
+        public function setResponseSignaturePseAttribute($value)
+        {
+            $this->attributes['response_signature_pse'] = (is_null($value)) ? null : json_encode($value);
         }
 
     }
