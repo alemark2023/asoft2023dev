@@ -871,9 +871,11 @@ class SaleNoteController extends Controller
             $discount_global = 0;
             $item_name_product = 0;
             foreach ($this->document->items as $it) {
-                if(strlen($it->item->description)>100){
+                /* if(strlen($it->item->description)>100){
                     $extra_by_item_description +=24;
-                }
+                } */
+                $extra_by_item_description = isset($it->item->description) ? (strlen($it->item->description)/10) * 10 : 0;
+                $extra_by_item_description += $extra_by_item_description;
                 if ($it->discounts) {
                     $discount_global = $discount_global + 1;
                 }
