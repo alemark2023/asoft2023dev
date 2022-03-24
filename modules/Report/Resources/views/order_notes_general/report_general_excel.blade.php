@@ -67,7 +67,7 @@
                                 $name_items=0;
                                 $obs=0;
                                 $data = $value->getCollectionData();
-                                dd($value);
+                                /* dd($value); */
                                 $items_order=0;
                                 $identifier_order=0;
                                 $guide_remision=0;
@@ -95,28 +95,32 @@
                                 $items_brand='';
                                 $category_string='';
                                 $discount_string='';
+                                $name_string='';
                                 $serie_document=(!$documents_order_id) ? $sale_order_id : $documents_order_id;
                                 foreach ($value->items as $itm) {
-                                    $discount=(array) $itm->discounts;
-                                    $items_order+=$itm->quantity;
-                                    if (!empty($itm->item->brand)) {
-                                        $items_brand= str_contains($brand_items,$itm->item->brand) ? $itm->item->brand : $items_brand.=$itm->item->brand.' - ';
+                                    $discount=(array)$itm['discounts'];
+                                    $items_order+=$itm['quantity'];
+                                    $item=(array)$itm['item'];
+                                    if (!empty($item['brand'])) {
+                                        $items_brand= str_contains($brand_items,$item['brand']) ? $item['brand'].' - ' : $items_brand.=$item['brand'].' - ';
                                         $brand_items = trim($items_brand,' - ');
                                     }
 
-                                    if (!empty($itm->item->category)) {
-                                        $category_string= str_contains($category_items,$itm->item->category) ? $itm->item->category : $category_string.=$itm->item->category.' - ';
-                                        $category_items = trim($items_brand,' - ');
+                                    if (!empty($item['category'])) {
+                                        $category_string= str_contains($category_items,$item['category']) ? $item['category'].' - ' : $category_string.=$item['category'].' - ';
+                                        $category_items = trim($category_string,' - ');
                                     }
 
-                                    $acum_price += ($itm->unit_price*$itm->quantity);
-                                    $acum_discount += $itm->total_discount;
+                                    $acum_price += ($itm['unit_price']*$itm['quantity']);
+                                    $acum_discount += $itm['total_discount'];
                                     if (!empty($discount)) {
                                         $discount_format=(array) $discount[0];
                                         $discount_string = str_contains($discount_description, $discount_format['description']) ? $discount_format['description'] : $discount_string.=$discount_format['description'].' - ';
                                         $discount_description = trim($discount_string,' - ');
                                     }
+                                    $name_string = str_contains($name_items, $itm['item_details'][0]['name']) ? $itm['item_details'][0]['name'].' - ' : $name_string.=$itm['item_details'][0]['name'].' - ';
                                     
+                                    $name_items=trim($name_string,' - ');
                                 }
                                 $obs=$value->observation;
                             @endphp

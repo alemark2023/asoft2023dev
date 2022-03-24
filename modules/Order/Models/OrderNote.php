@@ -23,6 +23,7 @@
     use Illuminate\Database\Eloquent\Relations\MorphMany;
     use Illuminate\Support\Collection;
     use Modules\Inventory\Models\InventoryKardex;
+    use App\Models\Tenant\Item;
     use Modules\Item\Models\ItemLot;
     use Modules\Item\Models\ItemLotsGroup;
 
@@ -614,7 +615,18 @@
                     ];
                 }),
                 'sale_notes' => $this->sale_notes,
-                'items' => $this->items,
+                'items_details' => $this->items->transform(function ($row) {
+                    /** @var Document $row */
+                    return [
+                        'item_details' => Item::where('id',$row->item_id)->get(),
+                        'item' => $row->item,
+                        'discounts' => $row->discounts,
+                        'quantity' => $row->quantity,
+                        'unit_price' => $row->unit_price,
+                        'total_discount' => $row->total_discount,
+
+                    ];
+                }),
                 'btn_generate' => $btn_generate,
                 'mi_tienda_pe' => $miTiendaPe,
                 'dispatches' => $dispatches,
