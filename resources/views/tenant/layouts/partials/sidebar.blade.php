@@ -1404,6 +1404,12 @@
                                         Productos
                                     </a>
                                 </li>
+                                <li class="{{ ( $secondLevel != null && $secondLevel == 'configuration' && $firstLevel === 'restaurant' ) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.restaurant.configuration') }}">
+                                        Configuración
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     @endif

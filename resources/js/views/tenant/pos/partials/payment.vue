@@ -243,11 +243,30 @@
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label class="control-label">Monto descuento</label>
+                                        <label class="control-label">
+                                            
+                                            <el-checkbox v-model="is_discount_amount"
+                                                            class="ml-1 mr-1"
+                                                            @change="changeTypeDiscount"></el-checkbox>
+
+                                            <template>{{ (is_discount_amount) ? 'Monto' : 'Porcentaje'}} descuento</template>
+                                            
+                                            <el-tooltip class="item"
+                                                        :content="global_discount_type.description"
+                                                        effect="dark"
+                                                        placement="top">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+
+                                        </label>
                                         <el-input v-model="discount_amount"
                                                   :disabled="!enabled_discount"
-                                                  @input="inputDiscountAmount()">
-                                            <template slot="prepend">{{ currencyTypeActive.symbol }}</template>
+                                                  @change="inputDiscountAmount()"
+                                                  >
+
+                                            <template slot="prepend" v-if="is_discount_amount">{{ currencyTypeActive.symbol }}</template>
+                                            <template slot="append" v-else>%</template>
+
                                         </el-input>
                                     </div>
                                 </div>
@@ -448,7 +467,7 @@ import MultiplePaymentForm from './multiple_payment.vue'
 export default {
     components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress},
 
-    props: ['form', 'customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany', 'businessTurns', 'isPrint'],
+    props: ['form', 'customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany', 'businessTurns', 'isPrint', 'globalDiscountTypeId'],
     data() {
         return {
             enabled_discount: false,
@@ -479,7 +498,11 @@ export default {
             statusDocument: {},
             payment_method_types: [],
             payments: [],
-            locked_submit: false
+            locked_submit: false,
+            global_discount_types: [],
+            global_discount_type: {},
+            error_global_discount: false,
+            is_discount_amount: false,
         }
     },
     async created() {
@@ -509,6 +532,11 @@ export default {
     },
     mounted() {
         // console.log(this.currencyTypeActive)
+    },
+    computed: {
+        isGlobalDiscountBase: function () {
+            return (this.globalDiscountTypeId === '02')
+        },
     },
     methods: {
         handleFn113() {
@@ -553,14 +581,20 @@ export default {
             }
 
         },
+        changeTypeDiscount() {
+            this.inputDiscountAmount()
+        },
         inputDiscountAmount() {
 
             if (this.enabled_discount) {
 
                 if (this.discount_amount && !isNaN(this.discount_amount) && parseFloat(this.discount_amount) > 0) {
 
-                    if (this.discount_amount >= this.form.total)
-                        return this.$message.error("El monto de descuento debe ser menor al total de venta")
+                    if(this.is_discount_amount)
+                    {
+                        if (this.discount_amount >= this.form.total)
+                            return this.$message.error("El monto de descuento debe ser menor al total de venta")
+                    }
 
                     this.deleteDiscountGlobal()
                     this.reCalculateTotal()
@@ -584,35 +618,79 @@ export default {
 
             return (not_exonerated) ? false : true
         },
+        setConfigGlobalDiscountType()
+        {
+            this.global_discount_type = _.find(this.global_discount_types, { id : this.globalDiscountTypeId})
+        },
+        setGlobalDiscount(factor, amount, base)
+        {
+            this.form.discounts.push({
+                discount_type_id: this.global_discount_type.id,
+                description: this.global_discount_type.description,
+                factor: factor,
+                amount: _.round(amount, 2),
+                base: base
+            })
+        },
         async discountGlobal() {
 
-            // let is_exonerated = this.isExonerated()
-            // let is_exonerated = false
+            // let percentage_igv = 18
+            // let amount = parseFloat(this.discount_amount)
+            const input_global_discount = parseFloat(this.discount_amount) //input se usa para monto y porcentaje
+            // let base = (this.globalDiscountTypeId === '02') ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
+            // let factor = _.round(amount / base, 5)
 
-            let global_discount = parseFloat(this.discount_amount)
+            let discount = _.find(this.form.discounts, {'discount_type_id': this.globalDiscountTypeId})
+    
+            if (input_global_discount > 0 && !discount)
+            {
 
-            let base = parseFloat(this.form.total)
-            let amount = parseFloat(global_discount)
-            let factor = _.round(amount / base, 5)
-
-            let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
-
-            if (global_discount > 0 && !discount) {
+                const percentage_igv = 18
+                let base = (this.isGlobalDiscountBase) ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
+                let amount = 0
+                let factor = 0
+                
+                if (this.is_discount_amount) 
+                {
+                    amount = input_global_discount
+                    factor = _.round(amount / base, 5)
+                }
+                else 
+                {
+                    factor = _.round(input_global_discount / 100, 5)
+                    amount = factor * base
+                }
 
                 this.form.total_discount = _.round(amount, 2)
-                this.form.total = _.round(this.form.total - amount, 2)
 
-                this.form.discounts.push({
-                    discount_type_id: '03',
-                    description: 'Descuentos globales que no afectan la base imponible del IGV/IVAP',
-                    factor: factor,
-                    amount: amount,
-                    base: base
-                })
+                // descuentos que afectan la bi
+                if(this.isGlobalDiscountBase)
+                {
+                    this.form.total_taxed = _.round(base - this.form.total_discount, 2)
+                    this.form.total_value = this.form.total_taxed
+                    this.form.total_igv = _.round(this.form.total_taxed * (percentage_igv / 100), 2)
+    
+                    //impuestos (isc + igv + icbper)
+                    this.form.total_taxes = _.round(this.form.total_igv + this.form.total_isc + this.form.total_plastic_bag_taxes, 2);
+                    this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
+                    this.form.subtotal = this.form.total
 
+                    if (this.form.total <= 0) this.$message.error("El total debe ser mayor a 0, verifique el tipo de descuento asignado (Configuración/Avanzado/Contable)")
+
+                }
+                // descuentos que no afectan la bi
+                else
+                {
+                    // this.form.total_discount = _.round(amount, 2)
+                    this.form.total = _.round(this.form.total - amount, 2)
+                }
+
+                this.setGlobalDiscount(factor, amount, base)
             }
 
-            this.difference = this.enter_amount - this.form.total
+
+            this.difference = _.round(this.enter_amount - this.form.total, 2)
+
             // this.difference = this.enter_amount - this.form.total_payable_amount
             // console.log(this.form.discounts)
         },
@@ -714,15 +792,18 @@ export default {
         },
         deleteDiscountGlobal() {
 
-            let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
-            let index = this.form.discounts.indexOf(discount)
-            // let is_exonerated = this.isExonerated()
+            this.form.discounts = []
+            this.form.total_discount = 0
 
-            if (index > -1) {
-                this.form.discounts.splice(index, 1)
-                this.form.total_discount = 0
-                // this.setDiscountByItem(0, is_exonerated)
-            }
+            // let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
+            // let index = this.form.discounts.indexOf(discount)
+            // // let is_exonerated = this.isExonerated()
+
+            // if (index > -1) {
+            //     this.form.discounts.splice(index, 1)
+            //     this.form.total_discount = 0
+            //     // this.setDiscountByItem(0, is_exonerated)
+            // }
 
         },
         back() {
@@ -899,6 +980,8 @@ export default {
                 sale_note_id: null
             }
 
+            this.is_discount_amount = true
+
         },
 
         filterSeries() {
@@ -950,6 +1033,8 @@ export default {
         },
         async clickPayment() {
             // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
+
+            if(this.form.total <= 0) return this.$message.error('El total debe ser mayor a 0')
 
             if (!moment(moment().format("YYYY-MM-DD")).isSame(this.form.date_of_issue)) {
                 return this.$message.error('La fecha de emisión no coincide con la del día actual');
@@ -1091,7 +1176,9 @@ export default {
                     this.all_series = response.data.series
                     this.payment_method_types = response.data.payment_method_types
                     this.cards_brand = response.data.cards_brand
+                    this.global_discount_types = response.data.global_discount_types
                     this.filterSeries()
+                    this.setConfigGlobalDiscountType()
                 })
 
         },

@@ -10,7 +10,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Catalogs\{
+    AffectationIgvType,
+    ChargeDiscountType
+};
 use GuzzleHttp\Client;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
@@ -344,8 +347,9 @@ class ConfigurationController extends Controller
     public function tables()
     {
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
+        $global_discount_types = ChargeDiscountType::whereIn('id', ['02', '03'])->whereActive()->get();
 
-        return compact('affectation_igv_types');
+        return compact('affectation_igv_types', 'global_discount_types');
     }
 
     public function visualDefaults()

@@ -228,19 +228,19 @@
          *
          * @return array
          */
-        public function getBalanceByCash($cash)
+        public function getBalanceByCash($cash, $requestCurrencyTipeId = 'PEN')
         {
 
-            $document_payment = $this->getSumPayment($cash, DocumentPayment::class);
-            $expense_payment = $this->getSumPayment($cash, ExpensePayment::class);
-            $sale_note_payment = $this->getSumPayment($cash, SaleNotePayment::class);
-            $purchase_payment = $this->getSumPayment($cash, PurchasePayment::class);
-            $quotation_payment = $this->getSumPayment($cash, QuotationPayment::class);
+            $document_payment = $this->getSumPayment($cash, DocumentPayment::class, $requestCurrencyTipeId);
+            $expense_payment = $this->getSumPayment($cash, ExpensePayment::class, $requestCurrencyTipeId);
+            $sale_note_payment = $this->getSumPayment($cash, SaleNotePayment::class, $requestCurrencyTipeId);
+            $purchase_payment = $this->getSumPayment($cash, PurchasePayment::class, $requestCurrencyTipeId);
+            $quotation_payment = $this->getSumPayment($cash, QuotationPayment::class, $requestCurrencyTipeId);
             // $contract_payment = 0; //$this->getSumPayment($cash, ContractPayment::class);
-            $contract_payment = $this->getSumPayment($cash, ContractPayment::class);
-            $income_payment = $this->getSumPayment($cash, IncomePayment::class);
+            $contract_payment = $this->getSumPayment($cash, ContractPayment::class, $requestCurrencyTipeId);
+            $income_payment = $this->getSumPayment($cash, IncomePayment::class, $requestCurrencyTipeId);
             $cash_pos = $this->getSumPaymentCashPos($cash, CashTransaction::class);
-            $technical_service_payment = $this->getSumPayment($cash, TechnicalServicePayment::class);
+            $technical_service_payment = $this->getSumPayment($cash, TechnicalServicePayment::class, $requestCurrencyTipeId);
             $cash_ids = $cash->pluck('destination_id')->unique();
 
             $transfer_beween_account = 0;
@@ -297,20 +297,20 @@
 
         }
 
-        public function getSumPayment($record, $model)
+        public function getSumPayment($record, $model, $requestCurrencyTipeId = 'PEN')
         {
-            return $record->where('payment_type', $model)->sum(function ($row) use($model) {
+            return $record->where('payment_type', $model)->sum(function ($row) use($model, $requestCurrencyTipeId) {
 
 
                 // se dispara un error cuando no hay relacion de paymeny y associated_record_payment
                 try{
-                    $total_credit_notes = ($row->instance_type == 'document') ? $this->getTotalCreditNotes($row->payment->associated_record_payment) : 0;
+                    $total_credit_notes = ($row->instance_type == 'document') ? $this->getTotalCreditNotes($row->payment->associated_record_payment, $requestCurrencyTipeId) : 0;
                 }catch (ErrorException $e){
                     $total_credit_notes = 0;
                 }
 
                 try {
-                    $total_currency_type = $this->calculateTotalCurrencyType($row->payment->associated_record_payment, $row->payment->payment);
+                    $total_currency_type = $this->calculateTotalCurrencyType($row->payment->associated_record_payment, $row->payment->payment, $requestCurrencyTipeId);
                 }catch (ErrorException $e) {
                     $total_currency_type = 0;
                     if( $row->payment && $row->payment->payment ) {
@@ -322,15 +322,15 @@
             });
         }
 
-        public function getTotalCreditNotes($record)
+        public function getTotalCreditNotes($record, $requestCurrencyTipeId = 'PEN')
         {
 
             $credit_notes = $record->affected_documents->where('note_type', 'credit');
 
-            $total_credit_notes = $credit_notes->sum(function ($note) {
+            $total_credit_notes = $credit_notes->sum(function ($note) use ($requestCurrencyTipeId) {
 
                 if (in_array($note->document->state_type_id, ['01', '03', '05', '07', '13'])) {
-                    return $this->calculateTotalCurrencyType($note->document, $note->document->total);
+                    return $this->calculateTotalCurrencyType($note->document, $note->document->total, $requestCurrencyTipeId);
                 }
 
                 return 0;
@@ -340,9 +340,14 @@
 
         }
 
-        public function calculateTotalCurrencyType($record, $payment)
+        public function calculateTotalCurrencyType($record, $payment, $requestCurrencyTipeId = 'PEN')
         {
-            return ($record->currency_type_id === 'USD') ? $payment * $record->exchange_rate_sale : $payment;
+            if($requestCurrencyTipeId == 'PEN') {
+                return ($record->currency_type_id === 'USD') ? $payment * $record->exchange_rate_sale : $payment;
+            }
+            else {
+                return ($record->currency_type_id === 'USD') ? $payment : ($payment / $record->exchange_rate_sale);
+            }
         }
 
         public function getSumPaymentCashPos($record, $model)
@@ -469,21 +474,21 @@
          *
          * @return Collection|\Illuminate\Support\Collection
          */
-        public function getBalanceByBankAcounts($bank_accounts)
+        public function getBalanceByBankAcounts($bank_accounts,  $requestCurrencyTipeId = 'PEN')
         {
 
             $exchangeRate = ExchangeRate::where('date', date('Y-m-d'))->first();
 
-            $records = $bank_accounts->map(function (\App\Models\Tenant\BankAccount  $row) use ($exchangeRate) {
-                $document_payment = $this->getSumPayment($row->global_destination, DocumentPayment::class);
-                $expense_payment = $this->getSumPayment($row->global_destination, ExpensePayment::class);
-                $sale_note_payment = $this->getSumPayment($row->global_destination, SaleNotePayment::class);
-                $purchase_payment = $this->getSumPayment($row->global_destination, PurchasePayment::class);
-                $quotation_payment = $this->getSumPayment($row->global_destination, QuotationPayment::class);
+            $records = $bank_accounts->map(function (\App\Models\Tenant\BankAccount  $row) use ($exchangeRate, $requestCurrencyTipeId) {
+                $document_payment = $this->getSumPayment($row->global_destination, DocumentPayment::class, $requestCurrencyTipeId);
+                $expense_payment = $this->getSumPayment($row->global_destination, ExpensePayment::class, $requestCurrencyTipeId);
+                $sale_note_payment = $this->getSumPayment($row->global_destination, SaleNotePayment::class, $requestCurrencyTipeId);
+                $purchase_payment = $this->getSumPayment($row->global_destination, PurchasePayment::class, $requestCurrencyTipeId);
+                $quotation_payment = $this->getSumPayment($row->global_destination, QuotationPayment::class, $requestCurrencyTipeId);
                 // $contract_payment = 0; //$this->getSumPayment($row->global_destination, ContractPayment::class);
-                $contract_payment = $this->getSumPayment($row->global_destination, ContractPayment::class);
-                $income_payment = $this->getSumPayment($row->global_destination, IncomePayment::class);
-                $technical_service_payment = $this->getSumPayment($row->global_destination, TechnicalServicePayment::class);
+                $contract_payment = $this->getSumPayment($row->global_destination, ContractPayment::class, $requestCurrencyTipeId);
+                $income_payment = $this->getSumPayment($row->global_destination, IncomePayment::class, $requestCurrencyTipeId);
+                $technical_service_payment = $this->getSumPayment($row->global_destination, TechnicalServicePayment::class, $requestCurrencyTipeId);
                 $transfer_beween_account = $this->getTransferAccountPayment($row);
 
                 // BankLoan es el total otorgado, se suma
@@ -493,7 +498,7 @@
                 if($row->bank_loan_items) {
                      self::getBankLoan($bankLoanItems, $bankLoan);
                 }
-                $bankLoanPayment = $this->getSumPayment($row->global_destination, BankLoanPayment::class);
+                $bankLoanPayment = $this->getSumPayment($row->global_destination, BankLoanPayment::class, $requestCurrencyTipeId);
 
 
                 $entry = $document_payment +
@@ -509,9 +514,9 @@
                 ;
 
                 $initial_balance = $row->initial_balance;
-                if($row->currency_type_id == 'USD') {
+                /*if($row->currency_type_id == 'USD') {
                     $initial_balance = $exchangeRate->sale_original * $row->initial_balance;
-                }
+                }*/
 
                 $balance = $initial_balance +
                     $entry -
