@@ -48,7 +48,7 @@
             <table class="">
                 <thead>
                 <tr>
-                    <th>#</th>
+                    {{-- <th>#</th>
                     <th>Nombres y Apellidos</th>
                     <th> Habitación</th>
                     <th>Status de pago</th>
@@ -56,7 +56,22 @@
                     <th>Fecha de entrada</th>
                     <th>Hora de entrada</th>
                     <th>Fecha de salida</th>
-                    <th>Hora de salida</th>
+                    <th>Hora de salida</th> --}}
+                    <th># numero</th>
+                    <th>nombres y apellidos</th>
+                    <th>sexo</th>
+                    <th>nacionalidad</th>
+                    <th>pais o region de residencia</th>
+                    <th>tipo de documento</th>
+                    <th>numero de documento</th>
+                    <th>fecha de ingreso</th>
+                    <th>fecha de salida</th>
+                    <th>numero de habitacion asignada</th>
+                    <th>tarifa</th>
+                    <th>arribos</th>
+                    <th>habitacion noche ocupadas</th>
+                    <th>permoctaciones</th>
+                    <th>motivo</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -71,14 +86,25 @@
                     <tr>
 
                         <td>{{ $key+1 }}</td>
-                        <td>{{$customer->description}}</td>
-                        <td>{{$room->name ?? ''}}</td>
+                        <td>{{$customer->name}}</td>
+                        <td></td>{{-- SEXO --}}
+                        <td></td>{{-- NACIONALIDAD --}}
+                        <td></td>{{-- PAIS RESIDENCIA --}}
+                        <td></td>{{-- TIPO DOCUMENTO --}}
+                        <td>{{ $customer->number }}</td>{{-- # DOCUMENTO --}}
+                        {{-- <td>{{$room->name ?? ''}}</td>
                         <td>{{ $value ->payment_status === "PAID" ? "Pagado" : "Debe" }}</td>
-                        <td>{{$value ->status}}</td>
+                        <td>{{$value ->status}}</td> --}}
                         <td>{{$value ->input_date}}</td>
                         <td>{{$value ->input_time}}</td>
                         <td>{{$value ->output_date}}</td>
                         <td>{{$value ->output_time}}</td>
+                        <td>{{$room->name ?? ''}}</td>{{-- # HABITACION ASIGNADA --}}
+                        <td></td>{{-- TARIFA --}}
+                        <td></td>{{-- PAIS ARRIBOS --}}
+                        <td></td>{{-- HABITACION NOCHE OCUPADAS --}}
+                        <td></td>{{-- PERMOCTACIONES --}}
+                        <td>{{ $value->notes }}</td>{{-- MOTIVO --}}
 
 
                     </tr>
