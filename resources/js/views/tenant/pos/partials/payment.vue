@@ -128,7 +128,7 @@
                 </div>
                 <div class="row m-0 p-0 h-25 d-flex align-items-center bg-white">
                     <div class="col-lg-6">
-                        <button :disabled="button_payment"
+                        <button :disabled="button_payment && payment_method_type_id != '09'"
                                 class="btn btn-block btn-primary"
                                 @click="clickPayment">PAGAR
                         </button>
@@ -421,6 +421,8 @@
             :showDialog.sync="showDialogMultiplePayment"
             :total="form.total"
             @add="addRow"
+            @setPaymentMethod="setPaymentMethod"
+
         ></multiple-payment-form>
 
         <!-- <sale-notes-options :showDialog.sync="showDialogSaleNote"
@@ -503,6 +505,8 @@ export default {
             global_discount_type: {},
             error_global_discount: false,
             is_discount_amount: false,
+            payment_method_type_id: null
+            
         }
     },
     async created() {
@@ -858,6 +862,9 @@ export default {
 
             // console.log(this.form.payments)
         },
+        setPaymentMethod(id){
+            this.payment_method_type_id = id;
+        },  
         setAmount(amount) {
             // this.amount = parseFloat(this.amount) + parseFloat(amount)
             this.amount = parseFloat(amount) //+ parseFloat(amount)
@@ -935,8 +942,10 @@ export default {
         inputAmount() {
 
             this.difference = this.amount - this.form.total
-
-            if (isNaN(this.difference)) {
+            if(this.payment_method_type_id == '09') {
+                this.button_payment = false
+            }
+            else if (isNaN(this.difference)) {
                 this.button_payment = true
                 this.difference = "-"
             } else if (this.difference >= 0) {
