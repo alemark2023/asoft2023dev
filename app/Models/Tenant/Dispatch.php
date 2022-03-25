@@ -18,6 +18,7 @@
     use Modules\Order\Models\OrderNote;
     use Symfony\Component\HttpFoundation\BinaryFileResponse;
     use App\Models\Tenant\Catalogs\RelatedDocumentType;
+    use App\Models\Tenant\Catalogs\IdentityDocumentType;
 
     /**
  * Class Dispatch
@@ -458,6 +459,8 @@
                 'has_xml' => $this->has_xml,
                 'has_pdf' => $this->has_pdf,
                 // 'has_cdr' => $this->has_cdr,
+                'dispatcher' => $this->dispatcher,
+                'type_disparcher' => $this->getTypeDispatcher(),
                 'has_cdr' => $has_cdr,
                 'download_external_xml' => $this->download_external_xml,
                 'download_external_pdf' => $this->download_external_pdf,
@@ -491,7 +494,12 @@
             });
 
         }
+        public function getTypeDispatcher()
+        {
 
+            return IdentityDocumentType::where('id', $this->dispatcher->identity_document_type_id)->get();
+
+        }
         /**
          * @return bool
          */

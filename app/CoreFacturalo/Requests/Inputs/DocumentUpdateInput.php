@@ -140,6 +140,7 @@ class DocumentUpdateInput
             'pending_amount_detraction' => Functions::valueKeyInArray($inputs, 'pending_amount_detraction', 0),
 
             'sale_notes_relateds'       => Functions::valueKeyInArray($inputs, 'sale_notes_relateds'),
+            'seller_id' 				=> Functions::valueKeyInArray($inputs, 'seller_id'),
 
 		];
 	}

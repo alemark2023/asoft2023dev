@@ -23,6 +23,7 @@
     use Illuminate\Database\Eloquent\Relations\MorphMany;
     use Illuminate\Support\Collection;
     use Modules\Inventory\Models\InventoryKardex;
+    use App\Models\Tenant\Item;
     use Modules\Item\Models\ItemLot;
     use Modules\Item\Models\ItemLotsGroup;
 
@@ -116,7 +117,7 @@
             'soap_type',
             'state_type',
             'currency_type',
-            'items'
+            'items',
         ];
 
         protected $fillable = [
@@ -606,15 +607,24 @@
                 'documents' => $this->documents->transform(function ($row) {
                     /** @var Document $row */
                     return [
+                        'id' => $row->id,
                         'number_full' => $row->number_full,
                         'state_type_id' => $row->state_type_id,
+                        'order_note_id' => $row->order_note_id,
+                        'series' => $row->series,
                     ];
                 }),
-                'sale_notes' => $this->sale_notes->transform(function ($row) {
-                    /** @var SaleNote $row */
+                'sale_notes' => $this->sale_notes,
+                'items_details' => $this->items->transform(function ($row) {
+                    /** @var Document $row */
                     return [
-                        'identifier' => $row->identifier,
-                        'state_type_id' => $row->state_type_id,
+                        'item_details' => Item::where('id',$row->item_id)->get(),
+                        'item' => $row->item,
+                        'discounts' => $row->discounts,
+                        'quantity' => $row->quantity,
+                        'unit_price' => $row->unit_price,
+                        'total_discount' => $row->total_discount,
+
                     ];
                 }),
                 'btn_generate' => $btn_generate,

@@ -106,7 +106,7 @@ class ReportOrderNoteGeneralController extends Controller
 
         $company = Company::first();
         $records = $this->dataGeneral($request->all())->get();
-
+        /* dd($records); */
         $documentHotelExport = new ReportOrderGeneralExport();
         $documentHotelExport
             ->records($records)

@@ -230,6 +230,7 @@
             'url_apiruc',
             'new_validator_pagination',
             'token_apiruc',
+            'customer_filter_by_seller',
         ];
 
         protected $casts = [
@@ -301,6 +302,7 @@
             'print_new_line_to_observation' => 'bool',
             'shipping_time_days' => 'int',
             'new_validator_pagination' => 'int',
+            'customer_filter_by_seller' => 'bool',
         ];
 
         protected $hidden = [
@@ -474,6 +476,7 @@
                 'pos_cost_price' => $this->isPosCostPrice(),
                 'show_totals_on_cpe_list' => $this->isShowTotalsOnCpeList(),
                 'detraction_amount_rounded_int' => $this->detraction_amount_rounded_int,
+                'customer_filter_by_seller' => $this->customer_filter_by_seller,
                 'global_discount_type_id' => $this->global_discount_type_id,
                 'show_terms_condition_pos' => (bool)$this->show_terms_condition_pos,
                 'mi_tienda_pe' => $this->isMiTiendaPe(),
