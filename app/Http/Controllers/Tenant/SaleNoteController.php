@@ -862,10 +862,6 @@ class SaleNoteController extends Controller
             $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items);
             $payments     = $this->document->payments()->count() * 2;
-            $document_observation = 0;
-            if (strlen($this->document->observation)>100) {
-                $document_observation = (strlen($this->document->observation)/100) * 10;
-            }
             $discount_global = 0;
             $extra_by_item_description = 0;
             foreach ($this->document->items as $it) {
