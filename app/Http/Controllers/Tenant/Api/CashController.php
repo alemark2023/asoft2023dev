@@ -36,6 +36,7 @@ class CashController extends Controller
         $cash->final_balance = 0;
         $cash->income = 0;
         $cash->state = 0;
+        $cash->reference_number = $request->referenceNumber;
         $cash->apply_restaurant = 1;
 
         $cash->save();
