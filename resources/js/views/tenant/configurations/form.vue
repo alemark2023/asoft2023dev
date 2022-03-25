@@ -515,6 +515,31 @@
                                            v-text="errors.new_validator_pagination[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-md-2 mt-4">
+                            </div>
+                            
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Filtrar clientes según vendedor asignado
+                                    <el-tooltip class="item"
+                                                content="Aplica para usuarios con perfil Vendedor - Disponible en Clientes y Ventas/Comprobante electrónico"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                 <div :class="{'has-danger': errors.customer_filter_by_seller}"
+                                        class="form-group">
+                                    <el-switch v-model="form.customer_filter_by_seller"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.customer_filter_by_seller"
+                                            class="form-control-feedback"
+                                            v-text="errors.customer_filter_by_seller[0]"></small>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="third">
@@ -1474,7 +1499,8 @@ export default {
                 name_product_pdf_to_xml:false,
                 detraction_amount_rounded_int:false,
                 show_logo_by_establishment: false,
-                shipping_time_days: 0
+                shipping_time_days: 0,
+                customer_filter_by_seller: false,
             };
         },
         UpdateFormPurchase(e) {
