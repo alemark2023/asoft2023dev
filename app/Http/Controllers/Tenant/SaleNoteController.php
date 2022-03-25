@@ -873,6 +873,7 @@ class SaleNoteController extends Controller
                 }
             }
             $legends = $this->document->legends != '' ? '10' : '0';
+            $bank_accounts = BankAccount::count() * 6;
 
             $pdf = new Mpdf([
                 'mode' => 'utf-8',
