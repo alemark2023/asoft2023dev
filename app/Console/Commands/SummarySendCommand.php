@@ -45,11 +45,14 @@ class SummarySendCommand extends Command
      * @return mixed
      */
     public function handle() {
+        $now = Carbon::now('America/Bogota');
+        \Log::info($now->format('Y-m-d H:i:s').' summary:send -> Iniciando el comando');
         $this->info('The command was started');
 
         Auth::login(User::firstOrFail());
 
         if (Configuration::firstOrFail()->cron) {
+            \Log::info($now->format('Y-m-d H:i:s').' summary:send -> Cron activado ');
             $hostname = Website::query()
                 ->where('uuid', app(\Hyn\Tenancy\Environment::class)->tenant()->uuid)
                 ->first()
@@ -65,6 +68,7 @@ class SummarySendCommand extends Command
                 ])
                 ->groupBy('date_of_issue')
                 ->get();
+            \Log::info($now->format('Y-m-d H:i:s').' summary:send -> Iniciando el envio de documentos ');
 
             foreach ($documents as $document) {
 
@@ -85,6 +89,7 @@ class SummarySendCommand extends Command
                 ];
 
                 $clientGuzzleHttp = new ClientGuzzleHttp($constructor_params);
+                \Log::info($now->format('Y-m-d H:i:s')." summary:send -> Enviando datos para \n".var_export($constructor_params,true));
 
                 $response = $clientGuzzleHttp->post('/api/summaries', [
                     'http_errors' => false,
@@ -100,12 +105,16 @@ class SummarySendCommand extends Command
 
                 $res = json_decode($response->getBody()->getContents(), true);
 
-                if (!$res['success']) $this->info("{$document->date_of_issue} - {$res['message']}");
+                if (!$res['success']) {
+                    \Log::info($now->format('Y-m-d H:i:s').' summary:send -> Ocurrio un error');
+                    $this->info("{$document->date_of_issue} - {$res['message']}");
+                }
             }
         }
         else {
             $this->info('The crontab is disabled');
         }
+        \Log::info($now->format('Y-m-d H:i:s').' -> Comando finalizado');
 
         $this->info('The command is finished');
     }
