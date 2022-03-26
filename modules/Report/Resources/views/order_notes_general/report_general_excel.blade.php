@@ -30,11 +30,8 @@
                                 <th  class="celda" >Motivo</th>
                                 <th  class="celda">Detalle</th>
                                 <th  class="celda">Codigo interno</th>
-<<<<<<< HEAD
-=======
                                 <th  class="celda">Nombre de producto</th>
                                 <th  class="celda">Categoria</th>
->>>>>>> #1389
                                 <th  class="celda">Marca</th>
                                 <th  class="celda">Cantidad de producto</th>
                                 <th  class="celda">Precio unitario</th>
@@ -66,17 +63,11 @@
                                 $discount_description=0;
                                 $guide_remision=0;
                                 $brand_items=0;
-<<<<<<< HEAD
-                                $obs=0;
-                                $data = $value->getCollectionData();
-                                /* dd($data); */
-=======
                                 $category_items=0;
                                 $name_items=0;
                                 $obs=0;
                                 $data = $value->getCollectionData();
                                 /* dd($value); */
->>>>>>> #1389
                                 $items_order=0;
                                 $identifier_order=0;
                                 $guide_remision=0;
@@ -102,20 +93,6 @@
                                 $sale_order_id= empty($data['sale_notes'][0]) ? 0 : $data['sale_notes'][0]['series'].'-'.$data['sale_notes'][0]['id'];
                                 /* dd($guide_remision); */
                                 $items_brand='';
-<<<<<<< HEAD
-                                $discount_string='';
-                                $serie_document=(!$documents_order_id) ? $sale_order_id : $documents_order_id;
-                                foreach ($value->items as $itm) {
-                                    $discount=(array) $itm->discounts;
-                                    $items_order+=$itm->quantity;
-                                    if (!empty($itm->item->brand)) {
-                                        $items_brand= str_contains($brand_items,$itm->item->brand) ? $itm->item->brand : $items_brand.=$itm->item->brand.' - ';
-                                        $brand_items = trim($items_brand,' - ');
-                                    }
-
-                                    $acum_price += ($itm->unit_price*$itm->quantity);
-                                    $acum_discount += $itm->total_discount;
-=======
                                 $category_string='';
                                 $discount_string='';
                                 $name_string='';
@@ -136,19 +113,14 @@
 
                                     $acum_price += ($itm['unit_price']*$itm['quantity']);
                                     $acum_discount += $itm['total_discount'];
->>>>>>> #1389
                                     if (!empty($discount)) {
                                         $discount_format=(array) $discount[0];
                                         $discount_string = str_contains($discount_description, $discount_format['description']) ? $discount_format['description'] : $discount_string.=$discount_format['description'].' - ';
                                         $discount_description = trim($discount_string,' - ');
                                     }
-<<<<<<< HEAD
-                                    
-=======
                                     $name_string = str_contains($name_items, $itm['item_details'][0]['name']) ? $itm['item_details'][0]['name'].' - ' : $name_string.=$itm['item_details'][0]['name'].' - ';
                                     
                                     $name_items=trim($name_string,' - ');
->>>>>>> #1389
                                 }
                                 $obs=$value->observation;
                             @endphp
@@ -165,12 +137,8 @@
                                     <td  class="celda">{{$discount_description}}</td>
                                     <td  class="celda">{{$obs}}</td>
                                     <td  class="celda">{{$identifier_order}}</td>
-<<<<<<< HEAD
-                                    
-=======
                                     <td  class="celda">{{$name_items}}</td>
                                     <td  class="celda">{{$category_items}}</td>
->>>>>>> #1389
                                     <td  class="celda">{{$brand_items}}</td>
                                     <td  class="celda">{{$items_order}}</td>
                                     <td  class="celda">{{number_format($acum_price,2)}}</td>
