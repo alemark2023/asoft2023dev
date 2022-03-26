@@ -119,7 +119,7 @@
                                         $discount_description = trim($discount_string,' - ');
                                     }
                                     /* dd(empty($itm['item_details'][0])); */
-                                    if(!empty($itm['item_details'][0])){
+                                    if(!empty($itm['item_details'][0])&& !is_null($itm['item_details'][0])){
                                         $name_string = str_contains($name_items, $itm['item_details'][0]['name']) ? $itm['item_details'][0]['name'].' - ' : $name_string.=$itm['item_details'][0]['name'].' - ';
                                     
                                         $name_items=trim($name_string,' - ');
