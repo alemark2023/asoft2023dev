@@ -58,57 +58,85 @@
                     <th>Fecha de salida</th>
                     <th>Hora de salida</th> --}}
                     <th># numero</th>
-                    <th>nombres y apellidos</th>
-                    <th>sexo</th>
-                    <th>nacionalidad</th>
-                    <th>pais o region de residencia</th>
-                    <th>tipo de documento</th>
-                    <th>numero de documento</th>
-                    <th>fecha de ingreso</th>
-                    <th>fecha de salida</th>
-                    <th>numero de habitacion asignada</th>
-                    <th>tarifa</th>
-                    <th>arribos</th>
-                    <th>habitacion noche ocupadas</th>
-                    <th>permoctaciones</th>
-                    <th>motivo</th>
+                    <th>Nombres y apellidos</th>
+                    <th>Nacionalidad</th>
+                    <th>Pais o region de residencia</th>
+                    <th>Tipo de documento</th>
+                    <th>Numero de documento</th>
+                    <th>Fecha de ingreso</th>
+                    <th>Fecha de salida</th>
+                    <th>Numero de habitacion asignada</th>
+                    <th>Tarifa</th>
+                    <th>Arribos</th>
+                    <th>Habitacion noche ocupadas</th>
+                    <th>Pernoctaciones</th>
+                    <th>Motivo</th>
+                    <th>Categoria</th>
                 </tr>
                 </thead>
                 <tbody>
+                    @php
+
+                    $total_days_rent=0;
+                    $total_nigth_days=0;
+
+                    @endphp
                 @foreach($records as $key => $value)
                     <?php
                     /** @var \Modules\Hotel\Models\HotelRent $value */
-
-
+                    /* dd($value); */
+                    $days_arrival=1;
                     $customer = $value->customer;
                     $room = $value->room;
+                    $rates = $value->room->rates[0]->price;
+                    $category = $value->room->category->description;
+                    $person_details = $value->searchPersonDetails($value);
+                    /* $document_type = $identity_document_type[0]->description; */
+                    $document_type = $person_details[0]->identity_document_type->description;
+                    $country = $person_details[0]->country->description;
+                    /* dd($country); */
+                    $date_initial = new DateTime($value->input_date);
+                    $date_end = new DateTime($value ->output_date);
+                    $date_rent = $date_initial->diff($date_end);
+                    $days = $date_rent->format('%d');
+                    $days_rent = intval($days);
+                    /* dd($dat); */
+
+                    $total_days_rent+=$days_arrival;
+                    $total_nigth_days+=$days_rent;
                     ?>
                     <tr>
 
                         <td>{{ $key+1 }}</td>
                         <td>{{$customer->name}}</td>
-                        <td></td>{{-- SEXO --}}
                         <td></td>{{-- NACIONALIDAD --}}
-                        <td></td>{{-- PAIS RESIDENCIA --}}
-                        <td></td>{{-- TIPO DOCUMENTO --}}
+                        <td>{{ $country }}</td>{{-- PAIS RESIDENCIA --}}
+                        <td>{{ $document_type }}</td>{{-- TIPO DOCUMENTO --}}
                         <td>{{ $customer->number }}</td>{{-- # DOCUMENTO --}}
                         {{-- <td>{{$room->name ?? ''}}</td>
                         <td>{{ $value ->payment_status === "PAID" ? "Pagado" : "Debe" }}</td>
                         <td>{{$value ->status}}</td> --}}
-                        <td>{{$value ->input_date}}</td>
-                        <td>{{$value ->input_time}}</td>
+                        <td>{{$value->input_date}}</td>
+                        {{-- <td>{{$value ->input_time}}</td> --}}
                         <td>{{$value ->output_date}}</td>
-                        <td>{{$value ->output_time}}</td>
+                        {{-- <td>{{$value ->output_time}}</td> --}}
                         <td>{{$room->name ?? ''}}</td>{{-- # HABITACION ASIGNADA --}}
-                        <td></td>{{-- TARIFA --}}
-                        <td></td>{{-- PAIS ARRIBOS --}}
-                        <td></td>{{-- HABITACION NOCHE OCUPADAS --}}
-                        <td></td>{{-- PERMOCTACIONES --}}
+                        <td>{{ $rates }}</td>{{-- TARIFA --}}
+                        <td> 1 </td>{{-- ARRIBOS --}}
+                        <td>{{ $days_rent }}</td>{{-- HABITACION NOCHE OCUPADAS --}}
+                        <td>{{ $days_rent }}</td>{{-- PERNOCTACIONES --}}
                         <td>{{ $value->notes }}</td>{{-- MOTIVO --}}
-
+                        <td>{{ $category }}</td>{{-- CATEGORIA --}}
 
                     </tr>
                 @endforeach
+                    <tr>
+                        <td class="celda" colspan="9"></td>
+                        <td class="celda"><strong>Total</strong></td>
+                        <td class="celda">{{$total_days_rent}}</td>
+                        <td class="celda">{{$total_nigth_days}}</td>
+                        <td class="celda">{{$total_nigth_days}}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>

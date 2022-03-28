@@ -8,6 +8,7 @@
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
     use Illuminate\Database\Eloquent\Collection;
+    use App\Models\Tenant\Person;
 
     /**
      * Class \Modules\Hotel\Models\HotelRent
@@ -122,6 +123,18 @@
             }
 
             return $query;
+        }
+
+        public function searchPersonDetails($value)
+        {
+            $id ='';
+
+            if ($value->customer->id) {
+                $id = $value->customer->id;
+                $data=Person::with('identity_document_type', 'country')
+                ->orderBy('id', 'DESC');
+                return $data = $data->where('id',$id)->get();
+            }
         }
 
     }
