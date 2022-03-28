@@ -29,10 +29,16 @@
 
             <template v-if="form.has_cdr">
                 <div class="col-lg-6 col-md-6 col-sm-6 text-center font-weight-bold mt-3">
-                    <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickDownload()">
+                    <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickDownload('a4')">
                         <i class="fa fa-file-alt"></i>
                     </button>
                     <p>Descargar A4</p>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 text-center font-weight-bold mt-3">
+                    <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickDownload('ticket')">
+                        <i class="fa fa-file-alt"></i>
+                    </button>
+                    <p>80MM</p>
                 </div>
                  <div class="col-lg-6 col-md-6 col-sm-6 text-center font-weight-bold mt-3">
                     <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickDownload('ticket_58')">
@@ -111,6 +117,7 @@
             this.text_button = 'Nueva guía'
         },
         methods: {
+           
             clickDownload(format = null) {
                 window.open(`/print/dispatch/${this.form.external_id}/${format}`, '_blank');
             },
