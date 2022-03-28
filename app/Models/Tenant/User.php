@@ -30,6 +30,7 @@ use Modules\Sale\Models\Contract;
 use Modules\Sale\Models\SaleOpportunity;
 use Modules\Sale\Models\TechnicalService;
 use Modules\Sale\Models\UserCommission;
+use App\Models\Tenant\Configuration;
 
 
 /**
@@ -171,6 +172,7 @@ class User extends Authenticatable
         'document_id',
         'series_id',
         'permission_edit_cpe',
+        'permission_override_cpe',
         'recreate_documents',
         'zone_id',
 
@@ -193,6 +195,7 @@ class User extends Authenticatable
     protected $casts = [
         'series_id'=> 'int',
         'permission_edit_cpe' => 'boolean',
+        'permission_override_cpe' => 'boolean',
         'recreate_documents' => 'boolean',
         'establishment_id' => 'int',
         'zone_id' => 'int',
@@ -858,4 +861,22 @@ $withEstablishment = true){
             ->get();
 
     }
+
+        
+    /**
+     * 
+     * Validar si aplica el filtro por vendedor para el usuario en sesión (filtrar clientes por vendedor asignado)
+     *
+     * Usado en:
+     * Person - scopeWhereFilterCustomerBySeller
+     * 
+     * @return bool
+     */
+    public function applyCustomerFilterBySeller()
+    {
+        $configuration = Configuration::select('customer_filter_by_seller')->first();
+
+        return ($this->type === 'seller' && $configuration->customer_filter_by_seller);
+    }
+
 }
