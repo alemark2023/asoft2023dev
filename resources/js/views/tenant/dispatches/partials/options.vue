@@ -50,8 +50,7 @@
                     </button>
                     <p>Descargar A4</p>
                 </div>
-                <!-- No existen templates dispatch_ticket_58 dispatch_ticket_80 -->
-                <!--
+                <!-- se agregaron templates con el issue #1435 -->
                 <div v-if="form && form.external_id && form.external_id != null"
                      class="col-lg-6 col-md-6 col-sm-6 text-center font-weight-bold mt-3">
                     <button class="btn btn-lg btn-info waves-effect waves-light"
@@ -70,7 +69,6 @@
                     </button>
                     <p>58MM</p>
                 </div>
-                -->
                 <div v-if="form && form.external_id && form.external_id != null"
                      class="col-lg-6 col-md-6 col-sm-6 text-center font-weight-bold mt-3">
                     <button class="btn btn-lg btn-info waves-effect waves-light"
