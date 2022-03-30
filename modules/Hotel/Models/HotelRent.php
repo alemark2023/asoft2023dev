@@ -137,4 +137,17 @@
             }
         }
 
+        public function searchPersonNationality($value)
+        {
+            $id ='';
+
+            if ($value->customer->id) {
+                $id = $value->customer->id;
+                $data=Person::with('country')
+                ->where('country.id','nationality_id')
+                ->orderBy('id', 'DESC');
+                return $data = $data->where('id',$id)->get();
+            }
+        }
+
     }

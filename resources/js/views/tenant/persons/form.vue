@@ -231,7 +231,7 @@
                                 <div :class="{'has-danger': errors.country_id}"
                                      class="form-group">
                                     <label class="control-label">Nacionalidad</label>
-                                    <el-select v-model="form.country_id"
+                                    <el-select v-model="form.nationality_id"
                                                dusk="country_id"
                                                filterable>
                                         <el-option v-for="option in countries"
@@ -743,6 +743,7 @@ export default {
                 name: null,
                 trade_name: null,
                 country_id: 'PE',
+                nationality_id: 'PE',
                 department_id: null,
                 province_id: null,
                 district_id: null,
