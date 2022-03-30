@@ -19,6 +19,9 @@ Route::prefix('restaurant')->group(function() {
     Route::get('item/{id}/{promotion_id?}', 'RestaurantController@item')->name('restaurant.item');
     Route::get('cart', 'RestaurantController@detailCart')->name('restaurant.detail.cart');
     Route::post('payment_cash', 'RestaurantController@paymentCash')->name('restaurant.payment.cash');
+    Route::get('configuration', 'RestaurantController@configuration')->name('tenant.restaurant.configuration');
+    Route::get('configuration/record', 'RestaurantController@record')->name('tenant.restaurant.configuration.record');
+    Route::post('configuration', 'RestaurantController@setConfiguration')->name('tenant.restaurant.configuration.set');
 
 
 
@@ -56,6 +59,7 @@ Route::prefix('restaurant')->group(function() {
     Route::prefix('cash')->group(function() {
 
         Route::get('', 'CashController@index')->name('tenant.restaurant.cash.index');
+        Route::get('/pos', 'CashController@posFilter')->name('tenant.restaurant.cash.filter-pos');
         Route::get('records', 'CashController@records');
         Route::get('report', 'CashController@report_general');
         Route::get('columns', 'CashController@columns');
@@ -79,7 +83,7 @@ Route::prefix('restaurant')->group(function() {
 
     });
 
-                
+
 
 });
 

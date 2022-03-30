@@ -74,6 +74,7 @@
     <div class="">
         <div class=" ">
             @php
+                $acum_total_charges=0;
                 $acum_total_taxed=0;
                 $acum_total_igv=0;
                 $acum_total=0;
@@ -106,6 +107,7 @@
                     <th>DPTO</th>
                     <th>PROV</th>
 
+                    <th>Direccion de cliente</th>
                     <th>Cliente</th>
                     <th>RUC</th>
                     <th>Estado</th>
@@ -114,6 +116,7 @@
                     <th>Orden de compra</th>
                     <th class="">Forma de pago</th>
                     <th> MÉTODO DE PAGO </th>
+                    <th>Total Cargos</th>
                     <th>Total Exonerado</th>
                     <th>Total Inafecto</th>
                     <th>Total Gratuito</th>
@@ -122,6 +125,7 @@
                     <th>Total IGV</th>
                     <th>Total ISC</th>
                     <th>Total</th>
+                    <th>Total de productos</th>
 
                     @foreach ($categories as $category)
                         <th>{{$category->name}}</th>
@@ -137,14 +141,14 @@
                     <?php
                     /** @var \App\Models\Tenant\Document|App\Models\Tenant\SaleNote  $value */
                     $iteration = $loop->iteration;
-                                    // $user = $value->user->name;
+                                    $user = $value->user->name;
                     $document_type = $value->getDocumentType();
-                    $seller = \App\CoreFacturalo\Helpers\Template\ReportHelper::getSellerData($value);
+                    /* $seller = \App\CoreFacturalo\Helpers\Template\ReportHelper::getSellerData($value);
                     try{
                         $user = $seller->name;
                     }catch (ErrorException $e){
                         $user = '';
-                    }
+                    } */
 
                     ?>
 
@@ -183,6 +187,7 @@
                         <td class="celda">{{$stablihsment['department']}}</td>
                         <td class="celda">{{$stablihsment['province']}}</td>
 
+                        <td class="celda">{{$value->customer->address}}</td>
                         <td class="celda">{{$value->customer->name}}</td>
                         <td class="celda">{{$value->customer->number}}</td>
                         <td class="celda">{{$value->state_type->description}}</td>
@@ -245,7 +250,9 @@
                                 <td class="celda">0</td>
                                 <td class="celda">0</td>
                                 <td class="celda">0</td>
+                                <td class="celda">0</td>
                             @else
+                                <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_charge}}</td>
                                 <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_exonerated}}</td>
                                 <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_unaffected}}</td>
                                 <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_free}}</td>
@@ -257,6 +264,7 @@
                             @endif
 
                         @else
+                            <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_charge}}</td>
                             <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_exonerated}}</td>
                             <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_unaffected}}</td>
                             <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_free}}</td>
@@ -316,8 +324,13 @@
 
                             $serie_affec =  '';
 
-                        @endphp
+                            $quality_item=0;
+                            foreach ($value->items as $itm) {
+                                $quality_item+=$itm->quantity;
+                            }
 
+                        @endphp
+                        <td>{{$quality_item}}</td>
                     </tr>
                     @php
                         if($value->currency_type_id == 'PEN'){
@@ -336,7 +349,7 @@
                                 $acum_total_taxed += -$value->total_taxed;
                                 $acum_total_igv += -$value->total_igv;
 
-
+                                $acum_total_charges += -$value->total_charge;
                                 $acum_total_exonerado += -$value->total_exonerated;
                                 $acum_total_inafecto += -$value->total_unaffected;
                                 $acum_total_free += -$value->total_free;
@@ -348,6 +361,7 @@
                                 $acum_total_taxed += 0;
                                 $acum_total_igv += 0;
 
+                                $acum_total_charges += 0;
                                 $acum_total_exonerado += 0;
                                 $acum_total_inafecto += 0;
                                 $acum_total_free += 0;
@@ -358,6 +372,7 @@
                                 $acum_total_taxed += $value->total_taxed;
                                 $acum_total_igv += $value->total_igv;
 
+                                $acum_total_charges += $value->total_charge;
                                 $acum_total_exonerado += $value->total_exonerated;
                                 $acum_total_inafecto += $value->total_unaffected;
                                 $acum_total_free += $value->total_free;
@@ -391,16 +406,17 @@
 
 
                         }
+
                     @endphp
                 @endforeach
                 <tr>
-                    <td colspan="20"></td>
+                    <td colspan="21"></td>
                 <!-- <td >Totales</td>
                                 <td>{{$acum_total_exonerado}}</td>
                                 <td>{{$acum_total_inafecto}}</td>
                                 <td>{{$acum_total_free}}</td> -->
                     <td>Totales PEN</td>
-
+                    <td>{{number_format($acum_total_charges, 2)}}</td>
                     <td>{{number_format($acum_total_exonerado, 2)}}</td>
                     <td>{{number_format ($acum_total_inafecto, 2 )}}</td>
                     <td>{{number_format($acum_total_free, 2)}}</td>
@@ -412,7 +428,7 @@
                     <td>{{$acum_total}}</td>
                 </tr>
                 <tr>
-                    <td colspan="20"></td>
+                    <td colspan="21"></td>
                     <td>Totales USD</td>
                     <td></td>
                     <td></td>
@@ -423,6 +439,7 @@
                     <td></td>
                     <td>{{$acum_total_usd}}</td>
                 </tr>
+
                 </tbody>
             </table>
         </div>

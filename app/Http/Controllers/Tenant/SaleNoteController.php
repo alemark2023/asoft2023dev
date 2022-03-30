@@ -628,7 +628,7 @@ class SaleNoteController extends Controller
                 {
                     if(is_array($row['IdLoteSelected'])) {
 
-                        foreach ($row['IdLoteSelected'] as $item) { 
+                        foreach ($row['IdLoteSelected'] as $item) {
                             $lot = ItemLotsGroup::query()->find($item['id']);
                             $lot->quantity = $lot->quantity - $item['compromise_quantity'];
                             $lot->save();
@@ -644,7 +644,7 @@ class SaleNoteController extends Controller
                         $lot->quantity = ($lot->quantity - ($row['quantity'] * $quantity_unit));
                         $lot->save();
                     }
-                    
+
                 }
 
             }
@@ -1558,7 +1558,7 @@ class SaleNoteController extends Controller
         $lot_group_selecteds =  $lot_group_selecteds_filter->all();
 
         if(count($lot_group_selecteds) > 0){
-           
+
             foreach ($lot_group_selecteds as $lt) {
                 $lot = ItemLotsGroup::find($lt->id);
                 $lot->quantity = $lot->quantity + $lt->compromise_quantity;

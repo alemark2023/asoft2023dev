@@ -844,6 +844,7 @@
                 :soapCompany="soapCompany"
                 :businessTurns="businessTurns"
                 :is-print="isPrint"
+                :globalDiscountTypeId="configuration.global_discount_type_id"
             ></payment-form>
         </template>
 
@@ -966,9 +967,17 @@ import WarehousesDetail from "../items/partials/warehouses.vue";
 import queryString from "query-string";
 import TableItems from "./partials/table.vue";
 import ItemUnitTypes from "./partials/item_unit_types.vue";
+import {mapState, mapActions} from "vuex/dist/vuex.mjs";
 
 export default {
-    props: ["configuration", "soapCompany", "businessTurns", "typeUser", "isPrint"],
+    props: [
+        "configuration2",
+        "configuration",
+        "soapCompany",
+        "businessTurns",
+        "typeUser",
+        "isPrint"
+    ],
     components: {
         PaymentForm,
         ItemForm,
@@ -980,7 +989,10 @@ export default {
         Keypress,
         TableItems
     },
-    mixins: [functions, exchangeRate],
+    mixins: [
+        functions,
+        exchangeRate
+    ],
 
     data() {
         return {
@@ -1024,6 +1036,8 @@ export default {
         };
     },
     async created() {
+        this.loadConfiguration();
+        this.$store.commit('setConfiguration', this.configuration2)
         await this.initForm();
         await this.getTables();
         this.events();
@@ -1042,6 +1056,9 @@ export default {
     },
 
     computed: {
+            ...mapState([
+                'config',
+            ]),
         canSeeHistoryPurchase: function () {
             if(this.typeUser !=='admin'){
                 return this.configuration.pos_history
@@ -1096,6 +1113,7 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['loadConfiguration']),
         enabledSearchItemByBarcode(){
 
             if (this.configuration.search_item_by_barcode) {
@@ -1525,7 +1543,7 @@ export default {
                 reference_data: null,
                 is_print: true,
             };
-            console.log(this.configuration.show_terms_condition_pos);
+            // console.log(this.configuration.show_terms_condition_pos);
             if (this.configuration.show_terms_condition_pos) {
 
                 this.form.terms_condition = this.configuration.terms_condition_sale;
@@ -1821,18 +1839,26 @@ export default {
                 total_discount += parseFloat(row.total_discount);
                 total_charge += parseFloat(row.total_charge);
 
-                if (row.affectation_igv_type_id === "10") {
-                    total_taxed += parseFloat(row.total_value);
+                if (row.affectation_igv_type_id === "10") 
+                {
+                    // total_taxed += parseFloat(row.total_value);
+                    total_taxed += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
-                if (row.affectation_igv_type_id === "20") {
-                    total_exonerated += parseFloat(row.total_value);
+
+                if (row.affectation_igv_type_id === "20") 
+                {
+                    // total_exonerated += parseFloat(row.total_value);
+                    total_exonerated += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
+
                 if (row.affectation_igv_type_id === "30") {
                     total_unaffected += parseFloat(row.total_value);
                 }
+
                 if (row.affectation_igv_type_id === "40") {
                     total_exportation += parseFloat(row.total_value);
                 }
+
                 if (
                     ["10", "20", "30", "40"].indexOf(
                         row.affectation_igv_type_id
@@ -1840,15 +1866,18 @@ export default {
                 ) {
                     total_free += parseFloat(row.total_value);
                 }
-                if (
-                    ["10", "20", "30", "40"].indexOf(
-                        row.affectation_igv_type_id
-                    ) > -1
-                ) {
-                    total_igv += parseFloat(row.total_igv);
-                    total += parseFloat(row.total);
+
+                if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1) 
+                {
+                    // total_igv += parseFloat(row.total_igv);
+                    // total += parseFloat(row.total);
+                    total_igv += (row.total_igv_without_rounding) ? parseFloat(row.total_igv_without_rounding) : parseFloat(row.total_igv)
+                    total += (row.total_without_rounding) ? parseFloat(row.total_without_rounding) : parseFloat(row.total)
                 }
-                total_value += parseFloat(row.total_value);
+
+                // total_value += parseFloat(row.total_value);
+                total_value += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
+
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
                 if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
@@ -1900,7 +1929,7 @@ export default {
 
             this.form.total = _.round(total, 2)
             // this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
-            
+
             this.form.subtotal = this.form.total
 
         },

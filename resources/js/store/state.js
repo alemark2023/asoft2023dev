@@ -109,7 +109,10 @@ export default {
             serie: null,
             document_id: null,
             type: '',
-        }
+        },
+        show_ticket_58: false,
+        show_ticket_80: false,
+        show_ticket_50: false,
 
     },
     form_pos: {},
