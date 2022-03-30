@@ -143,8 +143,7 @@
 
             if ($value->customer->id) {
                 $id = $value->customer->id;
-                $data=Person::with('country')
-                ->where('country.id','nationality_id')
+                $data=Person::with('nationality')
                 ->orderBy('id', 'DESC');
                 return $data = $data->where('id',$id)->get();
             }

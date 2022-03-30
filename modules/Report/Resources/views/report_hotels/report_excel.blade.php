@@ -79,7 +79,8 @@
 
                     $total_days_rent=0;
                     $total_nigth_days=0;
-
+                    $nationality = 0;
+                    $country = 0;
                     @endphp
                 @foreach($records as $key => $value)
                     <?php
@@ -91,10 +92,16 @@
                     $rates = $value->room->rates[0]->price;
                     $category = $value->room->category->description;
                     $person_details = $value->searchPersonDetails($value);
+                    $person_nationality = $value->searchPersonNationality($value);
+                    /* dd($person_nationality); */
                     /* $document_type = $identity_document_type[0]->description; */
                     $document_type = $person_details[0]->identity_document_type->description;
                     $country = $person_details[0]->country->description;
-                    /* dd($country); */
+                    if (!is_null($person_nationality)) {
+                        $nationality = $person_nationality[0]->nationality->description;
+                    }
+                    
+                    /* dd($nationality); */
                     $date_initial = new DateTime($value->input_date);
                     $date_end = new DateTime($value ->output_date);
                     $date_rent = $date_initial->diff($date_end);
@@ -109,7 +116,7 @@
 
                         <td>{{ $key+1 }}</td>
                         <td>{{$customer->name}}</td>
-                        <td></td>{{-- NACIONALIDAD --}}
+                        <td>{{ $nationality }}</td>{{-- NACIONALIDAD --}}
                         <td>{{ $country }}</td>{{-- PAIS RESIDENCIA --}}
                         <td>{{ $document_type }}</td>{{-- TIPO DOCUMENTO --}}
                         <td>{{ $customer->number }}</td>{{-- # DOCUMENTO --}}

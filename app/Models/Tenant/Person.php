@@ -233,6 +233,11 @@
             return $this->belongsTo(Country::class);
         }
 
+        public function nationality()
+        {
+            return $this->belongsTo(Country::class, 'nationality_id');
+        }
+
         /**
          * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
          */
