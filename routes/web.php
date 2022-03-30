@@ -225,6 +225,9 @@ if ($hostname) {
                 Route::post('/import', 'Tenant\PersonController@import');
                 Route::get('/enabled/{type}/{person}', 'Tenant\PersonController@enabled');
                 Route::get('/{type}/exportation', 'Tenant\PersonController@export')->name('tenant.persons.export');
+                Route::get('/export/barcode/print', 'Tenant\PersonController@printBarCode')->name('tenant.persons.export.barcode.print');
+                Route::get('/barcode/{item}', 'Tenant\PersonController@generateBarcode');
+                Route::get('/search/{barcode}', 'Tenant\PersonController@getPersonByBarcode');
             });
             //Documents
             Route::post('documents/categories', 'Tenant\DocumentController@storeCategories');
