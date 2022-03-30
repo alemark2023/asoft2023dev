@@ -225,6 +225,25 @@
                                  name="second">
                         <span slot="label">Dirección</span>
                         <div class="row">
+                            <!-- Nacionalidad -->
+
+                            <div class="col-md-3">
+                                <div :class="{'has-danger': errors.country_id}"
+                                     class="form-group">
+                                    <label class="control-label">Nacionalidad</label>
+                                    <el-select v-model="form.country_id"
+                                               dusk="country_id"
+                                               filterable>
+                                        <el-option v-for="option in countries"
+                                                   :key="option.id"
+                                                   :label="option.description"
+                                                   :value="option.id"></el-option>
+                                    </el-select>
+                                    <small v-if="errors.country_id"
+                                           class="form-control-feedback"
+                                           v-text="errors.country_id[0]"></small>
+                                </div>
+                            </div>
                             <!-- País -->
 
                             <div class="col-md-3">
