@@ -321,8 +321,10 @@
                                             <a class="nav-link"
                                                href="{{route('tenant.pos.index')}}">Punto de venta</a>
                                         </li>
+                                    @endif
+                                    @if(in_array('pos_garage', $vc_module_levels))
                                         <li class="{{ ($firstLevel === 'pos' && $secondLevel === 'garage')?'nav-active':'' }}">
-                                                <a class="nav-link"
+                                            <a class="nav-link"
                                                 href="{{route('tenant.pos.garage')}}">Venta rápida <span style="font-size:.65rem;">(Grifos y Markets)</span></a>
                                         </li>
                                     @endif
