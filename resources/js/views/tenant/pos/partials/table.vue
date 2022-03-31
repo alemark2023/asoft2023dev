@@ -344,7 +344,8 @@ export default {
         },
         handleCurrentChange(val) {
             this.currentRow = val;
-            this.selectedIndex = val.index;
+            this.selectedIndex=val.index;
+            /* console.log(this.selectedIndex) */
         },
         clickWarehouseDetail(id) {
             this.$emit("clickWarehouseDetail", id);

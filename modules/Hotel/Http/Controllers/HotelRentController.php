@@ -162,6 +162,7 @@ class HotelRentController extends Controller
 		$rent = HotelRent::findOrFail($rentId);
 		$rent->update([
 			'arrears' => request('arrears'),
+			'payment_status' => 'PAID',
 			'status'  => 'FINALIZADO'
 		]);
 		HotelRoom::where('id', $rent->hotel_room_id)
@@ -185,10 +186,14 @@ class HotelRentController extends Controller
 			->orderBy('name');
 
 		$query = request('input');
-		if ($query) {
+		$search_by_barcode = (bool)request('search_by_barcode');
+		if ($query && $search_by_barcode) {
+			
+			$customers = $customers->where('barcode', 'like', "%{$query}%");
+		}else{
 			if (is_numeric($query)) {
 				$customers = $customers->where('number', 'like', "%{$query}%");
-			} else {
+			}else {
 				$customers = $customers->where('name', 'like', "%{$query}%");
 			}
 		}
@@ -205,7 +210,8 @@ class HotelRentController extends Controller
 					'identity_document_type_code' => $row->identity_document_type->code,
 					'addresses'                   => $row->addresses,
 					'address'                     => $row->address,
-					'internal_code'               => $row->internal_code
+					'internal_code'               => $row->internal_code,
+					'barcode'					  => $row->barcode
 				];
 			});
 

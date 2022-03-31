@@ -158,6 +158,16 @@
                                            v-text="errors.person_type_id[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-md-3">
+                                <div :class="{'has-danger': errors.barcode}"
+                                    class="form-group">
+                                    <label class="control-label">Código de barra</label>
+                                    <el-input v-model="form.barcode"></el-input>
+                                    <small v-if="errors.barcode"
+                                        class="form-control-feedback"
+                                        v-text="errors.barcode[0]"></small>
+                                </div>
+                            </div>
                             <div v-if="form.state"
                                  class="col-md-6">
                                 <div class="form-group">
@@ -225,6 +235,25 @@
                                  name="second">
                         <span slot="label">Dirección</span>
                         <div class="row">
+                            <!-- Nacionalidad -->
+
+                            <div class="col-md-3">
+                                <div :class="{'has-danger': errors.country_id}"
+                                     class="form-group">
+                                    <label class="control-label">Nacionalidad</label>
+                                    <el-select v-model="form.nationality_id"
+                                               dusk="country_id"
+                                               filterable>
+                                        <el-option v-for="option in countries"
+                                                   :key="option.id"
+                                                   :label="option.description"
+                                                   :value="option.id"></el-option>
+                                    </el-select>
+                                    <small v-if="errors.country_id"
+                                           class="form-control-feedback"
+                                           v-text="errors.country_id[0]"></small>
+                                </div>
+                            </div>
                             <!-- País -->
 
                             <div class="col-md-3">
@@ -724,6 +753,7 @@ export default {
                 name: null,
                 trade_name: null,
                 country_id: 'PE',
+                nationality_id: 'PE',
                 department_id: null,
                 province_id: null,
                 district_id: null,

@@ -27,7 +27,7 @@
             $module = $request->user()->getModule();
             $path = explode('/', $request->path());
             $modules = $request->user()->getModules();
-
+            /* dd($request->user()->getModule()); */
             if (!$request->ajax()) {
 
                 if (count($modules)) {
@@ -37,6 +37,7 @@
 
                     if ($group) {
                         if ($this->getModuleByGroup($modules, $group) === 0) {
+
                             return $this->redirectRoute($module);
                         }
                     }
@@ -67,7 +68,7 @@
                 $firstLevel == "documents" ||
                 $firstLevel == "dashboard" ||
                 $firstLevel == "quotations" ||
-                $firstLevel == "items" ||
+                /* $firstLevel == "items" || */
                 $firstLevel == "summaries" ||
                 $firstLevel == "voided") {
                 $group = "documents";
@@ -76,6 +77,10 @@
                 $firstLevel == "purchases" ||
                 $firstLevel == "expenses") {
                 $group = "purchases";
+            }///* Module Items  */
+            elseif (
+                $firstLevel == "items") {
+                $group = "items";
             } ///* Module advanced */
             elseif (
                 $firstLevel == "retentions" ||
