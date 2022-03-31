@@ -243,19 +243,38 @@
                         <div class="col-md-3">
                             <div :class="{'has-danger': errors.internal_id}"
                                  class="form-group">
-                                <label class="control-label">Código Interno
+                               
+                                <template v-if="inventory_configuration && inventory_configuration.generate_internal_id == 1">
+                                    <label class="control-label">Código Interno
+                                    <el-tooltip class="item"
+                                                content="Código interno de la empresa para el control de sus productos | Autogenerado por el sistema"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                    </label>
+                                    <el-input :disabled="true" v-model="form.internal_id"
+                                          dusk="internal_id"></el-input>
+                                    <small v-if="errors.internal_id"
+                                       class="form-control-feedback"
+                                       v-text="errors.internal_id[0]"></small>
+                                </template>
+                                <template v-else>
+                                     <label class="control-label">Código Interno
                                     <el-tooltip class="item"
                                                 content="Código interno de la empresa para el control de sus productos"
                                                 effect="dark"
                                                 placement="top-start">
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
-                                </label>
-                                <el-input v-model="form.internal_id"
+                                    </label>
+                                    <el-input  v-model="form.internal_id"
                                           dusk="internal_id"></el-input>
-                                <small v-if="errors.internal_id"
+                                    <small v-if="errors.internal_id"
                                        class="form-control-feedback"
                                        v-text="errors.internal_id[0]"></small>
+                                </template>
+                                
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -526,6 +545,7 @@
                                 <table class="table table-sm mb-0">
                                     <thead>
                                     <tr>
+                                        <th class="text-center">Código de barra</th>
                                         <th class="text-center">Unidad</th>
                                         <th class="text-center">Descripción</th>
                                         <th class="text-center">
@@ -548,6 +568,8 @@
                                     <tr v-for="(row, index) in form.item_unit_types"
                                         :key="index">
                                         <template v-if="row.id">
+                                           
+                                            <td class="text-center"> {{row.barcode}} </td>
                                             <td class="text-center">{{ row.unit_type_id }}</td>
                                             <td class="text-center">{{ row.description }}</td>
                                             <td class="text-center">{{ row.quantity_unit }}</td>
@@ -570,6 +592,7 @@
                                             </td>
                                         </template>
                                         <template v-else>
+                                            <td class="text-center">  <el-input v-model="row.barcode"></el-input> </td>
                                             <td>
                                                 <div class="form-group">
                                                     <el-select v-model="row.unit_type_id"
@@ -1221,6 +1244,7 @@ export default {
             attribute_types: [],
             activeName: 'first',
             fromPharmacy: false,
+            inventory_configuration: null
         }
     },
     async created() {
@@ -1260,6 +1284,7 @@ export default {
                 this.loadConfiguration()
                 this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0) ? this.affectation_igv_types[0].id : null
                 this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0) ? this.affectation_igv_types[0].id : null
+                this.inventory_configuration = data.inventory_configuration;
             })
 
         this.$eventHub.$on('submitPercentagePerception', (data) => {
@@ -1388,7 +1413,8 @@ export default {
                 price1: 0,
                 price2: 0,
                 price3: 0,
-                price_default: 2
+                price_default: 2,
+                barcode: null
             })
         },
         clickCancel(index) {
