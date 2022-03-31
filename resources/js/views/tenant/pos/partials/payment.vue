@@ -128,7 +128,7 @@
                 </div>
                 <div class="row m-0 p-0 h-25 d-flex align-items-center bg-white">
                     <div class="col-lg-6">
-                        <button :disabled="button_payment"
+                        <button :disabled="button_payment && payment_method_type_id != '09'"
                                 class="btn btn-block btn-primary"
                                 @click="clickPayment">PAGAR
                         </button>
@@ -421,6 +421,8 @@
             :showDialog.sync="showDialogMultiplePayment"
             :total="form.total"
             @add="addRow"
+            @setPaymentMethod="setPaymentMethod"
+
         ></multiple-payment-form>
 
         <!-- <sale-notes-options :showDialog.sync="showDialogSaleNote"
@@ -503,6 +505,8 @@ export default {
             global_discount_type: {},
             error_global_discount: false,
             is_discount_amount: false,
+            payment_method_type_id: null
+            
         }
     },
     async created() {
@@ -717,26 +721,34 @@ export default {
                 total_charge += parseFloat(row.total_charge)
 
                 if (row.affectation_igv_type_id === '10') {
-                    total_taxed += parseFloat(row.total_value)
+                    total_taxed += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
+
                 if (row.affectation_igv_type_id === '20') {
-                    total_exonerated += parseFloat(row.total_value)
+                    total_exonerated += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
+
                 if (row.affectation_igv_type_id === '30') {
                     total_unaffected += parseFloat(row.total_value)
                 }
+
                 if (row.affectation_igv_type_id === '40') {
                     total_exportation += parseFloat(row.total_value)
                 }
+
                 if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
                     total_free += parseFloat(row.total_value)
                 }
+
                 if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
-                    total_igv += parseFloat(row.total_igv)
-                    total += parseFloat(row.total)
+                    total_igv += (row.total_igv_without_rounding) ? parseFloat(row.total_igv_without_rounding) : parseFloat(row.total_igv)
+                    total += (row.total_without_rounding) ? parseFloat(row.total_without_rounding) : parseFloat(row.total)
                 }
-                total_value += parseFloat(row.total_value)
+
+                total_value += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
+
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
+
 
                 if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
 
@@ -858,6 +870,9 @@ export default {
 
             // console.log(this.form.payments)
         },
+        setPaymentMethod(id){
+            this.payment_method_type_id = id;
+        },  
         setAmount(amount) {
             // this.amount = parseFloat(this.amount) + parseFloat(amount)
             this.amount = parseFloat(amount) //+ parseFloat(amount)
@@ -935,8 +950,10 @@ export default {
         inputAmount() {
 
             this.difference = this.amount - this.form.total
-
-            if (isNaN(this.difference)) {
+            if(this.payment_method_type_id == '09') {
+                this.button_payment = false
+            }
+            else if (isNaN(this.difference)) {
                 this.button_payment = true
                 this.difference = "-"
             } else if (this.difference >= 0) {
