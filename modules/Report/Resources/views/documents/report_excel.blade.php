@@ -141,21 +141,27 @@
                     <?php
                     /** @var \App\Models\Tenant\Document|App\Models\Tenant\SaleNote  $value */
                     $iteration = $loop->iteration;
-                                    $user = $value->user->name;
+                                    $userCreator = $value->user->name;
                     $document_type = $value->getDocumentType();
-                    /* $seller = \App\CoreFacturalo\Helpers\Template\ReportHelper::getSellerData($value);
+                    $seller = \App\CoreFacturalo\Helpers\Template\ReportHelper::getSellerData($value);
                     try{
                         $user = $seller->name;
                     }catch (ErrorException $e){
                         $user = '';
-                    } */
+                    }
 
                     ?>
 
                     ?>
                     <tr>
                         <td class="celda">{{$iteration}}</td>
-                        <td class="celda">{{$user}}</td>
+                        <td class="celda">
+                            @if($filters['user_type']==='CREADOR')
+                                {{$userCreator}}
+                            @else
+                                {{$user}}
+                            @endif
+                        </td>
                         <td class="celda">{{$document_type->id}}</td>
                         <td class="celda">{{$value->series}}-{{$value->number}}</td>
                         <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td>
@@ -406,7 +412,11 @@
 
 
                         }
+<<<<<<< HEAD
 
+=======
+                        
+>>>>>>> 9b69e3c19d59a385b5966651b2ba9bf251091650
                     @endphp
                 @endforeach
                 <tr>
@@ -439,7 +449,11 @@
                     <td></td>
                     <td>{{$acum_total_usd}}</td>
                 </tr>
+<<<<<<< HEAD
 
+=======
+                
+>>>>>>> 9b69e3c19d59a385b5966651b2ba9bf251091650
                 </tbody>
             </table>
         </div>
