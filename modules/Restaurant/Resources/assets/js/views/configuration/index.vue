@@ -15,7 +15,7 @@
               <div class="row">
                 <div class="col-sm-6 col-md-4 mt-4">
                   <label class="control-label">
-                    Habilitar menu POS
+                    Habilitar menú POS
                   </label>
                   <div :class="{'has-danger': errors.menu_pos}"
                         class="form-group">
@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-sm-6 col-md-4 mt-4">
                   <label class="control-label">
-                    Habilitar menu Mesas
+                    Habilitar menú Mesas
                   </label>
                   <div :class="{'has-danger': errors.menu_tables}"
                         class="form-group">
@@ -45,7 +45,7 @@
                 </div>
                 <div class="col-sm-6 col-md-4 mt-4">
                   <label class="control-label">
-                    Habilitar menu Pedidos
+                    Habilitar menú Pedidos
                   </label>
                   <div :class="{'has-danger': errors.menu_order}"
                         class="form-group">
@@ -56,6 +56,36 @@
                     <small v-if="errors.menu_order"
                            class="form-control-feedback"
                            v-text="errors.menu_order[0]"></small>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-md-4 mt-4">
+                  <label class="control-label">
+                    Habilitar Comanda/Bar
+                  </label>
+                  <div :class="{'has-danger': errors.menu_bar}"
+                        class="form-group">
+                    <el-switch v-model="form.menu_bar"
+                                active-text="Si"
+                                inactive-text="No"
+                                @change="submit"></el-switch>
+                    <small v-if="errors.menu_bar"
+                            class="form-control-feedback"
+                            v-text="errors.menu_bar[0]"></small>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-md-4 mt-4">
+                  <label class="control-label">
+                    Habilitar Comanda/Cocina
+                  </label>
+                  <div :class="{'has-danger': errors.menu_kitchen}"
+                        class="form-group">
+                    <el-switch v-model="form.menu_kitchen"
+                                active-text="Si"
+                                inactive-text="No"
+                                @change="submit"></el-switch>
+                    <small v-if="errors.menu_kitchen"
+                            class="form-control-feedback"
+                            v-text="errors.menu_kitchen[0]"></small>
                   </div>
                 </div>
                 <div class="col-sm-6 col-md-6 mt-4">
@@ -84,7 +114,7 @@
                     <el-slider
                       v-model="form.tables_quantity"
                       :step="1"
-                      max="20"
+                      :max="20"
                       show-stops
                       @change="submit">
                     </el-slider>
@@ -120,6 +150,8 @@ export default {
           menu_pos: true,
           menu_order: true,
           menu_tables: true,
+          menu_bar: true,
+          menu_kitchen: true,
           first_menu: 'POS',
           tables_quantity: 15
         },
