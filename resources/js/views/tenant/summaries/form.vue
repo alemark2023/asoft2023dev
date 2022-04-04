@@ -170,6 +170,7 @@
                 this.changeDateOfReference()
 
                 await this.$http.get(`/${this.resource_documents}/tables`).then(response => {
+                    console.log(response.data);
                     this.all_document_types = response.data.document_types_summaries;
                     this.all_series = response.data.series;
                     /* this.payment_destinations = response.data.payment_destinations;
@@ -181,8 +182,16 @@
             },
             getSeries() {
                 this.form.series_id = null
-                this.series = _.filter(this.all_series, {'document_type_id': this.form.document_type_id})
-                this.form.series_number = (this.series.length > 0)?this.series[0].number:null
+                
+                
+                if (this.form.document_type_id!='03') {
+                    let serie_document = _.filter(this.all_series, {'document_type_id': this.form.document_type_id})
+                    this.series = serie_document.filter((serie) => serie.number.startsWith("B"));
+                    this.form.series_number = (this.series.length > 0)?this.series[0].number:null;
+                }else{
+                    this.series = _.filter(this.all_series, {'document_type_id': this.form.document_type_id});
+                    this.form.series_number = (this.series.length > 0)?this.series[0].number:null;
+                }
             },
             async getDocumentId() {
                 this.document_types = this.all_document_types
