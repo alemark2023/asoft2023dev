@@ -130,7 +130,7 @@
                             </div>
 
                             <div class="col-lg-8 mt-2" >
-
+                                <label>Pagos</label>
                                 <table>
                                     <thead>
                                         <tr width="100%">
