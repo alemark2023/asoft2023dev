@@ -1111,6 +1111,7 @@ class DocumentController extends Controller
         $category_id = $request->category_id;
         $purchase_order = $request->purchase_order;
         $guides = $request->guides;
+        $plate_numbers = $request->plate_numbers;
 
         $records = Document::query();
 		if ($d_start && $d_end) {
@@ -1160,6 +1161,9 @@ class DocumentController extends Controller
         }
         if (!empty($guides)) {
             $records->where('guides', 'like', DB::raw("%\"number\":\"%") . $guides . DB::raw("%\"%"));
+        }
+        if ($plate_numbers) {
+            $records->where('plate_number', 'like', '%' . $plate_numbers . '%');
         }
         return $records;
     }
