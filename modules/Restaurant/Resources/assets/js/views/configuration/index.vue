@@ -76,6 +76,23 @@
                             v-text="errors.first_menu[0]"></small>
                   </div>
                 </div>
+                <div class="col-sm-6 col-md-6 mt-4">
+                  <div :class="{'has-danger': errors.tables_quantity}"
+                        class="form-group">
+                    <label class="control-label">Cantidad de mesas
+                    </label>
+                    <el-slider
+                      v-model="form.tables_quantity"
+                      :step="1"
+                      max="20"
+                      show-stops
+                      @change="submit">
+                    </el-slider>
+                    <small v-if="errors.tables_quantity"
+                            class="form-control-feedback"
+                            v-text="errors.tables_quantity[0]"></small>
+                  </div>
+                </div>
               </div>
             </el-tab-pane>
           </el-tabs>
@@ -103,7 +120,8 @@ export default {
           menu_pos: true,
           menu_order: true,
           menu_tables: true,
-          first_menu: 'POS'
+          first_menu: 'POS',
+          tables_quantity: 15
         },
         activeName: 'first',
         menu_list: [
