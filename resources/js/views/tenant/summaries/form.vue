@@ -5,7 +5,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.series_id}">
-                            <label class="control-label">Serie</label>
+                            <label class="control-label">Serie <span class="text-danger">*</span></label>
                             <el-select v-model="form.series_number">
                                 <el-option v-for="option in series" :key="option.id" :value="option.number" :label="option.number"></el-option>
                             </el-select>
@@ -14,7 +14,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="control-label">Numero Inicial</label>
+                            <label class="control-label">Numero Inicial <span class="text-danger">*</span></label>
                             <el-input v-model="form.initInterval"></el-input>
                             <small class="form-control-feedback" v-if="errors.initInterval" v-text="errors.initInterval[0]"></small>
                         </div>
@@ -28,7 +28,7 @@
                     </div>
                     <div class="col-lg-12">
                         <div class="form-group" :class="{'has-danger': errors.document_type_id}">
-                            <label class="control-label">Tipo comprobante</label>
+                            <label class="control-label">Tipo comprobante <span class="text-danger">*</span></label>
                             <el-select v-model="form.document_type_id" @change="getSeries" popper-class="el-select-document_type" dusk="document_type_id" class="border-left rounded-left border-info">
                                 <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                             </el-select>
