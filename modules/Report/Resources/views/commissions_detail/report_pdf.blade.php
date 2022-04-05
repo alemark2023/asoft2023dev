@@ -134,7 +134,7 @@
                                     <td class="celda">{{ $relation->customer->number}}</td> 
 
                                     <td class="celda">{{$relation->customer->name}}</td> 
-                                    <td class="celda">{{$row->relation_item->name}}</td> 
+                                    <td class="celda">{{$row->relation_item->description}}</td> 
 
                                     <td class="celda">{{$row->quantity}}</td> 
                                     <td class="celda">{{$purchase_unit_price}}</td> 
