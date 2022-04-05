@@ -250,6 +250,13 @@
                                     </el-checkbox>
                                 </div>
                             </div>
+                            <div  class="col-md-4 mt-1" >
+                                <div class="form-comtrol">
+                                    <el-checkbox v-model="form.permission_override_cpe">
+                                        Anular CPE
+                                    </el-checkbox>
+                                </div>
+                            </div>
                             <div  class="col-md-4 mt-1">
                                 <div class="form-comtrol">
                                     <el-checkbox v-model="form.recreate_documents">
@@ -303,6 +310,7 @@ export default {
                 modules: [],
                 levels: [],
                 permission_edit_cpe: false,
+                permission_override_cpe: false,
                 recreate_documents: false,
             },
             modules: [],
@@ -429,6 +437,7 @@ export default {
                 modules: [],
                 levels: [],
                 permission_edit_cpe: false,
+                permission_override_cpe: false,
                 recreate_documents: false,
             };
         },

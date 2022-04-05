@@ -158,7 +158,7 @@
                     </li>
                             @if($user->type != 'integrator' && $vc_company->soap_type_id != '03')
                     <li>
-                        <a href="{{route('tenant.inventories.configuration.index')}}">Inventarios</a>
+                        <a href="{{route('tenant.inventories.configuration.index')}}">Inventarios / Productos</a>
                     </li>
                     @endif
                             @if($user->type === 'admin')

@@ -493,6 +493,52 @@
                                 </div>
                             </div>
                             -->
+                            <div  class="col-md-4 mt-4">
+                                <label class="control-label">
+                                    Cantidad de elementos en el validador
+                                    <el-tooltip class="item"
+                                                content="Aplica en el nuevo validador ./reports/validate-documents"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.new_validator_pagination}"
+                                     class="form-group">
+                                    <el-input-number v-model="form.new_validator_pagination"
+                                                     :min="1"
+                                                     :precision="0"
+                                                     :step="1"
+                                                     @change="submit"></el-input-number>
+                                    <small v-if="errors.new_validator_pagination"
+                                           class="form-control-feedback"
+                                           v-text="errors.new_validator_pagination[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-2 mt-4">
+                            </div>
+                            
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Filtrar clientes según vendedor asignado
+                                    <el-tooltip class="item"
+                                                content="Aplica para usuarios con perfil Vendedor - Disponible en Clientes y Ventas/Comprobante electrónico"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                 <div :class="{'has-danger': errors.customer_filter_by_seller}"
+                                        class="form-group">
+                                    <el-switch v-model="form.customer_filter_by_seller"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.customer_filter_by_seller"
+                                            class="form-control-feedback"
+                                            v-text="errors.customer_filter_by_seller[0]"></small>
+                                </div>
+                            </div>
 
                         </div>
                     </el-tab-pane>
@@ -710,6 +756,63 @@
                                             v-text="errors.detraction_amount_rounded_int[0]"></small>
                                 </div>
                             </div>
+
+                            
+                            <div class="col-md-6 mt-4">
+                                <div :class="{'has-danger': errors.global_discount_type_id}"
+                                        class="form-group">
+                                    <label class="control-label">Tipo de descuento global
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+ 
+                                            <div slot="content">
+                                                <strong>Tipo de descuento predeterminado en POS - Ventas/Comprobante electrónico</strong><br/><br/>
+                                                Sugerencias:<br/>
+                                                Si la venta tiene op. gravadas utilice el descuento que afecta a la base imponible del IGV/IVAP.<br/>
+                                                Si la venta no tiene op. gravadas utilice el descuento que no afecta a la base imponible del IGV/IVAP.<br/>
+                                            </div>
+                                        </el-tooltip>
+                                    </label>
+                                    <el-select v-model="form.global_discount_type_id"
+                                                filterable
+                                                @change="submit">
+                                        <el-option v-for="option in global_discount_types"
+                                                    :key="option.id"
+                                                    :label="option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small v-if="errors.global_discount_type_id"
+                                            class="form-control-feedback"
+                                            v-text="errors.global_discount_type_id[0]"></small>
+                                </div>
+                            </div>
+
+
+                            
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Restringir venta de productos menores al precio de compra 
+                                    <el-tooltip
+                                        class="item"
+                                        content="Validar que el precio de compra del producto no sea superior al de venta - Disponible Ventas/Comprobante electrónico - Nota de venta"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.validate_purchase_sale_unit_price}"
+                                        class="form-group">
+                                    <el-switch v-model="form.validate_purchase_sale_unit_price"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.validate_purchase_sale_unit_price"
+                                            class="form-control-feedback"
+                                            v-text="errors.validate_purchase_sale_unit_price[0]"></small>
+                                </div>
+                            </div>
+
 
                         </div>
                     </el-tab-pane>
@@ -1310,6 +1413,7 @@ export default {
                 dispatches_address_text:false,
             },
             affectation_igv_types: [],
+            global_discount_types: [],
             placeholder: '',
             activeName: 'first'
         }
@@ -1369,6 +1473,7 @@ export default {
 
             await this.$http.get(`/${this.resource}/tables`).then(response => {
                 this.affectation_igv_types = response.data.affectation_igv_types
+                this.global_discount_types = response.data.global_discount_types
             })
 
         },
@@ -1385,6 +1490,7 @@ export default {
                 amount_plastic_bag_taxes: 0.1,
                 colums_grid_item: 4,
                 affectation_igv_type_id: '10',
+                global_discount_type_id: '03',
                 terms_condition: null,
                 header_image: null,
                 legend_footer: false,
@@ -1417,8 +1523,10 @@ export default {
                 permission_to_edit_cpe: false,
                 name_product_pdf_to_xml:false,
                 detraction_amount_rounded_int:false,
+                validate_purchase_sale_unit_price: false,
                 show_logo_by_establishment: false,
-                shipping_time_days: 0
+                shipping_time_days: 0,
+                customer_filter_by_seller: false,
             };
         },
         UpdateFormPurchase(e) {
