@@ -68,7 +68,7 @@ class RestaurantConfigurationController extends Controller
      * consulta los usuarios actuales
      */
     public function getUsers() {
-        $users = User::all();
+        $users = User::orderBy('name')->get();
         $alls = $users->transform(function ($item) {
             return $item->getCollectionRestaurantData();
         });

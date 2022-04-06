@@ -634,7 +634,7 @@ $withEstablishment = true){
             'email' => $this->email,
             'name' => $this->name,
             'restaurant_role_id' => $this->restaurant_role_id,
-            'restaurant_role_name' => $this->restaurant_role->name,
+            'restaurant_role_name' => $this->restaurant_role_id ? $this->restaurant_role->name : '',
             'locked' => (bool) $this->locked,
         ];
     }
