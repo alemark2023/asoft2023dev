@@ -181,9 +181,17 @@
 
                         </div>
                         <div class="col-lg-6">
-                            <button class="btn btn-block btn-danger"
+                            <!-- <button class="btn btn-block btn-danger"
                                     @click="clickCancel">CANCELAR
-                            </button>
+                            </button> -->
+                            
+                            <el-button
+                                :loading="loading_submit_cancel"
+                                class="submit btn btn-block btn-danger"
+                                @click="clickCancel"
+                                >
+                                CANCELAR
+                            </el-button>
                         </div>
                     </div>
                 </div>
@@ -296,7 +304,8 @@ export default {
             statusDocument: {},
             payment_method_types: [],
             payments: [],
-            locked_submit: false
+            locked_submit: false,
+            loading_submit_cancel: false,
         }
     },
     async created() {
@@ -707,9 +716,9 @@ export default {
         },
         async clickCancel() {
 
-            this.loading_submit = true
-            await this.sleep(800);
-            this.loading_submit = false
+            this.loading_submit_cancel = true
+            await this.sleep(400);
+            this.loading_submit_cancel = false
             this.cleanLocalStoragePayment()
             this.$eventHub.$emit('cancelSaleGarage')
             //console.info('cli cancel fas_payment')
@@ -915,8 +924,8 @@ export default {
                     }
                 })
         },
-        getTables() {
-            this.$http.get(`/${this.resource}/payment_tables`)
+        async getTables() {
+            await this.$http.get(`/${this.resource}/payment_tables`)
                 .then(response => {
                     this.all_series = response.data.series
                     this.payment_method_types = response.data.payment_method_types
