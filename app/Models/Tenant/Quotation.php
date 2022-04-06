@@ -20,6 +20,7 @@ class Quotation extends ModelTenant
     protected $fillable = [
         'id',
         'user_id',
+        'seller_id',
         'external_id',
         'establishment_id',
         'establishment',
@@ -344,6 +345,8 @@ class Quotation extends ModelTenant
             $orderNote = [];
         }
 
+        $seller = User::find($this->seller_id);
+
         return [
             'id' => $row->id,
             'items' => $items,
@@ -356,6 +359,7 @@ class Quotation extends ModelTenant
             'delivery_date' => $row->delivery_date,
             'identifier' => $row->identifier,
             'user_name' => $row->user->name,
+            'seller_name' => $seller->name,
             'customer_id' => $row->customer_id,
             'customer_name' => $row->customer->name,
             'customer_number' => $row->customer->number,
