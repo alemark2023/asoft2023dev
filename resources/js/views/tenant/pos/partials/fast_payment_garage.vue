@@ -165,19 +165,19 @@
                     </div>
                     <div class="row m-0 p-0 h-25 d-flex align-items-center">
                         <div class="col-lg-6">
-                            <!-- <button :disabled="button_payment"
+                            <button :disabled="button_payment"
                                     class="btn btn-block btn-primary"
                                     @click="clickPayment">PAGAR
-                            </button> -->
+                            </button>
                             
-                            <el-button
+                            <!-- <el-button
                                 :disabled="button_payment"
                                 :loading="loading_submit"
                                 class="submit btn btn-block btn-primary"
                                 @click="clickPayment"
                                 >
                                 PAGAR
-                            </el-button>
+                            </el-button> -->
 
                         </div>
                         <div class="col-lg-6">
