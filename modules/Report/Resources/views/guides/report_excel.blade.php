@@ -119,7 +119,13 @@
                     <th class="text-center">Fecha Envío</th>
                     <th class="text-center">Producto</th>
                     <th class="text-center">Cantidad</th>
-                    <th class="text-center">Motivo de traslado</th>
+                    <th class="text-center">Motivo de Traslado</th>
+                    <th class="text-center">Descripcion de Motivo de Traslado</th>
+
+                    <th class="text-center">Transportista Tipo Doc</th>
+                    <th class="text-center"># Documento</th>
+                    <th class="text-center">Nombre de Transportista</th>
+                    
                     <th class="text-center"># Pedido</th>
                 </tr>
                 </thead>
@@ -129,6 +135,10 @@
                         <?php
                         /** @var \App\Models\Tenant\DispatchItem $value */
                         $order_note=0;
+                        $transfer_description=0;
+                        $type_doc=0;
+                        $num_doc=0;
+                        $name_dispatcher=0;
                         $transfer_description=0;
                         $data = $value->getCollectionData();
                         /* dd($data); */
@@ -152,10 +162,13 @@
                         }
                         
                         if($dispatches['transfer_reason_type']){
-                            $transfer_description=$dispatches['transfer_reason_type']['description'];
+                            $transfer_reason=$dispatches['transfer_reason_type']['description'];
                         }
-                        
-                        
+                        $type_doc=$dispatches['type_disparcher'][0]['description'];
+                        $dispatcher=(array)$dispatches['dispatcher'];
+                        $num_doc=$dispatcher['number'];
+                        $name_dispatcher=$dispatcher['name'];
+                        $transfer_description = $dispatches['transfer_reason_description']? $dispatches['transfer_reason_description'] : 0;
                         ?>
 
                         <td class="celda">{{$loop->iteration}}</td>
@@ -168,7 +181,11 @@
                         <td class="celda">{{ $date_of_shipping }}</td>
                         <td class="celda"> {{$item_description}} </td>
                         <td class="celda"> {{$value->getQtyFormated()}} </td>
+                        <td class="celda">{{$transfer_reason}}</td>
                         <td class="celda">{{$transfer_description}}</td>
+                        <td class="celda">{{$type_doc}}</td>
+                        <td class="celda">{{$num_doc}}</td>
+                        <td class="celda">{{$name_dispatcher}}</td>
                         <td class="celda">{{$order_note}}</td>
                     @php
                         $acum_total += $qty

@@ -364,6 +364,7 @@
         <sale-notes-form-item  :typeUser="typeUser" :showDialog.sync="showDialogAddItem"
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
+                           :configuration="config"
                            @add="addRow"></sale-notes-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"

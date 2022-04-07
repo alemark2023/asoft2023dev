@@ -59,6 +59,7 @@ Route::prefix('restaurant')->group(function() {
     Route::prefix('cash')->group(function() {
 
         Route::get('', 'CashController@index')->name('tenant.restaurant.cash.index');
+        Route::get('/pos', 'CashController@posFilter')->name('tenant.restaurant.cash.filter-pos');
         Route::get('records', 'CashController@records');
         Route::get('report', 'CashController@report_general');
         Route::get('columns', 'CashController@columns');
