@@ -801,15 +801,14 @@ class SaleNoteController extends Controller
 //        $this->createPdf();
 //    }
 
-    private function setFilename(){
-
+    private function setFilename()
+    {
         $name = [$this->sale_note->series,$this->sale_note->number,date('Ymd')];
         $this->sale_note->filename = join('-', $name);
         
         $this->sale_note->unique_filename = $this->sale_note->filename; //campo único para evitar duplicados
 
         $this->sale_note->save();
-
     }
 
     public function toPrint($external_id, $format) {
@@ -1656,6 +1655,7 @@ class SaleNoteController extends Controller
         $this->sale_note->external_id = Str::uuid()->toString();
         $this->sale_note->state_type_id = '01' ;
         $this->sale_note->number = SaleNote::getLastNumberByModel($obj) ;
+        $this->sale_note->unique_filename = null;
         $this->sale_note->save();
 
         foreach($obj->items as $row)
