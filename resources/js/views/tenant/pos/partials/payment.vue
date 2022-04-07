@@ -128,7 +128,7 @@
                 </div>
                 <div class="row m-0 p-0 h-25 d-flex align-items-center bg-white">
                     <div class="col-lg-6">
-                        <button :disabled="button_payment"
+                        <button :disabled="button_payment && payment_method_type_id != '09'"
                                 class="btn btn-block btn-primary"
                                 @click="clickPayment">PAGAR
                         </button>
@@ -244,14 +244,15 @@
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <label class="control-label">
-                                            
+
                                             <el-checkbox v-model="is_discount_amount"
                                                             class="ml-1 mr-1"
                                                             @change="changeTypeDiscount"></el-checkbox>
 
                                             <template>{{ (is_discount_amount) ? 'Monto' : 'Porcentaje'}} descuento</template>
-                                            
+
                                             <el-tooltip class="item"
+                                                        v-if="global_discount_type && global_discount_type.description"
                                                         :content="global_discount_type.description"
                                                         effect="dark"
                                                         placement="top">
@@ -421,6 +422,8 @@
             :showDialog.sync="showDialogMultiplePayment"
             :total="form.total"
             @add="addRow"
+            @setPaymentMethod="setPaymentMethod"
+
         ></multiple-payment-form>
 
         <!-- <sale-notes-options :showDialog.sync="showDialogSaleNote"
@@ -503,6 +506,8 @@ export default {
             global_discount_type: {},
             error_global_discount: false,
             is_discount_amount: false,
+            payment_method_type_id: null
+
         }
     },
     async created() {
@@ -624,9 +629,13 @@ export default {
         },
         setGlobalDiscount(factor, amount, base)
         {
+            let discount_text = '';
+            if(this.global_discount_type && this.global_discount_type.description){
+                discount_text = this.global_discount_type.description
+            }
             this.form.discounts.push({
                 discount_type_id: this.global_discount_type.id,
-                description: this.global_discount_type.description,
+                description: discount_text,
                 factor: factor,
                 amount: _.round(amount, 2),
                 base: base
@@ -641,7 +650,7 @@ export default {
             // let factor = _.round(amount / base, 5)
 
             let discount = _.find(this.form.discounts, {'discount_type_id': this.globalDiscountTypeId})
-    
+
             if (input_global_discount > 0 && !discount)
             {
 
@@ -649,13 +658,13 @@ export default {
                 let base = (this.isGlobalDiscountBase) ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
                 let amount = 0
                 let factor = 0
-                
-                if (this.is_discount_amount) 
+
+                if (this.is_discount_amount)
                 {
                     amount = input_global_discount
                     factor = _.round(amount / base, 5)
                 }
-                else 
+                else
                 {
                     factor = _.round(input_global_discount / 100, 5)
                     amount = factor * base
@@ -669,7 +678,7 @@ export default {
                     this.form.total_taxed = _.round(base - this.form.total_discount, 2)
                     this.form.total_value = this.form.total_taxed
                     this.form.total_igv = _.round(this.form.total_taxed * (percentage_igv / 100), 2)
-    
+
                     //impuestos (isc + igv + icbper)
                     this.form.total_taxes = _.round(this.form.total_igv + this.form.total_isc + this.form.total_plastic_bag_taxes, 2);
                     this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
@@ -717,26 +726,34 @@ export default {
                 total_charge += parseFloat(row.total_charge)
 
                 if (row.affectation_igv_type_id === '10') {
-                    total_taxed += parseFloat(row.total_value)
+                    total_taxed += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
+
                 if (row.affectation_igv_type_id === '20') {
-                    total_exonerated += parseFloat(row.total_value)
+                    total_exonerated += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
+
                 if (row.affectation_igv_type_id === '30') {
                     total_unaffected += parseFloat(row.total_value)
                 }
+
                 if (row.affectation_igv_type_id === '40') {
                     total_exportation += parseFloat(row.total_value)
                 }
+
                 if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
                     total_free += parseFloat(row.total_value)
                 }
+
                 if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
-                    total_igv += parseFloat(row.total_igv)
-                    total += parseFloat(row.total)
+                    total_igv += (row.total_igv_without_rounding) ? parseFloat(row.total_igv_without_rounding) : parseFloat(row.total_igv)
+                    total += (row.total_without_rounding) ? parseFloat(row.total_without_rounding) : parseFloat(row.total)
                 }
-                total_value += parseFloat(row.total_value)
+
+                total_value += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
+
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
+
 
                 if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
 
@@ -858,6 +875,9 @@ export default {
 
             // console.log(this.form.payments)
         },
+        setPaymentMethod(id){
+            this.payment_method_type_id = id;
+        },
         setAmount(amount) {
             // this.amount = parseFloat(this.amount) + parseFloat(amount)
             this.amount = parseFloat(amount) //+ parseFloat(amount)
@@ -935,8 +955,10 @@ export default {
         inputAmount() {
 
             this.difference = this.amount - this.form.total
-
-            if (isNaN(this.difference)) {
+            if(this.payment_method_type_id == '09') {
+                this.button_payment = false
+            }
+            else if (isNaN(this.difference)) {
                 this.button_payment = true
                 this.difference = "-"
             } else if (this.difference >= 0) {

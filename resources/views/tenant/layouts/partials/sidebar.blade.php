@@ -1344,30 +1344,30 @@
                             </a>
                             <ul class="nav nav-children">
                                 <li class="nav-parent
-                                {{ ($secondLevel != null && $secondLevel == 'cash')?'nav-active nav-expanded':'' }}">
+                                {{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == 'pos')?'nav-active nav-expanded':'' }}">
                                     <a class="nav-link"
                                         href="#">
                                         POS
                                     </a>
                                     <ul class="nav nav-children">
-                                        <li class="{{ ($secondLevel != null && $secondLevel == 'cash')?'nav-active':'' }}">
+                                        <li class="{{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == 'pos')?'nav-active':'' }}">
                                             <a class="nav-link"
-                                                href="{{route('tenant.restaurant.cash.index')}}">
+                                                href="{{route('tenant.restaurant.cash.filter-pos')}}">
                                                 Caja Chica
                                             </a>
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="nav-parent">
+                                <li class="nav-parent {{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == '')?'nav-active nav-expanded':'' }}">
                                     <a class="nav-link"
                                         href="#">
                                         Mesas
                                     </a>
                                     <ul class="nav nav-children">
-                                        <li class="">
+                                        <li class="{{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == '')?'nav-active':'' }}">
                                             <a class="nav-link"
-                                                href="#">
-                                                Cantidad mesas
+                                                href="{{route('tenant.restaurant.cash.index')}}">
+                                                Caja Chica
                                             </a>
                                         </li>
                                     </ul>
