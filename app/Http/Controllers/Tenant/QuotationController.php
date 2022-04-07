@@ -123,10 +123,9 @@ class QuotationController extends Controller
 
         }else if($request->column == 'seller_name'){
 
-            $records = Quotation::whereHas('user', function($query) use($request){
+            $records = Quotation::whereHas('seller', function($query) use($request){
                             $query->where('name', 'like', "%{$request->value}%");
                         })
-                        ->whereTypeUser()
                         ->latest();
 
         }else{
