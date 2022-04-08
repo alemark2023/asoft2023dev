@@ -1656,6 +1656,10 @@ class SaleNoteController extends Controller
         $this->sale_note->state_type_id = '01' ;
         $this->sale_note->number = SaleNote::getLastNumberByModel($obj) ;
         $this->sale_note->unique_filename = null;
+
+        $this->sale_note->changed = false;
+        $this->sale_note->document_id = null;
+
         $this->sale_note->save();
 
         foreach($obj->items as $row)
