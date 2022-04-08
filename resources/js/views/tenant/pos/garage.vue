@@ -1628,6 +1628,12 @@ export default {
             this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
             this.form.subtotal = this.form.total
 
+            this.checkPaymentGarage()
+        },
+        checkPaymentGarage(){
+
+            this.$eventHub.$emit('eventCheckPaymentGarage')
+
         },
         changeDateOfIssue() {
             // this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {

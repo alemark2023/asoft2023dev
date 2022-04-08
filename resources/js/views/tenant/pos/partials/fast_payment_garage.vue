@@ -209,6 +209,7 @@
             :showDialog.sync="showDialogMultiplePayment"
             :total="form.total"
             @add="addRow"
+            ref="componentMultiplePaymentGarage"
         ></multiple-payment-form>
 
         <!-- <sale-notes-options :showDialog.sync="showDialogSaleNote"
@@ -671,7 +672,7 @@ export default {
             this.difference = _.round(this.difference, 2)
             // this.form_payment.payment = this.amount
 
-            this.$eventHub.$emit('eventSetFormPosLocalStorage', this.form)
+            this.$eventHub.$emit('eventSetFormPosLocalStorageGarage', this.form)
             this.lStoPayment()
 
         },
@@ -747,6 +748,12 @@ export default {
                 this.payments = []
                 this.amount = 0
             });
+
+
+            
+            await this.$eventHub.$on("eventCheckPaymentGarage", () => {
+                this.checkPaymentGarage()
+            })
         },
         cleanLocalStoragePayment() {
 
@@ -934,6 +941,26 @@ export default {
                 })
 
         },
+        checkPaymentGarage(){ 
+            
+            
+            if(this.form.payments.length == 0)
+            {
+                this.$refs.componentMultiplePaymentGarage.clickAddPayment(this.form.total)
+            }
+            else if(this.form.payments.length == 1)
+            {
+                this.form.payments[0].payment = this.form.total
+                // this.$eventHub.$emit('localSPaymentsGarage', (form_pos.payments))
+                // this.$eventHub.$emit('eventSetFormPosLocalStorage', form_pos)
+                // this.$emit('add', form_pos.payments);
+            }
+
+            console.log("check")
+        },
+
+
+         
     }
 }
 </script>
