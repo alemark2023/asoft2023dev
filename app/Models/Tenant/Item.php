@@ -111,7 +111,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  */
 class Item extends ModelTenant
 {
-    protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags'];
+    protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags','item_lots'];
     protected $fillable = [
         'warehouse_id',
         'name',
@@ -1427,20 +1427,28 @@ class Item extends ModelTenant
         $currentRow = $class::where('item_id',$this->id)
             ->whereNotIn($field_id,$dataCollection)
             ->get();
+
         foreach ($currentRow as $row){
             $row->setActive(false)->push();
             $row->delete();
         }
 
 
+
         foreach($dataCollection as $item){
 
+            if($field_id=='cat_item_product_family_id' && get_class($item)==CatItemProductFamily::class) {
+                $item = $item->id;
+            }
             $ck = [
                 'item_id'=>$this->id,
                 $field_id=>$item
             ];
             $newRow = $class::where($ck)->first();
-            if(empty($newRow)) $newRow = new $class($ck);
+
+            if(empty($newRow)) {
+                $newRow = new $class($ck);
+            }
 
             $newRow->setActive(true)->push();
         }

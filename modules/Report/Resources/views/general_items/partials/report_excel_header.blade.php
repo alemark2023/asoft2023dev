@@ -27,6 +27,7 @@
 @if($type == 'sale')
     <th> VENDEDOR</th>
 @endif
+<th> OBSERVACIÓN </th>
 <th> MONEDA</th>
 <th> TIPO DE CAMBIO</th>
 <th> UNIDAD DE MEDIDA</th>

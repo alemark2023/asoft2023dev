@@ -64,6 +64,7 @@ class GeneralItemCollection extends ResourceCollection
                 // 'resource'=>$resource,
                 'purchase_item'=>$purchase_item,
                 'observation'=>$observation,
+                'additional_information' => $resource['additional_information'][0],
             ];
         });
     }
@@ -177,6 +178,7 @@ class GeneralItemCollection extends ResourceCollection
             $data['document_type_id'] = $document->document_type->id;
             $data['currency_type_id'] = $document->currency_type_id;
             $data['purchase_order'] = $document->purchase_order;
+            $data['additional_information'] = $document->additional_information;
 
         } else if ($row->purchase) {
             /** @var \App\Models\Tenant\Purchase $document */
