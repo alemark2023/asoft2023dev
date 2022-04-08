@@ -286,6 +286,9 @@
                         Moneda
                     </th>
                     <th>
+                        T.Pagado
+                    </th>
+                    <th>
                         Total
                     </th>
                 </tr>
@@ -317,6 +320,9 @@
                         </td>
                         <td class="celda">
                             {{ $value['currency_type_id'] }}
+                        </td>
+                        <td class="celda">
+                            {{ $value['total_payments'] }}
                         </td>
                         <td class="celda">
                             {{ $value['total_string'] }}
