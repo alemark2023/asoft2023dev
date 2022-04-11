@@ -215,6 +215,7 @@
             'user_rel_suscription_plan_id',
             'subtotal',
             'total_igv_free',
+            'unique_filename', //registra nombre de archivo unico (campo para evitar duplicidad)
         ];
 
         protected $casts = [
