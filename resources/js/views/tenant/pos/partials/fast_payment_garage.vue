@@ -336,6 +336,7 @@ export default {
     },
     mounted() {
         // console.log(this.currencyTypeActive)
+        this.checkPaymentGarage()
     },
     methods: {
         handleFn113() {
@@ -721,36 +722,11 @@ export default {
             await this.sleep(400);
             this.loading_submit_cancel = false
             this.cleanLocalStoragePayment()
-            this.$eventHub.$emit('cancelSaleGarage')
+            // this.$eventHub.$emit('cancelSaleGarage')
             //console.info('cli cancel fas_payment')
 
         },
         async events() {
-            await this.$eventHub.$on("cancelSaleGarage", () => {
-                console.info('aquiss');
-                this.initLStoPayment()
-                this.getTables()
-                this.initFormPayment()
-                this.inputAmount()
-                this.form.payments = []
-                this.$eventHub.$on('reloadDataCardBrands', (card_brand_id) => {
-                    this.reloadDataCardBrands(card_brand_id)
-                })
-
-                this.$eventHub.$on('localSPaymentsGarage', (payments) => {
-                    this.payments = payments
-                });
-
-                this.setInitialAmount()
-
-                this.getFormPosLocalStorage()
-
-                this.payments = []
-                this.amount = 0
-            });
-
-
-            
             await this.$eventHub.$on("eventCheckPaymentGarage", () => {
                 this.checkPaymentGarage()
             })
@@ -783,6 +759,13 @@ export default {
                     }
                 });
             }
+        },
+        cleanPayments(){
+            this.payments = []
+        },
+        initDataComponent(){
+            this.cleanPayments()
+            // this.filterSeries()
         },
         async clickPayment() {
             // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
@@ -850,6 +833,9 @@ export default {
                         this.gethtml();
                     }
                     this.$eventHub.$emit('saleSuccess');
+
+                    this.initDataComponent()
+                    
                 } else {
                     this.$message.error(response.data.message);
                 }
@@ -942,25 +928,31 @@ export default {
 
         },
         checkPaymentGarage(){ 
-            
-            
+
             if(this.form.payments.length == 0)
             {
                 this.$refs.componentMultiplePaymentGarage.clickAddPayment(this.form.total)
+                this.setAmount(this.form.total)
             }
             else if(this.form.payments.length == 1)
             {
+
                 this.form.payments[0].payment = this.form.total
-                // this.$eventHub.$emit('localSPaymentsGarage', (form_pos.payments))
-                // this.$eventHub.$emit('eventSetFormPosLocalStorage', form_pos)
-                // this.$emit('add', form_pos.payments);
+
+                if(this.payments.length == 0)
+                {
+                    this.payments = this.form.payments
+                }   
+
+                this.setAmount(this.form.total)
+
+            }
+            else
+            {
+                // multiples pagos no controlados
             }
 
-            console.log("check")
         },
-
-
-         
     }
 }
 </script>
