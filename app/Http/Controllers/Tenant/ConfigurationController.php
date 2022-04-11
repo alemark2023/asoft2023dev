@@ -322,6 +322,31 @@ class ConfigurationController extends Controller
         ];
     }
 
+    /**
+     * Solo guarda lo sdatos de token para el cliente
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function storeApiRuc( Request  $request)
+    {
+        $configuration = Configuration::first();
+        if(empty($configuration)){
+            $configuration = new Configuration();
+        }
+        $configuration->token_apiruc = $request->token_apiruc;
+        $configuration->url_apiruc = $request->url_apiruc;
+
+        $configuration->save();
+
+        return [
+            'success' => true,
+            'configuration' => $configuration->getCollectionData(),
+            'message' => 'Configuración actualizada',
+        ];
+    }
+
     public function icbper(Request $request)
     {
         DB::connection('tenant')->transaction(function () use ($request) {

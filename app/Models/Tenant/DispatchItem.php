@@ -31,6 +31,7 @@ class DispatchItem extends ModelTenant
         'item_id',
         'item',
         'quantity',
+        'name_product_pdf',
     ];
 
     /**
