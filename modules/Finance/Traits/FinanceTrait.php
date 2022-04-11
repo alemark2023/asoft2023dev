@@ -327,7 +327,7 @@
 
             $credit_notes = $record->affected_documents->where('note_type', 'credit');
 
-            $total_credit_notes = $credit_notes->sum(function ($note, $requestCurrencyTipeId) {
+            $total_credit_notes = $credit_notes->sum(function ($note) use ($requestCurrencyTipeId) {
 
                 if (in_array($note->document->state_type_id, ['01', '03', '05', '07', '13'])) {
                     return $this->calculateTotalCurrencyType($note->document, $note->document->total, $requestCurrencyTipeId);
@@ -429,6 +429,7 @@
             $income_payment = $this->getSumPayment($bank_account->global_destination, IncomePayment::class);
             $technical_service_payment = $this->getSumPayment($bank_account->global_destination, TechnicalServicePayment::class);
             $transfer_beween_account = $this->getTransferAccountPayment($bank_account);
+            $initial_balance = $bank_account->initial_balance;
 
             $entry = $document_payment +
                 $sale_note_payment +
@@ -437,13 +438,13 @@
                 $income_payment +
                 $cash_pos +
                 $technical_service_payment +
+                $initial_balance +
                 $transfer_beween_account;
             $egress = $expense_payment +
                 $purchase_payment;
 
             $balance = $entry -
                 $egress;
-            $initial_balance = $bank_account->initial_balance;
             $description = "{$bank_account->bank->description} - {$bank_account->currency_type_id} - {$bank_account->description}";
 
 

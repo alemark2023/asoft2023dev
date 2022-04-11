@@ -39,6 +39,11 @@ class CashController extends Controller
         return view('restaurant::cash.index');
     }
 
+    public function posFilter()
+    {
+        return view('restaurant::cash.filter_pos');
+    }
+
     public function columns()
     {
         return [
@@ -48,7 +53,9 @@ class CashController extends Controller
 
     public function records(Request $request)
     {
-        $records = Cash::where('apply_restaurant', 1)->where($request->column, 'like', "%{$request->value}%")
+        $records = Cash::where('apply_restaurant', 1)
+                        ->where($request->column, 'like', "%{$request->value}%")
+                        ->where('reference_number', 'like', "%{$request->reference_number}%")
                         ->whereTypeUser()
                         ->orderBy('date_closed', 'DESC')
                         ->orderBy('time_closed', 'DESC');

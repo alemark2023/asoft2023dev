@@ -5,6 +5,8 @@
     use App\CoreFacturalo\Helpers\Template\TemplateHelper;
     use App\Models\Tenant\SaleNote;
 
+    $data = \Modules\Report\Http\Resources\GeneralItemCollection::getDocument($value);
+    $observation = $data['additional_information'][0]?$data['additional_information'][0]:'';
     $purchseOrder = $document->purchase_order;
 $stablihsment = $stablihsment ?? [
         'district' => '',
@@ -128,6 +130,7 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
             {{$document->user->name}}
         @endif
     </td>
+    <td class="celda">{{ $observation }} </td>
     <td class="celda">{{ $document->currency_type_id }}</td>
     <td class="celda">{{ $document->exchange_rate_sale }}</td>
     <td class="celda">

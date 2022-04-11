@@ -284,7 +284,8 @@
     <cac:CreditNoteLine>
         <cbc:ID>{{ $loop->iteration }}</cbc:ID>
         <cbc:CreditedQuantity unitCode="{{ $row->item->unit_type_id }}">{{ $row->quantity }}</cbc:CreditedQuantity>
-        @if($note->note_credit_type_id === '13' && $document->payment_condition_id === '02')
+        {{-- @if($note->note_credit_type_id === '13' && $document->payment_condition_id === '02') --}}
+        @if( ($note->note_credit_type_id === '13' && $document->payment_condition_id === '02') || $note->note_credit_type_id === '03' )
             @if($row->total_value >= 0)
             <cbc:LineExtensionAmount currencyID="{{ $document->currency_type_id }}">{{ $row->total_value }}</cbc:LineExtensionAmount>
             @endif

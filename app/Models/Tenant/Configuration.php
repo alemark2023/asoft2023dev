@@ -2050,6 +2050,7 @@
          */
         public function UseCustomApiPeruToken(){
             // .env ALLOW_CLIENT_USE_OWN_APIPERU_TOKEN
+            return (bool)env('ALLOW_CLIENT_USE_OWN_APIPERU_TOKEN', false);
             return (bool)\Config('extra.AllowClientUseOwnApiperuToken');
         }
 

@@ -628,18 +628,23 @@
                 </div>
                 <div class="h-50 bg-light" style="overflow-y: auto">
                     <div class="row m-0 p-0 d-flex align-items-center">
-                        <fast-payment
-                            :is_payment.sync="is_payment"
-                            :form="form"
-                            :currency-type-id-active="form.currency_type_id"
-                            :currency-type-active="currency_type"
-                            :exchange-rate-sale="form.exchange_rate_sale"
-                            :customer="customer"
-                            :soapCompany="soapCompany"
-                            :businessTurns="businessTurns"
-                            :is-print="isPrint"
-                            :rows-items="form.items.length"
-                        ></fast-payment>
+
+                        <template v-if="show_fast_payment_garage">
+                            <fast-payment
+                                :is_payment.sync="is_payment"
+                                :form="form"
+                                :currency-type-id-active="form.currency_type_id"
+                                :currency-type-active="currency_type"
+                                :exchange-rate-sale="form.exchange_rate_sale"
+                                :customer="customer"
+                                :soapCompany="soapCompany"
+                                :businessTurns="businessTurns"
+                                :is-print="isPrint"
+                                :rows-items="form.items.length"
+                                ref="componentFastPaymentGarage"
+                            ></fast-payment>
+                        </template>
+
                     </div>
                 </div>
             </div>
@@ -824,11 +829,14 @@ export default {
             pagination: {},
             category_selected: "",
             focusClienteSelect: false,
+            show_fast_payment_garage: false,
             itemUnitTypes: []
         };
     },
     async created() {
         this.loadConfiguration()
+
+        this.show_fast_payment_garage = false
         await this.initForm();
         await this.getTables();
         this.events();
@@ -838,6 +846,8 @@ export default {
         this.customer = await this.getLocalStorageIndex("customer");
 
         await this.selectDefaultCustomer();
+
+        this.show_fast_payment_garage = true
 
         this.form.establishment_id = this.establishment.id;
     },
@@ -1184,6 +1194,8 @@ export default {
                 this.form.document_type_id =
                     customer.identity_document_type_id == "6" ? "01" : "03";
             }
+
+            if(this.$refs.componentFastPaymentGarage) this.$refs.componentFastPaymentGarage.filterSeries()
 
             this.setLocalStorageIndex("customer", this.customer);
             this.setFormPosLocalStorage();
