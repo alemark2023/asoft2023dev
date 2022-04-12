@@ -322,7 +322,7 @@
                             {{ $value['currency_type_id'] }}
                         </td>
                         <td class="celda">
-                            {{ $value['total_payments'] }}
+                            {{ $value['total_payments']??'0.00' }}
                         </td>
                         <td class="celda">
                             {{ $value['total_string'] }}
