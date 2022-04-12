@@ -34,6 +34,12 @@ class GeneralItemCollection extends ResourceCollection
                 $purchase = $row->purchase;
                 $observation=$purchase->observation;
             }
+            $additional_information = null;
+            if(
+            isset($resource['additional_information'], $resource['additional_information'][0])
+            ){
+                $additional_information = $resource['additional_information'][0];
+            }
             return [
                 'id' => $row->id,
                 'unit_type_id' => $row->item->unit_type_id,
@@ -64,7 +70,7 @@ class GeneralItemCollection extends ResourceCollection
                 // 'resource'=>$resource,
                 'purchase_item'=>$purchase_item,
                 'observation'=>$observation,
-                'additional_information' => $resource['additional_information'][0],
+                'additional_information' => $additional_information,
             ];
         });
     }
