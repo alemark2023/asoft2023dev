@@ -574,7 +574,8 @@ export default {
     props: [
         'showDialog',
         'currencyTypeIdActive',
-        'exchangeRateSale'
+        'exchangeRateSale',
+        'localHasGlobalIgv'
     ],
     components: {itemForm, LotsForm, Keypress},
     computed: {
@@ -794,7 +795,8 @@ export default {
                 purchase_has_igv: null,
                 update_price: false,
                 update_date_of_due: false,
-                update_purchase_price: true,
+                update_purchase_price: this.config.checked_update_purchase_price,
+                // update_purchase_price: true,
             }
 
             this.item_unit_type = {};
@@ -889,7 +891,9 @@ export default {
         setGlobalIgvToItem() {
             if (this.config.enabled_global_igv_to_purchase === true) {
                 // Ajusta el igv, si es global, se lo añade o quita al precio del item directamente
-                this.form.purchase_has_igv = this.hasGlobalIgv
+                // this.form.purchase_has_igv = this.hasGlobalIgv
+                this.form.purchase_has_igv = this.localHasGlobalIgv
+                
             }
         },
 

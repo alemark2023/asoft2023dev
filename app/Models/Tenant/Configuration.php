@@ -230,6 +230,8 @@
             'url_apiruc',
             'new_validator_pagination',
             'token_apiruc',
+            'checked_global_igv_to_purchase',
+            'checked_update_purchase_price',
         ];
 
         protected $casts = [
@@ -301,6 +303,8 @@
             'print_new_line_to_observation' => 'bool',
             'shipping_time_days' => 'int',
             'new_validator_pagination' => 'int',
+            'checked_global_igv_to_purchase' => 'bool',
+            'checked_update_purchase_price' => 'bool',
         ];
 
         protected $hidden = [
@@ -482,6 +486,8 @@
                 'show_ticket_50' => (bool)$this->show_ticket_50,
                 'show_last_price_sale' => (bool)$this->show_last_price_sale,
                 'shipping_time_days' => $this->shipping_time_days,
+                'checked_global_igv_to_purchase' => $this->checked_global_igv_to_purchase,
+                'checked_update_purchase_price' => $this->checked_update_purchase_price,
                 'new_validator_pagination' => $this->getNewValidatorPagination(),
             ];
         }
