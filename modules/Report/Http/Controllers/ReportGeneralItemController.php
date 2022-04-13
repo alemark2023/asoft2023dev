@@ -51,7 +51,7 @@ class ReportGeneralItemController extends Controller
     {
 
         $records = $this->getRecordsItems($request->all())->latest('id');
-
+        
         return new GeneralItemCollection($records->paginate(config('tenant.items_per_page')));
     }
 

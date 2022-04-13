@@ -179,8 +179,10 @@ class CashController extends Controller
                     'currency_type_id'          => $sale_note->currency_type_id,
                     'usado'                     => $usado." ".__LINE__,
                     'tipo'                      => 'sale_note',
+                    'total_payments'            => (!in_array($sale_note->state_type_id, $status_type_id)) ? 0 : $sale_note->payments->sum('payment'),
                 ];
-            } /** Documentos de Tipo Document */
+            } 
+            /** Documentos de Tipo Document */
             elseif ($cash_document->document) {
                 $record_total = 0;
                 $document = $cash_document->document;
@@ -269,10 +271,13 @@ class CashController extends Controller
                     'usado'                     => $usado." ".__LINE__,
 
                     'tipo' => 'document',
+                    'total_payments'            => (!in_array($document->state_type_id, $status_type_id)) ? 0 : $document->payments->sum('payment'),
+
                 ];
                 /* Notas de credito o debito*/
                 $notes = $document->getNotes();
-            } /** Documentos de Tipo Servicio tecnico */
+            } 
+            /** Documentos de Tipo Servicio tecnico */
             elseif ($cash_document->technical_service) {
                 $usado = '<br>Se usan para cash<br>';
                 $technical_service = $cash_document->technical_service;
@@ -300,8 +305,10 @@ class CashController extends Controller
                     'currency_type_id'          => 'PEN',
                     'usado'                     => $usado." ".__LINE__,
                     'tipo'                      => 'technical_service',
+                    'total_payments'            => $technical_service->payments->sum('payment'),
                 ];
-            } /** Documentos de Tipo Gastos */
+            }
+            /** Documentos de Tipo Gastos */
             elseif ($cash_document->expense_payment) {
                 $expense_payment = $cash_document->expense_payment;
                 //    $usado = '<br>No se usan pagos<br>';
@@ -331,6 +338,8 @@ class CashController extends Controller
                     'usado'                     => $usado." ".__LINE__,
 
                     'tipo' => 'expense_payment',
+                    'total_payments'            => -$expense_payment->payment,
+
                 ];
             }
             /** Documentos de Tipo compras */
@@ -375,6 +384,8 @@ class CashController extends Controller
                     'currency_type_id'          => $purchase->currency_type_id,
                     'usado'                     => $usado." ".__LINE__,
                     'tipo'                      => 'purchase',
+                    'total_payments'            => (!in_array($purchase->state_type_id, $status_type_id)) ? 0 : $purchase->payments->sum('payment'),
+
                 ];
             }
             /** Cotizaciones */
@@ -420,6 +431,8 @@ class CashController extends Controller
                         'currency_type_id'          => $quotation->currency_type_id,
                         'usado'                     => $usado." ".__LINE__,
                         'tipo'                      => 'quotation',
+                        'total_payments'            => (!in_array($quotation->state_type_id, $status_type_id)) ? 0 : $quotation->payments->sum('payment'),
+
                     ];
 
                 }
@@ -431,6 +444,7 @@ class CashController extends Controller
             if (!empty($temp)) {
                 $temp['usado'] = isset($temp['usado']) ? $temp['usado'] : '--';
                 $temp['total_string'] = self::FormatNumber($temp['total']);
+                $temp['total_payments'] = self::FormatNumber($temp['total_payments']);
                 $all_documents[] = $temp;
             }
 
