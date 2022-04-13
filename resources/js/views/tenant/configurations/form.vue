@@ -1116,7 +1116,9 @@
                         <span slot="label">Compras</span>
                         <tenant-configurations-form-purchases
                             :errors="errors"
+                            :form="form"
                             @EmitChange="UpdateFormPurchase"
+                            @submitConfigPurchase="submitConfigPurchase"
                         ></tenant-configurations-form-purchases>
 
                     </el-tab-pane>
@@ -1352,6 +1354,12 @@
                             </div>
                         </div>
                     </el-tab-pane>
+
+                    <el-tab-pane class="mb-3"  name="ten">
+                        <span slot="label">Reportes</span>
+                        <report-configurations-index></report-configurations-index>
+                    </el-tab-pane>
+                    
                 </el-tabs>
                 <terms-condition :form="form"
                                     :showClose="false"
@@ -1382,6 +1390,7 @@ import TermsCondition from '@views/quotations/partials/terms_condition.vue'
 import TermsConditionSale from '@views/documents/partials/terms_condition.vue'
 import AllowanceCharge from './partials/allowance_charge.vue'
 import {mapActions, mapState} from "vuex";
+import ReportConfigurationsIndex from './partials/report_configurations_index.vue'
 
 export default {
     props: [
@@ -1392,6 +1401,7 @@ export default {
         TermsCondition,
         TermsConditionSale,
         AllowanceCharge,
+        ReportConfigurationsIndex,
     },
     computed: {
         ...mapState([
@@ -1527,12 +1537,18 @@ export default {
                 show_logo_by_establishment: false,
                 shipping_time_days: 0,
                 customer_filter_by_seller: false,
+                checked_global_igv_to_purchase: false,
+                checked_update_purchase_price: false,
+
             };
         },
         UpdateFormPurchase(e) {
             //Añadir la variable para cada item en compra. No es posible pasar elemento form por vuex
             this.form.enabled_global_igv_to_purchase = this.config.enabled_global_igv_to_purchase
             this.submit();
+        },
+        submitConfigPurchase(){
+            this.submit()
         },
         changeDefaultDocumentType03(){
 
