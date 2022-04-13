@@ -306,12 +306,9 @@
             'print_new_line_to_observation' => 'bool',
             'shipping_time_days' => 'int',
             'new_validator_pagination' => 'int',
-<<<<<<< HEAD
             'customer_filter_by_seller' => 'bool',
-=======
             'checked_global_igv_to_purchase' => 'bool',
             'checked_update_purchase_price' => 'bool',
->>>>>>> #1519
         ];
 
         protected $hidden = [
