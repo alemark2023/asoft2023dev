@@ -705,7 +705,6 @@ export default {
                 });
                 this.form.items = items
                 this.calculateTotal()
-                console.log(this.currency_type)
             },
             calculateTotal() {
                 let total_discount = 0
