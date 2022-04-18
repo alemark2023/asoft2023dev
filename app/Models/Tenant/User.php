@@ -176,6 +176,10 @@ class User extends Authenticatable
         'recreate_documents',
         'zone_id',
         'restaurant_role_id',
+        
+        'delete_payment',
+        'create_payment',
+
 
         // 'email_verified_at',
         // 'api_token',
@@ -200,6 +204,9 @@ class User extends Authenticatable
         'establishment_id' => 'int',
         'zone_id' => 'int',
         'locked' => 'bool',
+
+        'delete_payment' => 'bool',
+        'create_payment' => 'bool',
     ];
 
     public function modules()
@@ -880,4 +887,20 @@ $withEstablishment = true){
             ->get();
 
     }
+
+    
+    /**
+     * 
+     * Obtener permisos para pagos de comprobantes
+     *
+     * @return array
+     */
+    public function getPermissionsPayment()
+    {
+        return [
+            'create_payment' => $this->create_payment,
+            'delete_payment' => $this->delete_payment,
+        ];
+    }
+
 }
