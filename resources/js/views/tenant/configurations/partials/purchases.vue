@@ -17,6 +17,52 @@
             </div>
         </div>
 
+        <div class="col-md-6 mt-4">
+            <label class="control-label">
+                Seleccionar por defecto <b>Poder cambiar el IGV global de los items en la compra</b>
+                <el-tooltip class="item"
+                            content="Solo aplica si la configuración 'Poder cambiar el IGV global de los items en la compra' se encuentra habilitada"
+                            effect="dark"
+                            placement="top-start">
+                    <i class="fa fa-info-circle"></i>
+                </el-tooltip>
+            </label>
+            <div :class="{'has-danger': errors.checked_global_igv_to_purchase}"
+                 class="form-group">
+                <el-switch
+                    v-model="form.checked_global_igv_to_purchase"
+                    active-text="Si"
+                    inactive-text="No"
+                    @change="submitConfigPurchase"></el-switch>
+                <small v-if="errors.checked_global_igv_to_purchase"
+                       class="form-control-feedback"
+                       v-text="errors.checked_global_igv_to_purchase[0]"></small>
+            </div>
+        </div>
+
+        <div class="col-md-6 mt-4">
+            <label class="control-label">
+                Seleccionar por defecto <b>Actualizar precio de compra</b>
+                <el-tooltip class="item"
+                            content="Disponible en compras"
+                            effect="dark"
+                            placement="top-start">
+                    <i class="fa fa-info-circle"></i>
+                </el-tooltip>
+            </label>
+            <div :class="{'has-danger': errors.checked_update_purchase_price}"
+                 class="form-group">
+                <el-switch
+                    v-model="form.checked_update_purchase_price"
+                    active-text="Si"
+                    inactive-text="No"
+                    @change="submitConfigPurchase"></el-switch>
+                <small v-if="errors.checked_update_purchase_price"
+                       class="form-control-feedback"
+                       v-text="errors.checked_update_purchase_price[0]"></small>
+            </div>
+        </div>
+        
     </div>
 </template>
 
@@ -26,7 +72,8 @@ import {mapActions, mapState} from "vuex";
 
 export default {
     props: [
-        'errors'
+        'errors',
+        'form',
     ],
     data() {
         return {}
@@ -40,6 +87,9 @@ export default {
         ]),
     },
     methods: {
+        submitConfigPurchase(){
+            this.$emit('submitConfigPurchase')
+        },
         ...mapActions([
             'loadConfiguration',
         ]),

@@ -1091,7 +1091,9 @@
                         <span slot="label">Compras</span>
                         <tenant-configurations-form-purchases
                             :errors="errors"
+                            :form="form"
                             @EmitChange="UpdateFormPurchase"
+                            @submitConfigPurchase="submitConfigPurchase"
                         ></tenant-configurations-form-purchases>
 
                     </el-tab-pane>
@@ -1500,13 +1502,19 @@ export default {
                 detraction_amount_rounded_int:false,
                 validate_purchase_sale_unit_price: false,
                 show_logo_by_establishment: false,
-                shipping_time_days: 0
+                shipping_time_days: 0,
+                checked_global_igv_to_purchase: false,
+                checked_update_purchase_price: false,
+
             };
         },
         UpdateFormPurchase(e) {
             //Añadir la variable para cada item en compra. No es posible pasar elemento form por vuex
             this.form.enabled_global_igv_to_purchase = this.config.enabled_global_igv_to_purchase
             this.submit();
+        },
+        submitConfigPurchase(){
+            this.submit()
         },
         changeDefaultDocumentType03(){
 

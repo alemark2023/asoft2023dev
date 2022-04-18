@@ -395,8 +395,9 @@ Vue.component('tenant-packaging-form', require('../../modules/Production/Resourc
 /* Restaurante */
 Vue.component('tenant-restaurant-list-items', require('../../modules/Restaurant/Resources/assets/js/views/items/index.vue'));
 Vue.component('tenant-restaurant-promotions-index', require('../../modules/Restaurant/Resources/assets/js/views/promotions/index.vue'));
-Vue.component('tenant-restautant-orders-index', require('../../modules/Restaurant/Resources/assets/js/views/orders/index.vue'));
-Vue.component('tenant-restautant-cash-index', require('../../modules/Restaurant/Resources/assets/js/views/cash/index.vue'));
+Vue.component('tenant-restaurant-orders-index', require('../../modules/Restaurant/Resources/assets/js/views/orders/index.vue'));
+Vue.component('tenant-restaurant-cash-index', require('../../modules/Restaurant/Resources/assets/js/views/cash/index.vue'));
+Vue.component('tenant-restaurant-cash-filter-pos', require('../../modules/Restaurant/Resources/assets/js/views/cash/filter-pos.vue'));
 Vue.component('tenant-restaurant-configuration', require('../../modules/Restaurant/Resources/assets/js/views/configuration/index.vue'));
 
 

@@ -30,6 +30,7 @@ use Modules\Sale\Models\Contract;
 use Modules\Sale\Models\SaleOpportunity;
 use Modules\Sale\Models\TechnicalService;
 use Modules\Sale\Models\UserCommission;
+use Modules\Restaurant\Models\RestaurantRole;
 
 
 /**
@@ -142,6 +143,7 @@ use Modules\Sale\Models\UserCommission;
  * @property int|null $user_commissions_count
  * @property int|null $voideds_count
  * @property int|null $zone_id
+ * @property int|null $restaurant_role_id
 
  */
 class User extends Authenticatable
@@ -173,6 +175,7 @@ class User extends Authenticatable
         'permission_edit_cpe',
         'recreate_documents',
         'zone_id',
+        'restaurant_role_id',
 
         // 'email_verified_at',
         // 'api_token',
@@ -315,6 +318,11 @@ class User extends Authenticatable
         return $this->hasMany(SaleNote::class,
 'seller_id',
 'id');
+    }
+
+    public function restaurant_role()
+    {
+        return $this->belongsTo(RestaurantRole::class);
     }
 
     public function scopeWhereTypeUser($query)
@@ -614,6 +622,20 @@ $withEstablishment = true){
 
             'locked' => (bool) $this->locked,
 
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getCollectionRestaurantData(){
+        return [
+            'id' => $this->id,
+            'email' => $this->email,
+            'name' => $this->name,
+            'restaurant_role_id' => $this->restaurant_role_id,
+            'restaurant_role_name' => $this->restaurant_role_id ? $this->restaurant_role->name : '',
+            'locked' => (bool) $this->locked,
         ];
     }
 

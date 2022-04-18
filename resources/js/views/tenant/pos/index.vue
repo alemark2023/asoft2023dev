@@ -1839,18 +1839,26 @@ export default {
                 total_discount += parseFloat(row.total_discount);
                 total_charge += parseFloat(row.total_charge);
 
-                if (row.affectation_igv_type_id === "10") {
-                    total_taxed += parseFloat(row.total_value);
+                if (row.affectation_igv_type_id === "10") 
+                {
+                    // total_taxed += parseFloat(row.total_value);
+                    total_taxed += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
-                if (row.affectation_igv_type_id === "20") {
-                    total_exonerated += parseFloat(row.total_value);
+
+                if (row.affectation_igv_type_id === "20") 
+                {
+                    // total_exonerated += parseFloat(row.total_value);
+                    total_exonerated += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
+
                 if (row.affectation_igv_type_id === "30") {
                     total_unaffected += parseFloat(row.total_value);
                 }
+
                 if (row.affectation_igv_type_id === "40") {
                     total_exportation += parseFloat(row.total_value);
                 }
+
                 if (
                     ["10", "20", "30", "40"].indexOf(
                         row.affectation_igv_type_id
@@ -1858,15 +1866,18 @@ export default {
                 ) {
                     total_free += parseFloat(row.total_value);
                 }
-                if (
-                    ["10", "20", "30", "40"].indexOf(
-                        row.affectation_igv_type_id
-                    ) > -1
-                ) {
-                    total_igv += parseFloat(row.total_igv);
-                    total += parseFloat(row.total);
+
+                if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1) 
+                {
+                    // total_igv += parseFloat(row.total_igv);
+                    // total += parseFloat(row.total);
+                    total_igv += (row.total_igv_without_rounding) ? parseFloat(row.total_igv_without_rounding) : parseFloat(row.total_igv)
+                    total += (row.total_without_rounding) ? parseFloat(row.total_without_rounding) : parseFloat(row.total)
                 }
-                total_value += parseFloat(row.total_value);
+
+                // total_value += parseFloat(row.total_value);
+                total_value += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
+
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
                 if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
