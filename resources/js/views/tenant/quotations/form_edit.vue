@@ -416,7 +416,7 @@ export default {
                 this.reloadDataCustomers(customer_id)
             })
 
-
+            
 
 
         },
@@ -567,6 +567,7 @@ export default {
                     this.changeCustomer()
                     this.form.customer_address_id = dato.customer.address_id
                     this.calculateTotal()
+                    this.changeCurrencyType()
                     //console.log(response.data)
                 })
 
@@ -704,6 +705,7 @@ export default {
                 });
                 this.form.items = items
                 this.calculateTotal()
+                console.log(this.currency_type)
             },
             calculateTotal() {
                 let total_discount = 0
