@@ -31,6 +31,7 @@ use Modules\Sale\Models\SaleOpportunity;
 use Modules\Sale\Models\TechnicalService;
 use Modules\Sale\Models\UserCommission;
 use App\Models\Tenant\Configuration;
+use Modules\Restaurant\Models\RestaurantRole;
 
 
 /**
