@@ -473,6 +473,7 @@
                 'soap_shipping_response' => $this->soap_shipping_response,
                 'btn_generate_document' => $this->generate_document || $this->reference_document_id ? false : true,
                 'transfer_reason_type' => $this->transfer_reason_type,
+                'transfer_reason_description' => $this->transfer_reason_description,
                 'documents' => $documents
             ];
 

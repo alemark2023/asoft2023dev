@@ -97,6 +97,7 @@ if ($hostname) {
             Route::get('configurations/create', 'Tenant\ConfigurationController@create')->name('tenant.configurations.create');
             Route::get('configurations/record', 'Tenant\ConfigurationController@record');
             Route::post('configurations', 'Tenant\ConfigurationController@store');
+            Route::post('configurations/apiruc', 'Tenant\ConfigurationController@storeApiRuc');
             Route::post('configurations/icbper', 'Tenant\ConfigurationController@icbper');
             Route::post('configurations/changeFormat', 'Tenant\ConfigurationController@changeFormat');
             Route::get('configurations/tables', 'Tenant\ConfigurationController@tables');
@@ -225,6 +226,9 @@ if ($hostname) {
                 Route::post('/import', 'Tenant\PersonController@import');
                 Route::get('/enabled/{type}/{person}', 'Tenant\PersonController@enabled');
                 Route::get('/{type}/exportation', 'Tenant\PersonController@export')->name('tenant.persons.export');
+                Route::get('/export/barcode/print', 'Tenant\PersonController@printBarCode')->name('tenant.persons.export.barcode.print');
+                Route::get('/barcode/{item}', 'Tenant\PersonController@generateBarcode');
+                Route::get('/search/{barcode}', 'Tenant\PersonController@getPersonByBarcode');
             });
             //Documents
             Route::post('documents/categories', 'Tenant\DocumentController@storeCategories');
