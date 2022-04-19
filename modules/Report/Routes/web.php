@@ -8,6 +8,12 @@
         Route::domain($current_hostname->fqdn)->group(function () {
             Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
 
+               Route::prefix('report_configurations')->group(function () {
+
+                    Route::get('records', 'ReportConfigurationController@records');
+                    Route::post('', 'ReportConfigurationController@store');
+                });
+
 
                Route::prefix('reports')->group(function () {
 
