@@ -1513,6 +1513,7 @@ export default {
                 shipping_time_days: 0,
                 checked_global_igv_to_purchase: false,
                 checked_update_purchase_price: false,
+                set_global_purchase_currency_items: false,
 
             };
         },

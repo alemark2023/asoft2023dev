@@ -63,6 +63,29 @@
             </div>
         </div>
         
+        
+        <div class="col-md-6 mt-4">
+            <label class="control-label">
+                Asignar moneda global de la compra a los items
+                <el-tooltip class="item"
+                            effect="dark"
+                            content="Al agregar el item se seleccionará por defecto la moneda global elegida"
+                            placement="top-start">
+                    <i class="fa fa-info-circle"></i>
+                </el-tooltip>
+            </label>
+            <div :class="{'has-danger': errors.set_global_purchase_currency_items}"
+                 class="form-group">
+                <el-switch
+                    v-model="form.set_global_purchase_currency_items"
+                    active-text="Si"
+                    inactive-text="No"
+                    @change="submitConfigPurchase"></el-switch>
+                <small v-if="errors.set_global_purchase_currency_items"
+                       class="form-control-feedback"
+                       v-text="errors.set_global_purchase_currency_items[0]"></small>
+            </div>
+        </div>
     </div>
 </template>
 

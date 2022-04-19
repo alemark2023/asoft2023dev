@@ -233,6 +233,7 @@
             'token_apiruc',
             'checked_global_igv_to_purchase',
             'checked_update_purchase_price',
+            'set_global_purchase_currency_items',
         ];
 
         protected $casts = [
@@ -307,6 +308,7 @@
             'new_validator_pagination' => 'int',
             'checked_global_igv_to_purchase' => 'bool',
             'checked_update_purchase_price' => 'bool',
+            'set_global_purchase_currency_items' => 'bool',
         ];
 
         protected $hidden = [
@@ -491,6 +493,7 @@
                 'shipping_time_days' => $this->shipping_time_days,
                 'checked_global_igv_to_purchase' => $this->checked_global_igv_to_purchase,
                 'checked_update_purchase_price' => $this->checked_update_purchase_price,
+                'set_global_purchase_currency_items' => $this->set_global_purchase_currency_items,
                 'new_validator_pagination' => $this->getNewValidatorPagination(),
             ];
         }
