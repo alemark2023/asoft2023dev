@@ -54,6 +54,12 @@ class GeneralItemCollection extends ResourceCollection
                 $observation=$purchase->observation;
             }
 
+            // $additional_information = null;
+            // if(
+            // isset($resource['additional_information'], $resource['additional_information'][0])
+            // ){
+            //     $additional_information = $resource['additional_information'][0];
+            // }
             return [
                 'id' => $row->id,
                 'unit_type_id' => $row->item->unit_type_id,
@@ -89,6 +95,7 @@ class GeneralItemCollection extends ResourceCollection
                 'observation'=>$observation,
                 'description_apply_conversion_to_pen' => $description_apply_conversion_to_pen,
                 'additional_information' => $resource['additional_information'][0] ?? null,
+                // 'additional_information' => $additional_information,
             ];
         });
     }

@@ -1061,6 +1061,9 @@ class Item extends ModelTenant
         if(empty($currency )){
             $currency = new CurrencyType();
         }
+
+        $show_sale_unit_price = "{$currency->symbol} {$this->getFormatSaleUnitPrice()}";
+
         return [
             'name_disa' => $name_disa,
             'laboratory' => $laboratory,
@@ -1095,7 +1098,8 @@ class Item extends ModelTenant
             'active' => (bool)$this->active,
             'has_igv_description' => $has_igv_description,
             'purchase_has_igv_description' => $purchase_has_igv_description,
-            'sale_unit_price' => "{$currency->symbol} {$this->sale_unit_price}",
+            'sale_unit_price' => $show_sale_unit_price,
+            // 'sale_unit_price' => "{$currency->symbol} {$this->sale_unit_price}",
             'sale_unit_price_with_igv' => "{$currency->symbol} $salePriceWithIgv",
             'purchase_unit_price' => "{$currency->symbol} {$this->purchase_unit_price}",
             'created_at' => ($this->created_at) ? $this->created_at->format('Y-m-d H:i:s') : '',
@@ -1149,6 +1153,18 @@ class Item extends ModelTenant
 
         ];
     }
+
+    
+    /**
+     * Obtener precio unitario entero o con decimales
+     *
+     * @return int|float
+     */
+    public function getFormatSaleUnitPrice()
+    {
+        return ((int)$this->sale_unit_price != $this->sale_unit_price) ? $this->sale_unit_price : round($this->sale_unit_price);
+    }
+
 
     /**
      * Establece un standar para insersion por catalogo DIGEMID

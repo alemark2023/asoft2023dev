@@ -7,7 +7,7 @@
 
     $data = \Modules\Report\Http\Resources\GeneralItemCollection::getDocument($value);
     $observation = isset($data['additional_information'][0]) ? $data['additional_information'][0] : '';
-    // $observation = $data['additional_information'][0]?$data['additional_information'][0]:'';
+
     $purchseOrder = $document->purchase_order;
 $stablihsment = $stablihsment ?? [
         'district' => '',
