@@ -1148,7 +1148,7 @@ export default {
             return false;
         },
         canSeeProduction:function(){
-            if(this.config.production_app) return this.config.production_app
+            if(this.config && this.config.production_app) return this.config.production_app
             return false;
         },
         requireSupply:function(){

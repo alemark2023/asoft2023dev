@@ -914,7 +914,7 @@ class ItemController extends Controller
         }
 
         if($period !== 'all'){
-            $items->whereBetween('created_at', [$d_start, $d_end]);
+            $items->whereBetween('items.created_at', [$d_start, $d_end]);
         }
 
         $records =  $items->get();
