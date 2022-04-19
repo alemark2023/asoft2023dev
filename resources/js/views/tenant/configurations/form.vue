@@ -764,6 +764,31 @@
                                 </div>
                             </div>
 
+
+                            
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Restringir venta de productos menores al precio de compra 
+                                    <el-tooltip
+                                        class="item"
+                                        content="Validar que el precio de compra del producto no sea superior al de venta - Disponible Ventas/Comprobante electrónico - Nota de venta"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.validate_purchase_sale_unit_price}"
+                                        class="form-group">
+                                    <el-switch v-model="form.validate_purchase_sale_unit_price"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.validate_purchase_sale_unit_price"
+                                            class="form-control-feedback"
+                                            v-text="errors.validate_purchase_sale_unit_price[0]"></small>
+                                </div>
+                            </div>
+
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="fourth">
@@ -1066,7 +1091,9 @@
                         <span slot="label">Compras</span>
                         <tenant-configurations-form-purchases
                             :errors="errors"
+                            :form="form"
                             @EmitChange="UpdateFormPurchase"
+                            @submitConfigPurchase="submitConfigPurchase"
                         ></tenant-configurations-form-purchases>
 
                     </el-tab-pane>
@@ -1302,6 +1329,12 @@
                             </div>
                         </div>
                     </el-tab-pane>
+
+                    <el-tab-pane class="mb-3"  name="ten">
+                        <span slot="label">Reportes</span>
+                        <report-configurations-index></report-configurations-index>
+                    </el-tab-pane>
+                    
                 </el-tabs>
                 <terms-condition :form="form"
                                     :showClose="false"
@@ -1332,6 +1365,7 @@ import TermsCondition from '@views/quotations/partials/terms_condition.vue'
 import TermsConditionSale from '@views/documents/partials/terms_condition.vue'
 import AllowanceCharge from './partials/allowance_charge.vue'
 import {mapActions, mapState} from "vuex";
+import ReportConfigurationsIndex from './partials/report_configurations_index.vue'
 
 export default {
     props: [
@@ -1342,6 +1376,7 @@ export default {
         TermsCondition,
         TermsConditionSale,
         AllowanceCharge,
+        ReportConfigurationsIndex,
     },
     computed: {
         ...mapState([
@@ -1473,14 +1508,22 @@ export default {
                 permission_to_edit_cpe: false,
                 name_product_pdf_to_xml:false,
                 detraction_amount_rounded_int:false,
+                validate_purchase_sale_unit_price: false,
                 show_logo_by_establishment: false,
-                shipping_time_days: 0
+                shipping_time_days: 0,
+                checked_global_igv_to_purchase: false,
+                checked_update_purchase_price: false,
+                set_global_purchase_currency_items: false,
+
             };
         },
         UpdateFormPurchase(e) {
             //Añadir la variable para cada item en compra. No es posible pasar elemento form por vuex
             this.form.enabled_global_igv_to_purchase = this.config.enabled_global_igv_to_purchase
             this.submit();
+        },
+        submitConfigPurchase(){
+            this.submit()
         },
         changeDefaultDocumentType03(){
 
