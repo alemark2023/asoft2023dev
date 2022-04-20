@@ -174,6 +174,7 @@ class Item extends ModelTenant
         'purchase_system_isc_type_id',
         'purchase_has_isc',
 
+        'subject_to_detraction',
         // 'warehouse_id'
     ];
 
@@ -181,6 +182,7 @@ class Item extends ModelTenant
         'date_of_due' => 'date',
         'is_for_production' => 'bool',
         'purchase_has_isc' => 'bool',
+        'subject_to_detraction' => 'bool',
     ];
 
     /**
@@ -969,6 +971,8 @@ class Item extends ModelTenant
             'system_isc_type_id' => $this->system_isc_type_id,
             'percentage_isc' => $this->percentage_isc,
             'is_for_production'=>$this->isIsForProduction(),
+            'subject_to_detraction' => $this->subject_to_detraction,
+            
         ];
 
         // El nombre de producto, por defecto, sera la misma descripcion.
