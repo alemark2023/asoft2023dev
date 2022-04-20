@@ -184,7 +184,7 @@ class ReportInventoryController extends Controller
         }else{
             $website_id = $hostname->website_id;
         }
-        ProcessInventoryReport::dispatch($website_id,$trayId, ($request->warehouse_id == 'all' ? 0 :  $request->warehouse_id), $request->format );
+        ProcessInventoryReport::dispatch($website_id,$trayId, ($request->warehouse_id == 'all' ? 0 :  $request->warehouse_id), $request->format, $request->all() );
 
         return  [
             'success' => true,
