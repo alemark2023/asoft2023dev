@@ -27,7 +27,9 @@
                             <a href="#"
                                @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
                         </label>
+                        <div class="col-md-12">
                         <el-select v-show="!search_item_by_barcode"
+                                   id="select-width"
                                    v-model="form.item_id"
                                    :loading="loading_search"
                                    :remote-method="searchRemoteItems"
@@ -57,6 +59,31 @@
                                   placeholder="Buscar"
                                   @change="searchBarCode"
                         ></el-input>
+                        <el-tooltip v-if="this.type === 'settlements'"
+                            slot="append"
+                            class="item"
+                            content="Ver Stock del Producto"
+                            effect="dark"
+                            placement="bottom">
+                            <el-button
+                                :disabled="isEditItemNote"
+                                @click.prevent="clickWarehouseDetail()">
+                                <i class="fa fa-search"></i>
+                            </el-button>
+                        </el-tooltip>
+                        <el-tooltip v-if="this.type === 'settlements'"
+                            slot="append"
+                            class="item"
+                            content="Historial de Ventas"
+                            effect="dark"
+                            placement="bottom">
+                            <el-button
+                                :disabled="isEditItemNote"
+                                @click.prevent="clickHistorySales(item.item_id)">
+                                <i class="fas fa-list-ul"></i>
+                            </el-button>
+                        </el-tooltip>
+                        </div>
                         <small v-if="errors.item_id"
                                class="form-control-feedback"
                                v-text="errors.item_id[0]"></small>
@@ -537,6 +564,12 @@
         <item-form :external="true"
                    :showDialog.sync="showDialogNewItem"></item-form>
 
+        <warehouses-detail
+            :isUpdateWarehouseId="isUpdateWarehouseId"
+            :showDialog.sync="showWarehousesDetail"
+            :warehouses="warehousesDetail">
+        </warehouses-detail>
+
         <lots-form
             :lots="lots"
             :showDialog.sync="showDialogLots"
@@ -544,6 +577,11 @@
             @addRowLot="addRowLot">
         </lots-form>
 
+        <history-sales-form
+            :showDialog.sync="showDialogHistorySales"
+            :item_id="this.form.item_id"
+            :supplier_id="this.supplier_id"
+        ></history-sales-form>
     </el-dialog>
 </template>
 <style>
@@ -569,15 +607,19 @@ import Keypress from "vue-keypress";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import moment from "moment";
+import WarehousesDetail from '../../documents/partials/select_warehouses.vue'
+import HistorySalesForm from "../../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
 
 export default {
     props: [
         'showDialog',
         'currencyTypeIdActive',
         'exchangeRateSale',
-        'localHasGlobalIgv'
+        'localHasGlobalIgv',
+        'type',
+        'supplier_id'
     ],
-    components: {itemForm, LotsForm, Keypress},
+    components: {itemForm, LotsForm, Keypress,WarehousesDetail,HistorySalesForm},
     computed: {
         ...mapState([
             'config',
@@ -667,6 +709,10 @@ export default {
             lot_code: null,
             change_affectation_igv_type_id: false,
             prices: {},
+            showWarehousesDetail: false,
+            warehousesDetail: [],
+            isUpdateWarehouseId: null,
+            showDialogHistorySales: false,
         }
     },
     created() {
@@ -969,6 +1015,7 @@ export default {
             let warehouse = _.find(this.warehouses, {'id': this.form.warehouse_id})
             row.warehouse_id = warehouse.id
             row.warehouse_description = warehouse.description
+            this.isUpdateWarehouseId= warehouse.id
             return row
         },
         reloadDataItems(item_id) {
@@ -1148,6 +1195,20 @@ export default {
                 }
             }
             return item
+        },
+        clickWarehouseDetail() {
+
+            if (!this.form.item_id) {
+                return this.$message.error('Seleccione un item');
+            }
+
+            let item = _.find(this.items, {'id': this.form.item_id});
+
+            this.warehousesDetail = item.warehouses
+            this.showWarehousesDetail = true
+        },
+        clickHistorySales(id) {
+            this.$emit("clickHistorySales", id);
         },
     }
 }

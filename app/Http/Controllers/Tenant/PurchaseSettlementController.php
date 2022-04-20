@@ -15,6 +15,12 @@ class PurchaseSettlementController extends Controller
         return view('tenant.purchase-settlements.index');
     }
 
+    public function create($order_id = null)
+        {
+            $type = 'settlements';
+            return view('tenant.purchases.form', compact('order_id','type'));
+        }
+
     public function columns()
     {
         return [

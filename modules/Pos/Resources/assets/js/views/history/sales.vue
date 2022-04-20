@@ -3,8 +3,15 @@
         <div class="form-body">
             <div class="row" >
                 <div class="col-lg-12">
-                
-                    <data-table :resource="resource" :form="form">
+                    <div v-show="this.supplier_id? true : false" class="form-actions text-right pt-2">
+                        <el-button 
+                                type="primary">Individual</el-button>
+                        <el-button
+                                native-type="submit"
+                                type="primary">Todas las ventas
+                        </el-button>
+                    </div>
+                    <data-table :resource="this.supplier_id? 'purchase-settlements':resource" :form="form">
                         <tr slot="heading">
                             <th>#</th>
                             <th class="text-center">Documento</th>
@@ -36,7 +43,7 @@
 
     export default {
         components: {DataTable},
-        props: ['showDialog', 'item_id','customer_id'],
+        props: ['showDialog', 'item_id','customer_id', 'supplier_id'],
         data() {
             return {
                 titleDialog: 'Historial de ventas',
@@ -52,7 +59,8 @@
             initForm(){
                 this.form = {
                     item_id : this.item_id,
-                    customer_id : this.customer_id
+                    customer_id : this.customer_id,
+                    supplier_id : this.supplier_id
                 }
             },
             async create(){

@@ -64,9 +64,10 @@
         }
 
 
-        public function create($purchase_order_id = null)
+        public function create($order_id = null)
         {
-            return view('tenant.purchases.form', compact('purchase_order_id'));
+            $type = 'purchase';
+            return view('tenant.purchases.form', compact('order_id','type'));
         }
 
         public function columns()
@@ -125,12 +126,18 @@
 
         }
 
-        public function tables()
+        public function tables($type)
         {
             $suppliers = $this->table('suppliers');
             $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
             $currency_types = CurrencyType::whereActive()->get();
-            $document_types_invoice = DocumentType::DocumentsActiveToPurchase()->get();
+            if ($type === 'settlements') {
+                $document_types_invoice = DocumentType::DocumentsActiveToSettlement()->get();
+            } else {
+                $document_types_invoice = DocumentType::DocumentsActiveToPurchase()->get();
+            }
+            
+            
             $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
             $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
             $company = Company::active();
