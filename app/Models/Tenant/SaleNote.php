@@ -1219,6 +1219,26 @@
             return ($this->currency_type_id === 'PEN') ? $this->total : ($this->total * $this->exchange_rate_sale);
         }
 
+        
+        /**
+         * 
+         * Filtro para no incluir relaciones en consulta
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         */  
+        public function scopeWhereFilterWithOutRelations($query)
+        {
+            return $query->withOut([
+                'user',
+                'soap_type',
+                'state_type',
+                'currency_type',
+                'items',
+                'payments'
+            ]);
+        }
+
 
         /**
          * 
