@@ -618,4 +618,107 @@ class Purchase extends ModelTenant
     {
         return $this->hasMany(GuideFile::class);
     }
+    
+    /**
+     * Validar si es compra en dolares
+     *
+     * @return bool
+     */
+    public function isCurrencyTypeUsd()
+    {
+        return $this->currency_type_id === 'USD';
+    }
+
+    public function convertValueToPen($value)
+    {
+        return self::NumberFormat($this->generalConvertValueToPen($value, $this->exchange_rate_sale));
+    }
+
+    /**
+     * 
+     * Obtener total y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalToPen()
+    {
+        return $this->convertValueToPen($this->total);
+    }
+
+    /**
+     * 
+     * Obtener total isc y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalIscToPen()
+    {
+        return $this->convertValueToPen($this->total_isc);
+    }
+    
+    /**
+     * 
+     * Obtener total igv y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalIgvToPen()
+    {
+        return $this->convertValueToPen($this->total_igv);
+    }
+    /**
+     * 
+     * Obtener total base y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalTaxedToPen()
+    {
+        return $this->convertValueToPen($this->total_taxed);
+    }
+    
+    /**
+     * 
+     * Obtener total exonerado y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalExoneratedToPen()
+    {
+        return $this->convertValueToPen($this->total_exonerated);
+    }
+
+    /**
+     * 
+     * Obtener total inafecto y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalUnaffectedToPen()
+    {
+        return $this->convertValueToPen($this->total_unaffected);
+    }
+
+    /**
+     * 
+     * Obtener total gratuito y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalFreeToPen()
+    {
+        return $this->convertValueToPen($this->total_free);
+    }
+    
+    /**
+     * 
+     * Obtener total exportacion y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalExportationToPen()
+    {
+        return $this->convertValueToPen($this->total_exportation);
+    }
+
 }

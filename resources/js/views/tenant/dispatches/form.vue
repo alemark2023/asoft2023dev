@@ -468,9 +468,10 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="(row, index) in form.items">
+                            <tr v-for="(row, index) in form.items" :key="index">
                                 <td>{{ index + 1 }}</td>
-                                <td>{{ row.item.description }}</td>
+                                <td>{{ setDescriptionOfItem(row.item) }}</td>
+                                <!-- <td>{{ row.item.description }}</td> -->
                                 <td class="text-right">{{ row.quantity }}</td>
                                 <td class="text-right">
                                     <button class="btn waves-effect waves-light btn-xs btn-danger" type="button"
@@ -512,6 +513,7 @@ import PersonForm from '../persons/form.vue';
 import Items from './items.vue';
 import DispatchOptions from './partials/options.vue'
 import {mapActions, mapState} from "vuex";
+import {showNamePdfOfDescription} from '@helpers/functions'
 
 export default {
     props: [
@@ -685,6 +687,9 @@ export default {
 
     },
     methods: {
+        setDescriptionOfItem(item) {
+            return showNamePdfOfDescription(item, this.configuration.show_pdf_name)
+        },
         changeTransferReasonType(){
 
             // exportacion

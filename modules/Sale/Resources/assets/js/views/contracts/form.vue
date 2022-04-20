@@ -213,7 +213,8 @@
                                         <tbody v-if="form.items.length > 0">
                                             <tr v-for="(row, index) in form.items" :key="index">
                                                 <td>{{index + 1}}</td>
-                                                <td>{{row.item.description}} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
+                                                <td> {{ setDescriptionOfItem(row.item) }} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
+                                                <!-- <td>{{row.item.description}} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td> -->
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
                                                 <td class="text-right">{{row.quantity}}</td>
                                                 <!-- <td class="text-right">{{currency_type.symbol}} {{row.unit_price}}</td> -->
@@ -292,7 +293,7 @@
     import PersonForm from '@views/persons/form.vue'
     import ContractOptionsPdf from './partials/options_pdf.vue'
     import {functions, exchangeRate} from '@mixins/functions'
-    import {calculateRowItem} from '@helpers/functions'
+    import {calculateRowItem, showNamePdfOfDescription} from '@helpers/functions'
     import Logo from '@views/companies/logo.vue'
 
     export default {
@@ -364,6 +365,9 @@
             await this.generateFromQuotation()
         },
         methods: {
+            setDescriptionOfItem(item) {
+                return showNamePdfOfDescription(item, this.configuration.show_pdf_name)
+            },
             selectDestinationSale() {
 
                 if(this.configuration.destination_sale && this.payment_destinations.length > 0 && this.showPayments) {
