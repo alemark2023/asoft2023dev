@@ -699,5 +699,24 @@ trait InventoryTrait
     {
         return InventoryTransaction::get();
     }
+    
+    /**
+     * 
+     * Validar si el lote cuenta con stock disponible, controla descuento de lotes individuales y por presentacion
+     * 
+     * Usado en:
+     * InventoryKardexServiceProvider - método sale (venta cpe)
+     * 
+     * @param $lot
+     * @param $document_item
+     * @return void
+     */
+    public function validateStockLotGroup($lot, $document_item)
+    {
+        if($lot->quantity < 0)
+        {
+            throw new Exception("El lote '{$lot->code}' del producto {$document_item->item->description} no tiene suficiente stock!");
+        }
+    }
 
 }
