@@ -7,6 +7,7 @@
                             :import_documents="{{ json_encode($import_documents) }}"
                             user-id="{{ auth()->user()->id }}"
                             :user-permission-edit-cpe="{{ json_encode(auth()->user()->permission_edit_cpe) }}"
+                            :user-permission-override-cpe="{{ json_encode(auth()->user()->permission_override_cpe) }}"
                             :import_documents_second="{{ json_encode($import_documents_second) }}"
                             :configuration="{{ $configuration }}"
                             :view_apiperudev_validator_cpe="{{ json_encode($view_apiperudev_validator_cpe) }}"
