@@ -464,6 +464,19 @@
                             </div>
                         </template>
 
+                        
+                        <div class="col-md-3">
+                            <div :class="{'has-danger': errors.subject_to_detraction}"
+                                 class="form-group">
+                                <el-checkbox v-model="form.subject_to_detraction">Sujeto a detracción</el-checkbox>
+                                <br>
+                                <small v-if="errors.subject_to_detraction"
+                                       class="form-control-feedback"
+                                       v-text="errors.subject_to_detraction[0]"></small>
+                            </div>
+                        </div>
+
+
                     </div>
                 </el-tab-pane>
 
@@ -1449,6 +1462,7 @@ export default {
                 purchase_has_isc: false,
                 purchase_system_isc_type_id: null,
                 purchase_percentage_isc: 0,
+                subject_to_detraction: false,
             }
 
             this.show_has_igv = true

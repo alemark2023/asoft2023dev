@@ -1301,6 +1301,8 @@ export default {
             this.row.IdLoteSelected = IdLoteSelected
             this.row.document_item_id = document_item_id
 
+            this.showMessageDetraction()
+
             this.$emit('add', this.row);
 
             if (this.search_item_by_barcode) {
@@ -1312,6 +1314,14 @@ export default {
             } else {
                 this.setFocusSelectItem();
             }
+        },
+        showMessageDetraction(){
+
+            let total = (this.currencyTypeIdActive === 'PEN') ? this.row.total : (this.row.total * this.exchangeRateSale)
+            let total_restriction = 700
+
+            if (total >= total_restriction && this.row.item.subject_to_detraction) this.$message.warning('El producto/servicio vendido está sujeto a detracción')
+
         },
         cleanItems() {
             this.items = []
