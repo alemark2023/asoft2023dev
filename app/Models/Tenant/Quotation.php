@@ -257,7 +257,7 @@ class Quotation extends ModelTenant
                 $user = new User();
             }
         }
-        else { 
+        else {
             $user = auth()->user();
         }
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
@@ -345,6 +345,9 @@ class Quotation extends ModelTenant
         }
 
         $seller = User::find($this->seller_id);
+        if(empty($seller)){
+            $seller = new User();
+        }
 
         return [
             'id' => $row->id,
@@ -425,7 +428,7 @@ class Quotation extends ModelTenant
 
 
     /**
-     * 
+     *
      * Obtener total y realizar conversión al tipo de cambio si se requiere
      *
      * @return float
@@ -434,10 +437,10 @@ class Quotation extends ModelTenant
     {
         return ($this->currency_type_id === 'PEN') ? $this->total : ($this->total * $this->exchange_rate_sale);
     }
-        
+
 
     /**
-     * 
+     *
      * Validar si tiene estado registrado/aceptado
      *
      * @return bool
@@ -446,10 +449,10 @@ class Quotation extends ModelTenant
     {
         return in_array($this->state_type_id, ['01','05']);
     }
-    
+
 
     /**
-     * 
+     *
      * Validar si la cotizacion tiene pagos
      *
      * @return bool
@@ -459,9 +462,9 @@ class Quotation extends ModelTenant
         return $this->payments->count() > 0;
     }
 
-    
+
     /**
-     * 
+     *
      * Validar si cumple las condiciones para sumar a los ingresos de caja o mostrar en reporte (pos)
      *
      * @return bool

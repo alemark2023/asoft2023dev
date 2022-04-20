@@ -1219,6 +1219,7 @@
             return ($this->currency_type_id === 'PEN') ? $this->total : ($this->total * $this->exchange_rate_sale);
         }
 
+        
         /**
          * 
          * Filtro para no incluir relaciones en consulta
@@ -1236,6 +1237,18 @@
                 'items',
                 'payments'
             ]);
+        }
+
+
+        /**
+         * 
+         * Obtener vuelto para mostrar en pdf
+         *
+         * @return float
+         */
+        public function getChangePayment()
+        {
+            return ($this->total - $this->payments->sum('payment')) - $this->payments->sum('change');
         }
 
     }

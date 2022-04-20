@@ -218,6 +218,7 @@
             'show_totals_on_cpe_list',
             'mi_tienda_pe',
             'detraction_amount_rounded_int',
+            'validate_purchase_sale_unit_price',
             'show_terms_condition_pos',
             'show_ticket_80',
             'show_ticket_58',
@@ -230,6 +231,9 @@
             'url_apiruc',
             'new_validator_pagination',
             'token_apiruc',
+            'checked_global_igv_to_purchase',
+            'checked_update_purchase_price',
+            'set_global_purchase_currency_items',
         ];
 
         protected $casts = [
@@ -295,12 +299,16 @@
             'show_totals_on_cpe_list' => 'bool',
             'auto_print' => 'bool',
             'detraction_amount_rounded_int' => 'bool',
+            'validate_purchase_sale_unit_price' => 'bool',
             'show_terms_condition_pos' => 'bool',
             'show_last_price_sale' => 'bool',
             'show_logo_by_establishment' => 'bool',
             'print_new_line_to_observation' => 'bool',
             'shipping_time_days' => 'int',
             'new_validator_pagination' => 'int',
+            'checked_global_igv_to_purchase' => 'bool',
+            'checked_update_purchase_price' => 'bool',
+            'set_global_purchase_currency_items' => 'bool',
         ];
 
         protected $hidden = [
@@ -474,6 +482,7 @@
                 'pos_cost_price' => $this->isPosCostPrice(),
                 'show_totals_on_cpe_list' => $this->isShowTotalsOnCpeList(),
                 'detraction_amount_rounded_int' => $this->detraction_amount_rounded_int,
+                'validate_purchase_sale_unit_price' => $this->validate_purchase_sale_unit_price,
                 'global_discount_type_id' => $this->global_discount_type_id,
                 'show_terms_condition_pos' => (bool)$this->show_terms_condition_pos,
                 'mi_tienda_pe' => $this->isMiTiendaPe(),
@@ -482,6 +491,9 @@
                 'show_ticket_50' => (bool)$this->show_ticket_50,
                 'show_last_price_sale' => (bool)$this->show_last_price_sale,
                 'shipping_time_days' => $this->shipping_time_days,
+                'checked_global_igv_to_purchase' => $this->checked_global_igv_to_purchase,
+                'checked_update_purchase_price' => $this->checked_update_purchase_price,
+                'set_global_purchase_currency_items' => $this->set_global_purchase_currency_items,
                 'new_validator_pagination' => $this->getNewValidatorPagination(),
             ];
         }

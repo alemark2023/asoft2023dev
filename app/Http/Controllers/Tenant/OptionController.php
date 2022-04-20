@@ -119,6 +119,7 @@ class OptionController extends Controller
     private function deleteQuotation()
     {
         $records_id = Quotation::where('soap_type_id', '01')->whereFilterWithOutRelations()->select('id')->get()->pluck('id')->toArray();
+        // dd($records_id);
         CashDocument::whereIn('quotation_id', $records_id)->delete();
         Quotation::where('soap_type_id', '01')->delete();
     }

@@ -6,7 +6,8 @@
     use App\Models\Tenant\SaleNote;
 
     $data = \Modules\Report\Http\Resources\GeneralItemCollection::getDocument($value);
-    $observation = $data['additional_information'][0]?$data['additional_information'][0]:'';
+    $observation = isset($data['additional_information'][0]) ? $data['additional_information'][0] : '';
+
     $purchseOrder = $document->purchase_order;
 $stablihsment = $stablihsment ?? [
         'district' => '',
@@ -29,6 +30,9 @@ $total_isc = '';
 $total_plastic_bag_taxes = '';
 $pack_prefix = '';
 $pack_price_prefix = '';
+$apply_conversion_to_pen = $request_apply_conversion_to_pen == 'true';
+$description_apply_conversion_to_pen = null;
+
 if (!isset($qty)) {
     /** Item normal */
     $discount = $value->total_discount;
@@ -45,6 +49,23 @@ if (!isset($qty)) {
     $total_plastic_bag_taxes = $value->total_plastic_bag_taxes;
     $category = $relation_item->category->name;
     $brand = $relation_item->brand->name;
+
+    
+    // aplicar conversión si es que esta habilitada la configuracion
+    if($apply_conversion_to_pen && $value->isCurrencyTypeUsd())
+    {
+        $total = number_format($value->getConvertTotalToPen(), 2);
+        $utility_item = number_format($total - $total_item_purchase, 2);
+        $unit_price = number_format($value->getConvertUnitPriceToPen(), 6);
+        $unit_value = number_format($value->getConvertUnitValueToPen(), 6);
+        $total_value = number_format($value->getConvertTotalValueToPen(), 2);
+        $igv = number_format($value->getConvertTotalIgvToPen(), 2);
+        $total_isc = number_format($value->getConvertTotalIscToPen(), 2);
+        $description_apply_conversion_to_pen = '(Se aplicó conversión a soles)';
+    }
+    // aplicar conversión si es que esta habilitada la configuracion
+
+
 } else {
     /** Item desde un pack */
     $item = \App\Models\Tenant\Item::find($item->id);
@@ -131,7 +152,7 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
         @endif
     </td>
     <td class="celda">{{ $observation }} </td>
-    <td class="celda">{{ $document->currency_type_id }}</td>
+    <td class="celda">{{ $document->currency_type_id }} {{ $description_apply_conversion_to_pen ?? ''}}</td>
     <td class="celda">{{ $document->exchange_rate_sale }}</td>
     <td class="celda">
         @if($isSaleNote)
