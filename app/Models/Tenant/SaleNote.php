@@ -1251,4 +1251,22 @@
             return ($this->total - $this->payments->sum('payment')) - $this->payments->sum('change');
         }
 
+        /**
+         * 
+         * Obtener porcentaje de cargos para mostrar en pdf
+         *
+         * @return float
+         */
+        public function getTotalFactor()
+        {
+            $total_factor = 0;
+
+            if($this->charges)
+            {
+                $total_factor = collect($this->charges)->sum('factor') * 100;
+            }
+
+            return $total_factor;
+        }
+
     }
