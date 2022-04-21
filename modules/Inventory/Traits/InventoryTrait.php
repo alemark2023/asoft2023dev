@@ -478,13 +478,17 @@ trait InventoryTrait
         if (isset($document_item->item->IdLoteSelected)) {
             if ($document_item->item->IdLoteSelected != null) {
 
-                if(is_array($document_item->item->IdLoteSelected)) { 
+                if(is_array($document_item->item->IdLoteSelected)) 
+                { 
 
+                    // presentacion - factor de lista de precios
+                    $quantity_unit = isset($document_item->item->presentation->quantity_unit) ? $document_item->item->presentation->quantity_unit : 1;
                     $lotesSelecteds = $document_item->item->IdLoteSelected;
 
-                    foreach ($lotesSelecteds as $item) {
+                    foreach ($lotesSelecteds as $item) 
+                    {
                         $lot = ItemLotsGroup::query()->find($item->id);
-                        $lot->quantity = $lot->quantity + $item->compromise_quantity;
+                        $lot->quantity = $lot->quantity + ($quantity_unit * $item->compromise_quantity);
                         $lot->save();
                     }
                     
@@ -706,6 +710,7 @@ trait InventoryTrait
      * 
      * Usado en:
      * InventoryKardexServiceProvider - método sale (venta cpe)
+     * SaleNoteController - método store (registro nota venta)
      * 
      * @param $lot
      * @param $document_item
