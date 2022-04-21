@@ -35,8 +35,6 @@
                             <th class="">N° Documento</th>
                             <th class="">Cliente</th>
 
-                            <th class="">Observaciones</th>
-
                             <th class="">Cod. Interno</th>
                             <th>Marca</th>
                             <th class="">Descripción</th>
@@ -65,8 +63,6 @@
                         <td>{{row.customer_number}}</td>
                             <td>{{row.customer_name}}</td>
                             
-                            <td v-if="type == 'sale'">{{row.observation}}</td>
-                            <td v-if="type != 'sale'">{{row.additional_information}}</td>
                             <td>{{row.internal_id}}</td>
                             <td>{{ row.brand }}</td>
                             <td>{{row.description}}</td>
