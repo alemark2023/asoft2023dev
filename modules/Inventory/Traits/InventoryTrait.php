@@ -609,7 +609,11 @@ trait InventoryTrait
                 if (!$lot_group) {
                     throw new Exception("El lote {$purchase_item->lot_code} no existe!");
                 }
-                if ((int)$lot_group->quantity != (int)$purchase_item->quantity) {
+
+                // factor de lista de precios
+                $presentation_quantity = (isset($purchase_item->item->presentation->quantity_unit)) ? $purchase_item->item->presentation->quantity_unit : 1;
+
+                if ((int)$lot_group->quantity != (int) ($purchase_item->quantity * $presentation_quantity)) {
                     throw new Exception("Los productos del lote {$purchase_item->lot_code} han sido vendidos!");
                 }
             }
