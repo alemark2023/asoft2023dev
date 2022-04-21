@@ -65,9 +65,9 @@
                         <td  v-if="columns.purchase_order.visible">{{row.purchase_order}}</td>
                         <td>{{row.customer_number}}</td>
                             <td>{{row.customer_name}}</td>
-
-                            <td>{{row.additional_information}}</td>
-
+                            
+                            <td v-if="type == 'sale'">{{row.observation}}</td>
+                            <td v-if="type != 'sale'">{{row.additional_information}}</td>
                             <td>{{row.internal_id}}</td>
                             <td>{{ row.brand }}</td>
                             <td>{{row.description}}</td>
