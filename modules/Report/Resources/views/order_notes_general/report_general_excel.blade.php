@@ -124,7 +124,7 @@
                                     
                                         $name_items=trim($name_string,' - ');
                                     }
-
+                                    
                                 }
                                 $obs=$value->observation;
                             @endphp

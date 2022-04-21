@@ -48,9 +48,10 @@ class PersonController extends Controller
 
     public function records($type, Request $request)
     {
-      //  return 'sd';
+
         $records = Person::where($request->column, 'like', "%{$request->value}%")
                             ->where('type', $type)
+                            ->whereFilterCustomerBySeller($type)
                             ->orderBy('name');
 
         return new PersonCollection($records->paginate(config('tenant.items_per_page')));
@@ -338,18 +339,11 @@ class PersonController extends Controller
 
     public function getPersonByBarcode($request)
     {
-        dd($request);
-        $value = $request->input;
-        $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
+        /* dd($request); */
+        $value = $request;
 
-        $customers = Person::with('addresses')->whereType('customers');
-        if($search_by_barcode){
-            $customers=$customers->where('barcode',$value);
-        }
-        else{
-            $customers=$customers->where('id',$value);
-        }
-        $customers=$customers->get()->transform(function($row) {
+        $customers = Person::with('addresses')->whereType('customers')
+        ->where('id',$value)->get()->transform(function($row) {
                         /** @var  Person $row */
                         return $row->getCollectionData();
                         /* Movido al modelo */
