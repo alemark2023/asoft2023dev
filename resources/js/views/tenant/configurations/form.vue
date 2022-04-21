@@ -603,7 +603,7 @@
                                     @click.prevent="showDialogAllowanceCharge = true">[+ Aplicar cargos]</a>
                                 <el-tooltip
                                     class="item"
-                                    content="Disponible en Ventas - Comprobante electrónico"
+                                    content="Disponible en Ventas - Comprobante electrónico / Nota de venta"
                                     effect="dark"
                                     placement="top-start">
                                     <i class="fa fa-info-circle"></i>
