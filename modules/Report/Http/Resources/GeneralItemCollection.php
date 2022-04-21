@@ -29,10 +29,17 @@ class GeneralItemCollection extends ResourceCollection
                 $platform = $platform->name;
             }
             $observation=null;
+            $aditional_information=null;
             if(get_class($row)== \App\Models\Tenant\PurchaseItem::class){
                 /** @var \App\Models\Tenant\PurchaseItem $row */
                 $purchase = $row->purchase;
                 $observation=$purchase->observation;
+            }
+            if($resource['document_type_id']===80){
+                $observation = $resource['observation']? $resource['observation'] : '';
+            }
+            if(get_class($row)== \App\Models\Tenant\Document::class){
+                $aditional_information=$resource['additional_information']?$resource['additional_information'][0] : '';
             }
             return [
                 'id' => $row->id,
@@ -64,7 +71,7 @@ class GeneralItemCollection extends ResourceCollection
                 // 'resource'=>$resource,
                 'purchase_item'=>$purchase_item,
                 'observation'=>$observation,
-                'additional_information' => $resource['additional_information'][0],
+                'additional_information' => $aditional_information,
             ];
         });
     }
@@ -204,6 +211,7 @@ class GeneralItemCollection extends ResourceCollection
             $data['document_type_id'] = 80;
             $data['currency_type_id'] = $document->currency_type_id;
             $data['purchase_order'] = $document->purchase_order;
+            $data['observation'] = $document->observation;
         }
 
         return $data;
