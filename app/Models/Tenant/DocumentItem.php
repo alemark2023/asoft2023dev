@@ -448,4 +448,80 @@
 
         }
 
+        /**
+         * 
+         * Obtener total y realizar conversión a soles de acuerdo al tipo de cambio
+         *
+         * @return float
+         */
+        public function getConvertTotalToPen()
+        {
+            return $this->generalConvertValueToPen($this->total, $this->document->exchange_rate_sale);
+        }
+
+        /**
+         * 
+         * Obtener valor unitario y realizar conversión a soles de acuerdo al tipo de cambio
+         *
+         * @return float
+         */
+        public function getConvertUnitValueToPen()
+        {
+            return $this->generalConvertValueToPen($this->unit_value, $this->document->exchange_rate_sale);
+        }
+        
+        /**
+         * 
+         * Obtener precio unitario y realizar conversión a soles de acuerdo al tipo de cambio
+         *
+         * @return float
+         */
+        public function getConvertUnitPriceToPen()
+        {
+            return $this->generalConvertValueToPen($this->unit_price, $this->document->exchange_rate_sale);
+        }
+
+        /**
+         * 
+         * Obtener total valor y realizar conversión a soles de acuerdo al tipo de cambio
+         *
+         * @return float
+         */
+        public function getConvertTotalValueToPen()
+        {
+            return $this->generalConvertValueToPen($this->total_value, $this->document->exchange_rate_sale);
+        }
+
+        /**
+         * 
+         * Obtener total igv y realizar conversión a soles de acuerdo al tipo de cambio
+         *
+         * @return float
+         */
+        public function getConvertTotalIgvToPen()
+        {
+            return $this->generalConvertValueToPen($this->total_igv, $this->document->exchange_rate_sale);
+        }
+
+        /**
+         * 
+         * Obtener total isc y realizar conversión a soles de acuerdo al tipo de cambio
+         *
+         * @return float
+         */
+        public function getConvertTotalIscToPen()
+        {
+            return $this->generalConvertValueToPen($this->total_isc, $this->document->exchange_rate_sale);
+        }
+
+        /**
+         * Validar si es venta en dolares
+         *
+         * @return bool
+         */
+        public function isCurrencyTypeUsd()
+        {
+            return $this->document->currency_type_id === 'USD';
+        }
+
     }

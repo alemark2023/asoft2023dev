@@ -62,7 +62,7 @@ use Modules\Item\Models\ItemLotsGroup;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use setasign\Fpdi\Fpdi;
-
+use Modules\Inventory\Models\InventoryConfiguration;
 
 class ItemController extends Controller
 {
@@ -200,6 +200,7 @@ class ItemController extends Controller
         }
         /** Informacion adicional */
         $configuration = $configuration->getCollectionData();
+        $inventory_configuration = InventoryConfiguration::firstOrFail();
         /*
         $configuration = Configuration::select(
             'affectation_igv_type_id',
@@ -227,7 +228,8 @@ class ItemController extends Controller
             'CatItemStatus',
             'CatItemPackageMeasurement',
             'CatItemProductFamily',
-            'CatItemUnitsPerPackage'
+            'CatItemUnitsPerPackage',
+            'inventory_configuration'
         );
     }
 
@@ -324,6 +326,14 @@ class ItemController extends Controller
             $item_unit_type->price_default = $value['price_default'];
             $item_unit_type->save();
 
+            if(!$value['barcode']) {
+                $item_unit_type->barcode = $item_unit_type->id.$item_unit_type->unit_type_id.$item_unit_type->quantity_unit;
+                $item_unit_type->save();
+            }
+            else {
+                $item_unit_type->barcode = $value['barcode'];
+                $item_unit_type->save();
+            }
         }
         if (isset($request->supplies)) {
             foreach($request->supplies as $value){
@@ -534,6 +544,17 @@ class ItemController extends Controller
         }
 
         $item->update();
+
+        $inventory_configuration = InventoryConfiguration::firstOrFail();
+
+        if($inventory_configuration->generate_internal_id == 1) {
+            if(!$item->internal_id) {
+                $items = Item::count();
+                $item->internal_id = (string)($items + 1);
+                $item->save();
+            }
+        }
+        
         /********************************* SECCION PARA PRECIO POR ALMACENES ******************************************/
 
         // Precios por almacenes
@@ -914,7 +935,7 @@ class ItemController extends Controller
         }
 
         if($period !== 'all'){
-            $items->whereBetween('created_at', [$d_start, $d_end]);
+            $items->whereBetween('items.created_at', [$d_start, $d_end]);
         }
 
         $records =  $items->get();
@@ -1194,6 +1215,53 @@ class ItemController extends Controller
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         $pdf->output('etiquetas_'.now()->format('Y_m_d').'.pdf', 'I');
+
+    }
+
+    public function printBarCodeX(Request $request)
+    {
+        ini_set("pcre.backtrack_limit", "50000000");
+        $id = $request->id;
+        $format = $request->format;
+
+        $record = Item::find($id);
+        $item_warehouse = ItemWarehouse::where([['item_id', $id], ['warehouse_id', auth()->user()
+            ->establishment->warehouse->id]])->first();
+
+        if(!$item_warehouse){
+            return [
+                'success' => false,
+                'message' => "El producto seleccionado no esta disponible en su almacen!"
+            ];
+        }
+
+        if($item_warehouse->stock < 1){
+            return [
+                'success' => false,
+                'message' => "El producto seleccionado no tiene stock disponible en su almacen, no puede generar etiquetas!"
+            ];
+        }
+
+        $stock = $item_warehouse->stock;
+
+        $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    104.1,
+                    24
+                    ],
+                'margin_top' => 2,
+                'margin_right' => 2,
+                'margin_bottom' => 0,
+                'margin_left' => 2
+            ]);
+        $html = view('tenant.items.exports.items-barcode-x', compact('record', 'stock', 'format'))->render();
+
+        // return $html;
+
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+        $pdf->output('etiquetas_1x'.$format.'_'.now()->format('Y_m_d').'.pdf', 'I');
 
     }
 

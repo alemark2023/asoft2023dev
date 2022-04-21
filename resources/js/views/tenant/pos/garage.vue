@@ -850,6 +850,7 @@ export default {
         this.show_fast_payment_garage = true
 
         this.form.establishment_id = this.establishment.id;
+
     },
 
     computed: {
@@ -1227,15 +1228,20 @@ export default {
             );
 
             await this.$eventHub.$on("cancelSaleGarage", () => {
+
                 this.is_payment = false;
                 this.initForm();
                 this.changeExchangeRate();
                 this.cancelFormPosLocalStorage();
                 this.selectDefaultCustomer();
+
                 this.$nextTick(() => {
                     this.initFocus();
+                    if(this.$refs.componentFastPaymentGarage && !this.form.series_id) this.$refs.componentFastPaymentGarage.filterSeries()
                 });
-                this.form.establishment_id = this.establishment.id;
+
+                this.form.establishment_id = this.establishment.id
+
             });
 
             // await this.$eventHub.$on("indexInitFocus", () => {
@@ -1256,6 +1262,7 @@ export default {
                 this.initForm();
                 this.getTables();
                 this.setFormPosLocalStorage();
+
             });
 
             await this.$eventHub.$on("enterSelectItemUnitType", (unit_type) => {
@@ -1627,6 +1634,12 @@ export default {
             // this.form.total = _.round(total, 2);
             this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
             this.form.subtotal = this.form.total
+
+            this.checkPaymentGarage()
+        },
+        checkPaymentGarage(){
+
+            this.$eventHub.$emit('eventCheckPaymentGarage')
 
         },
         changeDateOfIssue() {

@@ -22,7 +22,7 @@
     use Modules\Sale\Models\Contract;
     use Modules\Sale\Models\SaleOpportunity;
     use Modules\Sale\Models\TechnicalService;
-
+    use App\Models\Tenant\Configuration;
 
     /**
      * App\Models\Tenant\Person
@@ -128,6 +128,7 @@
             'trade_name',
             'internal_code',
             'country_id',
+            'nationality_id',
             'department_id',
             'province_id',
             'district_id',
@@ -231,6 +232,11 @@
         public function country()
         {
             return $this->belongsTo(Country::class);
+        }
+
+        public function nationality()
+        {
+            return $this->belongsTo(Country::class, 'nationality_id');
         }
 
         /**
@@ -566,6 +572,7 @@
                 'type' => $this->type,
                 'trade_name' => $this->trade_name,
                 'country_id' => $this->country_id,
+                'nationality_id' => $this->nationality_id,
                 'department_id' => $department['id']??null,
                 'department' => $department,
 
@@ -742,4 +749,33 @@
             return $query;
 
         }
+
+        
+        /**
+         * 
+         * Aplicar filtro por vendedor asignado al cliente
+         *
+         * Usado en:
+         * PersonController - records
+         * 
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @param string $type
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public function scopeWhereFilterCustomerBySeller($query, $type)
+        {
+            if($type === 'customers')
+            {
+                $user = auth()->user();
+                
+                if($user->applyCustomerFilterBySeller())
+                {
+                    return $query->where('seller_id', $user->id);
+                }
+            }
+
+            return $query;
+        }
+
+
     }
