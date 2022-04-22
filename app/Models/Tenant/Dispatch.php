@@ -623,7 +623,7 @@
          * 
          * Retornar registro relacionado
          * 
-         * Guia generada desde: Cot, Nv
+         * Guia generada desde: Cot, Nv, Ped
          * 
          */
         public function getRelationExternalDocument()
@@ -632,6 +632,8 @@
             
             if(!is_null($this->reference_sale_note_id)) return $this->sale_note;
 
+            if(!is_null($this->reference_order_note_id)) return $this->order_note;
+            
             return null;
         }
 
