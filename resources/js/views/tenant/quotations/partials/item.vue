@@ -1297,7 +1297,7 @@ export default {
         },
         async getLastPriceItem() {
             this.itemLastPrice =null
-            if(this.configuration.show_last_price_sale) {
+            if(this.config.show_last_price_sale) {
                 if(this.customerId && this.form.item_id) {
                     const params = {
                         'type_document': 'QUOTATION',

@@ -111,7 +111,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  */
 class Item extends ModelTenant
 {
-    protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags'];
+    protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags','item_lots'];
     protected $fillable = [
         'warehouse_id',
         'name',
@@ -174,6 +174,7 @@ class Item extends ModelTenant
         'purchase_system_isc_type_id',
         'purchase_has_isc',
 
+        'subject_to_detraction',
         // 'warehouse_id'
     ];
 
@@ -181,6 +182,7 @@ class Item extends ModelTenant
         'date_of_due' => 'date',
         'is_for_production' => 'bool',
         'purchase_has_isc' => 'bool',
+        'subject_to_detraction' => 'bool',
     ];
 
     /**
@@ -969,6 +971,8 @@ class Item extends ModelTenant
             'system_isc_type_id' => $this->system_isc_type_id,
             'percentage_isc' => $this->percentage_isc,
             'is_for_production'=>$this->isIsForProduction(),
+            'subject_to_detraction' => $this->subject_to_detraction,
+            
         ];
 
         // El nombre de producto, por defecto, sera la misma descripcion.
@@ -1061,6 +1065,9 @@ class Item extends ModelTenant
         if(empty($currency )){
             $currency = new CurrencyType();
         }
+
+        $show_sale_unit_price = "{$currency->symbol} {$this->getFormatSaleUnitPrice()}";
+
         return [
             'name_disa' => $name_disa,
             'laboratory' => $laboratory,
@@ -1095,7 +1102,8 @@ class Item extends ModelTenant
             'active' => (bool)$this->active,
             'has_igv_description' => $has_igv_description,
             'purchase_has_igv_description' => $purchase_has_igv_description,
-            'sale_unit_price' => "{$currency->symbol} {$this->sale_unit_price}",
+            'sale_unit_price' => $show_sale_unit_price,
+            // 'sale_unit_price' => "{$currency->symbol} {$this->sale_unit_price}",
             'sale_unit_price_with_igv' => "{$currency->symbol} $salePriceWithIgv",
             'purchase_unit_price' => "{$currency->symbol} {$this->purchase_unit_price}",
             'created_at' => ($this->created_at) ? $this->created_at->format('Y-m-d H:i:s') : '',
@@ -1149,6 +1157,18 @@ class Item extends ModelTenant
 
         ];
     }
+
+    
+    /**
+     * Obtener precio unitario entero o con decimales
+     *
+     * @return int|float
+     */
+    public function getFormatSaleUnitPrice()
+    {
+        return ((int)$this->sale_unit_price != $this->sale_unit_price) ? $this->sale_unit_price : round($this->sale_unit_price);
+    }
+
 
     /**
      * Establece un standar para insersion por catalogo DIGEMID

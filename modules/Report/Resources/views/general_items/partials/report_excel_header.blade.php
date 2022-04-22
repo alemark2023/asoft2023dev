@@ -28,7 +28,6 @@
     <th> VENDEDOR</th>
     <th> OBSERVACIÓN </th>
 @endif
-
 <th> MONEDA</th>
 <th> TIPO DE CAMBIO</th>
 <th> UNIDAD DE MEDIDA</th>

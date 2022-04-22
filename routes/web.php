@@ -200,6 +200,7 @@ if ($hostname) {
             Route::get('items/export/extra_atrributes/XLSX', 'Tenant\ItemController@downloadExtraDataItemsExcel');
             Route::get('items/export/barcode_full', 'Tenant\ItemController@exportBarCodeFull');
             Route::get('items/export/barcode/print', 'Tenant\ItemController@printBarCode')->name('tenant.items.export.barcode.print');
+            Route::get('items/export/barcode/print_x', 'Tenant\ItemController@printBarCodeX')->name('tenant.items.export.barcode.print.x');
             Route::get('items/export/barcode/last', 'Tenant\ItemController@itemLast')->name('tenant.items.last');
             Route::post('get-items', 'Tenant\ItemController@getAllItems');
 
@@ -572,6 +573,8 @@ if ($hostname) {
             Route::get('pos/validate_stock/{item}/{quantity}', 'Tenant\PosController@validate_stock');
             Route::get('pos/items', 'Tenant\PosController@item');
             Route::get('pos/search_items_cat', 'Tenant\PosController@search_items_cat');
+            Route::get('pos/search_items_unit_types', 'Tenant\PosController@search_items_unit_types');
+
 
             Route::get('cash', 'Tenant\CashController@index')->name('tenant.cash.index');
             Route::get('cash/columns', 'Tenant\CashController@columns');
