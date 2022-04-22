@@ -490,6 +490,7 @@
                 'show_ticket_58' => (bool)$this->show_ticket_58,
                 'show_ticket_50' => (bool)$this->show_ticket_50,
                 'show_last_price_sale' => (bool)$this->show_last_price_sale,
+                'show_logo_by_establishment' => (bool)$this->show_logo_by_establishment,
                 'shipping_time_days' => $this->shipping_time_days,
                 'checked_global_igv_to_purchase' => $this->checked_global_igv_to_purchase,
                 'checked_update_purchase_price' => $this->checked_update_purchase_price,
