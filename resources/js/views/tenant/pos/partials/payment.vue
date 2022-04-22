@@ -244,14 +244,15 @@
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <label class="control-label">
-                                            
+
                                             <el-checkbox v-model="is_discount_amount"
                                                             class="ml-1 mr-1"
                                                             @change="changeTypeDiscount"></el-checkbox>
 
                                             <template>{{ (is_discount_amount) ? 'Monto' : 'Porcentaje'}} descuento</template>
-                                            
+
                                             <el-tooltip class="item"
+                                                        v-if="global_discount_type && global_discount_type.description"
                                                         :content="global_discount_type.description"
                                                         effect="dark"
                                                         placement="top">
@@ -506,7 +507,7 @@ export default {
             error_global_discount: false,
             is_discount_amount: false,
             payment_method_type_id: null
-            
+
         }
     },
     async created() {
@@ -628,9 +629,13 @@ export default {
         },
         setGlobalDiscount(factor, amount, base)
         {
+            let discount_text = '';
+            if(this.global_discount_type && this.global_discount_type.description){
+                discount_text = this.global_discount_type.description
+            }
             this.form.discounts.push({
                 discount_type_id: this.global_discount_type.id,
-                description: this.global_discount_type.description,
+                description: discount_text,
                 factor: factor,
                 amount: _.round(amount, 2),
                 base: base
@@ -645,7 +650,7 @@ export default {
             // let factor = _.round(amount / base, 5)
 
             let discount = _.find(this.form.discounts, {'discount_type_id': this.globalDiscountTypeId})
-    
+
             if (input_global_discount > 0 && !discount)
             {
 
@@ -653,13 +658,13 @@ export default {
                 let base = (this.isGlobalDiscountBase) ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
                 let amount = 0
                 let factor = 0
-                
-                if (this.is_discount_amount) 
+
+                if (this.is_discount_amount)
                 {
                     amount = input_global_discount
                     factor = _.round(amount / base, 5)
                 }
-                else 
+                else
                 {
                     factor = _.round(input_global_discount / 100, 5)
                     amount = factor * base
@@ -673,7 +678,7 @@ export default {
                     this.form.total_taxed = _.round(base - this.form.total_discount, 2)
                     this.form.total_value = this.form.total_taxed
                     this.form.total_igv = _.round(this.form.total_taxed * (percentage_igv / 100), 2)
-    
+
                     //impuestos (isc + igv + icbper)
                     this.form.total_taxes = _.round(this.form.total_igv + this.form.total_isc + this.form.total_plastic_bag_taxes, 2);
                     this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
@@ -872,7 +877,7 @@ export default {
         },
         setPaymentMethod(id){
             this.payment_method_type_id = id;
-        },  
+        },
         setAmount(amount) {
             // this.amount = parseFloat(this.amount) + parseFloat(amount)
             this.amount = parseFloat(amount) //+ parseFloat(amount)

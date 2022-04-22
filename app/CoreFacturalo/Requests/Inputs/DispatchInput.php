@@ -174,6 +174,7 @@ class DispatchInput
                 $item = Item::find($row['item_id']);
                 $itemDispatch = $row['item']??[];
                 $row['IdLoteSelected'] =  $row['IdLoteSelected']??$itemDispatch['IdLoteSelected']??null;
+                
                 $temp = [
                     'item_id' => $item->id,
                     'item' => [
@@ -188,7 +189,9 @@ class DispatchInput
                         'lot_group' => $row['lot_group'] ?? null,
                     ],
                     'quantity' => $row['quantity'],
+                    'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf'),
                 ];
+
                 if(isset($temp['item']['lot_group']['date_of_due'])){
                     $temp['item']['date_of_due']=$temp['item']['lot_group']['date_of_due'];
                 }else{
