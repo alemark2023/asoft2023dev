@@ -763,8 +763,6 @@
                                             v-text="errors.global_discount_type_id[0]"></small>
                                 </div>
                             </div>
-
-
                             
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">Restringir venta de productos menores al precio de compra 
@@ -788,6 +786,27 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Asignar precio unitario a los productos desde registro relacionado
+                                    <el-tooltip
+                                        class="item"
+                                        content="Se asignará el precio unitario desde el registro relacionado (Cotización, Nota de venta) a la guía - Generar CPE desde Guía"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.set_unit_price_dispatch_related_record}"
+                                        class="form-group">
+                                    <el-switch v-model="form.set_unit_price_dispatch_related_record"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.set_unit_price_dispatch_related_record"
+                                            class="form-control-feedback"
+                                            v-text="errors.set_unit_price_dispatch_related_record[0]"></small>
+                                </div>
+                            </div>
 
                         </div>
                     </el-tab-pane>
@@ -1514,6 +1533,7 @@ export default {
                 checked_global_igv_to_purchase: false,
                 checked_update_purchase_price: false,
                 set_global_purchase_currency_items: false,
+                set_unit_price_dispatch_related_record: false,
 
             };
         },
