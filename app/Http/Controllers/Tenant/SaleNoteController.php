@@ -513,6 +513,7 @@ class SaleNoteController extends Controller
         $currency_types = CurrencyType::whereActive()->get();
         $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
+        $global_charge_types = ChargeDiscountType::whereIn('id', ['50'])->get();
         $company = Company::active();
         $payment_method_types = PaymentMethodType::all();
         $series = collect(Series::all())->transform(function($row) {
@@ -531,7 +532,7 @@ class SaleNoteController extends Controller
 
 
         return compact('customers', 'establishments','currency_types', 'discount_types', 'configuration',
-                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers');
+                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers', 'global_charge_types');
     }
 
     public function changed($id)
@@ -626,13 +627,19 @@ class SaleNoteController extends Controller
 
                 if(isset($row['IdLoteSelected']))
                 {
-                    if(is_array($row['IdLoteSelected'])) {
+                    if(is_array($row['IdLoteSelected'])) 
+                    {
+                        // presentacion - factor de lista de precios
+                        $quantity_unit = isset($sale_note_item->item->presentation->quantity_unit) ? $sale_note_item->item->presentation->quantity_unit : 1;
 
-                        foreach ($row['IdLoteSelected'] as $item) {
+                        foreach ($row['IdLoteSelected'] as $item) 
+                        {
                             $lot = ItemLotsGroup::query()->find($item['id']);
-                            $lot->quantity = $lot->quantity - $item['compromise_quantity'];
+                            $lot->quantity = $lot->quantity - ($quantity_unit * $item['compromise_quantity']);
+                            $this->validateStockLotGroup($lot, $sale_note_item);
                             $lot->save();
                         }
+                        
                     }
                     else {
 
