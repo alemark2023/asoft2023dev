@@ -522,6 +522,7 @@ export default {
         'typeDocument',
         'dispatch',
         'configuration',
+        'sale_note',
     ],
     components: {
         PersonForm,
