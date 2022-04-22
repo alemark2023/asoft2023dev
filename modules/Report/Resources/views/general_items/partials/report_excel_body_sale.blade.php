@@ -101,7 +101,13 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
 <tr>
     <td class="celda">{{ $loop->iteration }}</td>
     <td class="celda">{{ $document->date_of_issue->format('Y-m-d') }}</td>
-    <td class="celda">{{ $user}}</td>
+    <td class="celda">{{-- {{ $user}} --}}
+        @if($type==='sale')
+            {{ $document->seller_id == null ? $document->user->name : $document->seller->name }}
+        @else
+            {{$user}}
+        @endif
+    </td>
     @if($isSaleNote)
         <td class="celda">{{ $stablihsment['district'] }}</td>
         <td class="celda">{{ $stablihsment['department'] }}</td>
