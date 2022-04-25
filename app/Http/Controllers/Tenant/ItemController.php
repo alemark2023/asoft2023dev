@@ -62,6 +62,7 @@ use Modules\Item\Models\ItemLotsGroup;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use setasign\Fpdi\Fpdi;
+use Modules\Inventory\Models\InventoryConfiguration;
 
 
 class ItemController extends Controller
@@ -200,6 +201,7 @@ class ItemController extends Controller
         }
         /** Informacion adicional */
         $configuration = $configuration->getCollectionData();
+        $inventory_configuration = InventoryConfiguration::firstOrFail();
         /*
         $configuration = Configuration::select(
             'affectation_igv_type_id',
@@ -227,7 +229,8 @@ class ItemController extends Controller
             'CatItemStatus',
             'CatItemPackageMeasurement',
             'CatItemProductFamily',
-            'CatItemUnitsPerPackage'
+            'CatItemUnitsPerPackage',
+            'inventory_configuration'
         );
     }
 
@@ -324,6 +327,15 @@ class ItemController extends Controller
             $item_unit_type->price_default = $value['price_default'];
             $item_unit_type->save();
 
+            // migracion desarrollo sin terminar #1401
+            if(!$value['barcode']) {
+                $item_unit_type->barcode = $item_unit_type->id.$item_unit_type->unit_type_id.$item_unit_type->quantity_unit;
+                $item_unit_type->save();
+            }
+            else {
+                $item_unit_type->barcode = $value['barcode'];
+                $item_unit_type->save();
+            }
         }
         if (isset($request->supplies)) {
             foreach($request->supplies as $value){
@@ -534,6 +546,17 @@ class ItemController extends Controller
         }
 
         $item->update();
+
+        // migracion desarrollo sin terminar #1401
+        $inventory_configuration = InventoryConfiguration::firstOrFail();
+
+        if($inventory_configuration->generate_internal_id == 1) {
+            if(!$item->internal_id) {
+                $items = Item::count();
+                $item->internal_id = (string)($items + 1);
+                $item->save();
+            }
+        }
         /********************************* SECCION PARA PRECIO POR ALMACENES ******************************************/
 
         // Precios por almacenes
