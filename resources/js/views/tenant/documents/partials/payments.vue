@@ -37,7 +37,11 @@
                                     </td>
                                     <td class="text-right">{{ row.payment }}</td>
                                     <td class="series-table-actions text-right">
-                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
+
+                                        <template v-if="permissions.delete_payment">
+                                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
+                                        </template>
+
                                         <!--<el-button type="danger" icon="el-icon-delete" plain @click.prevent="clickDelete(row.id)"></el-button>-->
                                     </td>
                                 </template>
@@ -103,6 +107,7 @@
                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickSubmit(index)">
                                             <i class="fa fa-check"></i>
                                         </button>
+
                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
                                             <i class="fa fa-trash"></i>
                                         </button>
@@ -131,7 +136,9 @@
                     </div>
                 </div>
                 <div class="col-md-12 text-center pt-2" v-if="showAddButton && (document.total_difference > 0)">
-                    <el-button type="primary" icon="el-icon-plus" @click="clickAddRow">Nuevo</el-button>
+                    <template v-if="permissions.create_payment">
+                        <el-button type="primary" icon="el-icon-plus" @click="clickAddRow">Nuevo</el-button>
+                    </template>
                 </div>
             </div>
         </div>
@@ -157,6 +164,7 @@
                 payment_method_types: [],
                 showAddButton: true,
                 document: {},
+                permissions: {},
                 index_file: null,
             }
         },
@@ -166,6 +174,7 @@
                 .then(response => {
                     this.payment_method_types = response.data.payment_method_types;
                     this.payment_destinations = response.data.payment_destinations
+                    this.permissions = response.data.permissions
                     //this.initDocumentTypes()
                 })
         },
