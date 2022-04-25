@@ -286,6 +286,14 @@
         /**
          * @return BelongsTo
          */
+        public function reference_quotation()
+        {
+            return $this->belongsTo(Quotation::class, 'reference_quotation_id');
+        }
+
+        /**
+         * @return BelongsTo
+         */
         public function unit_type()
         {
             return $this->belongsTo(UnitType::class, 'unit_type_id');
@@ -608,6 +616,38 @@
         public function setResponseSignaturePseAttribute($value)
         {
             $this->attributes['response_signature_pse'] = (is_null($value)) ? null : json_encode($value);
+        }
+
+        
+        /**
+         * 
+         * Retornar registro relacionado
+         * 
+         * Guia generada desde: Cot, Nv, Ped
+         * 
+         */
+        public function getRelationExternalDocument()
+        {
+            if(!is_null($this->reference_quotation_id)) return $this->reference_quotation;
+            
+            if(!is_null($this->reference_sale_note_id)) return $this->sale_note;
+
+            if(!is_null($this->reference_order_note_id)) return $this->order_note;
+            
+            return null;
+        }
+
+        
+        /**
+         * 
+         * Validar si existe relación
+         *
+         * @param $relation_external_document
+         * @return bool
+         */
+        public function isGeneratedFromExternalDocument($relation_external_document)
+        {
+            return !is_null($relation_external_document);
         }
 
     }
