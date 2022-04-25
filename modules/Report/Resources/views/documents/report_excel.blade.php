@@ -424,7 +424,7 @@
 
 
                         }
-
+                        
                     @endphp
                 @endforeach
                 <tr>
@@ -458,7 +458,7 @@
                     <td></td>
                     <td>{{$acum_total_usd}}</td>
                 </tr>
-
+                
                 </tbody>
             </table>
         </div>
