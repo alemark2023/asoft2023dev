@@ -234,6 +234,7 @@
             'checked_global_igv_to_purchase',
             'checked_update_purchase_price',
             'set_global_purchase_currency_items',
+            'set_unit_price_dispatch_related_record',
         ];
 
         protected $casts = [
@@ -309,6 +310,7 @@
             'checked_global_igv_to_purchase' => 'bool',
             'checked_update_purchase_price' => 'bool',
             'set_global_purchase_currency_items' => 'bool',
+            'set_unit_price_dispatch_related_record' => 'bool',
         ];
 
         protected $hidden = [
@@ -494,6 +496,7 @@
                 'checked_global_igv_to_purchase' => $this->checked_global_igv_to_purchase,
                 'checked_update_purchase_price' => $this->checked_update_purchase_price,
                 'set_global_purchase_currency_items' => $this->set_global_purchase_currency_items,
+                'set_unit_price_dispatch_related_record' => $this->set_unit_price_dispatch_related_record,
                 'new_validator_pagination' => $this->getNewValidatorPagination(),
             ];
         }
@@ -2085,5 +2088,11 @@
             $this->new_validator_pagination = (int)$new_validator_pagination;
             return $this;
         }
+
+        public function scopeGetUnitPriceDispatchRelatedRecord($query)
+        {
+            return $query->select('set_unit_price_dispatch_related_record')->first()->set_unit_price_dispatch_related_record;
+        }
+        
 
     }

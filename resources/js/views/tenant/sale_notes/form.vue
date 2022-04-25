@@ -146,6 +146,21 @@
                                            v-text="sms_periodo"></small>
                                 </div>
                             </div>
+
+                            
+                            <div v-if="config.active_allowance_charge && form.total > 0" class="col-lg-2 col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Porcentaje otros cargos</label>
+
+                                    <el-input-number v-model="config.percentage_allowance_charge"
+                                                        :min="0"
+                                                        controls-position="right"
+                                                        size="mini"
+                                                        @change="calculateTotal">
+                                                        </el-input-number>
+                                </div>
+                            </div>
+
                             <div class="col-lg-2 col-md-2" >
                                 <div class="form-group">
                                     <label class="control-label">Placa</label>
@@ -322,7 +337,7 @@
 
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-12">
                                 <p class="text-right" v-if="form.total_exportation > 0">OP.EXPORTACIÓN: {{ currency_type.symbol }} {{ form.total_exportation }}</p>
                                 <p class="text-right" v-if="form.total_free > 0">OP.GRATUITAS: {{ currency_type.symbol }} {{ form.total_free }}</p>
                                 <p class="text-right" v-if="form.total_unaffected > 0">OP.INAFECTAS: {{ currency_type.symbol }} {{ form.total_unaffected }}</p>
@@ -330,6 +345,34 @@
                                 <p class="text-right" v-if="form.total_taxed > 0">OP.GRAVADA: {{ currency_type.symbol }} {{ form.total_taxed }}</p>
                                 <p class="text-right" v-if="form.total_igv > 0">IGV: {{ currency_type.symbol }} {{ form.total_igv }}</p>
                                 <p class="text-right" v-if="form.total_discount > 0">DESCUENTO: {{ currency_type.symbol }} {{ form.total_discount }}</p>
+
+                                
+                                <div class="row mt-1" v-if="form.total > 0">
+                                    <div class="col-lg-10 float-right mt-1">
+                                        <label class="float-right control-label">OTROS CARGOS: </label>
+                                    </div>
+                                    <div class="col-lg-2 float-right">
+                                        <div class="form-group">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        {{ currency_type.symbol }}
+                                                    </td>
+                                                    <td>
+                                                        <el-input-number v-model="total_global_charge"
+                                                            :disabled="config.active_allowance_charge == true ? true:false"
+                                                            :min="0"
+                                                            class="input-custom ml-2"
+                                                            controls-position="right"
+                                                            @change="calculateTotal">
+                                                        </el-input-number>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <h3 class="text-right" v-if="form.total > 0"><b>TOTAL A PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
                             </div>
 
@@ -478,6 +521,8 @@
                 enabled_payments: true,
                 payment_destinations:  [],
                 total_discount_no_base: 0,
+                total_global_charge: 0,
+                global_charge_types: [],
             }
         },
         async created() {
@@ -491,6 +536,8 @@
                     this.all_customers = response.data.customers
                     this.discount_types = response.data.discount_types
                     this.charges_types = response.data.charges_types
+                    this.global_charge_types = response.data.global_charge_types
+                    
                     this.payment_method_types = response.data.payment_method_types
                     this.company = response.data.company
                     if(this.config.currency_type_id === undefined) {
@@ -628,13 +675,19 @@
                     // console.log(this.id);
                     await this.$http.get(`/${this.resource}/record2/${this.id}`)
                         .then(response => {
-                            this.form = response.data.data;
-    //                        this.filterProvinces();
-    //                        this.filterDistricts();
+                            this.form = response.data.data
+                            this.setDataUpdate()
                             this.changeCurrencyType()
                         })
                 }
 
+            },
+            setDataUpdate(){
+
+                if(this.form.total_charge > 0) this.total_global_charge = this.form.total_charge
+
+                this.form.charges = (this.form.charges) ? Object.values(this.form.charges) : []
+                
             },
             clickAddPayment() {
                 this.form.payments.push({
@@ -737,6 +790,7 @@
 
                 this.clickAddPayment()
                 this.enabled_payments = true
+                this.total_global_charge = 0
 
             },
             resetForm() {
@@ -887,7 +941,75 @@
                 this.form.subtotal = _.round(total, 2)
                 this.form.total = _.round(total - this.total_discount_no_base, 2)
 
+                this.chargeGlobal()
+
                 this.setTotalDefaultPayment()
+
+            },
+            getGlobalCharge(id){
+                return _.find(this.global_charge_types, { id : id })
+            },
+            chargeGlobal(){
+
+                let base = parseFloat(this.form.total)
+
+                if (this.config.active_allowance_charge) {
+                    let percentage_allowance_charge = parseFloat(this.config.percentage_allowance_charge)
+                    this.total_global_charge = _.round(base * (percentage_allowance_charge / 100), 2)
+                }
+
+                if (this.total_global_charge == 0) {
+                    this.deleteChargeGlobal()
+                    return
+                }
+
+                let amount = parseFloat(this.total_global_charge)
+                let factor = _.round(amount / base, 5)
+                let charge = _.find(this.form.charges, {charge_type_id: '50'})
+
+                if (amount > 0 && !charge) 
+                {
+                    this.form.total_charge = _.round(amount, 2)
+                    this.form.total = _.round(this.form.total + this.form.total_charge, 2)
+                    const global_charge = this.getGlobalCharge('50')
+
+                    this.form.charges.push({
+                        charge_type_id: global_charge.id,
+                        description: global_charge.description,
+                        factor: factor,
+                        amount: amount,
+                        base: base
+                    })
+
+                } 
+                else 
+                {
+
+                    let pos = this.form.charges.indexOf(charge);
+
+                    if (pos > -1) {
+
+                        this.form.total_charge = _.round(amount, 2)
+                        this.form.total = _.round(this.form.total + this.form.total_charge, 2)
+
+                        this.form.charges[pos].base = base
+                        this.form.charges[pos].amount = amount
+                        this.form.charges[pos].factor = factor
+
+                    }
+                }
+
+            },
+            deleteChargeGlobal() {
+
+                let charge = _.find(this.form.charges, {charge_type_id: '50'})
+                let index = this.form.charges.indexOf(charge)
+
+                if (index > -1) {
+                    this.form.charges.splice(index, 1)
+                    this.form.total_charge = 0
+                }
+
             },
             async saveCashDocument(sale_note_id){
 
