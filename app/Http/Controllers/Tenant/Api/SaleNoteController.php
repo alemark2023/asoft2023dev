@@ -249,6 +249,7 @@ class SaleNoteController extends Controller
     {
         $name = [$this->sale_note->prefix, $this->sale_note->id, date('Ymd')];
         $this->sale_note->filename = join('-', $name);
+        $this->sale_note->unique_filename = $this->sale_note->filename; //campo único para evitar duplicados
         $this->sale_note->save();
     }
 

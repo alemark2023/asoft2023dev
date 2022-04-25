@@ -63,4 +63,16 @@
         {
             return array_key_exists($attr, $this->attributes);
         }
+
+                
+        /**
+         * @param  float $value
+         * @param  float $exchange_rate_sale
+         * @return float
+         */
+        public function generalConvertValueToPen($value, $exchange_rate_sale)
+        {
+            return $value * $exchange_rate_sale;
+        }
+
     }

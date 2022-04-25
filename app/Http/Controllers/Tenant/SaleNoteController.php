@@ -513,6 +513,7 @@ class SaleNoteController extends Controller
         $currency_types = CurrencyType::whereActive()->get();
         $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
+        $global_charge_types = ChargeDiscountType::whereIn('id', ['50'])->get();
         $company = Company::active();
         $payment_method_types = PaymentMethodType::all();
         $series = collect(Series::all())->transform(function($row) {
@@ -531,7 +532,7 @@ class SaleNoteController extends Controller
 
 
         return compact('customers', 'establishments','currency_types', 'discount_types', 'configuration',
-                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers');
+                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers', 'global_charge_types');
     }
 
     public function changed($id)
@@ -801,12 +802,14 @@ class SaleNoteController extends Controller
 //        $this->createPdf();
 //    }
 
-    private function setFilename(){
-
+    private function setFilename()
+    {
         $name = [$this->sale_note->series,$this->sale_note->number,date('Ymd')];
         $this->sale_note->filename = join('-', $name);
-        $this->sale_note->save();
+        
+        $this->sale_note->unique_filename = $this->sale_note->filename; //campo único para evitar duplicados
 
+        $this->sale_note->save();
     }
 
     public function toPrint($external_id, $format) {
@@ -1653,6 +1656,11 @@ class SaleNoteController extends Controller
         $this->sale_note->external_id = Str::uuid()->toString();
         $this->sale_note->state_type_id = '01' ;
         $this->sale_note->number = SaleNote::getLastNumberByModel($obj) ;
+        $this->sale_note->unique_filename = null;
+
+        $this->sale_note->changed = false;
+        $this->sale_note->document_id = null;
+
         $this->sale_note->save();
 
         foreach($obj->items as $row)

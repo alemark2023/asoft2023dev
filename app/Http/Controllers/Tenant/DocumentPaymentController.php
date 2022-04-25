@@ -35,7 +35,8 @@ class DocumentPaymentController extends Controller
     {
         return [
             'payment_method_types' => PaymentMethodType::all(),
-            'payment_destinations' => $this->getPaymentDestinations()
+            'payment_destinations' => $this->getPaymentDestinations(),
+            'permissions' => auth()->user()->getPermissionsPayment()
         ];
     }
 
