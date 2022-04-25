@@ -109,6 +109,22 @@
                             </div>
                         </div>
 
+                        
+                        <div class="col-md-8 mt-2 mb-2" v-if="configuration.enabled_global_igv_to_purchase">
+                            <div class="form-group">
+                                <el-checkbox v-model="localHasGlobalIgv"
+                                             :disabled="(form.items.length != 0 && configuration.enabled_global_igv_to_purchase)"
+                                             @change="changeHasGlobalIgv">¿La compra tiene igv?
+                                    <el-tooltip class="item"
+                                                content="Al estar la configuracion activa, sobreescribe el igv del item. Si no esta checado, el producto no tendra igv."
+                                                effect="dark"
+                                                placement="top-end">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </el-checkbox>
+                            </div>
+                        </div>
+
                         <div class="col-lg-6 col-md-6" v-if="form.has_client">
                             <div class="form-group">
                                 <label class="control-label">
@@ -444,6 +460,7 @@
         <purchase-form-item :showDialog.sync="showDialogAddItem"
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
+                           :localHasGlobalIgv="localHasGlobalIgv"
                            @add="addRow"></purchase-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -509,7 +526,9 @@
                 currency_type: {},
                 readonly_date_of_due: false,
                 configuration: {},
-                purchaseNewId: null
+                purchaseNewId: null,
+                localHasGlobalIgv: false,
+
             }
         },
         async created() {
@@ -551,6 +570,7 @@
             await this.filterCustomers()
             await this.changeHasPayment()
             await this.changeHasClient()
+            this.initGlobalIgv()
         },
         computed: { 
             creditPaymentMethod: function () {
@@ -564,7 +584,9 @@
             },
         },
         methods: {
+            changeHasGlobalIgv() { 
 
+            },
             changeHasPayment(){
 
                 if(!this.form.has_payment){
@@ -927,6 +949,12 @@
                 // this.clickAddPayment()
                 this.initInputPerson()
                 this.readonly_date_of_due = false
+
+                this.initGlobalIgv()
+
+            },
+            initGlobalIgv(){
+                this.localHasGlobalIgv = this.configuration.checked_global_igv_to_purchase
             },
             resetForm() {
                 this.initForm()
