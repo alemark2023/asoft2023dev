@@ -1342,6 +1342,9 @@ export default {
                 this.resource = 'purchase-settlements';
                 msg = 'Liquidacion de compra registrada'
             }
+            if (this.type === 'settlements') {
+                this.resource = 'purchase-settlements';
+            }
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
 

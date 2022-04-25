@@ -38,4 +38,55 @@ class PurchaseSettlementController extends Controller
         return new PurchaseSettlementCollection($records->paginate(config('tenant.items_per_page')));
     }
 
+    public function store(Request $request)
+    {
+
+        // dd($request->all());
+        try {
+        $fact = DB::connection('tenant')->transaction(function () use($request) {
+
+            $facturalo = new Facturalo();
+            $facturalo->save($request->all());
+            $facturalo->createXmlUnsigned();
+            $facturalo->signXmlUnsigned();
+            $facturalo->updateHash();
+            // $facturalo->updateQr();
+            $facturalo->createPdf();
+            $facturalo->sendEmail();
+            $facturalo->senderXmlSignedBill();
+
+            return $facturalo;
+        });
+
+        $document = $fact->getDocument();
+        $response = $fact->getResponse();
+
+        return [
+            'success' => true,
+            'data' => [
+                'id' => $purchase->id,
+                'number_full' => "{$purchase->series}-{$purchase->number}",
+            ],
+            /* 'success' => true,
+            'data' => [
+                'number' => $document->number_full,
+                'filename' => $document->filename,
+                'external_id' => $document->external_id,
+                'number_to_letter' => $document->number_to_letter,
+                'hash' => $document->hash,
+            ],
+            'links' => [
+                'xml' => $document->download_external_xml,
+                'pdf' => $document->download_external_pdf,
+                'cdr' => ($response['sent'])?$document->download_external_cdr:'',
+            ],
+            'response' => ($response['sent'])?array_except($response, 'sent'):[] */
+        ];
+        } catch (Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
 }
