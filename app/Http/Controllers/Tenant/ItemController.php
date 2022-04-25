@@ -1223,11 +1223,14 @@ class ItemController extends Controller
 
         $stock = $item_warehouse->stock;
 
+        $width = ($format == 1) ? 80 : 104.1;
+        $height = ($format == 1) ? 26 : 24;
+
         $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
-                    104.1,
-                    24
+                    $width,
+                    $height
                     ],
                 'margin_top' => 2,
                 'margin_right' => 2,
