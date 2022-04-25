@@ -34,7 +34,8 @@ class InventoryConfigurationController extends Controller
         $id = $request->input('id');
         $inventory_configuration = InventoryConfiguration::find($id);
         $inventory_configuration->fill($request->all());
-
+        
+        // migracion desarrollo sin terminar #1401
         if($request->generate_internal_id == true) {
             $item = Item::first();
             if($item) {
@@ -45,10 +46,9 @@ class InventoryConfigurationController extends Controller
                 ];
             }
         }
-
-
-        $inventory_configuration->save();
         
+        $inventory_configuration->save();
+
         return [
             'success' => true,
             'message' => 'Configuración actualizada'

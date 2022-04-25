@@ -326,6 +326,7 @@ class ItemController extends Controller
             $item_unit_type->price_default = $value['price_default'];
             $item_unit_type->save();
 
+            // migracion desarrollo sin terminar #1401
             if(!$value['barcode']) {
                 $item_unit_type->barcode = $item_unit_type->id.$item_unit_type->unit_type_id.$item_unit_type->quantity_unit;
                 $item_unit_type->save();
@@ -545,6 +546,7 @@ class ItemController extends Controller
 
         $item->update();
 
+        // migracion desarrollo sin terminar #1401
         $inventory_configuration = InventoryConfiguration::firstOrFail();
 
         if($inventory_configuration->generate_internal_id == 1) {
@@ -1244,11 +1246,14 @@ class ItemController extends Controller
 
         $stock = $item_warehouse->stock;
 
+        $width = ($format == 1) ? 80 : 104.1;
+        $height = ($format == 1) ? 26 : 24;
+
         $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
-                    104.1,
-                    24
+                    $width,
+                    $height
                     ],
                 'margin_top' => 2,
                 'margin_right' => 2,

@@ -15,6 +15,7 @@
                             </div>
                         </div>
                         <div class="col-md-12">
+                            <!-- migracion desarrollo sin terminar #1401 -->
                             <label class="control-label">Generar automaticamente codigo interno del producto</label>
                             <div class="form-group" :class="{'has-danger': errors.generate_internal_id}">
                                 <el-switch v-model="form.generate_internal_id" active-text="Si" inactive-text="No" @change="submit"></el-switch>
@@ -27,7 +28,6 @@
         </div>
     </div>
 </template>
-
 
 <script>
     export default {
