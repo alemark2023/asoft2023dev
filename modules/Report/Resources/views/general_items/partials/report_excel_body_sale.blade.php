@@ -6,8 +6,13 @@
     use App\Models\Tenant\SaleNote;
 
     $data = \Modules\Report\Http\Resources\GeneralItemCollection::getDocument($value);
-    $observation = isset($data['additional_information'][0]) ? $data['additional_information'][0] : '';
-
+    if ($document_type_id == '80') {
+        $observation = $data['observation']?$data['observation']:'';
+    } else {
+        $observation = $data['additional_information']?$data['additional_information'][0]:'';
+    }
+    
+    
     $purchseOrder = $document->purchase_order;
 $stablihsment = $stablihsment ?? [
         'district' => '',
@@ -116,7 +121,13 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
 <tr>
     <td class="celda">{{ $loop->iteration }}</td>
     <td class="celda">{{ $document->date_of_issue->format('Y-m-d') }}</td>
-    <td class="celda">{{ $user}}</td>
+    <td class="celda">{{-- {{ $user}} --}}
+        @if($type==='sale')
+            {{ $document->seller_id == null ? $document->user->name : $document->seller->name }}
+        @else
+            {{$user}}
+        @endif
+    </td>
     @if($isSaleNote)
         <td class="celda">{{ $stablihsment['district'] }}</td>
         <td class="celda">{{ $stablihsment['department'] }}</td>

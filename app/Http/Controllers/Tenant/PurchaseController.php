@@ -380,9 +380,13 @@
                         if (array_key_exists('item', $row)) {
                             if (isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true) {
 
+                                // factor de lista de precios
+                                $presentation_quantity = (isset($p_item->item->presentation->quantity_unit)) ? $p_item->item->presentation->quantity_unit : 1;
+
                                 ItemLotsGroup::create([
                                     'code' => $row['lot_code'],
-                                    'quantity' => $row['quantity'],
+                                    'quantity' => $row['quantity'] * $presentation_quantity,
+                                    // 'quantity' => $row['quantity'],
                                     'date_of_due' => $row['date_of_due'],
                                     'item_id' => $row['item_id']
                                 ]);
@@ -598,9 +602,13 @@
                     if (array_key_exists('item', $row)) {
                         if (isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true) {
 
+                            // factor de lista de precios
+                            $presentation_quantity = (isset($p_item->item->presentation->quantity_unit)) ? $p_item->item->presentation->quantity_unit : 1;
+
                             ItemLotsGroup::create([
                                 'code' => $row['lot_code'],
-                                'quantity' => $row['quantity'],
+                                'quantity' => $row['quantity'] * $presentation_quantity,
+                                // 'quantity' => $row['quantity'],
                                 'date_of_due' => $row['date_of_due'],
                                 'item_id' => $row['item_id']
                             ]);
