@@ -125,34 +125,24 @@ class InventoryKardexServiceProvider extends ServiceProvider
             /*
              * Calculando el stock por lote por factor según la unidad
              */
-            if (isset($document_item->item->IdLoteSelected)) {
-                if ($document_item->item->IdLoteSelected != null) {
+            if (isset($document_item->item->IdLoteSelected)) 
+            {
+                if ($document_item->item->IdLoteSelected != null) 
+                {
+                    if(is_array($document_item->item->IdLoteSelected)) 
+                    {
+                        // presentacion - factor de lista de precios
+                        $quantity_unit = isset($document_item->item->presentation->quantity_unit) ? $document_item->item->presentation->quantity_unit : 1;
+                        
+                        $lotesSelecteds = $document_item->item->IdLoteSelected;
+                        $document_factor = ($document->document_type_id === '07') ? 1 : -1;
 
-                    if(is_array($document_item->item->IdLoteSelected)) {
-
-                        try {
-                            $quantity_unit = $document_item->item->presentation->quantity_unit;
-                        } catch (Exception $e) {
-                            $quantity_unit = 1;
-                        }
-
-                            $lotesSelecteds = $document_item->item->IdLoteSelected;
-
-                            foreach ($lotesSelecteds as $item) {
-                                $lot = ItemLotsGroup::query()->find($item->id);
-                                $lot->quantity = $lot->quantity - $item->compromise_quantity;
-                                $lot->save();
-                            }
-
-                        if ($document->document_type_id === '07') {
-
-                            $lotesSelecteds = $document_item->item->IdLoteSelected;
-
-                            foreach ($lotesSelecteds as $item) {
-                                $lot = ItemLotsGroup::query()->find($item->id);
-                                $lot->quantity = $lot->quantity + $item->compromise_quantity;
-                                $lot->save();
-                            }
+                        foreach ($lotesSelecteds as $item) 
+                        {
+                            $lot = ItemLotsGroup::query()->find($item->id);
+                            $lot->quantity = $lot->quantity + (($quantity_unit * $item->compromise_quantity) * $document_factor);
+                            $this->validateStockLotGroup($lot, $document_item);
+                            $lot->save();
                         }
 
                     }
