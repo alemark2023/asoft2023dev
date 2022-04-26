@@ -647,7 +647,6 @@ export default {
             readonly_total: 0,
             itemLastPrice: null,
             search_item_by_barcode_presentation: false,
-            input_search_barcode: false,
             //item_unit_type: {}
         }
     },
@@ -856,7 +855,6 @@ export default {
 
             if (input.length > 2) 
             {
-                this.input_search_barcode = input
                 this.loading_search = true
                 const params = {
                     'input': input,
