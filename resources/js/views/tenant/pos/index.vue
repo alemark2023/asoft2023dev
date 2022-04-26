@@ -6,20 +6,30 @@
                 :key-code="112"
                 @success="handleFn112"
             />
-         
-            <div class="col-md-4" style="padding-left: 0.5%;">
-                <el-switch
+            <!-- <Keypress key-event="keyup" :key-code="113" @success="handleFn113" /> -->
+
+            <!-- <h2 class="text-sm">POS</h2>
+      <div class="right-wrapper pull-right">
+        <h2 class="text-sm pr-5">T/C 3.321</h2>
+        <h2 class="text-sm">{{user.name}}</h2>
+      </div> -->
+            <div class="col-md-5">
+                <!-- <h2 class="text-sm">POS</h2> -->
+                <h2>
+                    <el-switch
                         v-model="search_item_by_barcode"
                         active-text="Buscar con escáner de código de barras"
                         @change="changeSearchItemBarcode"
-                    ></el-switch>
-                    <el-switch
-                        v-model="search_item_by_unit_types_barcode"
-                        active-text="Buscar con escáner de código de barras"
-                        @change="changeSearchItemBarcode"
-                    ></el-switch>
+                    >
+                    </el-switch>
+
+                    <template v-if="search_item_by_barcode">
+                        <el-checkbox class="ml-2 mt-1" v-model="search_item_by_barcode_presentation">Por presentación</el-checkbox>
+                    </template>
+
+                </h2>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <h2>
                     <el-tooltip
                         class="item"
@@ -896,6 +906,7 @@ export default {
             showDialogItemUnitTypes: false,
             history_item_id: null,
             search_item_by_barcode: false,
+            search_item_by_barcode_presentation: false,
             is_print: true,
             warehousesDetail: [],
             unittypeDetail: [],
@@ -1927,7 +1938,7 @@ export default {
             // console.log("in:" + this.input_item)
             if (this.input_item.length > 1) {
                 this.loading = true;
-                let parameters = `input_item=${this.input_item}`;
+                let parameters = `input_item=${this.input_item}&search_item_by_barcode_presentation=${this.search_item_by_barcode_presentation}`;
 
                 await this.$http
                     .get(`/${this.resource}/search_items?${parameters}`)
@@ -1967,11 +1978,33 @@ export default {
             this.all_items =this.items;
         },
         enabledSearchItemsBarcode() {
-            if (this.search_item_by_barcode) {
-                if (this.items.length == 1) {
-                    // console.log(this.items)
-                    this.clickAddItem(this.items[0], 0);
-                    this.filterItems();
+
+            if (this.search_item_by_barcode) 
+            {
+                //busqueda por presentacion
+                if(this.search_item_by_barcode_presentation)
+                {
+                    if (this.items.length == 1) 
+                    {
+                        if(this.items[0].unit_type.length === 1 && this.items[0].search_item_by_barcode_presentation) 
+                        {
+                            this.selectItemUnitType(this.items[0].unit_type[0])
+                        }
+                        else
+                        {
+                            this.items = []
+                            this.filterItems()
+                        }
+                    }
+                }
+                //busqueda comun
+                else
+                {
+                    if (this.items.length == 1) {
+                        // console.log(this.items)
+                        this.clickAddItem(this.items[0], 0);
+                        this.filterItems();
+                    }
                 }
 
                 this.cleanInput();
