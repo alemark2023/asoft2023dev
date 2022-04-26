@@ -76,7 +76,7 @@ class PosController extends Controller
                             })
                             ->whereWarehouse();
                             
-        if($search_item_by_barcode_presentation) $items_query->filterItemUnitTypeBarcode($request->input_item);
+        if($search_item_by_barcode_presentation) $items_query->orFilterItemUnitTypeBarcode($request->input_item);
 
         $items =  $items_query->whereIsActive()->get()->transform(function($row) use($configuration, $search_item_by_barcode_presentation, $request){
 

@@ -2144,6 +2144,9 @@ class Item extends ModelTenant
      * 
      * Obtener presentaciones
      *
+     * Usado en: 
+     * PosController
+     * 
      * @param  bool $search_item_by_barcode_presentation
      * @param  string $barcode_presentation
      * @return array
@@ -2153,10 +2156,29 @@ class Item extends ModelTenant
         return $search_item_by_barcode_presentation ? $this->item_unit_types()->where('barcode', $barcode_presentation)->get() : $this->item_unit_types;
     }
 
+    /**
+     * 
+     * Filtrar por codigo de barra de presentacion
+     * 
+     * Usado en: 
+     * PosController
+     * 
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeOrFilterItemUnitTypeBarcode($query, $barcode)
+    {
+        return $query->orWhereHas('item_unit_types', function($query) use($barcode) {
+            $query->where('barcode', $barcode);
+        });
+    }
 
     /**
      * 
      * Filtrar por codigo de barra de presentacion
+     * 
+     * Usado en: 
+     * SearchItemController
      * 
      * @param Builder $query
      * @return Builder

@@ -24,7 +24,7 @@
                     </el-switch>
 
                     <template v-if="search_item_by_barcode">
-                        <el-checkbox class="ml-2 mt-1" v-model="search_item_by_barcode_presentation">(Por presentación)</el-checkbox>
+                        <el-checkbox class="ml-2 mt-1" v-model="search_item_by_barcode_presentation">Por presentación</el-checkbox>
                     </template>
 
                 </h2>
@@ -2077,8 +2077,6 @@ export default {
                     {
                         if(this.items[0].unit_type.length === 1 && this.items[0].search_item_by_barcode_presentation) 
                         {
-                            // this.clickAddItem(this.items[0], 0);
-                            // console.log("ent")
                             this.selectItemUnitType(this.items[0].unit_type[0])
                         }
                         else
@@ -2086,7 +2084,6 @@ export default {
                             this.items = []
                             this.filterItems()
                         }
-                        
                     }
                 }
                 //busqueda comun

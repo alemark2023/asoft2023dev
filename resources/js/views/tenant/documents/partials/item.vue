@@ -125,7 +125,7 @@
                                 </el-checkbox>
                                 <br>
                                 <template v-if="search_item_by_barcode">
-                                    <el-checkbox v-model="search_item_by_barcode_presentation">(Por presentación)</el-checkbox>
+                                    <el-checkbox v-model="search_item_by_barcode_presentation">Por presentación</el-checkbox>
                                     <br>
                                 </template>
                             </template>
@@ -893,17 +893,13 @@ export default {
                     {
                         const item_unit_type = _.find(this.items[0].item_unit_types, { barcode : input})
     
-                        if(item_unit_type)
+                        if(!_.isEmpty(item_unit_type))
                         {
                             this.form.item_id = this.items[0].id;
                             this.$refs.selectBarcode.blur();
                             this.changeItem()
                             this.selectedPrice(item_unit_type)
                         }
-                        // console.log(this.items[0])
-                        // buscar codigo de barra en unit types
-    
-                        // selectedPrice
                     }
                 }
                 //busqueda comun
