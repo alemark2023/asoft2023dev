@@ -756,9 +756,6 @@ export default {
         if (this.type === 'purchase') {
             this.titleDialog = 'Nueva Compra'
         }
-        if (this.type === 'settlements') {
-            this.titleDialog = 'Nueva Liquidacion de Compra'
-        }
         this.loadConfiguration()
         this.loadHasGlobalIgv()
         this.loadEstablishment()

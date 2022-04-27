@@ -59,7 +59,7 @@
                                   placeholder="Buscar"
                                   @change="searchBarCode"
                         ></el-input>
-                        <el-tooltip v-if="this.type === 'settlements'"
+                        <el-tooltip
                             slot="append"
                             class="item"
                             content="Ver Stock del Producto"
@@ -71,7 +71,7 @@
                                 <i class="fa fa-search"></i>
                             </el-button>
                         </el-tooltip>
-                        <el-tooltip v-if="this.type === 'settlements'"
+                        <el-tooltip
                             slot="append"
                             class="item"
                             content="Historial de Ventas"
@@ -86,7 +86,7 @@
                         </div>
                         <small v-if="errors.item_id"
                                class="form-control-feedback"
-                               v-text="errors.item_id[0]"></small>
+                        v-text="errors.item_id[0]"></small>
                     </div>
                 </div>
             </div>

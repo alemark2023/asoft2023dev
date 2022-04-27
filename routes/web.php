@@ -669,6 +669,8 @@ if ($hostname) {
             Route::get('purchase-settlements/columns', 'Tenant\PurchaseSettlementController@columns');
             Route::get('purchase-settlements/records', 'Tenant\PurchaseSettlementController@records');
             Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store');
+            Route::get('purchase-settlements/tables/{type}', 'Tenant\PurchaseSettlementController@tables');
+            Route::get('purchase-settlements/table/{table}', 'Tenant\PurchaseSettlementController@table');
 
             //Almacen de columnas por usuario
             Route::post('validate_columns','Tenant\SettingController@getColumnsToDatatable');
