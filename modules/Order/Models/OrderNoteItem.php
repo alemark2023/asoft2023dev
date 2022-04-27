@@ -1029,4 +1029,27 @@
         {
             return $this->name_product_pdf;
         }
+        
+        /**
+         * Obtener lotes vendidos
+         *
+         * @return string
+         */
+        public function getSaleLotGroupCodeDescription()
+        {
+            if(isset($this->item->lots_group))
+            {
+                if(is_array($this->item->lots_group))
+                {
+                    $lots_group = collect($this->item->lots_group)->where('compromise_quantity', '>', 0)->pluck('code')->toArray();
+
+                    return implode('/', $lots_group);
+                }
+            }
+
+            return null;
+        }
+
+
+
     }
