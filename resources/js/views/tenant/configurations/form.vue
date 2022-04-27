@@ -786,6 +786,50 @@
                                 </div>
                             </div>
 
+                            <template v-if="typeUser != 'integrator'">
+                                <div class="col-md-6 mt-4">
+                                    <label class="control-label">Restringir envío de comunicación de baja (RA)
+                                        <el-tooltip
+                                            class="item"
+                                            content="Se validará los días de plazo de envío para la anulación del documento - Disponible para anulaciones de Facturas y Notas relacionadas"
+                                            effect="dark"
+                                            placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.restrict_voided_send}"
+                                            class="form-group">
+                                        <el-switch v-model="form.restrict_voided_send"
+                                                    active-text="Si"
+                                                    inactive-text="No"
+                                                    @change="submit"></el-switch>
+                                        <small v-if="errors.restrict_voided_send"
+                                                class="form-control-feedback"
+                                                v-text="errors.restrict_voided_send[0]"></small>
+                                    </div>
+                                </div>
+
+                                <template v-if="form.restrict_voided_send" >
+                                    <div class="col-md-4 mt-4">
+                                        <label class="control-label">
+                                            Días de plazo de envío de la comunicación de baja
+                                        </label>
+                                        <div :class="{'has-danger': errors.shipping_time_days_voided}"
+                                                class="form-group">
+                                            <el-input-number v-model="form.shipping_time_days_voided"
+                                                                :min="1"
+                                                                :precision="0"
+                                                                :step="1"
+                                                                @change="submit"></el-input-number>
+                                            <small v-if="errors.shipping_time_days_voided"
+                                                    class="form-control-feedback"
+                                                    v-text="errors.shipping_time_days_voided[0]"></small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2"></div>
+                                </template>
+                            </template>
+
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">Asignar precio unitario a los productos desde registro relacionado
                                     <el-tooltip
@@ -1534,6 +1578,8 @@ export default {
                 checked_update_purchase_price: false,
                 set_global_purchase_currency_items: false,
                 set_unit_price_dispatch_related_record: false,
+                restrict_voided_send: false,
+                shipping_time_days_voided: 0,
 
             };
         },
