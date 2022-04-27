@@ -1186,4 +1186,22 @@
             ]);
         }
 
+                
+        /**
+         * Obtener diferencia de días en base a la fecha de emisión
+         * 
+         * Usado en:
+         * VoidedController - Validación de plazo de envío
+         *
+         * @param  Carbon $value
+         * @return int
+         */
+        public function getDiffInDaysDateOfIssue($value = null)
+        {
+            $date = $value ?? Carbon::now();
+
+            return $this->date_of_issue->diffInDays($date);
+        }
+        
+
     }
