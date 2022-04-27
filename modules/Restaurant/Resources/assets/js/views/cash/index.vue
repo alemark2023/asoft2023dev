@@ -21,10 +21,9 @@
                 <h3 class="my-0">Listado de cajas</h3>
             </div>
             <div class="card-body">
-                <data-table :resource="resource">
+                <data-table :resource="resource" :reference="'restaurant'">
                     <tr slot="heading">
                         <th>#</th>
-                        <th># Referencia</th>
                         <th>Vendedor</th>
                         <th class="text-center">Apertura</th>
                         <th class="text-center">Cierre</th>
@@ -37,7 +36,6 @@
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
-                        <td>{{ row.reference_number }}</td>
                         <td>{{ row.user }}</td>
                         <td class="text-center">{{ row.opening }}</td>
                         <td class="text-center">{{ row.closed }}</td>
@@ -169,9 +167,6 @@
                         })
                     .catch(action => {
                     });
-
-
-
             },
             createRegister(instance, done){
 

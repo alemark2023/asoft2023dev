@@ -202,6 +202,11 @@ class CashController extends Controller
                     
                 }
             }
+            // cotizacion
+            else if($cash_document->quotation)
+            {
+                $final_balance += ($cash_document->quotation->applyQuotationToCash()) ? $cash_document->quotation->getTransformTotal() : 0;
+            }
 
             // else if($cash_document->purchase){
             //     $final_balance -= $cash_document->purchase->total;

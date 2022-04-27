@@ -39,8 +39,11 @@ class UserResource extends JsonResource {
             'locked'           => (bool)$this->locked,
             'document_id'      => $this->document_id,
             'permission_edit_cpe' => $this->permission_edit_cpe,
+            'permission_override_cpe' => $this->permission_override_cpe,
             'recreate_documents' => $this->recreate_documents,
             'series_id'        => ($this->series_id == 0) ? null : $this->series_id,
+            'create_payment' => $this->create_payment,
+            'delete_payment' => $this->delete_payment,
         ];
     }
 }

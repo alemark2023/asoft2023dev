@@ -133,6 +133,7 @@
                             </div>
 
                             <div class="col-lg-8 mt-2" >
+                                <label>Pagos</label>
                                 <table>
                                     <thead>
                                         <tr width="100%">
@@ -244,8 +245,9 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
-                                                <th class="font-weight-bold">Descripción</th>
+                                                <th width="5%">#</th>
+                                                <th class="font-weight-bold"
+                                                    width="30%">Descripción</th>
                                                 <th class="text-center font-weight-bold">Unidad</th>
                                                 <th class="text-right font-weight-bold">Cantidad</th>
                                                 <th class="text-right font-weight-bold">Valor Unitario</th>
@@ -253,7 +255,7 @@
                                                 <th class="text-right font-weight-bold">Subtotal</th>
                                                 <!--<th class="text-right font-weight-bold">Cargo</th>-->
                                                 <th class="text-right font-weight-bold">Total</th>
-                                                <th></th>
+                                                <th width="8%"></th>
                                             </tr>
                                         </thead>
                                         <tbody v-if="form.items.length > 0">
@@ -471,7 +473,8 @@
             },
             selectDestinationSale() {
 
-                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                // if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0 && this.form.payments.length > 0) {
                     let cash = _.find(this.payment_destinations, {id : 'cash'})
                     this.form.payments[0].payment_destination_id = (cash) ? cash.id : this.payment_destinations[0].id
                 }
@@ -640,7 +643,8 @@
 
                 this.total_discount_no_base = 0
 
-                this.clickAddPayment()
+                // no se agrega pago por defecto para controlar flujo caja pos
+                // this.clickAddPayment()
 
             },
             resetForm() {
@@ -817,11 +821,14 @@
                 }
 
                 this.loading_submit = true
+
                 await this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
+
                         this.resetForm();
                         this.quotationNewId = response.data.data.id;
                         this.saveCashDocument(this.quotationNewId)
+
                         if(this.saleOpportunityId){
                             this.$message.success(`La cotización ${response.data.data.number_full} fue generada`)
                             this.close()

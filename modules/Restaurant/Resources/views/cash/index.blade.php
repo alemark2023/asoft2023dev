@@ -2,6 +2,6 @@
 
 @section('content')
 
-    <tenant-restautant-cash-index :type-user="{{json_encode(Auth::user()->type)}}"  ></tenant-restautant-cash-index>
+    <tenant-restaurant-cash-index :type-user="{{json_encode(Auth::user()->type)}}"  ></tenant-restaurant-cash-index>
 
 @endsection

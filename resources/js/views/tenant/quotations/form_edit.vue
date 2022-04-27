@@ -118,9 +118,19 @@
                                 </div>
                             </div>
 
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="form-group col-6 col-md-2">
+                                        <label>Vendedor</label>
+                                        <el-select v-model="form.seller_id" clearable>
+                                            <el-option v-for="sel in sellers" :key="sel.id" :value="sel.id" :label="sel.name">{{ sel.name }}</el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="col-lg-8 mt-2" >
-
+                                <label>Pagos</label>
                                 <table>
                                     <thead>
                                         <tr width="100%">
@@ -232,21 +242,22 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
-                                                <th class="font-weight-bold">Descripción</th>
+                                                <th width="5%">#</th>
+                                                <th class="font-weight-bold"
+                                                    width="30%">Descripción</th>
                                                 <th class="text-center font-weight-bold">Unidad</th>
                                                 <th class="text-right font-weight-bold">Cantidad</th>
                                                 <th class="text-right font-weight-bold">Valor Unitario</th>
                                                 <th class="text-right font-weight-bold">Precio Unitario</th>
                                                 <th class="text-right font-weight-bold">Subtotal</th>
                                                 <th class="text-right font-weight-bold">Total</th>
-                                                <th></th>
+                                                <th width="8%"></th>
                                             </tr>
                                         </thead>
                                         <tbody v-if="form.items.length > 0">
                                             <tr v-for="(row, index) in form.items" :key="index">
                                                 <td>{{index + 1}}</td>
-                                                <td>{{row.item.description}} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
+                                                <td>{{setDescriptionOfItem (row.item)}} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
                                                 <td class="text-right">{{row.quantity}}</td>
                                                 <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
@@ -301,7 +312,9 @@
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
                            :recordItem="recordItem"
+                           :configuration="config"
                              :typeUser="typeUser"
+                             :customer-id="form.customer_id"
                              @add="addRow"></quotation-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -327,8 +340,9 @@ import QuotationFormItem from './partials/item.vue'
 import PersonForm from '../persons/form.vue'
 import QuotationOptions from '../quotations/partials/options.vue'
 import {exchangeRate, functions} from '../../../mixins/functions'
-import {calculateRowItem, sumAmountDiscountsNoBaseByItem} from '../../../helpers/functions'
+import {calculateRowItem, showNamePdfOfDescription, sumAmountDiscountsNoBaseByItem} from '../../../helpers/functions'
 import Logo from '../companies/logo.vue'
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
         components: {QuotationFormItem, PersonForm, QuotationOptions, Logo, TermsCondition},
@@ -341,6 +355,9 @@ export default {
             'typeUser': {
                 required: true,
             },
+            'configuration':{
+                required: true,
+            }
         },
         mixins: [functions, exchangeRate],
         data() {
@@ -369,13 +386,16 @@ export default {
                 payment_method_types: [],
                 activePanel: 0,
                 payment_destinations:  [],
-                configuration: {},
+                /* configuration: {}, */
                 loading_search:false,
                 recordItem: null,
+                sellers: [],
                 total_discount_no_base: 0,
             }
         },
         async created() {
+            this.loadConfiguration()
+            this.$store.commit('setConfiguration', this.configuration)
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -389,7 +409,8 @@ export default {
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                     this.payment_method_types = response.data.payment_method_types
                     this.payment_destinations = response.data.payment_destinations
-                    this.configuration = response.data.configuration
+                    /* this.configuration = response.data.configuration */
+                    this.sellers = response.data.sellers
 
                     this.changeEstablishment()
                     this.changeDateOfIssue()
@@ -404,11 +425,19 @@ export default {
                 this.reloadDataCustomers(customer_id)
             })
 
-
+            
 
 
         },
+        computed: {
+            ...mapState([
+                'config',
+            ]),
+        },
         methods: {
+            ...mapActions([
+                'loadConfiguration',
+            ]),
             clickAddItem() {
                 this.recordItem = null;
                 this.showDialogAddItem = true;
@@ -546,6 +575,7 @@ export default {
                     this.form.shipping_address = dato.shipping_address
                     this.form.account_number = dato.account_number
                     this.form.terms_condition = dato.terms_condition
+                    this.form.seller_id = dato.seller_id
                     this.form.active_terms_condition = dato.terms_condition ? true:false
                     this.form.items = this.onPrepareItems(dato.items)
                     // this.form.items = dato.items
@@ -554,6 +584,7 @@ export default {
                     this.changeCustomer()
                     this.form.customer_address_id = dato.customer.address_id
                     this.calculateTotal()
+                    this.changeCurrencyType()
                     //console.log(response.data)
                 })
 
@@ -635,6 +666,7 @@ export default {
                     },
                     contact:null,
                     phone:null,
+                    seller_id: null
                 }
 
                 this.total_discount_no_base = 0
@@ -849,6 +881,9 @@ export default {
                     this.customers = response.data.customers
                     this.form.customer_id = customer_id
                 })
+            },
+            setDescriptionOfItem(item){
+                return showNamePdfOfDescription(item,this.config.show_pdf_name)
             },
         }
     }

@@ -19,7 +19,7 @@
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item v-for="(column, index) in columns" :key="index">
-                            <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                            <el-checkbox @change="getColumnsToShow(1)" v-model="column.visible">{{ column.title }}</el-checkbox>
                         </el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -152,7 +152,7 @@
                                 data-toggle="tooltip"
                                 data-placement="top"
                                 title="Anular"
-                                v-if="row.state_type_id != '11'"
+                                v-if="userPermissionOverrideCpe&&row.state_type_id != '11'"
                                 type="button"
                                 class="dropdown-item"
                              @click.prevent="clickVoided(row.id)">
@@ -282,6 +282,7 @@
         props: [
             'soapCompany',
             'typeUser',
+            'userPermissionOverrideCpe',
             'configuration'
         ],
         mixins: [deletable],
@@ -372,6 +373,7 @@
         created() {
             this.loadConfiguration()
             this.$store.commit('setConfiguration', this.configuration)
+            this.getColumnsToShow();
         },
         filters:{
             period(name)
@@ -397,6 +399,25 @@
             ...mapActions([
                 'loadConfiguration',
             ]),
+            getColumnsToShow(updated){
+
+                this.$http.post('/validate_columns',{
+                    columns : this.columns,
+                    report : 'sale_notes_index', // Nombre del reporte.
+                    updated : (updated !== undefined),
+                })
+                    .then((response)=>{
+                        if(updated === undefined){
+                            let currentCols = response.data.columns;
+                            if(currentCols !== undefined) {
+                                this.columns = currentCols
+                            }
+                        }
+                    })
+                    .catch((error)=>{
+                        console.error(error)
+                    })
+            },
             duplicate(id){
                 this.$http.post(`${this.resource}/duplicate`, {id})
                     .then(response => {

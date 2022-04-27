@@ -13,17 +13,23 @@
         <h2 class="text-sm pr-5">T/C 3.321</h2>
         <h2 class="text-sm">{{user.name}}</h2>
       </div> -->
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <!-- <h2 class="text-sm">POS</h2> -->
                 <h2>
                     <el-switch
                         v-model="search_item_by_barcode"
                         active-text="Buscar con escáner de código de barras"
                         @change="changeSearchItemBarcode"
-                    ></el-switch>
+                    >
+                    </el-switch>
+
+                    <template v-if="search_item_by_barcode">
+                        <el-checkbox class="ml-2 mt-1" v-model="search_item_by_barcode_presentation">Por presentación</el-checkbox>
+                    </template>
+
                 </h2>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <h2>
                     <el-tooltip
                         class="item"
@@ -224,18 +230,10 @@
                                             </small>
                                         </template>
 
-                                        <!-- <el-popover v-if="item.warehouses" placement="right" width="280"  trigger="hover">
-                      <el-table  :data="item.warehouses">
-                        <el-table-column width="150" property="warehouse_description" label="Ubicación"></el-table-column>
-                        <el-table-column width="100" property="stock" label="Stock"></el-table-column>
-                      </el-table>
-                      <el-button slot="reference"><i class="fa fa-search"></i></el-button>
-                    </el-popover> -->
                                     </p>
                                 </div>
                                 <div class="card-footer pointer text-center bg-primary">
-                                    <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
-                  <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button> -->
+                                   
                                     <template v-if="!item.edit_unit_price">
                                         <h5
                                             class="font-weight-semibold text-right text-white"
@@ -287,35 +285,6 @@
                                     class=" card-footer  bg-primary btn-group flex-wrap"
                                     style="width:100% !important; padding:0 !important; "
                                 >
-                                    <!-- <el-popover v-if="item.warehouses" placement="right" width="280"  trigger="hover">
-                    <el-table  :data="item.warehouses">
-                      <el-table-column width="150" property="warehouse_description" label="Ubicación"></el-table-column>
-                      <el-table-column width="100" property="stock" label="Stock"></el-table-column>
-                    </el-table>
-                    <button type="button" style="width:100% !important;" slot="reference" class="btn btn-xs btn-default " @click="clickHistorySales(item.item_id)"><i class="fa fa-search"></i></button>
-                  </el-popover> -->
-                                    <!--<el-tooltip class="item" effect="dark" content="Visualizar stock" placement="bottom-end">
-                    <button type="button" style="width:25% !important;"   class="btn btn-xs btn-primary-pos" @click="clickWarehouseDetail(item)">
-                      <i class="fa fa-search"></i>
-                    </button>
-                  </el-tooltip>
-
-                  <el-tooltip class="item" effect="dark" content="Visualizar historial de ventas del producto (precio venta) y cliente" placement="bottom-end">
-                    <button type="button" style="width:25% !important;"   class="btn btn-xs btn-primary-pos" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
-                  </el-tooltip>
-
-                  <el-tooltip class="item" effect="dark" content="Visualizar historial de compras del producto (precio compra)" placement="bottom-end">
-                    <button type="button" style="width:25% !important;"  class="btn btn-xs btn-primary-pos" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button>
-                  </el-tooltip>
-
-                  <el-popover
-                    placement="top-start"
-                    title="Title"
-                    width="400"
-                    trigger="hover"
-                    content="this is content, this is content, this is content">
-                    <el-button slot="reference">Hov</el-button>
-                </el-popover>-->
 
                                     <el-row style="width:100%">
                                         <el-col :span="6">
@@ -592,26 +561,10 @@
                                             <el-input v-model="item.item.aux_quantity"
                                                       @input="clickAddItem(item, index, true)"
                                                       @keyup.enter.native="keyupEnterQuantity"></el-input>
-                                            <!-- <el-input
-                                                v-model="item.item.aux_quantity"
-                                                :readonly="
-                                                    item.item.calculate_quantity
-                                                "
-                                                class
-                                                @input="
-                                                    clickAddItem(
-                                                        item,
-                                                        index,
-                                                        true
-                                                    )
-                                                "
-                                                @keyup.enter.native="
-                                                    keyupEnterQuantity
-                                                "
-                                            ></el-input> -->
-                                            <!-- <el-input-number v-model="item.item.aux_quantity" @change="clickAddItem(item,index,true)" :min="1" :max="10"></el-input-number> -->
+                                           
                                         </td>
-                                        <td class="font-weight-semibold">
+                                        <td
+                                        class="font-weight-semibold">
                                             <p class="item-description">
                                                 {{ item.item.description }}
                                             </p>
@@ -620,18 +573,6 @@
                                             </small>
                                             <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
                                         </td>
-                                        <!-- <td>
-                      <p class="font-weight-semibold m-0 text-center">{{currency_type.symbol}}</p>
-                    </td>
-                    <td width="30%">
-                      <p class="font-weight-semibold m-0 text-center">
-                        <el-input
-                          v-model="item.item.unit_price"
-                          @blur="blurCalculateQuantity2(index)"
-                        >
-                        </el-input>
-                      </p>
-                    </td> -->
 
                                         <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label font-weight-semibold">
 <!--                                            <p-->
@@ -649,13 +590,12 @@
                                                     @input="calculateQuantity(index)"
                                                     @blur="blurCalculateQuantity(index)"
                                                     :readonly="!item.item.calculate_quantity">
-                                                    <!--                                                     <template slot="prepend">{{ currency_type.symbol }}</template>-->
+                                                   
                                                 </el-input>
                                             </template>
                                             <template v-else>
                                                 {{ item.total }}
                                             </template>
-<!--                                            </p>-->
                                         </td>
                                         <td class="text-right" style="width: 36px; padding-left: 0; padding-right: 0; vertical-align: top">
                                             <a class="btn btn-sm btn-default" @click="clickDeleteItem(index)">
@@ -765,40 +705,6 @@
                             </table>
                         </div>
 
-                        <!-- <div class="col-12 text-right px-0" v-if="form.total_taxed > 0">
-              <h4 class="font-weight-semibold  m-0">
-                <span class="font-weight-semibold">OP.GRAVADA: </span>
-                <span class="text-blue">{{currency_type.symbol}} {{ form.total_taxed }}</span>
-              </h4>
-            </div>
-
-            <div class="col-12 text-right px-0" v-if="form.total_free > 0">
-              <h4 class="font-weight-semibold  m-0">
-                <span class="font-weight-semibold">OP.GRATUITAS: </span>
-                <span class="text-blue">{{currency_type.symbol}} {{ form.total_free }}</span>
-              </h4>
-            </div>
-
-            <div class="col-12 text-right px-0" v-if="form.total_unaffected > 0">
-              <h4 class="font-weight-semibold  m-0">
-                <span class="font-weight-semibold">OP.INAFECTAS: </span>
-                <span class="text-blue">{{currency_type.symbol}} {{ form.total_unaffected }}</span>
-              </h4>
-            </div>
-
-            <div class="col-12 text-right px-0" v-if="form.total_exonerated > 0">
-              <h4 class="font-weight-semibold  m-0">
-                <span class="font-weight-semibold">OP.EXONERADAS: </span>
-                <span class="text-blue">{{currency_type.symbol}} {{ form.total_exonerated }}</span>
-              </h4>
-            </div>
-
-            <div class="col-12 text-right px-0" v-if="form.total_igv > 0">
-              <h4 class="font-weight-semibold  m-0">
-                <span class="font-weight-semibold">IGV: </span>
-                <span class="text-blue">{{currency_type.symbol}} {{form.total_igv}}</span>
-              </h4>
-            </div> -->
                     </div>
                     <div
                         class="row text-white m-0 p-0 h-50 d-flex align-items-center"
@@ -1000,6 +906,7 @@ export default {
             showDialogItemUnitTypes: false,
             history_item_id: null,
             search_item_by_barcode: false,
+            search_item_by_barcode_presentation: false,
             is_print: true,
             warehousesDetail: [],
             unittypeDetail: [],
@@ -1033,6 +940,8 @@ export default {
             category_selected: "",
             focusClienteSelect: false,
             itemUnitTypes: [],
+            search_item_by_unit_types_barcode: false,
+            items_unit_types_barcde: []
         };
     },
     async created() {
@@ -1215,7 +1124,7 @@ export default {
                     : 1,
                 input_item: this.input_item,
                 cat: this.category_selected,
-                limit: this.limit
+                limit: this.limit,
             });
         },
         getColor(i) {
@@ -1615,6 +1524,26 @@ export default {
             this.setFormPosLocalStorage();
         },
         async clickAddItem(item, index, input = false) {
+            if(item.item_unit_barcode) {
+                let value = 0;
+                const unit_ = item.unit_type[0]
+                switch (unit_.price_default) {
+                    case 1:
+                        value = unit_.price1;
+                        break;
+                    case 2:
+                        value = unit_.price2;
+                        break;
+                    case 3:
+                        value = unit_.price3;
+                        break;
+                }
+
+                item.sale_unit_price = value
+                item.unit_type_id = unit_.unit_type_id;
+                item.presentation = unit_
+            }
+
             this.loading = true;
             let exchangeRateSale = this.form.exchange_rate_sale;
             let presentation = item.presentation
@@ -1633,16 +1562,6 @@ export default {
                     unit_type_id: item.unit_type_id
                 });
             }
-
-            /*
-            console.log(exist_item)
-            console.log(item.unit_type_id)
-            console.log(exist_item)
-            console.log(item)
-            console.log(presentation)
-            console.log(presentation)
-            */
-
 
             let pos = this.form.items.indexOf(exist_item);
             let response = null;
@@ -1839,18 +1758,26 @@ export default {
                 total_discount += parseFloat(row.total_discount);
                 total_charge += parseFloat(row.total_charge);
 
-                if (row.affectation_igv_type_id === "10") {
-                    total_taxed += parseFloat(row.total_value);
+                if (row.affectation_igv_type_id === "10") 
+                {
+                    // total_taxed += parseFloat(row.total_value);
+                    total_taxed += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
-                if (row.affectation_igv_type_id === "20") {
-                    total_exonerated += parseFloat(row.total_value);
+
+                if (row.affectation_igv_type_id === "20") 
+                {
+                    // total_exonerated += parseFloat(row.total_value);
+                    total_exonerated += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
+
                 if (row.affectation_igv_type_id === "30") {
                     total_unaffected += parseFloat(row.total_value);
                 }
+
                 if (row.affectation_igv_type_id === "40") {
                     total_exportation += parseFloat(row.total_value);
                 }
+
                 if (
                     ["10", "20", "30", "40"].indexOf(
                         row.affectation_igv_type_id
@@ -1858,15 +1785,18 @@ export default {
                 ) {
                     total_free += parseFloat(row.total_value);
                 }
-                if (
-                    ["10", "20", "30", "40"].indexOf(
-                        row.affectation_igv_type_id
-                    ) > -1
-                ) {
-                    total_igv += parseFloat(row.total_igv);
-                    total += parseFloat(row.total);
+
+                if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1) 
+                {
+                    // total_igv += parseFloat(row.total_igv);
+                    // total += parseFloat(row.total);
+                    total_igv += (row.total_igv_without_rounding) ? parseFloat(row.total_igv_without_rounding) : parseFloat(row.total_igv)
+                    total += (row.total_without_rounding) ? parseFloat(row.total_without_rounding) : parseFloat(row.total)
                 }
-                total_value += parseFloat(row.total_value);
+
+                // total_value += parseFloat(row.total_value);
+                total_value += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
+
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
                 if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
@@ -1901,9 +1831,6 @@ export default {
             this.form.total_taxed = _.round(total_taxed, 2);
             this.form.total_exonerated = _.round(total_exonerated, 2);
 
-            // this.form.total_taxed =
-            //   _.round(total_taxed, 2) + this.form.total_exonerated;
-            // this.form.total_exonerated = _.round(total_exonerated, 2)
             this.form.total_unaffected = _.round(total_unaffected, 2);
             this.form.total_free = _.round(total_free, 2);
             this.form.total_igv = _.round(total_igv, 2);
@@ -1923,9 +1850,7 @@ export default {
 
         },
         changeDateOfIssue() {
-            // this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
-            //     this.form.exchange_rate_sale = response
-            // })
+          
         },
         changeExchangeRate() {
             this.searchExchangeRateByDate(this.form.date_of_issue).then(
@@ -1948,9 +1873,6 @@ export default {
                         ? this.currency_types[0].id
                         : null;
                 this.renderCategories(response.data.categories);
-                // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
-                // this.changeCurrencyType();
-                //this.filterItems();
                 this.changeDateOfIssue();
                 this.changeExchangeRate();
             });
@@ -1998,11 +1920,13 @@ export default {
                                 response.data.meta.per_page
                             );
                             this.fixItems();
+                            this.searchItemUnitBarcode(this.input_item)
                             this.loading = false;
                         } else {
                             this.loading = false;
                             this.filterItems();
                         }
+
                     });
             } else {
                 this.getRecords();
@@ -2014,18 +1938,23 @@ export default {
             // console.log("in:" + this.input_item)
             if (this.input_item.length > 1) {
                 this.loading = true;
-                let parameters = `input_item=${this.input_item}`;
+                let parameters = `input_item=${this.input_item}&search_item_by_barcode_presentation=${this.search_item_by_barcode_presentation}`;
 
                 await this.$http
                     .get(`/${this.resource}/search_items?${parameters}`)
                     .then(response => {
                         // console.log("buah");
                         this.items = response.data.items;
+
+                        this.searchItemUnitBarcode(this.input_item)
+
                         this.enabledSearchItemsBarcode();
                         this.loading = false;
                         if (this.items.length == 0) {
                             this.filterItems();
                         }
+
+                       
                     });
             } else {
                 await this.filterItems();
@@ -2049,11 +1978,33 @@ export default {
             this.all_items =this.items;
         },
         enabledSearchItemsBarcode() {
-            if (this.search_item_by_barcode) {
-                if (this.items.length == 1) {
-                    // console.log(this.items)
-                    this.clickAddItem(this.items[0], 0);
-                    this.filterItems();
+
+            if (this.search_item_by_barcode) 
+            {
+                //busqueda por presentacion
+                if(this.search_item_by_barcode_presentation)
+                {
+                    if (this.items.length == 1) 
+                    {
+                        if(this.items[0].unit_type.length === 1 && this.items[0].search_item_by_barcode_presentation) 
+                        {
+                            this.selectItemUnitType(this.items[0].unit_type[0])
+                        }
+                        else
+                        {
+                            this.items = []
+                            this.filterItems()
+                        }
+                    }
+                }
+                //busqueda comun
+                else
+                {
+                    if (this.items.length == 1) {
+                        // console.log(this.items)
+                        this.clickAddItem(this.items[0], 0);
+                        this.filterItems();
+                    }
                 }
 
                 this.cleanInput();
@@ -2070,14 +2021,6 @@ export default {
                 this.items = this.all_items;
             } else {
                 this.items = this.all_items.map(i => {
-                    // console.log(i.description);
-                    // if (i.brand) {
-                    //     var desc = `${i.description} - ${i.brand}`;
-                    //     if(i.description != desc){
-                    //         i.description = `${i.description} - ${i.brand}`;
-                    //     }
-                    // }
-                    // console.log(i.description);
                     return i;
                 });
             }
@@ -2159,6 +2102,20 @@ export default {
             if(item.description === undefined) return 0;
             if(item.description == null) return 0;
             return item.description.length;
+        },
+        async searchItemUnitBarcode(search) {
+            if(this.search_item_by_unit_types_barcode) {
+                 let parameters = `input_item=${search}`;
+                await this.$http
+                    .get(`/${this.resource}/search_items_unit_types?${parameters}`)
+                    .then(response => {
+                        this.items_unit_types_barcde = response.data.items
+                        const items_ = this.items;
+                        const items_unit_ = this.items_unit_types_barcde;
+
+                        this.items = [...items_, ...items_unit_];
+                    });
+            }
         }
     }
 };

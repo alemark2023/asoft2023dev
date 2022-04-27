@@ -218,6 +218,7 @@
             'show_totals_on_cpe_list',
             'mi_tienda_pe',
             'detraction_amount_rounded_int',
+            'validate_purchase_sale_unit_price',
             'show_terms_condition_pos',
             'show_ticket_80',
             'show_ticket_58',
@@ -230,6 +231,11 @@
             'url_apiruc',
             'new_validator_pagination',
             'token_apiruc',
+            'customer_filter_by_seller',
+            'checked_global_igv_to_purchase',
+            'checked_update_purchase_price',
+            'set_global_purchase_currency_items',
+            'set_unit_price_dispatch_related_record',
         ];
 
         protected $casts = [
@@ -295,12 +301,18 @@
             'show_totals_on_cpe_list' => 'bool',
             'auto_print' => 'bool',
             'detraction_amount_rounded_int' => 'bool',
+            'validate_purchase_sale_unit_price' => 'bool',
             'show_terms_condition_pos' => 'bool',
             'show_last_price_sale' => 'bool',
             'show_logo_by_establishment' => 'bool',
             'print_new_line_to_observation' => 'bool',
             'shipping_time_days' => 'int',
             'new_validator_pagination' => 'int',
+            'customer_filter_by_seller' => 'bool',
+            'checked_global_igv_to_purchase' => 'bool',
+            'checked_update_purchase_price' => 'bool',
+            'set_global_purchase_currency_items' => 'bool',
+            'set_unit_price_dispatch_related_record' => 'bool',
         ];
 
         protected $hidden = [
@@ -474,6 +486,8 @@
                 'pos_cost_price' => $this->isPosCostPrice(),
                 'show_totals_on_cpe_list' => $this->isShowTotalsOnCpeList(),
                 'detraction_amount_rounded_int' => $this->detraction_amount_rounded_int,
+                'customer_filter_by_seller' => $this->customer_filter_by_seller,
+                'validate_purchase_sale_unit_price' => $this->validate_purchase_sale_unit_price,
                 'global_discount_type_id' => $this->global_discount_type_id,
                 'show_terms_condition_pos' => (bool)$this->show_terms_condition_pos,
                 'mi_tienda_pe' => $this->isMiTiendaPe(),
@@ -481,7 +495,12 @@
                 'show_ticket_58' => (bool)$this->show_ticket_58,
                 'show_ticket_50' => (bool)$this->show_ticket_50,
                 'show_last_price_sale' => (bool)$this->show_last_price_sale,
+                'show_logo_by_establishment' => (bool)$this->show_logo_by_establishment,
                 'shipping_time_days' => $this->shipping_time_days,
+                'checked_global_igv_to_purchase' => $this->checked_global_igv_to_purchase,
+                'checked_update_purchase_price' => $this->checked_update_purchase_price,
+                'set_global_purchase_currency_items' => $this->set_global_purchase_currency_items,
+                'set_unit_price_dispatch_related_record' => $this->set_unit_price_dispatch_related_record,
                 'new_validator_pagination' => $this->getNewValidatorPagination(),
             ];
         }
@@ -2050,6 +2069,7 @@
          */
         public function UseCustomApiPeruToken(){
             // .env ALLOW_CLIENT_USE_OWN_APIPERU_TOKEN
+            return (bool)env('ALLOW_CLIENT_USE_OWN_APIPERU_TOKEN', false);
             return (bool)\Config('extra.AllowClientUseOwnApiperuToken');
         }
 
@@ -2072,5 +2092,11 @@
             $this->new_validator_pagination = (int)$new_validator_pagination;
             return $this;
         }
+
+        public function scopeGetUnitPriceDispatchRelatedRecord($query)
+        {
+            return $query->select('set_unit_price_dispatch_related_record')->first()->set_unit_price_dispatch_related_record;
+        }
+        
 
     }
