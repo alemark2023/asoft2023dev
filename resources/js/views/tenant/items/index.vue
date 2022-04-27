@@ -320,7 +320,6 @@
                                         >
                                             Duplicar
                                         </button>
-
                                         <button
                                             v-if="row.active"
                                             class="dropdown-item"
@@ -335,19 +334,36 @@
                                         >
                                             Habilitar
                                         </button>
-
                                         <button
                                             class="dropdown-item"
                                             @click.prevent="clickBarcode(row)"
                                         >
                                             Cod. Barras
                                         </button>
-
                                         <button
                                             class="dropdown-item"
                                             @click.prevent="clickPrintBarcode(row)"
                                         >
                                             Etiquetas
+                                        </button>
+                                        <div class="dropdown-divider"></div>
+                                        <button
+                                            class="dropdown-item"
+                                            @click.prevent="clickPrintBarcodeX(row, 1)"
+                                        >
+                                            Etiquetas 1x1
+                                        </button>
+                                        <button
+                                            class="dropdown-item"
+                                            @click.prevent="clickPrintBarcodeX(row, 2)"
+                                        >
+                                            Etiquetas 1x2
+                                        </button>
+                                        <button
+                                            class="dropdown-item"
+                                            @click.prevent="clickPrintBarcodeX(row, 3)"
+                                        >
+                                            Etiquetas 1x3
                                         </button>
                                     </template>
                                 </div>
@@ -654,6 +670,15 @@ export default {
             }
 
             window.open(`/${this.resource}/export/barcode/print?id=${row.id}`);
+        },
+        clickPrintBarcodeX(row, x) {
+            if (!row.barcode) {
+                return this.$message.error(
+                    "Para generar el código de barras debe registrar el código de barras."
+                );
+            }
+
+            window.open(`/${this.resource}/export/barcode/print_x?format=${x}&id=${row.id}`);
         },
         getItems() {
             this.$http.get(`/${this.resource}/item/tables`).then(response => {

@@ -914,7 +914,7 @@ class ItemController extends Controller
         }
 
         if($period !== 'all'){
-            $items->whereBetween('created_at', [$d_start, $d_end]);
+            $items->whereBetween('items.created_at', [$d_start, $d_end]);
         }
 
         $records =  $items->get();
@@ -1194,6 +1194,56 @@ class ItemController extends Controller
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         $pdf->output('etiquetas_'.now()->format('Y_m_d').'.pdf', 'I');
+
+    }
+
+    public function printBarCodeX(Request $request)
+    {
+        ini_set("pcre.backtrack_limit", "50000000");
+        $id = $request->id;
+        $format = $request->format;
+
+        $record = Item::find($id);
+        $item_warehouse = ItemWarehouse::where([['item_id', $id], ['warehouse_id', auth()->user()
+            ->establishment->warehouse->id]])->first();
+
+        if(!$item_warehouse){
+            return [
+                'success' => false,
+                'message' => "El producto seleccionado no esta disponible en su almacen!"
+            ];
+        }
+
+        if($item_warehouse->stock < 1){
+            return [
+                'success' => false,
+                'message' => "El producto seleccionado no tiene stock disponible en su almacen, no puede generar etiquetas!"
+            ];
+        }
+
+        $stock = $item_warehouse->stock;
+
+        $width = ($format == 1) ? 80 : 104.1;
+        $height = ($format == 1) ? 26 : 24;
+
+        $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    $width,
+                    $height
+                    ],
+                'margin_top' => 2,
+                'margin_right' => 2,
+                'margin_bottom' => 0,
+                'margin_left' => 2
+            ]);
+        $html = view('tenant.items.exports.items-barcode-x', compact('record', 'stock', 'format'))->render();
+
+        // return $html;
+
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+        $pdf->output('etiquetas_1x'.$format.'_'.now()->format('Y_m_d').'.pdf', 'I');
 
     }
 

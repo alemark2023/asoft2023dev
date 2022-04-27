@@ -628,7 +628,7 @@
                                     @click.prevent="showDialogAllowanceCharge = true">[+ Aplicar cargos]</a>
                                 <el-tooltip
                                     class="item"
-                                    content="Disponible en Ventas - Comprobante electrónico"
+                                    content="Disponible en Ventas - Comprobante electrónico / Nota de venta"
                                     effect="dark"
                                     placement="top-start">
                                     <i class="fa fa-info-circle"></i>
@@ -786,6 +786,94 @@
                                     <small v-if="errors.global_discount_type_id"
                                             class="form-control-feedback"
                                             v-text="errors.global_discount_type_id[0]"></small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Restringir venta de productos menores al precio de compra 
+                                    <el-tooltip
+                                        class="item"
+                                        content="Validar que el precio de compra del producto no sea superior al de venta - Disponible Ventas/Comprobante electrónico - Nota de venta"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.validate_purchase_sale_unit_price}"
+                                        class="form-group">
+                                    <el-switch v-model="form.validate_purchase_sale_unit_price"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.validate_purchase_sale_unit_price"
+                                            class="form-control-feedback"
+                                            v-text="errors.validate_purchase_sale_unit_price[0]"></small>
+                                </div>
+                            </div>
+
+                            <template v-if="typeUser != 'integrator'">
+                                <div class="col-md-6 mt-4">
+                                    <label class="control-label">Restringir envío de comunicación de baja (RA)
+                                        <el-tooltip
+                                            class="item"
+                                            content="Se validará los días de plazo de envío para la anulación del documento - Disponible para anulaciones de Facturas y Notas relacionadas"
+                                            effect="dark"
+                                            placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.restrict_voided_send}"
+                                            class="form-group">
+                                        <el-switch v-model="form.restrict_voided_send"
+                                                    active-text="Si"
+                                                    inactive-text="No"
+                                                    @change="submit"></el-switch>
+                                        <small v-if="errors.restrict_voided_send"
+                                                class="form-control-feedback"
+                                                v-text="errors.restrict_voided_send[0]"></small>
+                                    </div>
+                                </div>
+
+                                <template v-if="form.restrict_voided_send" >
+                                    <div class="col-md-4 mt-4">
+                                        <label class="control-label">
+                                            Días de plazo de envío de la comunicación de baja
+                                        </label>
+                                        <div :class="{'has-danger': errors.shipping_time_days_voided}"
+                                                class="form-group">
+                                            <el-input-number v-model="form.shipping_time_days_voided"
+                                                                :min="1"
+                                                                :precision="0"
+                                                                :step="1"
+                                                                @change="submit"></el-input-number>
+                                            <small v-if="errors.shipping_time_days_voided"
+                                                    class="form-control-feedback"
+                                                    v-text="errors.shipping_time_days_voided[0]"></small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2"></div>
+                                </template>
+                            </template>
+
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Asignar precio unitario a los productos desde registro relacionado
+                                    <el-tooltip
+                                        class="item"
+                                        content="Se asignará el precio unitario desde el registro relacionado (Cotización, Nota de venta) a la guía - Generar CPE desde Guía"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.set_unit_price_dispatch_related_record}"
+                                        class="form-group">
+                                    <el-switch v-model="form.set_unit_price_dispatch_related_record"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.set_unit_price_dispatch_related_record"
+                                            class="form-control-feedback"
+                                            v-text="errors.set_unit_price_dispatch_related_record[0]"></small>
                                 </div>
                             </div>
 
@@ -1329,6 +1417,12 @@
                             </div>
                         </div>
                     </el-tab-pane>
+
+                    <el-tab-pane class="mb-3"  name="ten">
+                        <span slot="label">Reportes</span>
+                        <report-configurations-index></report-configurations-index>
+                    </el-tab-pane>
+                    
                 </el-tabs>
                 <terms-condition :form="form"
                                     :showClose="false"
@@ -1359,6 +1453,7 @@ import TermsCondition from '@views/quotations/partials/terms_condition.vue'
 import TermsConditionSale from '@views/documents/partials/terms_condition.vue'
 import AllowanceCharge from './partials/allowance_charge.vue'
 import {mapActions, mapState} from "vuex";
+import ReportConfigurationsIndex from './partials/report_configurations_index.vue'
 
 export default {
     props: [
@@ -1369,6 +1464,7 @@ export default {
         TermsCondition,
         TermsConditionSale,
         AllowanceCharge,
+        ReportConfigurationsIndex,
     },
     computed: {
         ...mapState([
@@ -1500,11 +1596,16 @@ export default {
                 permission_to_edit_cpe: false,
                 name_product_pdf_to_xml:false,
                 detraction_amount_rounded_int:false,
+                validate_purchase_sale_unit_price: false,
                 show_logo_by_establishment: false,
                 shipping_time_days: 0,
                 customer_filter_by_seller: false,
                 checked_global_igv_to_purchase: false,
                 checked_update_purchase_price: false,
+                set_global_purchase_currency_items: false,
+                set_unit_price_dispatch_related_record: false,
+                restrict_voided_send: false,
+                shipping_time_days_voided: 0,
 
             };
         },
