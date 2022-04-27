@@ -132,9 +132,12 @@
 
             $records = $this->getRecords($request->all())->get();
 
+            $rooms = HotelRoom::get();
+
             $documentHotelExport = new ReportHotelExport();
             $documentHotelExport
                 ->records($records)
+                ->rooms($rooms)
                 ->company($company);
 
             return $documentHotelExport->download('Reporte_Hoteles_' . Carbon::now() . '.xlsx');

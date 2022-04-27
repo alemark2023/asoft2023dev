@@ -42,6 +42,9 @@
     </table>
 </div>
 <br>
+{{-- @php
+    dd($records);
+@endphp --}}
 @if(!empty($records))
     <div class="">
         <div class=" ">
@@ -90,15 +93,24 @@
                     $customer = $value->customer;
                     $room = $value->room;
                     $rates = $value->room->rates[0]->price;
-                    $category = $value->room->category->description;
+                    $category = $value->room->category;
+                    /* dd($category['description']); */
+                    $category = $category['description'];
                     $person_details = $value->searchPersonDetails($value);
                     $person_nationality = $value->searchPersonNationality($value);
                     /* dd($person_nationality); */
                     /* $document_type = $identity_document_type[0]->description; */
-                    $document_type = $person_details[0]->identity_document_type->description;
-                    $country = $person_details[0]->country->description;
+                    $document_type = $person_details[0]->identity_document_type;
+                    $document_type = $document_type['description'];
+                    $country = $person_details[0]->country;
+                    $country = $country['description'];
                     if (!is_null($person_nationality)) {
-                        $nationality = $person_nationality[0]->nationality->description;
+                        if (!is_null($person_nationality[0]->nationality)) {
+                        $nationality = $person_nationality[0]->nationality;
+                        $nationality = $nationality['description'];
+                        }else{
+                            $nationality = 0;
+                        }
                     }
                     
                     /* dd($nationality); */
@@ -143,6 +155,63 @@
                         <td class="celda">{{$total_days_rent}}</td>
                         <td class="celda">{{$total_nigth_days}}</td>
                         <td class="celda">{{$total_nigth_days}}</td>
+                    </tr>
+                    <tr></tr>
+                    <tr>
+                        <th>Habitacion</th>
+                        <th>Estado</th>
+                        <th>Horas</th>
+                    </tr>
+                    @php
+
+                    $available=0;
+                    $busy=0;
+                    $cleaning = 0;
+                    $status = 0;
+                    $name_room = 0;
+                    $hours= 0;
+                    $hours_total=0;
+                    $hours_now=0;
+                    $symbol = 'h';
+                    @endphp
+                @foreach($rooms as $key => $value)
+                @php
+                $status=$value->status;
+                if ($status === 'DISPONIBLE') {
+                    $available+=1;
+                }else if ($status === 'OCUPADO'){
+                    $busy+=1;
+                }
+                 else {
+                    $cleaning += 1;
+                }
+                $hours = $value->updated_at;
+                $hours = \Carbon\Carbon::parse($hours);
+                $hours_now = \Carbon\Carbon::now();
+                $hours_total = $hours->diffInHours($hours_now);
+                if ($hours_total === 0) {
+                    $hours_total = $hours->diffInMinutes($hours_now);
+                    $symbol = 'm';
+                }
+                $name_room = $value->name;
+                @endphp
+                    
+                    <tr>
+                        <td>{{$name_room}}</td>
+                        <td>{{$status}}</td>
+                        <td>{{ $hours_total.' '.$symbol}}</td>
+                    </tr>
+                @endforeach
+                    <tr></tr>
+                    <tr>
+                        <th>Disponible</th>
+                        <th>Ocupado</th>
+                        <th>Limpieza</th>
+                    </tr>
+                    <tr>
+                        <td>{{$available}}</td>
+                        <td>{{$busy}}</td>
+                        <td>{{$cleaning}}</td>
                     </tr>
                 </tbody>
             </table>
