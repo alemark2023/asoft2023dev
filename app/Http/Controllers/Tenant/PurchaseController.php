@@ -140,9 +140,10 @@
             $customers = $this->getPersons('customers');
             $configuration = Configuration::first();
             $payment_conditions = GeneralPaymentCondition::get();
+            $warehouses = Warehouse::get();
 
             return compact('suppliers', 'establishment', 'currency_types', 'discount_types', 'configuration', 'payment_conditions',
-                'charge_types', 'document_types_invoice', 'company', 'payment_method_types', 'payment_destinations', 'customers');
+                'charge_types', 'document_types_invoice', 'company', 'payment_method_types', 'payment_destinations', 'customers', 'warehouses');
         }
 
         public function table($table)

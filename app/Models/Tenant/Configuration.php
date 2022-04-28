@@ -236,6 +236,8 @@
             'checked_update_purchase_price',
             'set_global_purchase_currency_items',
             'set_unit_price_dispatch_related_record',
+            'restrict_voided_send',
+            'shipping_time_days_voided',
         ];
 
         protected $casts = [
@@ -313,6 +315,9 @@
             'checked_update_purchase_price' => 'bool',
             'set_global_purchase_currency_items' => 'bool',
             'set_unit_price_dispatch_related_record' => 'bool',
+            'restrict_voided_send' => 'bool',
+            'shipping_time_days_voided' => 'int',
+
         ];
 
         protected $hidden = [
@@ -502,6 +507,9 @@
                 'set_global_purchase_currency_items' => $this->set_global_purchase_currency_items,
                 'set_unit_price_dispatch_related_record' => $this->set_unit_price_dispatch_related_record,
                 'new_validator_pagination' => $this->getNewValidatorPagination(),
+                'restrict_voided_send' => $this->restrict_voided_send,
+                'shipping_time_days_voided' => $this->shipping_time_days_voided,
+
             ];
         }
 

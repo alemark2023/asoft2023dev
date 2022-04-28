@@ -1186,4 +1186,44 @@
             ]);
         }
 
+                
+        /**
+         * Obtener diferencia de días en base a la fecha de emisión
+         * 
+         * Usado en:
+         * VoidedController - Validación de plazo de envío
+         *
+         * @param  Carbon $value
+         * @return int
+         */
+        public function getDiffInDaysDateOfIssue($value = null)
+        {
+            $date = $value ?? Carbon::now();
+
+            return $this->date_of_issue->diffInDays($date);
+        }
+        
+        
+        /**
+         * Validar si el documento fue generado a partir de un registro externo
+         *
+         * Usado en:
+         * InventoryKardexServiceProvider
+         * 
+         * @return bool
+         */
+        public function isGeneratedFromExternalRecord()
+        {
+            $generated = false;
+
+            if(!is_null($this->order_note_id))
+            {
+                $generated = true;
+            }
+            
+            // @todo agregar mas registros relacionados
+
+            return $generated;
+        }
+        
     }

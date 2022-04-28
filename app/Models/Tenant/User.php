@@ -908,4 +908,19 @@ $withEstablishment = true){
         return ($this->type === 'seller' && $configuration->customer_filter_by_seller);
     }
 
+    
+    /**
+     * 
+     * Obtener permisos para pagos de comprobantes
+     *
+     * @return array
+     */
+    public function getPermissionsPayment()
+    {
+        return [
+            'create_payment' => $this->create_payment,
+            'delete_payment' => $this->delete_payment,
+        ];
+    }
+
 }
