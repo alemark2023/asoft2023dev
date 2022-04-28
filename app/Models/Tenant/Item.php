@@ -2110,6 +2110,24 @@ class Item extends ModelTenant
             ->distinct();
     }
 
+    
+    /**
+     * Almacenes asociados al producto
+     *
+     * @return array
+     */
+    public function getDataWarehouses()
+    {
+        return collect($this->warehouses)->transform(function($row){
+            return [
+                'warehouse_description' => $row->warehouse->description,
+                'stock' => $row->stock,
+                'warehouse_id' => $row->warehouse_id,
+            ];
+        });
+    }
+
+
     /**
      * @param Builder $query
      *
