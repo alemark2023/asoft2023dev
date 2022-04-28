@@ -1205,8 +1205,11 @@
         
         
         /**
-         * isGeneratedFromExternalRecord
+         * Validar si el documento fue generado a partir de un registro externo
          *
+         * Usado en:
+         * InventoryKardexServiceProvider
+         * 
          * @return bool
          */
         public function isGeneratedFromExternalRecord()

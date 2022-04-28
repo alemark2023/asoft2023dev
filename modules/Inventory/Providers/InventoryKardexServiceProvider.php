@@ -126,8 +126,9 @@ class InventoryKardexServiceProvider extends ServiceProvider
              * Calculando el stock por lote por factor según la unidad
              */
 
-            if(!$document_item->document->isGeneratedFromExternalRecord())
+            if(!$document->isGeneratedFromExternalRecord())
             {
+                
                 if (isset($document_item->item->IdLoteSelected)) 
                 {
                     if ($document_item->item->IdLoteSelected != null) 

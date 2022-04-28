@@ -1033,23 +1033,27 @@
         /**
          * Obtener lotes vendidos
          *
+         * @return array
+         */
+        public function getSaleLotGroupCode()
+        {
+            if(isset($this->item->lots_group))
+            {
+                if(is_array($this->item->lots_group)) return collect($this->item->lots_group)->where('compromise_quantity', '>', 0)->pluck('code')->toArray();
+            }
+
+            return [];
+        }
+
+        /**
+         * Obtener descripción de lotes vendidos
+         * Usado en formato PDF
+         *
          * @return string
          */
         public function getSaleLotGroupCodeDescription()
         {
-            if(isset($this->item->lots_group))
-            {
-                if(is_array($this->item->lots_group))
-                {
-                    $lots_group = collect($this->item->lots_group)->where('compromise_quantity', '>', 0)->pluck('code')->toArray();
-
-                    return implode('/', $lots_group);
-                }
-            }
-
-            return null;
+            return implode('/', $this->getSaleLotGroupCode());
         }
-
-
 
     }
