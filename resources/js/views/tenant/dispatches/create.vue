@@ -264,7 +264,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-2">
+                        <div class="col-lg-2" v-if="!order_form_id">
                             <div :class="{'has-danger': errors.order_form_external}"
                                  class="form-group">
                                 <label class="control-label">Orden de pedido
