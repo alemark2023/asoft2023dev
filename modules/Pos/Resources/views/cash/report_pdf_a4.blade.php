@@ -180,6 +180,16 @@
             </td>
         </tr>
         <tr>
+            <td class="td-custom">
+                <p>
+                    <strong>
+                        Total propinas:
+                    </strong>
+                    S/. {{$data['total_tips'] ?? 0}}
+                </p>
+            </td>
+        </tr>
+        <tr>
             <td><hr></td>
             <td><hr></td>
         </tr>
