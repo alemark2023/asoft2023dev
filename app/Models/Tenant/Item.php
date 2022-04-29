@@ -2208,5 +2208,35 @@ class Item extends ModelTenant
         });
     }
 
+
+    /**
+     * 
+     * Filtro para no incluir relaciones en consulta
+     *
+     * @param Builder $query
+     * @return Builder
+     */  
+    public function scopeWhereFilterWithOutRelations($query)
+    {
+        return $query->withOut(['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags']);
+    }
+
+
+    /**
+     * 
+     * Filtro para consulta al actualizar precios
+     * 
+     * Usado en:
+     * ItemUpdatePriceImport
+     *
+     * @param Builder $query
+     * @param  string $internal_id
+     * @return Builder
+     */  
+    public function scopeWhereFilterUpdatePrices($query, $internal_id)
+    {
+        return $query->whereFilterWithOutRelations()->where('internal_id', $internal_id)->select('id', 'internal_id', 'sale_unit_price', 'purchase_unit_price');
+    }
+
 }
 
