@@ -61,6 +61,7 @@ Vue.component('tenant-documents-note', require('./views/tenant/documents/note.vu
 
 // purchase-settlements
 Vue.component('tenant-purchase-settlements-index', require('./views/tenant/purchase-settlements/index.vue'));
+Vue.component('tenant-purchase-settlements-form', require('./views/tenant/purchase-settlements/form.vue'));
 
 Vue.component('tenant-documents-items-list', require('./views/tenant/documents/partials/item.vue'));
 Vue.component('tenant-summaries-index', require('./views/tenant/summaries/index.vue'));
