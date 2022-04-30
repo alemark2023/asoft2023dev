@@ -596,6 +596,7 @@ if ($hostname) {
 
             Route::get('cash/report/products/{cash}', 'Tenant\CashController@report_products');
             Route::get('cash/report/products-excel/{cash}', 'Tenant\CashController@report_products_excel');
+            Route::get('cash/report/cash-excel/{cash}', 'Tenant\CashController@report_cash_excel');
 
             //POS VENTA RAPIDA
             Route::get('pos/fast', 'Tenant\PosController@fast')->name('tenant.pos.fast');
