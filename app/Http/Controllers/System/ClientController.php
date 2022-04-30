@@ -58,13 +58,79 @@
                     return $this->prepareModules($module);
                 });
 
+            // luego se podria crear grupos mediante algun modulo, de momento se pasan los id de manera directa
+            $group_basic = Module::with('levels')
+                ->whereIn('id', [7,1,6,17,18,5,14])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_hotel = Module::with('levels')
+                ->whereIn('id', [7,1,6,17,18,5,14,8,4])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_pharmacy = Module::with('levels')
+                ->whereIn('id', [7,1,6,17,18,5,14,8,4])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_restaurant = Module::with('levels')
+                ->whereIn('id', [7,1,6,17,18,5,14,8,4])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_hotel_apps = Module::with('levels')
+                ->whereIn('id', [15])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_pharmacy_apps = Module::with('levels')
+                ->whereIn('id', [19])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_restaurant_apps = Module::with('levels')
+                ->whereIn('id', [23])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+
             $config = Configuration::first();
 
             $certificate_admin = $config->certificate;
             $soap_username = $config->soap_username;
             $soap_password = $config->soap_password;
 
-            return compact('url_base', 'plans', 'types', 'modules', 'apps', 'certificate_admin', 'soap_username', 'soap_password');
+            return compact(
+                'url_base',
+                'plans',
+                'types',
+                'modules',
+                'apps',
+                'certificate_admin',
+                'soap_username',
+                'soap_password',
+                'group_basic',
+                'group_hotel',
+                'group_pharmacy',
+                'group_restaurant',
+                'group_hotel_apps',
+                'group_pharmacy_apps',
+                'group_restaurant_apps');
         }
 
         private function prepareModules(Module $module): Module
