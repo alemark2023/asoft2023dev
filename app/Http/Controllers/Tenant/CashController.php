@@ -635,6 +635,8 @@ class CashController extends Controller
                     'total_payments'            => (!in_array($document->state_type_id, $status_type_id)) ? 0 : $document->payments->sum('payment'),
 
                 ];
+                /* Notas de credito o debito*/
+                $notes = $document->getNotes();
             } 
             /** Documentos de Tipo Servicio tecnico */
             elseif ($cash_document->technical_service) {
@@ -783,6 +785,52 @@ class CashController extends Controller
                 $all_documents[] = $temp;
             }
 
+            /** Notas de credito o debito */
+            if ($notes !== null) {
+                foreach ($notes as $note) {
+                    $usado = 'Tomado para ';
+                    /** @var \App\Models\Tenant\Note $note */
+                    $sum = $note->isDebit();
+                    $type = ($note->isDebit()) ? 'Nota de debito' : 'Nota de crédito';
+                    $document = $note->getDocument();
+                    if (in_array($document->state_type_id, $status_type_id)) {
+                        if (in_array($document->payment_method_type_id, $type_payment)) {
+                            $record_total = $document->getTotal();
+                            /** Si es credito resta */
+                            if ($sum) {
+                                $usado .= 'Nota de debito';
+                                $nota_debito += $record_total;
+                                $final_balance += $record_total;
+                                $usado .= "Id de documento {$document->id} - Nota de Debito /* $record_total * /<br>";
+                            } else {
+                                $usado .= 'Nota de credito';
+                                $nota_credito += $record_total;
+                                $final_balance -= $record_total;
+                                $usado .= "Id de documento {$document->id} - Nota de Credito /* $record_total * /<br>";
+                            }
+                        }
+                        $temp = [
+                            'type_transaction'          => $type,
+                            'document_type_description' => $document->document_type->description,
+                            'number'                    => $document->number_full,
+                            'date_of_issue'             => $document->date_of_issue->format('Y-m-d'),
+                            'date_sort'                 => $document->date_of_issue,
+                            'customer_name'             => $document->customer->name,
+                            'customer_number'           => $document->customer->number,
+                            'total'                     => (!in_array($document->state_type_id, $status_type_id)) ? 0
+                                : $document->total,
+                            'currency_type_id'          => $document->currency_type_id,
+                            'usado'                     => $usado.' '.__LINE__,
+                            'tipo'                      => 'document',
+                        ];
+
+                        $temp['usado'] = isset($temp['usado']) ? $temp['usado'] : '--';
+                        $temp['total_string'] = self::FormatNumber($temp['total']);
+                        $all_documents[] = $temp;
+                    }
+
+                }
+            }
 
         }
 //        $all_documents = collect($all_documents)->sortBy('date_sort')->all();
