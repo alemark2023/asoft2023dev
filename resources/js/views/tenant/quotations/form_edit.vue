@@ -242,15 +242,16 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
-                                                <th class="font-weight-bold">Descripción</th>
+                                                <th width="5%">#</th>
+                                                <th class="font-weight-bold"
+                                                    width="30%">Descripción</th>
                                                 <th class="text-center font-weight-bold">Unidad</th>
                                                 <th class="text-right font-weight-bold">Cantidad</th>
                                                 <th class="text-right font-weight-bold">Valor Unitario</th>
                                                 <th class="text-right font-weight-bold">Precio Unitario</th>
                                                 <th class="text-right font-weight-bold">Subtotal</th>
                                                 <th class="text-right font-weight-bold">Total</th>
-                                                <th></th>
+                                                <th width="8%"></th>
                                             </tr>
                                         </thead>
                                         <tbody v-if="form.items.length > 0">
@@ -424,7 +425,7 @@ export default {
                 this.reloadDataCustomers(customer_id)
             })
 
-
+            
 
 
         },
@@ -583,6 +584,7 @@ export default {
                     this.changeCustomer()
                     this.form.customer_address_id = dato.customer.address_id
                     this.calculateTotal()
+                    this.changeCurrencyType()
                     //console.log(response.data)
                 })
 

@@ -102,6 +102,9 @@
                                 >L. Atributos</a
                                 >
                             </template>
+                            
+                            <a class="dropdown-item text-1" href="#" @click.prevent="clickImportUpdatePrice()">Actualizar precios</a>
+
                         </div>
                     </div>
                 </template>
@@ -408,6 +411,10 @@
             ></items-import-extra-info>
 
 
+            <items-import-update-price
+                :showDialog.sync="showImporUpdatePrice"
+            ></items-import-update-price>
+
             <!--
             : false,
             show_extra_info_to_item
@@ -440,6 +447,7 @@ import DataTable from "../../../components/DataTable.vue";
 import {deletable} from "../../../mixins/deletable";
 import ItemsHistory from "@viewsModuleItem/items/history.vue";
 import {mapActions, mapState} from "vuex";
+import ItemsImportUpdatePrice from "./partials/update_prices.vue";
 
 export default {
     props: [
@@ -459,6 +467,7 @@ export default {
         ItemsImportListPrice,
         ItemsImportExtraInfo,
         ItemsHistory,
+        ItemsImportUpdatePrice
     },
     data() {
         return {
@@ -471,6 +480,7 @@ export default {
             showExportExtraDialog: false,
             showImportListPriceDialog: false,
             showImportExtraWithExtraInfo: false,
+            showImporUpdatePrice: false,
             showWarehousesDetail: false,
             resource: "items",
             recordId: null,
@@ -637,6 +647,9 @@ export default {
         },
         clickImportExtraWithExtraInfo() {
             this.showImportExtraWithExtraInfo = true;
+        },
+        clickImportUpdatePrice(){
+            this.showImporUpdatePrice = true;
         },
         clickDelete(id) {
             this.destroy(`/${this.resource}/${id}`).then(() =>

@@ -130,6 +130,7 @@ class CashController extends Controller
         $data['establishment_department_description'] = $establishment->department->description;
         $data['establishment_district_description'] = $establishment->district->description;
         $data['nota_venta'] = 0;
+        $data['total_tips'] = 0;
         $nota_credito = 0;
         $nota_debito = 0;
         /************************/
@@ -166,6 +167,9 @@ class CashController extends Controller
                         }
                     }
                 }
+
+                $data['total_tips'] += $sale_note->tip ? $sale_note->tip->total : 0;
+
                 $temp = [
                     'type_transaction'          => 'Venta',
                     'document_type_description' => 'NOTA DE VENTA',
@@ -257,6 +261,9 @@ class CashController extends Controller
                 if ($record_total != $document->total) {
                     $usado .= '<br> Los montos son diferentes '.$document->total." vs ".$pagado."<br>";
                 }
+
+                $data['total_tips'] += $document->tip ? $document->tip->total : 0;
+
                 $temp = [
                     'type_transaction'          => 'Venta',
                     'document_type_description' => $document->document_type->description,
