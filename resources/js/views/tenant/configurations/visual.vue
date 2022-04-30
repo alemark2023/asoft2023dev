@@ -81,21 +81,6 @@
                     </div>
                 </div>
 
-                <div class="pt-3">
-                    <h5>Ver icono de soporte</h5>
-                    <div :class="{'has-danger': errors.enable_whatsapp}">
-                        <el-switch
-                            v-model="form.enable_whatsapp"
-                            active-text="Si"
-                            inactive-text="No"
-                            @change="submitForm">
-                        </el-switch>
-                        <small class="form-control-feedback" v-if="errors.enable_whatsapp" v-text="errors.enable_whatsapp[0]"></small>
-                        <br>
-                        <small class="form-control-feedback">Se mostrará si su administrador ha añadido número de soporte: Administrador/Perfil/Teléfono</small>
-                    </div>
-                </div>
-
             </div>
         </form>
 
