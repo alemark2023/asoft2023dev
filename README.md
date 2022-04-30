@@ -1,6 +1,6 @@
-<img src="icon_pro3.jpg" width="120">
+<img src="icon_pro5.png" width="120">
 
-# **Facturador PRO 4**
+# **Facturador PRO 5**
 
 
 ## Manuales de Instalación
