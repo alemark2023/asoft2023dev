@@ -1203,5 +1203,27 @@
             return $this->date_of_issue->diffInDays($date);
         }
         
+        
+        /**
+         * Validar si el documento fue generado a partir de un registro externo
+         *
+         * Usado en:
+         * InventoryKardexServiceProvider
+         * 
+         * @return bool
+         */
+        public function isGeneratedFromExternalRecord()
+        {
+            $generated = false;
 
+            if(!is_null($this->order_note_id))
+            {
+                $generated = true;
+            }
+            
+            // @todo agregar mas registros relacionados
+
+            return $generated;
+        }
+        
     }
