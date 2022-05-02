@@ -53,7 +53,7 @@
 
                         <th class="text-center">Pagos</th>
                         <th class="text-center">Descarga</th>
-                        <th class="text-center">
+                        <th class="text-center" v-if="columns.recurrence.visible">
                             Recurrencia
                         </th>
                          <th class="text-center" v-if="columns.type_period.visible" >
@@ -118,7 +118,7 @@
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickDownload(row.external_id)"><i class="fas fa-file-pdf"></i></button>
                         </td>
-                        <td class="text-right">
+                        <td class="text-right" v-if="columns.recurrence.visible">
                             <template v-if="row.type_period && row.quantity_period>0">
                                 <el-switch :disabled="row.apply_concurrency" v-model="row.enabled_concurrency" active-text="Si" inactive-text="No" @change="changeConcurrency(row)"></el-switch>
                             </template>
@@ -363,6 +363,10 @@
                     },
                     seller_name:{
                         title: 'Vendedor',
+                        visible: false
+                    },
+                    recurrence: {
+                        title: 'Recurrencia',
                         visible: false
                     }
 
