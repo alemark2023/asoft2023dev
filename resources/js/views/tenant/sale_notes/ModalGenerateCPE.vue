@@ -23,7 +23,7 @@
             <el-option key="name" value="name" label="Nombres"></el-option>
           </el-select>
         </div>
-        <div class="col-5 form-group">
+        <div class="col-3 form-group">
           <el-select
             v-model="form.client_id"
             filterable
@@ -47,7 +47,17 @@
             v-model="form.date_of_issue"
             type="date"
             style="width: 100%"
-            placeholder="Fecha de emisión"
+            placeholder="Inicio Fecha de emisión"
+            value-format="yyyy-MM-dd"
+          >
+          </el-date-picker>
+        </div>
+        <div class="col-3 form-group">
+          <el-date-picker
+            v-model="form.date_of_due"
+            type="date"
+            style="width: 100%"
+            placeholder="Final Fecha de emisión"
             value-format="yyyy-MM-dd"
           >
           </el-date-picker>
@@ -69,6 +79,7 @@
               <th></th>
               <th>Nota</th>
               <th>Fecha de emisión</th>
+              <th>Monto</th>
             </tr>
           </thead>
           <tbody>
@@ -85,6 +96,13 @@
                 <span>{{ dis.number | pad(0, 3) }}</span>
               </td>
               <td>{{ dis.date_of_issue | toDate }}</td>
+              <td>{{ dis.total }}</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td>Total</td>
+              <td>{{this.sum_total}}</td>
             </tr>
           </tbody>
         </table>
@@ -126,7 +144,8 @@ export default {
       },
       notes: [],
       errors: {},
-      group_items_generate_document: false
+      group_items_generate_document: false,
+      sum_total:null,
     };
   },
   methods: {
@@ -243,6 +262,7 @@ export default {
       this.$http
         .get(`/sale-notes/list-by-client`, { params })
         .then((response) => {
+          this.sum_total = response.data.sum_total;
           this.notes = response.data.data.map((d) => {
 
             d.selected = false;
