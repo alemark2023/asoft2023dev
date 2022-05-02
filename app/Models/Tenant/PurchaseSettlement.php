@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models\Tenant;
-
+use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Catalogs\{
     CurrencyType,
     DocumentType
@@ -10,7 +10,7 @@ use App\Models\Tenant\Catalogs\{
 
 class PurchaseSettlement extends ModelTenant
 {
-
+    protected $with = ['establishment'];
     protected $fillable = [
         'user_id',
         'external_id',
@@ -43,7 +43,7 @@ class PurchaseSettlement extends ModelTenant
         'legends',
         'prepayments',
         'related',
-        'observation',
+        'observations',
 
         'filename',
         'hash',
@@ -56,6 +56,11 @@ class PurchaseSettlement extends ModelTenant
         'date_of_issue' => 'date',
     ];
 
+    public function establishment()
+    {
+        return $this->belongsTo(Establishment::class);
+    }
+    
     public function getOperationDataAttribute($value)
     {
         return (is_null($value))?null:(object) json_decode($value);

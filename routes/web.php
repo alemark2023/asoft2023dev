@@ -450,8 +450,8 @@ if ($hostname) {
             Route::get('purchases', 'Tenant\PurchaseController@index')->name('tenant.purchases.index');
             Route::get('purchases/columns', 'Tenant\PurchaseController@columns');
             Route::get('purchases/records', 'Tenant\PurchaseController@records');
-            Route::get('purchases/create/{purchase_order_id?}', 'Tenant\PurchaseController@create')->name('tenant.purchases.create');
-            Route::get('purchases/tables', 'Tenant\PurchaseController@tables');
+            Route::get('purchases/create/{order_id?}', 'Tenant\PurchaseController@create')->name('tenant.purchases.create');
+            Route::get('purchases/tables/{type}', 'Tenant\PurchaseController@tables');
             Route::get('purchases/table/{table}', 'Tenant\PurchaseController@table');
             Route::post('purchases', 'Tenant\PurchaseController@store');
             Route::post('purchases/update', 'Tenant\PurchaseController@update');
@@ -573,6 +573,8 @@ if ($hostname) {
             Route::get('pos/validate_stock/{item}/{quantity}', 'Tenant\PosController@validate_stock');
             Route::get('pos/items', 'Tenant\PosController@item');
             Route::get('pos/search_items_cat', 'Tenant\PosController@search_items_cat');
+            Route::get('pos/search_items_unit_types', 'Tenant\PosController@search_items_unit_types');
+
 
             Route::get('cash', 'Tenant\CashController@index')->name('tenant.cash.index');
             Route::get('cash/columns', 'Tenant\CashController@columns');
@@ -596,6 +598,7 @@ if ($hostname) {
 
             Route::get('cash/report/products/{cash}', 'Tenant\CashController@report_products');
             Route::get('cash/report/products-excel/{cash}', 'Tenant\CashController@report_products_excel');
+            Route::get('cash/report/cash-excel/{cash}', 'Tenant\CashController@report_cash_excel');
 
             //POS VENTA RAPIDA
             Route::get('pos/fast', 'Tenant\PosController@fast')->name('tenant.pos.fast');
@@ -666,8 +669,12 @@ if ($hostname) {
 
             //liquidacion de compra
             Route::get('purchase-settlements', 'Tenant\PurchaseSettlementController@index')->name('tenant.purchase-settlements.index');
+            Route::get('purchase-settlements/create/{order_id?}', 'Tenant\PurchaseSettlementController@create')->name('tenant.purchase-settlements.create');
             Route::get('purchase-settlements/columns', 'Tenant\PurchaseSettlementController@columns');
             Route::get('purchase-settlements/records', 'Tenant\PurchaseSettlementController@records');
+            Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store');
+            Route::get('purchase-settlements/tables/{type}', 'Tenant\PurchaseSettlementController@tables');
+            Route::get('purchase-settlements/table/{table}', 'Tenant\PurchaseSettlementController@table');
 
             //Almacen de columnas por usuario
             Route::post('validate_columns','Tenant\SettingController@getColumnsToDatatable');

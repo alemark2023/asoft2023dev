@@ -257,7 +257,7 @@
                                         <tbody v-if="form.items.length > 0">
                                             <tr v-for="(row, index) in form.items" :key="index">
                                                 <td>{{index + 1}}</td>
-                                                <td>{{row.item.description}} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
+                                                <td>{{setDescriptionOfItem (row.item)}} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
                                                 <td class="text-center">{{row.quantity}}</td>
                                                 <td class="text-center">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
@@ -312,7 +312,9 @@
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
                            :recordItem="recordItem"
+                           :configuration="config"
                              :typeUser="typeUser"
+                             :customer-id="form.customer_id"
                              @add="addRow"></quotation-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -338,8 +340,9 @@ import QuotationFormItem from './partials/item.vue'
 import PersonForm from '../persons/form.vue'
 import QuotationOptions from '../quotations/partials/options.vue'
 import {exchangeRate, functions} from '../../../mixins/functions'
-import {calculateRowItem, sumAmountDiscountsNoBaseByItem} from '../../../helpers/functions'
+import {calculateRowItem, showNamePdfOfDescription, sumAmountDiscountsNoBaseByItem} from '../../../helpers/functions'
 import Logo from '../companies/logo.vue'
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
         components: {QuotationFormItem, PersonForm, QuotationOptions, Logo, TermsCondition},
@@ -352,6 +355,9 @@ export default {
             'typeUser': {
                 required: true,
             },
+            'configuration':{
+                required: true,
+            }
         },
         mixins: [functions, exchangeRate],
         data() {
@@ -380,7 +386,7 @@ export default {
                 payment_method_types: [],
                 activePanel: 0,
                 payment_destinations:  [],
-                configuration: {},
+                /* configuration: {}, */
                 loading_search:false,
                 recordItem: null,
                 sellers: [],
@@ -388,6 +394,8 @@ export default {
             }
         },
         async created() {
+            this.loadConfiguration()
+            this.$store.commit('setConfiguration', this.configuration)
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -401,7 +409,7 @@ export default {
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                     this.payment_method_types = response.data.payment_method_types
                     this.payment_destinations = response.data.payment_destinations
-                    this.configuration = response.data.configuration
+                    /* this.configuration = response.data.configuration */
                     this.sellers = response.data.sellers
 
                     this.changeEstablishment()
@@ -417,11 +425,19 @@ export default {
                 this.reloadDataCustomers(customer_id)
             })
 
-
+            
 
 
         },
+        computed: {
+            ...mapState([
+                'config',
+            ]),
+        },
         methods: {
+            ...mapActions([
+                'loadConfiguration',
+            ]),
             clickAddItem() {
                 this.recordItem = null;
                 this.showDialogAddItem = true;
@@ -568,6 +584,7 @@ export default {
                     this.changeCustomer()
                     this.form.customer_address_id = dato.customer.address_id
                     this.calculateTotal()
+                    this.changeCurrencyType()
                     //console.log(response.data)
                 })
 
@@ -864,6 +881,9 @@ export default {
                     this.customers = response.data.customers
                     this.form.customer_id = customer_id
                 })
+            },
+            setDescriptionOfItem(item){
+                return showNamePdfOfDescription(item,this.config.show_pdf_name)
             },
         }
     }
