@@ -11,6 +11,7 @@
     use Illuminate\Foundation\Application;
     use Illuminate\Support\Facades\Config;
     use Modules\Inventory\Models\Warehouse;
+    use Modules\LevelAccess\Models\ModuleLevel;
 
     /**
      * Class App\Models\Tenant\Configuration
@@ -238,6 +239,10 @@
             'set_unit_price_dispatch_related_record',
             'restrict_voided_send',
             'shipping_time_days_voided',
+            'top_menu_a_id',
+            'top_menu_b_id',
+            'top_menu_c_id',
+            'top_menu_d_id',
         ];
 
         protected $casts = [
@@ -317,6 +322,10 @@
             'set_unit_price_dispatch_related_record' => 'bool',
             'restrict_voided_send' => 'bool',
             'shipping_time_days_voided' => 'int',
+            'top_menu_a_id' => 'int',
+            'top_menu_b_id' => 'int',
+            'top_menu_c_id' => 'int',
+            'top_menu_d_id' => 'int',
 
         ];
 
@@ -509,6 +518,10 @@
                 'new_validator_pagination' => $this->getNewValidatorPagination(),
                 'restrict_voided_send' => $this->restrict_voided_send,
                 'shipping_time_days_voided' => $this->shipping_time_days_voided,
+                'top_menu_a_id' => $this->top_menu_a_id,
+                'top_menu_b_id' => $this->top_menu_b_id,
+                'top_menu_c_id' => $this->top_menu_c_id,
+                'top_menu_d_id' => $this->top_menu_d_id,
 
             ];
         }
@@ -2105,6 +2118,26 @@
         {
             return $query->select('set_unit_price_dispatch_related_record')->first()->set_unit_price_dispatch_related_record;
         }
-        
+
+        public function top_menu_a()
+        {
+            return $this->belongsTo(ModuleLevel::class, 'top_menu_a_id');
+        }
+
+        public function top_menu_b()
+        {
+            return $this->belongsTo(ModuleLevel::class, 'top_menu_b_id');
+        }
+
+        public function top_menu_c()
+        {
+            return $this->belongsTo(ModuleLevel::class, 'top_menu_c_id');
+        }
+
+        public function top_menu_d()
+        {
+            return $this->belongsTo(ModuleLevel::class, 'top_menu_d_id');
+        }
+
 
     }

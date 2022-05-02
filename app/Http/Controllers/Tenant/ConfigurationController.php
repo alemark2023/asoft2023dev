@@ -23,6 +23,7 @@ use App\CoreFacturalo\Template;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\FormatTemplate;
+use Modules\LevelAccess\Models\ModuleLevel;
 
 class ConfigurationController extends Controller
 {
@@ -490,6 +491,31 @@ class ConfigurationController extends Controller
             'url_apiruc' => $configuration->url_apiruc,
             'token_apiruc' => $configuration->token_apiruc,
             'token_false' => !$configuration->UseCustomApiPeruToken(),
+        ];
+    }
+
+    public function visualGetMenu()
+    {
+        $modules = ModuleLevel::where([['route_name', '!=', null],['label_menu', '!=', null]])->get();
+
+        return [
+            'modules' => $modules
+        ];
+    }
+
+    public function visualSetMenu(Request $request)
+    {
+        $configuration = Configuration::first();
+        $configuration->top_menu_a_id = $request->menu_a;
+        $configuration->top_menu_b_id = $request->menu_b;
+        $configuration->top_menu_c_id = $request->menu_c;
+        $configuration->top_menu_d_id = $request->menu_d;
+        $configuration->save();
+
+        return [
+            'success' => true,
+            'configuration' => $configuration->getCollectionData(),
+            'message' => 'Configuración actualizada',
         ];
     }
 }

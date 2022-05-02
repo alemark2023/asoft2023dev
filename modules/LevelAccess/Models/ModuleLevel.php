@@ -17,6 +17,8 @@
             'value',
             'description',
             'module_id',
+            'route_name',
+            'label_menu',
         ];
 
         /**

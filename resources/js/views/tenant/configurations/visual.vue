@@ -81,16 +81,24 @@
                     </div>
                 </div>
 
+                <div class="pt-3">
+                    <h5>Accesos directos</h5>
+                    <el-button type="button" @click="dialogMenu()" color="primary">Editar</el-button>
+                </div>
+
             </div>
         </form>
-
+        <dialog-header-menu :showDialog.sync="dialogHeaderMenuVisible" :configurations="visuals"/>
     </div>
 </template>
 
 <script>
+    import DialogHeaderMenu from './partials/dialog_header_menu.vue'
     export default {
         props:['visual','typeUser'],
-
+        components: {
+            DialogHeaderMenu
+        },
         data() {
             return {
                 loading_submit: false,
@@ -98,6 +106,7 @@
                 errors: {},
                 form: {},
                 visuals: {},
+                dialogHeaderMenuVisible: false,
             }
         },
         async created() {
@@ -167,6 +176,9 @@
                 }).then(() => {
                     this.loading_submit = false;
                 });
+            },
+            dialogMenu() {
+                this.dialogHeaderMenuVisible = true
             },
         }
     }
