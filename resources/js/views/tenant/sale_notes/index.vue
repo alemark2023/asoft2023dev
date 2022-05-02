@@ -104,7 +104,14 @@
                             </template>
                         </td>
                         <td class="text-center">
-                            <span class="badge text-white" :class="{'bg-success': (row.total_canceled), 'bg-warning': (!row.total_canceled)}">{{row.total_canceled ? 'Pagado':'Pendiente'}}</span>
+
+                            <template v-if="row.state_type_id === '11'">
+                                <span class="badge text-white bg-danger">{{row.state_type_description}}</span>
+                            </template>
+                            <template v-else>
+                                <span class="badge text-white" :class="{'bg-success': (row.total_canceled), 'bg-warning': (!row.total_canceled)}">{{row.total_canceled ? 'Pagado':'Pendiente'}}</span>
+                            </template>
+                            
                         </td>
 
                         <td>{{ row.purchase_order }}</td>
@@ -152,7 +159,7 @@
                                 data-toggle="tooltip"
                                 data-placement="top"
                                 title="Anular"
-                                v-if="row.state_type_id != '11'"
+                                v-if="userPermissionOverrideCpe&&row.state_type_id != '11'"
                                 type="button"
                                 class="dropdown-item"
                              @click.prevent="clickVoided(row.id)">
@@ -282,6 +289,7 @@
         props: [
             'soapCompany',
             'typeUser',
+            'userPermissionOverrideCpe',
             'configuration'
         ],
         mixins: [deletable],
