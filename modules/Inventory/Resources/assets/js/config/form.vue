@@ -14,13 +14,20 @@
                                 <small class="form-control-feedback" v-if="errors.stock_control" v-text="errors.stock_control[0]"></small>
                             </div>
                         </div>
+                        <div class="col-md-12">
+                            <!-- migracion desarrollo sin terminar #1401 -->
+                            <label class="control-label">Generar automaticamente codigo interno del producto</label>
+                            <div class="form-group" :class="{'has-danger': errors.generate_internal_id}">
+                                <el-switch v-model="form.generate_internal_id" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                <small class="form-control-feedback" v-if="errors.generate_internal_id" v-text="errors.generate_internal_id[0]"></small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 </template>
-
 
 <script>
     export default {
@@ -33,11 +40,8 @@
             }
         },
         async created() {
-            await this.initForm();
-
-            await this.$http.get(`/${this.resource}/record`) .then(response => {
-                if (response.data !== '') this.form = response.data.data;
-            });
+            this.initForm();
+            await this.getRecord()
         },
         methods: {
             initForm() {
@@ -48,7 +52,12 @@
                     stock_control: false,
                 };
             },
-            submit() {
+            async getRecord() {
+                await this.$http.get(`/${this.resource}/record`) .then(response => {
+                    if (response.data !== '') this.form = response.data.data;
+                });
+            },
+            async submit() {
                 this.loading_submit = true;
 
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
@@ -57,6 +66,7 @@
                     }
                     else {
                         this.$message.error(response.data.message);
+                        this.getRecord()
                     }
                 }).catch(error => {
                     if (error.response.status === 422) {
