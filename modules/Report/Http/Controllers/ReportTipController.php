@@ -38,7 +38,7 @@ class ReportTipController extends Controller
         
         FunctionsHelper::setDateInPeriod($request, $date_start, $date_end);
 
-        return Tip::with(['origin'])->whereBetween('origin_date_of_issue', [$date_start, $date_end]);
+        return Tip::with(['origin'])->whereBetween('origin_date_of_issue', [$date_start, $date_end])->latest();
 
     }
 

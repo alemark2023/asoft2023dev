@@ -12,6 +12,7 @@
                         <th>Empleado</th>
                         <th class="text-center">Fecha</th>
                         <th class="text-center">Documento</th>
+                        <th class="text-center">Estado</th>
                         <th>Tipo documento</th>
                         <th class="text-center">Total propina</th>
                     <tr>
@@ -20,6 +21,7 @@
                         <td>{{row.worker_full_name}}</td>
                         <td class="text-center">{{row.origin_date_of_issue}}</td>
                         <td class="text-center">{{row.document_number_full}}</td> 
+                        <td class="text-center">{{row.state_type_description}}</td> 
                         <td>{{row.document_type_description}}</td> 
                         <td class="text-center">{{row.total}}</td> 
                     </tr>

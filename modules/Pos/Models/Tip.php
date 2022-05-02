@@ -82,6 +82,7 @@ class Tip extends ModelTenant
             'total' => $this->total, 
             'document_type_description' => $this->document_type_description, 
             'document_number_full' => $this->document_number_full, 
+            'state_type_description' => $this->origin->state_type->description, 
         ];
     }
 
