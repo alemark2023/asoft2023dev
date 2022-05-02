@@ -1223,6 +1223,8 @@ export default {
         },
         async clickAddItem() {
 
+            if(parseFloat(this.form.unit_price_value) <= 0) return this.$message.error('El Precio Unitario debe ser mayor a 0');
+
             // if(this.form.quantity < this.getMinQuantity()){
             //     return this.$message.error(`La cantidad no puede ser inferior a ${this.getMinQuantity()}`);
             // }
@@ -1252,6 +1254,18 @@ export default {
 
                 }
             }
+
+            
+            //validar precio compra y venta
+            if(this.configuration.validate_purchase_sale_unit_price)
+            {
+                let val_purchase_unit_price = parseFloat(this.form.item.purchase_unit_price)
+                
+                if(val_purchase_unit_price > parseFloat(unit_price)){
+                    return this.$message.error(`El precio de compra no puede ser superior al precio de venta (P. Compra: ${val_purchase_unit_price})`)
+                }
+            }
+
 
             this.form.input_unit_price_value = this.form.unit_price_value;
 
@@ -1289,6 +1303,8 @@ export default {
             this.row.IdLoteSelected = IdLoteSelected
             this.row.document_item_id = document_item_id
 
+            this.showMessageDetraction()
+
             this.$emit('add', this.row);
 
             if (this.search_item_by_barcode) {
@@ -1300,6 +1316,14 @@ export default {
             } else {
                 this.setFocusSelectItem();
             }
+        },
+        showMessageDetraction(){
+
+            let total = (this.currencyTypeIdActive === 'PEN') ? this.row.total : (this.row.total * this.exchangeRateSale)
+            let total_restriction = 700
+
+            if (total >= total_restriction && this.row.item.subject_to_detraction) this.$message.warning('El producto/servicio vendido está sujeto a detracción')
+
         },
         cleanItems() {
             this.items = []
