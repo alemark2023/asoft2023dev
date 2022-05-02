@@ -130,7 +130,11 @@ class CashController extends Controller
         $data['establishment_department_description'] = $establishment->department->description;
         $data['establishment_district_description'] = $establishment->district->description;
         $data['nota_venta'] = 0;
+
         $data['total_tips'] = 0;
+        $data['total_payment_cash_01_document'] = 0;
+        $data['total_payment_cash_01_sale_note'] = 0;
+
         $nota_credito = 0;
         $nota_debito = 0;
         /************************/
@@ -161,14 +165,17 @@ class CashController extends Controller
                     $final_balance += $total;
                     if (count($sale_note->payments) > 0) {
                         $pays = $sale_note->payments;
-                        foreach ($methods_payment as $record) {
+                        foreach ($methods_payment as $record) 
+                        {
                             $record_total = $pays->where('payment_method_type_id', $record->id)->sum('payment');
                             $record->sum = ($record->sum + $record_total);
+                            if($record->id === '01') $data['total_payment_cash_01_sale_note'] += $record_total;
                         }
                     }
+
+                    $data['total_tips'] += $sale_note->tip ? $sale_note->tip->total : 0;
                 }
 
-                $data['total_tips'] += $sale_note->tip ? $sale_note->tip->total : 0;
 
                 $temp = [
                     'type_transaction'          => 'Venta',
@@ -214,6 +221,9 @@ class CashController extends Controller
                                 if (!empty($record_total)) {
                                     $usado .= self::getStringPaymentMethod($record->id).'<br>Se usan los pagos Tipo '.$record->id.'<br>';
                                 }
+
+                                if($record->id === '01') $data['total_payment_cash_01_document'] += $record_total;
+
                             }
                         }
                     } else {
@@ -257,12 +267,14 @@ class CashController extends Controller
                             }
                         }
                     }
+
+                    $data['total_tips'] += $document->tip ? $document->tip->total : 0;
+
                 }
                 if ($record_total != $document->total) {
                     $usado .= '<br> Los montos son diferentes '.$document->total." vs ".$pagado."<br>";
                 }
 
-                $data['total_tips'] += $document->tip ? $document->tip->total : 0;
 
                 $temp = [
                     'type_transaction'          => 'Venta',
