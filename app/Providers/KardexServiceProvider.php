@@ -6,6 +6,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\DocumentItem;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\PurchaseItem;
+use App\Models\Tenant\PurchaseSettlementItem;
 use App\Models\Tenant\SaleNoteItem;
 use App\Models\Tenant\Kardex;
 use Illuminate\Support\ServiceProvider;
@@ -24,6 +25,7 @@ class KardexServiceProvider extends ServiceProvider
         $this->save_item();
         $this->sale();
         $this->purchase();
+        $this->purchase_settlement();
         $this->sale_note();
 
     }
@@ -60,6 +62,20 @@ class KardexServiceProvider extends ServiceProvider
     private function purchase()
     {
         PurchaseItem::created(function (PurchaseItem $purchase_item) {
+
+            $kardex = $this->saveKardex('purchase', $purchase_item->item_id, $purchase_item->purchase_id, $purchase_item->quantity, 'purchase');
+
+            $this->updateStock($purchase_item->item_id, $kardex->quantity, false);
+
+        });
+    }
+
+    /**
+     *Cuando se realiza una compra
+     */
+    private function purchase_settlement()
+    {
+        PurchaseSttlementItem::created(function (PurchaseItem $purchase_item) {
 
             $kardex = $this->saveKardex('purchase', $purchase_item->item_id, $purchase_item->purchase_id, $purchase_item->quantity, 'purchase');
 

@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Models\Tenant;
+use App\Models\Tenant\Kardex;
+use App\Models\Tenant\InventoryKardex;
 
 use App\Models\Tenant\Catalogs\{
     CurrencyType,
@@ -148,6 +150,26 @@ class PurchaseSettlement extends ModelTenant
     public function items()
     {
         return $this->hasMany(PurchaseSettlementItem::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function kardex()
+    {
+        return $this->hasMany(Kardex::class);
+    }
+
+    /**
+     * Se usa en la relacion con el inventario kardex en modules/Inventory/Traits/InventoryTrait.php.
+     * Tambien se debe tener en cuenta modules/Inventory/Providers/InventoryKardexServiceProvider.php y
+     * app/Providers/KardexServiceProvider.php para la correcta gestion de kardex
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function inventory_kardex()
+    {
+        return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
     }
 
     public function getNumberFullAttribute()
