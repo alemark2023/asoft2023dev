@@ -162,6 +162,7 @@ class HotelRentController extends Controller
 		$rent = HotelRent::findOrFail($rentId);
 		$rent->update([
 			'arrears' => request('arrears'),
+			'payment_status' => 'PAID',
 			'status'  => 'FINALIZADO'
 		]);
 		HotelRoom::where('id', $rent->hotel_room_id)

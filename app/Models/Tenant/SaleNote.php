@@ -15,6 +15,7 @@
     use Modules\Item\Models\WebPlatform;
     use Modules\Order\Models\OrderNote;
     use Modules\Sale\Models\TechnicalService;
+    use Modules\Pos\Models\Tip;
 
     /**
      * Class SaleNote
@@ -1079,6 +1080,10 @@
             return $this->hasMany(SaleNotePayment::class);
         }
 
+        public function tip()
+        {
+            return $this->morphOne(Tip::class, 'origin');
+        }
 
         /**
          *
