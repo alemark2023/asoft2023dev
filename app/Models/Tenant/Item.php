@@ -2110,6 +2110,24 @@ class Item extends ModelTenant
             ->distinct();
     }
 
+    
+    /**
+     * Almacenes asociados al producto
+     *
+     * @return array
+     */
+    public function getDataWarehouses()
+    {
+        return collect($this->warehouses)->transform(function($row){
+            return [
+                'warehouse_description' => $row->warehouse->description,
+                'stock' => $row->stock,
+                'warehouse_id' => $row->warehouse_id,
+            ];
+        });
+    }
+
+
     /**
      * @param Builder $query
      *
@@ -2136,6 +2154,36 @@ class Item extends ModelTenant
         return $query->whereHas('warehouses', function($query) use($stockmin) {
             $query->where('stock', '>', $stockmin);
         });
+    }
+
+
+    /**
+     * 
+     * Filtro para no incluir relaciones en consulta
+     *
+     * @param Builder $query
+     * @return Builder
+     */  
+    public function scopeWhereFilterWithOutRelations($query)
+    {
+        return $query->withOut(['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags']);
+    }
+
+
+    /**
+     * 
+     * Filtro para consulta al actualizar precios
+     * 
+     * Usado en:
+     * ItemUpdatePriceImport
+     *
+     * @param Builder $query
+     * @param  string $internal_id
+     * @return Builder
+     */  
+    public function scopeWhereFilterUpdatePrices($query, $internal_id)
+    {
+        return $query->whereFilterWithOutRelations()->where('internal_id', $internal_id)->select('id', 'internal_id', 'sale_unit_price', 'purchase_unit_price');
     }
 
 }

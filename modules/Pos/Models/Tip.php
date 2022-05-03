@@ -56,12 +56,12 @@ class Tip extends ModelTenant
 
     public function getDocumentTypeDescriptionAttribute()
     {
-        return $this->origin_type === Document::class ? $this->origin->document_type->description : 'NOTA DE VENTA';
+        return $this->origin_type === Document::class ? $this->origin->document_type->description ?? null : 'NOTA DE VENTA';
     } 
 
     public function getDocumentNumberFullAttribute()
     {
-        return $this->origin->number_full;
+        return optional($this->origin)->number_full;
     } 
 
     /**
@@ -82,7 +82,7 @@ class Tip extends ModelTenant
             'total' => $this->total, 
             'document_type_description' => $this->document_type_description, 
             'document_number_full' => $this->document_number_full, 
-            'state_type_description' => $this->origin->state_type->description, 
+            'state_type_description' => $this->origin->state_type->description ?? null, 
         ];
     }
 

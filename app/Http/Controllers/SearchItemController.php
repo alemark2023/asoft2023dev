@@ -1161,6 +1161,7 @@
 
             }
 
+            $data->whereIsActive();
 
             return self::getItemToTrasferModal($data,$warehouse_id);
         }
@@ -1172,7 +1173,8 @@
          */
         public static function getItemToTrasferWithoutSearch( $warehouse_id = 0): \Illuminate\Database\Eloquent\Collection
         {
-            $data = self::getItemToTrasferCollection($warehouse_id);
+            $data = self::getItemToTrasferCollection($warehouse_id)->whereIsActive();
+
             // Inicia con 20 productos, puede añadirse en el env la variable NUMBER_ITEMS
             $data->take(\Config('extra.number_items_at_start'));
             return  self::getItemToTrasferModal($data,$warehouse_id);
