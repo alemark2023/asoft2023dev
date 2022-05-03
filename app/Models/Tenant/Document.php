@@ -26,6 +26,7 @@
     use Modules\Order\Models\OrderNote;
     use Modules\Sale\Models\TechnicalService;
     use phpDocumentor\Reflection\Utils;
+    use Modules\Pos\Models\Tip;
 
 
     /**
@@ -937,6 +938,11 @@
         public function guide_files()
         {
             return $this->hasMany(GuideFile::class);
+        }
+        
+        public function tip()
+        {
+            return $this->morphOne(Tip::class, 'origin');
         }
 
         /**

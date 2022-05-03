@@ -845,6 +845,7 @@
                 :businessTurns="businessTurns"
                 :is-print="isPrint"
                 :globalDiscountTypeId="configuration.global_discount_type_id"
+                :enabledTipsPos="configuration.enabled_tips_pos"
             ></payment-form>
         </template>
 
@@ -1542,6 +1543,8 @@ export default {
                 },
                 reference_data: null,
                 is_print: true,
+                worker_full_name_tips: null, //propinas
+                total_tips: 0, //propinas
             };
             // console.log(this.configuration.show_terms_condition_pos);
             if (this.configuration.show_terms_condition_pos) {

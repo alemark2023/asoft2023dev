@@ -540,6 +540,27 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Habilitar registro de propinas
+                                    <el-tooltip class="item"
+                                                content="Disponible en POS"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                 <div :class="{'has-danger': errors.enabled_tips_pos}"
+                                        class="form-group">
+                                    <el-switch v-model="form.enabled_tips_pos"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.enabled_tips_pos"
+                                            class="form-control-feedback"
+                                            v-text="errors.enabled_tips_pos[0]"></small>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="third">
@@ -1606,6 +1627,7 @@ export default {
                 set_unit_price_dispatch_related_record: false,
                 restrict_voided_send: false,
                 shipping_time_days_voided: 0,
+                enabled_tips_pos: false,
 
             };
         },

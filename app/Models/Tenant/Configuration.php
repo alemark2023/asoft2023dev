@@ -238,6 +238,7 @@
             'set_unit_price_dispatch_related_record',
             'restrict_voided_send',
             'shipping_time_days_voided',
+            'enabled_tips_pos',
         ];
 
         protected $casts = [
@@ -317,7 +318,8 @@
             'set_unit_price_dispatch_related_record' => 'bool',
             'restrict_voided_send' => 'bool',
             'shipping_time_days_voided' => 'int',
-
+            'enabled_tips_pos' => 'bool',
+            
         ];
 
         protected $hidden = [
@@ -509,6 +511,7 @@
                 'new_validator_pagination' => $this->getNewValidatorPagination(),
                 'restrict_voided_send' => $this->restrict_voided_send,
                 'shipping_time_days_voided' => $this->shipping_time_days_voided,
+                'enabled_tips_pos' => $this->enabled_tips_pos,
 
             ];
         }
