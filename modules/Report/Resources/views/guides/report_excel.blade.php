@@ -117,6 +117,7 @@
                     <th>Número</th>
                     <th>Estado</th>
                     <th class="text-center">Fecha Envío</th>
+                    <th class="text-center">O.Pedido</th>
                     <th class="text-center">Producto</th>
                     <th class="text-center">Cantidad</th>
                     <th class="text-center">Motivo de Traslado</th>
@@ -169,6 +170,7 @@
                         $num_doc=$dispatcher['number'];
                         $name_dispatcher=$dispatcher['name'];
                         $transfer_description = $dispatches['transfer_reason_description']? $dispatches['transfer_reason_description'] : 0;
+                        $order_form_description = $dispatches['order_form_description'];
                         ?>
 
                         <td class="celda">{{$loop->iteration}}</td>
@@ -179,6 +181,7 @@
                         <td class="celda">{{ $number }}</td>
                         <td class="celda"> {{$state_type_description}} </td>
                         <td class="celda">{{ $date_of_shipping }}</td>
+                        <td class="celda">{{ $order_form_description }}</td>
                         <td class="celda"> {{$item_description}} </td>
                         <td class="celda"> {{$value->getQtyFormated()}} </td>
                         <td class="celda">{{$transfer_reason}}</td>
@@ -192,7 +195,7 @@
                     @endphp
                 @endforeach
                 <tr>
-                    <td class="celda" colspan="7"></td>
+                    <td class="celda" colspan="8"></td>
                     <td class="celda"><strong>Total</strong></td>
                     <td class="celda">{{number_format($acum_total,2)}}</td>
                 </tr>
