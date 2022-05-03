@@ -429,6 +429,31 @@
             return $this->belongsTo(OrderNote::class, 'reference_order_note_id');
         }
 
+        
+        /**
+         * 
+         * Obtener orden de pedido externa o relacionada de order form
+         *
+         * @return string
+         */
+        public function getOrderFormDescription()
+        {
+
+            $order_form_description = null;
+
+            if($this->order_form)
+            {
+                $order_form_description = $this->order_form->number_full;
+            }
+            else if($this->order_form_external)
+            {
+                $order_form_description = $this->order_form_external;
+            }
+
+            return $order_form_description;
+            
+        }
+
 
         /**
          * Retorna un standar de nomenclatura para el modelo
@@ -448,6 +473,7 @@
 
             if ($this->generate_document) $documents [] = ['description' => $this->generate_document->number_full];
             if ($this->reference_document) $documents [] = ['description' => $this->reference_document->number_full];
+ 
 
             //
             return [
@@ -483,7 +509,8 @@
                 'btn_generate_document' => $this->generate_document || $this->reference_document_id ? false : true,
                 'transfer_reason_type' => $this->transfer_reason_type,
                 'transfer_reason_description' => $this->transfer_reason_description,
-                'documents' => $documents
+                'documents' => $documents,
+                'order_form_description' => $this->getOrderFormDescription(),
             ];
 
         }
