@@ -934,6 +934,7 @@ class Item extends ModelTenant
                     'price2'        => $item_unit_types->price2,
                     'price3'        => $item_unit_types->price3,
                     'price_default' => $item_unit_types->price_default,
+                    'barcode' => $item_unit_types->barcode,
                 ];
             }),
             'warehouses' => collect($this->warehouses)->transform(function ($warehouses) use ($warehouse) {
@@ -2153,6 +2154,57 @@ class Item extends ModelTenant
         $stockmin = (int)$this->stock_min;
         return $query->whereHas('warehouses', function($query) use($stockmin) {
             $query->where('stock', '>', $stockmin);
+        });
+    }
+    
+
+    /**
+     * 
+     * Obtener presentaciones
+     *
+     * Usado en: 
+     * PosController
+     * 
+     * @param  bool $search_item_by_barcode_presentation
+     * @param  string $barcode_presentation
+     * @return array
+     */
+    public function getItemUnitTypesBarcode($search_item_by_barcode_presentation = false, $barcode_presentation)
+    {
+        return $search_item_by_barcode_presentation ? $this->item_unit_types()->where('barcode', $barcode_presentation)->get() : $this->item_unit_types;
+    }
+
+    /**
+     * 
+     * Filtrar por codigo de barra de presentacion
+     * 
+     * Usado en: 
+     * PosController
+     * 
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeOrFilterItemUnitTypeBarcode($query, $barcode)
+    {
+        return $query->orWhereHas('item_unit_types', function($query) use($barcode) {
+            $query->where('barcode', $barcode);
+        });
+    }
+
+    /**
+     * 
+     * Filtrar por codigo de barra de presentacion
+     * 
+     * Usado en: 
+     * SearchItemController
+     * 
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeFilterItemUnitTypeBarcode($query, $barcode)
+    {
+        return $query->whereHas('item_unit_types', function($query) use($barcode) {
+            $query->where('barcode', $barcode);
         });
     }
 
