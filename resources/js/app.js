@@ -189,6 +189,7 @@ Vue.component('tenant-report-massive-downloads-index', require('../../modules/Re
 Vue.component('tenant-documents-regularize-shipping', require('../../modules/Document/Resources/assets/js/views/documents/regularize_shipping.vue'));
 Vue.component('tenant-report-commissions-detail-index', require('../../modules/Report/Resources/assets/js/views/commissions_detail/index.vue'));
 
+Vue.component('tenant-report-tips-index', require('../../modules/Report/Resources/assets/js/views/tips/index.vue'));
 
 Vue.component('tenant-categories-index', require('../../modules/Item/Resources/assets/js/views/categories/index.vue'));
 Vue.component('tenant-brands-index', require('../../modules/Item/Resources/assets/js/views/brands/index.vue'));

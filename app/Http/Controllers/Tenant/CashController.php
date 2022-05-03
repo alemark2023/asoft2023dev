@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\DB;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Pos\Models\CashTransaction;
 use App\Models\Tenant\CashDocumentCredit;
+use App\CoreFacturalo\Helpers\Template\ReportHelper;
+
 
 /**
  * Class CashController
@@ -375,10 +377,10 @@ class CashController extends Controller
 
     }
 
-    public function report_products($id)
+    public function report_products($id, $is_garage = false)
     {
 
-        $data = $this->getDataReport($id);
+        $data = $this->getDataReport($id, $is_garage);
         $pdf = PDF::loadView('tenant.cash.report_product_pdf', $data);
         $filename = "Reporte_POS_PRODUCTOS - {$data['cash']->user->name} - {$data['cash']->date_opening} {$data['cash']->time_opening}";
 
@@ -404,15 +406,17 @@ class CashController extends Controller
     }
 
 
-    public function getDataReport($id){
+    public function getDataReport($id, $is_garage = false){
 
         $cash = Cash::findOrFail($id);
         $company = Company::first();
         $cash_documents =  CashDocument::select('document_id')->where('cash_id', $cash->id)->get();
+        ReportHelper::setBoolIsGarage($is_garage);
 
         $source = DocumentItem::with('document')->whereIn('document_id', $cash_documents)->get();
 
         $documents = collect($source)->transform(function(DocumentItem $row){
+
             $item = $row->item;
             $data = $row->toArray();
             $data['item'] =$item;
@@ -420,6 +424,8 @@ class CashController extends Controller
             $data['sub_total'] =$data['unit_value'] * $data['quantity'];
             $data['number_full'] = $row->document->number_full;
             $data['description'] = $row->item->description;
+            $data['unit_type_id'] = $this->getUnitTypeId($row);
+            $data['record_type'] = 'document_item';
             return $data;
         });
 
@@ -427,7 +433,7 @@ class CashController extends Controller
 
         $documents = $documents->merge($this->getPurchasesReportProducts($cash));
 
-        return compact("cash", "company", "documents");
+        return compact("cash", "company", "documents", 'is_garage');
 
     }
 
@@ -447,6 +453,8 @@ class CashController extends Controller
             $data['sub_total'] =$data['unit_value'] * $data['quantity'];
             $data['number_full'] = $row->sale_note->number_full;
             $data['description'] = $row->item->description;
+            $data['unit_type_id'] = $this->getUnitTypeId($row);
+            $data['record_type'] = 'sale_note_item';
             return $data;
         });
 
@@ -467,9 +475,16 @@ class CashController extends Controller
             $data['sub_total'] =$data['unit_value'] * $data['quantity'];
             $data['number_full'] = $row->purchase->number_full;
             $data['description'] = $row->item->description;
+            $data['unit_type_id'] = $this->getUnitTypeId($row);
+            $data['record_type'] = 'purchase_item';
             return $data;
         });
 
+    }
+
+    private function getUnitTypeId($row)
+    {
+        return $row->item->unit_type_id ?? null;
     }
 
 }
