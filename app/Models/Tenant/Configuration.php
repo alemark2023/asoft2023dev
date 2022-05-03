@@ -12,6 +12,7 @@
     use Illuminate\Support\Facades\Config;
     use Modules\Inventory\Models\Warehouse;
     use Modules\LevelAccess\Models\ModuleLevel;
+    use App\Models\Tenant\SKin;
 
     /**
      * Class App\Models\Tenant\Configuration
@@ -243,6 +244,7 @@
             'top_menu_b_id',
             'top_menu_c_id',
             'top_menu_d_id',
+            'skin_id',
         ];
 
         protected $casts = [
@@ -326,7 +328,7 @@
             'top_menu_b_id' => 'int',
             'top_menu_c_id' => 'int',
             'top_menu_d_id' => 'int',
-
+            'skin_id' => 'int',
         ];
 
         protected $hidden = [
@@ -419,6 +421,7 @@
                 $warehouse = new Warehouse();
             }
             $currency = CurrencyType::all();
+            $skins = Skin::all();
             return [
                 'id' => $this->id,
                 'company' => $company,
@@ -522,7 +525,8 @@
                 'top_menu_b_id' => $this->top_menu_b_id,
                 'top_menu_c_id' => $this->top_menu_c_id,
                 'top_menu_d_id' => $this->top_menu_d_id,
-
+                'skin_id' => $this->skin_id,
+                'skins' => $skins,
             ];
         }
 
@@ -2139,5 +2143,8 @@
             return $this->belongsTo(ModuleLevel::class, 'top_menu_d_id');
         }
 
-
+        public function skin()
+        {
+            return $this->belongsTo(Skin::class, 'skin_id');
+        }
     }

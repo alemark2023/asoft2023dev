@@ -86,6 +86,24 @@
                     <el-button type="button" @click="dialogMenu()" color="primary">Editar</el-button>
                 </div>
 
+                <div class="pt-3">
+                    <h5>Cambiar tema</h5>
+                    <div :class="{'has-danger': errors.compact_sidebar}">
+                        <el-select
+                            v-model="form.skin_id"
+                            placeholder="Tema"
+                            @change="submitForm">
+                            <el-option
+                                v-for="item in skins"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                            </el-option>
+                        </el-select>
+                        <small class="form-control-feedback" v-if="errors.compact_sidebar" v-text="errors.compact_sidebar[0]"></small>
+                    </div>
+                </div>
+
             </div>
         </form>
         <dialog-header-menu :showDialog.sync="dialogHeaderMenuVisible" :configurations="visuals"/>
@@ -107,6 +125,7 @@
                 form: {},
                 visuals: {},
                 dialogHeaderMenuVisible: false,
+                skins: {},
             }
         },
         async created() {
@@ -126,6 +145,7 @@
                     colums_grid_item: 4,
                     enable_whatsapp: true,
                     phone_whatsapp: '',
+                    skins: 1,
                 }
             },
             getRecords() {
@@ -133,6 +153,7 @@
                     if (response.data !== ''){
                         this.visuals = response.data.data.visual;
                         this.form = response.data.data;
+                        this.skins = response.data.data.skins;
                     }
                 });
             },

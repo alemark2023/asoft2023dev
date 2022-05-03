@@ -74,9 +74,11 @@
         <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
     @endif
 
-    {{-- @if (file_exists(public_path('theme/custom_styles_ecommerce.css')))
-        <link rel="stylesheet" href="{{ asset('theme/custom_styles_ecommerce.css') }}" />
-    @endif --}}
+    @if($vc_compact_sidebar->skin->name != 'Default')
+        @if (file_exists(public_path('skins/'.$vc_compact_sidebar->skin->filename)))
+            <link rel="stylesheet" href="{{ asset('skins/'.$vc_compact_sidebar->skin->filename) }}" />
+        @endif
+    @endif
 
 
     @stack('styles')
