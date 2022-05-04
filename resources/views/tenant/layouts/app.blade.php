@@ -75,8 +75,8 @@
     @endif
 
     @if($vc_compact_sidebar->skin->name != 'Default')
-        @if (file_exists(public_path('skins/'.$vc_compact_sidebar->skin->filename)))
-            <link rel="stylesheet" href="{{ asset('skins/'.$vc_compact_sidebar->skin->filename) }}" />
+        @if (file_exists(storage_path('app/public/skins/'.$vc_compact_sidebar->skin->filename)))
+            <link rel="stylesheet" href="{{ asset('storage/skins/'.$vc_compact_sidebar->skin->filename) }}" />
         @endif
     @endif
 

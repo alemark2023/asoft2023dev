@@ -92,7 +92,8 @@
                         <el-select
                             v-model="form.skin_id"
                             placeholder="Tema"
-                            @change="submitForm">
+                            @change="submitForm"
+                            class="pb-3">
                             <el-option
                                 v-for="item in skins"
                                 :key="item.id"
@@ -101,21 +102,25 @@
                             </el-option>
                         </el-select>
                         <small class="form-control-feedback" v-if="errors.compact_sidebar" v-text="errors.compact_sidebar[0]"></small>
+                        <el-button type="button" @click="dialogSkins()" color="primary">Subir tema</el-button>
                     </div>
                 </div>
 
             </div>
         </form>
         <dialog-header-menu :showDialog.sync="dialogHeaderMenuVisible" :configurations="visuals"/>
+        <dialog-skins :showDialog.sync="dialogSkinsVisible" :skins="skins"/>
     </div>
 </template>
 
 <script>
     import DialogHeaderMenu from './partials/dialog_header_menu.vue'
+    import DialogSkins from './partials/dialog_skins.vue'
     export default {
         props:['visual','typeUser'],
         components: {
-            DialogHeaderMenu
+            DialogHeaderMenu,
+            DialogSkins
         },
         data() {
             return {
@@ -126,6 +131,7 @@
                 visuals: {},
                 dialogHeaderMenuVisible: false,
                 skins: {},
+                dialogSkinsVisible: false
             }
         },
         async created() {
@@ -200,6 +206,9 @@
             },
             dialogMenu() {
                 this.dialogHeaderMenuVisible = true
+            },
+            dialogSkins() {
+                this.dialogSkinsVisible = true
             },
         }
     }

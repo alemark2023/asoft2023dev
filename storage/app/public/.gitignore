@@ -1,2 +1,4 @@
 *
 !.gitignore
+!skins/
+!skins/fastura.css

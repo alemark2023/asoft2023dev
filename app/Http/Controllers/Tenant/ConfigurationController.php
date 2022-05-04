@@ -24,6 +24,8 @@ use App\Models\Tenant\Company;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\FormatTemplate;
 use Modules\LevelAccess\Models\ModuleLevel;
+use Validator;
+use App\Models\Tenant\SKin;
 
 class ConfigurationController extends Controller
 {
@@ -516,6 +518,48 @@ class ConfigurationController extends Controller
             'success' => true,
             'configuration' => $configuration->getCollectionData(),
             'message' => 'Configuración actualizada',
+        ];
+    }
+
+    public function visualUploadSkin(Request $request)
+    {
+        if ($request->file->getClientMimeType() != 'text/css') {
+            return [
+                'success' => false,
+                'message' =>  'Tipo de archivo no permitido',
+            ];
+        }
+        if (Storage::disk('public')->exists('skins'.DIRECTORY_SEPARATOR.$request->file->getClientOriginalName())) {
+            return [
+                'success' => false,
+                'message' =>  'Archivo ya existe',
+            ];
+        }
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+
+            $file_content = file_get_contents($file->getRealPath());
+            $filename = $file->getClientOriginalName();
+            $name = pathinfo($file->getClientOriginalName());
+
+
+            Storage::disk('public')->put('skins'.DIRECTORY_SEPARATOR.$filename, $file_content);
+
+            $skin = new Skin;
+            $skin->filename = $filename;
+            $skin->name = $name['filename'];
+            $skin->save();
+
+
+            return [
+                'success' => true,
+                'message' =>  'Archivo cargado exitosamente'
+            ];
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
         ];
     }
 }
