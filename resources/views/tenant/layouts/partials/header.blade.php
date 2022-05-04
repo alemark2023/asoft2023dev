@@ -104,13 +104,13 @@
             </li>
         </ul>
 
-        @if($vc_document > 0 || $vc_document_regularize_shipping > 0)
+        @if($vc_document > 0 || $vc_document_regularize_shipping > 0 || $vc_finished_downloads > 0)
         <span class="separator"></span>
         <ul class="notifications">
             <li class="showed" id="dropdown-notifications">
                 <a href="#" id="dn-toggle" class="dropdown-toggle notification-icon" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="far fa-bell text-secondary"></i>
-                    <span class="badge">!</span>
+                    <span class="badge {{ $vc_document == 0 && $vc_document_regularize_shipping == 0 && $vc_finished_downloads > 0 ? 'badge-info' : '' }}">!</span>
                 </a>
 
                 <div id="dn-menu" class="dropdown-menu notification-menu" style="">

@@ -20879,41 +20879,6 @@ html.fixed.sidebar-gray .sidebar-left a:focus::after {
     color: #4b4b4b;
 } */
 
-/* fondo celeste */
-html.fixed.sidebar-ligth-blue .sidebar-left,
-html.fixed.sidebar-ligth-blue .sidebar-header,
-html.fixed.sidebar-ligth-blue .sidebar-left .nano {
-    background-color: #00cfe8 !important;
-}
-html.fixed.sidebar-ligth-blue .sidebar-left a {
-    color: #fff;
-}
-html.fixed.sidebar-ligth-blue .sidebar-left a:hover,
-html.fixed.sidebar-ligth-blue .sidebar-left a:active,
-html.fixed.sidebar-ligth-blue .sidebar-left a:focus {
-    color: #4b4b4b;
-}
-html.fixed.sidebar-ligth-blue .sidebar-left a::after {
-    color: #fff;
-}
-html.fixed.sidebar-ligth-blue .sidebar-left a::before {
-    border-color: #fff;
-}
-html.fixed.sidebar-ligth-blue .sidebar-left a:hover,
-html.fixed.sidebar-ligth-blue .sidebar-left a:active,
-html.fixed.sidebar-ligth-blue .sidebar-left a:focus {
-    color: #fff;
-    background-color: transparent;
-}
-html.fixed.sidebar-ligth-blue .sidebar-left a:hover::before,
-html.fixed.sidebar-ligth-blue .sidebar-left a:active::before,
-html.fixed.sidebar-ligth-blue .sidebar-left a:focus::before,
-html.fixed.sidebar-ligth-blue .sidebar-left a:hover::after,
-html.fixed.sidebar-ligth-blue .sidebar-left a:active::after,
-html.fixed.sidebar-ligth-blue .sidebar-left a:focus::after {
-    border-color: #fff;
-    color: #fff;
-}
 /* fondo blanco */
 html.fixed.sidebar-white .sidebar-left,
 html.fixed.sidebar-white .sidebar-header,
