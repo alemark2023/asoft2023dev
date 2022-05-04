@@ -73,10 +73,33 @@
             $input = self::setInputByRequest($request);
             $item = self::getAllItemBase($request, false, $id);
 
-            if ($search_by_barcode === false && $input != null) {
-                self::SetWarehouseToUser($item);
-            }
+            // el filtro por almacén no debe depender de la búsqueda por código de barras o coincidencias
+            // if ($search_by_barcode === false && $input != null) {
+            //     self::SetWarehouseToUser($item);
+            // }
 
+            self::SetWarehouseToUser($item);
+
+            return $item->orderBy('description')->get();
+        }
+
+        
+        /**
+         * 
+         * No aplica filtro por almacén
+         * 
+         * @param Request|null $request
+         * @param int          $id
+         *
+         * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+         */
+        public static function getNotServiceItemWithOutWarehouse(Request $request = null, $id = 0)
+        {
+
+            self::validateRequest($request);
+            // $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
+            // $input = self::setInputByRequest($request);
+            $item = self::getAllItemBase($request, false, $id);
 
             return $item->orderBy('description')->get();
         }
@@ -958,7 +981,8 @@
          */
         public static function getItemToPurchase(Request $request = null, $id = 0)
         {
-            $items_not_services = self::getNotServiceItem($request, $id);
+            $items_not_services = self::getNotServiceItemWithOutWarehouse($request, $id);
+            // $items_not_services = self::getNotServiceItem($request, $id);
             $items_services = self::getServiceItem($request, $id);
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
