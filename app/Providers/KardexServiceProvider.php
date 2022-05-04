@@ -75,11 +75,11 @@ class KardexServiceProvider extends ServiceProvider
      */
     private function purchase_settlement()
     {
-        PurchaseSttlementItem::created(function (PurchaseItem $purchase_item) {
+        PurchaseSettlementItem::created(function (PurchaseSettlementItem $purchase_item_settlement) {
 
-            $kardex = $this->saveKardex('purchase', $purchase_item->item_id, $purchase_item->purchase_id, $purchase_item->quantity, 'purchase');
-
-            $this->updateStock($purchase_item->item_id, $kardex->quantity, false);
+            $kardex = $this->saveKardex('purchase', $purchase_item_settlement->item_id, $purchase_item_settlement->purchase_settlement_id, $purchase_item_settlement->quantity, 'purchase_settlement');
+            /* dd($kardex->quantity); */
+            $this->updateStock($purchase_item_settlement->item_id, $kardex->quantity, false);
 
         });
     }

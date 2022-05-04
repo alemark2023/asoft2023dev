@@ -1,8 +1,15 @@
 <?php
 
 namespace App\Models\Tenant;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use App\Models\Tenant\Kardex;
 use App\Models\Tenant\InventoryKardex;
+
 
 use App\Models\Tenant\Catalogs\{
     CurrencyType,
@@ -31,6 +38,7 @@ class PurchaseSettlement extends ModelTenant
         'supplier',
         'operation_data',
         'currency_type_id',
+        'payment_method_type_id',
         'exchange_rate_sale',
         'total_prepayment',
         'total_taxed',
@@ -57,6 +65,15 @@ class PurchaseSettlement extends ModelTenant
     protected $casts = [
         'date_of_issue' => 'date',
     ];
+
+    public static function getLastNumberBySerie($serie)
+    {
+        $t = PurchaseSettlement::where('series', $serie)->select('number')->orderby('number', 'DESC')->first();
+        if ( !empty($t)) {
+            return $t->number;
+        }
+        return 0;
+    }
 
     public function getOperationDataAttribute($value)
     {

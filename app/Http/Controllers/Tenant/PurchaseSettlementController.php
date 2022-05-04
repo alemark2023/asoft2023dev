@@ -48,6 +48,7 @@ class PurchaseSettlementController extends Controller
 
     public function create($order_id = null)
     {
+
         return view('tenant.purchase-settlements.form', compact('order_id'));
     }
 
@@ -74,23 +75,13 @@ class PurchaseSettlementController extends Controller
         // dd($request->all());
         try {
         $fact = DB::connection('tenant')->transaction(function () use($data) {
-
-            $document = PurchaseSettlement::create($data);
-            foreach ($data['items'] as $row) {
-                $document->items()->create($row);
-            }
-            $type='purchase_settlement';
-            $document = PurchaseSettlement::find($document->id);
             $facturalo = new Facturalo();
-            $facturalo->setDocument($document);
-            $facturalo->setType('purchase_settlement');
-            $facturalo->setActions($data['actions']);
+            $facturalo->save($data);
             $facturalo->createXmlUnsigned();
             $facturalo->signXmlUnsigned();
             $facturalo->updateHash();
-            $facturalo->updateState('05');
-            // $facturalo->updateQr();
-            $facturalo->createPdf($document, $type);
+            $facturalo->createPdf();
+            $facturalo->senderXmlSignedBill();
 
             return $facturalo;
         });
@@ -126,7 +117,16 @@ class PurchaseSettlementController extends Controller
             'code' => 1000,
             'value' => NumberLetter::convertToLetter($inputs['total'])
         ];
-        $filename= Functions::filename(Company::active(), $inputs['document_type_id'], $inputs['series'], $inputs['number']);
+        $actions=[
+            'send_email'=>true,
+            'send_xml_signed'=>true,
+            'format_pdf'=>'a4',
+        ];
+        $last_number = PurchaseSettlement::getLastNumberBySerie($inputs['series']);
+        // se actualiza el numero actual en $imputs
+        $number_new= $last_number + 1;
+        $type='purchase_settlement';
+        $filename= Functions::filename(Company::active(), $inputs['document_type_id'], $inputs['series'], $number_new);
         $company = Company::active();
         $values = [
             'user_id' => auth()->id(),
@@ -140,6 +140,9 @@ class PurchaseSettlementController extends Controller
             'operation_data' => OperationDataInput::set($operation_data),
             'legends' => $legends,
             'filename' => $filename,
+            'actions' => $actions,
+            'type' => $type,
+            'number' => $number_new
         ];
 
         $inputs->merge($values);
@@ -161,7 +164,7 @@ class PurchaseSettlementController extends Controller
         $payment_destinations = $this->getPaymentDestinations();
         $customers = $this->getPersons('customers');
         $configuration = Configuration::first();
-        $payment_conditions = GeneralPaymentCondition::get();
+        $payment_conditions = GeneralPaymentCondition::where('id','01')->get();
 
         return compact('suppliers', 'establishment', 'currency_types', 'discount_types', 'configuration', 'payment_conditions',
             'charge_types', 'document_types_invoice', 'company', 'payment_method_types', 'payment_destinations', 'customers');
@@ -172,7 +175,7 @@ class PurchaseSettlementController extends Controller
         switch ($table) {
             case 'suppliers':
 
-                $suppliers = Person::whereType('suppliers')->orderBy('name')->get()->transform(function ($row) {
+                $suppliers = Person::whereType('suppliers')->whereIn('identity_document_type_id',[1,4,7])->orderBy('name')->get()->transform(function ($row) {
                     return [
                         'id' => $row->id,
                         'description' => $row->number . ' - ' . $row->name,
