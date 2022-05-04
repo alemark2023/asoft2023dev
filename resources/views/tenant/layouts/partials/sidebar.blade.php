@@ -1286,6 +1286,7 @@
                                                     ($firstLevel === 'machine-production') ||
                                                     ($firstLevel === 'packaging') ||
                                                     ($firstLevel === 'machine-type-production') ||
+                                                    ($firstLevel === 'workers') ||
                                                     ($firstLevel === 'mill-production')
                                                 ) ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link"
@@ -1329,6 +1330,12 @@
                                     </a>
                                 </li>
 
+                                <li class="{{ (($firstLevel === 'workers')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.workers.index') }}">
+                                        Empleados
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     @endif
