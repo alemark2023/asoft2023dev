@@ -307,6 +307,7 @@ return [
 		'full_name' => 'Nombre completo',
 		'gitlab_user' => 'usuario de gitlab.com',
 		'domain' => 'dominio',
+		'occupation' => 'cargo',
 
 	],
 ];

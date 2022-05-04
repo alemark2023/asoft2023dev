@@ -385,6 +385,9 @@ Vue.component('tenant-machine-index', require('../../modules/Production/Resource
 Vue.component('tenant-machine-type-index', require('../../modules/Production/Resources/assets/js/view/machine/index_type.vue'));
 Vue.component('tenant-machine-form', require('../../modules/Production/Resources/assets/js/view/machine/form.vue'));
 Vue.component('tenant-machine-type-form', require('../../modules/Production/Resources/assets/js/view/machine/form_type.vue'));
+
+Vue.component('tenant-workers-index', require('../../modules/Production/Resources/assets/js/view/workers/index.vue'));
+
 /** produccion */
 
 Vue.component('tenant-production-index', require('../../modules/Production/Resources/assets/js/view/production/index.vue'));
