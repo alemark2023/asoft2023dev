@@ -117,7 +117,6 @@
                     <th>Número</th>
                     <th>Estado</th>
                     <th class="text-center">Fecha Envío</th>
-                    <th class="text-center">O.Pedido</th>
                     <th class="text-center">Producto</th>
                     <th class="text-center">Cantidad</th>
                     <th class="text-center">Motivo de Traslado</th>
@@ -128,6 +127,7 @@
                     <th class="text-center">Nombre de Transportista</th>
                     
                     <th class="text-center"># Pedido</th>
+                    <th class="text-center">O.Pedido</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -181,7 +181,6 @@
                         <td class="celda">{{ $number }}</td>
                         <td class="celda"> {{$state_type_description}} </td>
                         <td class="celda">{{ $date_of_shipping }}</td>
-                        <td class="celda">{{ $order_form_description }}</td>
                         <td class="celda"> {{$item_description}} </td>
                         <td class="celda"> {{$value->getQtyFormated()}} </td>
                         <td class="celda">{{$transfer_reason}}</td>
@@ -190,6 +189,7 @@
                         <td class="celda">{{$num_doc}}</td>
                         <td class="celda">{{$name_dispatcher}}</td>
                         <td class="celda">{{$order_note}}</td>
+                        <td class="celda">{{ $order_form_description }}</td>
                     @php
                         $acum_total += $qty
                     @endphp
