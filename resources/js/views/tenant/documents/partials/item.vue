@@ -137,6 +137,10 @@
                                                                             barras
                                 </el-checkbox>
                                 <br>
+                                <template v-if="search_item_by_barcode">
+                                    <el-checkbox v-model="search_item_by_barcode_presentation">Por presentación</el-checkbox>
+                                    <br>
+                                </template>
                             </template>
                             <el-checkbox v-model="form.has_plastic_bag_taxes"
                                          :disabled="isEditItemNote">Impuesto a la
@@ -870,17 +874,20 @@ export default {
             this.calculateTotal()
         },
         async searchRemoteItems(input) {
-            if (input.length > 2) {
+
+            if (input.length > 2) 
+            {
                 this.loading_search = true
                 const params = {
                     'input': input,
-                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0
+                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0,
+                    'search_item_by_barcode_presentation': this.search_item_by_barcode_presentation ? 1 : 0,
                 }
                 await this.$http.get(`/${this.resource}/search-items/`, {params})
                     .then(response => {
                         this.items = response.data.items
                         this.loading_search = false
-                        this.enabledSearchItemsBarcode()
+                        this.enabledSearchItemsBarcode(input)
                         this.enabledSearchItemBySeries()
                         if (this.items.length == 0) {
                             this.filterItems()
@@ -894,14 +901,37 @@ export default {
         filterItems() {
             this.items = this.all_items
         },
-        enabledSearchItemsBarcode() {
+        enabledSearchItemsBarcode(input) {
             if (this.search_item_by_barcode) {
+
                 this.$refs.selectBarcode.$data.selectedLabel = '';
-                if (this.items.length == 1) {
-                    this.form.item_id = this.items[0].id;
-                    this.$refs.selectBarcode.blur();
-                    this.changeItem();
+
+                //busqueda por presentacion
+                if(this.search_item_by_barcode_presentation)
+                {
+                    if (this.items.length == 1)
+                    {
+                        const item_unit_type = _.find(this.items[0].item_unit_types, { barcode : input})
+    
+                        if(!_.isEmpty(item_unit_type))
+                        {
+                            this.form.item_id = this.items[0].id;
+                            this.$refs.selectBarcode.blur();
+                            this.changeItem()
+                            this.selectedPrice(item_unit_type)
+                        }
+                    }
                 }
+                //busqueda comun
+                else
+                {
+                    if (this.items.length == 1) {
+                        this.form.item_id = this.items[0].id;
+                        this.$refs.selectBarcode.blur();
+                        this.changeItem();
+                    }
+                }
+
             }
         },
         async enabledSearchItemBySeries() {
@@ -1245,6 +1275,8 @@ export default {
             this.total_item = null
         },
         async clickAddItem() {
+
+            if(parseFloat(this.form.unit_price_value) <= 0) return this.$message.error('El Precio Unitario debe ser mayor a 0');
 
             // if(this.form.quantity < this.getMinQuantity()){
             //     return this.$message.error(`La cantidad no puede ser inferior a ${this.getMinQuantity()}`);

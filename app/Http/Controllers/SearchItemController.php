@@ -115,6 +115,7 @@
             $id = (int)$id;
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
             $input = self::setInputByRequest($request);
+            $search_item_by_barcode_presentation = $request->has('search_item_by_barcode_presentation') && (bool)$request->search_item_by_barcode_presentation;
 
             // $item = Item:: whereIsActive();
             $item = Item::query();
@@ -171,6 +172,8 @@
                     }
                 }
             }
+
+
             if ($bySerie === null) {
                 if ($items_id != null) {
                     $item->whereIn('id', $items_id);
@@ -178,9 +181,18 @@
                     $item->where('id', $id);
                 } else {
                     if ($search_by_barcode === true) {
-                        $item
-                            ->where('barcode', $input)
-                            ->limit(1);
+
+                        if($search_item_by_barcode_presentation)
+                        {
+                            $item->filterItemUnitTypeBarcode($input)->limit(1);
+                        }
+                        else
+                        {
+                            $item
+                                ->where('barcode', $input)
+                                ->limit(1);
+                        }
+
                     } else {
                         self::setFilter($item, $request);
                     }
