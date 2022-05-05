@@ -109,7 +109,7 @@
             </div>
         </form>
         <dialog-header-menu :showDialog.sync="dialogHeaderMenuVisible" :configurations="visuals"/>
-        <dialog-skins :showDialog.sync="dialogSkinsVisible" :skins="skins"/>
+        <dialog-skins :showDialog.sync="dialogSkinsVisible" :skins.sync="skins"/>
     </div>
 </template>
 

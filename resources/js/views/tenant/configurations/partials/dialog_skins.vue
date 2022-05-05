@@ -3,12 +3,17 @@
     <el-table :data="skins">
       <el-table-column prop="name" label="Nombre" width="150"></el-table-column>
       <el-table-column prop="filename" label="Archivo" width="150"></el-table-column>
+      <el-table-column prop="" label="Acciones" width="150">
+        <template slot-scope="scope">
+          <el-button v-if="scope.$index > 1" type="danger" size="small" @click.native.prevent="deleteSkin(scope.$index)" icon="el-icon-delete"></el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <el-upload
       :headers="headers"
       :multiple="false"
       :on-remove="handleRemove"
-      class="upload-demo"
+      class="upload-demo pt-3"
       ref="upload"
       :action="`/configurations/visual/upload_skin`"
       :show-file-list="true"
@@ -24,23 +29,11 @@
 </template>
 
 <script>
-  import {mapActions, mapState} from "vuex";
-
   export default {
     props:['showDialog', 'skins'],
-    computed: {
-        ...mapState([
-            'config',
-        ]),
-    },
     data() {
       return {
-        form: {
-          menu_a: null,
-          menu_b: null,
-          menu_c: null,
-          menu_d: null,
-        },
+        form: { },
         formLabelWidth: '120px',
         modules: [],
         headers: headers_token,
@@ -49,30 +42,8 @@
       };
     },
     created() {
-      this.$store.commit('setConfiguration', this.configuration);
-      this.loadConfiguration();
-      this.getRecords();
-      this.initForm();
     },
     methods: {
-      ...mapActions([
-          'loadConfiguration',
-      ]),
-      getRecords() {
-        this.$http.get(`/configurations/visual/get_menu`) .then(response => {
-          if (response.data !== ''){
-            this.modules = response.data.modules;
-          }
-        });
-      },
-      initForm() {
-        this.form = {
-          menu_a: this.config.top_menu_a_id,
-          menu_b: this.config.top_menu_b_id,
-          menu_c: this.config.top_menu_c_id,
-          menu_d: this.config.top_menu_d_id
-        }
-      },
       close() {
           this.$emit('update:showDialog', false)
       },
@@ -87,7 +58,10 @@
         if (response.success) {
           // this.index_file = response.data.index
           this.$message.success(response.message)
-          location.reload();
+          if (response.skins !== undefined) {
+            this.skins = response.skins;
+            this.$emit("update:skins", response.skins);
+          }
         } else {
           this.cleanFileList()
           this.$message.error(response.message)
@@ -96,6 +70,28 @@
       },
       cleanFileList(){
         this.fileList = []
+      },
+      deleteSkin(index) {
+        this.form.id = this.skins[index].id;
+        this.$http.post(`configurations/visual/delete_skin`, this.form).then(response => {
+          let data = response.data;
+          if (data.success) {
+            this.$message.success(data.message);
+          } else {
+            this.$message.error(data.message);
+          }
+          if (data !== undefined && data.skins !== undefined) {
+            this.skins = data.skins;
+            this.$emit("update:skins", data.skins);
+          }
+
+        }).catch(error => {
+          if (error.response.status === 422) {
+            this.errors = error.response.data.errors;
+          } else {
+            console.log(error);
+          }
+        });
       },
     }
   };

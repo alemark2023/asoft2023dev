@@ -25,7 +25,7 @@ use App\Models\Tenant\Establishment;
 use App\Models\Tenant\FormatTemplate;
 use Modules\LevelAccess\Models\ModuleLevel;
 use Validator;
-use App\Models\Tenant\SKin;
+use App\Models\Tenant\Skin;
 
 class ConfigurationController extends Controller
 {
@@ -551,15 +551,40 @@ class ConfigurationController extends Controller
             $skin->name = $name['filename'];
             $skin->save();
 
-
+            $skins = Skin::all();
             return [
                 'success' => true,
-                'message' =>  'Archivo cargado exitosamente'
+                'message' =>  'Archivo cargado exitosamente',
+                'skins' => $skins
             ];
         }
         return [
             'success' => false,
             'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
+    public function visualDeleteSkin(Request $request)
+    {
+        $config = Configuration::first();
+        if($config->skin_id == $request->id) {
+            return [
+                'success' => false,
+                'message' => 'No se puede eliminar el Tema actual'
+            ];
+        }
+
+
+        $skin = Skin::find($request->id);
+        Storage::disk('public')->delete('skins'.DIRECTORY_SEPARATOR.$skin->filename);
+        $skin->delete();
+
+        $skins = Skin::all();
+
+        return [
+            'success' => true,
+            'message' =>  'Tema eliminado correctamente',
+            'skins' => $skins
         ];
     }
 }

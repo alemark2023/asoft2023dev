@@ -12,7 +12,7 @@
     use Illuminate\Support\Facades\Config;
     use Modules\Inventory\Models\Warehouse;
     use Modules\LevelAccess\Models\ModuleLevel;
-    use App\Models\Tenant\SKin;
+    use App\Models\Tenant\Skin;
 
     /**
      * Class App\Models\Tenant\Configuration
