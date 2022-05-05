@@ -32,6 +32,11 @@ use App\Models\Tenant\{
     CashDocument
 };
 use Modules\Pos\Models\Tip;
+use Modules\Production\Models\{
+    Production,
+    Mill,
+    Packaging,
+};
 
 
 class OptionController extends Controller
@@ -104,6 +109,14 @@ class OptionController extends Controller
 
         $this->updateStockAfterDelete();
 
+        // produccion
+        
+        Production::where('soap_type_id', '01')->delete();
+        Packaging::where('soap_type_id', '01')->delete();
+        $this->deleteMill();
+
+        // produccion
+
         return [
             'success' => true,
             'message' => 'Documentos de prueba eliminados',
@@ -111,6 +124,24 @@ class OptionController extends Controller
         ];
     }
     
+
+    /**
+     * 
+     * Eliminar registros de ingresos de insumos
+     *
+     * @return void
+     */
+    private function deleteMill()
+    {
+        $mills = Mill::where('soap_type_id', '01')->get();
+
+        foreach ($mills as $mill) 
+        {
+            $mill->relation_mill_items()->delete();
+            $mill->delete();
+        }
+
+    }
 
     /**
      * 
