@@ -313,6 +313,7 @@ class DispatchController extends Controller
                     }),
                     'lots' => [],
                     'lots_enabled' => (bool) $row->lots_enabled,
+                    'warehouses' => $row->getDataWarehouses(),
                 ];
             });
 
