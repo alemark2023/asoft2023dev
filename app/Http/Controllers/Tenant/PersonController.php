@@ -48,9 +48,10 @@ class PersonController extends Controller
 
     public function records($type, Request $request)
     {
-      //  return 'sd';
+
         $records = Person::where($request->column, 'like', "%{$request->value}%")
                             ->where('type', $type)
+                            ->whereFilterCustomerBySeller($type)
                             ->orderBy('name');
 
         return new PersonCollection($records->paginate(config('tenant.items_per_page')));
@@ -126,9 +127,16 @@ class PersonController extends Controller
         if(!empty($optional_email)){
             $person->setOptionalEmailArray($optional_email)->push();
         }
+
+        $msg = '';
+        if($request->type === 'suppliers'){
+            $msg = ($id)?'Proveedor editado con éxito':'Proveedor registrado con éxito';
+        }else{
+            $msg = ($id)?'Cliente editado con éxito':'Cliente registrado con éxito';
+        }
         return [
             'success' => true,
-            'message' => ($id)?'Cliente editado con éxito':'Cliente registrado con éxito',
+            'message' => $msg,
             'id' => $person->id
         ];
     }

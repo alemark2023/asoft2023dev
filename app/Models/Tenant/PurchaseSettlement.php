@@ -1,6 +1,15 @@
 <?php
 
 namespace App\Models\Tenant;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use App\Models\Tenant\Kardex;
+use App\Models\Tenant\InventoryKardex;
+
 
 use App\Models\Tenant\Catalogs\{
     CurrencyType,
@@ -10,7 +19,7 @@ use App\Models\Tenant\Catalogs\{
 
 class PurchaseSettlement extends ModelTenant
 {
-
+    /* protected $with = ['establishment']; */
     protected $fillable = [
         'user_id',
         'external_id',
@@ -29,6 +38,7 @@ class PurchaseSettlement extends ModelTenant
         'supplier',
         'operation_data',
         'currency_type_id',
+        'payment_method_type_id',
         'exchange_rate_sale',
         'total_prepayment',
         'total_taxed',
@@ -43,7 +53,7 @@ class PurchaseSettlement extends ModelTenant
         'legends',
         'prepayments',
         'related',
-        'observation',
+        'observations',
 
         'filename',
         'hash',
@@ -55,6 +65,15 @@ class PurchaseSettlement extends ModelTenant
     protected $casts = [
         'date_of_issue' => 'date',
     ];
+
+    public static function getLastNumberBySerie($serie)
+    {
+        $t = PurchaseSettlement::where('series', $serie)->select('number')->orderby('number', 'DESC')->first();
+        if ( !empty($t)) {
+            return $t->number;
+        }
+        return 0;
+    }
 
     public function getOperationDataAttribute($value)
     {
@@ -148,6 +167,26 @@ class PurchaseSettlement extends ModelTenant
     public function items()
     {
         return $this->hasMany(PurchaseSettlementItem::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function kardex()
+    {
+        return $this->hasMany(Kardex::class);
+    }
+
+    /**
+     * Se usa en la relacion con el inventario kardex en modules/Inventory/Traits/InventoryTrait.php.
+     * Tambien se debe tener en cuenta modules/Inventory/Providers/InventoryKardexServiceProvider.php y
+     * app/Providers/KardexServiceProvider.php para la correcta gestion de kardex
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function inventory_kardex()
+    {
+        return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
     }
 
     public function getNumberFullAttribute()

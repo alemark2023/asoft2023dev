@@ -76,6 +76,19 @@
                                             <i class="fa fa-search"></i>
                                         </el-button>
                                     </el-tooltip>
+                                    <el-tooltip
+                                        slot="append"
+                                        :disabled="recordItem != null"
+                                        class="item"
+                                        content="Historial de ventas"
+                                        effect="dark"
+                                        placement="bottom">
+                                        <el-button
+                                            :disabled="isEditItemNote"
+                                            @click.prevent="clickHistorySales()">
+                                            <i class="fa fa-list"></i>
+                                        </el-button>
+                                    </el-tooltip>
                                 </el-input>
                             </template>
                             <template v-else>
@@ -124,6 +137,10 @@
                                                                             barras
                                 </el-checkbox>
                                 <br>
+                                <template v-if="search_item_by_barcode">
+                                    <el-checkbox v-model="search_item_by_barcode_presentation">Por presentación</el-checkbox>
+                                    <br>
+                                </template>
                             </template>
                             <el-checkbox v-model="form.has_plastic_bag_taxes"
                                          :disabled="isEditItemNote">Impuesto a la
@@ -533,7 +550,12 @@
             :showDialog.sync="showWarehousesDetail"
             :warehouses="warehousesDetail">
         </warehouses-detail>
-
+        <history-sales-form
+            :showDialog.sync="showDialogHistorySales"
+            :item_id="history_item_id"
+            :customer_id="this.customerId"
+            :type="true"
+        ></history-sales-form>
         <lots-group
             :lots_group="form.lots_group"
             :quantity="form.quantity"
@@ -550,6 +572,7 @@
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
 
+        
 
     </el-dialog>
 </template>
@@ -575,6 +598,8 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 import Keypress from "vue-keypress";
 
+import HistorySalesForm from "../../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
+
 export default {
     props: [
         'recordItem',
@@ -595,6 +620,7 @@ export default {
         WarehousesDetail,
         Keypress,
         LotsGroup,
+        HistorySalesForm,
         SelectLotsForm,
         'vue-ckeditor': VueCkeditor.component
     },
@@ -641,7 +667,8 @@ export default {
             },
             value1: 'hello',
             readonly_total: 0,
-            itemLastPrice: null
+            itemLastPrice: null,
+            showDialogHistorySales: false,
             //item_unit_type: {}
         }
     },
@@ -847,17 +874,20 @@ export default {
             this.calculateTotal()
         },
         async searchRemoteItems(input) {
-            if (input.length > 2) {
+
+            if (input.length > 2) 
+            {
                 this.loading_search = true
                 const params = {
                     'input': input,
-                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0
+                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0,
+                    'search_item_by_barcode_presentation': this.search_item_by_barcode_presentation ? 1 : 0,
                 }
                 await this.$http.get(`/${this.resource}/search-items/`, {params})
                     .then(response => {
                         this.items = response.data.items
                         this.loading_search = false
-                        this.enabledSearchItemsBarcode()
+                        this.enabledSearchItemsBarcode(input)
                         this.enabledSearchItemBySeries()
                         if (this.items.length == 0) {
                             this.filterItems()
@@ -871,14 +901,37 @@ export default {
         filterItems() {
             this.items = this.all_items
         },
-        enabledSearchItemsBarcode() {
+        enabledSearchItemsBarcode(input) {
             if (this.search_item_by_barcode) {
+
                 this.$refs.selectBarcode.$data.selectedLabel = '';
-                if (this.items.length == 1) {
-                    this.form.item_id = this.items[0].id;
-                    this.$refs.selectBarcode.blur();
-                    this.changeItem();
+
+                //busqueda por presentacion
+                if(this.search_item_by_barcode_presentation)
+                {
+                    if (this.items.length == 1)
+                    {
+                        const item_unit_type = _.find(this.items[0].item_unit_types, { barcode : input})
+    
+                        if(!_.isEmpty(item_unit_type))
+                        {
+                            this.form.item_id = this.items[0].id;
+                            this.$refs.selectBarcode.blur();
+                            this.changeItem()
+                            this.selectedPrice(item_unit_type)
+                        }
+                    }
                 }
+                //busqueda comun
+                else
+                {
+                    if (this.items.length == 1) {
+                        this.form.item_id = this.items[0].id;
+                        this.$refs.selectBarcode.blur();
+                        this.changeItem();
+                    }
+                }
+
             }
         },
         async enabledSearchItemBySeries() {
@@ -1222,6 +1275,8 @@ export default {
             this.total_item = null
         },
         async clickAddItem() {
+
+            if(parseFloat(this.form.unit_price_value) <= 0) return this.$message.error('El Precio Unitario debe ser mayor a 0');
 
             // if(this.form.quantity < this.getMinQuantity()){
             //     return this.$message.error(`La cantidad no puede ser inferior a ${this.getMinQuantity()}`);
@@ -1591,7 +1646,17 @@ export default {
                 }
             }
            
-        }
+        },
+        clickHistorySales() {
+            if (!this.form.item_id) {
+                return this.$message.error('Seleccione un item');
+            }
+
+            let item = _.find(this.items, {'id': this.form.item_id});
+            this.history_item_id = item.id;
+            this.showDialogHistorySales = true;
+            // console.log(item)
+        },
     }
 }
 

@@ -31,6 +31,7 @@ use App\Models\Tenant\{
     CashDocumentCredit,
     CashDocument
 };
+use Modules\Pos\Models\Tip;
 
 
 class OptionController extends Controller
@@ -95,6 +96,7 @@ class OptionController extends Controller
         OrderForm::where('soap_type_id', '01')->delete();
         
         GlobalPayment::where('soap_type_id', '01')->delete();
+        Tip::where('soap_type_id', '01')->delete();
         
         Income::where('soap_type_id', '01')->delete();
 

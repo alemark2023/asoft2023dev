@@ -8,6 +8,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\ItemWarehousePrice;
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\Purchase;
+use App\Models\Tenant\PurchaseSettlement;
 use App\Models\Tenant\SaleNote;
 use Modules\Order\Models\OrderNote;
 
@@ -116,6 +117,7 @@ class InventoryKardex extends ModelTenant
         $models = [
             Document::class,
             Purchase::class,
+            PurchaseSettlement::class,
             SaleNote::class,
             Inventory::class,
             OrderNote::class,
@@ -193,13 +195,20 @@ class InventoryKardex extends ModelTenant
                 $data['type_transaction'] = ($qty < 0) ? "Anulación Compra" : "Compra";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 break;
-            case $models[2]: // Nota de venta
+            case $models[2]: // liquidacion de compra
+                
+                $data['balance'] = $balance += $qty;
+                $data['number'] = optional($inventory_kardexable)->series . '-' . optional($inventory_kardexable)->number;
+                $data['type_transaction'] = ($qty < 0) ? "Anulación Liquidacion Compra" : "Liquidacion Compra";
+                $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
+                break;
+            case $models[3]: // Nota de venta
                 $data['balance'] = $balance += $qty;
                 $data['number'] = optional($inventory_kardexable)->number_full;
                 $data['type_transaction'] = "Nota de venta";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 break;
-            case $models[3]:
+            case $models[4]:
             {
                 $transaction = '';
                 $input = '';
@@ -229,19 +238,19 @@ class InventoryKardex extends ModelTenant
                 }
                 break;
             }
-            case $models[4]:
+            case $models[5]:
                 $data['balance'] = $balance += $qty;
                 $data['number'] = optional($inventory_kardexable)->prefix . '-' . optional($inventory_kardexable)->id;
                 $data['type_transaction'] = ($qty < 0) ? "Pedido" : "Anulación Pedido";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 break;
-            case $models[5]: // Devolution
+            case $models[6]: // Devolution
                 $data['balance'] = $balance += $qty;
                 $data['number'] = optional($inventory_kardexable)->number_full;
                 $data['type_transaction'] = "Devolución";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 break;
-            case $models[6]: // Dispatch
+            case $models[7]: // Dispatch
                 $data['input'] = ($qty > 0) ? (isset($inventory_kardexable->reference_sale_note_id) || isset($inventory_kardexable->reference_order_note_id) || isset($inventory_kardexable->reference_document_id) ? "-" : $qty) : "-";
                 $data['output'] = ($qty < 0) ? (isset($inventory_kardexable->reference_sale_note_id) || isset($inventory_kardexable->reference_order_note_id) || isset($inventory_kardexable->reference_document_id) ? "-" : $qty) : "-";
                 $data['balance'] = (isset($inventory_kardexable->reference_sale_note_id) || isset($inventory_kardexable->reference_order_note_id) || isset($inventory_kardexable->reference_document_id)) ? $balance += 0 : $balance += $qty;
@@ -256,5 +265,6 @@ class InventoryKardex extends ModelTenant
         $decimalRound = 6; // Cantidad de decimales a aproximar
         $data['balance'] =$data['balance'] ? round( $data['balance'] ,$decimalRound):0;
         return $data;
+        /* dd($data); */
     }
 }

@@ -211,17 +211,36 @@
                     S/. {{ $data['credit'] }}
                 </p>
             </td>
+            
             <td class="td-custom">
-                {{--
                 <p>
                     <strong>
-                        Ingreso:
+                        Total propinas:
                     </strong>
-                    S/. {{$data['cash_income']}}
+                    S/. {{$data['total_tips'] ?? 0}}
                 </p>
-                --}}
             </td>
         </tr>
+        
+        <tr>
+            <td class="td-custom">
+                <p>
+                    <strong>
+                        Total efectivo CPE:
+                    </strong>
+                    S/. {{$data['total_payment_cash_01_document'] ?? 0}}
+                </p>
+            </td>
+            <td class="td-custom">
+                <p>
+                    <strong>
+                        Total efectivo NOTA DE VENTA:
+                    </strong>
+                    S/. {{$data['total_payment_cash_01_sale_note'] ?? 0}}
+                </p>
+            </td>
+        </tr>
+
     </table>
 </div>
 @if($data['cash_documents_total']>0)

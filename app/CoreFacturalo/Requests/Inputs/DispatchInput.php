@@ -73,6 +73,7 @@ class DispatchInput
             'reference_sale_note_id' => Functions::valueKeyInArray($inputs, 'reference_sale_note_id'),
             'secondary_license_plates' => self::secondary_license_plates($inputs),
             'related' => self::related($inputs),
+            'order_form_external' => Functions::valueKeyInArray($inputs, 'order_form_external'),
         ];
 
         if(isset($inputs['data_affected_document'])){

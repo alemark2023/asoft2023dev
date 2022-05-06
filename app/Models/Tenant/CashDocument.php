@@ -8,7 +8,7 @@ use Modules\Sale\Models\TechnicalService;
 
 class CashDocument extends ModelTenant
 {
-    // protected $with = ['document'];
+    protected $with = ['document','sale_note'];
 
     public $timestamps = false;
 

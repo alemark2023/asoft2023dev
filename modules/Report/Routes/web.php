@@ -355,6 +355,16 @@
                      });
 
 
+                    Route::prefix('tips')->group(function () {
+
+                         Route::get('', 'ReportTipController@index')->name('tenant.reports.tips.index');
+                         Route::get('pdf', 'ReportTipController@pdf');
+                         Route::get('excel', 'ReportTipController@excel');
+                         Route::get('records', 'ReportTipController@records');
+
+                    });
+  
+
                 });
 
                 Route::get('cash/report/income-summary/{cash}', 'ReportIncomeSummaryController@pdf')
