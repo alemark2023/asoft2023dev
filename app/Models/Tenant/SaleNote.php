@@ -1274,4 +1274,19 @@
             return $total_factor;
         }
 
+        
+        /**
+         * 
+         * Filtrar por rango de fechas
+         * 
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         * 
+         */
+        public function scopeFilterRangeDateOfIssue($query, $date_start, $date_end)
+        {
+            return $query->whereBetween('date_of_issue', [$date_start, $date_end]);
+        }
+
+        
     }

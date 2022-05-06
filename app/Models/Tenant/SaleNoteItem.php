@@ -293,4 +293,37 @@ class SaleNoteItem extends ModelTenant
         return $this->generalConvertValueToPen($this->total_isc, $this->sale_note->exchange_rate_sale);
     }
     
+    
+    /**
+     * 
+     * Filtro para no incluir relaciones en consulta
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */  
+    public function scopeWhereFilterWithOutRelations($query)
+    {
+        return $query->withOut(['affectation_igv_type', 'system_isc_type', 'price_type']);
+    }
+
+
+    /**
+     * 
+     * Filtro para reporte de ventas grifo
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */  
+    public function scopeFilterSaleGarageGLL($query, $d_start, $d_end)
+    {
+        return $query->whereHas('relation_item', function($query){
+                        return $query->where('unit_type_id' , 'GLL');
+                    })
+                    ->whereFilterWithOutRelations()
+                    ->whereHas('sale_note', function($query) use($d_start, $d_end){
+                        return $query->whereStateTypeAccepted()->filterRangeDateOfIssue($d_start, $d_end);
+                    });
+    }
+
+
 }

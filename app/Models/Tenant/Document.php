@@ -1232,4 +1232,41 @@
             return $generated;
         }
         
+
+        /**
+         * 
+         * Filtrar por rango de fechas
+         * 
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         * 
+         */
+        public function scopeFilterRangeDateOfIssue($query, $date_start, $date_end)
+        {
+            return $query->whereBetween('date_of_issue', [$date_start, $date_end]);
+        }
+
+        /**
+         * 
+         * Filtrar facturas y boletas
+         * 
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         * 
+         */
+        public function scopeFilterDocumentTypeInvoice($query)
+        {
+            return $query->whereIn('document_type_id', ['01', '03']);
+        }
+
+        /**
+         * 
+         * @return string
+         * 
+         */
+        public function getVoidedDescription()
+        {
+            return $this->state_type_id === '11' ? 'SI' : 'NO';
+        }
+
     }
