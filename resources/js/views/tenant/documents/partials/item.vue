@@ -613,7 +613,8 @@ export default {
         'documentTypeId',
         'noteCreditOrDebitTypeId',
         'displayDiscount',
-        'customerId'
+        'customerId',
+        'personTypeId',
     ],
     components: {
         ItemForm,
@@ -1032,7 +1033,10 @@ export default {
             let operation_type = await _.find(this.operation_types, {id: this.operationTypeId})
             this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
 //
-
+            this.$http.get(`/price/search/${this.personTypeId}`)
+                        .then(response => {
+                            this.form = response.data
+                        })
             if (this.recordItem) {
                 if (this.recordItem.item !== undefined && this.recordItem.item.extra !== undefined) {
                     this.extra_temp = this.recordItem.item.extra

@@ -12,6 +12,7 @@ use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use App\Models\Tenant\Catalogs\Province;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\PersonType;
+use Modules\Item\Models\ItemPriceType;
 use Exception;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Excel;
@@ -20,7 +21,8 @@ class PersonTypeController extends Controller
 {
     public function index()
     {
-        return view('tenant.person_types.index');
+        $item_price_type = ItemPriceType::distinct()->select('name')->get();
+        return view('tenant.person_types.index', compact('item_price_types'));
     }
 
     public function columns()
@@ -55,7 +57,17 @@ class PersonTypeController extends Controller
     public function store(PersonTypeRequest $request)
     {
         $id = $request->input('id');
+        $name=$request->input('price_name');
+        dd($name);
         $person_type = PersonType::firstOrNew(['id' => $id]);
+        if($name){
+            $list_price = ItemPriceType::where('name', 'like', $name)->get();
+            foreach ($list_price as $value) {
+                $value->name = $name;
+                $item_unit_type->save();
+            }
+        }
+        
         $person_type->fill($request->all());
         $person_type->save();
   
@@ -72,7 +84,7 @@ class PersonTypeController extends Controller
             
             $person_type = PersonType::findOrFail($id);
             $person_type_type = 'Tipo de cliente';
-            $person_type->delete(); 
+            $person_type->delete();
 
             return [
                 'success' => true,

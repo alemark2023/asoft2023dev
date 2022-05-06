@@ -63,6 +63,7 @@ use Modules\Item\Http\Requests\CategoryRequest;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
 use Modules\Document\Helpers\DocumentHelper;
+use App\Models\Tenant\PersonType;
 
 
 class DocumentController extends Controller
@@ -196,7 +197,8 @@ class DocumentController extends Controller
 
         $configuration = Configuration::first();
         $is_contingency = 0;
-        return view('tenant.documents.form', compact('is_contingency', 'configuration'));
+        $person_types = PersonType::all();
+        return view('tenant.documents.form', compact('is_contingency', 'configuration', 'person_types'));
     }
 
     public function create_tensu()

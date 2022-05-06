@@ -36,7 +36,8 @@
             </div>
 
             <person-types-form :showDialog.sync="showDialog"
-                          :recordId="recordId" ></person-types-form>
+                          :recordId="recordId"
+                          :itemPriceTypes="itemPriceTypes" ></person-types-form>
  
         </div>
     </div>
@@ -49,7 +50,7 @@
     import {deletable} from '../../../mixins/deletable'
 
     export default {
-        props:['typeUser'],
+        props:['typeUser','itemPriceTypes'],
         mixins: [deletable],
         components: {PersonTypesForm, DataTable},
         data() {

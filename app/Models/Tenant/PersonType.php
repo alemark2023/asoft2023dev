@@ -2,6 +2,8 @@
 
 namespace App\Models\Tenant;
 
+use Modules\Item\Models\ItemPriceType;
+
 /**
  * App\Models\Tenant\PersonType
  *
@@ -14,10 +16,16 @@ namespace App\Models\Tenant;
  */
 class PersonType extends ModelTenant
 {
+    protected $with = ['item_price_type'];
     protected $fillable = [
         'description',
 
     ];
+
+    public function item_price_type()
+    {
+        return $this->hasMany(ItemPriceType::class,'type_customer_id');
+    }
 
     /**
      * @return string
