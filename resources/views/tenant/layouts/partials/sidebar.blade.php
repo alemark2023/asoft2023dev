@@ -1202,6 +1202,43 @@
                         </li>
                     @endif
                     {{-- Suscription --}}
+                    @if(in_array('full_suscription_app', $vc_modules) )
+                        <li class=" nav-parent {{ ($firstLevel === 'full_suscription') ? 'nav-active nav-expanded' : '' }}">
+                            <a class="nav-link"
+                               href="#">
+                                <i class="fa fas fa-calendar-check"
+                                   aria-hidden="true"></i>
+                                <span>Suscripción General</span>
+                            </a>
+                            <ul class="nav nav-children">
+                                <li class="{{ ($firstLevel === 'full_suscription' && $secondLevel === 'client')?'nav-active':'' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.fullsuscription.client.index') }}">
+                                    Clientes
+                                    </a>
+                                </li>
+                                <li class="{{ (($firstLevel === 'full_suscription') && ($secondLevel === 'plans')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.fullsuscription.plans.index') }}">
+                                        Planes
+                                    </a>
+                                </li>
+                                <li class="{{ (($firstLevel === 'full_suscription') && ($secondLevel === 'payments')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.fullsuscription.payments.index') }}">
+                                        Suscripciones
+                                    </a>
+                                </li>
+                                <li class="{{ (($firstLevel === 'full_suscription') && ($secondLevel === 'payment_receipt')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.fullsuscription.payment_receipt.index') }}">
+                                        Recibos de pago
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    @endif
+                    {{-- Suscription Escolar--}}
                     @if(in_array('suscription_app', $vc_modules) )
                         <li class=" nav-parent {{ ($firstLevel === 'suscription') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link"

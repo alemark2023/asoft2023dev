@@ -527,6 +527,7 @@
                 'top_menu_d_id' => $this->top_menu_d_id,
                 'skin_id' => $this->skin_id,
                 'skins' => $skins,
+                'facturalo_server' => $this->getFacturaloConfig(),
             ];
         }
 
@@ -2146,5 +2147,10 @@
         public function skin()
         {
             return $this->belongsTo(Skin::class, 'skin_id');
+        }
+
+        public function  getFacturaloConfig(): bool
+        {
+            return (bool) \Config('extra.suscription_facturalo');
         }
     }
