@@ -30,6 +30,7 @@ use Modules\Sale\Models\Contract;
 use Modules\Sale\Models\SaleOpportunity;
 use Modules\Sale\Models\TechnicalService;
 use Modules\Sale\Models\UserCommission;
+use App\Models\Tenant\Configuration;
 use Modules\Restaurant\Models\RestaurantRole;
 
 
@@ -886,6 +887,23 @@ $withEstablishment = true){
             ->whereIn('type', ['seller', 'admin'])->orWhere('id', $userId)
             ->get();
 
+    }
+
+        
+    /**
+     * 
+     * Validar si aplica el filtro por vendedor para el usuario en sesión (filtrar clientes por vendedor asignado)
+     *
+     * Usado en:
+     * Person - scopeWhereFilterCustomerBySeller
+     * 
+     * @return bool
+     */
+    public function applyCustomerFilterBySeller()
+    {
+        $configuration = Configuration::select('customer_filter_by_seller')->first();
+
+        return ($this->type === 'seller' && $configuration->customer_filter_by_seller);
     }
 
     

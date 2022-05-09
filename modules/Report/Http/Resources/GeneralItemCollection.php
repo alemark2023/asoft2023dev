@@ -48,18 +48,18 @@ class GeneralItemCollection extends ResourceCollection
                 $platform = $platform->name;
             }
             $observation=null;
+            $additional_information=null;
             if(get_class($row)== \App\Models\Tenant\PurchaseItem::class){
                 /** @var \App\Models\Tenant\PurchaseItem $row */
                 $purchase = $row->purchase;
                 $observation=$purchase->observation;
             }
-
-            // $additional_information = null;
-            // if(
-            // isset($resource['additional_information'], $resource['additional_information'][0])
-            // ){
-            //     $additional_information = $resource['additional_information'][0];
-            // }
+            if($resource['document_type_id']===80){
+                $observation = $resource['observation']? $resource['observation'] : '';
+            }
+            if(get_class($row)== \App\Models\Tenant\Document::class){
+                $additional_information=$resource['additional_information']?$resource['additional_information'][0] : '';
+            }
             return [
                 'id' => $row->id,
                 'unit_type_id' => $row->item->unit_type_id,
@@ -93,9 +93,7 @@ class GeneralItemCollection extends ResourceCollection
                 // 'resource'=>$resource,
                 'purchase_item'=>$purchase_item,
                 'observation'=>$observation,
-                'description_apply_conversion_to_pen' => $description_apply_conversion_to_pen,
-                'additional_information' => $resource['additional_information'][0] ?? null,
-                // 'additional_information' => $additional_information,
+                'additional_information' => $additional_information,
             ];
         });
     }
@@ -235,6 +233,7 @@ class GeneralItemCollection extends ResourceCollection
             $data['document_type_id'] = 80;
             $data['currency_type_id'] = $document->currency_type_id;
             $data['purchase_order'] = $document->purchase_order;
+            $data['observation'] = $document->observation;
         }
 
         return $data;

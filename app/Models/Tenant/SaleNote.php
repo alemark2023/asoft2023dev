@@ -15,6 +15,7 @@
     use Modules\Item\Models\WebPlatform;
     use Modules\Order\Models\OrderNote;
     use Modules\Sale\Models\TechnicalService;
+    use Modules\Pos\Models\Tip;
 
     /**
      * Class SaleNote
@@ -1079,6 +1080,10 @@
             return $this->hasMany(SaleNotePayment::class);
         }
 
+        public function tip()
+        {
+            return $this->morphOne(Tip::class, 'origin');
+        }
 
         /**
          *
@@ -1251,4 +1256,37 @@
             return ($this->total - $this->payments->sum('payment')) - $this->payments->sum('change');
         }
 
+        /**
+         * 
+         * Obtener porcentaje de cargos para mostrar en pdf
+         *
+         * @return float
+         */
+        public function getTotalFactor()
+        {
+            $total_factor = 0;
+
+            if($this->charges)
+            {
+                $total_factor = collect($this->charges)->sum('factor') * 100;
+            }
+
+            return $total_factor;
+        }
+
+        
+        /**
+         * 
+         * Filtrar por rango de fechas
+         * 
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         * 
+         */
+        public function scopeFilterRangeDateOfIssue($query, $date_start, $date_end)
+        {
+            return $query->whereBetween('date_of_issue', [$date_start, $date_end]);
+        }
+
+        
     }
