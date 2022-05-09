@@ -16,7 +16,7 @@
                                 <th>Método de pago</th>
                                 <th>Destino</th>
                                 <th>Referencia</th>
-                                <th>Archivo</th>
+                                <th>Voucher</th>
                                 <th class="text-right">Monto</th>
                                 <th></th>
                             </tr>
@@ -81,7 +81,7 @@
                                     </td>
                                     <td>
                                         <div class="form-group mb-0">
-                                            
+
                                             <el-upload
                                                     :data="{'index': index}"
                                                     :headers="headers"
@@ -93,9 +93,11 @@
                                                     :on-success="onSuccess"
                                                     :limit="1"
                                                     >
-                                                <el-button slot="trigger" type="primary">Seleccione un archivo</el-button>
+                                                <el-button slot="trigger" type="primary">Cargar voucher</el-button>
                                             </el-upload>
+                                            <dialog-link-payment></dialog-link-payment>
                                         </div>
+
                                     </td>
                                     <td>
                                         <div class="form-group mb-0" :class="{'has-danger': row.errors.payment}">
@@ -149,10 +151,14 @@
 <script>
 
     import {deletable} from '../../../../mixins/deletable'
+    import DialogLinkPayment from './dialog_link_payment'
 
     export default {
         props: ['showDialog', 'documentId'],
         mixins: [deletable],
+        components: {
+            DialogLinkPayment,
+        },
         data() {
             return {
                 title: null,
@@ -203,19 +209,19 @@
                 }
 
                 // console.log(this.records)
-            
+
             },
             cleanFileList(){
                 this.fileList = []
             },
-            handleRemove(file, fileList) {       
-                
+            handleRemove(file, fileList) {
+
                 this.records[this.index_file].filename = null
                 this.records[this.index_file].temp_path = null
                 this.fileList = []
                 this.index_file = null
 
-            }, 
+            },
             initForm() {
                 this.records = [];
                 this.fileList = [];
