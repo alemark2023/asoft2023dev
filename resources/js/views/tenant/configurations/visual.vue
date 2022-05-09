@@ -1,7 +1,7 @@
 <template>
     <div id="styleSwitcher" class="style-switcher">
 
-        <a id="styleSwitcherOpen" class="style-switcher-open" href="#"><i class="fas fa-cogs"></i></a>
+        <a id="styleSwitcherOpen" class="style-switcher-open" href="#"><i class="fas fa-paint-brush"></i></a>
 
         <form class="style-switcher-wrap" autocomplete="off">
 
@@ -82,11 +82,6 @@
                 </div>
 
                 <div class="pt-3">
-                    <h5>Accesos directos</h5>
-                    <el-button type="button" @click="dialogMenu()" color="primary">Editar</el-button>
-                </div>
-
-                <div class="pt-3">
                     <h5>Cambiar tema</h5>
                     <div :class="{'has-danger': errors.compact_sidebar}">
                         <el-select
@@ -108,18 +103,15 @@
 
             </div>
         </form>
-        <dialog-header-menu :showDialog.sync="dialogHeaderMenuVisible" :configurations="visuals"/>
         <dialog-skins :showDialog.sync="dialogSkinsVisible" :skins.sync="skins"/>
     </div>
 </template>
 
 <script>
-    import DialogHeaderMenu from './partials/dialog_header_menu.vue'
     import DialogSkins from './partials/dialog_skins.vue'
     export default {
         props:['visual','typeUser'],
         components: {
-            DialogHeaderMenu,
             DialogSkins
         },
         data() {
@@ -129,7 +121,6 @@
                 errors: {},
                 form: {},
                 visuals: {},
-                dialogHeaderMenuVisible: false,
                 skins: {},
                 dialogSkinsVisible: false
             }
@@ -203,9 +194,6 @@
                 }).then(() => {
                     this.loading_submit = false;
                 });
-            },
-            dialogMenu() {
-                this.dialogHeaderMenuVisible = true
             },
             dialogSkins() {
                 this.dialogSkinsVisible = true

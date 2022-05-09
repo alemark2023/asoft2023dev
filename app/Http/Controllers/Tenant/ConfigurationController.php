@@ -496,12 +496,23 @@ class ConfigurationController extends Controller
         ];
     }
 
+    private function getMenu() {
+        $configuration = Configuration::first();
+        return $menus = [
+            'top_menu_a' => $configuration->top_menu_a_id ? $configuration->top_menu_a : '',
+            'top_menu_b' => $configuration->top_menu_b_id ? $configuration->top_menu_b : '',
+            'top_menu_c' => $configuration->top_menu_c_id ? $configuration->top_menu_c : '',
+            'top_menu_d' => $configuration->top_menu_d_id ? $configuration->top_menu_d : '',
+        ];
+    }
+
     public function visualGetMenu()
     {
         $modules = ModuleLevel::where([['route_name', '!=', null],['label_menu', '!=', null]])->get();
 
         return [
-            'modules' => $modules
+            'modules' => $modules,
+            'menu' => $this->getMenu()
         ];
     }
 
@@ -516,7 +527,7 @@ class ConfigurationController extends Controller
 
         return [
             'success' => true,
-            'configuration' => $configuration->getCollectionData(),
+            'menu' => $this->getMenu(),
             'message' => 'Configuración actualizada',
         ];
     }

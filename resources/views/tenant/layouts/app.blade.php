@@ -74,7 +74,7 @@
         <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
     @endif
 
-    @if($vc_compact_sidebar->skin->name != 'Default')
+    @if($vc_compact_sidebar->skin)
         @if (file_exists(storage_path('app/public/skins/'.$vc_compact_sidebar->skin->filename)))
             <link rel="stylesheet" href="{{ asset('storage/skins/'.$vc_compact_sidebar->skin->filename) }}" />
         @endif
@@ -114,13 +114,14 @@
 
     <section class="body">
         <!-- start: header -->
-        @include('tenant.layouts.partials.header')
+        {{-- @include('tenant.layouts.partials.header') --}}
         <!-- end: header -->
         <div class="inner-wrapper">
             <!-- start: sidebar -->
             @include('tenant.layouts.partials.sidebar')
             <!-- end: sidebar -->
             <section role="main" class="content-body" id="main-wrapper">
+                @include('tenant.layouts.partials.header')
               @yield('content')
               @include('tenant.layouts.partials.sidebar_styles')
             </section>

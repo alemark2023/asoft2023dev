@@ -464,21 +464,6 @@ html.fixed.sidebar-dark ul.nav-main li a:hover, html.fixed.sidebar-dark ul.nav-m
   box-shadow: none;
 }
 
-.sidebar-gray ul.nav-main li .nav-children li:not(.nav-parent) > a,
-.sidebar-gray ul.nav-main li .nav-children li a {
-  color: #4b4b4b !important;
-}
-
-.sidebar-gray .sidebar-left a::before {
-  color: #4b4b4b !important;
-  border-color: #4b4b4b !important;
-}
-
-html.fixed.sidebar-gray .sidebar-left a:hover {
-  background-color: #f5f5f5;
-  color: #4b4b4b !important;
-}
-
 .dropdown-menu .dropdown-item {
   font-size: 0.8rem;
 }
@@ -742,62 +727,18 @@ html.fixed.sidebar-warning .sidebar-left-collapsed .sidebar-left .nav-main > li 
   border-radius: 6px 6px 6px 6px !important;
 }
 
-/* fondo celeste */
-html.fixed.sidebar-ligth-blue .sidebar-left,
-html.fixed.sidebar-ligth-blue .sidebar-header,
-html.fixed.sidebar-ligth-blue .sidebar-left .nano {
-    background-color: #00cfe8 !important;
-}
-html.fixed.sidebar-ligth-blue .sidebar-left a {
-    color: #fff;
-}
-html.fixed.sidebar-ligth-blue .sidebar-left a:hover,
-html.fixed.sidebar-ligth-blue .sidebar-left a:active,
-html.fixed.sidebar-ligth-blue .sidebar-left a:focus {
-    color: #fff !important;
-}
-html.fixed.sidebar-ligth-blue .sidebar-left a::after {
-    color: #fff;
-}
-html.fixed.sidebar-ligth-blue .sidebar-left a::before {
-    border-color: #fff !important;
-}
-html.fixed.sidebar-ligth-blue ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a::before {
-  background: #fff !important;
-}
-html.fixed.sidebar-ligth-blue .sidebar-left a:hover,
-html.fixed.sidebar-ligth-blue .sidebar-left a:active,
-html.fixed.sidebar-ligth-blue .sidebar-left a:focus {
-    color: #fff;
-    background-color: transparent;
-}
-html.fixed.sidebar-ligth-blue .sidebar-left a:hover::before,
-html.fixed.sidebar-ligth-blue .sidebar-left a:active::before,
-html.fixed.sidebar-ligth-blue .sidebar-left a:focus::before,
-html.fixed.sidebar-ligth-blue .sidebar-left a:hover::after,
-html.fixed.sidebar-ligth-blue .sidebar-left a:active::after,
-html.fixed.sidebar-ligth-blue .sidebar-left a:focus::after {
-    border-color: #fff;
-    color: #fff;
-}
-html.fixed.sidebar-ligth-blue ul.nav-main li.nav-expanded > a {
-  background-color: #00a1b3;
-  color: #fff !important;
-}
-ul.fixed.sidebar-ligth-blue .nav-main > li.nav-active:not(.nav-expanded) > a {
-  border-radius: 6px 6px 6px 6px !important;
-}
-html.fixed.sidebar-ligth-blue ul.nav-main li.nav-parent > ul.nav-children {
-  background-color: #00a1b3;
-}
-html.fixed.sidebar-ligth-blue .sidebar-left a:hover, html.fixed.sidebar-ligth-blue .sidebar-left a:active, html.fixed.sidebar-ligth-blue .sidebar-left a:focus {
+/* admin */
+.userbox.show .dropdown-menu a:hover {
+  background-color: #08c;
   color: #fff;
-  background-color: #00a1b3;
 }
-html.fixed.sidebar-ligth-blue ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
-  background: #007582;
-  color: #fff !important;
+.userbox .name {
+  color: #4b4b4b !important;
 }
-html.fixed.sidebar-ligth-blue .sidebar-left-collapsed .sidebar-left .nav-main > li > a {
-  border-radius: 6px 6px 6px 6px !important;
+
+html:not(.sidebar-left-collapsed) .sidebar-toggle .fa-angle-right {
+  display: none;
+}
+html.sidebar-left-collapsed .sidebar-toggle .fa-angle-left {
+  display: none;
 }

@@ -1,63 +1,15 @@
 <header class="header">
     <div class="logo-container">
-        {{-- <a href="{{route('tenant.dashboard.index')}}" class="logo pt-2 pt-md-0">
-
-            @if($vc_company->logo)
-                <img src="{{ asset('storage/uploads/logos/'.$vc_company->logo) }}" alt="Logo" />
-            @else
-                <img src="{{asset('logo/700x300.jpg')}}" alt="Logo" />
-            @endif
-        </a> --}}
         <div class="sidebar-toggle" data-toggle-class="sidebar-left-collapsed" data-target="html"
              data-fire-event="sidebar-left-toggle">
-             {{-- <img src="{{ asset('images/disc.svg') }}" alt="Sidebar toggle" class="img-fluid" width="20"> --}}
-            <i class="fas fa-bullseye" aria-label="Toggle sidebar"></i>
+            <i class="fas fa-angle-left" aria-label="Toggle sidebar"></i>
+            <i class="fas fa-angle-right" aria-label="Toggle sidebar"></i>
         </div>
         <div class="d-md-none toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
             <i class="fas fa-bars" aria-label="Toggle sidebar"></i>
         </div>
-        <div class="d-md-none d-lg-block" style="height: inherit">
-            @if($vc_configuration->top_menu_a)
-                <a class="topbar-links" href="{{ route($vc_configuration->top_menu_a->route_name) }}" title="{{ $vc_configuration->top_menu_a->description }}" data-toggle="tooltip" data-placement="bottom">
-                    <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
-                    <span>{{ $vc_configuration->top_menu_a->label_menu }}</span>
-                </a>
-            @endif
-            @if($vc_configuration->top_menu_b)
-                <a class="topbar-links" href="{{ route($vc_configuration->top_menu_b->route_name) }}" title="{{ $vc_configuration->top_menu_b->description }}" data-toggle="tooltip" data-placement="bottom">
-                    <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
-                    <span>{{ $vc_configuration->top_menu_b->label_menu }}</span>
-                </a>
-            @endif
-            @if($vc_configuration->top_menu_c)
-                <a class="topbar-links" href="{{ route($vc_configuration->top_menu_c->route_name) }}" title="{{ $vc_configuration->top_menu_c->description }}" data-toggle="tooltip" data-placement="bottom">
-                    <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
-                    <span>{{ $vc_configuration->top_menu_c->label_menu }}</span>
-                </a>
-            @endif
-            @if($vc_configuration->top_menu_d)
-                <a class="topbar-links" href="{{ route($vc_configuration->top_menu_d->route_name) }}" title="{{ $vc_configuration->top_menu_d->description }}" data-toggle="tooltip" data-placement="bottom">
-                    <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
-                    <span>{{ $vc_configuration->top_menu_d->label_menu }}</span>
-                </a>
-            @endif
-            {{-- <a class="topbar-links" href="{{ route('tenant.documents.create') }}" title="Nueva factura" data-toggle="tooltip" data-placement="bottom">
-                <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
-                <span>FA</span>
-            </a>
-            <a class="topbar-links {{ in_array('pos', $vc_modules) ? '' : 'd-none' }}" href="{{ in_array('pos', $vc_modules) ? route('tenant.pos.index') : '#' }}" title="POS" data-toggle="tooltip" data-placement="bottom">
-                <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
-                <span>POS</span>
-            </a>
-            <a class="topbar-links" href="{{ in_array('configuration', $vc_modules) ? route('tenant.companies.create') : '#' }}" title="Mi empresa" data-toggle="tooltip" data-placement="bottom">
-                <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
-                <span>ME</span>
-            </a>
-            <a class="topbar-links" href="{{ in_array('establishments', $vc_modules) ? route('tenant.establishments.index') : '#' }}" title="Nuevo establecimiento" data-toggle="tooltip" data-placement="bottom">
-                <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
-                <span>ES</span>
-            </a> --}}
-        </div>
+        <tenant-dialog-header-menu></tenant-dialog-header-menu>
+
     </div>
     <div class="header-right">
 

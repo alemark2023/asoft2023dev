@@ -19,6 +19,7 @@
             'module_id',
             'route_name',
             'label_menu',
+            'route_path',
         ];
 
         /**

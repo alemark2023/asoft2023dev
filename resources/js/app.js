@@ -44,6 +44,7 @@ Vue.component('tenant-configurations-ticket-pdf', require('./views/tenant/config
 Vue.component('tenant-configurations-sale-notes', require('./views/tenant/configurations/sale_notes.vue'));
 Vue.component('tenant-configurations-pdf-guide', require('./views/tenant/configurations/pdf_guide_templates.vue'));
 Vue.component('tenant-configurations-preprinted-pdf', require('./views/tenant/configurations/pdf_preprinted_templates.vue'));
+Vue.component('tenant-dialog-header-menu', require('./views/tenant/configurations/partials/dialog_header_menu.vue'));
 // Vue.component('tenant-establishments-form', require('./views/tenant/establishments/form.vue'));
 // Vue.component('tenant-series-form', require('./views/tenant/series/form.vue'));
 Vue.component('tenant-bank_accounts-index', require('./views/tenant/bank_accounts/index.vue'));
