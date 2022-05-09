@@ -2,14 +2,15 @@
   <el-dialog title="Accesos Directos" :visible.sync="showDialog" @close="close" top="20vh" width="40%">
     <el-table :data="skins">
       <el-table-column prop="name" label="Nombre" width="150"></el-table-column>
-      <el-table-column prop="filename" label="Archivo" width="150">
+      <el-table-column prop="filename" label="Archivo" width="150"></el-table-column>
+      <el-table-column prop="" label="Acciones" width="100">
         <template slot-scope="scope">
-          <a :href="'/storage/skins/'+scope.row.filename" target="BLANK">{{scope.row.filename}}</a>
-        </template>
-      </el-table-column>
-      <el-table-column prop="" label="Acciones" width="150">
-        <template slot-scope="scope">
-          <el-button v-if="scope.$index > 1" type="danger" size="small" @click.native.prevent="deleteSkin(scope.$index)" icon="el-icon-delete"></el-button>
+          <a class="btn btn-info btn-sm" :href="'/storage/skins/'+scope.row.filename" target="BLANK">
+            <i class="fas fa-download"></i>
+          </a>
+          <button v-if="scope.$index > 1" class="btn btn-sm btn-danger" @click.native.prevent="deleteSkin(scope.$index)">
+            <i class="fas fa-trash"></i>
+          </button>
         </template>
       </el-table-column>
     </el-table>

@@ -82,13 +82,26 @@ html.sidebar-blue .userbox.show .dropdown-menu a:hover {
 }
 /* panel derecho */
 html.sidebar-blue .style-switcher,
-html.sidebar-blue .style-switcher h4,
 html.sidebar-blue .style-switcher .style-switcher-open {
-  background-color: #554AC6;
+  background-color: #f6f6f6;
+  color: #777;
+  border-left: 3px solid #e2e3e6;
+  border-top: 3px solid #e2e3e6;
+  border-bottom: 3px solid #e2e3e6;
 }
-
+.sidebar-blue ul.nav-main li.nav-active:not(.nav-parent) > a, .sidebar-blue ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
+  box-shadow: none;
+}
+html.sidebar-blue .style-switcher h4 {
+  background-color: #f6f6f6;
+  color: #777;
+}
+html.sidebar-blue ul.nav-main li.nav-active:not(.nav-parent) > a {
+  background: #554AC6;
+  box-shadow: none;
+}
 /* cajas de contenido */
-html.sidebar-blue .bg-info {
+html.sidebar-blue .card-header.bg-info {
   background: #554AC6 !important;
 }
 
@@ -103,7 +116,7 @@ html.sidebar-green ul.nav-main li.nav-active:not(.nav-parent) > a {
   box-shadow: none;
 }
 /* cajas de contenido */
-html.sidebar-green .bg-info {
+html.sidebar-green .card-header.bg-info {
   background: #1ca55a !important;
 }
 
@@ -114,9 +127,16 @@ html.sidebar-red .userbox.show .dropdown-menu a:hover {
 }
 /* panel derecho */
 html.sidebar-red .style-switcher,
-html.sidebar-red .style-switcher h4,
 html.sidebar-red .style-switcher .style-switcher-open {
-  background-color: #dc3545;
+  background-color: #f6f6f6;
+  color: #777;
+  border-left: 3px solid #e2e3e6;
+  border-top: 3px solid #e2e3e6;
+  border-bottom: 3px solid #e2e3e6;
+}
+html.sidebar-red .style-switcher h4 {
+  background-color: #f6f6f6;
+  color: #777;
 }
 html.sidebar-red ul.nav-main li.nav-active:not(.nav-parent) > a {
   background: #dc3545;
@@ -124,7 +144,7 @@ html.sidebar-red ul.nav-main li.nav-active:not(.nav-parent) > a {
 }
 
 /* cajas de contenido */
-html.sidebar-red .bg-info {
+html.sidebar-red .card-header.bg-info {
   background: #dc3545 !important;
 }
 
@@ -140,7 +160,7 @@ html.sidebar-warning .userbox.show .dropdown-menu a:hover {
   background-color: #ff9f43;
 }
 /* cajas de contenido */
-html.sidebar-warning .bg-info {
+html.sidebar-warning .card-header.bg-info {
   background: #ff9f43 !important;
 }
 
@@ -217,10 +237,26 @@ html.sidebar-gray ul.nav-main li.nav-active:not(.nav-parent) > a {
   border-color: #4b4b4b !important;
 }
 /* cajas de contenido */
-html.sidebar-gray .bg-info {
+html.sidebar-gray .card-header.bg-info {
   background: #707376 !important;
 }
 /* header */
 html.sidebar-gray .userbox.show .dropdown-menu a:hover {
   background-color: #707376;
+}
+
+
+/* --------------------------- tema oscuro / sin modo noche --------------------------- */
+/* panel derecho */
+html.sidebar-dark:not(.dark) .style-switcher,
+html.sidebar-dark:not(.dark) .style-switcher .style-switcher-open {
+  background-color: #f6f6f6;
+  color: #777;
+  border-left: 3px solid #e2e3e6;
+  border-top: 3px solid #e2e3e6;
+  border-bottom: 3px solid #e2e3e6;
+}
+html.sidebar-dark:not(.dark) .style-switcher h4 {
+  background-color: #f6f6f6;
+  color: #777;
 }

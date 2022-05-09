@@ -455,14 +455,9 @@ ul.nav-main li.nav-expanded > a {
   border-radius: 6px 6px 0 0 !important;
 }
 
-html.fixed.sidebar-dark ul.nav-main li a:hover, html.fixed.sidebar-dark ul.nav-main li .nav-children li a:focus {
+/* html.fixed.sidebar-dark ul.nav-main li a:hover, html.fixed.sidebar-dark ul.nav-main li .nav-children li a:focus {
   background-color: #161d31 ;
-}
-
-/* tema morado */
-.sidebar-blue ul.nav-main li.nav-active:not(.nav-parent) > a, .sidebar-blue ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
-  box-shadow: none;
-}
+} */
 
 .dropdown-menu .dropdown-item {
   font-size: 0.8rem;

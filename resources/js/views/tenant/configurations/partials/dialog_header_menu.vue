@@ -19,7 +19,7 @@
     </a>
     <a class="topbar-links" href="#" title="editar accesos directos" data-toggle="tooltip" data-placement="bottom" @click="showDialog = true">
       <i class="fas fa-fw fa-pen" aria-hidden="true"></i>
-      <span>AD</span>
+      <span><i class="fas fa-ellipsis-h"></i></span>
     </a>
     <el-dialog title="Accesos Directos" :visible="showDialog" @close="close" top="20vh" width="40%">
       <el-form :model="form">

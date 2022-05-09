@@ -1,44 +1,39 @@
 <template>
     <div id="styleSwitcher" class="style-switcher">
 
-        <a id="styleSwitcherOpen" class="style-switcher-open" href="#"><i class="fas fa-paint-brush"></i></a>
+        <a id="styleSwitcherOpen" class="style-switcher-open" href="#">
+            <i class="fas fa-paint-brush"></i>
+        </a>
 
         <form class="style-switcher-wrap" autocomplete="off">
-
             <h4>Configuraciones visuales</h4>
-
             <div v-if="visual == null">
                 <h5 class="">No posee ajustes actualmente</h5>
                 <a href="" class="text-warning" v-if="typeUser != 'integrator'">cargar ajustes por defecto</a>
                 <br>
             </div>
-            <div v-if="typeUser != 'integrator'">
+            <div v-if="typeUser != 'integrator'" class="pt-3">
+                <div class="text-right">
+                    <a v-if="visuals.bg == 'white'"
+                        href="/configurations/change-mode"
+                        class="notification-icon text-secondary"
+                        data-toggle="tooltip"
+                        data-placement="bottom"
+                        title="Modo noche"
+                        style="text-decoration: none;">
+                        <i class="fas fa-2x fa-moon"></i>
+                    </a>
+                    <a v-if="visuals.bg == 'dark'"
+                        href="/configurations/change-mode"
+                        class="notification-icon text-white"
+                        data-toggle="tooltip"
+                        data-placement="bottom"
+                        title="Modo día"
+                        style="text-decoration: none;">
+                        <i class="fa-2x wi-sun"></i>
+                    </a>
+                </div>
 
-                <!-- <h5>Fondo oscuro</h5>
-                <el-switch
-                    v-model="visuals.bg"
-                    active-text="Dark"
-                    inactive-text="Light"
-                    active-value="dark"
-                    inactive-value="light"
-                    active-color="#383f48"
-                    inactive-color="#ccc"
-                    @change="submit">
-                </el-switch> -->
-
-                <!-- <div class="hidden-on-dark pt-3">
-                    <h5>Encabezado</h5>
-                    <el-switch
-                        v-model="visuals.header"
-                        active-text="Dark"
-                        inactive-text="Light"
-                        active-value="dark"
-                        inactive-value="light"
-                        active-color="#383f48"
-                        inactive-color="#ccc"
-                        @change="submit">
-                    </el-switch>
-                </div> -->
 
                 <div class="pt-3">
                     <h5>Color de fondo del sidebar</h5>
