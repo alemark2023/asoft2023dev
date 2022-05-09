@@ -144,6 +144,7 @@ class DocumentInput
             'is_editable' => true,
             'total_pending_payment' => Functions::valueKeyInArray($inputs, 'total_pending_payment', 0),
             // 'pending_amount_detraction' => Functions::valueKeyInArray($inputs, 'pending_amount_detraction', 0),
+            'tip' => self::tip($inputs, $soap_type_id),
         ];
     }
 
@@ -590,4 +591,37 @@ class DocumentInput
             ]
         ];
     }
+
+        
+    /**
+     * 
+     * Retorna datos para registro de propina
+     *
+     * Usado en:
+     * DocumentInput
+     * TipTrait
+     * 
+     * @param  array $inputs
+     * @param  string $soap_type_id
+     * @return array
+     */
+    public static function tip($inputs, $soap_type_id)
+    {
+        $worker_full_name_tips = Functions::valueKeyInArray($inputs, 'worker_full_name_tips');
+        $total_tips = Functions::valueKeyInArray($inputs, 'total_tips', 0);
+
+        if ($worker_full_name_tips && $total_tips > 0)
+        {
+            return [
+                'date' => date('Y-m-d'),
+                'worker_full_name' => $worker_full_name_tips,
+                'total' => $total_tips,
+                'soap_type_id' => $soap_type_id,
+                'origin_date_of_issue' => $inputs['date_of_issue'],
+            ];
+        }
+
+        return null;
+    }
+    
 }

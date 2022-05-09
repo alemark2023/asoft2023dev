@@ -288,6 +288,47 @@
                         </div>
                     </div>
                 </div>
+
+
+                <!-- propinas -->
+                <div class="col-lg-8" v-if="enabledTipsPos">
+
+                    <div class="card card-default">
+                        <div class="card-body">
+
+                            <div class="row col-lg-12 mb-2 mt-1">
+
+                                <div class="col-lg-12">
+                                    <h5><strong>Registrar propina</strong>
+                                        <el-tooltip class="item"
+                                                    content="Para registrar la propina debe ingresar los datos del empleado y el monto debe ser mayor a 0"
+                                                    effect="dark"
+                                                    placement="top">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </h5>
+                                </div>
+
+                                <div class="col-lg-8">
+                                    <div class="form-group">
+                                        <label class="control-label">Empleado</label>
+                                        <el-input v-model="form.worker_full_name_tips"></el-input>
+                                    </div>
+                                </div>
+ 
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Monto</label>
+                                        <el-input-number v-model="form.total_tips" :min="0" controls-position="right"></el-input-number>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- propinas -->
+
                 <div class="col-lg-8">
                     <div class="card card-default">
                         <div class="card-body">
@@ -470,7 +511,18 @@ import MultiplePaymentForm from './multiple_payment.vue'
 export default {
     components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress},
 
-    props: ['form', 'customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany', 'businessTurns', 'isPrint', 'globalDiscountTypeId'],
+    props: [
+        'form', 
+        'customer', 
+        'currencyTypeActive', 
+        'exchangeRateSale', 
+        'is_payment', 
+        'soapCompany', 
+        'businessTurns', 
+        'isPrint', 
+        'globalDiscountTypeId', 
+        'enabledTipsPos'
+    ],
     data() {
         return {
             enabled_discount: false,
