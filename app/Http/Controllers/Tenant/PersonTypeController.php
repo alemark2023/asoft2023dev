@@ -21,7 +21,7 @@ class PersonTypeController extends Controller
 {
     public function index()
     {
-        $item_price_type = ItemPriceType::distinct()->select('name')->get();
+        $item_price_types = ItemPriceType::distinct()->select('name')->get();
         return view('tenant.person_types.index', compact('item_price_types'));
     }
 
@@ -37,7 +37,7 @@ class PersonTypeController extends Controller
 
         $records = PersonType::where($request->column, 'like', "%{$request->value}%")
                             ->latest();
-
+        /* dd($records); */
         return new PersonTypeCollection($records->paginate(config('tenant.items_per_page')));
     }
 
@@ -57,17 +57,17 @@ class PersonTypeController extends Controller
     public function store(PersonTypeRequest $request)
     {
         $id = $request->input('id');
-        $name=$request->input('price_name');
-        dd($name);
-        $person_type = PersonType::firstOrNew(['id' => $id]);
+        $name=$request->input('price_id');
+        /* dd($name); */
+        
         if($name){
             $list_price = ItemPriceType::where('name', 'like', $name)->get();
             foreach ($list_price as $value) {
-                $value->name = $name;
-                $item_unit_type->save();
+                $value->type_customer_id = $id;
+                $value->save();
             }
         }
-        
+        $person_type = PersonType::firstOrNew(['id' => $id]);
         $person_type->fill($request->all());
         $person_type->save();
   

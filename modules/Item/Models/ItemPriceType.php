@@ -47,7 +47,7 @@ class ItemPriceType extends ModelTenant
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function person_type() {
-        return $this->belongsTo(PersonType::class, 'type_customer_id');
+        return $this->belongsTo(PersonType::class);
     }
 
 

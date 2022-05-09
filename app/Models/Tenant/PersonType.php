@@ -3,6 +3,7 @@
 namespace App\Models\Tenant;
 
 use Modules\Item\Models\ItemPriceType;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Tenant\PersonType
@@ -24,7 +25,7 @@ class PersonType extends ModelTenant
 
     public function item_price_type()
     {
-        return $this->hasMany(ItemPriceType::class,'type_customer_id');
+        return $this->hasMany(ItemPriceType::class, 'type_customer_id');
     }
 
     /**

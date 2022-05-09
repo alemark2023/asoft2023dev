@@ -295,9 +295,9 @@
                             :form="form"
                         ></tenant-item-aditional-info-selector>
                     </template>
-                    <template v-if="!is_client">
+                    <template v-if="!is_client||personTypeId">
 
-                        <div v-if="form.item_unit_types.length > 0"
+                        <div v-if="form.item_unit_types.length > 0||personTypeId"
                              class="col-md-12">
                             <div class="table-responsive"
                                  style="margin:3px">
@@ -319,6 +319,7 @@
                                         <th class="text-center">Precio 1</th>
                                         <th class="text-center">Precio 2</th>
                                         <th class="text-center">Precio 3</th>
+                                        <th v-if="personTypeId" class="text-center">Precio 4</th>
                                         <th class="text-center">Precio Default</th>
                                         <th></th>
                                     </tr>
@@ -332,6 +333,7 @@
                                         <td class="text-center">{{ row.price1 }}</td>
                                         <td class="text-center">{{ row.price2 }}</td>
                                         <td class="text-center">{{ row.price3 }}</td>
+                                        <td v-if="personTypeId" class="text-center">{{ row.price4 }}</td>
                                         <td class="text-center">Precio {{ row.price_default }}</td>
                                         <td class="series-table-actions text-right">
                                             <button :class="getSelectedClass(row)"
@@ -1035,7 +1037,15 @@ export default {
 //
             this.$http.get(`/price/search/${this.personTypeId}`)
                         .then(response => {
-                            this.form = response.data
+                            console.log(response.data)
+                            this.form.item_unit_types = [];
+                            if(response.data.length > 0){
+                                response.data.forEach(price => {
+                                    this.form.item_unit_types.push(price)
+                                });
+                            }else{
+                                this.form.item_unit_types.push(response.data)
+                            }
                         })
             if (this.recordItem) {
                 if (this.recordItem.item !== undefined && this.recordItem.item.extra !== undefined) {
