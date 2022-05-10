@@ -4,6 +4,8 @@ namespace App\Models\Tenant;
 
 use Modules\Finance\Models\GlobalPayment;
 use Modules\Finance\Models\PaymentFile;
+use Modules\Payment\Models\PaymentLink;
+
 
 class DocumentPayment extends ModelTenant
 {
@@ -54,6 +56,11 @@ class DocumentPayment extends ModelTenant
     public function payment_file()
     {
         return $this->morphOne(PaymentFile::class, 'payment');
+    }
+
+    public function payment_link()
+    {
+        return $this->morphMany(PaymentLink::class, 'payment');
     }
 
 }

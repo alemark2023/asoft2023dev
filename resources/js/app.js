@@ -411,6 +411,12 @@ Vue.component('tenant-restaurant-cash-filter-pos', require('../../modules/Restau
 Vue.component('tenant-restaurant-configuration', require('../../modules/Restaurant/Resources/assets/js/views/configuration/index.vue'));
 
 
+//Pagos
+Vue.component('tenant-payment-configurations-index', require('@viewsModulePayment/payment_configurations/index.vue'));
+
+import VueClipboard from 'vue-clipboard2'
+Vue.use(VueClipboard)
+
 
 import moment from 'moment';
 

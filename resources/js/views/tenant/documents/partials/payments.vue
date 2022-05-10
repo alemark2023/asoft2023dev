@@ -16,7 +16,7 @@
                                 <th>Método de pago</th>
                                 <th>Destino</th>
                                 <th>Referencia</th>
-                                <th>Voucher</th>
+                                <th>Voucher/Link de pago</th>
                                 <th class="text-right">Monto</th>
                                 <th></th>
                             </tr>
@@ -31,9 +31,12 @@
                                     <td>{{ row.reference }}</td>
                                     <!-- <td>{{ row.filename }}</td> -->
                                     <td class="text-center">
-                                        <button  type="button" v-if="row.filename" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickDownloadFile(row.filename)">
+                                        <button  type="button" v-if="row.filename" class="btn waves-effect waves-light btn-xs btn-primary mb-2" @click.prevent="clickDownloadFile(row.filename)">
                                             <i class="fas fa-file-download"></i>
                                         </button>
+
+                                        <el-button type="primary" @click="showDialogLinkPayment(row)">Link de pago</el-button>
+
                                     </td>
                                     <td class="text-right">{{ row.payment }}</td>
                                     <td class="series-table-actions text-right">
@@ -95,7 +98,6 @@
                                                     >
                                                 <el-button slot="trigger" type="primary">Cargar voucher</el-button>
                                             </el-upload>
-                                            <dialog-link-payment></dialog-link-payment>
                                         </div>
 
                                     </td>
@@ -144,6 +146,13 @@
                 </div>
             </div>
         </div>
+        
+        <dialog-link-payment 
+            :documentPaymentId="documentPayment.id"
+            :payment="documentPayment.payment"
+            :showDialog.sync="showDialogLink"
+            >
+        </dialog-link-payment>
     </el-dialog>
 
 </template>
@@ -172,6 +181,8 @@
                 document: {},
                 permissions: {},
                 index_file: null,
+                documentPayment: {},
+                showDialogLink: false,
             }
         },
         async created() {
@@ -185,6 +196,10 @@
                 })
         },
         methods: {
+            showDialogLinkPayment(row){
+                this.showDialogLink = true
+                this.documentPayment = row
+            },
             clickDownloadFile(filename) {
                 window.open(
                     `/finances/payment-file/download-file/${filename}/documents`,
