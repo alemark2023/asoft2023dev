@@ -58,7 +58,7 @@ class DocumentPayment extends ModelTenant
         return $this->morphOne(PaymentFile::class, 'payment');
     }
 
-    public function payment_link()
+    public function payment_links()
     {
         return $this->morphMany(PaymentLink::class, 'payment');
     }
