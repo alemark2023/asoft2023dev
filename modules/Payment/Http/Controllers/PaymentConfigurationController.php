@@ -12,13 +12,22 @@ use Modules\Finance\Helpers\UploadFileHelper;
 
 class PaymentConfigurationController extends Controller
 {
-
+    
+    /**
+     * @return PaymentConfigurationResource
+     */
     public function record()
     {
         return new PaymentConfigurationResource(PaymentConfiguration::firstOrFail());
     }
 
-
+    
+    /**
+     * Actualizar configuracion
+     *
+     * @param  PaymentConfigurationRequest $request
+     * @return array
+     */
     public function store(PaymentConfigurationRequest $request)
     {
 
@@ -46,7 +55,13 @@ class PaymentConfigurationController extends Controller
         ];
     }
 
-
+    
+    /**
+     * Cargar qr yape
+     *
+     * @param  Request $request
+     * @return array
+     */
     public function uploadQrcodeYape(Request $request)
     {
 

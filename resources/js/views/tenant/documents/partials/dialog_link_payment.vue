@@ -19,18 +19,72 @@
                                         Copiar Link
                                     </el-button>
 
-                                    <el-button type="primary" class="mt-2" icon="fas fa-envelope fa-fw">Enviar Correo</el-button>
-                                    <el-button type="primary" class="my-2" icon="fab fa-whatsapp fa-fw">Enviar Whatsapp</el-button>
+                                    <el-button type="primary" class="mt-2" icon="fas fa-envelope fa-fw" @click="showInputEmail">Enviar Correo</el-button>
+                                    <el-button type="primary" class="my-2" icon="fab fa-whatsapp fa-fw" @click="showInputWhatsapp">Enviar Whatsapp</el-button>
 
                                 </template>
                                 <template v-else>
                                     <el-button type="primary" class="mt-2 mb-2" icon="el-icon-link" @click="clickGenerateLink" :loading="loading_generate_link">Generar Link</el-button>
                                 </template>
+                                
+                                <div class="payment-links-yape m-3" v-if="show_input_whatsapp || show_input_email">
+
+                                    <template v-if="show_input_whatsapp">
+
+                                        <el-input v-model="form_utilities.customer_telephone">
+                                            <template slot="prepend">+51</template>
+                                            <el-button slot="append"
+                                                    @click="clickSendWhatsapp">Enviar
+                                                <el-tooltip class="item"
+                                                            content="Se recomienta tener abierta la sesión de Whatsapp web"
+                                                            effect="dark"
+                                                            placement="top-start">
+                                                    <i class="fab fa-whatsapp"></i>
+                                                </el-tooltip>
+                                            </el-button>
+                                        </el-input>
+
+                                    </template>
+
+                                    
+                                    <template v-if="show_input_email">
+                                        <el-input v-model="form_utilities.customer_email">
+                                            <el-button slot="append"
+                                                    :loading="loading_email"
+                                                    icon="el-icon-message"
+                                                    @click="clickSendEmail">Enviar
+                                            </el-button>
+                                        </el-input>
+                                    </template>
+
+                                </div>
 
                             </div>
                         </div>
-                        <div class="col-md-5 pt-2">
-                            <el-button type="primary">Adjuntar pago</el-button>
+                        <div class="col-md-1 pt-2">
+                        </div>
+                        <div class="col-md-4 pt-2">
+                            <template v-if="has_payment_link">
+                                <!-- <el-button type="primary">Adjuntar pago</el-button> -->
+                                
+                                <el-upload
+                                        :data="{'id': form.id}"
+                                        :headers="headers"
+                                        :multiple="false"
+                                        :on-remove="handleRemove"
+                                        :action="`/${resource}/uploaded-file`"
+                                        :show-file-list="true"
+                                        :file-list="fileList"
+                                        :on-success="onSuccess"
+                                        :limit="1"
+                                        >
+                                    <el-button slot="trigger" type="primary">Adjuntar pago</el-button>
+                                </el-upload>
+
+                                
+                                <img class="img-fluid pt-3" style="width: 100%; max-height: 300px" v-if="form.image_url_uploaded_filename" :src="form.image_url_uploaded_filename" alt="Yape">
+
+                            </template>
 
                         </div>
                     </div>
@@ -63,7 +117,7 @@
 
             <div class="row mt-3">
                 <div class="col-md-12">
-                    <h4 class="text-left"><b>Valor: {{payment}}</b></h4>
+                    <h4 class="text-left"><b>Total a pagar: {{payment}}</b></h4>
                 </div>
             </div>
         </el-dialog>
@@ -85,11 +139,17 @@
                 payment_configuration: {},
                 titleDialog: null,
                 loading_generate_link: false,
+                loading_email: false,
                 resource: 'payment-links',
                 errors: {},
                 form: {},
                 has_payment_link: false,
                 copyTextValue: null,
+                show_input_whatsapp: false,
+                show_input_email: false,
+                form_utilities: {},
+                headers: headers_token,
+                fileList: [],
             }
         },
         async created() {
@@ -97,6 +157,78 @@
             await this.getConfiguration()
         },
         methods: {
+            onSuccess(response, file, fileList) {
+
+                this.fileList = fileList
+
+                if (response.success) {
+
+                    this.getData()
+
+                } else {
+
+                    this.cleanFileList()
+                    this.$message.error(response.message)
+                }
+
+                // console.log(this.records)
+
+            },
+            cleanFileList(){
+                this.fileList = []
+            },
+            handleRemove(file, fileList) {
+
+                this.form.filename = null
+                this.form.temp_path = null
+                this.fileList = []
+
+            },
+            clickSendEmail() {
+
+                if (!this.form_utilities.customer_email) return this.$message.error('El correo electrónico es obligatorio')
+
+                this.loading_email = true
+                this.$http.post(`/${this.resource}/email`, {
+                        customer_email: this.form_utilities.customer_email,
+                        user_payment_link: this.form.user_payment_link
+                    })
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message)
+                        } else {
+                            this.$message.error('Error al enviar el correo')
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.errors = error.response.data.errors
+                        } else {
+                            this.$message.error(error.response.data.message)
+                        }
+                    })
+                    .then(() => {
+                        this.loading_email = false
+                    })
+            },
+            clickSendWhatsapp() {
+
+                if (!this.form_utilities.customer_telephone) 
+                {
+                    return this.$message.error('El número es obligatorio')
+                }
+
+                const text = `Su link de pago ha sido generado correctamente, puede revisarlo en: ${this.form.user_payment_link}`
+
+                window.open(`https://wa.me/51${this.form_utilities.customer_telephone}?text=${text}`, '_blank');
+
+            },
+            showInputEmail(){
+                this.show_input_email = !this.show_input_email
+            },
+            showInputWhatsapp(){
+                this.show_input_whatsapp = !this.show_input_whatsapp
+            },
             onCopy: function(e) {
                 this.$message.success('Texto copiado al portapapeles')
             },
@@ -149,6 +281,12 @@
                     total: 0,
                     instance_type: 'document',
                     user_payment_link: null,
+                    image_url_uploaded_filename: null,
+                }
+
+                this.form_utilities = {
+                    customer_telephone: null,
+                    customer_email: null,
                 }
 
                 this.titleDialog = 'Link de pago'
