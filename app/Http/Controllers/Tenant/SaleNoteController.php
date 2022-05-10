@@ -627,13 +627,19 @@ class SaleNoteController extends Controller
 
                 if(isset($row['IdLoteSelected']))
                 {
-                    if(is_array($row['IdLoteSelected'])) {
+                    if(is_array($row['IdLoteSelected'])) 
+                    {
+                        // presentacion - factor de lista de precios
+                        $quantity_unit = isset($sale_note_item->item->presentation->quantity_unit) ? $sale_note_item->item->presentation->quantity_unit : 1;
 
-                        foreach ($row['IdLoteSelected'] as $item) {
+                        foreach ($row['IdLoteSelected'] as $item) 
+                        {
                             $lot = ItemLotsGroup::query()->find($item['id']);
-                            $lot->quantity = $lot->quantity - $item['compromise_quantity'];
+                            $lot->quantity = $lot->quantity - ($quantity_unit * $item['compromise_quantity']);
+                            $this->validateStockLotGroup($lot, $sale_note_item);
                             $lot->save();
                         }
+                        
                     }
                     else {
 

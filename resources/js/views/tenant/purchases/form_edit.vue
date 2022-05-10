@@ -374,7 +374,8 @@
                                     <tr v-for="(row, index) in form.items" :key="index">
                                         <td>{{ index + 1 }}</td>
                                         <td>{{ row.item.description }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
-                                        <td class="text-left">{{ (row.warehouse_description) ? row.warehouse_description : row.warehouse.description  }}</td>
+                                        <td class="text-left">{{ getWarehouseDescription(row)  }}</td>
+                                        <!-- <td class="text-left">{{ (row.warehouse_description) ? row.warehouse_description : row.warehouse.description  }}</td> -->
                                         <td class="text-left">{{ row.lot_code }}</td>
                                         <td class="text-center">{{ row.item.unit_type_id }}</td>
                                         <td class="text-right">{{ row.quantity }}</td>
@@ -528,6 +529,7 @@
                 configuration: {},
                 purchaseNewId: null,
                 localHasGlobalIgv: false,
+                warehouses: [],
 
             }
         },
@@ -546,6 +548,7 @@
                     this.all_customers = response.data.customers
                     this.configuration = response.data.configuration
                     this.payment_conditions = response.data.payment_conditions
+                    this.warehouses = response.data.warehouses
 
                     this.charges_types = response.data.charges_types
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
@@ -584,6 +587,29 @@
             },
         },
         methods: {
+            getWarehouse(id){
+                return _.find(this.warehouses, { id : id })
+            },
+            getWarehouseDescription(row){
+
+                let description = null
+
+                if(row.warehouse_description)
+                {
+                    description = row.warehouse_description
+                }
+                else if(row.warehouse)
+                {
+                    description = row.warehouse.description
+                }
+                else
+                {
+                    const warehouse = this.getWarehouse(row.warehouse_id)
+                    if(warehouse) description = warehouse.description
+                }
+
+                return description
+            },
             changeHasGlobalIgv() { 
 
             },
@@ -785,6 +811,9 @@
                 }
 
             },
+            setCurrencyType(){
+                this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+            },
             initRecord()
             {
                 this.$http.get(`/${this.resource}/record/${this.resourceId}` )
@@ -806,6 +835,8 @@
                     this.form.purchase_payments_id = dato.purchase_payments.id
                     this.form.purchase_order_id = dato.purchase_order_id
                     this.form.customer_id = dato.customer_id
+
+                    this.setCurrencyType()
 
                     if(this.form.customer_id){
                         this.searchRemotePersons(dato.customer_number)

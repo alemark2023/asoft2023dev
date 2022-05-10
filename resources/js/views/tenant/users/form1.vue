@@ -272,7 +272,7 @@
                                     </label>
                                 </div>
                             </div>
-                            <div  class="col-md-4 mt-1" v-if="config_permission_to_edit_cpe">
+                            <div  class="col-md-4 mt-1">
                                 <div class="form-comtrol">
                                     <el-checkbox v-model="form.create_payment">
                                         Agregar
