@@ -751,3 +751,16 @@ html.sidebar-left-collapsed .sidebar-toggle .fa-angle-left {
 .uploader .el-upload:hover {
   border-color: #409EFF;
 }
+
+.color--success {
+  color: #4ebf56;
+}
+
+.color--error {
+  color: #e23636;
+}
+
+.color--warning {
+  color: #c76a3c;
+}
+

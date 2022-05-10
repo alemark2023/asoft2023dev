@@ -28,7 +28,14 @@
 
             </template>
             <template v-else-if="payment_link.payment_link_type_id == '02'">
-                M PAGO
+                
+                <form-mercado-pago 
+                    :payment_link="payment_link"
+                    :payment_configuration="payment_configuration"
+                    :total="total"
+                    >
+                </form-mercado-pago>
+
             </template>
              
         </div> 
@@ -36,11 +43,14 @@
 </template>
 
 <script>
+
     import FormYape from './partials/yape.vue'
+    import FormMercadoPago from '@viewsModuleMercadoPago/transactions/index.vue'
 
     export default {
         components: {
             FormYape,
+            FormMercadoPago
         },
         props: [
             'payment_link',
