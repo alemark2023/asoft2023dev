@@ -602,7 +602,7 @@ html.fixed.sidebar-green .sidebar-left a:hover, html.fixed.sidebar-green .sideba
   background-color: #1ca55a;
 }
 html.fixed.sidebar-green ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
-  background-color: #18874a;
+  background: #18874a;
   color: #fff !important;
 }
 html.fixed.sidebar-green .sidebar-left-collapsed .sidebar-left .nav-main > li > a {
@@ -750,4 +750,22 @@ html.sidebar-left-collapsed .sidebar-toggle .fa-angle-left {
 
 .uploader .el-upload:hover {
   border-color: #409EFF;
+}
+
+html.dark .el-pagination {
+  margin-bottom: 5px;
+}
+html.dark .el-pagination button:disabled {
+  background-color: #131631;
+  border: 1px solid #283046;
+  color: #303133;
+}
+html.dark .el-pagination .el-pager li {
+  background: #131631;
+  border: 1px solid #283046;
+}
+html.dark .el-pagination .btn-prev,
+html.dark .el-pagination .btn-next {
+  background: #131631;
+  border: 1px solid #283046;
 }

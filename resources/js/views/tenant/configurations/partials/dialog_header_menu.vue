@@ -1,5 +1,5 @@
 <template>
-  <div class="d-md-none d-lg-block" style="height: inherit;">
+  <div class="d-md-none ml-1 d-lg-block" style="height: inherit;">
 
     <a v-if="menu.menu_a != ''" class="topbar-links" :href="menu.menu_a.route_path" :title="menu.menu_a.description" data-toggle="tooltip" data-placement="bottom">
         <i class="fas fa-fw fa-plus" aria-hidden="true"></i>

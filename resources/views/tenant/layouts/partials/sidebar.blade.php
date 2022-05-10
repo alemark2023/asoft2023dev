@@ -16,7 +16,7 @@
                 <img src="{{ asset('storage/uploads/logos/'.$vc_company->logo) }}"
                      alt="Logo"/>
             @else
-                <img src="{{asset('logo/700x300.jpg')}}"
+                <img src="{{asset('logo/tulogo.png')}}"
                      alt="Logo"/>
             @endif
         </a>

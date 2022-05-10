@@ -79,8 +79,11 @@ sup.el-badge__content.el-badge__content--undefined.is-fixed {
 p {
     color: #314167;
 }
-a {
+.sidebar-light:not(.sidebar-gray):not(.sidebar-green):not(.sidebar-warning) .page-header h2 a {
     color: #1478fa;
+}
+.sidebar-dark:not(.dark) .page-header h2 {
+    color: #ccc;
 }
 
 a:hover, a:focus {
@@ -292,10 +295,14 @@ html.sidebar-left-collapsed .sidebar-left .nav-main > li > a {
     padding-left: 10px;
 }
 .header .logo-container .topbar-links {
+    margin-top: 4px;
     height: 50px;
     background: #f7f8fa;
     border-radius: 4px;
     color: #60769a;
+}
+.header .logo-container .topbar-links:last-of-type i {
+    margin: 0px;
 }
 .header .logo-container .topbar-links:hover {
     background-color: rgb(0 116 255);
@@ -385,7 +392,7 @@ html.sidebar-left-collapsed .sidebar-left .nano:hover {
     height: 15px;
     border-radius: 4px;
 }
-html.sidebar-light:not(.dark) ul.nav-main > li.nav-active > a {
+html.sidebar-light:not(.dark):not(.sidebar-green):not(.sidebar-green) ul.nav-main > li.nav-active > a {
     color: #0074ff;
 }
 .userbox .name,
@@ -401,6 +408,7 @@ html.sidebar-light:not(.dark) ul.nav-main > li.nav-active > a {
 }
 .sidebar-left .sidebar-header .logo img {
     height: 40px;
+    border-radius: 2px;
 }
 .invoice table.table > thead:first-child > tr > th {
     background-color: #f0f3f4;
@@ -455,12 +463,14 @@ span.badge.text-white.bg-success {
     box-shadow: none !important;
 }
 
-
 .logo-container .fa-bullseye:before {
     content: "\f0c9";
 }
 .sidebar-toggle:hover {
     background-color: #f0f3f4;
+}
+html.dark .sidebar-toggle:hover {
+    background-color: #161d31;
 }
 
 .notifications a.notification-icon.text-secondary {
@@ -594,4 +604,375 @@ html.sidebar-light:not(.dark) .page-header .breadcrumbs span {
 a.ws-flotante {
     border-radius: 0 !important;
     transform: scale(0.85);
+}
+
+/************************************ tema morado ************************************/
+/* header */
+html.sidebar-blue .userbox.show .dropdown-menu a:hover {
+    background-color: #554AC6;
+}
+html.sidebar-blue .header .logo-container .topbar-links:hover {
+    background-color: #554AC6;
+    color: #fff;
+}
+/* panel derecho */
+html.sidebar-blue .style-switcher,
+html.sidebar-blue .style-switcher .style-switcher-open {
+    background-color: #f6f6f6;
+    color: #777;
+    border-left: 3px solid #e2e3e6;
+    border-top: 3px solid #e2e3e6;
+    border-bottom: 3px solid #e2e3e6;
+}
+.sidebar-blue ul.nav-main li.nav-active:not(.nav-parent) > a, .sidebar-blue ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
+    box-shadow: none;
+}
+html.sidebar-blue .style-switcher h4 {
+    background-color: #f6f6f6;
+    color: #777;
+}
+html.sidebar-blue ul.nav-main li.nav-active:not(.nav-parent) > a {
+    background: #554AC6;
+    box-shadow: none;
+}
+/* cajas de contenido */
+html.sidebar-blue .card-header.bg-info {
+    background: #554AC6 !important;
+}
+/* panel izquierdo */
+html.sidebar-blue ul.nav-main li .nav-children li a:after {
+    background: transparent;
+}
+
+/************************************ tema gris ************************************/
+/* header */
+html.sidebar-gray .userbox.show .dropdown-menu a:hover {
+    background-color: #82868b;
+}
+html.sidebar-gray .header .logo-container .topbar-links:hover {
+    background-color: #82868b;
+    color: #fff;
+}
+/* panel derecho */
+html.sidebar-gray:not(.dark) .style-switcher,
+html.sidebar-gray:not(.dark) .style-switcher .style-switcher-open {
+    background-color: #f6f6f6;
+    color: #777;
+    border-left: 3px solid #e2e3e6;
+    border-top: 3px solid #e2e3e6;
+    border-bottom: 3px solid #e2e3e6;
+}
+.sidebar-gray:not(.dark) ul.nav-main li.nav-active:not(.nav-parent) > a, .sidebar-gray:not(.dark) ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
+    box-shadow: none;
+}
+html.sidebar-gray:not(.dark) .style-switcher h4 {
+    background-color: #f6f6f6;
+    color: #777;
+}
+html.sidebar-gray:not(.dark) ul.nav-main li.nav-active:not(.nav-parent) > a {
+    background: #82868b;
+    box-shadow: none;
+}
+/* cajas de contenido */
+html.sidebar-gray .card-header.bg-info {
+    background: #82868b !important;
+}
+/* panel izquierdo */
+html.fixed.sidebar-gray .sidebar-left,
+html.fixed.sidebar-gray .sidebar-header,
+html.fixed.sidebar-gray .sidebar-left .nano {
+    background-color: #82868b !important;
+}
+html.fixed.sidebar-gray .sidebar-left a {
+    color: #fff;
+}
+html.fixed.sidebar-gray .sidebar-left a:hover,
+html.fixed.sidebar-gray .sidebar-left a:active,
+html.fixed.sidebar-gray .sidebar-left a:focus {
+    color: #fff !important;
+}
+html.fixed.sidebar-gray .sidebar-left a::after {
+    color: #fff;
+}
+html.fixed.sidebar-gray .sidebar-left a::before {
+    border-color: #fff !important;
+}
+html.fixed.sidebar-gray ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a::before {
+  background: #fff !important;
+}
+html.fixed.sidebar-gray .sidebar-left a:hover,
+html.fixed.sidebar-gray .sidebar-left a:active,
+html.fixed.sidebar-gray .sidebar-left a:focus,
+html.fixed.sidebar-gray.dark .sidebar-left a:hover,
+html.fixed.sidebar-gray.dark .sidebar-left a:active,
+html.fixed.sidebar-gray.dark .sidebar-left a:focus {
+    color: #fff;
+    background-color: #82868b !important;
+}
+html.fixed.sidebar-gray .sidebar-left a:hover::before,
+html.fixed.sidebar-gray .sidebar-left a:active::before,
+html.fixed.sidebar-gray .sidebar-left a:focus::before,
+html.fixed.sidebar-gray .sidebar-left a:hover::after,
+html.fixed.sidebar-gray .sidebar-left a:active::after,
+html.fixed.sidebar-gray .sidebar-left a:focus::after {
+    border-color: #fff;
+    color: #fff;
+}
+html.fixed.sidebar-gray ul.nav-main li.nav-expanded > a {
+  background: #707376 !important;
+  color: #fff !important;
+}
+ul.fixed.sidebar-gray .nav-main > li.nav-active:not(.nav-expanded) > a {
+  border-radius: 6px 6px 6px 6px !important;
+}
+html.fixed.sidebar-gray ul.nav-main li.nav-parent > ul.nav-children {
+  background-color: #707376;
+}
+html.fixed.sidebar-gray .sidebar-left a:hover, html.fixed.sidebar-gray .sidebar-left a:active, html.fixed.sidebar-gray .sidebar-left a:focus {
+  color: #fff;
+  background-color: #707376;
+}
+html.fixed.sidebar-gray ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
+  background: #616365;
+  color: #fff !important;
+}
+html.fixed.sidebar-gray .sidebar-left-collapsed .sidebar-left .nav-main > li > a {
+  border-radius: 6px 6px 6px 6px !important;
+}
+html.sidebar-gray ul.nav-main li.nav-active:not(.nav-parent) > a {
+  background: #707376;
+  box-shadow: none;
+}
+.sidebar-gray ul.nav-main li .nav-children li:not(.nav-parent) > a,
+.sidebar-gray ul.nav-main li .nav-children li a {
+  color: #fff;
+}
+.sidebar-gray .sidebar-left a::before {
+  color: #fff;
+  border-color: #4b4b4b !important;
+}
+html.sidebar-gray ul.nav-main li .nav-children li a:after {
+    background: transparent;
+}
+
+/************************************ tema verde ************************************/
+/* header */
+html.sidebar-green .userbox.show .dropdown-menu a:hover {
+    background-color: #1ca55a;
+}
+html.sidebar-green .header .logo-container .topbar-links:hover {
+      background-color: #1ca55a;
+      color: #fff;
+}
+/* panel izquierdo */
+html.sidebar-green ul.nav-main li .nav-children li a:after {
+    background: transparent;
+}
+html.sidebar-green ul.nav-main li.nav-active:not(.nav-parent) > a {
+    background: #1ca55a;
+    box-shadow: none;
+}
+html.fixed.sidebar-green ul.nav-main li.nav-expanded > a {
+    background-color: #1ca55a !important;
+    color: #fff !important;
+}
+html.fixed.sidebar-green .sidebar-left a:hover,
+html.fixed.sidebar-green .sidebar-left a:active,
+html.fixed.sidebar-green .sidebar-left a:focus,
+html.fixed.sidebar-green.dark .sidebar-left a:hover,
+html.fixed.sidebar-green.dark .sidebar-left a:active,
+html.fixed.sidebar-green.dark .sidebar-left a:focus {
+  color: #fff;
+  background-color: #1ca55a !important;
+}
+/* cajas de contenido */
+html.sidebar-green .card-header.bg-info {
+  background: #1ca55a !important;
+}
+
+/************************************ tema rojo ************************************/
+/* header */
+html.sidebar-red .userbox.show .dropdown-menu a:hover {
+    background-color: #dc3545;
+}
+html.sidebar-red .header .logo-container .topbar-links:hover {
+    background-color: #dc3545;
+}
+/* panel izquierdo */
+html.sidebar-red ul.nav-main li.nav-active:not(.nav-parent) > a {
+    background: #dc3545;
+    box-shadow: none;
+}
+html.sidebar-red ul.nav-main li .nav-children li a:after {
+    background: transparent;
+}
+html.fixed.sidebar-red ul.nav-main li.nav-expanded > a {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+}
+html.fixed.sidebar-red .sidebar-left a:hover,
+html.fixed.sidebar-red .sidebar-left a:active,
+html.fixed.sidebar-red .sidebar-left a:focus,
+html.fixed.sidebar-red.dark .sidebar-left a:hover,
+html.fixed.sidebar-red.dark .sidebar-left a:active,
+html.fixed.sidebar-red.dark .sidebar-left a:focus {
+  color: #fff;
+  background-color: #dc3545 !important;
+}
+/* panel derecho */
+html.sidebar-red:not(.dark) .style-switcher,
+html.sidebar-red:not(.dark) .style-switcher .style-switcher-open {
+  background-color: #f6f6f6;
+  color: #777;
+  border-left: 3px solid #e2e3e6;
+  border-top: 3px solid #e2e3e6;
+  border-bottom: 3px solid #e2e3e6;
+}
+html.sidebar-red:not(.dark) .style-switcher h4 {
+  background-color: #f6f6f6;
+  color: #777;
+}
+html.sidebar-red:not(.dark) ul.nav-main li.nav-active:not(.nav-parent) > a {
+  background: #dc3545;
+  box-shadow: none;
+}
+/* cajas de contenido */
+html.sidebar-red .card-header.bg-info {
+  background: #dc3545 !important;
+}
+
+/************************************ tema naranja ************************************/
+/* header */
+html.sidebar-warning .userbox.show .dropdown-menu a:hover {
+    background-color: #dd8028;
+}
+html.sidebar-warning .header .logo-container .topbar-links:hover {
+    background-color: #dd8028;
+}
+/* panel izquierdo */
+html.sidebar-warning ul.nav-main li.nav-active:not(.nav-parent) > a {
+    background: #dd8028;
+    box-shadow: none;
+}
+html.sidebar-warning ul.nav-main li .nav-children li a:after {
+    background: transparent;
+}
+html.fixed.sidebar-warning ul.nav-main li.nav-expanded > a {
+    background-color: #dd8028 !important;
+    color: #fff !important;
+}
+html.fixed.sidebar-warning .sidebar-left a:hover,
+html.fixed.sidebar-warning .sidebar-left a:active,
+html.fixed.sidebar-warning .sidebar-left a:focus,
+html.fixed.sidebar-warning.dark .sidebar-left a:hover,
+html.fixed.sidebar-warning.dark .sidebar-left a:active,
+html.fixed.sidebar-warning.dark .sidebar-left a:focus {
+  color: #fff;
+  background-color: #dd8028 !important;
+}
+/* cajas de contenido */
+html.sidebar-warning .card-header.bg-info {
+  background: #dd8028 !important;
+}
+
+/* --------------------------- tema azul celeste --------------------------- */
+/* panel izquierdo */
+html.fixed.sidebar-ligth-blue .sidebar-left,
+html.fixed.sidebar-ligth-blue .sidebar-header,
+html.fixed.sidebar-ligth-blue .sidebar-left .nano {
+    background-color: #00cfe8 !important;
+}
+html.fixed.sidebar-ligth-blue .sidebar-left a {
+    color: #fff;
+}
+html.fixed.sidebar-ligth-blue .sidebar-left a:hover,
+html.fixed.sidebar-ligth-blue .sidebar-left a:active,
+html.fixed.sidebar-ligth-blue .sidebar-left a:focus {
+    color: #fff !important;
+}
+html.fixed.sidebar-ligth-blue .sidebar-left a::after {
+    color: #fff;
+}
+html.fixed.sidebar-ligth-blue .sidebar-left a::before {
+    border-color: #fff !important;
+}
+html.fixed.sidebar-ligth-blue ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a::before {
+  background: #fff !important;
+}
+html.fixed.sidebar-ligth-blue .sidebar-left a:hover,
+html.fixed.sidebar-ligth-blue .sidebar-left a:active,
+html.fixed.sidebar-ligth-blue .sidebar-left a:focus {
+    color: #fff;
+    background-color: transparent;
+}
+html.fixed.sidebar-ligth-blue .sidebar-left a:hover::before,
+html.fixed.sidebar-ligth-blue .sidebar-left a:active::before,
+html.fixed.sidebar-ligth-blue .sidebar-left a:focus::before,
+html.fixed.sidebar-ligth-blue .sidebar-left a:hover::after,
+html.fixed.sidebar-ligth-blue .sidebar-left a:active::after,
+html.fixed.sidebar-ligth-blue .sidebar-left a:focus::after {
+    border-color: #fff;
+    color: #fff;
+}
+html.fixed.sidebar-ligth-blue ul.nav-main li.nav-expanded > a,
+html.fixed.sidebar-ligth-blue.dark ul.nav-main li.nav-expanded > a {
+  background-color: #00a1b3 !important;
+  color: #fff !important;
+}
+ul.fixed.sidebar-ligth-blue .nav-main > li.nav-active:not(.nav-expanded) > a {
+  border-radius: 6px 6px 6px 6px !important;
+}
+html.fixed.sidebar-ligth-blue ul.nav-main li.nav-parent > ul.nav-children {
+  background-color: #00a1b3;
+}
+html.fixed.sidebar-ligth-blue .sidebar-left a:hover,
+html.fixed.sidebar-ligth-blue .sidebar-left a:active,
+html.fixed.sidebar-ligth-blue .sidebar-left a:focus,
+html.fixed.sidebar-ligth-blue.dark .sidebar-left a:hover,
+html.fixed.sidebar-ligth-blue.dark .sidebar-left a:active,
+html.fixed.sidebar-ligth-blue.dark .sidebar-left a:focus {
+  color: #fff;
+  background-color: #00a1b3 !important;
+}
+html.fixed.sidebar-ligth-blue ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
+  background: #007582;
+  color: #fff !important;
+}
+html.fixed.sidebar-ligth-blue .sidebar-left-collapsed .sidebar-left .nav-main > li > a {
+  border-radius: 6px 6px 6px 6px !important;
+}
+html.sidebar-ligth-blue ul.nav-main li.nav-active:not(.nav-parent) > a {
+  background: #00a1b3;
+  box-shadow: none;
+}
+/* header */
+html.sidebar-ligth-blue .userbox.show .dropdown-menu a:hover {
+  background-color: #00cfe8;
+}
+html.sidebar-ligth-blue .header .logo-container .topbar-links:hover {
+    background-color: #00cfe8;
+}
+html.sidebar-ligth-blue ul.nav-main li .nav-children li a:after {
+    background: transparent;
+}
+/* cajas de contenido */
+html.sidebar-ligth-blue .card-header.bg-info {
+  background: #00cfe8 !important;
+}
+
+
+/* --------------------------- tema noche --------------------------- */
+html.dark .header .logo-container .topbar-links {
+    background: #161d31;
+}
+/* html.dark .header .logo-container .topbar-links:hover {
+    background: #161d31d1;
+} */
+html.dark ul.nav-main li .nav-children li a:after {
+    background: transparent;
+}
+
+/* -------- config -------- */
+html.dark .card.card-dashboard .card-title, html.dark .card.card-dashboard small.text-muted {
+    background: #283046;
 }
