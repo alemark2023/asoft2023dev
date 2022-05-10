@@ -18,7 +18,7 @@ class PaymentConfigurationRequest extends FormRequest
         
         $type = $this->input('type');
 
-        if($type == 'yape' && $this->input('enabled_yape'))
+        if($type == '01' && $this->input('enabled_yape'))
         {
 
             return [
@@ -39,6 +39,20 @@ class PaymentConfigurationRequest extends FormRequest
             ];
 
         }
+        else if($type == '02' && $this->input('enabled_mp'))
+        {
+
+            return [
+                // 'access_token_mp' => [
+                //     'required',
+                // ],
+                'public_key_mp' => [
+                    'required',
+                ],
+            ];
+
+        }
+
 
         return [];
     }

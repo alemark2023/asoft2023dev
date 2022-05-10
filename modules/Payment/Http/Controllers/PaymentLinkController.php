@@ -11,14 +11,30 @@ use App\Models\Tenant\{
 use Exception, Illuminate\Support\Facades\DB;
 use Modules\Payment\Http\Requests\PaymentLinkRequest;
 use Carbon\Carbon;
-use Modules\Payment\Models\PaymentLink;
+use Modules\Payment\Models\{
+    PaymentLink,
+    PaymentLinkType,
+    PaymentConfiguration,
+};
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Modules\Payment\Mail\PaymentLinkEmail;
+use Modules\Finance\Helpers\UploadFileHelper;
 
 
 class PaymentLinkController extends Controller
 {
 
-
+    
+    /**
+     * Buscar link de pago
+     *
+     * @param  int $document_payment_id
+     * @param  string $instance_type
+     * @param  int $payment_link_type_id
+     * @return array
+     */
     public function record($document_payment_id, $instance_type, $payment_link_type_id)
     {
 
@@ -44,7 +60,13 @@ class PaymentLinkController extends Controller
     }
 
 
-
+    
+    /**
+     * Registrar link de pago
+     *
+     * @param  PaymentLinkRequest $request
+     * @return array
+     */
     public function store(PaymentLinkRequest $request)
     {
 
@@ -54,7 +76,7 @@ class PaymentLinkController extends Controller
             'soap_type_id' => Company::select('soap_type_id')->firstOrFail()->soap_type_id,
             'payment_link_type_id' => $request->payment_link_type_id,
             'payment_id' => $request->payment_id,
-            'payment_type' => $this->getModelByType($request->origin_type),
+            'payment_type' => PaymentLink::getModelByType($request->instance_type),
             'total' => $request->total,
         ]);
 
@@ -67,6 +89,169 @@ class PaymentLinkController extends Controller
 
     public function index() {
         return view('payment::generate.index');
+    }
+     
+    /**
+     * Mostrar formulario público del link de pago
+     *
+     * @param  string $uuid
+     * @param  string $payment_link_type_id
+     * @param  float $total
+     */
+    public function publicPaymentLink($uuid, $payment_link_type_id, $input_total)
+    {
+
+        $this->validatePublicParams($payment_link_type_id, $input_total);
+        $payment_link = PaymentLink::with(['payment'])->where('uuid', $uuid)->firstOrFail();
+        $company = $this->getPublicDataCompany();
+        $payment_configuration = PaymentConfiguration::getPublicRowResource();
+
+        $apply_conversion = false;
+        $total = $this->getTotal($payment_link, $input_total, $apply_conversion);
+
+        return view('payment::payment_links.public.index', compact('payment_link', 'company', 'payment_configuration', 'total', 'apply_conversion'));
+
+    }
+    
+    /**
+     *
+     * @param  PaymentLink $payment_link
+     * @param  float $input_total
+     * @return float
+     */
+    public function getTotal(PaymentLink $payment_link, $input_total, &$apply_conversion)
+    {
+        $document = $payment_link->payment->document;
+
+        if($document->currency_type_id === 'PEN') return $input_total;
+
+        $apply_conversion = true;
+
+        return round($input_total * $document->exchange_rate_sale, 2);
+    }
+    
+
+    /**
+     *
+     * @return Company
+     */
+    public function getPublicDataCompany()
+    {
+        return Company::select('name', 'number')->first();
+    }
+
+    
+    /**
+     * 
+     * Validar datos
+     *
+     * @param  string $payment_link_type_id
+     * @param  float $total
+     * @return void
+     */
+    public function validatePublicParams($payment_link_type_id, $total)
+    {
+
+        $validate = [
+            'success' => true,
+            'message' => null,
+        ];
+
+        if(!is_numeric($total))
+        {
+            $validate = [
+                'success' => false,
+                'message' => 'El total debe ser númerico',
+            ];
+        }
+        else
+        {
+            if($total <= 0)
+            {
+                $validate = [
+                    'success' => false,
+                    'message' => 'El total debe ser mayor a 0',
+                ];
+            }
+        }
+
+        if(!PaymentLinkType::find($payment_link_type_id))
+        {
+            $validate = [
+                'success' => false,
+                'message' => 'Tipo de link no permitido',
+            ]; 
+        }
+        
+        if(!$validate['success']) throw new Exception($validate['message']);
+
+    }
+
+    
+    /**
+     * Enviar correo
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function email(Request $request)
+    {
+
+        $company = $this->getPublicDataCompany();
+
+        Mail::to($request->customer_email)->send(new PaymentLinkEmail($company, $request->user_payment_link));
+        
+        return [
+            'success' => true,
+            'message' => 'El correo fue enviado satisfactoriamente'
+        ];
+
+    }
+
+    
+    
+    /**
+     * Cargar voucher
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function uploadedFile(Request $request)
+    {
+
+        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,svg');
+        if(!$validate_upload['success']) return $validate_upload;
+
+        if ($request->hasFile('file')) 
+        {
+
+            $payment_link = PaymentLink::findOrFail($request->id);
+
+            $new_request = [
+                'file' => $request->file('file'),
+                'type' => $request->input('type'),
+            ];
+
+            $temp_file = UploadFileHelper::getTempFile($new_request);
+
+            if($temp_file['success'])
+            {
+                $filename = UploadFileHelper::uploadFileFromTempFile('payment_links', $temp_file['data']['filename'], $temp_file['data']['temp_path'], $payment_link->id);
+                $payment_link->uploaded_filename = $filename;
+                $payment_link->save();
+                
+                return [
+                    'success' => true,
+                    'message' => 'Archivo cargado correctamente',
+                ];
+
+            }
+        }
+
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
     }
 
 }

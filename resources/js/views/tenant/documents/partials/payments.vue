@@ -149,6 +149,8 @@
         
         <dialog-link-payment 
             :documentPaymentId="documentPayment.id"
+            :currencyTypeId="document.currency_type_id"
+            :exchangeRateSale="document.exchange_rate_sale"
             :payment="documentPayment.payment"
             :showDialog.sync="showDialogLink"
             >

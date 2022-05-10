@@ -12,7 +12,7 @@
             
             <el-tabs v-model="form.type" @tab-click="handleClick">
 
-                <el-tab-pane label="Yape" name="yape">
+                <el-tab-pane label="Yape" name="01">
                     <div class="row pt-1">
                         <div class="col-md-6">
                             <h4 class="control-label">Habilitar</h4>
@@ -65,15 +65,59 @@
                         </template>
         
                     </div>
-                    <div class="form-actions text-right mt-3">
+                    <!-- <div class="form-actions text-right mt-3">
                         <el-button type="primary" @click="submit" :loading="loading_submit">Guardar</el-button>
+                    </div> -->
+                </el-tab-pane>
+
+
+                <el-tab-pane label="Mercado Pago" name="02">
+
+                    <div class="row pt-1">
+                        <div class="col-md-6">
+                            <h4 class="control-label">Habilitar</h4>
+                            <div :class="{'has-danger': errors.enabled_mp}"
+                                    class="form-group">
+                                <el-switch v-model="form.enabled_mp"
+                                            active-text="Si"
+                                            inactive-text="No"></el-switch>
+                                <small v-if="errors.enabled_mp"
+                                        class="form-control-feedback"
+                                        v-text="errors.enabled_mp[0]"></small>
+                            </div>
+                        </div>
+                        
+                        <template v-if="form.enabled_mp">
+
+                            <div class="col-md-12 mt-3">
+                                <div class="form-group" :class="{'has-danger': errors.public_key_mp}">
+                                    <label class="control-label">Token público <span class="text-danger">*</span></label>
+                                    <el-input v-model="form.public_key_mp"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.public_key_mp" v-text="errors.public_key_mp[0]"></small>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-12 mt-3">
+                                <div class="form-group" :class="{'has-danger': errors.access_token_mp}">
+                                    <label class="control-label">Token de acceso (privado) <span class="text-danger">*</span>
+                                        <el-tooltip class="item" effect="dark" content="El token de acceso no es visible, si desea modificarlo ingrese un valor" placement="top-end">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <el-input v-model="form.access_token_mp" show-password></el-input>
+                                    <small class="form-control-feedback" v-if="errors.access_token_mp" v-text="errors.access_token_mp[0]"></small>
+                                </div>
+                            </div>
+
+                        </template>
+        
                     </div>
                 </el-tab-pane>
 
-
-                <el-tab-pane label="Mercado Pago" name="mercado-pago">
-                    
-                </el-tab-pane>
+                <div class="form-actions text-right mt-3">
+                    <el-button type="primary" @click="submit" :loading="loading_submit">Guardar</el-button>
+                </div>
             </el-tabs>
 
         </div> 
@@ -153,11 +197,16 @@
                     enabled_yape : false,
                     name_yape : null,
                     telephone_yape: null,
-                    type: 'yape',
+                    type: '01',
 
                     qrcode_yape : null,
                     image_url_yape: null,
                     temp_path_yape: null,
+
+                    
+                    enabled_mp : false,
+                    access_token_mp: null,
+                    public_key_mp: null,
                 }
 
                 this.errors = {}
@@ -167,7 +216,7 @@
                 await this.$http.get(`/${this.resource}/record`)
                     .then(response => {
                         this.form = response.data.data
-                        this.form.type = 'yape'
+                        this.form.type = '01'
                     })
             }, 
         }

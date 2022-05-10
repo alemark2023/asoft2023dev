@@ -52,7 +52,9 @@ class DocumentPaymentController extends Controller
             'number_full' => $document->number_full,
             'total_paid' => $total_paid,
             'total' => $total,
-            'total_difference' => $total_difference
+            'total_difference' => $total_difference,
+            'currency_type_id' => $document->currency_type_id,
+            'exchange_rate_sale' => (float) $document->exchange_rate_sale,
         ];
 
     }
