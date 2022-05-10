@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Pos\Models\CashTransaction;
 use App\Models\Tenant\CashDocumentCredit;
+use Modules\Finance\Models\Income;
 
 /**
  * Class CashController
@@ -635,6 +636,8 @@ class CashController extends Controller
                     'total_payments'            => (!in_array($document->state_type_id, $status_type_id)) ? 0 : $document->payments->sum('payment'),
 
                 ];
+                /* Notas de credito o debito*/
+                $notes = $document->getNotes();
             } 
             /** Documentos de Tipo Servicio tecnico */
             elseif ($cash_document->technical_service) {
@@ -775,6 +778,7 @@ class CashController extends Controller
 
             }
 
+            
 
             if (!empty($temp)) {
                 $temp['usado'] = isset($temp['usado']) ? $temp['usado'] : '--';
@@ -783,14 +787,127 @@ class CashController extends Controller
                 $all_documents[] = $temp;
             }
 
+            /** Notas de credito o debito */
+            if ($notes !== null) {
+                foreach ($notes as $note) {
+                    $usado = 'Tomado para ';
+                    /** @var \App\Models\Tenant\Note $note */
+                    $sum = $note->isDebit();
+                    $type = ($note->isDebit()) ? 'Nota de debito' : 'Nota de crédito';
+                    $document = $note->getDocument();
+                    if (in_array($document->state_type_id, $status_type_id)) {
+                        $record_total = $document->getTotal();
+                        /** Si es credito resta */
+                        if ($sum) {
+                            $usado .= 'Nota de debito';
+                            $nota_debito += $record_total;
+                            $final_balance += $record_total;
+                            $usado .= "Id de documento {$document->id} - Nota de Debito /* $record_total * /<br>";
+                        } else {
+                            $usado .= 'Nota de credito';
+                            $nota_credito += $record_total;
+                            $final_balance -= $record_total;
+                            $usado .= "Id de documento {$document->id} - Nota de Credito /* $record_total * /<br>";
+                        }
+                        $temp = [
+                            'type_transaction'          => $type,
+                            'document_type_description' => $document->document_type->description,
+                            'number'                    => $document->number_full,
+                            'date_of_issue'             => $document->date_of_issue->format('Y-m-d'),
+                            'date_sort'                 => $document->date_of_issue,
+                            'customer_name'             => $document->customer->name,
+                            'customer_number'           => $document->customer->number,
+                            'total'                     => (!in_array($document->state_type_id, $status_type_id)) ? 0
+                                : $document->total,
+                            'currency_type_id'          => $document->currency_type_id,
+                            'usado'                     => $usado.' '.__LINE__,
+                            'tipo'                      => 'document',
+                        ];
+
+                        $temp['usado'] = isset($temp['usado']) ? $temp['usado'] : '--';
+                        $temp['total_string'] = self::FormatNumber($temp['total']);
+                        $all_documents[] = $temp;
+                    }
+
+                }
+            }
 
         }
+
+        // finanzas ingresos
+        $id_income=$cash->user_id;
+        $incomes=Income::where('user_id', $id_income)
+        ->whereTypeUser()
+        ->get();
+        
+        if ($incomes) {
+
+            $data['cash_documents_total'] = (int)$incomes->count();
+
+            foreach ($incomes as $income) {
+                
+                if (in_array($income->state_type_id, $status_type_id)){
+                    $payments=$income->payments;
+                    if (!is_null($payments[0])&&in_array($payments[0]['payment_method_type_id'], $type_payment))
+                    {
+                        $record_total = 0;
+    
+                        $total = self::CalculeTotalOfCurency(
+                            $income->total,
+                            $income->currency_type_id,
+                            $income->exchange_rate_sale
+                        );
+    
+                        $cash_income += $total;
+                        $final_balance += $total;
+
+    
+                        if (count($income->payments) > 0) 
+                        {
+                            $pays = $income->payments;
+                            foreach ($methods_payment as $record) {
+                                $record_total = $pays->where('payment_method_type_id', $record->id)->sum('payment');
+                                $record->sum = ($record->sum + $record_total);
+                            }
+                        }
+                    }
+                }
+                /* dd((!in_array($income->state_type_id, $status_type_id)) ? 0 : $income->payments->sum('payment')); */
+                $usado = '';
+                $temp = [
+                    'type_transaction'          => 'Venta (finanzas)',
+                    'document_type_description' => $income->income_type->description,
+                    'number'                    => $income->number,
+                    'date_of_issue'             => $income->date_of_issue->format('Y-m-d'),
+                    'date_sort'                 => $income->date_of_issue,
+                    'customer_name'             => $income->customer,
+                    'customer_number'           => $income->customer,
+                    'total'                     => ((!in_array($income->state_type_id, $status_type_id)) ? 0 : $income->total),
+                    'currency_type_id'          => $income->currency_type_id,
+                    'usado'                     => $usado." ".__LINE__,
+                    'tipo'                      => 'finance',
+                    'total_payments'            => (!in_array($income->state_type_id, $status_type_id)) ? 0 : $income->payments->sum('payment'),
+    
+                ];
+    
+                
+                if (!empty($temp)) {
+                    $temp['usado'] = isset($temp['usado']) ? $temp['usado'] : '--';
+                    $temp['total_string'] = self::FormatNumber($temp['total']);
+                    $temp['total_payments'] = self::FormatNumber($temp['total_payments']);
+                    $all_documents[] = $temp;
+                }
+            }
+        }
+
+        
+
 //        $all_documents = collect($all_documents)->sortBy('date_sort')->all();
         /************************/
         /************************/
         $data['all_documents'] = $all_documents;
         $temp = [];
-
+        
         foreach ($methods_payment as $index => $item) {
             $temp[] = [
                 'iteracion' => $index + 1,
@@ -812,7 +929,7 @@ class CashController extends Controller
 
         //$cash_income = ($final_balance > 0) ? ($cash_final_balance - $cash->beginning_balance) : 0;
         /* return $data; */
-
+        /* dd($data); */
         $filename = "Reporte_POS_EFECTIVO - {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
 
         $cashPaymentExport = new CashPaymentExport();
