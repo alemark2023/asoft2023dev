@@ -202,6 +202,23 @@
                                        v-text="errors.observations[0]"></small>
                             </div>
                         </div>
+                        
+                        <div class="col-lg-2" v-if="showOrderFormExternal">
+                            <div :class="{'has-danger': errors.order_form_external}"
+                                 class="form-group">
+                                <label class="control-label">Orden de pedido
+                                    <el-tooltip class="item"
+                                                content="Pedidos externos"
+                                                effect="dark"
+                                                placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <el-input v-model="form.order_form_external"></el-input>
+                                <small v-if="errors.order_form_external" class="form-control-feedback" v-text="errors.order_form_external[0]"></small>
+                            </div>
+                        </div>
+
                     </div>
                     <hr>
                     <h4>Datos envío</h4>
@@ -795,7 +812,7 @@ export default {
                     semitrailer: null
                 },
                 related: {},
-
+                order_form_external: null,
             }
         },
         changeEstablishment() {
@@ -916,6 +933,9 @@ export default {
         ...mapState([
             'config',
         ]),
+        showOrderFormExternal(){
+            return ['i', 'on'].includes(this.typeDocument)
+        },
     },
 }
 </script>

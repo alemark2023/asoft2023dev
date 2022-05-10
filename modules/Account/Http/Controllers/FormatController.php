@@ -11,6 +11,11 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Modules\Account\Exports\ReportFormatPurchaseExport;
 use Modules\Account\Exports\ReportFormatSaleExport;
+use Modules\Account\Exports\ReportFormatSaleGarageGllExport;
+use App\Models\Tenant\{
+    DocumentItem
+};
+
 
     /**
      * Class FormatController
@@ -51,7 +56,8 @@ use Modules\Account\Exports\ReportFormatSaleExport;
                 'params' => $request->all(),
             ];
 
-            if ($type === 'sale') {
+            if ($type === 'sale') 
+            {
                 $filename = 'Reporte_Formato_Ventas_'.date('YmdHis');
                 $data['records'] = $this->getSaleDocuments($d_start, $d_end);
                 $reportFormatSaleExport = new ReportFormatSaleExport();
@@ -60,6 +66,13 @@ use Modules\Account\Exports\ReportFormatSaleExport;
                 return $reportFormatSaleExport
                     ->download($filename.'.xlsx');
             }
+            else if($type === 'garage-gll')
+            {
+                
+                $data['records'] = $this->getSaleGarageGll($d_start, $d_end);
+                return (new ReportFormatSaleGarageGllExport())->data($data)->download('Reporte_Formato_Ventas_Grifo'.date('YmdHis').'.xlsx');
+            }
+
             $data['records'] = $this->getPurchaseDocuments($d_start, $d_end);
 
             $reportFormatPurchaseExport = new ReportFormatPurchaseExport();
@@ -80,6 +93,21 @@ use Modules\Account\Exports\ReportFormatSaleExport;
             'number' => $company->number,
         ];
     }
+
+        
+        /**
+         * 
+         * Datos para reporte grifo
+         *
+         * @param $d_start
+         * @param $d_end
+         * @return array
+         */
+        private function getSaleGarageGll($d_start, $d_end)
+        {
+            return DocumentItem::filterSaleGarageGLL($d_start, $d_end)->get();
+        }
+
 
         /**
          * @param                                               $d_start

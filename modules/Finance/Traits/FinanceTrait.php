@@ -786,4 +786,15 @@
         }
 
 
+        /**
+         * 
+         * Obtener soap_type_id para registro de entorno
+         *
+         * @return string
+         */
+        public function getCompanySoapTypeId()
+        {
+            return Company::getCompanySoapTypeId();
+        }
+
     }
