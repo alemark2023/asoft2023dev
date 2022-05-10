@@ -81,22 +81,22 @@ html.sidebar-blue .userbox.show .dropdown-menu a:hover {
   background-color: #554AC6;
 }
 /* panel derecho */
-html.sidebar-blue .style-switcher,
-html.sidebar-blue .style-switcher .style-switcher-open {
+html.sidebar-blue:not(.dark) .style-switcher,
+html.sidebar-blue:not(.dark) .style-switcher .style-switcher-open {
   background-color: #f6f6f6;
   color: #777;
   border-left: 3px solid #e2e3e6;
   border-top: 3px solid #e2e3e6;
   border-bottom: 3px solid #e2e3e6;
 }
-.sidebar-blue ul.nav-main li.nav-active:not(.nav-parent) > a, .sidebar-blue ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
+.sidebar-blue:not(.dark) ul.nav-main li.nav-active:not(.nav-parent) > a, .sidebar-blue:not(.dark) ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
   box-shadow: none;
 }
-html.sidebar-blue .style-switcher h4 {
+html.sidebar-blue:not(.dark) .style-switcher h4 {
   background-color: #f6f6f6;
   color: #777;
 }
-html.sidebar-blue ul.nav-main li.nav-active:not(.nav-parent) > a {
+html.sidebar-blue:not(.dark) ul.nav-main li.nav-active:not(.nav-parent) > a {
   background: #554AC6;
   box-shadow: none;
 }
@@ -126,19 +126,19 @@ html.sidebar-red .userbox.show .dropdown-menu a:hover {
   background-color: #dc3545;
 }
 /* panel derecho */
-html.sidebar-red .style-switcher,
-html.sidebar-red .style-switcher .style-switcher-open {
+html.sidebar-red:not(.dark) .style-switcher,
+html.sidebar-red:not(.dark) .style-switcher .style-switcher-open {
   background-color: #f6f6f6;
   color: #777;
   border-left: 3px solid #e2e3e6;
   border-top: 3px solid #e2e3e6;
   border-bottom: 3px solid #e2e3e6;
 }
-html.sidebar-red .style-switcher h4 {
+html.sidebar-red:not(.dark) .style-switcher h4 {
   background-color: #f6f6f6;
   color: #777;
 }
-html.sidebar-red ul.nav-main li.nav-active:not(.nav-parent) > a {
+html.sidebar-red:not(.dark) ul.nav-main li.nav-active:not(.nav-parent) > a {
   background: #dc3545;
   box-shadow: none;
 }

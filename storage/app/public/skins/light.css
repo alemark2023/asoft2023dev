@@ -616,22 +616,22 @@ html.sidebar-blue .header .logo-container .topbar-links:hover {
     color: #fff;
 }
 /* panel derecho */
-html.sidebar-blue .style-switcher,
-html.sidebar-blue .style-switcher .style-switcher-open {
+html.sidebar-blue:not(.dark) .style-switcher,
+html.sidebar-blue:not(.dark) .style-switcher .style-switcher-open {
     background-color: #f6f6f6;
     color: #777;
     border-left: 3px solid #e2e3e6;
     border-top: 3px solid #e2e3e6;
     border-bottom: 3px solid #e2e3e6;
 }
-.sidebar-blue ul.nav-main li.nav-active:not(.nav-parent) > a, .sidebar-blue ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
+.sidebar-blue:not(.dark) ul.nav-main li.nav-active:not(.nav-parent) > a, .sidebar-blue:not(.dark) ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
     box-shadow: none;
 }
-html.sidebar-blue .style-switcher h4 {
+html.sidebar-blue:not(.dark) .style-switcher h4 {
     background-color: #f6f6f6;
     color: #777;
 }
-html.sidebar-blue ul.nav-main li.nav-active:not(.nav-parent) > a {
+html.sidebar-blue:not(.dark) ul.nav-main li.nav-active:not(.nav-parent) > a {
     background: #554AC6;
     box-shadow: none;
 }
