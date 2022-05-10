@@ -38,4 +38,18 @@ class PaymentConfiguration extends ModelTenant
     }
 
 
+    public static function getPublicRowResource()
+    {
+
+        $record = PaymentConfiguration::first();
+
+        return [
+            'name_yape' => $record->name_yape,
+            'telephone_yape' => $record->telephone_yape,
+            'image_url_yape' => $record->image_url_yape,
+        ];
+
+    }
+
+
 }

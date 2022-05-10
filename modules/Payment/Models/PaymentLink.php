@@ -127,13 +127,22 @@ class PaymentLink extends ModelTenant
      */
     public function getUserPaymentLinkAttribute()
     {
-        return url("{$this->uuid}/{$this->payment_link_type_id}/{$this->total}");
+        return url("pagos/{$this->uuid}/{$this->payment_link_type_id}/{$this->total}");
     }
 
+
+    /**
+     * @return string
+     */
+    public function getImageUrlUploadedFilenameAttribute()
+    {
+        return $this->uploaded_filename ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'payment_links'.DIRECTORY_SEPARATOR.$this->uploaded_filename) : null;
+    }
 
     public function getRowResource()
     {
         return [
+            'id' => $this->id,
             'uuid' => $this->uuid,
             'user_id' => $this->user_id,
             'payment_link_type_id' => $this->payment_link_type_id,
@@ -143,15 +152,16 @@ class PaymentLink extends ModelTenant
             'uploaded_filename' => $this->uploaded_filename,
             'instance_type' => $this->instance_type,
             'user_payment_link' => $this->user_payment_link,
+            'image_url_uploaded_filename' => $this->image_url_uploaded_filename,
         ];
     }
 
 
-    public static function getModelByType($origin_type)
+    public static function getModelByType($instance_type)
     {
         $model = null;
 
-        switch ($origin_type) {
+        switch ($instance_type) {
             case 'document':
                 $model = DocumentPayment::class;
                 break;
