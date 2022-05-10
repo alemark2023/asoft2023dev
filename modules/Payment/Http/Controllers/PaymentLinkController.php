@@ -98,16 +98,36 @@ class PaymentLinkController extends Controller
      * @param  string $payment_link_type_id
      * @param  float $total
      */
-    public function publicPaymentLink($uuid, $payment_link_type_id, $total)
+    public function publicPaymentLink($uuid, $payment_link_type_id, $input_total)
     {
 
-        $this->validatePublicParams($payment_link_type_id, $total);
-        $payment_link = PaymentLink::select('payment_link_type_id')->where('uuid', $uuid)->firstOrFail();
+        $this->validatePublicParams($payment_link_type_id, $input_total);
+        $payment_link = PaymentLink::with(['payment'])->where('uuid', $uuid)->firstOrFail();
         $company = $this->getPublicDataCompany();
         $payment_configuration = PaymentConfiguration::getPublicRowResource();
 
-        return view('payment::payment_links.public.index', compact('payment_link', 'company', 'payment_configuration', 'total'));
+        $apply_conversion = false;
+        $total = $this->getTotal($payment_link, $input_total, $apply_conversion);
 
+        return view('payment::payment_links.public.index', compact('payment_link', 'company', 'payment_configuration', 'total', 'apply_conversion'));
+
+    }
+    
+    /**
+     *
+     * @param  PaymentLink $payment_link
+     * @param  float $input_total
+     * @return float
+     */
+    public function getTotal(PaymentLink $payment_link, $input_total, &$apply_conversion)
+    {
+        $document = $payment_link->payment->document;
+
+        if($document->currency_type_id === 'PEN') return $input_total;
+
+        $apply_conversion = true;
+
+        return round($input_total * $document->exchange_rate_sale, 2);
     }
     
 

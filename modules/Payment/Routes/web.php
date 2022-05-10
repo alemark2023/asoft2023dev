@@ -16,6 +16,7 @@ if($hostname) {
 
                 Route::post('', 'PaymentConfigurationController@store');
                 Route::get('/record', 'PaymentConfigurationController@record');
+                Route::get('/record-permissions', 'PaymentConfigurationController@recordPermissions');
                 Route::post('upload-qrcode-yape', 'PaymentConfigurationController@uploadQrcodeYape');
 
             });

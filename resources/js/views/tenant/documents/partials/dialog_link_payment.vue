@@ -3,121 +3,184 @@
         <el-dialog :title="titleDialog" :visible="showDialog" class="" @close="close" @open="create" >
 
             <el-tabs v-model="activeTab" @tab-click="handleClick" v-loading="loading">
-                <el-tab-pane label="Yape" name="01" v-if="payment_configuration.enabled_yape">
-                    <div class="row">
-                        <div class="col-md-7 bg-yape text-center pr-0">
-                            <img src="/logo/yape-logo.png" class="img-fluid" alt="Yape">
-                            <div class="payment-links-yape">
+                <el-tab-pane label="Yape" name="01">
 
-                                <template v-if="has_payment_link">
-                                    
-                                    <el-button type="primary" class="mt-2" icon="el-icon-share" 
-                                        v-clipboard:copy="form.user_payment_link"
-                                        v-clipboard:success="onCopy"
-                                        v-clipboard:error="onError"
-                                    >
-                                        Copiar Link
-                                    </el-button>
+                    <template  v-if="payment_configuration.enabled_yape">
 
-                                    <el-button type="primary" class="mt-2" icon="fas fa-envelope fa-fw" @click="showInputEmail">Enviar Correo</el-button>
-                                    <el-button type="primary" class="my-2" icon="fab fa-whatsapp fa-fw" @click="showInputWhatsapp">Enviar Whatsapp</el-button>
+                        <div class="row">
+                            <div class="col-md-7 bg-yape text-center pr-0">
+                                <img src="/logo/yape-logo.png" class="img-fluid" alt="Yape">
+                                <div class="payment-links-yape">
 
-                                </template>
-                                <template v-else>
-                                    <el-button type="primary" class="mt-2 mb-2" icon="el-icon-link" @click="clickGenerateLink" :loading="loading_generate_link">Generar Link</el-button>
-                                </template>
-                                
-                                <div class="payment-links-yape m-3" v-if="show_input_whatsapp || show_input_email">
+                                    <template v-if="has_payment_link">
+                                        
+                                        <el-button type="primary" class="mt-2" icon="el-icon-share" 
+                                            v-clipboard:copy="form.user_payment_link"
+                                            v-clipboard:success="onCopy"
+                                            v-clipboard:error="onError"
+                                        >
+                                            Copiar Link
+                                        </el-button>
 
-                                    <template v-if="show_input_whatsapp">
-
-                                        <el-input v-model="form_utilities.customer_telephone">
-                                            <template slot="prepend">+51</template>
-                                            <el-button slot="append"
-                                                    @click="clickSendWhatsapp">Enviar
-                                                <el-tooltip class="item"
-                                                            content="Se recomienta tener abierta la sesión de Whatsapp web"
-                                                            effect="dark"
-                                                            placement="top-start">
-                                                    <i class="fab fa-whatsapp"></i>
-                                                </el-tooltip>
-                                            </el-button>
-                                        </el-input>
+                                        <el-button type="primary" class="mt-2" icon="fas fa-envelope fa-fw" @click="showInputEmail">Enviar Correo</el-button>
+                                        <el-button type="primary" class="my-2" icon="fab fa-whatsapp fa-fw" @click="showInputWhatsapp">Enviar Whatsapp</el-button>
 
                                     </template>
-
-                                    
-                                    <template v-if="show_input_email">
-                                        <el-input v-model="form_utilities.customer_email">
-                                            <el-button slot="append"
-                                                    :loading="loading_email"
-                                                    icon="el-icon-message"
-                                                    @click="clickSendEmail">Enviar
-                                            </el-button>
-                                        </el-input>
+                                    <template v-else>
+                                        <el-button type="primary" class="mt-2 mb-2" icon="el-icon-link" @click="clickGenerateLink" :loading="loading_generate_link">Generar Link</el-button>
                                     </template>
+                                    
+                                    <div class="m-3" v-if="show_input_whatsapp || show_input_email">
+
+                                        <template v-if="show_input_whatsapp">
+
+                                            <el-input v-model="form_utilities.customer_telephone">
+                                                <template slot="prepend">+51</template>
+                                                <el-button slot="append"
+                                                        @click="clickSendWhatsapp">Enviar
+                                                    <el-tooltip class="item"
+                                                                content="Se recomienta tener abierta la sesión de Whatsapp web"
+                                                                effect="dark"
+                                                                placement="top-start">
+                                                        <i class="fab fa-whatsapp"></i>
+                                                    </el-tooltip>
+                                                </el-button>
+                                            </el-input>
+
+                                        </template>
+
+                                        
+                                        <template v-if="show_input_email">
+                                            <el-input v-model="form_utilities.customer_email" class="mt-2">
+                                                <el-button slot="append"
+                                                        :loading="loading_email"
+                                                        icon="el-icon-message"
+                                                        @click="clickSendEmail">Enviar
+                                                </el-button>
+                                            </el-input>
+                                        </template>
+
+                                    </div>
 
                                 </div>
-
                             </div>
-                        </div>
-                        <div class="col-md-1 pt-2">
-                        </div>
-                        <div class="col-md-4 pt-2">
-                            <template v-if="has_payment_link">
-                                <!-- <el-button type="primary">Adjuntar pago</el-button> -->
-                                
-                                <el-upload
-                                        :data="{'id': form.id}"
-                                        :headers="headers"
-                                        :multiple="false"
-                                        :on-remove="handleRemove"
-                                        :action="`/${resource}/uploaded-file`"
-                                        :show-file-list="true"
-                                        :file-list="fileList"
-                                        :on-success="onSuccess"
-                                        :limit="1"
-                                        >
-                                    <el-button slot="trigger" type="primary">Adjuntar pago</el-button>
-                                </el-upload>
-
-                                
-                                <img class="img-fluid pt-3" style="width: 100%; max-height: 300px" v-if="form.image_url_uploaded_filename" :src="form.image_url_uploaded_filename" alt="Yape">
-
-                            </template>
-
-                        </div>
-                    </div>
-                </el-tab-pane>
-                <el-tab-pane label="Mercado Pago" name="02">
-                    <div class="row">
-                        <div class="col-md-7 bg-mercadopago text-center pr-0">
-                            <img src="/logo/logo_mercadopago.jpg" class="img-fluid" alt="Yape">
-                            <div class="payment-links-mp">
-
+                            <div class="col-md-1 pt-2">
+                            </div>
+                            <div class="col-md-4 pt-2">
                                 <template v-if="has_payment_link">
+                                    <!-- <el-button type="primary">Adjuntar pago</el-button> -->
+                                    
+                                    <el-upload
+                                            :data="{'id': form.id}"
+                                            :headers="headers"
+                                            :multiple="false"
+                                            :on-remove="handleRemove"
+                                            :action="`/${resource}/uploaded-file`"
+                                            :show-file-list="true"
+                                            :file-list="fileList"
+                                            :on-success="onSuccess"
+                                            :limit="1"
+                                            >
+                                        <el-button slot="trigger" type="primary">Adjuntar pago</el-button>
+                                    </el-upload>
 
-                                    <el-button type="primary" class="mt-2" icon="el-icon-share">Copiar Link</el-button>
-                                    <el-button type="primary" class="mt-2" icon="fas fa-envelope fa-fw">Enviar Correo</el-button>
-                                    <el-button type="primary" class="my-2" icon="fab fa-whatsapp fa-fw">Enviar Whatsapp</el-button>
-                                
-                                </template>
-                                <template v-else>
-                                    <el-button type="primary" class="mt-2" icon="el-icon-link" @click="clickGenerateLink" :loading="loading_generate_link">Generar Link</el-button>
+                                    
+                                    <img class="img-fluid pt-3" style="width: 100%; max-height: 300px" v-if="form.image_url_uploaded_filename" :src="form.image_url_uploaded_filename" alt="Yape">
+
                                 </template>
 
                             </div>
                         </div>
-                        <div class="col-md-5 pt-2">
-                            <el-button type="primary">Consultar estado</el-button>
+                    </template>
+                    <template v-else>
+                         <el-alert
+                            title="Configuración deshabilitada"
+                            type="info"
+                            description="Disponible en configuración/empresa"
+                            show-icon>
+                        </el-alert>
+                    </template>
+
+                </el-tab-pane>
+                <el-tab-pane label="Mercado Pago" name="02" >
+
+                    <template  v-if="payment_configuration.enabled_mp">
+                        <div class="row">
+                            <div class="col-md-7 bg-mercadopago text-center pr-0">
+                                <img src="/logo/logo_mercadopago.jpg" class="img-fluid" alt="Yape">
+                                <div class="payment-links-mp">
+
+                                    <template v-if="has_payment_link">
+
+                                        <el-button type="primary" class="mt-2" icon="el-icon-share"
+                                            v-clipboard:copy="form.user_payment_link"
+                                            v-clipboard:success="onCopy"
+                                            v-clipboard:error="onError"
+                                            >
+                                            Copiar Link
+                                        </el-button>
+
+                                        <el-button type="primary" class="mt-2" icon="fas fa-envelope fa-fw" @click="showInputEmail">Enviar Correo</el-button>
+                                        <el-button type="primary" class="my-2" icon="fab fa-whatsapp fa-fw" @click="showInputWhatsapp">Enviar Whatsapp</el-button>
+                                    
+                                    </template>
+                                    <template v-else>
+                                        <el-button type="primary" class="mt-2" icon="el-icon-link" @click="clickGenerateLink" :loading="loading_generate_link">Generar Link</el-button>
+                                    </template>
+
+                                    <div class="m-3" v-if="show_input_whatsapp || show_input_email">
+
+                                        <template v-if="show_input_whatsapp">
+
+                                            <el-input v-model="form_utilities.customer_telephone">
+                                                <template slot="prepend">+51</template>
+                                                <el-button slot="append"
+                                                        @click="clickSendWhatsapp">Enviar
+                                                    <el-tooltip class="item"
+                                                                content="Se recomienta tener abierta la sesión de Whatsapp web"
+                                                                effect="dark"
+                                                                placement="top-start">
+                                                        <i class="fab fa-whatsapp"></i>
+                                                    </el-tooltip>
+                                                </el-button>
+                                            </el-input>
+
+                                        </template>
+
+                                        
+                                        <template v-if="show_input_email">
+                                            <el-input v-model="form_utilities.customer_email" class="mt-2">
+                                                <el-button slot="append"
+                                                        :loading="loading_email"
+                                                        icon="el-icon-message"
+                                                        @click="clickSendEmail">Enviar
+                                                </el-button>
+                                            </el-input>
+                                        </template>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-5 pt-2">
+                                <el-button type="primary">Consultar estado</el-button>
+                            </div>
                         </div>
-                    </div>
+                    </template>
+                    <template v-else>
+                         <el-alert
+                            title="Configuración deshabilitada"
+                            type="info"
+                            description="Disponible en configuración/empresa"
+                            show-icon>
+                        </el-alert>
+                    </template>
                 </el-tab-pane>
             </el-tabs>
 
             <div class="row mt-3">
                 <div class="col-md-12">
-                    <h4 class="text-left"><b>Total a pagar: {{payment}}</b></h4>
+                    <h4 class="text-left"><b>Total a pagar: S/ {{getPayment()}}</b></h4>
                 </div>
             </div>
         </el-dialog>
@@ -128,6 +191,8 @@
     export default {
         props: [
             'documentPaymentId',
+            'currencyTypeId',
+            'exchangeRateSale',
             'payment',
             'showDialog',
         ],
@@ -157,6 +222,13 @@
             await this.getConfiguration()
         },
         methods: {
+            getPayment(){
+
+                if(this.currencyTypeId === 'PEN') return this.payment
+
+                return _.round(this.payment * this.exchangeRateSale, 2)
+
+            },
             onSuccess(response, file, fileList) {
 
                 this.fileList = fileList
@@ -238,6 +310,8 @@
             },
             handleClick(){
                 this.form.payment_link_type_id = this.activeTab
+                this.show_input_whatsapp = false
+                this.show_input_email = false
                 this.getData()
             },
             async create(){
@@ -309,7 +383,7 @@
 
             }, 
             async getConfiguration() {
-                await this.$http.get(`/payment-configurations/record`)
+                await this.$http.get(`/payment-configurations/record-permissions`)
                     .then(response => {
                         this.payment_configuration = response.data.data
                     })

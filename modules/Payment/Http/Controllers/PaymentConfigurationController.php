@@ -23,6 +23,17 @@ class PaymentConfigurationController extends Controller
 
     
     /**
+     * @return array
+     */
+    public function recordPermissions()
+    {
+        return [
+            'data' => PaymentConfiguration::getPaymentPermissions()
+        ];
+    }
+
+
+    /**
      * Actualizar configuracion
      *
      * @param  PaymentConfigurationRequest $request
@@ -34,17 +45,14 @@ class PaymentConfigurationController extends Controller
         $type = $request->type;
         $record = PaymentConfiguration::firstOrFail();
         
-        if($type == 'yape')
+        switch ($type) 
         {
-            $record->enabled_yape = $request->enabled_yape;
-            $record->name_yape = $request->name_yape;
-            $record->telephone_yape = $request->telephone_yape;
-
-            if($request->qrcode_yape && $request->temp_path_yape)
-            {
-                $filename = UploadFileHelper::uploadFileFromTempFile('payment_configurations', $request->qrcode_yape, $request->temp_path_yape, $record->id, 'qr_yape');
-                $record->qrcode_yape = $filename;
-            }
+            case '01': //yape
+                $this->setDataYape($record, $request);
+                break;
+            case '02': //m pago
+                $this->setDataMP($record, $request);
+                break;
         }
 
         $record->save();
@@ -53,6 +61,44 @@ class PaymentConfigurationController extends Controller
             'success' => true,
             'message' => 'Configuración actualizada'
         ];
+    }
+
+    
+    /**
+     *
+     * @param  PaymentConfiguration $record
+     * @param  PaymentConfigurationRequest $request
+     * @return void
+     */
+    public function setDataMP(PaymentConfiguration &$record, $request)
+    {
+        $record->enabled_mp = $request->enabled_mp;
+        $record->public_key_mp = $request->public_key_mp;
+
+        if($request->access_token_mp)
+        {
+            $record->access_token_mp = $request->access_token_mp;
+        }
+    }
+
+
+    /**
+     *
+     * @param  PaymentConfiguration $record
+     * @param  PaymentConfigurationRequest $request
+     * @return void
+     */
+    public function setDataYape(PaymentConfiguration &$record, $request)
+    {
+        $record->enabled_yape = $request->enabled_yape;
+        $record->name_yape = $request->name_yape;
+        $record->telephone_yape = $request->telephone_yape;
+
+        if($request->qrcode_yape && $request->temp_path_yape)
+        {
+            $filename = UploadFileHelper::uploadFileFromTempFile('payment_configurations', $request->qrcode_yape, $request->temp_path_yape, $record->id, 'qr_yape');
+            $record->qrcode_yape = $filename;
+        }
     }
 
     

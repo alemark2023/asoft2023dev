@@ -12,11 +12,20 @@ class PaymentConfiguration extends ModelTenant
         'qrcode_yape',
         'name_yape',
         'telephone_yape',
+        
+        'enabled_mp',
+        'access_token_mp',
+        'public_key_mp',
+    ];
+
+    protected $hidden = [
+        'access_token_mp'
     ];
 
 
     protected $casts = [
         'enabled_yape' => 'bool',
+        'enabled_mp' => 'bool',
     ];
 
 
@@ -34,6 +43,8 @@ class PaymentConfiguration extends ModelTenant
             'name_yape' => $this->name_yape,
             'telephone_yape' => $this->telephone_yape,
             'image_url_yape' => $this->image_url_yape,
+            'enabled_mp' => $this->enabled_mp,
+            'public_key_mp' => $this->public_key_mp,
         ];
     }
 
@@ -47,6 +58,18 @@ class PaymentConfiguration extends ModelTenant
             'name_yape' => $record->name_yape,
             'telephone_yape' => $record->telephone_yape,
             'image_url_yape' => $record->image_url_yape,
+        ];
+
+    }
+
+    public static function getPaymentPermissions()
+    {
+
+        $record = PaymentConfiguration::select('enabled_yape', 'enabled_mp')->firstOrFail();
+
+        return [
+            'enabled_yape' => $record->enabled_yape,
+            'enabled_mp' => $record->enabled_mp,
         ];
 
     }

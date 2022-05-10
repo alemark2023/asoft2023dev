@@ -11,7 +11,7 @@
                         <h4><b>Número:</b> {{ payment_configuration.telephone_yape}}</h4>
                     </div>
                     <div class="short-div col-md-12">
-                        <h4><b>Total a pagar:</b> {{ total }}</h4>
+                        <h4><b>Total a pagar:</b> S/ {{ total }}</h4>
                     </div>
                 </div>
             </div>
