@@ -8,6 +8,7 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
 use App\Models\Tenant\PersonType;
+use Modules\Item\Models\NamePriceType;
 
 /**
  * App\Models\Tenant\ItemUnitType
@@ -21,11 +22,12 @@ use App\Models\Tenant\PersonType;
  */
 class ItemPriceType extends ModelTenant
 {
-     protected $with = ['unit_type', 'person_type'];
+     protected $with = ['unit_type', 'person_type', 'name_price_type'];
     public $timestamps = false;
 
     protected $fillable = [
         'description',
+        'name_price_id',
         'item_id',
         'unit_type_id',
         'quantity_unit',
@@ -48,6 +50,10 @@ class ItemPriceType extends ModelTenant
      */
     public function person_type() {
         return $this->belongsTo(PersonType::class);
+    }
+
+    public function name_price_type() {
+        return $this->belongsTo(NamePriceType::class);
     }
 
 

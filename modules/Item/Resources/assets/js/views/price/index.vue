@@ -25,8 +25,8 @@
                         <td>{{ index }}</td>
                         <td>{{ row.name }}</td>
                         <td class="text-right">
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.name)">Editar</button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.name)">Eliminar</button>
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
                         </td>
                     </tr>
                 </data-table>

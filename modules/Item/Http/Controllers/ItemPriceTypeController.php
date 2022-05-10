@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Item\Models\ItemPriceType;
+use Modules\Item\Models\NamePriceType;
 use Modules\Item\Http\Resources\ItemPriceTypeCollection;
 use Modules\Item\Http\Resources\ItemPriceTypeResource;
 use Modules\Item\Http\Requests\ItemPriceTypeRequest;
@@ -30,16 +31,14 @@ class ItemPriceTypeController extends Controller
     public function records(Request $request)
     {
 
-
-        $records = ItemPriceType::distinct()->select('name')->where($request->column, 'like', "%{$request->value}%");
-
+        $records = ItemPriceType::with('name_price_type')->where($request->column, 'like', "%{$request->value}%");
         return new ItemPriceTypeCollection($records->paginate(config('tenant.items_per_page')));
     }
 
 
     public function record($id)
     {
-        $record = ItemPriceType::where('name', 'like', $id)->get();
+        $record = ItemPriceType::with('name_price_type')->where('id', $id)->get();
         return $record;
     }
 
@@ -71,7 +70,8 @@ class ItemPriceTypeController extends Controller
     public function store(Request $request)
     {
         /* dd($request->item_unit_types); */
-        $name= $request->input('name');
+        $name_price=$request->input('name');
+        $name=NamePriceType::create($name_price);
         $item_price=$request->item_unit_types;
 
         $price=null;
@@ -79,7 +79,7 @@ class ItemPriceTypeController extends Controller
             $price_id= $value['id'];
             $price= $value['description'];
             $item_unit_type = ItemPriceType::firstOrNew(['id' => $value['id']]);
-            $item_unit_type->name = $name;
+            $item_unit_type->name_price_id = $name->id;
             $item_unit_type->description = $value['description'];
             $item_unit_type->unit_type_id = $value['unit_type_id'];
             $item_unit_type->quantity_unit = $value['quantity_unit'];
@@ -95,32 +95,6 @@ class ItemPriceTypeController extends Controller
                 'data' => $price
             ];
         }
-
-        /* $id = (int)$request->input('id');
-        $name = $request->input('name');
-        $error = null;
-        $category = null;
-        if(!empty($name)){
-            $category = ItemPriceType::where('name', $name);
-            if(empty($id)) {
-                $category= $category->first();
-                if (!empty($category)) {
-                    $error = 'El nombre de categoría ya existe';
-                }
-            }else{
-                $category = $category->where('id','!=',$id)->first();
-                if (!empty($category)) {
-                    $error = 'El nombre de categoría ya existe para otro registro';
-                }
-            }
-        } */
-        
-        /* if(empty($error)){
-            $category = ItemPriceType::firstOrNew(['id' => $id]);
-            $category->fill($request->all());
-            $category->save();
-            
-        } */
         return $data;
 
     }
@@ -129,9 +103,10 @@ class ItemPriceTypeController extends Controller
     {
         try {
 
-            $category = ItemPriceType::findOrFail($id);
-            $category->delete();
-
+            $itemprices = ItemPriceType::where('name_price_id', $request->id)->delete();
+         
+            $nameprices = NamePriceType::find($request->id);
+            $nameprices->delete();
             return [
                 'success' => true,
                 'message' => 'Precio eliminada con éxito'
