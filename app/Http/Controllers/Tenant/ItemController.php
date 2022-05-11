@@ -98,6 +98,7 @@ class ItemController extends Controller
             'lot_code' => 'Código lote',
             'active' => 'Habilitados',
             'inactive' => 'Inhabilitados',
+            'category' => 'Categoria'
         ];
     }
 
@@ -123,6 +124,11 @@ class ItemController extends Controller
 
             case 'brand':
                 $records->whereHas('brand',function($q) use($request){
+                                    $q->where('name', 'like', "%{$request->value}%");
+                                });
+                break;
+            case 'category':
+                $records->whereHas('category',function($q) use($request){
                                     $q->where('name', 'like', "%{$request->value}%");
                                 });
                 break;
