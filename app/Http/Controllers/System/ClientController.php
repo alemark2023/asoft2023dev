@@ -612,6 +612,7 @@
             ]);
 
             $plan = Plan::findOrFail($request->input('plan_id'));
+            $http = config('tenant.force_https') == true ? 'https://' : 'http://';
 
             DB::connection('tenant')->table('configurations')->insert([
                 'send_auto' => true,
@@ -626,7 +627,7 @@
                 'config_system_env' => $request->config_system_env,
                 'login' => json_encode([
                     'type' => 'image',
-                    'image' => $fqdn.'/images/fondo-5.png',
+                    'image' => $http.$fqdn.'/images/fondo-5.png',
                     'position_form' => 'right',
                     'show_logo_in_form' => false,
                     'position_logo' => 'top-left',
