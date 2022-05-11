@@ -116,15 +116,15 @@ class TransactionController extends Controller
     private function setResponse($payment)
     {
 
-        $success = false; 
+        $success_operation = false; 
         $transaction_state_id = null; 
         $transaction_state_message = null; 
 
         if($this->transaction)
         {
-            $success = (bool) $this->transaction->transaction_state->success; 
+            $success_operation = (bool) $this->transaction->transaction_state->success; 
             $transaction_state_id = $this->transaction->transaction_state_id; 
-            $message = 'Transacción registrada correctamente';
+            $message = $success_operation ? 'Transacción registrada correctamente' : 'Transacción registrada con errores';
             $transaction_state_message = $this->transaction->transaction_state->user_message;
             
         }else
@@ -133,7 +133,8 @@ class TransactionController extends Controller
         }
 
         return [
-            'success' => $success,
+            'success' => true,
+            'success_operation' => $success_operation,
             'message' => $message,
             'transaction_state_message' => $transaction_state_message,
             'transaction_state_id' => $transaction_state_id,
@@ -156,6 +157,7 @@ class TransactionController extends Controller
             $payment_id = isset($transaction_query['id']) ? $transaction_query['id'] : null;
 
             $transaction = $this->payment_link->transactions()->create([
+                'soap_type_id' => $this->getSoapTypeId(),
                 'date' => date('Y-m-d'),
                 'time' => date('H:i:s'),
                 'uuid' => Str::uuid()->toString(),

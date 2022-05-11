@@ -4,6 +4,7 @@ namespace Modules\MercadoPago\Models;
 
 use App\Models\Tenant\{
     ModelTenant,
+    SoapType,
 };
 use Modules\Payment\Models\{
     PaymentLink
@@ -13,7 +14,10 @@ use Modules\Payment\Models\{
 class Transaction extends ModelTenant
 {
 
+    public const TRANSACTION_STATE_APPROVED = '01';
+
     protected $fillable = [
+        'soap_type_id',
         'date',
         'time',
         'uuid',
@@ -40,5 +44,32 @@ class Transaction extends ModelTenant
         return $this->hasMany(TransactionQuery::class);
     } 
  
+    public function soap_type()
+    {
+        return $this->belongsTo(SoapType::class);
+    }
+     
+    public function getRowResource()
+    {
+        return [
+            'date' => $this->date,
+            'time' => $this->time,
+            'description' => $this->description,
+            'amount' => $this->amount,
+            'transaction_state_id' => $this->transaction_state_id,
+            'transaction_state_description' => $this->getStateUserMessage(),
+        ];
+    }
+    
+    /**
+     * 
+     * Obtener descripción del estado de la transacción
+     *
+     * @return string
+     */
+    public function getStateUserMessage()
+    {
+        return $this->transaction_state->user_message;
+    }
 
 }

@@ -163,7 +163,25 @@
                                 </div>
                             </div>
                             <div class="col-md-5 pt-2">
-                                <el-button type="primary">Consultar estado</el-button>
+
+                                <template v-if="has_payment_link">
+                                    <template v-if="form.query_transaction">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h4><b>Tiene un pago aceptado.</b></h4>
+                                            </div>
+                                            <div class="col-12 text-center" v-if="form.transaction">
+                                                <h1 class="display-3 color--success pt-5"><i class="fas fa-check"></i></h1>
+                                                <p><b>{{form.transaction.transaction_state_message}}</b></p>
+                                                <p><b>Total pagado: S/ {{form.transaction.transaction_total}}</b></p>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template v-else>
+                                        <el-button type="primary" @click="clickQueryStatusMP">Consultar estado</el-button>
+                                    </template>
+                                </template>
+
                             </div>
                         </div>
                     </template>
@@ -222,6 +240,33 @@
             await this.getConfiguration()
         },
         methods: {
+            clickQueryStatusMP(){
+                
+                this.loading = true
+
+                this.$http.post(`/${this.resource}/query-transaction-state`, {
+                        id : this.form.id
+                    })
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message)
+                            this.getData()
+                        } else {
+                            this.$message.error(response.data.message)
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.errors = error.response.data
+                        } else {
+                            console.log(error)
+                        }
+                    })
+                    .then(()=>{
+                        this.loading = false
+                    })
+
+            },
             getPayment(){
 
                 if(this.currencyTypeId === 'PEN') return this.payment
@@ -356,6 +401,8 @@
                     instance_type: 'document',
                     user_payment_link: null,
                     image_url_uploaded_filename: null,
+                    query_transaction: false,
+                    transaction: null,
                 }
 
                 this.form_utilities = {

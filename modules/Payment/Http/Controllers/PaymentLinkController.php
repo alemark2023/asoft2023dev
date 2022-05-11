@@ -2,8 +2,6 @@
 namespace Modules\Payment\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Tenant\DocumentPaymentRequest;
-use App\Http\Resources\Tenant\DocumentPaymentCollection;
 use App\Models\Tenant\{
     DocumentPayment,
     Company
@@ -21,14 +19,52 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Modules\Payment\Mail\PaymentLinkEmail;
 use Modules\Finance\Helpers\UploadFileHelper;
+use Modules\Payment\Traits\PaymentLinkTrait;
+use Modules\Payment\Http\Resources\{
+    PaymentLinkCollection,
+    PaymentLinkResource,
+};
 
 
 class PaymentLinkController extends Controller
 {
 
-    
+    use PaymentLinkTrait;
+
+
+    public function index() 
+    {
+        return view('payment::payment_links.index');
+    }
+
+         
+    public function columns()
+    {
+        return [
+            'uuid' => 'Identificador',
+            'total' => 'Total',
+        ];
+    }
+
+
+    public function tables()
+    {
+        $payment_link_types = PaymentLinkType::get();
+
+        return compact('payment_link_types');
+    }
+
+
+    public function records(Request $request)
+    {
+        $records = PaymentLink::where($request->column, 'like', "%{$request->value}%")->latest();
+
+        return new PaymentLinkCollection($records->paginate(config('tenant.items_per_page')));
+    }
+
+
     /**
-     * Buscar link de pago
+     * Buscar link de pago desde form de pagos
      *
      * @param  int $document_payment_id
      * @param  string $instance_type
@@ -59,10 +95,9 @@ class PaymentLinkController extends Controller
 
     }
 
-
     
     /**
-     * Registrar link de pago
+     * Registrar link de pago desde un pago (cpe)
      *
      * @param  PaymentLinkRequest $request
      * @return array
@@ -87,10 +122,127 @@ class PaymentLinkController extends Controller
 
     }
 
-    public function index() {
-        return view('payment::generate.index');
+    
+    /**
+     * 
+     * Registrar/Actualizar link de pago desde el listado
+     *
+     * @param  PaymentLinkRequest $request
+     * @return array
+     */
+    public function storeWithoutPayment(PaymentLinkRequest $request)
+    {
+
+        $id = $request->input('id');
+        $record = PaymentLink::firstOrNew(['id' => $id]);
+
+        $record->fill([
+            'user_id' => auth()->id(),
+            'uuid' => Str::uuid()->toString(),
+            'soap_type_id' => $record->soap_type_id ?? Company::select('soap_type_id')->firstOrFail()->soap_type_id,
+            'payment_link_type_id' => $request->payment_link_type_id,
+            'total' => $request->total,
+        ]);
+
+        $record->save();
+
+        return [
+            'success' => true,
+            'message' => $id ? 'Link actualizado con éxito' : 'Link generado con éxito'
+        ];
+
     }
-     
+
+
+    /**
+     * 
+     * Buscar link de pago desde listado
+     *
+     * @param  int $id
+     * @return PaymentLinkResource
+     */
+    public function recordWithoutPayment($id)
+    {
+        return new PaymentLinkResource(PaymentLink::findOrFail($id));
+    }
+
+
+    /**
+     * 
+     * Buscar transacciones
+     *
+     * @param  int $id
+     * @return array
+     */
+    public function transactions($id)
+    {
+        $payment_link = PaymentLink::findOrFail($id);
+
+        return $payment_link->transactions->transform(function($row){
+                    return $row->getRowResource();
+                });
+    }
+
+    
+    /**
+     * 
+     * Eliminar link de pago
+     *
+     * @param  int $id
+     * @return array
+     */
+    public function destroy($id)
+    {
+        $payment_link = PaymentLink::findOrFail($id);
+
+        if($payment_link->transactions->count() > 0)
+        {
+            return [
+                'success' => false,
+                'message' => 'El link de pago tiene transacciones relacionadas'
+            ];
+        }
+        
+        $payment_link->delete();
+
+        return [
+            'success' => true,
+            'message' => 'Link de pago eliminado con éxito'
+        ];
+    }
+    
+
+    /**
+     * 
+     * Consultar y validar estado Aceptado de la transacción de mercado pago
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function queryTransactionState(Request $request)
+    {
+
+        $payment_link = PaymentLink::findOrFail($request->id);
+
+        if($payment_link->isTransactionApproved())
+        {
+            $payment_link->query_transaction = true;
+            $payment_link->update();
+
+            return [
+                'success' => true,
+                'message' => 'La transacción asociada tiene estado Aceptado.'
+            ];
+        }
+
+        return [
+            'success' => false,
+            'message' => $payment_link->transactions->count() == 0 ? 'No se encontraron transacciones asociadas.' : 'La transacción asociada no tiene estado Aceptado.'
+        ];
+
+    }
+    
+
     /**
      * Mostrar formulario público del link de pago
      *
@@ -102,7 +254,7 @@ class PaymentLinkController extends Controller
     {
 
         $this->validatePublicParams($payment_link_type_id, $input_total);
-        $payment_link = PaymentLink::with(['payment'])->where('uuid', $uuid)->firstOrFail();
+        $payment_link = $this->getPublicPaymentLink($payment_link_type_id, $uuid);
         $company = $this->getPublicDataCompany();
         $payment_configuration = PaymentConfiguration::getPublicRowResource();
 
@@ -110,80 +262,6 @@ class PaymentLinkController extends Controller
         $total = $this->getTotal($payment_link, $input_total, $apply_conversion);
 
         return view('payment::payment_links.public.index', compact('payment_link', 'company', 'payment_configuration', 'total', 'apply_conversion'));
-
-    }
-    
-    /**
-     *
-     * @param  PaymentLink $payment_link
-     * @param  float $input_total
-     * @return float
-     */
-    public function getTotal(PaymentLink $payment_link, $input_total, &$apply_conversion)
-    {
-        $document = $payment_link->payment->document;
-
-        if($document->currency_type_id === 'PEN') return $input_total;
-
-        $apply_conversion = true;
-
-        return round($input_total * $document->exchange_rate_sale, 2);
-    }
-    
-
-    /**
-     *
-     * @return Company
-     */
-    public function getPublicDataCompany()
-    {
-        return Company::select('name', 'number')->first();
-    }
-
-    
-    /**
-     * 
-     * Validar datos
-     *
-     * @param  string $payment_link_type_id
-     * @param  float $total
-     * @return void
-     */
-    public function validatePublicParams($payment_link_type_id, $total)
-    {
-
-        $validate = [
-            'success' => true,
-            'message' => null,
-        ];
-
-        if(!is_numeric($total))
-        {
-            $validate = [
-                'success' => false,
-                'message' => 'El total debe ser númerico',
-            ];
-        }
-        else
-        {
-            if($total <= 0)
-            {
-                $validate = [
-                    'success' => false,
-                    'message' => 'El total debe ser mayor a 0',
-                ];
-            }
-        }
-
-        if(!PaymentLinkType::find($payment_link_type_id))
-        {
-            $validate = [
-                'success' => false,
-                'message' => 'Tipo de link no permitido',
-            ]; 
-        }
-        
-        if(!$validate['success']) throw new Exception($validate['message']);
 
     }
 
@@ -207,7 +285,6 @@ class PaymentLinkController extends Controller
         ];
 
     }
-
     
     
     /**

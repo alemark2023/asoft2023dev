@@ -1208,7 +1208,9 @@
                                href="#">
                                 <i class="fa fas fa-calendar-check"
                                    aria-hidden="true"></i>
-                                <span>Suscripción General</span>
+                                <span>
+                                    Suscripción Servicios SAAS
+                                </span>
                             </a>
                             <ul class="nav nav-children">
                                 <li class="{{ ($firstLevel === 'full_suscription' && $secondLevel === 'client')?'nav-active':'' }}">

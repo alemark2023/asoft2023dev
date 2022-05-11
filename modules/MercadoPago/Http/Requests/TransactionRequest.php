@@ -19,7 +19,8 @@ class TransactionRequest extends FormRequest
 
         return [
             'description' => [
-                'required'
+                'required',
+                'max:255',
             ],
             'transaction_amount' => [
                 'required',

@@ -527,7 +527,7 @@
                 'top_menu_d' => $this->top_menu_d_id ? $this->top_menu_d : '',
                 'skin_id' => $this->skin_id,
                 'skins' => $skins,
-                'facturalo_server' => $this->getFacturaloConfig(),
+                'facturalo_server' => true, // $this->getFacturaloConfig(),
             ];
         }
 

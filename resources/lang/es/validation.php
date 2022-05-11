@@ -87,6 +87,10 @@ return [
 	'uploaded' => 'Subir :attribute ha fallado.',
 	'url'      => 'El formato :attribute es inválido.',
 
+    'gt' => [
+        'numeric' => 'El campo :attribute debe ser mayor que :value.',
+    ],
+
 	/*
 	|--------------------------------------------------------------------------
 	| Custom Validation Language Lines

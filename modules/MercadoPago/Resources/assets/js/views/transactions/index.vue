@@ -1,6 +1,6 @@
 <template>
     <div class="" v-loading="loading_submit">
-        <div class="pl-1 pr-1" id="pay" v-if="!success_operation">
+        <div class="pl-1 pr-1" id="pay" v-if="!success_response">
             <div class="row">
 
                 <div class="col-md-12 col-lg-12">
@@ -9,54 +9,73 @@
                         <div class="row">
                             
                             <div class="col-md-12 col-lg-12">
-                                <label for="user">
-                                    Nombre del titular como aparece en la tarjeta
-                                </label>
-                                <input class="form-control" type="text" v-model="form.user" id="user" placeholder="Nombres Apellidos" autocomplete>
-                                <small class="form-control-feedback" v-if="errors.user" v-text="errors.user[0]"></small>
+                                <div :class="{'has-danger': errors.user}" class="form-group">
+                                    <label class="control-label" for="user">
+                                        Nombre del titular como aparece en la tarjeta
+                                    </label>
+                                    <input class="form-control" type="text" v-model="form.user" id="user" placeholder="Nombres Apellidos" autocomplete>
+                                    <small class="form-control-feedback" v-if="errors.user" v-text="errors.user[0]"></small>
+                                </div>
                             </div>
 
 
                             <div class="col-md-6 col-lg-6">
-                                <label for="transaction_amount">
-                                    Monto
-                                </label>
-                                <input class="form-control" type="text" v-model="form.transaction_amount" id="transaction_amount" readonly/>
-                                <small class="form-control-feedback" v-if="errors.transaction_amount" v-text="errors.transaction_amount[0]"></small>
+                                <div :class="{'has-danger': errors.transaction_amount}" class="form-group">
+                                    <label class="control-label" for="transaction_amount">
+                                        Monto
+                                    </label>
+                                    <input class="form-control" type="text" v-model="visual_transaction_amount" id="transaction_amount" readonly/>
+                                    <!-- <input class="form-control" type="text" v-model="form.transaction_amount" id="transaction_amount" readonly/> -->
+                                    <small class="form-control-feedback" v-if="errors.transaction_amount" v-text="errors.transaction_amount[0]"></small>
+                                </div>
                             </div>
 
                             <div class="col-md-6 col-lg-6">
-                                <label for="email">Correo</label>
-                                <input class="form-control" type="text" id="email" v-model="form.email" placeholder="demo@tarjeta2efectivo.com" data-checkout="email" />
-                                <small class="form-control-feedback" v-if="errors.email" v-text="errors.email[0]"></small>
+                                <div :class="{'has-danger': errors.email}" class="form-group">
+                                    <label class="control-label" for="email">Correo</label>
+                                    <input class="form-control" type="text" id="email" v-model="form.email" placeholder="demo@tarjeta2efectivo.com" data-checkout="email" />
+                                    <small class="form-control-feedback" v-if="errors.email" v-text="errors.email[0]"></small>
+                                </div>
                             </div>
 
                             <div class="col-md-6 col-lg-6">
-                                <label for="cardNumber">Número de la tarjeta</label>
-                                <input class="form-control" v-model="form.card_number" @change="guessPaymentMethod" @input="guessPaymentMethod" placeholder="5031755734530604" type="number" id="cardNumber" data-checkout="cardNumber" onselectstart="return false" onDrag="return false" onDrop="return false" value="" autocomplete=off />
-                                <small class="form-control-feedback" v-if="errors.card_number" v-text="errors.card_number[0]"></small>
+                                <div :class="{'has-danger': errors.card_number}" class="form-group">
+                                    <label class="control-label" for="cardNumber">Número de la tarjeta</label>
+                                    <input class="form-control" v-model="form.card_number" @change="guessPaymentMethod" @input="guessPaymentMethod" placeholder="5031755734530604" type="number" id="cardNumber" data-checkout="cardNumber" onselectstart="return false" onDrag="return false" onDrop="return false" value="" autocomplete=off />
+                                    <small class="form-control-feedback" v-if="errors.card_number" v-text="errors.card_number[0]"></small>
+                                </div>
                             </div>
 
                             <div class="col-md-2 col-lg-2">
-                                <label for="card_month_due">Mes</label>
-                                <input class="form-control" type="text" v-model="form.card_month_due" id="cardExpirationMonth" placeholder="11" autocomplete="off" @change="guessPaymentMethod" @input="guessPaymentMethod">
-                                <small class="form-control-feedback" v-if="errors.card_month_due" v-text="errors.card_month_due[0]"></small>
+                                <div :class="{'has-danger': errors.card_month_due}" class="form-group">
+                                    <label class="control-label" for="card_month_due">Mes</label>
+                                    <input class="form-control" type="text" v-model="form.card_month_due" id="cardExpirationMonth" placeholder="11" autocomplete="off" @change="guessPaymentMethod" @input="guessPaymentMethod">
+                                    <small class="form-control-feedback" v-if="errors.card_month_due" v-text="errors.card_month_due[0]"></small>
+                                </div>
                             </div>
+
                             <div class="col-md-2 col-lg-2">
-                                <label for="card_year_due">Año</label>
-                                <input class="form-control" type="text" v-model="form.card_year_due" id="cardExpirationYear" placeholder="25" data-checkout="cardExpirationYear" onselectstart="return false" onpaste="return false" onCopy="return false" onCut="return false" onDrag="return false" onDrop="return false" autocomplete=off @change="guessPaymentMethod" @input="guessPaymentMethod">
-                                <small class="form-control-feedback" v-if="errors.card_year_due" v-text="errors.card_year_due[0]"></small>
+                                <div :class="{'has-danger': errors.card_year_due}" class="form-group">
+                                    <label class="control-label" for="card_year_due">Año</label>
+                                    <input class="form-control" type="text" v-model="form.card_year_due" id="cardExpirationYear" placeholder="25" data-checkout="cardExpirationYear" onselectstart="return false" onpaste="return false" onCopy="return false" onCut="return false" onDrag="return false" onDrop="return false" autocomplete=off @change="guessPaymentMethod" @input="guessPaymentMethod">
+                                    <small class="form-control-feedback" v-if="errors.card_year_due" v-text="errors.card_year_due[0]"></small>
+                                </div>
                             </div>
+
                             <div class="col-md-2 col-lg-2">
-                                <label for="security_code">CVV</label>
-                                <input class="form-control" type="text" v-model="form.security_code" id="securityCode" placeholder="123" data-checkout="securityCode" onselectstart="return false" onpaste="return false" onCopy="return false" onCut="return false" onDrag="return false" onDrop="return false" autocomplete=off @change="guessPaymentMethod" @input="guessPaymentMethod">
-                                <small class="form-control-feedback" v-if="errors.security_code" v-text="errors.security_code[0]"></small>
+                                <div :class="{'has-danger': errors.security_code}" class="form-group">
+                                    <label class="control-label" for="security_code">CVV</label>
+                                    <input class="form-control" type="text" v-model="form.security_code" id="securityCode" placeholder="123" data-checkout="securityCode" onselectstart="return false" onpaste="return false" onCopy="return false" onCut="return false" onDrag="return false" onDrop="return false" autocomplete=off @change="guessPaymentMethod" @input="guessPaymentMethod">
+                                    <small class="form-control-feedback" v-if="errors.security_code" v-text="errors.security_code[0]"></small>
+                                </div>
                             </div>
 
                             <div class="col-md-4 col-lg-4">
-                                <label for="payment_method_id">Tipo de Tarjeta</label>
-                                <input class="form-control" type="text" v-model="form.payment_method_id" readonly name="payment_method_id" id="payment_method_id">
-                                <small class="form-control-feedback" v-if="errors.payment_method_id" v-text="errors.payment_method_id[0]"></small>
+                                <div :class="{'has-danger': errors.payment_method_id}" class="form-group">
+                                    <label class="control-label" for="payment_method_id">Tipo de Tarjeta</label>
+                                    <input class="form-control" type="text" v-model="form.payment_method_id" readonly name="payment_method_id" id="payment_method_id">
+                                    <small class="form-control-feedback" v-if="errors.payment_method_id" v-text="errors.payment_method_id[0]"></small>
+                                </div>
                             </div>
 
                             <div class="col-md-8 col-lg-8 mt-3">
@@ -72,21 +91,29 @@
                     <fieldset>
                         <legend>Inf.Adicional</legend>
                         <div class="row">
-                            <div class="col-md-12 col-lg-12">
-                                <label for="description">Descripción del pago</label>
-                                <input class="form-control" type="text" id="description" v-model="form.description">
-                                <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
-                            </div>
-                            <div class="col-md-6 col-lg-6">
-                                <label for="installments">Tipo de documento</label>
-                                <select class="form-control" id="docType" v-model="form.identity_document_type" data-checkout="docType"></select>
-                                <small class="form-control-feedback" v-if="errors.identity_document_type" v-text="errors.identity_document_type[0]"></small>
 
+                            <div  class="col-md-12 col-lg-12">
+                                <div :class="{'has-danger': errors.description}" class="form-group">
+                                    <label class="control-label" for="description">Descripción del pago</label>
+                                    <input class="form-control" type="text" id="description" v-model="form.description">
+                                    <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
+                                </div>
                             </div>
+
                             <div class="col-md-6 col-lg-6">
-                                <label for="number">Número de documento</label>
-                                <input class="form-control" type="number" v-model="form.number" placeholder="12345678" />
-                                <small class="form-control-feedback" v-if="errors.number" v-text="errors.number[0]"></small>
+                                <div :class="{'has-danger': errors.identity_document_type}" class="form-group">
+                                    <label class="control-label" for="identity_document_type">Tipo de documento</label>
+                                    <select class="form-control" id="docType" v-model="form.identity_document_type" data-checkout="docType"></select>
+                                    <small class="form-control-feedback" v-if="errors.identity_document_type" v-text="errors.identity_document_type[0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-lg-6">
+                                <div :class="{'has-danger': errors.number}" class="form-group">
+                                    <label class="control-label" for="number">Número de documento</label>
+                                    <input class="form-control" type="number" v-model="form.number" placeholder="12345678" />
+                                    <small class="form-control-feedback" v-if="errors.number" v-text="errors.number[0]"></small>
+                                </div>
                             </div>
                         </div>
                     </fieldset>
@@ -100,20 +127,19 @@
             <div class="form-actions text-right mt-2 mb-3">
             
                 <el-button type="primary" class="mt-2" icon="el-icon-check" size="default" @click="clickProccess()" :loading="loading_submit">Pagar</el-button>
-                <!-- <button type="submit" @click="clickProccess()" class="btn btn-primary type--uppercase">Pagar</button> -->
             </div>
         </div>
         <!-- respuesta mercado pago -->
         <div class="row" v-else>
             <div class="col-12 text-center">
-                <template v-if="success_operation && response_payment.transaction_state_id == '01'">
+                <template v-if="response_payment.success_operation && response_payment.transaction_state_id == '01'">
                     <h1 class="display-3 color--success pt-5"><i class="fas fa-check"></i></h1>
                     <p class="pt-5">Su operación ha finalizado</p>
                     <p><b>{{response_payment.message}}</b></p>
                     <p><b>{{response_payment.transaction_state_message}}</b></p>
                 </template>
 
-                <template v-else-if="success_operation && (transaction_state_id == '02' || transaction_state_id == '03')">
+                <template v-else-if="response_payment.success_operation && (response_payment.transaction_state_id == '02' || response_payment.transaction_state_id == '03')">
                     <h1 class="display-3 color--warning pt-5"><i class="fas fa-exclamation-triangle icon-warning"></i></h1>
                     <p class="pt-5">Su operación ha finalizado</p>
                     <p><b>{{response_payment.message}}</b></p>
@@ -127,7 +153,7 @@
                     <p><b>{{response_payment.transaction_state_message}}</b></p>
                 </template>
 
-                <el-button type="primary" class="mt-2" icon="el-icon-check" size="default" @click="clickContinue()">Continuar</el-button>
+                <el-button type="primary" class="mt-2" icon="el-icon-check" size="default" @click="clickFinish()">Finalizar</el-button>
             </div>
         </div>
 
@@ -164,13 +190,12 @@ export default {
             alert_sdk: {
                 success: false,
             },
-            success_operation: false,
-            transaction_state_id: null,
+            success_response: false,
             client_errors: [],
             bank_accounts: [],
             mercado_pago: null,
-            success_operation: false,
-            response_payment: {}
+            response_payment: {},
+            visual_transaction_amount: 0
         }
     },
     async created() {
@@ -180,7 +205,7 @@ export default {
         await this.getClientErrors()
     },
     methods: {
-        clickContinue(){
+        clickFinish(){
             location.reload()
         },
         async setDefaultData() {
@@ -212,7 +237,7 @@ export default {
             this.form = {
 
                 customer_uuid: this.customerUuid,
-                description: 'Asesoría financiera',
+                description: null,
                 transaction_amount: this.total,
                 email: null,
                 user: null,
@@ -238,14 +263,16 @@ export default {
 
             this.mercado_pago = window.Mercadopago
 
+            this.visual_transaction_amount = this.total
+
         },
-        clickProccess() {
+        async clickProccess() {
 
             if (!this.form.installments) {
                 return this.showAlertErrors('No ha seleccionado una cuota', [])
             }
 
-            this.doPay()
+            await this.doPay()
 
         },
         guessPaymentMethod() {
@@ -432,14 +459,26 @@ export default {
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
 
-                    this.success_operation = response.data.success
+                    this.success_response = response.data.success
+                    this.response_payment = response.data
 
-                    if (response.data.success) {
-                        this.response_payment = response.data
-                        this.$message.success(response.data.message)
+                    if (response.data.success) 
+                    {
+
+                        if(this.response_payment.success_operation)
+                        {
+                            this.$message.success(response.data.message)
+                        }
+                        else
+                        {
+                            this.$message.error(response.data.message)
+                        }
+
                         this.initForm()
-                        // window.reload()
-                    } else {
+
+                    } 
+                    else 
+                    {
                         this.$message.error(response.data.message)
                     }
 

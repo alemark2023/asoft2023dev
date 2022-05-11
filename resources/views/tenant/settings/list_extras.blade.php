@@ -136,12 +136,30 @@
                     </div>
                 </header>
                 <div class="card-body text-center">
-                    <h3 class="font-weight-semibold mt-3 text-center">Suscripciones</h3>
-                    <p class="text-center">Gestiona matriculas educativas, suscripción de servicios, entre otros..</p>
-                    <span class="badge badge-info">
-                    Próximamente
-                </span>
+                    <h3 class="font-weight-semibold mt-3 text-center">Suscripción Servicio SAAS</h3>
+                    <p class="text-center">Suscripción de servicios, entre otros..</p>
                     <br>
+
+                    <span class="badge badge-{{in_array('full_suscription_app', $vc_modules) ? 'success' : 'default'}}">
+                    {{in_array('full_suscription_app', $vc_modules) ? 'Activo' : 'Inactivo'}}
+                        </span>
+                </div>
+            </section>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-3">
+            <section class="card mb-2">
+                <header class="card-header bg-secondary">
+                    <div class="card-header-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </header>
+                <div class="card-body text-center">
+                    <h3 class="font-weight-semibold mt-3 text-center">Suscripcion Escolar</h3>
+                    <p class="text-center">Gestiona matriculas educativas, entre otros..</p>
+                    <br>
+                    <span class="badge badge-{{in_array('suscription_app', $vc_modules) ? 'success' : 'default'}}">
+                    {{in_array('suscription_app', $vc_modules) ? 'Activo' : 'Inactivo'}}
+                    </span>
                 </div>
             </section>
         </div>
