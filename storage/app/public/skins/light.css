@@ -976,3 +976,8 @@ html.dark ul.nav-main li .nav-children li a:after {
 html.dark .card.card-dashboard .card-title, html.dark .card.card-dashboard small.text-muted {
     background: #283046;
 }
+/* menu top */
+.fix-m {
+    margin-bottom: -4px;
+    margin-top: 5px;
+}
