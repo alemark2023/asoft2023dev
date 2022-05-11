@@ -18,7 +18,7 @@ class TenantAddDefaultsToConfigurations extends Migration
             ->update([
                 'top_menu_a_id' => 1,
                 'top_menu_b_id' => 15,
-                'top_menu_c_id' => 77,
+                'top_menu_c_id' => 76,
                 'login' => '{"type":"image","image":"http:\/\/'.config('tenant.app_url_base').'\/images\/fondo-5.png","position_form":"right","show_logo_in_form":false,"position_logo":"top-left","show_socials":false,"facebook":null,"twitter":null,"instagram":null,"linkedin":null}'
             ]);
     }

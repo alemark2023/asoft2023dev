@@ -626,7 +626,7 @@
                 'config_system_env' => $request->config_system_env,
                 'login' => json_encode([
                     'type' => 'image',
-                    'image' => asset('images/login-v2.svg'),
+                    'image' => $fqdn.'/images/fondo-5.png',
                     'position_form' => 'right',
                     'show_logo_in_form' => false,
                     'position_logo' => 'top-left',
@@ -635,7 +635,18 @@
                     'twitter' => null,
                     'instagram' => null,
                     'linkedin' => null,
-                ])
+                ]),
+                'visual' => json_encode([
+                    'bg' => 'white',
+                    'header' => 'light',
+                    'navbar' => 'fixed',
+                    'sidebars' => 'light',
+                    'sidebar_theme' => 'white'
+                ]),
+                'skin_id' => 2,
+                'top_menu_a_id' => 1,
+                'top_menu_b_id' => 15,
+                'top_menu_c_id' => 76
             ]);
 
 
