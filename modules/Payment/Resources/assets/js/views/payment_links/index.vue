@@ -1,175 +1,148 @@
 <template>
-    <div class="card">
-        <div class="card-header bg-info">
-            <h3 class="my-0">Configuración de pagos
-            </h3>
-            
-            <div class="card-actions white-text">
-                <a href="#" class="card-action card-action-toggle text-white" data-card-toggle=""></a>
-            </div>
+<div>
+    <div class="page-header pr-0">
+        <h2>
+            <a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a>
+        </h2>
+        <ol class="breadcrumbs">
+            <li class="active"><span>Links de pago</span></li>
+        </ol>
+        <div class="right-wrapper pull-right">
+            <button class="btn btn-custom btn-sm mt-2 mr-2" type="button" @click.prevent="clickCreate()">
+                <i class="fa fa-plus-circle"></i>Nuevo
+            </button>
         </div>
-        <div class="card-body"> 
-            
-            <el-tabs v-model="form.type" @tab-click="handleClick">
+    </div>
+    <div class="card mb-0">
+        <div class="card-header bg-info">
+            <h3 class="my-0">Generador de links de pago</h3>
+        </div>
+        <div class="card-body">
+            <data-table :resource="resource">
 
-                <el-tab-pane label="Yape" name="yape">
-                    <div class="row pt-1">
-                        <div class="col-md-6">
-                            <h4 class="control-label">Habilitar</h4>
-                            <div :class="{'has-danger': errors.enabled_yape}"
-                                    class="form-group">
-                                <el-switch v-model="form.enabled_yape"
-                                            active-text="Si"
-                                            inactive-text="No"></el-switch>
-                                <small v-if="errors.enabled_yape"
-                                        class="form-control-feedback"
-                                        v-text="errors.enabled_yape[0]"></small>
+                <tr slot="heading" width="100%">
+                    <th>#</th>
+                    <th>Identificador</th>
+                    <th>Pago asociado</th>
+                    <th>Tipo</th>
+                    <th>Link</th>
+                    <th>Total</th>
+                    <th class="text-right"></th>
+                </tr>
+
+                <tr></tr>
+                <tr slot-scope="{ index, row }">
+                    <td>{{ index }}</td>
+                    <td>{{ row.uuid }}</td>
+                    <td>{{ row.payment_number_full }}</td>
+                    <td>{{ row.payment_link_type_description }}</td>
+                    <td>
+
+                        <button type="button"
+                                style="min-width: 41px"
+                                class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                                v-clipboard:copy="row.user_payment_link"
+                                v-clipboard:success="onCopyText"
+                                v-clipboard:error="onErrorCopyText">
+                                Copiar
+                        </button>
+
+                    </td>
+                    <td>{{ row.total }}</td>
+
+                    <td class="text-right">
+                        <div class="dropdown">
+                            <button id="dropdownMenuButton" aria-expanded="false" aria-haspopup="true" class="btn btn-default btn-sm" data-toggle="dropdown" type="button">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div aria-labelledby="dropdownMenuButton" class="dropdown-menu">
+
+                                <template v-if="typeUser === 'admin'">
+
+                                    <template v-if="row.payment_link_type_id == '02'">
+                                        <button class="dropdown-item" @click.prevent="clickShowTransactions(row.id)">
+                                            Transacciones
+                                        </button>
+                                    </template>
+
+                                    <template v-if="!row.has_payment">
+                                        <button class="dropdown-item" @click.prevent="clickCreate(row.id)">
+                                            Editar
+                                        </button>
+                                    </template>
+
+                                    <button class="dropdown-item" @click.prevent="clickDelete(row.id)">
+                                        Eliminar
+                                    </button>
+                                </template>
                             </div>
                         </div>
-                        
-                        <template v-if="form.enabled_yape">
+                    </td>
+                </tr>
+            </data-table>
+        </div>
 
-                            <div class="col-md-6 mt-3">
-                                <div class="form-group" :class="{'has-danger': errors.telephone_yape}">
-                                    <label class="control-label">Número de teléfono <span class="text-danger">*</span></label>
-                                    <el-input v-model="form.telephone_yape" placeholder="977523641"></el-input>
-                                    <small class="form-control-feedback" v-if="errors.telephone_yape" v-text="errors.telephone_yape[0]"></small>
-                                </div>
-                            </div>
+        <payment-link-form 
+            :recordId="recordId" 
+            :showDialog.sync="showDialog"
+            ></payment-link-form>
 
-                            <div class="col-md-12 mt-3">
-                                <div class="form-group" :class="{'has-danger': errors.name_yape}">
-                                    <label class="control-label">Nombres y Apellidos <span class="text-danger">*</span></label>
-                                    <el-input v-model="form.name_yape"></el-input>
-                                    <small class="form-control-feedback" v-if="errors.name_yape" v-text="errors.name_yape[0]"></small>
-                                </div>
-                            </div>
-
-
-                            <div class="col-md-6  mt-3">
-                                <div class="form-group" :class="{'has-danger': errors.qrcode_yape}">
-                                    <label class="control-label">Adjuntar código QR (Imágen) <span class="text-danger">*</span></label>
-                                    
-                                    <el-upload class="uploader"
-                                            :headers="headers"
-                                            :action="`/${resource}/upload-qrcode-yape`"
-                                            :show-file-list="false"
-                                            :on-success="onSuccess">
-                                        <img v-if="form.image_url_yape" :src="form.image_url_yape" class="avatar">
-                                        <i v-else class="el-icon-plus uploader-icon"></i>
-                                    </el-upload>
-                                    <small class="form-control-feedback" v-if="errors.qrcode_yape" v-text="errors.qrcode_yape[0]"></small>
-                                </div>
-                            </div>
-
-                        </template>
-        
-                    </div>
-                    <div class="form-actions text-right mt-3">
-                        <el-button type="primary" @click="submit" :loading="loading_submit">Guardar</el-button>
-                    </div>
-                </el-tab-pane>
-
-
-                <el-tab-pane label="Mercado Pago" name="mercado-pago">
-                    
-                </el-tab-pane>
-            </el-tabs>
-
-        </div> 
+        <payment-link-transactions 
+            :recordId="recordId" 
+            :showDialog.sync="showDialogTransactions"
+            ></payment-link-transactions>
     </div>
+</div>
 </template>
-
-<style>
-
-    .uploader-icon {
-        font-size: 28px;
-        color: #8c939d;
-        width: 208px;
-        height: 208px;
-        line-height: 208px;
-        text-align: center;
-    }
-
-</style>
 
 <script>
 
+    import PaymentLinkForm from "./form.vue";
+    import PaymentLinkTransactions from "./partials/transactions.vue";
+    import DataTable from "@components/DataTable.vue";
+    import {deletable} from "@mixins/deletable";
+
     export default {
+        props: [
+            'typeUser'
+        ],
+        mixins: [deletable],
+        components: {
+            PaymentLinkForm,
+            PaymentLinkTransactions,
+            DataTable
+        },
         data() {
-            return {
-                headers: headers_token,
-                resource: 'payment-configurations',
-                recordId: null,
-                form: {},
-                errors: {},
-                loading_submit: false,
+            return { 
+                resource: 'payment-links',
+                recordId: null, 
+                showDialog: false,
+                showDialogTransactions: false,
             }
         },
         async created() {
-            await this.initForm()
-            await this.getData()
         },
-        methods: {
-            handleClick(){
-
+        methods: { 
+            clickDelete(id) {
+                this.destroy(`/${this.resource}/${id}`).then(() =>
+                    this.$eventHub.$emit("reloadData")
+                );
             },
-            submit(){
-
-                this.loading_submit = true
-                this.$http.post(`/${this.resource}`, this.form)
-                    .then(response => {
-                        if (response.data.success) {
-                            this.$message.success(response.data.message)
-                        } else {
-                            this.$message.error(response.data.message)
-                        }
-                    })
-                    .catch(error => {
-                        if (error.response.status === 422) {
-                            this.errors = error.response.data
-                        } else {
-                            console.log(error)
-                        }
-                    })
-                    .then(() => {
-                        this.loading_submit = false
-                    })
-
+            clickShowTransactions(recordId){
+                this.recordId = recordId
+                this.showDialogTransactions = true
             },
-            onSuccess(response) { 
-
-                if (response.success) {
-                    this.form.qrcode_yape = response.data.filename
-                    this.form.image_url_yape = response.data.temp_image
-                    this.form.temp_path_yape = response.data.temp_path 
-                } else {
-                    this.$message.error(response.message)
-                }
+            onCopyText: function(e) {
+                this.$message.success('Texto copiado al portapapeles')
             },
-            initForm(){
-
-                this.form = {
-                    enabled_yape : false,
-                    name_yape : null,
-                    telephone_yape: null,
-                    type: 'yape',
-
-                    qrcode_yape : null,
-                    image_url_yape: null,
-                    temp_path_yape: null,
-                }
-
-                this.errors = {}
-
+            onErrorCopyText: function(e) {
+                this.$message.error('No se pudo copiar el texto al portapapeles')
+                console.log(e)
             },
-            async getData() {
-                await this.$http.get(`/${this.resource}/record`)
-                    .then(response => {
-                        this.form = response.data.data
-                        this.form.type = 'yape'
-                    })
-            }, 
+            clickCreate(recordId = null){
+                this.recordId = recordId
+                this.showDialog = true
+            }
         }
     }
 </script>

@@ -414,6 +414,7 @@ Vue.component('tenant-restaurant-configuration', require('../../modules/Restaura
 //Pagos
 Vue.component('tenant-payment-configurations-index', require('@viewsModulePayment/payment_configurations/index.vue'));
 Vue.component('tenant-public-payment-links-index', require('@viewsModulePayment/payment_links/public/index.vue'));
+Vue.component('tenant-payment-links-index', require('@viewsModulePayment/payment_links/index.vue'));
 
 
 import VueClipboard from 'vue-clipboard2'

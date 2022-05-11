@@ -2,8 +2,6 @@
 namespace Modules\Payment\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Tenant\DocumentPaymentRequest;
-use App\Http\Resources\Tenant\DocumentPaymentCollection;
 use App\Models\Tenant\{
     DocumentPayment,
     Company
@@ -22,6 +20,10 @@ use Illuminate\Support\Facades\Mail;
 use Modules\Payment\Mail\PaymentLinkEmail;
 use Modules\Finance\Helpers\UploadFileHelper;
 use Modules\Payment\Traits\PaymentLinkTrait;
+use Modules\Payment\Http\Resources\{
+    PaymentLinkCollection,
+    PaymentLinkResource,
+};
 
 
 class PaymentLinkController extends Controller
@@ -29,8 +31,40 @@ class PaymentLinkController extends Controller
 
     use PaymentLinkTrait;
 
+
+    public function index() 
+    {
+        return view('payment::payment_links.index');
+    }
+
+         
+    public function columns()
+    {
+        return [
+            'uuid' => 'Identificador',
+            'total' => 'Total',
+        ];
+    }
+
+
+    public function tables()
+    {
+        $payment_link_types = PaymentLinkType::get();
+
+        return compact('payment_link_types');
+    }
+
+
+    public function records(Request $request)
+    {
+        $records = PaymentLink::where($request->column, 'like', "%{$request->value}%")->latest();
+
+        return new PaymentLinkCollection($records->paginate(config('tenant.items_per_page')));
+    }
+
+
     /**
-     * Buscar link de pago
+     * Buscar link de pago desde form de pagos
      *
      * @param  int $document_payment_id
      * @param  string $instance_type
@@ -61,10 +95,9 @@ class PaymentLinkController extends Controller
 
     }
 
-
     
     /**
-     * Registrar link de pago
+     * Registrar link de pago desde un pago (cpe)
      *
      * @param  PaymentLinkRequest $request
      * @return array
@@ -89,13 +122,96 @@ class PaymentLinkController extends Controller
 
     }
 
-
-    public function index() 
+    
+    /**
+     * 
+     * Registrar/Actualizar link de pago desde el listado
+     *
+     * @param  PaymentLinkRequest $request
+     * @return array
+     */
+    public function storeWithoutPayment(PaymentLinkRequest $request)
     {
-        return view('payment::generate.index');
+
+        $id = $request->input('id');
+        $record = PaymentLink::firstOrNew(['id' => $id]);
+
+        $record->fill([
+            'user_id' => auth()->id(),
+            'uuid' => Str::uuid()->toString(),
+            'soap_type_id' => $record->soap_type_id ?? Company::select('soap_type_id')->firstOrFail()->soap_type_id,
+            'payment_link_type_id' => $request->payment_link_type_id,
+            'total' => $request->total,
+        ]);
+
+        $record->save();
+
+        return [
+            'success' => true,
+            'message' => $id ? 'Link actualizado con éxito' : 'Link generado con éxito'
+        ];
+
     }
 
-         
+
+    /**
+     * 
+     * Buscar link de pago desde listado
+     *
+     * @param  int $id
+     * @return PaymentLinkResource
+     */
+    public function recordWithoutPayment($id)
+    {
+        return new PaymentLinkResource(PaymentLink::findOrFail($id));
+    }
+
+
+    /**
+     * 
+     * Buscar transacciones
+     *
+     * @param  int $id
+     * @return array
+     */
+    public function transactions($id)
+    {
+        $payment_link = PaymentLink::findOrFail($id);
+
+        return $payment_link->transactions->transform(function($row){
+                    return $row->getRowResource();
+                });
+    }
+
+    
+    /**
+     * 
+     * Eliminar link de pago
+     *
+     * @param  int $id
+     * @return array
+     */
+    public function destroy($id)
+    {
+        $payment_link = PaymentLink::findOrFail($id);
+
+        if($payment_link->transactions->count() > 0)
+        {
+            return [
+                'success' => false,
+                'message' => 'El link de pago tiene transacciones relacionadas'
+            ];
+        }
+        
+        $payment_link->delete();
+
+        return [
+            'success' => true,
+            'message' => 'Link de pago eliminado con éxito'
+        ];
+    }
+    
+
     /**
      * 
      * Consultar y validar estado Aceptado de la transacción de mercado pago

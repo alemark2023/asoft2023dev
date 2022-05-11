@@ -15,7 +15,23 @@ class PaymentLinkRequest extends FormRequest
 
     public function rules()
     {
-        
+
+        $without_payment = $this->input('without_payment');
+
+        if($without_payment)
+        {
+            return [
+                'payment_link_type_id' => [
+                    'required',
+                ],
+                'total' => [
+                    'required',
+                    'gt:0',
+                ],
+            ];
+        }
+
+
         return [
             'payment_link_type_id' => [
                 'required',

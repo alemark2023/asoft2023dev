@@ -23,8 +23,19 @@ if($hostname) {
 
             Route::prefix('payment-links')->group(function () {
 
+                Route::get('columns', 'PaymentLinkController@columns');
+                Route::get('records', 'PaymentLinkController@records');
+                Route::get('tables', 'PaymentLinkController@tables');
+
                 Route::post('', 'PaymentLinkController@store');
                 Route::get('record/{document_payment_id}/{instance_type}/{payment_link_type_id}', 'PaymentLinkController@record');
+
+                Route::get('transactions/{id}', 'PaymentLinkController@transactions');
+                Route::delete('/{id}', 'PaymentLinkController@destroy');
+
+                Route::post('store-without-payment', 'PaymentLinkController@storeWithoutPayment');
+                Route::get('record-without-payment/{id}', 'PaymentLinkController@recordWithoutPayment');
+                
                 Route::get('', 'PaymentLinkController@index')->name('tenant.payment.generate.index');
                 Route::post('email', 'PaymentLinkController@email');
                 Route::post('uploaded-file', 'PaymentLinkController@uploadedFile');

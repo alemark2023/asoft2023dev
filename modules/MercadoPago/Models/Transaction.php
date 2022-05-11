@@ -49,6 +49,17 @@ class Transaction extends ModelTenant
         return $this->belongsTo(SoapType::class);
     }
      
+    public function getRowResource()
+    {
+        return [
+            'date' => $this->date,
+            'time' => $this->time,
+            'description' => $this->description,
+            'amount' => $this->amount,
+            'transaction_state_id' => $this->transaction_state_id,
+            'transaction_state_description' => $this->getStateUserMessage(),
+        ];
+    }
     
     /**
      * 

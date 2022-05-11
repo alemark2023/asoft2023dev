@@ -156,10 +156,14 @@ class PaymentLink extends ModelTenant
         return $this->uploaded_filename ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'payment_links'.DIRECTORY_SEPARATOR.$this->uploaded_filename) : null;
     }
 
-
+    
+    /**
+     * Usado para mostrar el link de pago al generarlo desde pagos (cpe)
+     * 
+     * @return array
+     */
     public function getRowResource()
     {
-
 
         return [
             'id' => $this->id,
@@ -175,11 +179,66 @@ class PaymentLink extends ModelTenant
             'image_url_uploaded_filename' => $this->image_url_uploaded_filename,
             'query_transaction' => $this->query_transaction,
             'transaction' => $this->getShowDataTransactionApproved(),
-            
         ];
+
     }
 
+
+    /**
+     * Usado para mostrar el link de pago al generarlo desde el listado
+     * 
+     * @return array
+     */
+    public function getRowResourceWithoutPayment()
+    {
+
+        return [
+            'id' => $this->id,
+            'payment_link_type_id' => $this->payment_link_type_id,
+            'total' => $this->total,
+            'without_payment' => true,
+        ];
+
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getRowCollection()
+    {
+
+        return [
+            'id' => $this->id,
+            'uuid' => $this->uuid,
+            'payment_link_type_id' => $this->payment_link_type_id,
+            'payment_link_type_description' => $this->type->description,
+            'total' => $this->total,
+            'user_payment_link' => $this->user_payment_link,
+            'query_transaction' => $this->query_transaction,
+            'has_payment' => $this->has_payment,
+            'payment_number_full' => $this->getPaymentNumberFull(),
+        ];
+    }
     
+    
+    /**
+     * 
+     * Obtener descripción del pago asociado
+     *
+     * @return string
+     */
+    public function getPaymentNumberFull()
+    {
+        if($this->has_payment)
+        {
+            return "PAGO-{$this->payment->id}";
+        }
+
+        return null;
+    }
+
+
     /**
      * 
      * Obtener path del modelo en base al tipo de instancia definida
