@@ -28,6 +28,7 @@ if($hostname) {
                 Route::get('', 'PaymentLinkController@index')->name('tenant.payment.generate.index');
                 Route::post('email', 'PaymentLinkController@email');
                 Route::post('uploaded-file', 'PaymentLinkController@uploadedFile');
+                Route::post('query-transaction-state', 'PaymentLinkController@queryTransactionState');
 
             });
 

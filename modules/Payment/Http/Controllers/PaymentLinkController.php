@@ -21,12 +21,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Modules\Payment\Mail\PaymentLinkEmail;
 use Modules\Finance\Helpers\UploadFileHelper;
+use Modules\Payment\Traits\PaymentLinkTrait;
 
 
 class PaymentLinkController extends Controller
 {
 
-    
+    use PaymentLinkTrait;
+
     /**
      * Buscar link de pago
      *
@@ -87,10 +89,44 @@ class PaymentLinkController extends Controller
 
     }
 
-    public function index() {
+
+    public function index() 
+    {
         return view('payment::generate.index');
     }
-     
+
+         
+    /**
+     * 
+     * Consultar y validar estado Aceptado de la transacción de mercado pago
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function queryTransactionState(Request $request)
+    {
+
+        $payment_link = PaymentLink::findOrFail($request->id);
+
+        if($payment_link->isTransactionApproved())
+        {
+            $payment_link->query_transaction = true;
+            $payment_link->update();
+
+            return [
+                'success' => true,
+                'message' => 'La transacción asociada tiene estado Aceptado.'
+            ];
+        }
+
+        return [
+            'success' => false,
+            'message' => $payment_link->transactions->count() == 0 ? 'No se encontraron transacciones asociadas.' : 'La transacción asociada no tiene estado Aceptado.'
+        ];
+
+    }
+    
+
     /**
      * Mostrar formulario público del link de pago
      *
@@ -102,7 +138,7 @@ class PaymentLinkController extends Controller
     {
 
         $this->validatePublicParams($payment_link_type_id, $input_total);
-        $payment_link = PaymentLink::with(['payment'])->where('uuid', $uuid)->firstOrFail();
+        $payment_link = $this->getPublicPaymentLink($payment_link_type_id, $uuid);
         $company = $this->getPublicDataCompany();
         $payment_configuration = PaymentConfiguration::getPublicRowResource();
 
@@ -110,80 +146,6 @@ class PaymentLinkController extends Controller
         $total = $this->getTotal($payment_link, $input_total, $apply_conversion);
 
         return view('payment::payment_links.public.index', compact('payment_link', 'company', 'payment_configuration', 'total', 'apply_conversion'));
-
-    }
-    
-    /**
-     *
-     * @param  PaymentLink $payment_link
-     * @param  float $input_total
-     * @return float
-     */
-    public function getTotal(PaymentLink $payment_link, $input_total, &$apply_conversion)
-    {
-        $document = $payment_link->payment->document;
-
-        if($document->currency_type_id === 'PEN') return $input_total;
-
-        $apply_conversion = true;
-
-        return round($input_total * $document->exchange_rate_sale, 2);
-    }
-    
-
-    /**
-     *
-     * @return Company
-     */
-    public function getPublicDataCompany()
-    {
-        return Company::select('name', 'number')->first();
-    }
-
-    
-    /**
-     * 
-     * Validar datos
-     *
-     * @param  string $payment_link_type_id
-     * @param  float $total
-     * @return void
-     */
-    public function validatePublicParams($payment_link_type_id, $total)
-    {
-
-        $validate = [
-            'success' => true,
-            'message' => null,
-        ];
-
-        if(!is_numeric($total))
-        {
-            $validate = [
-                'success' => false,
-                'message' => 'El total debe ser númerico',
-            ];
-        }
-        else
-        {
-            if($total <= 0)
-            {
-                $validate = [
-                    'success' => false,
-                    'message' => 'El total debe ser mayor a 0',
-                ];
-            }
-        }
-
-        if(!PaymentLinkType::find($payment_link_type_id))
-        {
-            $validate = [
-                'success' => false,
-                'message' => 'Tipo de link no permitido',
-            ]; 
-        }
-        
-        if(!$validate['success']) throw new Exception($validate['message']);
 
     }
 
@@ -207,7 +169,6 @@ class PaymentLinkController extends Controller
         ];
 
     }
-
     
     
     /**

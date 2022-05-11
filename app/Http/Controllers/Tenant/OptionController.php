@@ -31,6 +31,8 @@ use App\Models\Tenant\{
     CashDocumentCredit,
     CashDocument
 };
+use Modules\Payment\Models\PaymentLink;
+use Modules\MercadoPago\Models\Transaction;
 
 
 class OptionController extends Controller
@@ -102,6 +104,9 @@ class OptionController extends Controller
 
         $this->updateStockAfterDelete();
 
+        $this->deletePaymentLink();
+
+
         return [
             'success' => true,
             'message' => 'Documentos de prueba eliminados',
@@ -109,6 +114,26 @@ class OptionController extends Controller
         ];
     }
     
+    
+    /**
+     * 
+     * Eliminar links de pago y transacciones asociadas en demo
+     *
+     * @return void
+     */
+    private function deletePaymentLink()
+    {
+        $transactions = Transaction::where('soap_type_id', '01')->get();
+
+        foreach ($transactions as $transaction) 
+        {
+            $transaction->transaction_queries()->delete();
+            $transaction->delete();
+        }
+
+        PaymentLink::where('soap_type_id', '01')->delete();
+    }
+
 
     /**
      * 
