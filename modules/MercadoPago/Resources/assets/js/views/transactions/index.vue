@@ -237,7 +237,7 @@ export default {
             this.form = {
 
                 customer_uuid: this.customerUuid,
-                description: 'Asesoría financiera',
+                description: null,
                 transaction_amount: this.total,
                 email: null,
                 user: null,
