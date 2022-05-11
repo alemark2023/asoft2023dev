@@ -1054,11 +1054,10 @@
 
 
                 <el-tab-pane class
-                             v-if="config !== undefined && config.facturalo_server  !== undefined && config.facturalo_server !== false"
                              name="four">
 
                     <span slot="label">
-                        Datos Servidor {{ config.facturalo_server }}
+                        Datos Servidor
                     </span>
 
                     <div class="form-body">

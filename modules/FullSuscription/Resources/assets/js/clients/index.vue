@@ -37,8 +37,7 @@
                         <th>
                             #
                         </th>
-                        <th v-if="config !== undefined && config.facturalo_server  !== undefined && config.facturalo_server !== false"
-                            class="text-left"
+                        <th class="text-left"
 
                         >
                             Canal
@@ -66,8 +65,7 @@
                         <td>
                             {{ index }}
                         </td>
-                        <td v-if="config !== undefined && config.facturalo_server  !== undefined && config.facturalo_server !== false"
-                            class="text-left"
+                        <td class="text-left"
 
                         >
 

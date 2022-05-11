@@ -39,7 +39,7 @@
         {
             return [
                 'value' => 'full_suscription_app',
-                'description' => 'Suscripciones Generales',
+                'description' => 'Suscripción Servicios SAAS',
                 'sort' => 17,
                 // 'order_menu' => 16,
 

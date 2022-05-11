@@ -31,6 +31,8 @@
                 'name' => 'Nombre',
                 'number' => 'Número',
                 'document_type' => 'Tipo de documento',
+                'discord_channel' => 'Canal',
+                'telephone' => 'Teléfono',
             ];
         }
 
@@ -151,22 +153,23 @@
             $personController = new PersonController();
 
             $data = $personController->store($request);
-            $servers = $request->servers;
+            $servers = ($request->has('servers'))?$request->servers:null;
             $demo = [];
             $person_id = $data['id'];
-            foreach ($servers as $server) {
-                $server_data = (isset($server['id'])) ?
-                    FullSuscriptionServerDatum::find($server['id']) :
-                    new FullSuscriptionServerDatum($server);
+            if(!empty($servers)) {
+                foreach ($servers as $server) {
+                    $server_data = (isset($server['id'])) ?
+                        FullSuscriptionServerDatum::find($server['id']) :
+                        new FullSuscriptionServerDatum($server);
+                    $server_data
+                        ->setPersonId($person_id)
+                        ->setHost($server['host'] ?? null)
+                        ->setIp($server['ip'] ?? null)
+                        ->setUser($server['user'] ?? null)
+                        ->setPassword($server['password'] ?? null)
+                        ->push();
 
-                $server_data
-                    ->setPersonId($person_id)
-                    ->setHost($server['host'] ?? null)
-                    ->setIp($server['ip'] ?? null)
-                    ->setUser($server['user'] ?? null)
-                    ->setPassword($server['password'] ?? null)
-                    ->push();
-
+                }
             }
             $extra_fields = [];
 
