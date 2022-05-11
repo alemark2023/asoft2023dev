@@ -769,3 +769,16 @@ html.dark .el-pagination .btn-next {
   background: #131631;
   border: 1px solid #283046;
 }
+
+.color--success {
+  color: #4ebf56;
+}
+
+.color--error {
+  color: #e23636;
+}
+
+.color--warning {
+  color: #c76a3c;
+}
+

@@ -73,6 +73,26 @@ class PaymentConfiguration extends ModelTenant
         ];
 
     }
+    
 
+    /**
+     * Obtener llave publica de mercado pago
+     *
+     * @return string
+     */
+    public static function getPublicKeyMp()
+    {
+        return PaymentConfiguration::select('public_key_mp')->firstOrFail()->public_key_mp;
+    }
+
+    /**
+     * Obtener llave publica de mercado pago
+     *
+     * @return string
+     */
+    public static function getAccessTokenMp()
+    {
+        return PaymentConfiguration::select('access_token_mp')->firstOrFail()->access_token_mp;
+    }
 
 }

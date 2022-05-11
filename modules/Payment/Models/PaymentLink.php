@@ -14,8 +14,13 @@ use App\Models\Tenant\{
     SoapType,
     User,
 };
+use Modules\MercadoPago\Models\Transaction;
 
 
+/**
+ * Se elimina el registro al borrar el pago relacionado
+ * Usa GlobalPaymentServiceProvider para el evento deleting del modelo
+ */
 class PaymentLink extends ModelTenant
 {
 
@@ -73,6 +78,12 @@ class PaymentLink extends ModelTenant
     public function doc_payments()
     {
         return $this->belongsTo(DocumentPayment::class, 'payment_id')->wherePaymentType(DocumentPayment::class);
+    }
+
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
     }
 
 
