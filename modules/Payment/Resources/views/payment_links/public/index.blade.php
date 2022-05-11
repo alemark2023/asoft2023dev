@@ -14,7 +14,7 @@
 @endsection
 
 {{-- mercadopago --}}
-@if ($payment_link->payment_link_type_id == '02')
+@if ($payment_link['payment_link_type_id'] == '02')
     
     @section('content-mercadopago')
 

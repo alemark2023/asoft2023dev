@@ -4,6 +4,10 @@ namespace Modules\MercadoPago\Traits;
 
 use Modules\MercadoPago\Models\TransactionState;
 use Illuminate\Support\Facades\Log;
+use App\Models\Tenant\{
+    Company
+};
+
 
 trait UtilityTrait
 { 
@@ -64,6 +68,15 @@ trait UtilityTrait
     public function setErrorLog($exception)
     {
         Log::error("Line: {$exception->getLine()} - Message: {$exception->getMessage()} - File: {$exception->getFile()}");
+    }
+
+        
+    /**
+     * @return Company
+     */
+    public function getSoapTypeId()
+    {
+        return Company::select('soap_type_id')->firstOrFail()->soap_type_id;
     }
 
 }
