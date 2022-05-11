@@ -530,9 +530,9 @@ html.dark .header .logo-container .topbar-links {
 
     .header .header-right {
         background: #fff;
-        /* float: none !important; */
+        float: none !important;
         height: 60px;
-        margin-top: 60px;
+        /* margin-top: 60px; */
         width: 100%;
         display: flex;
         align-items: center;

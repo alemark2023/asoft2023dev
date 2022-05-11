@@ -412,13 +412,16 @@ ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
   font-weight: 600;
 }
 html:not(.sidebar-light) ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
-  background-color: #161d31 ;
+  background: #0c102a;
   color: #fff !important;
+}
+html:not(.sidebar-light) ul.nav-main li .nav-children li a:after {
+  background: #161d31;
 }
 
 ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a::before {
-  border-color: #4b4b4b;
-  background: #4b4b4b;
+  border-color: #fff;
+  background: #fff;
 }
 
 html:not(.sidebar-light) ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a::before {
@@ -664,6 +667,9 @@ html.fixed.sidebar-blue ul.nav-main li .nav-children li.nav-active:not(.nav-pare
 html.fixed.sidebar-blue .sidebar-left-collapsed .sidebar-left .nav-main > li > a {
   border-radius: 6px 6px 6px 6px !important;
 }
+html.fixed.sidebar-blue:not(.dark) .page-header h2 {
+  color: #ccc;
+}
 
 /* fondo naranja */
 html.fixed.sidebar-warning .sidebar-left,
@@ -782,3 +788,106 @@ html.dark .el-pagination .btn-next {
   color: #c76a3c;
 }
 
+.card-header {
+  background: transparent !important;
+}
+.card {
+  border: transparent !important;
+}
+
+/* -------------------------- botones -------------------------- */
+/* -------------------------- white -------------------------- */
+/* botones */
+html.sidebar-white .el-button--primary {
+  color: #FFFFFF;
+  background-color: #08c;
+  border-color: #08c;
+}
+html.sidebar-white .el-button--primary:hover {
+  background-color: #0A7CB5;
+  border-color: #0477B0 #0477B0 #CCC;
+  color: #FFF;
+  transition: none;
+}
+/* -------------------------- morado -------------------------- */
+html.sidebar-blue .el-button--primary,
+html.sidebar-blue .btn-custom {
+  color: #FFFFFF;
+  background-color: #554AC6;
+  border-color: #554AC6;
+}
+html.sidebar-blue .el-button--primary:hover,
+html.sidebar-blue .btn-custom:hover {
+  background-color: #473db4;
+  border-color: #473db4;
+  color: #FFF;
+  transition: none;
+}
+/* -------------------------- verde -------------------------- */
+html.sidebar-green .el-button--primary,
+html.sidebar-green .btn-custom {
+  color: #FFFFFF;
+  background-color: #1ca55a;
+  border-color: #1ca55a;
+}
+html.sidebar-green .el-button--primary:hover,
+html.sidebar-green .btn-custom:hover {
+  background-color: #158c4a;
+  border-color: #158c4a;
+  color: #FFF;
+  transition: none;
+}
+/* -------------------------- verde -------------------------- */
+html.sidebar-gray .el-button--primary,
+html.sidebar-gray .btn-custom {
+  color: #FFFFFF;
+  background-color: #82868b;
+  border-color: #82868b;
+}
+html.sidebar-gray .el-button--primary:hover,
+html.sidebar-gray .btn-custom:hover {
+  background-color: #72767a;
+  border-color: #72767a;
+  color: #FFF;
+  transition: none;
+}
+/* -------------------------- dark -------------------------- */
+html.sidebar-dark .el-button--primary,
+html.sidebar-dark .btn-custom {
+  color: #FFFFFF;
+  background-color: #283046;
+  border-color: #0c102a;
+}
+html.sidebar-dark .el-button--primary:hover,
+html.sidebar-dark .btn-custom:hover {
+  background-color: #161d31;
+  border-color: #161d31;
+  color: #FFF;
+  transition: none;
+}
+html.sidebar-dark:not(.sidebar-light) .el-button--primary:hover,
+html.sidebar-dark:not(.sidebar-light) .btn-custom:hover {
+  background-color: #0c102a;
+  border-color: #0c102a;
+  color: #FFF;
+  transition: none;
+}
+html.sidebar-dark .userbox.show .dropdown-menu a:hover {
+  background-color: #283046;
+}
+html.sidebar-dark .header .logo-container .topbar-links:hover {
+  background-color: #0c102a;
+  color: #fff;
+}
+html.sidebar-dark .card-header.bg-info {
+  background: #283046 !important;
+}
+html.sidebar-dark:not(.sidebar-light) .card-header.bg-info {
+  background: #0c102a !important;
+}
+.card-header.bg-info {
+  background: #0088cc !important;
+}
+.card-header.bg-success {
+  background: #47a447 !important;
+}

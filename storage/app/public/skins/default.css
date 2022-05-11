@@ -245,6 +245,15 @@ html.sidebar-gray .userbox.show .dropdown-menu a:hover {
   background-color: #707376;
 }
 
+/* --------------------------- tema blanco --------------------------- */
+html.sidebar-white ul.nav-main li.nav-active:not(.nav-parent) > a {
+  background: #08c;
+  box-shadow: none;
+  color: #fff !important;
+}
+html.sidebar-white .card-header.bg-info {
+  background: #08c !important;
+}
 
 /* --------------------------- tema oscuro / sin modo noche --------------------------- */
 /* panel derecho */
@@ -259,4 +268,9 @@ html.sidebar-dark:not(.dark) .style-switcher .style-switcher-open {
 html.sidebar-dark:not(.dark) .style-switcher h4 {
   background-color: #f6f6f6;
   color: #777;
+}
+
+/* menu top */
+.fix-m {
+  margin-bottom: -4px;
 }

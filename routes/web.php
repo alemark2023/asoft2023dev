@@ -676,6 +676,11 @@ if ($hostname) {
             //Almacen de columnas por usuario
             Route::post('validate_columns','Tenant\SettingController@getColumnsToDatatable');
 
+            // test theme
+            // Route::get('testtheme', function () {
+            //     return view('tenant.layouts.partials.testtheme');
+            // });
+
         });
     });
 } else {

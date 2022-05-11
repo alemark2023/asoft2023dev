@@ -9,18 +9,6 @@
     color: #0e3068;
     background-color: #f0f3f4;
 }
-
-i.fa.fa-circle.fa-3x:after{
-    content: ' ';
-    background: url(https://buho.la/logo/fastura.png);
-    width: 130px;
-    height: 31px;
-    background-size: 130px;
-    display: inline-block;
-}
-i.fa.fa-circle.fa-3x:before{
-    opacity: 0;
-}
 .card-featured-left{
     border-left: none;
 }
@@ -980,4 +968,23 @@ html.dark .card.card-dashboard .card-title, html.dark .card.card-dashboard small
 .fix-m {
     margin-bottom: -4px;
     margin-top: 5px;
+}
+
+/* --------------------------- tema light --------------------------- */
+html.sidebar-light .userbox.show .dropdown-menu a:hover {
+    background-color: #0074ff;
+}
+
+/* -------------------------- botones -------------------------- */
+/* -------------------------- white -------------------------- */
+html.sidebar-white .el-button--primary {
+    color: #FFFFFF;
+    background-color: #0074ff;
+    border-color: #0074ff;
+}
+html.sidebar-white .el-button--primary:hover {
+    background-color: #002183;
+    border-color: #002183;
+    color: #FFF;
+    transition: none;
 }
