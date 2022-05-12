@@ -1735,7 +1735,9 @@ export default {
                     return this.$message.error(response.message);
                 }
 
-                this.form_item.item = item;
+                // this.form_item.item = item;
+                this.form_item.item = { ...item }
+
                 this.form_item.unit_price_value = this.form_item.item.sale_unit_price;
                 this.form_item.has_igv = this.form_item.item.has_igv;
                 this.form_item.has_plastic_bag_taxes = this.form_item.item.has_plastic_bag_taxes;
