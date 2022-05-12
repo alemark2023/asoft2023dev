@@ -157,6 +157,7 @@
                         'individual_item_id' => $row->individual_item_id,
                         'full_description' => $full_description,
                         'sale_unit_price' => (float)$row->individual_item->sale_unit_price,
+                        'purchase_unit_price' => (float)$row->individual_item->purchase_unit_price,
                         'quantity' => (float)$row->quantity,
                     ];
                 }),
