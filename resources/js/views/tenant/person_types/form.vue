@@ -20,7 +20,7 @@
                             <el-option v-for="option in itemPriceTypes"
                                         :key="option.id"
                                         :label="option.name"
-                                        :value="option.name"></el-option>
+                                        :value="option.id"></el-option>
                         </el-select>
                         <small v-if="errors.price_id"
                                 class="form-control-feedback"

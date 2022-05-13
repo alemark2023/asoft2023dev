@@ -35,15 +35,15 @@ if($hostname) {
 
             Route::prefix('price')->group(function () {
 
-                Route::get('', 'ItemPriceTypeController@index')->name('tenant.price.index');
-                Route::post('', 'ItemPriceTypeController@store');
-                Route::get('/records', 'ItemPriceTypeController@records');
-                Route::get('/tables', 'ItemPriceTypeController@tables');
-                Route::get('/record/{brand}', 'ItemPriceTypeController@record');
-                Route::get('/search/{brand}', 'ItemPriceTypeController@searchPrices');
-                Route::get('/columns', 'ItemPriceTypeController@columns');
-                Route::delete('/{brand}', 'ItemPriceTypeController@destroy');
-                Route::delete('/list/{brand}', 'ItemPriceTypeController@list');
+                Route::get('', 'NamePriceController@index')->name('tenant.price.index');
+                Route::post('', 'NamePriceController@store');
+                Route::get('/records', 'NamePriceController@records');
+                Route::get('/tables', 'NamePriceController@tables');
+                Route::get('/record/{brand}', 'NamePriceController@record');
+                Route::get('/search/{brand}', 'NamePriceController@searchPrices');
+                Route::get('/columns', 'NamePriceController@columns');
+                Route::delete('/{brand}', 'NamePriceController@destroy');
+                Route::delete('/list/{brand}', 'NamePriceController@list');
             });
 
 

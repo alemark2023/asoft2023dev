@@ -13,6 +13,7 @@ use App\Models\Tenant\Catalogs\Province;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\PersonType;
 use Modules\Item\Models\ItemPriceType;
+use Modules\Item\Models\NamePriceType;
 use Exception;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Excel;
@@ -21,7 +22,7 @@ class PersonTypeController extends Controller
 {
     public function index()
     {
-        $item_price_types = ItemPriceType::distinct()->select('name')->get();
+        $item_price_types = NamePriceType::with('item_price_type')->get();
         return view('tenant.person_types.index', compact('item_price_types'));
     }
 
@@ -61,7 +62,7 @@ class PersonTypeController extends Controller
         /* dd($name); */
         
         if($name){
-            $list_price = ItemPriceType::where('name', 'like', $name)->get();
+            $list_price = ItemPriceType::where('name_price_id', $name)->get();
             foreach ($list_price as $value) {
                 $value->type_customer_id = $id;
                 $value->save();

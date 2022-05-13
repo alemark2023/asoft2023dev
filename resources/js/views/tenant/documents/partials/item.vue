@@ -295,7 +295,7 @@
                             :form="form"
                         ></tenant-item-aditional-info-selector>
                     </template>
-                    <template v-if="!is_client||personTypeId">
+                    <template v-if="!is_client">
 
                         <div v-if="form.item_unit_types.length > 0"
                              class="col-md-12">
@@ -347,7 +347,7 @@
                             </div>
                         </div>
 
-                        <div v-if="form.item_unit_types.length > 0 &&personTypeId"
+                        <div v-if="form.item_price_types.length > 0 &&personTypeId"
                              class="col-md-12">
                             <div class="table-responsive"
                                  style="margin:3px">
@@ -1554,6 +1554,9 @@ export default {
                         break
                     case 3:
                         valor = row.price3
+                        break
+                    case 4:
+                        valor = this.form.item.sale_unit_price*(100/row.price4)
                         break
 
                 }

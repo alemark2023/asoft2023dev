@@ -14,40 +14,15 @@
                         </el-tooltip>
                     </h5>
                 </div>
-
-                <div class="col-md-3">
-                    <template  v-if="form.name" >
-                        <div :class="{'has-danger': errors.name}"
-                            class="form-group">
-                        <label class="control-label">Nombre</label>
-                        <el-input v-model="form.name">{{form.name}}</el-input>
-                        <small v-if="errors.name"
-                                class="form-control-feedback"
-                                v-text="errors.name[0]"></small>
-                    </div>
-                    </template>
-                    <template v-else>
-                        <div :class="{'has-danger': errors.name}"
-                            class="form-group">
-                        <label class="control-label">Nombre</label>
-                        <el-input v-model="form.name"></el-input>
-                        <small v-if="errors.name"
-                                class="form-control-feedback"
-                                v-text="errors.name[0]"></small>
-                    </div>
-                    </template>
-                    
-                </div>
-
                 <div
                         class="col-md-12">
-                    <div class="table-responsive">
+                    <div class="table-responsive" style="overflow-x:auto;">
                         <table class="table table-sm mb-0">
                             <thead>
                             <tr>
-                                <th class="text-center">Unidad</th>
-                                <th class="text-center">Descripción</th>
-                                <th class="text-center">
+                                <th style="width: 80px;" width="13%" class="text-center">Unidad</th>
+                                <th style="width: 80px;" width="13%" class="text-center">Descripción</th>
+                                <th style="width: 80px;" width="13%" class="text-center">
                                     Factor
                                     <el-tooltip class="item"
                                                 content="Cantidad de unidades"
@@ -56,46 +31,47 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </th>
-                                <th class="text-center">Precio 1</th>
-                                <th class="text-center">Precio 2</th>
-                                <th class="text-center">Precio 3</th>
-                                <th class="text-center">Precio 4</th>
-                                <th class="text-center">P. Defecto</th>
-                                <th></th>
+                                <template v-for="(row, index) in form.prices" >
+                                    <th style="width: 80px;" width="13%" :key="index" class="text-center">precio {{index+1}}</th>
+                                </template>
+                                
+                                <th style="width: 80px;" width="13%" class="text-center">P. Defecto</th>
+                                <th style="width: 80px;" width="13%"></th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="(row, index) in form.item_unit_types"
-                                :key="index">
-                                <template v-if="row.id">
-                                    <td class="text-center">{{ row.unit_type_id }}</td>
-                                    <td class="text-center">{{ row.description }}</td>
-                                    <td class="text-center">{{ row.quantity_unit }}</td>
-                                    <td class="text-center">
-                                        <el-input v-model="row.price1"></el-input>
-                                    </td>
-                                    <td class="text-center">
-                                        <el-input v-model="row.price2"></el-input>
-                                    </td>
-                                    <td class="text-center">
-                                        <el-input v-model="row.price3"></el-input>
-                                    </td>
-                                    <td class="text-center">
-                                        <el-input v-model="row.price4"></el-input>
-                                    </td>
-                                    <td class="text-center">Precio {{ row.price_default }}</td>
+                            <tr>
+                                <!-- <template v-if="form.id!=null">
+                                    <td class="text-center">{{ form.unit_type_id }}</td>
+                                    <td class="text-center">{{ form.description }}</td>
+                                    <td class="text-center">{{ form.quantity_unit }}</td>
+                                    <template v-for="(row, index) in form.prices" >
+                                        <td :key="index">
+                                            <div class="form-group">
+                                                <el-input v-model="row.index"></el-input>
+                                            </div>
+                                        </td>
+                                        <td v-if="index=='price4'" class="d-flex w-100" :key="index">
+                                            <span class="pr-1">%</span>
+                                            <div class="form-group">
+                                                <el-input v-model="row.index"></el-input> -->
+                                                <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
+                                            <!-- </div>
+                                        </td>
+                                    </template>
+                                    <td class="text-center">Precio {{ form.price_default }}</td>
                                     <td class="series-table-actions text-right">
                                         <button class="btn waves-effect waves-light btn-xs btn-danger"
                                                 type="button"
-                                                @click.prevent="clickDelete(row.id)">
+                                                @click.prevent="clickDelete(form.id)">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </td>
-                                </template>
-                                <template v-else>
-                                    <td>
-                                        <div class="form-group">
-                                            <el-select v-model="row.unit_type_id"
+                                </template> -->
+                                <template>
+                                    <td width="13%">
+                                        <div style="width: 80px;" class="form-group">
+                                            <el-select v-model="form.unit_type_id"
                                                         dusk="item_unit_type.unit_type_id">
                                                 <el-option v-for="option in unit_types"
                                                             :key="option.id"
@@ -104,64 +80,50 @@
                                             </el-select>
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="form-group">
-                                            <el-input v-model="row.description"></el-input>
+                                    <td width="13%">
+                                        <div style="width: 80px;" class="form-group">
+                                            <el-input v-model="form.description"></el-input>
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="form-group">
-                                            <el-input v-model="row.quantity_unit"></el-input>
+                                    <td width="13%">
+                                        <div style="width: 80px;" class="form-group">
+                                            <el-input v-model="form.quantity_unit"></el-input>
                                             <!-- <small class="form-control-feedback" v-if="errors.quantity_unit" v-text="errors.quantity_unit[0]"></small> -->
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="form-group">
-                                            <el-input v-model="row.price1"></el-input>
-                                            <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="form-group">
-                                            <el-input v-model="row.price2"></el-input>
-                                            <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="form-group">
-                                            <el-input v-model="row.price3"></el-input>
-                                            <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="form-group">
-                                            <el-input v-model="row.price4"></el-input>
-                                            <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <el-select v-model="row.price_default">
-                                                <el-option :key="1"
-                                                            :value="1"
-                                                            label="Precio 1"></el-option>
-                                                <el-option :key="2"
-                                                            :value="2"
-                                                            label="Precio 2"></el-option>
-                                                <el-option :key="3"
-                                                            :value="3"
-                                                            label="Precio 3"></el-option>
-                                                <el-option :key="3"
-                                                            :value="3"
-                                                            label="Precio 4"></el-option>
+                                    <template v-for="(row, index) in form.prices" >
+                                        <td v-if="index<=2" width="13%" :key="index">
+                                            <div style="width: 80px;" class="form-group">
+                                                <el-input v-model="row.price"></el-input>
+                                            </div>
+                                        </td>
+                                        <td else width="13%"  :key="index">
+                                            <div style="width: 80px;" class="d-flex w-100" >
+                                                <span class="pr-1">%</span>
+                                                <div class="form-group">
+                                                    <el-input v-model="row.price"></el-input>
+                                                    <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
+                                                </div>
+                                            </div>
+                                            
+                                        </td>
+                                    </template>
+                                    <td width="13%">
+                                        <div style="width: 80px;">
+                                            <el-select v-model="form.price_default">
+                                                <template  v-for="(row, index) in form.prices" >
+                                                    <el-option :key="index+1"
+                                                            :value="index+1"
+                                                            :label="`precio  ${index+1}`"></el-option>
+                                                </template>
                                             </el-select>
                                         </div>
                                     </td>
-                                    <td class="series-table-actions text-right">
+                                    <td width="13%" class="series-table-actions text-right">
                                         <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickSubmit(index)">
                                             <i class="fa fa-check"></i>
                                         </button> -->
-                                        <button class="btn waves-effect waves-light btn-xs btn-danger"
+                                        <button style="width: 80px;" class="btn waves-effect waves-light btn-xs btn-danger"
                                                 type="button"
                                                 @click.prevent="clickCancel(index)">
                                             <i class="fa fa-trash"></i>
@@ -200,18 +162,8 @@
                 resource: 'price', 
                 errors: {}, 
                 form: {},
-                item_unit_types: {
-                    id: null,
-                    unit_type_id: null,
-                    quantity_unit: 0,
-                    price1: 0,
-                    price2: 0,
-                    price3: 0,
-                    price4: 0,
-                    price_default: 2,
-
-                },
                 unit_types: [],
+                price:[]
             }
         },
         async created() {
@@ -231,6 +183,8 @@
             this.$eventHub.$on('reloadTables', () => {
                 this.reloadTables()
             })
+
+            console.log(this.form.prices)
         },
         methods: {
             initForm() { 
@@ -238,27 +192,26 @@
 
                 this.form = {
                     id: null,
-                    name: null,
-                    item_unit_types: [],
-                }
-            },
-            clickAddRow() {
-                this.form.item_unit_types.push({
-                    id: null,
-                    description: null,
+                     description: null,
                     unit_type_id: 'NIU',
                     quantity_unit: 0,
-                    price1: 0,
-                    price2: 0,
-                    price3: 0,
-                    price4: 0,
-                    price_default: 2
-                })
+                    price_default: 2,
+                    prices: [{price: 0},
+                        {price: 0},
+                        {price: 0},
+                        {price: 0
+                    }],
+                }
+            },
+            async clickAddRow() {
+                this.form.prices.push({
+                    price:0
+                });
+                console.log(this.form.prices);
 
-                console.log(this.form.item_unit_types)
             },
             clickCancel(index) {
-                this.form.item_unit_types.splice(index, 1)
+                this.form.prices.splice(index, 1)
             },
             clickDelete(id) {
 
@@ -282,17 +235,17 @@
             if (this.recordId) {
                 await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                         console.log(response.data)
-                        this.form.item_unit_types = [];
+                        /* this.form.prices = [];
                         if(response.data.length > 0){
                             response.data.forEach(price => {
-                                this.form.item_unit_types.push(price)
+                                this.form.prices.push(price)
                             });
-                            this.form.name= response.data[0].name
+                            this.form.description= response.data[0].description
                             console.log(response.data[0].name)
                         }else{
-                            this.form.item_unit_types.push(response.data)
+                            this.form.prices.push(response.data)
                             this.form.name= response.data.name
-                        }
+                        } */
                         
                     })
             }
@@ -303,17 +256,12 @@
                 if (this.recordId) {
                     await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                             console.log(response.data)
-                            
-                            if(response.data.length > 0){
-                                response.data.forEach(price => {
+                                /* response.data[0].item_price_type.forEach(price => {
                                     this.form.item_unit_types.push(price)
                                 });
                                 this.form.name= response.data[0].name
-                                console.log(response.data[0].name)
-                            }else{
-                                this.form.item_unit_types.push(response.data)
-                                this.form.name= response.data.name
-                            }
+                                console.log(response.data[0].name) */
+                            
                             
                         })
                 }
