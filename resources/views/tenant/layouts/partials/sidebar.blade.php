@@ -321,8 +321,10 @@
                                             <a class="nav-link"
                                                href="{{route('tenant.pos.index')}}">Punto de venta</a>
                                         </li>
+                                    @endif
+                                    @if(in_array('pos_garage', $vc_module_levels))
                                         <li class="{{ ($firstLevel === 'pos' && $secondLevel === 'garage')?'nav-active':'' }}">
-                                                <a class="nav-link"
+                                            <a class="nav-link"
                                                 href="{{route('tenant.pos.garage')}}">Venta rápida <span style="font-size:.65rem;">(Grifos y Markets)</span></a>
                                         </li>
                                     @endif
@@ -845,7 +847,7 @@
                         </li>
                     @endif
                     @if(in_array('reports', $vc_modules))
-                        <li class="{{  ($firstLevel === 'reports' && in_array($secondLevel, ['purchases', 'search','sales','customers','items', 'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated', 'order-notes-general', 'sales-consolidated', 'user-commissions', 'fixed-asset-purchases', 'massive-downloads'])) ? 'nav-active' : ''}} {{ $firstLevel === 'list-reports' ? 'nav-active' : '' }}">
+                        <li class="{{  ($firstLevel === 'reports' && in_array($secondLevel, ['purchases', 'search','sales','customers','items', 'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated', 'order-notes-general', 'sales-consolidated', 'user-commissions', 'fixed-asset-purchases', 'massive-downloads', 'tips'])) ? 'nav-active' : ''}} {{ $firstLevel === 'list-reports' ? 'nav-active' : '' }}">
                             <a class="nav-link"
                                href="{{ url('list-reports') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -1284,6 +1286,7 @@
                                                     ($firstLevel === 'machine-production') ||
                                                     ($firstLevel === 'packaging') ||
                                                     ($firstLevel === 'machine-type-production') ||
+                                                    ($firstLevel === 'workers') ||
                                                     ($firstLevel === 'mill-production')
                                                 ) ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link"
@@ -1327,6 +1330,12 @@
                                     </a>
                                 </li>
 
+                                <li class="{{ (($firstLevel === 'workers')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.workers.index') }}">
+                                        Empleados
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     @endif
@@ -1342,30 +1351,30 @@
                             </a>
                             <ul class="nav nav-children">
                                 <li class="nav-parent
-                                {{ ($secondLevel != null && $secondLevel == 'cash')?'nav-active nav-expanded':'' }}">
+                                {{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == 'pos')?'nav-active nav-expanded':'' }}">
                                     <a class="nav-link"
                                         href="#">
                                         POS
                                     </a>
                                     <ul class="nav nav-children">
-                                        <li class="{{ ($secondLevel != null && $secondLevel == 'cash')?'nav-active':'' }}">
+                                        <li class="{{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == 'pos')?'nav-active':'' }}">
                                             <a class="nav-link"
-                                                href="{{route('tenant.restaurant.cash.index')}}">
+                                                href="{{route('tenant.restaurant.cash.filter-pos')}}">
                                                 Caja Chica
                                             </a>
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="nav-parent">
+                                <li class="nav-parent {{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == '')?'nav-active nav-expanded':'' }}">
                                     <a class="nav-link"
                                         href="#">
                                         Mesas
                                     </a>
                                     <ul class="nav nav-children">
-                                        <li class="">
+                                        <li class="{{ ($secondLevel != null && $secondLevel == 'cash' && $thridLevel == '')?'nav-active':'' }}">
                                             <a class="nav-link"
-                                                href="#">
-                                                Cantidad mesas
+                                                href="{{route('tenant.restaurant.cash.index')}}">
+                                                Caja Chica
                                             </a>
                                         </li>
                                     </ul>

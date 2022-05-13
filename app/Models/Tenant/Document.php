@@ -26,6 +26,7 @@
     use Modules\Order\Models\OrderNote;
     use Modules\Sale\Models\TechnicalService;
     use phpDocumentor\Reflection\Utils;
+    use Modules\Pos\Models\Tip;
 
 
     /**
@@ -938,6 +939,11 @@
         {
             return $this->hasMany(GuideFile::class);
         }
+        
+        public function tip()
+        {
+            return $this->morphOne(Tip::class, 'origin');
+        }
 
         /**
          * @param \Illuminate\Database\Eloquent\Builder $query
@@ -1184,6 +1190,83 @@
                 'payments',
                 'fee'
             ]);
+        }
+
+                
+        /**
+         * Obtener diferencia de días en base a la fecha de emisión
+         * 
+         * Usado en:
+         * VoidedController - Validación de plazo de envío
+         *
+         * @param  Carbon $value
+         * @return int
+         */
+        public function getDiffInDaysDateOfIssue($value = null)
+        {
+            $date = $value ?? Carbon::now();
+
+            return $this->date_of_issue->diffInDays($date);
+        }
+        
+        
+        /**
+         * Validar si el documento fue generado a partir de un registro externo
+         *
+         * Usado en:
+         * InventoryKardexServiceProvider
+         * 
+         * @return bool
+         */
+        public function isGeneratedFromExternalRecord()
+        {
+            $generated = false;
+
+            if(!is_null($this->order_note_id))
+            {
+                $generated = true;
+            }
+            
+            // @todo agregar mas registros relacionados
+
+            return $generated;
+        }
+        
+
+        /**
+         * 
+         * Filtrar por rango de fechas
+         * 
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         * 
+         */
+        public function scopeFilterRangeDateOfIssue($query, $date_start, $date_end)
+        {
+            return $query->whereBetween('date_of_issue', [$date_start, $date_end]);
+        }
+
+        /**
+         * 
+         * Filtrar facturas y boletas
+         * 
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         * 
+         */
+        public function scopeFilterDocumentTypeInvoice($query)
+        {
+            return $query->whereIn('document_type_id', ['01', '03']);
+        }
+
+        /**
+         * 
+         * @return string
+         * 
+         */
+        public function getVoidedDescription()
+        {
+            return $this->state_type_id === '11' ? 'SI' : 'NO';
         }
 
     }

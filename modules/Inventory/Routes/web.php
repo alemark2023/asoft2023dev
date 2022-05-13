@@ -102,10 +102,10 @@
                     });
 
                     Route::prefix('item-prodcut-family')->group(function () {
-                        Route::get('/', 'ItemMoldPropertyController@index');
-                        Route::get('records', 'ItemMoldPropertyController@records');
-                        Route::post('record/{id}', 'ItemMoldPropertyController@record');
-                        Route::post('save/{id}', 'ItemMoldPropertyController@store');
+                        Route::get('/', 'ItemProductFamilyController@index');
+                        Route::get('records', 'ItemProductFamilyController@records');
+                        Route::post('record/{id}', 'ItemProductFamilyController@record');
+                        Route::post('save/{id}', 'ItemProductFamilyController@store');
                     });
                     Route::prefix('item-size')->group(function () {
                         Route::get('/', 'ItemSizeController@index');
