@@ -239,6 +239,7 @@
             'restrict_voided_send',
             'shipping_time_days_voided',
             'enabled_tips_pos',
+            'legend_forest_to_xml',
         ];
 
         protected $casts = [
@@ -319,6 +320,7 @@
             'restrict_voided_send' => 'bool',
             'shipping_time_days_voided' => 'int',
             'enabled_tips_pos' => 'bool',
+            'legend_forest_to_xml' => 'bool',
             
         ];
 
@@ -512,6 +514,7 @@
                 'restrict_voided_send' => $this->restrict_voided_send,
                 'shipping_time_days_voided' => $this->shipping_time_days_voided,
                 'enabled_tips_pos' => $this->enabled_tips_pos,
+                'legend_forest_to_xml' => $this->legend_forest_to_xml,
 
             ];
         }
@@ -2108,6 +2111,17 @@
         {
             return $query->select('set_unit_price_dispatch_related_record')->first()->set_unit_price_dispatch_related_record;
         }
+         
         
+        /**
+         * Usado en:
+         * LegendInput, para facturas y boletas
+         *
+         * @return bool
+         */
+        public static function isEnabledLegendForestToXml()
+        {
+            return Configuration::select('legend_forest_to_xml')->firstOrFail()->legend_forest_to_xml;
+        }
 
     }

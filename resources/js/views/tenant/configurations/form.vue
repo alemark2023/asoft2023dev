@@ -898,6 +898,27 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Agregar leyenda al XML (Amazonía)
+                                    <el-tooltip
+                                        class="item"
+                                        content="Registra la leyenda 2001 en el XML - Disponible Nuevo CPE (Facturas/Boletas)"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.legend_forest_to_xml}"
+                                        class="form-group">
+                                    <el-switch v-model="form.legend_forest_to_xml"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.legend_forest_to_xml"
+                                            class="form-control-feedback"
+                                            v-text="errors.legend_forest_to_xml[0]"></small>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="fourth">
@@ -1628,6 +1649,7 @@ export default {
                 restrict_voided_send: false,
                 shipping_time_days_voided: 0,
                 enabled_tips_pos: false,
+                legend_forest_to_xml: false,
 
             };
         },
