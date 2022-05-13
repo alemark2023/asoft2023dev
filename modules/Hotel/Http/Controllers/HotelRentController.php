@@ -160,19 +160,17 @@ class HotelRentController extends Controller
 	public function finalizeRent($rentId)
 	{
 		$rent = HotelRent::findOrFail($rentId);
-		$items = HotelRentItem::where('hotel_rent_id', $rentId)
-		->where('type', 'PRO')->get();
+		$items = HotelRentItem::where('hotel_rent_id', $rentId)->get();
 		$rent->update([
 			'arrears' => request('arrears'),
 			'payment_status' => 'PAID',
 			'status'  => 'FINALIZADO'
 		]);
 		foreach ($items as $item) {
-			$item->payment_status = 'PAID';
+			$item->update([
+				'payment_status' => 'PAID',
+			]);
 		}
-		/* $item->update([
-			'payment_status' => 'PAID'
-		]); */
 		HotelRoom::where('id', $rent->hotel_room_id)
 			->update([
 				'status' => 'LIMPIEZA'
