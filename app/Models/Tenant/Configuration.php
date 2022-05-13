@@ -239,6 +239,7 @@
             'restrict_voided_send',
             'shipping_time_days_voided',
             'enabled_tips_pos',
+            'change_currency_item',
         ];
 
         protected $casts = [
@@ -319,6 +320,7 @@
             'restrict_voided_send' => 'bool',
             'shipping_time_days_voided' => 'int',
             'enabled_tips_pos' => 'bool',
+            'change_currency_item' => 'bool',
             
         ];
 
@@ -512,6 +514,7 @@
                 'restrict_voided_send' => $this->restrict_voided_send,
                 'shipping_time_days_voided' => $this->shipping_time_days_voided,
                 'enabled_tips_pos' => $this->enabled_tips_pos,
+                'change_currency_item' => $this->change_currency_item,
 
             ];
         }

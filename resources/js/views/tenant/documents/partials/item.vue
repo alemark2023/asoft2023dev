@@ -203,15 +203,40 @@
                                         <i class="fa fa-info-circle"></i>
                                 </el-tooltip>
                             </label>
-                            <el-input v-model="form.unit_price_value"
-                                      :tabindex="'3'"
-                                      :readonly="!edit_unit_price"
-                                      @input="calculateQuantity">
-                                <template v-if="form.item.currency_type_symbol"
-                                          slot="prepend">
-                                    {{ form.item.currency_type_symbol }}
-                                </template>
-                            </el-input>
+
+                            <template v-if="configuration.change_currency_item">
+
+                                <el-input v-model="form.unit_price_value"
+                                        :tabindex="'3'"
+                                        :readonly="!edit_unit_price"
+                                        @input="calculateQuantity">
+
+                                    <template v-if="form.item.currency_type_symbol">
+                                        <el-select slot="prepend" v-model="form.item.currency_type_id" class="el-select-currency">
+
+                                            <el-option v-for="option in currencyTypes"
+                                                        :key="option.id"
+                                                        :label="option.symbol"
+                                                        :value="option.id"></el-option>
+                                        </el-select>
+                                    </template>
+                                </el-input>
+                                
+                            </template>
+                            <template v-else>
+
+                                <el-input v-model="form.unit_price_value"
+                                        :tabindex="'3'"
+                                        :readonly="!edit_unit_price"
+                                        @input="calculateQuantity">
+                                    <template v-if="form.item.currency_type_symbol"
+                                            slot="prepend">
+                                        {{ form.item.currency_type_symbol }}
+                                    </template>
+                                </el-input>
+
+                            </template>
+
                             <small v-if="errors.unit_price_value"
                                    class="form-control-feedback"
                                    v-text="errors.unit_price[0]"></small>
@@ -562,6 +587,11 @@
     margin-right: 5% !important;
     max-width: 80% !important;
 }
+
+.el-select-currency {
+    width: 59px;
+}
+
 </style>
 
 <script>
@@ -592,7 +622,8 @@ export default {
         'documentTypeId',
         'noteCreditOrDebitTypeId',
         'displayDiscount',
-        'customerId'
+        'customerId',
+        'currencyTypes'
     ],
     components: {
         ItemForm,
