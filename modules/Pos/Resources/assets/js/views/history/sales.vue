@@ -18,14 +18,18 @@
                             <th class="text-center">Documento</th>
                             <th class="text-center">Fecha</th>
                             <th class="text-center">Precio</th>
-                            <th v-show="this.type" class="text-center">Cliente</th>
+                            <template v-if="this.type">
+                                <th class="text-center">Cliente</th>
+                            </template>
+                            
                         <tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>
                             <td  class="text-center">{{ row.number_full }}</td>
                             <td class="text-center">{{ row.date_of_issue }}</td> 
-                            <td class="text-center">{{ row.price }} </td>  
-                            <td v-show="this.type" class="text-center">{{ row.name }} </td> 
+                            <td class="text-center">{{ row.price }} </td>
+                            <td  v-show="this.type" class="text-center">{{ row.name }} </td> 
+                            
                         </tr>
                     </data-table>
 
@@ -68,6 +72,7 @@
             async create(){
                 await this.initForm()
                 await this.$eventHub.$emit('reloadSimpleDataTableParams')
+                this.type=true;
                 
             },   
             close() {
