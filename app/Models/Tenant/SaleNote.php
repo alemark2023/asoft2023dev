@@ -1289,4 +1289,15 @@
         }
 
         
+        /**
+         * 
+         * Obtener la fecha de vencimiento y aplicar formato
+         *
+         * @return string
+         */
+        public function getFormatDueDate()
+        {
+            return $this->due_date ? $this->generalFormatDate($this->due_date) : null;
+        }
+
     }

@@ -908,6 +908,7 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
+
                                 <div :class="{'has-danger': errors.legend_forest_to_xml}"
                                         class="form-group">
                                     <el-switch v-model="form.legend_forest_to_xml"
@@ -919,6 +920,29 @@
                                             v-text="errors.legend_forest_to_xml[0]"></small>
                                 </div>
                             </div>
+                            
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Modificar moneda al agregar producto
+                                    <el-tooltip
+                                        class="item"
+                                        content="Disponible en Nuevo CPE"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.change_currency_item}"
+                                        class="form-group">
+                                    <el-switch v-model="form.change_currency_item"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.change_currency_item"
+                                            class="form-control-feedback"
+                                            v-text="errors.change_currency_item[0]"></small>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="fourth">
@@ -1650,7 +1674,7 @@ export default {
                 shipping_time_days_voided: 0,
                 enabled_tips_pos: false,
                 legend_forest_to_xml: false,
-
+                change_currency_item: false,
             };
         },
         UpdateFormPurchase(e) {

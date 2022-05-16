@@ -240,6 +240,7 @@
             'shipping_time_days_voided',
             'enabled_tips_pos',
             'legend_forest_to_xml',
+            'change_currency_item',
         ];
 
         protected $casts = [
@@ -321,6 +322,7 @@
             'shipping_time_days_voided' => 'int',
             'enabled_tips_pos' => 'bool',
             'legend_forest_to_xml' => 'bool',
+            'change_currency_item' => 'bool',
             
         ];
 
@@ -515,6 +517,7 @@
                 'shipping_time_days_voided' => $this->shipping_time_days_voided,
                 'enabled_tips_pos' => $this->enabled_tips_pos,
                 'legend_forest_to_xml' => $this->legend_forest_to_xml,
+                'change_currency_item' => $this->change_currency_item,
 
             ];
         }

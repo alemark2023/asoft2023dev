@@ -74,5 +74,20 @@
         {
             return $value * $exchange_rate_sale;
         }
+        
+
+        /**
+         * 
+         * Aplicar formato a fechas
+         *
+         * @param  $date
+         * @param  string $format
+         * @return string
+         */
+        public function generalFormatDate($date, $format = 'Y-m-d')
+        {
+            return $date->format($format);
+        }
+        
 
     }
