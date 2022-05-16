@@ -52,7 +52,7 @@ if (!isset($qty)) {
     if($apply_conversion_to_pen && $value->isCurrencyTypeUsd())
     {
         $total = $value->getConvertTotalToPen();
-        $utility_item = number_format($total - $total_item_purchase, 2);
+        $utility_item = round($total - $total_item_purchase, 2);
         $unit_price = $value->getConvertUnitPriceToPen();
         $description_apply_conversion_to_pen = '(Conv.)';
     }
