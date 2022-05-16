@@ -206,21 +206,23 @@
 
                             <template v-if="configuration.change_currency_item">
 
-                                <el-input v-model="form.unit_price_value"
-                                        :tabindex="'3'"
-                                        :readonly="!edit_unit_price"
-                                        @input="calculateQuantity">
+                                <template v-if="form.item">
+                                    <el-input v-model="form.unit_price_value"
+                                            :tabindex="'3'"
+                                            :readonly="!edit_unit_price"
+                                            @input="calculateQuantity">
 
-                                    <template v-if="form.item.currency_type_symbol">
-                                        <el-select slot="prepend" v-model="form.item.currency_type_id" class="el-select-currency">
+                                        <template v-if="form.item.currency_type_symbol">
+                                            <el-select slot="prepend" v-model="form.item.currency_type_id" class="el-select-currency">
 
-                                            <el-option v-for="option in currencyTypes"
-                                                        :key="option.id"
-                                                        :label="option.symbol"
-                                                        :value="option.id"></el-option>
-                                        </el-select>
-                                    </template>
-                                </el-input>
+                                                <el-option v-for="option in currencyTypes"
+                                                            :key="option.id"
+                                                            :label="option.symbol"
+                                                            :value="option.id"></el-option>
+                                            </el-select>
+                                        </template>
+                                    </el-input>
+                                </template>
                                 
                             </template>
                             <template v-else>
