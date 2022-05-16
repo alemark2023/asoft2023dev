@@ -7,9 +7,9 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Item\Models\NamePrice;
 use Modules\Item\Models\ListPrice;
-use Modules\Item\Http\Resources\ItemPriceTypeCollection;
-use Modules\Item\Http\Resources\ItemPriceTypeResource;
-use Modules\Item\Http\Requests\ItemPriceTypeRequest;
+use Modules\Item\Http\Resources\NamePriceCollection;
+use Modules\Item\Http\Resources\NamePriceResource;
+use Modules\Item\Http\Requests\NamePriceRequest;
 use App\Models\Tenant\Catalogs\UnitType;
 
 class NamePriceController extends Controller
@@ -31,16 +31,13 @@ class NamePriceController extends Controller
     public function records(Request $request)
     {
         $records = NamePrice::where($request->column, 'like', "%{$request->value}%");
-        
-        return new ItemPriceTypeCollection($records->paginate(config('tenant.items_per_page')));
+        return new NamePriceCollection($records->paginate(config('tenant.items_per_page')));
     }
 
 
     public function record($id)
     {
-        $record = NamePriceType::with('item_price_type')->where('id', $id)->get();
-       
-        
+        $record = ListPrice::with('name_price')->where('name_price_id', $id)->get();
         return $record;
     }
 
@@ -56,8 +53,8 @@ class NamePriceController extends Controller
 
     public function searchPrices($id)
     {
-        $records = ItemPriceType::where('type_customer_id', $id)->get();
-
+        $name_price = NamePrice::where('type_customer_id', $id)->get();
+        $records = ListPrice::with('name_price')->where('name_price_id', $name_price->id)->get();
         return $records;
     }
 
@@ -71,33 +68,44 @@ class NamePriceController extends Controller
      */
     public function store(Request $request)
     {
-        /* dd($request->item_unit_types); */
-        $name_price=$request->input('name');
-        $name=NamePriceType::firstOrNew(['name' => $name_price]);
-        $name->save();
-        $item_price=$request->item_unit_types;
+        if ($request->id==null) {
+            $record_id = NamePrice::WhereIdPrice();
+            $record_id+=1;
+            $name_price = NamePrice::firstOrNew(['id'=>$record_id]);
+            $name_price->description = $request->description;
+            $name_price->unit_type_id = $request->unit_type_id;
+            $name_price->quantity_unit = $request->quantity_unit;
+            $name_price->price_default = $request->price_default;
+            $name_price->save();
 
-        $price=null;
-        foreach ($item_price as $value) {
-            $price_id= $value['id'];
-            $price= $value['description'];
-            $item_unit_type = ItemPriceType::firstOrNew(['id' => $value['id']]);
-            $item_unit_type->name_price_id = $name->id;
-            $item_unit_type->description = $value['description'];
-            $item_unit_type->unit_type_id = $value['unit_type_id'];
-            $item_unit_type->quantity_unit = $value['quantity_unit'];
-            $item_unit_type->price1 = $value['price1'];
-            $item_unit_type->price2 = $value['price2'];
-            $item_unit_type->price3 = $value['price3'];
-            $item_unit_type->price4 = $value['price4'];
-            $item_unit_type->price_default = $value['price_default'];
-            $item_unit_type->save();
-            $data = [
-                'success' => true,
-                'message' => ($price_id)?'Listado de precio editado con éxito':'Listado de precio registrado con éxito',
-                'data' => $price
-            ];
+            $item_price=$request->prices;
+        
+            foreach ($item_price as $value) {
+                $item_unit_type = new ListPrice;
+                $item_unit_type->name_price_id=$name_price->id;
+                $item_unit_type->price = $value['price'];
+                $item_unit_type->save();
+                
+            }
+        }else{
+            $name_price = NamePrice::firstOrNew(['id'=>$request->id]);
+            $name_price->description = $request->description;
+            $name_price->unit_type_id = $request->unit_type_id;
+            $name_price->quantity_unit = $request->quantity_unit;
+            $name_price->price_default = $request->price_default;
+            $name_price->save();
+
+            $list_prices = $name_price->list_price;
+
+            
         }
+        
+
+        $data = [
+            'success' => true,
+            'message' => ($request->id)?'Listado de precio editado con éxito':'Listado de precio registrado con éxito',
+            'data' => $name_price->description
+        ];
         return $data;
 
     }
@@ -106,9 +114,9 @@ class NamePriceController extends Controller
     {
         try {
 
-            $itemprices = ItemPriceType::where('name_price_id', $id)->delete();
+            $itemprices = ListPrice::where('name_price_id', $id)->delete();
          
-            $nameprices = NamePriceType::find($id);
+            $nameprices = NamePrice::find($id);
             $nameprices->delete();
             return [
                 'success' => true,
@@ -127,7 +135,7 @@ class NamePriceController extends Controller
     {
         try {
 
-            $category = ItemPriceType::findOrFail($id);
+            $category = NamePrice::findOrFail($id);
             $category->delete();
 
             return [

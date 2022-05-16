@@ -92,12 +92,12 @@
                                         </div>
                                     </td>
                                     <template v-for="(row, index) in form.prices" >
-                                        <td v-if="index<=2" width="13%" :key="index">
+                                        <td v-if="index<3" width="13%" :key="index">
                                             <div style="width: 80px;" class="form-group">
                                                 <el-input v-model="row.price"></el-input>
                                             </div>
                                         </td>
-                                        <td else width="13%"  :key="index">
+                                        <td v-else width="13%"  :key="index">
                                             <div style="width: 80px;" class="d-flex w-100" >
                                                 <span class="pr-1">%</span>
                                                 <div class="form-group">
@@ -183,8 +183,6 @@
             this.$eventHub.$on('reloadTables', () => {
                 this.reloadTables()
             })
-
-            console.log(this.form.prices)
         },
         methods: {
             initForm() { 
@@ -235,17 +233,11 @@
             if (this.recordId) {
                 await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                         console.log(response.data)
-                        /* this.form.prices = [];
-                        if(response.data.length > 0){
-                            response.data.forEach(price => {
-                                this.form.prices.push(price)
-                            });
-                            this.form.description= response.data[0].description
-                            console.log(response.data[0].name)
-                        }else{
-                            this.form.prices.push(response.data)
-                            this.form.name= response.data.name
-                        } */
+                        response.data.forEach(value => {
+                            this.form.prices.push(value.price)
+                        });
+                        this.form.description= response.data[0].name_price.description
+                        console.log(response.data[0].name_price.description)
                         
                     })
             }
@@ -256,11 +248,11 @@
                 if (this.recordId) {
                     await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                             console.log(response.data)
-                                /* response.data[0].item_price_type.forEach(price => {
-                                    this.form.item_unit_types.push(price)
+                                response.data.forEach(value => {
+                                    this.form.prices.push(value.price)
                                 });
-                                this.form.name= response.data[0].name
-                                console.log(response.data[0].name) */
+                                this.form.description= response.data[0].name_price.description
+                                console.log(response.data[0].name_price.description)
                             
                             
                         })

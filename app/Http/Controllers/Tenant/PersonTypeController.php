@@ -12,8 +12,8 @@ use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use App\Models\Tenant\Catalogs\Province;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\PersonType;
-use Modules\Item\Models\ItemPriceType;
-use Modules\Item\Models\NamePriceType;
+use Modules\Item\Models\NamePrice;
+use Modules\Item\Models\ListPrice;
 use Exception;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Excel;
@@ -22,7 +22,7 @@ class PersonTypeController extends Controller
 {
     public function index()
     {
-        $item_price_types = NamePriceType::with('item_price_type')->get();
+        $item_price_types = NamePrice::with('list_price')->get();
         return view('tenant.person_types.index', compact('item_price_types'));
     }
 
@@ -58,15 +58,14 @@ class PersonTypeController extends Controller
     public function store(PersonTypeRequest $request)
     {
         $id = $request->input('id');
-        $name=$request->input('price_id');
+        $price_id=$request->input('price_id');
         /* dd($name); */
         
-        if($name){
-            $list_price = ItemPriceType::where('name_price_id', $name)->get();
-            foreach ($list_price as $value) {
-                $value->type_customer_id = $id;
-                $value->save();
-            }
+        if($price_id){
+            $list_price = NamePrice::where('id',$price_id);
+            $list_price = $list_price->update([
+                'type_customer_id' => $id
+            ]);
         }
         $person_type = PersonType::firstOrNew(['id' => $id]);
         $person_type->fill($request->all());

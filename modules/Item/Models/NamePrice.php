@@ -22,11 +22,12 @@ use Modules\Item\Models\ListPrice;
  */
 class NamePrice extends ModelTenant
 {
-     protected $with = ['unit_type', 'person_type', 'list_price'];
+     protected $with = ['unit_type', 'list_price'];
     public $timestamps = false;
 
     protected $fillable = [
         'description',
+        'type_customer_id',
         'unit_type_id',
         'quantity_unit',
         'price_default'
@@ -39,16 +40,25 @@ class NamePrice extends ModelTenant
         return $this->belongsTo(UnitType::class, 'unit_type_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function person_type() {
-        return $this->belongsTo(PersonType::class);
+    public function person_type(){
+        return $this->belongsTo(UnitType::class, 'type_customer_id');
     }
 
     public function list_price()
     {
-        return $this->hasMany(ListPrice::class,'name_price_id');
+        return $this->hasMany(ListPrice::class,'name_price_id','name_price_id');
+    }
+
+    public function scopeWhereIdPrice()
+    {
+        $name_id=NamePrice::latest('id')->first();
+        $id = 1;
+        if(empty($name_id->id)){
+            $id=1;
+        }else{
+            $id=$name_id->id;
+        }
+        return $id;
     }
 
 

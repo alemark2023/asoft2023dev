@@ -2,7 +2,7 @@
 
 namespace App\Models\Tenant;
 
-use Modules\Item\Models\ItemPriceType;
+use Modules\Item\Models\NamePrice;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -17,15 +17,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class PersonType extends ModelTenant
 {
-    protected $with = ['item_price_type'];
+    protected $with = ['name_price'];
     protected $fillable = [
         'description',
 
     ];
 
-    public function item_price_type()
+    public function name_price()
     {
-        return $this->hasMany(ItemPriceType::class, 'type_customer_id');
+        return $this->hasOne(NamePrice::class, 'type_customer_id');
     }
 
     /**

@@ -6,7 +6,7 @@
     use Illuminate\Http\Resources\Json\ResourceCollection;
     use Modules\Item\Models\NamePrice;
 
-    class ItemPriceTypeCollection extends ResourceCollection
+    class NamePriceCollection extends ResourceCollection
     {
         /**
          * Transform the resource collection into an array.

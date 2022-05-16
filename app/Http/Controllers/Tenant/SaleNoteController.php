@@ -56,6 +56,7 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
+use App\Models\Tenant\PersonType;
 
 // use App\Models\Tenant\Warehouse;
 
@@ -529,10 +530,11 @@ class SaleNoteController extends Controller
         $configuration = Configuration::select('destination_sale','ticket_58')->first();
         // $sellers = User::GetSellers(false)->get();
         $sellers = User::getSellersToNvCpe($establishment_id,$userId);
+        $person_types = PersonType::all();
 
 
         return compact('customers', 'establishments','currency_types', 'discount_types', 'configuration',
-                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers', 'global_charge_types');
+                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers', 'global_charge_types','person_types');
     }
 
     public function changed($id)

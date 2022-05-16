@@ -52,6 +52,16 @@
                                     </el-select>
                                     <small class="form-control-feedback" v-if="errors.customer_id" v-text="errors.customer_id[0]"></small>
                                 </div>
+                                <div
+                                 class="form-group col-sm-6 mb-0">
+                                    <label class="control-label font-weight-bold text-info">Tipo de cliente</label>
+                                    <el-select v-model="form.person_type_id">
+                                        <el-option v-for="option in person_types"
+                                                :key="option.id"
+                                                :label="option.description"
+                                                :value="option.id"></el-option>
+                                    </el-select>
+                                </div>
                             </div>
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.establishment_id}">
@@ -409,6 +419,7 @@
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
                            :configuration="config"
+                           :person-type-id="form.person_type_id"
                            @add="addRow"></sale-notes-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -524,6 +535,7 @@
                 total_discount_no_base: 0,
                 total_global_charge: 0,
                 global_charge_types: [],
+                person_types:[]
             }
         },
         async created() {
@@ -550,6 +562,7 @@
                     this.payment_destinations = response.data.payment_destinations
                     // this.configuration = response.data.configuration
                     this.sellers = response.data.sellers;
+                    this.person_types = response.data.person_types;
                     this.changeEstablishment()
                     this.changeDateOfIssue()
                     this.changeCurrencyType()
@@ -785,6 +798,7 @@
                     payment_method_type_id:null,
                     paid: false,
                     observation: null,
+                    person_type_id:null
                 }
 
                 this.total_discount_no_base = 0

@@ -19,7 +19,7 @@
                                     dusk="unit_type_id">
                             <el-option v-for="option in itemPriceTypes"
                                         :key="option.id"
-                                        :label="option.name"
+                                        :label="option.description"
                                         :value="option.id"></el-option>
                         </el-select>
                         <small v-if="errors.price_id"
