@@ -27,6 +27,7 @@
     use Modules\Sale\Models\TechnicalService;
     use phpDocumentor\Reflection\Utils;
     use Modules\Pos\Models\Tip;
+    use Illuminate\Support\Facades\DB;
 
 
     /**
@@ -1267,6 +1268,44 @@
         public function getVoidedDescription()
         {
             return $this->state_type_id === '11' ? 'SI' : 'NO';
+        }
+
+                
+        /**
+         * 
+         * Obtener el total de notas de credito de cada cpe
+         *
+         * @return float
+         */
+        public function getCreditNotesTotal()
+        {
+            return $this->affected_documents()
+                        ->join('documents', 'documents.id', '=', 'notes.document_id')
+                        ->whereHas('document', function($query){
+                            return $query->whereStateTypeAccepted()->where('document_type_id', '07');
+                        })
+                        ->sum('documents.total');
+        }
+
+        
+        /**
+         * 
+         * Obtener query de nc para subconsulta de cuentas por cobrar
+         * 
+         * Usado en:
+         * DashboardView
+         * AccountsReceivable
+         * 
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public static function getQueryCreditNotes()
+        {
+            return DB::table('notes')
+                        ->join('documents', 'documents.id', '=', 'notes.document_id')
+                        ->whereIn('documents.state_type_id', ['01', '03', '05', '07', '13'])
+                        ->where('documents.document_type_id', '07')
+                        ->select('affected_document_id', DB::raw('SUM(documents.total) as total_credit_notes'))
+                        ->groupBy('affected_document_id');
         }
 
     }

@@ -121,6 +121,11 @@
                                 <td class="text-right">{{ document.total_paid }}</td>
                                 <td></td>
                             </tr>
+                            <tr v-if="document.credit_notes_total">
+                                <td colspan="6" class="text-right">TOTAL NOTA CRÉDITO</td>
+                                <td class="text-right">{{ document.credit_notes_total }}</td>
+                                <td></td>
+                            </tr>
                             <tr>
                                 <td colspan="6" class="text-right">TOTAL A PAGAR</td>
                                 <td class="text-right">{{ document.total }}</td>
