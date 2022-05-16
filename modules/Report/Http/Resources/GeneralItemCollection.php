@@ -94,6 +94,7 @@ class GeneralItemCollection extends ResourceCollection
                 'purchase_item'=>$purchase_item,
                 'observation'=>$observation,
                 'additional_information' => $additional_information,
+                'description_apply_conversion_to_pen' => $description_apply_conversion_to_pen,
             ];
         });
     }

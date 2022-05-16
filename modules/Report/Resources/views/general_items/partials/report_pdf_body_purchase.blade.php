@@ -10,9 +10,9 @@
     // aplicar conversión si es que esta habilitada la configuracion
     if($apply_conversion_to_pen && $value->isCurrencyTypeUsd())
     {
-        $total = number_format($value->getConvertTotalToPen(), 2);
-        $unit_price = number_format($value->getConvertUnitPriceToPen(), 6);
-        $total_isc = number_format($value->getConvertTotalIscToPen(), 2);
+        $total = $value->getConvertTotalToPen();
+        $unit_price = $value->getConvertUnitPriceToPen();
+        $total_isc = round($value->getConvertTotalIscToPen(), 2);
         $description_apply_conversion_to_pen = '(Conv.)';
     }
     // aplicar conversión si es que esta habilitada la configuracion
@@ -55,11 +55,11 @@
     <td class="celda">{{$value->relation_item->category->name}}</td>
     <td class="celda">{{number_format($value->quantity, 2)}}</td>
     
-    <td class="celda">{{number_format($unit_price, 2)}}</td>
+    <td class="celda">{{round($unit_price, 6)}}</td>
     <td class="celda">{{optional($value->system_isc_type)->description}}</td>
     <td class="celda"> {{$total_isc > 0 ? $total_isc : ''}}</td>
 
-    <td class="celda">{{number_format($total, 2)}}</td>
+    <td class="celda">{{round($total, 2)}}</td>
     {{-- <td class="celda"></td> --}}
 
 </tr>
