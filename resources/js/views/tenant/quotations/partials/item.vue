@@ -348,25 +348,40 @@
                                         <th class="text-center">Unidad</th>
                                         <th class="text-center">Descripción</th>
                                         <th class="text-center">Factor</th>
-                                        <th class="text-center">Precio 1</th>
+                                        <!-- <th class="text-center">Precio 1</th>
                                         <th class="text-center">Precio 2</th>
                                         <th class="text-center">Precio 3</th>
-                                        <th class="text-center">Precio 4</th>
+                                        <th class="text-center">Precio 4</th> -->
+                                        <template v-for="(row, index) in form.prices" >
+                                            <th style="width: 80px;" width="13%" :key="index">precio {{index+1}}</th>
+                                        </template>
                                         <th class="text-center">Precio Default</th>
                                         <th></th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr v-for="(row, index) in form.item_price_types"
-                                        :key="index">
-                                        <td class="text-center">{{ row.unit_type_id }}</td>
-                                        <td class="text-center">{{ row.description }}</td>
-                                        <td class="text-center">{{ row.quantity_unit }}</td>
-                                        <td class="text-center">{{ row.price1 }}</td>
-                                        <td class="text-center">{{ row.price2 }}</td>
-                                        <td class="text-center">{{ row.price3 }}</td>
-                                        <td class="text-center">{{ row.price4 }}</td>
-                                        <td class="text-center">Precio {{ row.price_default }}</td>
+                                    <tr>
+                                        <td class="text-center">{{ form.prices_types.unit_type_id }}</td>
+                                        <td class="text-center">{{ form.prices_types.description }}</td>
+                                        <td class="text-center">{{ form.prices_types.quantity_unit }}</td>
+                                        <template v-for="(row, index) in form.prices_types.prices" >
+                                            <td v-if="index<3" width="15%" :key="index">
+                                                <div style="width: 100px;" class="form-group">
+                                                    <el-input v-model="row.price"></el-input>
+                                                </div>
+                                            </td>
+                                            <td v-else width="15%"  :key="index">
+                                                <div style="width: 100px;" class="d-flex w-100" >
+                                                    <span class="pr-1">%</span>
+                                                    <div class="form-group">
+                                                        <el-input v-model="row.price"></el-input>
+                                                        <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
+                                                    </div>
+                                                </div>
+                                                
+                                            </td>
+                                        </template>
+                                        <td class="text-center">Precio {{ form.prices_types.price_default }}</td>
                                         <td class="series-table-actions text-right">
                                             <button :class="getSelectedClass(row)"
                                                     class="btn waves-effect waves-light btn-xs"
@@ -941,6 +956,14 @@ export default {
                 has_igv: null,
                 is_set: false,
                 item_unit_types: [],
+                prices_types:{ 
+                    id: null,
+                    description: null,
+                    unit_type_id: 'NIU',
+                    quantity_unit: 0,
+                    price_default: 2,
+                    prices: [],
+                },
                 has_plastic_bag_taxes: false,
                 series_enabled: false,
                 warehouse_id: null,
@@ -970,16 +993,20 @@ export default {
                     this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
                 }
             }
-
+    
             this.$http.get(`/price/search/${this.personTypeId}`)
             .then(response => {
                 console.log(response.data)
-                /* this.form.item_price_types = [];
-                if(response.data.length > 0){
-                    response.data.forEach(price => {
-                        this.form.item_price_types.push(price)
-                    });
-                } */
+                this.form.prices_types.prices = [];
+                response.data.forEach(value => {
+                    this.form.prices_types.prices.push(value.price)
+                });
+
+                this.form.prices_types.id=response.data[0].id
+                this.form.prices_types.description=response.data[0].description
+                this.form.prices_types.unit_type_id=response.data[0].unit_type_id
+                this.form.prices_types.quantity_unit=response.data[0].quantity_unit
+                this.form.prices_types.price_default=response.data[0].price_default
             })
 
             if (this.recordItem) {

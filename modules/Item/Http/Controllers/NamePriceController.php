@@ -68,6 +68,10 @@ class NamePriceController extends Controller
      */
     public function store(Request $request)
     {
+        $item_price=$request->prices;
+
+        $length_prices = count($item_price);
+
         if ($request->id==null) {
             $record_id = NamePrice::WhereIdPrice();
             $record_id+=1;
@@ -78,7 +82,7 @@ class NamePriceController extends Controller
             $name_price->price_default = $request->price_default;
             $name_price->save();
 
-            $item_price=$request->prices;
+            
         
             foreach ($item_price as $value) {
                 $item_unit_type = new ListPrice;
@@ -95,7 +99,13 @@ class NamePriceController extends Controller
             $name_price->price_default = $request->price_default;
             $name_price->save();
 
-            $list_prices = $name_price->list_price;
+            $list_prices = ListPrice::where('name_price_id',$request->id)->get();
+
+            dd($list_prices);
+            
+
+            for ($i=0; $i < $length_prices; $i++) { 
+            }
 
             
         }

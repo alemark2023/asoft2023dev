@@ -20,9 +20,9 @@
                         <table class="table table-sm mb-0">
                             <thead>
                             <tr>
-                                <th style="width: 80px;" width="13%" class="text-center">Unidad</th>
-                                <th style="width: 80px;" width="13%" class="text-center">Descripción</th>
-                                <th style="width: 80px;" width="13%" class="text-center">
+                                <th style="width: 80px;" width="13%">Unidad</th>
+                                <th style="width: 80px;" width="13%">Descripción</th>
+                                <th style="width: 80px;" width="13%">
                                     Factor
                                     <el-tooltip class="item"
                                                 content="Cantidad de unidades"
@@ -32,7 +32,7 @@
                                     </el-tooltip>
                                 </th>
                                 <template v-for="(row, index) in form.prices" >
-                                    <th style="width: 80px;" width="13%" :key="index" class="text-center">precio {{index+1}}</th>
+                                    <th style="width: 80px;" width="13%" :key="index">precio {{index+1}}</th>
                                 </template>
                                 
                                 <th style="width: 80px;" width="13%" class="text-center">P. Defecto</th>
@@ -41,26 +41,29 @@
                             </thead>
                             <tbody>
                             <tr>
-                                <!-- <template v-if="form.id!=null">
-                                    <td class="text-center">{{ form.unit_type_id }}</td>
-                                    <td class="text-center">{{ form.description }}</td>
-                                    <td class="text-center">{{ form.quantity_unit }}</td>
+                                <!-- <template v-if="recordId">
+                                    <td style="width: 80px;">{{ form.unit_type_id }}</td>
+                                    <td style="width: 80px;">{{ form.description }}</td>
+                                    <td style="width: 80px;">{{ form.quantity_unit }}</td>
                                     <template v-for="(row, index) in form.prices" >
-                                        <td :key="index">
-                                            <div class="form-group">
-                                                <el-input v-model="row.index"></el-input>
+                                        <td style="width: 80px;" v-if="index<3" width="13%" :key="index">
+                                            <div style="width: 80px;" class="form-group">
+                                                <el-input v-model="row.price"></el-input>
                                             </div>
                                         </td>
-                                        <td v-if="index=='price4'" class="d-flex w-100" :key="index">
-                                            <span class="pr-1">%</span>
-                                            <div class="form-group">
-                                                <el-input v-model="row.index"></el-input> -->
-                                                <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
-                                            <!-- </div>
+                                        <td style="width: 80px;" v-else width="13%"  :key="index">
+                                            <div style="width: 80px;" class="d-flex w-100" >
+                                                <span class="pr-1">%</span>
+                                                <div class="form-group">
+                                                    <el-input v-model="row.price"></el-input> -->
+                                                    <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
+                                                <!-- </div>
+                                            </div>
+                                            
                                         </td>
                                     </template>
-                                    <td class="text-center">Precio {{ form.price_default }}</td>
-                                    <td class="series-table-actions text-right">
+                                    <td style="width: 80px;" class="text-center">Precio {{ form.price_default }}</td>
+                                    <td style="width: 80px;" class="series-table-actions text-right">
                                         <button class="btn waves-effect waves-light btn-xs btn-danger"
                                                 type="button"
                                                 @click.prevent="clickDelete(form.id)">
@@ -68,7 +71,7 @@
                                         </button>
                                     </td>
                                 </template> -->
-                                <template>
+                                <template >
                                     <td width="13%">
                                         <div style="width: 80px;" class="form-group">
                                             <el-select v-model="form.unit_type_id"
@@ -232,8 +235,10 @@
         async loadRecord() {
             if (this.recordId) {
                 await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
+                        this.form.prices=[]
                         console.log(response.data)
                         response.data.forEach(value => {
+                            console.log(value.price);
                             this.form.prices.push(value.price)
                         });
                         this.form.description= response.data[0].name_price.description
@@ -247,6 +252,7 @@
                 this.titleDialog = (this.recordId)? 'Editar Listado de Precios':'Nuevo Listado de Precios'
                 if (this.recordId) {
                     await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
+                            this.form.prices=[]
                             console.log(response.data)
                                 response.data.forEach(value => {
                                     this.form.prices.push(value.price)
