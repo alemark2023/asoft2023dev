@@ -204,7 +204,7 @@
                                 </el-tooltip>
                             </label>
 
-                            <template v-if="configuration.change_currency_item">
+                            <template v-if="configuration.change_currency_item && isFromInvoice">
 
                                 <template v-if="form.item">
                                     <el-input v-model="form.unit_price_value"
@@ -625,7 +625,8 @@ export default {
         'noteCreditOrDebitTypeId',
         'displayDiscount',
         'customerId',
-        'currencyTypes'
+        'currencyTypes',
+        'isFromInvoice',
     ],
     components: {
         ItemForm,

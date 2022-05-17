@@ -241,6 +241,7 @@
             'enabled_tips_pos',
             'legend_forest_to_xml',
             'change_currency_item',
+            'enabled_advanced_records_search',
         ];
 
         protected $casts = [
@@ -323,6 +324,7 @@
             'enabled_tips_pos' => 'bool',
             'legend_forest_to_xml' => 'bool',
             'change_currency_item' => 'bool',
+            'enabled_advanced_records_search' => 'bool',
             
         ];
 
@@ -518,6 +520,7 @@
                 'enabled_tips_pos' => $this->enabled_tips_pos,
                 'legend_forest_to_xml' => $this->legend_forest_to_xml,
                 'change_currency_item' => $this->change_currency_item,
+                'enabled_advanced_records_search' => $this->enabled_advanced_records_search,
 
             ];
         }
@@ -2126,5 +2129,18 @@
         {
             return Configuration::select('legend_forest_to_xml')->firstOrFail()->legend_forest_to_xml;
         }
+                
+        /**
+         * 
+         * Obtener configuracion avanzada de busqueda
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public function scopeIsEnabledAdvancedRecordsSearch($query)
+        {
+            return $query->select('enabled_advanced_records_search')->firstOrFail()->enabled_advanced_records_search;
+        }
+
 
     }

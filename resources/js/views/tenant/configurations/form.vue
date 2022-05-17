@@ -561,6 +561,32 @@
                                             v-text="errors.enabled_tips_pos[0]"></small>
                                 </div>
                             </div>
+
+                            
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Habilitar búsqueda avanzada
+                                    <el-tooltip class="item"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                        <div slot="content">
+                                            Disponible en Listado de productos/servicios para el campo Nombre.<br/>
+                                            Disponible en Listado de Inventario (Movimientos) para el campo Producto.<br/>
+                                        </div>
+                                    </el-tooltip>
+                                </label>
+                                 <div :class="{'has-danger': errors.enabled_advanced_records_search}"
+                                        class="form-group">
+                                    <el-switch v-model="form.enabled_advanced_records_search"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.enabled_advanced_records_search"
+                                            class="form-control-feedback"
+                                            v-text="errors.enabled_advanced_records_search[0]"></small>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="third">
@@ -1675,6 +1701,7 @@ export default {
                 enabled_tips_pos: false,
                 legend_forest_to_xml: false,
                 change_currency_item: false,
+                enabled_advanced_records_search: false,
             };
         },
         UpdateFormPurchase(e) {
