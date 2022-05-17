@@ -472,9 +472,6 @@
                     })
 
                 }
-                if(customer.person_type_id){
-                    this.form.person_type_id=customer.find(this.person_types, {'id': customer.person_type_id});
-                }
 
             },
             changeTermsCondition(){

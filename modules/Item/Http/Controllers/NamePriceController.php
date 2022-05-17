@@ -54,7 +54,8 @@ class NamePriceController extends Controller
     public function searchPrices($id)
     {
         $name_price = NamePrice::where('type_customer_id', $id)->get();
-        $records = ListPrice::with('name_price')->where('name_price_id', $name_price->id)->get();
+        
+        $records = ListPrice::where('name_price_id', $name_price[0]->id)->get();
         return $records;
     }
 
@@ -101,11 +102,15 @@ class NamePriceController extends Controller
 
             $list_prices = ListPrice::where('name_price_id',$request->id)->get();
 
-            dd($list_prices);
+            
             
 
             for ($i=0; $i < $length_prices; $i++) { 
+
+                $list_prices[$i]->price = $item_price[$i]->price;
             }
+
+            $list_prices->save();
 
             
         }

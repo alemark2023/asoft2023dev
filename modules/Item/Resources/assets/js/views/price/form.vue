@@ -41,23 +41,23 @@
                             </thead>
                             <tbody>
                             <tr>
-                                <!-- <template v-if="recordId">
+                                <template v-if="recordId">
                                     <td style="width: 80px;">{{ form.unit_type_id }}</td>
                                     <td style="width: 80px;">{{ form.description }}</td>
                                     <td style="width: 80px;">{{ form.quantity_unit }}</td>
                                     <template v-for="(row, index) in form.prices" >
                                         <td style="width: 80px;" v-if="index<3" width="13%" :key="index">
                                             <div style="width: 80px;" class="form-group">
-                                                <el-input v-model="row.price"></el-input>
+                                                <el-input v-model="row.price">{{row.price}}</el-input>
                                             </div>
                                         </td>
                                         <td style="width: 80px;" v-else width="13%"  :key="index">
                                             <div style="width: 80px;" class="d-flex w-100" >
                                                 <span class="pr-1">%</span>
                                                 <div class="form-group">
-                                                    <el-input v-model="row.price"></el-input> -->
+                                                    <el-input v-model="row.price">{{row.price}}</el-input>
                                                     <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
-                                                <!-- </div>
+                                                </div>
                                             </div>
                                             
                                         </td>
@@ -70,8 +70,8 @@
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </td>
-                                </template> -->
-                                <template >
+                                </template>
+                                <template  v-else>
                                     <td width="13%">
                                         <div style="width: 80px;" class="form-group">
                                             <el-select v-model="form.unit_type_id"
@@ -242,7 +242,9 @@
                             this.form.prices.push(value.price)
                         });
                         this.form.description= response.data[0].name_price.description
-                        console.log(response.data[0].name_price.description)
+                        this.form.unit_type_id= response.data[0].name_price.unit_type_id
+                        this.form.quantity_unit= response.data[0].name_price.quantity_unit
+                        this.form.price_default= response.data[0].name_price.price_default
                         
                     })
             }
@@ -251,6 +253,7 @@
 
                 this.titleDialog = (this.recordId)? 'Editar Listado de Precios':'Nuevo Listado de Precios'
                 if (this.recordId) {
+                    this.form.id=this.recordId
                     await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                             this.form.prices=[]
                             console.log(response.data)
@@ -258,7 +261,9 @@
                                     this.form.prices.push(value.price)
                                 });
                                 this.form.description= response.data[0].name_price.description
-                                console.log(response.data[0].name_price.description)
+                                this.form.unit_type_id= response.data[0].name_price.unit_type_id
+                                this.form.quantity_unit= response.data[0].name_price.quantity_unit
+                                this.form.price_default= response.data[0].name_price.price_default
                             
                             
                         })
