@@ -15,12 +15,12 @@
     // aplicar conversión si es que esta habilitada la configuracion
     if($apply_conversion_to_pen && $value->isCurrencyTypeUsd())
     {
-        $total = number_format($value->getConvertTotalToPen(), 2);
-        $unit_price = number_format($value->getConvertUnitPriceToPen(), 6);
-        $unit_value = number_format($value->getConvertUnitValueToPen(), 6);
-        $total_value = number_format($value->getConvertTotalValueToPen(), 2);
-        $total_isc = number_format($value->getConvertTotalIscToPen(), 2);
-        $total_igv = number_format($value->getConvertTotalIgvToPen(), 2);
+        $total = round($value->getConvertTotalToPen(), 2);
+        $unit_price = round($value->getConvertUnitPriceToPen(), 6);
+        $unit_value = round($value->getConvertUnitValueToPen(), 6);
+        $total_value = round($value->getConvertTotalValueToPen(), 2);
+        $total_isc = round($value->getConvertTotalIscToPen(), 2);
+        $total_igv = round($value->getConvertTotalIgvToPen(), 2);
         $description_apply_conversion_to_pen = '(Se aplicó conversión a soles)';
     }
     // aplicar conversión si es que esta habilitada la configuracion
