@@ -484,7 +484,7 @@ export default {
             company: null,
             operation_types: [],
             /* all_series: [], */
-            series: [],
+            /* series: [], */
             payment_destinations: [],
             payment_conditions: [],
             currency_type: {},
@@ -1128,6 +1128,7 @@ export default {
             } */
             this.$store.commit('setSeries',series)
             this.form.series_id = (this.series.length > 0) ? this.series[0].id : null
+            this.form.series= (this.series.length > 0) ? this.series[0].number : null
         },
     }
 }
