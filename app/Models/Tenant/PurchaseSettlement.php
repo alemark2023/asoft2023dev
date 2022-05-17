@@ -24,7 +24,7 @@ use App\Models\Tenant\Catalogs\{
 
 class PurchaseSettlement extends ModelTenant
 {
-
+    /* protected $with = ['establishment']; */
     protected $fillable = [
         'user_id',
         'external_id',
@@ -57,7 +57,7 @@ class PurchaseSettlement extends ModelTenant
         'legends',
         'prepayments',
         'related',
-        'observation',
+        'observations',
 
         'filename',
         'hash',

@@ -111,7 +111,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  */
 class Item extends ModelTenant
 {
-    protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags'];
+    protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags','item_lots'];
     protected $fillable = [
         'warehouse_id',
         'name',
@@ -934,6 +934,7 @@ class Item extends ModelTenant
                     'price2'        => $item_unit_types->price2,
                     'price3'        => $item_unit_types->price3,
                     'price_default' => $item_unit_types->price_default,
+                    'barcode' => $item_unit_types->barcode,
                 ];
             }),
             'warehouses' => collect($this->warehouses)->transform(function ($warehouses) use ($warehouse) {
@@ -2110,6 +2111,24 @@ class Item extends ModelTenant
             ->distinct();
     }
 
+    
+    /**
+     * Almacenes asociados al producto
+     *
+     * @return array
+     */
+    public function getDataWarehouses()
+    {
+        return collect($this->warehouses)->transform(function($row){
+            return [
+                'warehouse_description' => $row->warehouse->description,
+                'stock' => $row->stock,
+                'warehouse_id' => $row->warehouse_id,
+            ];
+        });
+    }
+
+
     /**
      * @param Builder $query
      *
@@ -2136,6 +2155,87 @@ class Item extends ModelTenant
         return $query->whereHas('warehouses', function($query) use($stockmin) {
             $query->where('stock', '>', $stockmin);
         });
+    }
+    
+
+    /**
+     * 
+     * Obtener presentaciones
+     *
+     * Usado en: 
+     * PosController
+     * 
+     * @param  bool $search_item_by_barcode_presentation
+     * @param  string $barcode_presentation
+     * @return array
+     */
+    public function getItemUnitTypesBarcode($search_item_by_barcode_presentation = false, $barcode_presentation)
+    {
+        return $search_item_by_barcode_presentation ? $this->item_unit_types()->where('barcode', $barcode_presentation)->get() : $this->item_unit_types;
+    }
+
+    /**
+     * 
+     * Filtrar por codigo de barra de presentacion
+     * 
+     * Usado en: 
+     * PosController
+     * 
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeOrFilterItemUnitTypeBarcode($query, $barcode)
+    {
+        return $query->orWhereHas('item_unit_types', function($query) use($barcode) {
+            $query->where('barcode', $barcode);
+        });
+    }
+
+    /**
+     * 
+     * Filtrar por codigo de barra de presentacion
+     * 
+     * Usado en: 
+     * SearchItemController
+     * 
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeFilterItemUnitTypeBarcode($query, $barcode)
+    {
+        return $query->whereHas('item_unit_types', function($query) use($barcode) {
+            $query->where('barcode', $barcode);
+        });
+    }
+
+
+    /**
+     * 
+     * Filtro para no incluir relaciones en consulta
+     *
+     * @param Builder $query
+     * @return Builder
+     */  
+    public function scopeWhereFilterWithOutRelations($query)
+    {
+        return $query->withOut(['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags']);
+    }
+
+
+    /**
+     * 
+     * Filtro para consulta al actualizar precios
+     * 
+     * Usado en:
+     * ItemUpdatePriceImport
+     *
+     * @param Builder $query
+     * @param  string $internal_id
+     * @return Builder
+     */  
+    public function scopeWhereFilterUpdatePrices($query, $internal_id)
+    {
+        return $query->whereFilterWithOutRelations()->where('internal_id', $internal_id)->select('id', 'internal_id', 'sale_unit_price', 'purchase_unit_price');
     }
 
 }

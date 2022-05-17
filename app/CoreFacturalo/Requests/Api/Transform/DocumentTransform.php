@@ -393,6 +393,7 @@ class DocumentTransform
                     'date' => $row['fecha'],
                     'currency_type_id' => $row['codigo_tipo_moneda'],
                     'amount' => $row['monto'],
+                    'payment_method_type_id' => Functions::valueKeyInArray($row, 'codigo_metodo_de_pago'),
                 ];
             }
         }
