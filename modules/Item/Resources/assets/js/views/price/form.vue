@@ -193,7 +193,7 @@
 
                 this.form = {
                     id: null,
-                     description: null,
+                    description: null,
                     unit_type_id: 'NIU',
                     quantity_unit: 0,
                     price_default: 2,
