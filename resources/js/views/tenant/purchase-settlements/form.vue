@@ -25,7 +25,7 @@
                                        v-text="errors.document_type_id[0]"></small>
                             </div>
                         </div>
-                        <div class="col-lg-2">
+                        <!-- <div class="col-lg-2">
                             <div :class="{'has-danger': errors.series}"
                                  class="form-group">
                                 <label class="control-label">Serie <span class="text-danger">*</span></label>
@@ -37,6 +37,21 @@
                                        class="form-control-feedback"
                                        v-text="errors.series[0]"></small>
                             </div>
+                        </div> -->
+
+                        <div :class="{'has-danger': errors.series_id}"
+                                class="form-group">
+                            <label class="control-label">Serie</label>
+                            <el-select v-model="form.series_id">
+                                <el-option v-for="option in series"
+                                            :key="option.id"
+                                            :label="option.number"
+                                            :disabled="option.disabled"
+                                            :value="option.id"></el-option>
+                            </el-select>
+                            <small v-if="errors.series_id"
+                                    class="form-control-feedback"
+                                    v-text="errors.series_id[0]"></small>
                         </div>
 
 
@@ -412,7 +427,7 @@ import PurchaseOptions from './partials/options.vue'
 import {exchangeRate, functions, fnPaymentsFee} from '../../../mixins/functions'
 import {calculateRowItem} from '../../../helpers/functions'
 import SeriesForm from './partials/series.vue'
-import {mapActions, mapState} from "vuex";
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
     props: ['order_id'],
@@ -423,6 +438,8 @@ export default {
             'config',
             'establishment',
             'hasGlobalIgv',
+            'series',
+            'all_series',
         ]),
         creditPaymentMethod: function () {
             return _.filter(this.payment_method_types, {'is_credit': true})
@@ -450,6 +467,7 @@ export default {
             form: {
                 items:[]
             },
+            is_contingency: false,
             type:'purchase-settlements',
             aux_supplier_id: null,
             total_amount: 0,
@@ -465,8 +483,8 @@ export default {
             customers: [],
             company: null,
             operation_types: [],
-            all_series: [],
-            series: [],
+            /* all_series: [], */
+            /* series: [], */
             payment_destinations: [],
             payment_conditions: [],
             currency_type: {},
@@ -483,8 +501,8 @@ export default {
                 this.document_types = data.document_types_invoice
                 this.currency_types = data.currency_types
                 this.payment_conditions = data.payment_conditions
-                // this.establishment = data.establishment
-
+                this.establishment = data.establishment
+                this.$store.commit('setAllSeries',response.data.series)
 
                 this.all_suppliers = data.suppliers
                 this.discount_types = data.discount_types
@@ -497,7 +515,7 @@ export default {
                 this.$store.commit('setEstablishment', data.establishment);
                 this.form.currency_type_id = (this.currency_types.length > 0) ? this.currency_types[0].id : null
                 this.form.establishment_id = (this.establishment.id) ? this.establishment.id : null
-                this.form.document_type_id = (this.document_types.length > 0) ? this.document_types[0].id : null
+                //this.form.document_type_id = (this.document_types.length > 0) ? this.document_types[0].id : null
 
 
             })
@@ -534,6 +552,7 @@ export default {
             'loadConfiguration',
             'loadEstablishment',
             'loadHasGlobalIgv',
+            
         ]),
         changeHasGlobalIgv() {
             // if(this.form.items.length < 1 && this.config.enabled_global_igv_to_purchase === true) {
@@ -854,14 +873,14 @@ export default {
         initForm() {
             this.errors = {}
             this.form = {
+                series_id: null,
                 establishment_id: null,
-                document_type_id: null,
+                document_type_id: '04',
                 series: null,
                 number: null,
                 date_of_issue: moment().format('YYYY-MM-DD'),
                 time_of_issue: moment().format('HH:mm:ss'),
                 supplier_id: null,
-                payment_method_type_id: '01',
                 currency_type_id: this.config.currency_type_id,
                 exchange_rate_sale: 0,
                 total_prepayment: 0,
@@ -879,6 +898,7 @@ export default {
                 actions: {
                     format_pdf: 'a4',
                 },
+                payments:[],
                 has_payment: true,
 
             }
@@ -928,7 +948,8 @@ export default {
 
         },
         changeDocumentType() {
-            this.filterSuppliers()
+            this.filterSuppliers();
+            this.filterSeries();
         },
         addRow(row) {
             this.form.items.push(row)
@@ -1088,24 +1109,27 @@ export default {
             return {success: true, message: ''}
         },
 
-        /* async searchPurchaseOrder(input){
-            if(this.order_id !== null) return false;
-            this.loading = true
-            await this.$http
-                .post(`/${this.resource}/search/purchase_order`,{input})
-                .then((response) => {
-                    this.purchase_order_data = response.data
-                })
-                .catch(error => {
-                    console.error(error)
+        filterSeries() {
+            this.form.series_id = null
+            let series = _.filter(this.all_series, {
+                'establishment_id': this.form.establishment_id,
+                'document_type_id': this.form.document_type_id,
+                'contingency': this.is_contingency
+            });
+            /* if(this.form.document_type_id === this.config.user.document_id && this.typeUser == 'seller'){
+                // Se filtra si el documento es el mismo que el establecido para el usuario.
+                series = _.filter(this.all_series, {
+                    'establishment_id': this.form.establishment_id,
+                    'document_type_id': this.form.document_type_id,
+                    'contingency': this.is_contingency,
+                    'id': this.config.user.serie,
 
-                })
-                .finally(() => {
-                    this.loading = false
-                })
-
-
-        }, */
+                });
+            } */
+            this.$store.commit('setSeries',series)
+            this.form.series_id = (this.series.length > 0) ? this.series[0].id : null
+            this.form.series= (this.series.length > 0) ? this.series[0].number : null
+        },
     }
 }
 </script>

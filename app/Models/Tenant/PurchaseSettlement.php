@@ -10,6 +10,11 @@ use Illuminate\Database\Eloquent\Collection;
 use App\Models\Tenant\Kardex;
 use App\Models\Tenant\InventoryKardex;
 
+use App\Models\Tenant\User;
+use App\Models\Tenant\Person;
+
+use App\Models\Tenant\PurchaseSettlementPayment;
+
 
 use App\Models\Tenant\Catalogs\{
     CurrencyType,
@@ -38,7 +43,6 @@ class PurchaseSettlement extends ModelTenant
         'supplier',
         'operation_data',
         'currency_type_id',
-        'payment_method_type_id',
         'exchange_rate_sale',
         'total_prepayment',
         'total_taxed',
@@ -189,6 +193,39 @@ class PurchaseSettlement extends ModelTenant
         return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
     }
 
+    /**
+         * @return HasMany
+         */
+        public function purchase_settlement_payment()
+        {
+            return $this->hasMany(PurchaseSettlementPayment::class);
+        }
+
+    /**
+         * @param $query
+         *
+         * @return null
+         */
+        public function scopeWhereTypeUser($query, $params= [])
+        {
+            if(isset($params['user_id'])) {
+                $user_id = (int)$params['user_id'];
+                $user = User::find($user_id);
+                if(!$user) {
+                    $user = new User();
+                }
+            }
+            else { 
+                $user = auth()->user();
+            }
+            return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
+        }
+
+    
+        public function scopeWhereStateTypeAccepted($query)
+        {
+            return $query->whereIn('state_type_id', ['01','03','05','07','13']);
+        }
     public function getNumberFullAttribute()
     {
         return $this->series.'-'.$this->number;

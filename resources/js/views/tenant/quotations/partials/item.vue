@@ -329,6 +329,73 @@
                             </div>
                         </div>
 
+                        <div v-if="personTypeId"
+                             class="col-md-12">
+                            <div class="table-responsive"
+                                 style="margin:3px">
+                                <h5 class="separator-title">
+                                    Lista de Precios por Tipo de cliente
+                                    <el-tooltip class="item"
+                                                content="Aplica para realizar compra/venta en presentacion de diferentes precios y/o cantidades"
+                                                effect="dark"
+                                                placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </h5>
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center">Unidad</th>
+                                        <th class="text-center">Descripción</th>
+                                        <th class="text-center">Factor</th>
+                                        <!-- <th class="text-center">Precio 1</th>
+                                        <th class="text-center">Precio 2</th>
+                                        <th class="text-center">Precio 3</th>
+                                        <th class="text-center">Precio 4</th> -->
+                                        <template v-for="(row, index) in form.prices" >
+                                            <th style="width: 80px;" width="13%" :key="index">precio {{index+1}}</th>
+                                        </template>
+                                        <th class="text-center">Precio Default</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td class="text-center">{{ form.prices_types.unit_type_id }}</td>
+                                        <td class="text-center">{{ form.prices_types.description }}</td>
+                                        <td class="text-center">{{ form.prices_types.quantity_unit }}</td>
+                                        <template v-for="(row, index) in form.prices_types.prices" >
+                                            <td v-if="index<3" width="15%" :key="index">
+                                                <div style="width: 100px;" class="form-group">
+                                                    <el-input v-model="row.price"></el-input>
+                                                </div>
+                                            </td>
+                                            <td v-else width="15%"  :key="index">
+                                                <div style="width: 100px;" class="d-flex w-100" >
+                                                    <span class="pr-1">%</span>
+                                                    <div class="form-group">
+                                                        <el-input v-model="row.price"></el-input>
+                                                        <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
+                                                    </div>
+                                                </div>
+                                                
+                                            </td>
+                                        </template>
+                                        <td class="text-center">Precio {{ form.prices_types.price_default }}</td>
+                                        <td class="series-table-actions text-right">
+                                            <button :class="getSelectedClass(row)"
+                                                    class="btn waves-effect waves-light btn-xs"
+                                                    type="button"
+                                                    @click.prevent="selectedPrice(row)">
+                                                <i class="el-icon-check"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                         <div class="col-md-12 mt-2" v-if="showDiscounts">
                             <el-collapse v-model="activePanel">
                                 <el-collapse-item :disabled="recordItem != null"
