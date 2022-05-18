@@ -63,6 +63,12 @@
         <td width="" class="pt-3"><p class="desc">{{ $document->date_of_issue->format('Y-m-d') }}</p></td>
     </tr>
 
+    @if ($document->due_date)
+        <tr>
+            <td width="" class="pt-3"><p class="desc">F. Vencimiento:</p></td>
+            <td width="" class="pt-3"><p class="desc">{{ $document->getFormatDueDate() }}</p></td>
+        </tr>
+    @endif
 
     <tr>
         <td class="align-top"><p class="desc">Cliente:</p></td>
