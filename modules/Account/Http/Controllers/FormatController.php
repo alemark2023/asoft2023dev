@@ -152,14 +152,28 @@ use App\Models\Tenant\{
                                 $total = round($row->total, 2);
                                 $total_taxed = round($row->total_taxed, 2);
                                 $total_igv = round($row->total_igv, 2);
+                                $total_exonerated = $row->total_exonerated;
+                                $total_unaffected = $row->total_unaffected;
+                                $total_exportation = $row->total_exportation;
+                                $total_isc = $row->total_isc;
+
                                 $exchange_rate_sale = $row->exchange_rate_sale;
                                 $currency_type_id = $row->currency_type_id;
-                                /* if ($row->currency_type_id == 'USD') {
-                    $total = round($row->total * $row->exchange_rate_sale, 2);
-                    $total_taxed = round($row->total_taxed * $row->exchange_rate_sale, 2);
-                    $symbol = 'S/';
-                    $total_igv = round($row->total_igv * $row->exchange_rate_sale, 2);
-                }*/
+                                $format_currency_type_id = $row->currency_type_id;
+
+                                // aplicar conversion al tipo de cambio
+                                if ($row->currency_type_id === 'USD') 
+                                {
+                                    $total = round($row->generalConvertValueToPen($total, $exchange_rate_sale), 2);
+                                    $total_taxed = round($row->generalConvertValueToPen($total_taxed, $exchange_rate_sale), 2);
+                                    $total_igv = round($row->generalConvertValueToPen($total_igv, $exchange_rate_sale), 2);
+                                    $total_exonerated = round($row->generalConvertValueToPen($total_exonerated, $exchange_rate_sale), 2);
+                                    $total_unaffected = round($row->generalConvertValueToPen($total_unaffected, $exchange_rate_sale), 2);
+                                    $total_exportation = round($row->generalConvertValueToPen($total_exportation, $exchange_rate_sale), 2);
+                                    $total_isc = round($row->generalConvertValueToPen($total_isc, $exchange_rate_sale), 2);
+                                    $symbol = 'S/';
+                                    $format_currency_type_id = 'PEN';
+                                }
 
 
                                 return [
@@ -172,17 +186,18 @@ use App\Models\Tenant\{
                                     'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
                                     'customer_number'                    => $row->customer->number,
                                     'customer_name'                      => $row->customer->name,
-                                    'total_exportation'                  => $row->total_exportation,
+                                    'total_exportation'                  => $total_exportation,
                                     'total_taxed'                        => $total_taxed,
-                                    'total_exonerated'                   => $row->total_exonerated,
-                                    'total_unaffected'                   => $row->total_unaffected,
+                                    'total_exonerated'                   => $total_exonerated,
+                                    'total_unaffected'                   => $total_unaffected,
                                     'total_plastic_bag_taxes'            => $row->total_plastic_bag_taxes,
-                                    'total_isc'                          => $row->total_isc,
+                                    'total_isc'                          => $total_isc,
                                     'total_igv'                          => $total_igv,
                                     'total'                              => $total,
                                     // 'selected_currency'                              => $currencyRequested,
                                     'exchange_rate_sale'                 => $exchange_rate_sale,
                                     'currency_type_symbol'               => $symbol,
+                                    'format_currency_type_id'            => $format_currency_type_id,
                                     'affected_document'                  => (in_array($row->document_type_id,
                                                                                       ['07', '08'])) ? [
                                         'date_of_issue'    => !empty($note_affected_document->date_of_issue)

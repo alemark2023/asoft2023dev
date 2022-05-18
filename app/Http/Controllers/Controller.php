@@ -14,6 +14,7 @@
     use function Config;
     use Illuminate\Support\Facades\Route;
     use Modules\Report\Models\ReportConfiguration;
+    use App\Models\Tenant\Configuration;
 
 
     /**
@@ -238,5 +239,19 @@ $string = var_export($header,true);
             return false;
         }
         
+
+        /**
+         * 
+         * Determinar si aplica busqueda avanzada
+         * 
+         * Usado en:
+         * ItemController
+         *
+         * @return bool
+         */
+        public function applyAdvancedRecordsSearch()
+        {   
+            return Configuration::isEnabledAdvancedRecordsSearch();
+        }
 
     }

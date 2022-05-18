@@ -76,6 +76,19 @@
                                             <i class="fa fa-search"></i>
                                         </el-button>
                                     </el-tooltip>
+                                    <el-tooltip
+                                        slot="append"
+                                        :disabled="recordItem != null"
+                                        class="item"
+                                        content="Historial de ventas"
+                                        effect="dark"
+                                        placement="bottom">
+                                        <el-button
+                                            :disabled="isEditItemNote"
+                                            @click.prevent="clickHistorySales()">
+                                            <i class="fa fa-list"></i>
+                                        </el-button>
+                                    </el-tooltip>
                                 </el-input>
                             </template>
                             <template v-else>
@@ -203,15 +216,42 @@
                                         <i class="fa fa-info-circle"></i>
                                 </el-tooltip>
                             </label>
-                            <el-input v-model="form.unit_price_value"
-                                      :tabindex="'3'"
-                                      :readonly="!edit_unit_price"
-                                      @input="calculateQuantity">
-                                <template v-if="form.item.currency_type_symbol"
-                                          slot="prepend">
-                                    {{ form.item.currency_type_symbol }}
+
+                            <template v-if="configuration.change_currency_item && isFromInvoice">
+
+                                <template v-if="form.item">
+                                    <el-input v-model="form.unit_price_value"
+                                            :tabindex="'3'"
+                                            :readonly="!edit_unit_price"
+                                            @input="calculateQuantity">
+
+                                        <template v-if="form.item.currency_type_symbol">
+                                            <el-select slot="prepend" v-model="form.item.currency_type_id" class="el-select-currency">
+
+                                                <el-option v-for="option in currencyTypes"
+                                                            :key="option.id"
+                                                            :label="option.symbol"
+                                                            :value="option.id"></el-option>
+                                            </el-select>
+                                        </template>
+                                    </el-input>
                                 </template>
-                            </el-input>
+                                
+                            </template>
+                            <template v-else>
+
+                                <el-input v-model="form.unit_price_value"
+                                        :tabindex="'3'"
+                                        :readonly="!edit_unit_price"
+                                        @input="calculateQuantity">
+                                    <template v-if="form.item.currency_type_symbol"
+                                            slot="prepend">
+                                        {{ form.item.currency_type_symbol }}
+                                    </template>
+                                </el-input>
+
+                            </template>
+
                             <small v-if="errors.unit_price_value"
                                    class="form-control-feedback"
                                    v-text="errors.unit_price[0]"></small>
@@ -530,14 +570,17 @@
         </form>
         <item-form :external="true"
                    :showDialog.sync="showDialogNewItem"></item-form>
-
-
         <warehouses-detail
             :isUpdateWarehouseId="isUpdateWarehouseId"
             :showDialog.sync="showWarehousesDetail"
             :warehouses="warehousesDetail">
         </warehouses-detail>
-
+        <history-sales-form
+            :showDialog.sync="showDialogHistorySales"
+            :item_id="history_item_id"
+            :customer_id="this.customerId"
+            :type="true"
+        ></history-sales-form>
         <lots-group
             :lots_group="form.lots_group"
             :quantity="form.quantity"
@@ -562,6 +605,11 @@
     margin-right: 5% !important;
     max-width: 80% !important;
 }
+
+.el-select-currency {
+    width: 59px;
+}
+
 </style>
 
 <script>
@@ -578,7 +626,7 @@ import VueCkeditor from 'vue-ckeditor5'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 import Keypress from "vue-keypress";
-
+import HistorySalesForm from "../../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
 export default {
     props: [
         'recordItem',
@@ -592,7 +640,9 @@ export default {
         'documentTypeId',
         'noteCreditOrDebitTypeId',
         'displayDiscount',
-        'customerId'
+        'customerId',
+        'currencyTypes',
+        'isFromInvoice',
     ],
     components: {
         ItemForm,
@@ -600,6 +650,7 @@ export default {
         Keypress,
         LotsGroup,
         SelectLotsForm,
+        HistorySalesForm,
         'vue-ckeditor': VueCkeditor.component
     },
     data() {
@@ -647,6 +698,7 @@ export default {
             readonly_total: 0,
             itemLastPrice: null,
             search_item_by_barcode_presentation: false,
+            showDialogHistorySales: false,
             //item_unit_type: {}
         }
     },
@@ -1625,6 +1677,17 @@ export default {
             }
            
         }
+        ,
+        clickHistorySales() {
+            if (!this.form.item_id) {
+                return this.$message.error('Seleccione un item');
+            }
+
+            let item = _.find(this.items, {'id': this.form.item_id});
+            this.history_item_id = item.id;
+            this.showDialogHistorySales = true;
+            // console.log(item)
+        },
     }
 }
 
