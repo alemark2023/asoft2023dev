@@ -76,6 +76,19 @@
                                             <i class="fa fa-search"></i>
                                         </el-button>
                                     </el-tooltip>
+                                    <el-tooltip
+                                        slot="append"
+                                        :disabled="recordItem != null"
+                                        class="item"
+                                        content="Historial de ventas"
+                                        effect="dark"
+                                        placement="bottom">
+                                        <el-button
+                                            :disabled="isEditItemNote"
+                                            @click.prevent="clickHistorySales()">
+                                            <i class="fa fa-list"></i>
+                                        </el-button>
+                                    </el-tooltip>
                                 </el-input>
                             </template>
                             <template v-else>
@@ -530,14 +543,17 @@
         </form>
         <item-form :external="true"
                    :showDialog.sync="showDialogNewItem"></item-form>
-
-
         <warehouses-detail
             :isUpdateWarehouseId="isUpdateWarehouseId"
             :showDialog.sync="showWarehousesDetail"
             :warehouses="warehousesDetail">
         </warehouses-detail>
-
+        <history-sales-form
+            :showDialog.sync="showDialogHistorySales"
+            :item_id="history_item_id"
+            :customer_id="this.customerId"
+            :type="true"
+        ></history-sales-form>
         <lots-group
             :lots_group="form.lots_group"
             :quantity="form.quantity"
@@ -578,7 +594,7 @@ import VueCkeditor from 'vue-ckeditor5'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 import Keypress from "vue-keypress";
-
+import HistorySalesForm from "../../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
 export default {
     props: [
         'recordItem',
@@ -600,6 +616,7 @@ export default {
         Keypress,
         LotsGroup,
         SelectLotsForm,
+        HistorySalesForm,
         'vue-ckeditor': VueCkeditor.component
     },
     data() {
@@ -647,6 +664,7 @@ export default {
             readonly_total: 0,
             itemLastPrice: null,
             search_item_by_barcode_presentation: false,
+            showDialogHistorySales: false,
             //item_unit_type: {}
         }
     },
@@ -1625,6 +1643,17 @@ export default {
             }
            
         }
+        ,
+        clickHistorySales() {
+            if (!this.form.item_id) {
+                return this.$message.error('Seleccione un item');
+            }
+
+            let item = _.find(this.items, {'id': this.form.item_id});
+            this.history_item_id = item.id;
+            this.showDialogHistorySales = true;
+            // console.log(item)
+        },
     }
 }
 
