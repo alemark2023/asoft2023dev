@@ -704,16 +704,18 @@ class CashController extends Controller
                         // $total = self::CalculeTotalOfCurency($purchase->total, $purchase->currency_type_id, $purchase->exchange_rate_sale);
                         // $cash_egress += $total;
                         // $final_balance -= $total;
-                    if (!is_null($payments[0])&&in_array($payments[0]['payment_method_type_id'], $type_payment)) {
-                        if (count($payments) > 0) {
-                            $pays = $payments;
-                            foreach ($methods_payment as $record) {
-                                $record_total = $pays->where('payment_method_type_id', '01')->sum('payment');
-                                $record->sum = ($record->sum - $record_total);
-                                $cash_egress += $record_total;
-                                $final_balance -= $record_total;
+                    if(isset($payments[0])){
+                        if (!is_null($payments[0])&&in_array($payments[0]['payment_method_type_id'], $type_payment)) {
+                            if (count($payments) > 0) {
+                                $pays = $payments;
+                                foreach ($methods_payment as $record) {
+                                    $record_total = $pays->where('payment_method_type_id', '01')->sum('payment');
+                                    $record->sum = ($record->sum - $record_total);
+                                    $cash_egress += $record_total;
+                                    $final_balance -= $record_total;
+                                }
+    
                             }
-
                         }
                     }
 
@@ -859,26 +861,28 @@ class CashController extends Controller
                 
                 if (in_array($income->state_type_id, $status_type_id)){
                     $payments=$income->payments;
-                    if (!is_null($payments[0])&&in_array($payments[0]['payment_method_type_id'], $type_payment))
-                    {
-                        $record_total = 0;
-    
-                        $total = self::CalculeTotalOfCurency(
-                            $income->total,
-                            $income->currency_type_id,
-                            $income->exchange_rate_sale
-                        );
-    
-                        $cash_income += $total;
-                        $final_balance += $total;
-
-    
-                        if (count($income->payments) > 0) 
+                    if(isset($payments[0])){
+                        if (!is_null($payments[0])&&in_array($payments[0]['payment_method_type_id'], $type_payment))
                         {
-                            $pays = $income->payments;
-                            foreach ($methods_payment as $record) {
-                                $record_total = $pays->where('payment_method_type_id', $record->id)->sum('payment');
-                                $record->sum = ($record->sum + $record_total);
+                            $record_total = 0;
+        
+                            $total = self::CalculeTotalOfCurency(
+                                $income->total,
+                                $income->currency_type_id,
+                                $income->exchange_rate_sale
+                            );
+        
+                            $cash_income += $total;
+                            $final_balance += $total;
+
+        
+                            if (count($income->payments) > 0) 
+                            {
+                                $pays = $income->payments;
+                                foreach ($methods_payment as $record) {
+                                    $record_total = $pays->where('payment_method_type_id', $record->id)->sum('payment');
+                                    $record->sum = ($record->sum + $record_total);
+                                }
                             }
                         }
                     }
