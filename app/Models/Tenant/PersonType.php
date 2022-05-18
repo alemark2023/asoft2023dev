@@ -2,6 +2,9 @@
 
 namespace App\Models\Tenant;
 
+use Modules\Item\Models\NamePrice;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 /**
  * App\Models\Tenant\PersonType
  *
@@ -14,10 +17,16 @@ namespace App\Models\Tenant;
  */
 class PersonType extends ModelTenant
 {
+    protected $with = ['name_price'];
     protected $fillable = [
         'description',
 
     ];
+
+    public function name_price()
+    {
+        return $this->hasOne(NamePrice::class, 'type_customer_id');
+    }
 
     /**
      * @return string

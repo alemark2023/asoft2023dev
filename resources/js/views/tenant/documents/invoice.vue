@@ -227,6 +227,16 @@
                                                :value="option.id"></el-option>
                                 </el-select>
                             </div>
+                            <div
+                                 class="form-group col-sm-6 mb-0">
+                                <label class="control-label font-weight-bold text-info">Tipo de cliente</label>
+                                <el-select v-model="form.person_type_id">
+                                    <el-option v-for="option in personTypes"
+                                               :key="option.id"
+                                               :label="option.description"
+                                               :value="option.id"></el-option>
+                                </el-select>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body border-top no-gutters p-0">
@@ -1389,6 +1399,7 @@
             :showDialog.sync="showDialogAddItem"
             :typeUser="typeUser"
             :customer-id="form.customer_id"
+            :person-type-id="form.person_type_id"
             @add="addRow"></document-form-item>
 
         <person-form :document_type_id=form.document_type_id
@@ -1476,7 +1487,8 @@ export default {
         'typeUser',
         'configuration',
         'documentId',
-        'isUpdate'
+        'isUpdate',
+        'personTypes'
     ],
     components: {
         DocumentFormItem,
@@ -2580,6 +2592,7 @@ export default {
         initForm() {
             this.errors = {}
             this.form = {
+                person_type_id: null,
                 establishment_id: null,
                 document_type_id: null,
                 series_id: null,

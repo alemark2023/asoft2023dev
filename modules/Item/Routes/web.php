@@ -33,6 +33,19 @@ if($hostname) {
                 Route::delete('/{brand}', 'ZoneController@destroy');
             });
 
+            Route::prefix('price')->group(function () {
+
+                Route::get('', 'NamePriceController@index')->name('tenant.price.index');
+                Route::post('', 'NamePriceController@store');
+                Route::get('/records', 'NamePriceController@records');
+                Route::get('/tables', 'NamePriceController@tables');
+                Route::get('/record/{brand}', 'NamePriceController@record');
+                Route::get('/search/{brand}', 'NamePriceController@searchPrices');
+                Route::get('/columns', 'NamePriceController@columns');
+                Route::delete('/{brand}', 'NamePriceController@destroy');
+                Route::delete('/list/{brand}', 'NamePriceController@list');
+            });
+
 
             Route::get('incentives', 'IncentiveController@index')->name('tenant.incentives.index')->middleware('redirect.level');
             Route::get('incentives/records', 'IncentiveController@records');

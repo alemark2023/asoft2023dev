@@ -174,6 +174,7 @@ class User extends Authenticatable
         'document_id',
         'series_id',
         'permission_edit_cpe',
+        'permission_override_cpe',
         'recreate_documents',
         'zone_id',
         'restaurant_role_id',
@@ -201,6 +202,7 @@ class User extends Authenticatable
     protected $casts = [
         'series_id'=> 'int',
         'permission_edit_cpe' => 'boolean',
+        'permission_override_cpe' => 'boolean',
         'recreate_documents' => 'boolean',
         'establishment_id' => 'int',
         'zone_id' => 'int',

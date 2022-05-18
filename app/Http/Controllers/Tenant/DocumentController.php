@@ -63,6 +63,7 @@ use Modules\Item\Http\Requests\CategoryRequest;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
 use Modules\Document\Helpers\DocumentHelper;
+use App\Models\Tenant\PersonType;
 
 
 class DocumentController extends Controller
@@ -196,7 +197,8 @@ class DocumentController extends Controller
 
         $configuration = Configuration::first();
         $is_contingency = 0;
-        return view('tenant.documents.form', compact('is_contingency', 'configuration'));
+        $person_types = PersonType::all();
+        return view('tenant.documents.form', compact('is_contingency', 'configuration', 'person_types'));
     }
 
     public function create_tensu()
@@ -226,6 +228,7 @@ class DocumentController extends Controller
         $establishments = Establishment::where('id', $establishment_id)->get();// Establishment::all();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
         $document_types_note = DocumentType::whereIn('id', ['07', '08'])->get();
+        $document_types_summaries = DocumentType::whereIn('id', ['03', '07', '08'])->get();
         $note_credit_types = NoteCreditType::whereActive()->orderByDescription()->get();
         $note_debit_types = NoteDebitType::whereActive()->orderByDescription()->get();
         $currency_types = CurrencyType::whereActive()->get();
@@ -279,6 +282,7 @@ class DocumentController extends Controller
             'series',
             'document_types_invoice',
             'document_types_note',
+            'document_types_summaries',
             'note_credit_types',
             'note_debit_types',
             'currency_types',
