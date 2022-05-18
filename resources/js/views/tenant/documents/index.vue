@@ -110,6 +110,10 @@
                         <th class="text-center" v-if="columns.plate_numbers.visible">Placa</th>
 
                         <th class="text-right"
+                            v-if="columns.total_discount.visible">T.Descuento
+                        </th>
+
+                        <th class="text-right"
                             v-if="columns.total_exportation.visible">T.Exportación
                         </th>
                         <th class="text-right"
@@ -253,6 +257,10 @@
                             <span v-for="(item, i) in row.plate_numbers" :key="i">
                                 {{ item.description }} <br>
                             </span>
+                        </td>
+
+                        <td class="text-right"
+                            v-if="columns.total_discount.visible">{{ row.total_discount }}
                         </td>
 
                         <td class="text-right"
@@ -568,6 +576,10 @@ export default {
                 },
                 user_name: {
                     title: 'Usuario',
+                    visible: false
+                },
+                total_discount: {
+                    title: 'T.Descuento',
                     visible: false
                 },
                 total_exportation: {
