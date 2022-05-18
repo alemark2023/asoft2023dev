@@ -2244,7 +2244,9 @@ class Item extends ModelTenant
      * Filtro avanzado para busqueda
      * Usado en:
      * ItemController - records
-     *
+     * Modules\Inventory\Http\Controllers\ItemController - advancedItemsSearch
+     * Modules\Inventory\Http\Controllers\InventoryController - records
+     * 
      * @param Builder $query
      * @param  string $column
      * @param  string $value
@@ -2263,6 +2265,62 @@ class Item extends ModelTenant
             }
 
         });
+    }
+
+    
+    /**
+     * 
+     * Filtro para busqueda avanzada de items en reporte kardex
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeWhereFilterReportKardex($query)
+    {
+        return $query->whereNotIsSet()->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']]);
+    }
+    
+
+    /**
+     * 
+     * Datos del item para busqueda avanzada
+     * 
+     * Usado en:
+     * Modules\Inventory\Http\Controllers\ItemController
+     * 
+     * @return array
+     */
+    public function getRowResourceAdvancedSearch()
+    {
+
+        $full_description = $this->getFullDescriptionAdvancedSearch();
+
+        return [
+            'id' => $this->id,
+            'full_description' => $full_description,
+            'internal_id' => $this->internal_id,
+            'description' => $this->description,
+        ];
+    }
+
+    
+    /**
+     * 
+     * Descripcion del item para busqueda avanzada
+     *
+     * @return string
+     */
+    public function getFullDescriptionAdvancedSearch()
+    {
+        $description = ($this->internal_id) ? $this->internal_id . ' - ' . $this->description : $this->description;
+
+        $category = "";
+        if($this->category) $category = ($this->category->id) ? " - {$this->category->name}" : "";
+
+        $brand = "";
+        if($this->brand) $brand = ($this->brand->id) ? " - {$this->brand->name}" : "";
+
+        return "{$description}{$category}{$brand}";
     }
 
 

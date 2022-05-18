@@ -573,6 +573,7 @@
                                         <div slot="content">
                                             Disponible en Listado de productos/servicios para el campo Nombre.<br/>
                                             Disponible en Listado de Inventario (Movimientos) para el campo Producto.<br/>
+                                            Disponible en Reporte Kardex para el campo Nombre y Código interno del Producto.<br/>
                                         </div>
                                     </el-tooltip>
                                 </label>
