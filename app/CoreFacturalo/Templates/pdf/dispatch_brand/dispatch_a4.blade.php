@@ -197,7 +197,8 @@
                         @if ($row->item_id == $row->item_id)
                             @isset($row->relation_item->item_lots)
                                 @foreach($row->relation_item->item_lots as $lot)
-                                    @if( isset($lot->has_sale) && $lot->has_sale)
+                                    @if( isset($lot->has_sale) && !$lot->has_sale)
+                                        
                                         <span style="font-size: 9px">{{ $lot->series }}</span><br>
                                     @endif
                                 @endforeach
