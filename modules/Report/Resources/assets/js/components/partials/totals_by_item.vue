@@ -99,7 +99,6 @@
                         quantity: this.records[r].quantity
                     })
                 });
-                console.log(items)
                 localStorage.setItem('items', JSON.stringify(items));
                 const tab = window.open('/dispatches/create', '_BLANK');
                 tab.focus();
