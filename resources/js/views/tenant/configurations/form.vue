@@ -162,7 +162,19 @@
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
-                                <label class="control-label">Productos de una ubicación</label>
+                                <label class="control-label">
+                                    Productos de una ubicación (Stock)
+                                    
+                                    <el-tooltip class="item"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                        <div slot="content">
+                                            Mostrar stock de los productos de 1 almacén - Disponible en Listado de productos / POS Lista de productos.<br/>
+                                        </div>
+                                    </el-tooltip>
+
+                                </label>
                                 <div :class="{'has-danger': errors.product_only_location}"
                                         class="form-group">
                                     <el-switch v-model="form.product_only_location"
@@ -561,6 +573,33 @@
                                             v-text="errors.enabled_tips_pos[0]"></small>
                                 </div>
                             </div>
+
+                            
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Habilitar búsqueda avanzada
+                                    <el-tooltip class="item"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                        <div slot="content">
+                                            Disponible en Listado de productos/servicios para el campo Nombre.<br/>
+                                            Disponible en Listado de Inventario (Movimientos) para el campo Producto.<br/>
+                                            Disponible en Reporte Kardex para el campo Nombre y Código interno del Producto.<br/>
+                                        </div>
+                                    </el-tooltip>
+                                </label>
+                                 <div :class="{'has-danger': errors.enabled_advanced_records_search}"
+                                        class="form-group">
+                                    <el-switch v-model="form.enabled_advanced_records_search"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.enabled_advanced_records_search"
+                                            class="form-control-feedback"
+                                            v-text="errors.enabled_advanced_records_search[0]"></small>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="third">
@@ -895,6 +934,29 @@
                                     <small v-if="errors.set_unit_price_dispatch_related_record"
                                             class="form-control-feedback"
                                             v-text="errors.set_unit_price_dispatch_related_record[0]"></small>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Modificar moneda al agregar producto
+                                    <el-tooltip
+                                        class="item"
+                                        content="Disponible en Nuevo CPE"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.change_currency_item}"
+                                        class="form-group">
+                                    <el-switch v-model="form.change_currency_item"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.change_currency_item"
+                                            class="form-control-feedback"
+                                            v-text="errors.change_currency_item[0]"></small>
                                 </div>
                             </div>
 
@@ -1628,7 +1690,8 @@ export default {
                 restrict_voided_send: false,
                 shipping_time_days_voided: 0,
                 enabled_tips_pos: false,
-
+                change_currency_item: false,
+                enabled_advanced_records_search: false,
             };
         },
         UpdateFormPurchase(e) {

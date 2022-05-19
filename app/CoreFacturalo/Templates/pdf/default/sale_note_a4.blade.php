@@ -62,6 +62,12 @@
     <tr>
         <td>{{ $customer->identity_document_type->description }}:</td>
         <td>{{ $customer->number }}</td>
+        
+        @if ($document->due_date)
+            <td class="align-top">Fecha Vencimiento:</td>
+            <td>{{ $document->getFormatDueDate() }}</td>
+        @endif
+
     </tr>
     @if ($customer->address !== '')
     <tr>

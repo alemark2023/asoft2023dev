@@ -1128,12 +1128,19 @@ export default {
             }
         },
         onLoadItemsFromSummary(items, itemsFromStorage) {
+
             items.map(it => {
-                const itemWithQuantity = itemsFromStorage.find(i => i.id == it.id);
-                if (itemWithQuantity) {
+                // const itemWithQuantity = itemsFromStorage.find(i => i.id == it.id);
+
+                const quantityByItems = _.sumBy(itemsFromStorage.filter(i => i.id == it.id), function(row){
+                    return parseFloat(row.quantity)
+                })
+
+                if (quantityByItems) {
                     this.addItem({
                         item: it,
-                        quantity: itemWithQuantity.quantity
+                        quantity: quantityByItems
+                        // quantity: itemWithQuantity.quantity
                     });
                 }
             });
