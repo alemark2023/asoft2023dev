@@ -5,6 +5,8 @@ namespace App\Models\Tenant;
 use Modules\Expense\Models\Expense;
 use Modules\Expense\Models\ExpensePayment;
 use Modules\Sale\Models\TechnicalService;
+use Illuminate\Database\Eloquent\Builder;
+
 
 class CashDocument extends ModelTenant
 {
@@ -66,5 +68,47 @@ class CashDocument extends ModelTenant
     // {
     //     return $this->belongsTo(Expense::class);
     // }
+
+    
+    /**
+     * 
+     * Filtro para obtener ids de los documentos asociados a caja
+     *
+     * @param Builder $query
+     * @param Cash $cash
+     * @return array
+     */ 
+    public function scopeGetDocumentIdsReport($query, $cash)
+    {
+        return $query->select('document_id')->whereHas('document')->where('cash_id', $cash->id)->get()->pluck('document_id')->toArray();
+    }
+
+
+    /**
+     * 
+     * Filtro para obtener ids de las notas de venta asociadas a caja
+     *
+     * @param Builder $query
+     * @param Cash $cash
+     * @return array
+     */ 
+    public function scopeGetSaleNoteIdsReport($query, $cash)
+    {
+        return $query->select('sale_note_id')->whereHas('sale_note')->where('cash_id', $cash->id)->get()->pluck('sale_note_id')->toArray();
+    }
+
+
+    /**
+     * 
+     * Filtro para obtener ids de las compras asociadas a caja
+     *
+     * @param Builder $query
+     * @param Cash $cash
+     * @return array
+     */ 
+    public function scopeGetPurchaseIdsReport($query, $cash)
+    {
+        return $query->select('purchase_id')->whereHas('purchase')->where('cash_id', $cash->id)->get()->pluck('purchase_id')->toArray();
+    }
 
 }

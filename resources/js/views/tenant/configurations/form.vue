@@ -162,7 +162,19 @@
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
-                                <label class="control-label">Productos de una ubicación</label>
+                                <label class="control-label">
+                                    Productos de una ubicación (Stock)
+                                    
+                                    <el-tooltip class="item"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                        <div slot="content">
+                                            Mostrar stock de los productos de 1 almacén - Disponible en Listado de productos / POS Lista de productos.<br/>
+                                        </div>
+                                    </el-tooltip>
+
+                                </label>
                                 <div :class="{'has-danger': errors.product_only_location}"
                                         class="form-group">
                                     <el-switch v-model="form.product_only_location"
@@ -573,6 +585,7 @@
                                         <div slot="content">
                                             Disponible en Listado de productos/servicios para el campo Nombre.<br/>
                                             Disponible en Listado de Inventario (Movimientos) para el campo Producto.<br/>
+                                            Disponible en Reporte Kardex para el campo Nombre y Código interno del Producto.<br/>
                                         </div>
                                     </el-tooltip>
                                 </label>

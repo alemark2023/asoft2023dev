@@ -409,11 +409,12 @@ class CashController extends Controller
     }
 
 
-    public function getDataReport($id, $is_garage = false){
+    public function getDataReport($id, $is_garage = false)
+    {
 
         $cash = Cash::findOrFail($id);
         $company = Company::first();
-        $cash_documents =  CashDocument::select('document_id')->where('cash_id', $cash->id)->get();
+        $cash_documents =  CashDocument::getDocumentIdsReport($cash);
         ReportHelper::setBoolIsGarage($is_garage);
 
         $source = DocumentItem::with('document')->whereIn('document_id', $cash_documents)->get();
@@ -442,9 +443,10 @@ class CashController extends Controller
 
 
 
-    public function getSaleNotesReportProducts($cash){
+    public function getSaleNotesReportProducts($cash)
+    {
 
-        $cd_sale_notes =  CashDocument::select('sale_note_id')->where('cash_id', $cash->id)->get();
+        $cd_sale_notes =  CashDocument::getSaleNoteIdsReport($cash);
 
         $sale_note_items = SaleNoteItem::with('sale_note')->whereIn('sale_note_id', $cd_sale_notes)->get();
 
@@ -464,9 +466,11 @@ class CashController extends Controller
     }
 
 
-    public function getPurchasesReportProducts($cash){
+    public function getPurchasesReportProducts($cash)
+    {
 
-        $cd_purchases =  CashDocument::select('purchase_id')->where('cash_id', $cash->id)->get();
+        $cd_purchases =  CashDocument::getPurchaseIdsReport($cash);
+
         $purchase_items = PurchaseItem::with('purchase')->whereIn('purchase_id', $cd_purchases)->get();
 
         return collect($purchase_items)->transform(function(PurchaseItem $row){
@@ -484,6 +488,17 @@ class CashController extends Controller
         });
 
     }
+    
+    
+    /**
+     * @param  array $row
+     * @return string
+     */
+    private function getUnitTypeId($row)
+    {
+        return $row->item->unit_type_id ?? null;
+    }
+
 
     public function report_cash_excel($cash_id)
     {
