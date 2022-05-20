@@ -111,4 +111,27 @@ class CashDocument extends ModelTenant
         return $query->select('purchase_id')->whereHas('purchase')->where('cash_id', $cash->id)->get()->pluck('purchase_id')->toArray();
     }
 
+    
+    /**
+     * 
+     * Retornar el modelo asociado dependiendo del registro relacionado
+     * 
+     */
+    public function getDataModelAssociated()
+    {
+        
+        if(!is_null($this->document_id)) return $this->document;
+
+        if(!is_null($this->sale_note_id)) return $this->sale_note;
+        
+        if(!is_null($this->technical_service_id)) return $this->technical_service;
+        
+        if(!is_null($this->expense_payment_id)) return $this->expense_payment;
+        
+        if(!is_null($this->purchase_id)) return $this->purchase;
+
+        if(!is_null($this->quotation_id)) return $this->quotation;
+
+    }
+
 }

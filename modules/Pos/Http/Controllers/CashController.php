@@ -695,4 +695,92 @@ class CashController extends Controller
         */
         return $report_cash_export->download($filename.'.xlsx');
     }
+
+    
+    /**
+     * 
+     * Obtener datos para header de reporte
+     *
+     * @param  Cash $cash
+     * @return array
+     */
+    public function getHeaderCommonDataToReport($cash)
+    {
+
+        $company = Company::select('name', 'number')->first();
+        
+        $data['cash_user_name'] = $cash->user->name;
+        $data['cash_date_opening'] = $cash->date_opening;
+        $data['cash_state'] = $cash->state;
+        $data['cash_date_closed'] = $cash->date_closed;
+        $data['cash_time_closed'] = $cash->time_closed;
+        $data['cash_time_opening'] = $cash->time_opening;
+        $data['company_name'] = $company->name;
+        $data['company_number'] = $company->number;
+
+        $establishment = $cash->user->establishment;
+        $data['establishment_address'] = $establishment->address;
+        $data['establishment_department_description'] = $establishment->department->description;
+        $data['establishment_district_description'] = $establishment->district->description;
+
+        $data['total_income'] = 0;
+        $data['total_egress'] = 0;
+
+        return $data;
+    }
+
+    
+    /**
+     * 
+     * Generar reporte de ingresos y egresos por metodo de pago efectivo con destino caja
+     *
+     * @param  int $cash
+     */
+    public function reportCashIncomeEgress($cash)
+    {
+
+        $cash = Cash::findOrFail($cash);
+        $data_payments = collect();
+        $data = $this->getHeaderCommonDataToReport($cash);
+        
+        foreach ($cash->cash_documents as $cash_document) 
+        {
+            $model_associated = $cash_document->getDataModelAssociated();
+            $payments = $model_associated->getCashPayments();
+
+            $payments->each(function($payment) use($data_payments){
+                $data_payments->push($payment);
+            });
+        }
+
+        $data['total_income'] = $data_payments->where('type_transaction', 'income')->sum('payment');
+        $data['total_egress'] = $data_payments->where('type_transaction', 'egress')->sum('payment');
+        $data['total_balance'] = $data['total_income'] - $data['total_egress'];
+
+        return $this->toPrintCashIncomeEgress(compact('data', 'data_payments'));
+
+    }
+    
+
+    /**
+     * Imprimir reporte de ingresos y egresos
+     *
+     * @param  array $data
+     */
+    public function toPrintCashIncomeEgress($data)
+    {
+
+        $view = view('pos::cash.reports.report_income_egress_pdf', $data);
+        $html = $view->render();
+        
+        $pdf = new Mpdf(['mode' => 'utf-8']);
+        $pdf->WriteHTML($html);
+
+        $temp = tempnam(sys_get_temp_dir(), 'cash_report_income_egress_pdf');
+        file_put_contents($temp, $pdf->output('', 'S'));
+
+        return response()->file($temp);
+    }
+
+
 }

@@ -67,6 +67,7 @@
                                 <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
                                     <!-- <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'pdf')">PDF</a> -->
                                     <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportCash(row.id, 'excel')">Excel</a>
+                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportIncomeEgress(row.id)">Ingresos y egresos</a>
                                 </div>
                             </div>
 
@@ -251,7 +252,10 @@
 
                 window.open(`/${this.resource}/report/products/${id}`, '_blank');
 
-            }
+            },
+            clickDownloadReportIncomeEgress(id){
+                window.open(`/${this.resource}/report-cash-income-egress/${id}`, '_blank');
+            },
         }
     }
 </script>
