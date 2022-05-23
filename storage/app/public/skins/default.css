@@ -148,6 +148,13 @@ html.sidebar-red .card-header.bg-info {
   background: #dc3545 !important;
 }
 
+/* botones */
+html.sidebar-red .el-button--primary, html.sidebar-red .btn-custom {
+  color: #FFFFFF;
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
 
 /* --------------------------- tema naranja --------------------------- */
 /* panel derecho */
