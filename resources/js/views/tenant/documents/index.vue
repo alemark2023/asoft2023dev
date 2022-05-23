@@ -110,6 +110,10 @@
                         <th class="text-center" v-if="columns.plate_numbers.visible">Placa</th>
 
                         <th class="text-right"
+                            v-if="columns.total_discount.visible">T.Descuento
+                        </th>
+
+                        <th class="text-right"
                             v-if="columns.total_exportation.visible">T.Exportación
                         </th>
                         <th class="text-right"
@@ -256,6 +260,10 @@
                         </td>
 
                         <td class="text-right"
+                            v-if="columns.total_discount.visible">{{ row.total_discount }}
+                        </td>
+
+                        <td class="text-right"
                             v-if="columns.total_exportation.visible">{{ row.total_exportation }}
                         </td>
 
@@ -344,7 +352,7 @@
                                     </a>
                                     <button class="dropdown-item"
                                         @click.prevent="clickVoided(row.id)"
-                                        v-if="row.btn_voided">
+                                        v-if="userPermissionOverrideCpe&&row.btn_voided">
                                         Anular
                                     </button>
                                     <a type="button"
@@ -518,6 +526,7 @@ export default {
         'userId',
         'configuration',
         'userPermissionEditCpe',
+        'userPermissionOverrideCpe',
         'view_apiperudev_validator_cpe',
         'view_validator_cpe'
     ],
@@ -568,6 +577,10 @@ export default {
                 },
                 user_name: {
                     title: 'Usuario',
+                    visible: false
+                },
+                total_discount: {
+                    title: 'T.Descuento',
                     visible: false
                 },
                 total_exportation: {

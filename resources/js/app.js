@@ -61,6 +61,7 @@ Vue.component('tenant-documents-note', require('./views/tenant/documents/note.vu
 
 // purchase-settlements
 Vue.component('tenant-purchase-settlements-index', require('./views/tenant/purchase-settlements/index.vue'));
+Vue.component('tenant-purchase-settlements-form', require('./views/tenant/purchase-settlements/form.vue'));
 
 Vue.component('tenant-documents-items-list', require('./views/tenant/documents/partials/item.vue'));
 Vue.component('tenant-summaries-index', require('./views/tenant/summaries/index.vue'));
@@ -192,6 +193,7 @@ Vue.component('tenant-report-commissions-detail-index', require('../../modules/R
 Vue.component('tenant-report-tips-index', require('../../modules/Report/Resources/assets/js/views/tips/index.vue'));
 
 Vue.component('tenant-categories-index', require('../../modules/Item/Resources/assets/js/views/categories/index.vue'));
+Vue.component('tenant-price-index', require('../../modules/Item/Resources/assets/js/views/price/index.vue'));
 Vue.component('tenant-brands-index', require('../../modules/Item/Resources/assets/js/views/brands/index.vue'));
 Vue.component('tenant-zone-index', require('../../modules/Item/Resources/assets/js/views/zone/index.vue'));
 Vue.component('tenant-incentives-index', require('../../modules/Item/Resources/assets/js/views/incentives/index.vue'));

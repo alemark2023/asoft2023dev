@@ -3,7 +3,7 @@
         <div class="form-body">
             <div class="row" >
                 <div class="col-lg-12">
-                    <button v-show="type" class="btn btn-danger"
+                        <button v-show="type" class="btn btn-danger"
                             type="button"
                             @click.prevent="clickUser()"> Ventas por usuario
                         </button>
@@ -11,21 +11,20 @@
                                 type="button"
                                 @click.prevent="clickAllUser()"> Ventas por usuarios
                         </button>
-                
+                    
                     <data-table :resource="resource" :form="form">
                         <tr slot="heading">
                             <th>#</th>
                             <th class="text-center">Documento</th>
                             <th class="text-center">Fecha</th>
                             <th class="text-center">Precio</th>
-                            <th class="text-center">Cliente</th> 
-                        <tr>
+                            <th class="text-center">Cliente</th>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>
-                            <td  class="text-center">{{ row.number_full }}</td>
                             <td class="text-center">{{ row.date_of_issue }}</td> 
-                            <td class="text-center">{{ row.price }} </td>  
+                            <td class="text-center">{{ row.price }} </td>
                             <td class="text-center">{{ row.name }} </td> 
+                            
                         </tr>
                     </data-table>
 
@@ -51,7 +50,7 @@
                 titleDialog: 'Historial de ventas',
                 loading: false,
                 resource: 'pos/history-sales',
-                form:{}
+                form:{},
             }
         },
         async created() {

@@ -33,6 +33,7 @@ use App\Models\Tenant\User;
 use App\Models\Tenant\Warehouse;
 use App\Traits\OfflineTrait;
 use Exception;
+use App\Models\Tenant\PersonType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -198,9 +199,10 @@ class QuotationController extends Controller
             ->get();
         */
         $sellers = User::GetSellers(false)->get();
+        $person_types = PersonType::all();
 
         return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types', 'configuration',
-                        'company', 'document_type_03_filter','payment_method_types', 'payment_destinations', 'sellers');
+                        'company', 'document_type_03_filter','payment_method_types', 'payment_destinations', 'sellers','person_types');
 
     }
 

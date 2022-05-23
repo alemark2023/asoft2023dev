@@ -1,7 +1,7 @@
 <template>
     <div class="card mb-0 pt-2 pt-md-0">
         <div class="card-header bg-info">
-            <h3 class="my-0">Nueva Compra</h3>
+            <h3 class="my-0">{{ titleDialog }}</h3>
         </div>
         <div class="tab-content">
             <form autocomplete="off"
@@ -153,7 +153,7 @@
                         </div>
 
                         <div class="col-lg-2"
-                             v-if="purchase_order_id === null">
+                             v-if="order_id === null">
                             <div class="form-group">
                                 <label>
                                     Orden de compra
@@ -493,7 +493,7 @@
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
                                         <td class="text-right">
-                                            <button v-if="purchase_order_id && row.item.series_enabled"
+                                            <button v-if="order_id && row.item.series_enabled"
                                                     class="btn waves-effect waves-light btn-xs btn-info"
                                                     type="button"
                                                     @click.prevent="clickOpenSeries(index, row.quantity, row.lots)">
@@ -617,6 +617,8 @@
                             :exchange-rate-sale="form.exchange_rate_sale"
                             :showDialog.sync="showDialogAddItem"
                             :localHasGlobalIgv="localHasGlobalIgv"
+                            :supplier_id="this.form.supplier_id"
+                            :type="this.type"
                             @add="addRow"></purchase-form-item>
 
         <person-form :external="true"
@@ -647,7 +649,7 @@ import SeriesForm from './partials/series'
 import {mapActions, mapState} from "vuex";
 
 export default {
-    props: ['purchase_order_id'],
+    props: ['order_id','type'],
     components: {PurchaseFormItem, PersonForm, PurchaseOptions, SeriesForm},
     mixins: [functions, exchangeRate, fnPaymentsFee],
     computed: {
@@ -704,11 +706,12 @@ export default {
             loading_search: false,
             purchaseNewId: null,
             showDialogLots: false,
+            titleDialog: null,
         }
     },
     mounted() {
         this.initForm()
-        this.$http.get(`/${this.resource}/tables`)
+        this.$http.get(`/${this.resource}/tables/${this.type}`)
             .then(response => {
                 let data = response.data
                 this.document_types = data.document_types_invoice
@@ -750,6 +753,9 @@ export default {
         this.changeHasClient()
     },
     created() {
+        if (this.type === 'purchase') {
+            this.titleDialog = 'Nueva Compra'
+        }
         this.loadConfiguration()
         this.loadHasGlobalIgv()
         this.loadEstablishment()
@@ -817,9 +823,9 @@ export default {
             // return unit_price.toFixed(6)
         },
         async isGeneratePurchaseOrder() {
-            if (this.purchase_order_id) {
+            if (this.order_id) {
 
-                await this.$http.get(`/purchase-orders/record/${this.purchase_order_id}`)
+                await this.$http.get(`/purchase-orders/record/${this.order_id}`)
                     .then(response => {
                         let purchase_order = response.data.data.purchase_order
                         let warehouse = response.data.data.warehouse
@@ -1328,6 +1334,14 @@ export default {
 
             this.loading_submit = true
             // await this.changePaymentMethodType(false)
+            let msg = 'Compra registrada'
+            if(this.type === 'settlements'){
+                this.resource = 'purchase-settlements';
+                msg = 'Liquidacion de compra registrada'
+            }
+            if (this.type === 'settlements') {
+                this.resource = 'purchase-settlements';
+            }
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
 
@@ -1337,7 +1351,7 @@ export default {
 
                             this.$message({
                                 showClose: true,
-                                message: `Compra registrada : ${response.data.data.number_full}`,
+                                message: `${msg} : ${response.data.data.number_full}`,
                                 duration: 2 * 3000,
                                 type: "success"
                             });
@@ -1407,7 +1421,7 @@ export default {
         },
 
         async searchPurchaseOrder(input){
-            if(this.purchase_order_id !== null) return false;
+            if(this.order_id !== null) return false;
             this.loading = true
             await this.$http
                 .post(`/${this.resource}/search/purchase_order`,{input})

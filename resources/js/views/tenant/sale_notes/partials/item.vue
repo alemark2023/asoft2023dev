@@ -272,6 +272,58 @@
                             </div>
                         </div>
 
+                        <div v-if="personTypeId"
+                             class="col-md-12">
+                            <div class="table-responsive"
+                                 style="margin:3px">
+                                <h5 class="separator-title">
+                                    Lista de Precios por Tipo de cliente
+                                    <el-tooltip class="item"
+                                                content="Aplica para realizar compra/venta en presentacion de diferentes precios y/o cantidades"
+                                                effect="dark"
+                                                placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </h5>
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center">Unidad</th>
+                                        <th class="text-center">Descripción</th>
+                                        <th class="text-center">Factor</th>
+                                        <th class="text-center">Precio 1</th>
+                                        <th class="text-center">Precio 2</th>
+                                        <th class="text-center">Precio 3</th>
+                                        <th class="text-center">Precio 4</th>
+                                        <th class="text-center">Precio Default</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr v-for="(row, index) in form.item_price_types"
+                                        :key="index">
+                                        <td class="text-center">{{ row.unit_type_id }}</td>
+                                        <td class="text-center">{{ row.description }}</td>
+                                        <td class="text-center">{{ row.quantity_unit }}</td>
+                                        <td class="text-center">{{ row.price1 }}</td>
+                                        <td class="text-center">{{ row.price2 }}</td>
+                                        <td class="text-center">{{ row.price3 }}</td>
+                                        <td class="text-center">{{ row.price4 }}</td>
+                                        <td class="text-center">Precio {{ row.price_default }}</td>
+                                        <td class="series-table-actions text-right">
+                                            <button :class="getSelectedClass(row)"
+                                                    class="btn waves-effect waves-light btn-xs"
+                                                    type="button"
+                                                    @click.prevent="selectedPrice(row)">
+                                                <i class="el-icon-check"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                         <div class="col-md-12 mt-2">
                             <el-collapse v-model="activePanel">
                                 <el-collapse-item :disabled="recordItem != null"
@@ -512,7 +564,8 @@ export default {
         'isEditItemNote',
         'configuration',
         'documentTypeId',
-        'noteCreditOrDebitTypeId'
+        'noteCreditOrDebitTypeId',
+        'personTypeId',
     ],
     components: {
         ItemForm,
@@ -860,6 +913,17 @@ export default {
                     this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
                 }
             }
+
+            this.$http.get(`/price/search/${this.personTypeId}`)
+            .then(response => {
+                console.log(response.data)
+                /* this.form.item_price_types = [];
+                if(response.data.length > 0){
+                    response.data.forEach(price => {
+                        this.form.item_price_types.push(price)
+                    });
+                } */
+            })
 
             if (this.recordItem) {
                 await this.reloadDataItems(this.recordItem.item_id)

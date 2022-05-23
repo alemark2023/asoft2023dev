@@ -50,6 +50,16 @@
                                         <el-option v-for="option in customer_addresses" :key="option.id" :value="option.id" :label="option.address"></el-option>
                                     </el-select>
                                 </div>
+                                <div
+                                 class="form-group col-sm-6 mb-0">
+                                    <label class="control-label font-weight-bold text-info">Tipo de cliente</label>
+                                    <el-select v-model="form.person_type_id">
+                                        <el-option v-for="option in person_types"
+                                                :key="option.id"
+                                                :label="option.description"
+                                                :value="option.id"></el-option>
+                                    </el-select>
+                                </div>
                             </div>
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
@@ -322,6 +332,7 @@
                              :recordItem="recordItem"
                              :configuration="config"
                              :customer-id="form.customer_id"
+                             :person-type-id="form.person_type_id"
                            @add="addRow"></quotation-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -389,6 +400,7 @@
                 loading_search:false,
                 recordItem: null,
                 total_discount_no_base: 0,
+                person_types:[]
             }
         },
         async created() {
@@ -410,6 +422,7 @@
                     this.payment_destinations = data.payment_destinations
                     // this.configuration = data.configuration
                     this.sellers = data.sellers;
+                    this.person_types=data.person_types;
 
                     this.changeEstablishment()
                     this.changeDateOfIssue()
@@ -639,6 +652,7 @@
                     sale_opportunity_id:null,
                     contact:null,
                     phone:null,
+                    person_type_id:null
                 }
 
                 this.total_discount_no_base = 0

@@ -159,7 +159,7 @@
                                 data-toggle="tooltip"
                                 data-placement="top"
                                 title="Anular"
-                                v-if="row.state_type_id != '11'"
+                                v-if="userPermissionOverrideCpe&&row.state_type_id != '11'"
                                 type="button"
                                 class="dropdown-item"
                              @click.prevent="clickVoided(row.id)">
@@ -289,6 +289,7 @@
         props: [
             'soapCompany',
             'typeUser',
+            'userPermissionOverrideCpe',
             'configuration'
         ],
         mixins: [deletable],

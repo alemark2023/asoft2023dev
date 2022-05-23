@@ -22,6 +22,7 @@
 @section('content')
     <tenant-documents-invoice
         :is_contingency="{{ json_encode($is_contingency) }}"
+        :person-types="{{ json_encode($person_types) }}"
         :type-user="{{json_encode(Auth::user()->type)}}"
         :configuration="{{\App\Models\Tenant\Configuration::getPublicConfig()}}"
         :document-id="{{ $documentId ?? 0 }}"
