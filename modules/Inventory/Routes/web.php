@@ -7,6 +7,9 @@
     if ($hostname) {
         Route::domain($hostname->fqdn)->group(function () {
             Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
+
+                Route::get('advanced-items-search', 'ItemController@advancedItemsSearch'); 
+
                 // Config inventory
 
                 Route::prefix('warehouses')->group(function () {

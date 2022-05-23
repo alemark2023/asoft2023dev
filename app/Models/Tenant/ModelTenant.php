@@ -22,6 +22,9 @@
     {
         use UsesTenantConnection;
 
+        public const RESERVED_SYMBOLS_FILTER = ['-', '+', '<', '>', '@', '(', ')', '~'];
+
+
         /**
          * Devuelve un esqueleto del array de data extra. Previene error de no enconrarse la funcion en otros modelos
          *
@@ -89,5 +92,33 @@
             return $date->format($format);
         }
         
+        
+        /**
+         * 
+         * Reemplazar simbolos reservados por espacio, para busqueda avanzada
+         *
+         * @param  string $value
+         * @return string
+         */
+        public function replaceReservedSymbols($value)
+        {
+            return str_replace(self::RESERVED_SYMBOLS_FILTER, ' ', $value);
+        }
+
+        
+        /**
+         * 
+         * Obtener arreglo con los valores a buscar - busqueda avanzada
+         *
+         * @param  string $value
+         * @return array
+         */
+        public function getSearchValues($value)
+        {
+            $search_term = $this->replaceReservedSymbols($value);
+
+            return preg_split('/\s+/', $search_term, -1, PREG_SPLIT_NO_EMPTY);
+        }
+
 
     }

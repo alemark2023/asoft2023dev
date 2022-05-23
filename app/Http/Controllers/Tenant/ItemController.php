@@ -120,7 +120,9 @@ class ItemController extends Controller
     public function getRecords(Request $request){
 
         $records = Item::whereTypeUser()->whereNotIsSet();
-        switch ($request->column) {
+        
+        switch ($request->column) 
+        {
 
             case 'brand':
                 $records->whereHas('brand',function($q) use($request){
@@ -143,9 +145,19 @@ class ItemController extends Controller
 
             default:
                 if($request->has('column'))
-                $records->where($request->column, 'like', "%{$request->value}%");
+                {
+                    if($this->applyAdvancedRecordsSearch() && $request->column === 'description')
+                    {
+                        if($request->value) $records->whereAdvancedRecordsSearch($request->column, $request->value);
+                    }
+                    else
+                    {
+                        $records->where($request->column, 'like', "%{$request->value}%");
+                    }
+                }
                 break;
         }
+
         if ($request->type) {
             if($request->type ==='PRODUCTS') {
                 // listar solo productos en la lista de productos

@@ -192,19 +192,6 @@
                 {{ $row->relation_item->brand != null ? $row->relation_item->brand->name : '' }}
             </td>
             <td class="text-center">
-                @if ($document->items)
-                    @foreach ($document->items as $row)
-                        @if ($row->item_id == $row->item_id)
-                            @isset($row->relation_item->item_lots)
-                                @foreach($row->relation_item->item_lots as $lot)
-                                    @if( isset($lot->has_sale) && $lot->has_sale)
-                                        <span style="font-size: 9px">{{ $lot->series }}</span><br>
-                                    @endif
-                                @endforeach
-                            @endisset
-                        @endif
-                    @endforeach
-                @endif
                 @if ($document->reference_document)
                     @foreach ($document->reference_document->items as $row)
                         @if ($row->item_id == $row->item_id)
