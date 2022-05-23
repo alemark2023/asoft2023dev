@@ -12,7 +12,7 @@ class PaymentConfiguration extends ModelTenant
         'qrcode_yape',
         'name_yape',
         'telephone_yape',
-        
+
         'enabled_mp',
         'access_token_mp',
         'public_key_mp',
@@ -65,15 +65,18 @@ class PaymentConfiguration extends ModelTenant
     public static function getPaymentPermissions()
     {
 
-        $record = PaymentConfiguration::select('enabled_yape', 'enabled_mp')->firstOrFail();
+        $record = PaymentConfiguration::firstOrFail();
 
         return [
             'enabled_yape' => $record->enabled_yape,
             'enabled_mp' => $record->enabled_mp,
+            'qrcode_yape' => $record->enabled_yape ? $record->getImageUrlYapeAttribute() : '',
+            'name_yape' => $record->enabled_yape ? $record->name_yape : '',
+            'telephone_yape' => $record->enabled_yape ? $record->telephone_yape : '',
         ];
 
     }
-    
+
 
     /**
      * Obtener llave publica de mercado pago

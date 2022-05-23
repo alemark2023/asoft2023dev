@@ -32,12 +32,12 @@ class PaymentLinkController extends Controller
     use PaymentLinkTrait;
 
 
-    public function index() 
+    public function index()
     {
         return view('payment::payment_links.index');
     }
 
-         
+
     public function columns()
     {
         return [
@@ -95,7 +95,7 @@ class PaymentLinkController extends Controller
 
     }
 
-    
+
     /**
      * Registrar link de pago desde un pago (cpe)
      *
@@ -122,9 +122,9 @@ class PaymentLinkController extends Controller
 
     }
 
-    
+
     /**
-     * 
+     *
      * Registrar/Actualizar link de pago desde el listado
      *
      * @param  PaymentLinkRequest $request
@@ -155,7 +155,7 @@ class PaymentLinkController extends Controller
 
 
     /**
-     * 
+     *
      * Buscar link de pago desde listado
      *
      * @param  int $id
@@ -168,7 +168,7 @@ class PaymentLinkController extends Controller
 
 
     /**
-     * 
+     *
      * Buscar transacciones
      *
      * @param  int $id
@@ -183,9 +183,9 @@ class PaymentLinkController extends Controller
                 });
     }
 
-    
+
     /**
-     * 
+     *
      * Eliminar link de pago
      *
      * @param  int $id
@@ -202,7 +202,7 @@ class PaymentLinkController extends Controller
                 'message' => 'El link de pago tiene transacciones relacionadas'
             ];
         }
-        
+
         $payment_link->delete();
 
         return [
@@ -210,10 +210,10 @@ class PaymentLinkController extends Controller
             'message' => 'Link de pago eliminado con éxito'
         ];
     }
-    
+
 
     /**
-     * 
+     *
      * Consultar y validar estado Aceptado de la transacción de mercado pago
      *
      * @param  Request $request
@@ -241,7 +241,7 @@ class PaymentLinkController extends Controller
         ];
 
     }
-    
+
 
     /**
      * Mostrar formulario público del link de pago
@@ -265,7 +265,7 @@ class PaymentLinkController extends Controller
 
     }
 
-    
+
     /**
      * Enviar correo
      *
@@ -278,15 +278,15 @@ class PaymentLinkController extends Controller
         $company = $this->getPublicDataCompany();
 
         Mail::to($request->customer_email)->send(new PaymentLinkEmail($company, $request->user_payment_link));
-        
+
         return [
             'success' => true,
             'message' => 'El correo fue enviado satisfactoriamente'
         ];
 
     }
-    
-    
+
+
     /**
      * Cargar voucher
      *
@@ -299,7 +299,7 @@ class PaymentLinkController extends Controller
         $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,svg');
         if(!$validate_upload['success']) return $validate_upload;
 
-        if ($request->hasFile('file')) 
+        if ($request->hasFile('file'))
         {
 
             $payment_link = PaymentLink::findOrFail($request->id);
@@ -316,7 +316,7 @@ class PaymentLinkController extends Controller
                 $filename = UploadFileHelper::uploadFileFromTempFile('payment_links', $temp_file['data']['filename'], $temp_file['data']['temp_path'], $payment_link->id);
                 $payment_link->uploaded_filename = $filename;
                 $payment_link->save();
-                
+
                 return [
                     'success' => true,
                     'message' => 'Archivo cargado correctamente',

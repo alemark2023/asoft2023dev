@@ -12,7 +12,7 @@ use Modules\Finance\Helpers\UploadFileHelper;
 
 class PaymentConfigurationController extends Controller
 {
-    
+
     /**
      * @return PaymentConfigurationResource
      */
@@ -21,7 +21,7 @@ class PaymentConfigurationController extends Controller
         return new PaymentConfigurationResource(PaymentConfiguration::firstOrFail());
     }
 
-    
+
     /**
      * @return array
      */
@@ -44,8 +44,8 @@ class PaymentConfigurationController extends Controller
 
         $type = $request->type;
         $record = PaymentConfiguration::firstOrFail();
-        
-        switch ($type) 
+
+        switch ($type)
         {
             case '01': //yape
                 $this->setDataYape($record, $request);
@@ -63,7 +63,7 @@ class PaymentConfigurationController extends Controller
         ];
     }
 
-    
+
     /**
      *
      * @param  PaymentConfiguration $record
@@ -101,7 +101,7 @@ class PaymentConfigurationController extends Controller
         }
     }
 
-    
+
     /**
      * Cargar qr yape
      *
@@ -114,7 +114,7 @@ class PaymentConfigurationController extends Controller
         $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,svg');
         if(!$validate_upload['success']) return $validate_upload;
 
-        if ($request->hasFile('file')) 
+        if ($request->hasFile('file'))
         {
             $new_request = [
                 'file' => $request->file('file'),

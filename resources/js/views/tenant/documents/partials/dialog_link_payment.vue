@@ -9,19 +9,24 @@
 
                         <div class="row">
                             <div class="col-md-7 bg-yape text-center pr-0">
-                                <img src="/logo/yape-logo.png" class="img-fluid" alt="Yape">
+                                <img src="/logo/yape-logo.png" class="my-1" style="max-width:80px;" alt="Yape">
+                                <div class="card mx-4">
+                                    <div class="card-body">
+                                        <div class="p-2">
+                                            <img :src="payment_configuration.qrcode_yape" class="img-fluid" alt="qr_yape">
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-white">{{payment_configuration.name_yape}}</p>
                                 <div class="payment-links-yape">
-
                                     <template v-if="has_payment_link">
-                                        
-                                        <el-button type="primary" class="mt-2" icon="el-icon-share" 
+                                        <el-button type="primary" class="mt-2" icon="el-icon-share"
                                             v-clipboard:copy="form.user_payment_link"
                                             v-clipboard:success="onCopy"
                                             v-clipboard:error="onError"
                                         >
                                             Copiar Link
                                         </el-button>
-
                                         <el-button type="primary" class="mt-2" icon="fas fa-envelope fa-fw" @click="showInputEmail">Enviar Correo</el-button>
                                         <el-button type="primary" class="my-2" icon="fab fa-whatsapp fa-fw" @click="showInputWhatsapp">Enviar Whatsapp</el-button>
 
@@ -29,39 +34,32 @@
                                     <template v-else>
                                         <el-button type="primary" class="mt-2 mb-2" icon="el-icon-link" @click="clickGenerateLink" :loading="loading_generate_link">Generar Link</el-button>
                                     </template>
-                                    
-                                    <div class="m-3" v-if="show_input_whatsapp || show_input_email">
 
-                                        <template v-if="show_input_whatsapp">
-
-                                            <el-input v-model="form_utilities.customer_telephone">
-                                                <template slot="prepend">+51</template>
-                                                <el-button slot="append"
-                                                        @click="clickSendWhatsapp">Enviar
-                                                    <el-tooltip class="item"
-                                                                content="Se recomienta tener abierta la sesión de Whatsapp web"
-                                                                effect="dark"
-                                                                placement="top-start">
-                                                        <i class="fab fa-whatsapp"></i>
-                                                    </el-tooltip>
-                                                </el-button>
-                                            </el-input>
-
-                                        </template>
-
-                                        
-                                        <template v-if="show_input_email">
-                                            <el-input v-model="form_utilities.customer_email" class="mt-2">
-                                                <el-button slot="append"
-                                                        :loading="loading_email"
-                                                        icon="el-icon-message"
-                                                        @click="clickSendEmail">Enviar
-                                                </el-button>
-                                            </el-input>
-                                        </template>
-
-                                    </div>
-
+                                </div>
+                                <div class="m-3" v-if="show_input_whatsapp || show_input_email">
+                                    <template v-if="show_input_whatsapp">
+                                        <el-input v-model="form_utilities.customer_telephone">
+                                            <template slot="prepend">+51</template>
+                                            <el-button slot="append"
+                                                    @click="clickSendWhatsapp">Enviar
+                                                <el-tooltip class="item"
+                                                            content="Se recomienta tener abierta la sesión de Whatsapp web"
+                                                            effect="dark"
+                                                            placement="top-start">
+                                                    <i class="fab fa-whatsapp"></i>
+                                                </el-tooltip>
+                                            </el-button>
+                                        </el-input>
+                                    </template>
+                                    <template v-if="show_input_email">
+                                        <el-input v-model="form_utilities.customer_email" class="mt-2">
+                                            <el-button slot="append"
+                                                    :loading="loading_email"
+                                                    icon="el-icon-message"
+                                                    @click="clickSendEmail">Enviar
+                                            </el-button>
+                                        </el-input>
+                                    </template>
                                 </div>
                             </div>
                             <div class="col-md-1 pt-2">
@@ -69,7 +67,7 @@
                             <div class="col-md-4 pt-2">
                                 <template v-if="has_payment_link">
                                     <!-- <el-button type="primary">Adjuntar pago</el-button> -->
-                                    
+
                                     <el-upload
                                             :data="{'id': form.id}"
                                             :headers="headers"
@@ -84,7 +82,7 @@
                                         <el-button slot="trigger" type="primary">Adjuntar pago</el-button>
                                     </el-upload>
 
-                                    
+
                                     <img class="img-fluid pt-3" style="width: 100%; max-height: 300px" v-if="form.image_url_uploaded_filename" :src="form.image_url_uploaded_filename" alt="Yape">
 
                                 </template>
@@ -122,7 +120,7 @@
 
                                         <el-button type="primary" class="mt-2" icon="fas fa-envelope fa-fw" @click="showInputEmail">Enviar Correo</el-button>
                                         <el-button type="primary" class="my-2" icon="fab fa-whatsapp fa-fw" @click="showInputWhatsapp">Enviar Whatsapp</el-button>
-                                    
+
                                     </template>
                                     <template v-else>
                                         <el-button type="primary" class="mt-2" icon="el-icon-link" @click="clickGenerateLink" :loading="loading_generate_link">Generar Link</el-button>
@@ -147,7 +145,7 @@
 
                                         </template>
 
-                                        
+
                                         <template v-if="show_input_email">
                                             <el-input v-model="form_utilities.customer_email" class="mt-2">
                                                 <el-button slot="append"
@@ -241,7 +239,7 @@
         },
         methods: {
             clickQueryStatusMP(){
-                
+
                 this.loading = true
 
                 this.$http.post(`/${this.resource}/query-transaction-state`, {
@@ -330,7 +328,7 @@
             },
             clickSendWhatsapp() {
 
-                if (!this.form_utilities.customer_telephone) 
+                if (!this.form_utilities.customer_telephone)
                 {
                     return this.$message.error('El número es obligatorio')
                 }
@@ -428,13 +426,13 @@
                         this.loading = false
                     })
 
-            }, 
+            },
             async getConfiguration() {
                 await this.$http.get(`/payment-configurations/record-permissions`)
                     .then(response => {
                         this.payment_configuration = response.data.data
                     })
-            }, 
+            },
             close() {
                 this.$emit('update:showDialog', false);
             },
@@ -449,8 +447,8 @@
     }
 
     .payment-links-yape .el-button--primary {
-        background-color: #10cbb4;
-        border-color: #10cbb4;
+        background-color: #10cbb4 !important;
+        border-color: #10cbb4 !important;
     }
 
     .bg-yape {
