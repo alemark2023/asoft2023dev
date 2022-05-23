@@ -192,7 +192,8 @@
                                     <a href="#"
                                        @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
                                 </label>
-                                <el-select v-model="form.customer_id"
+                                <el-select ref="select_person" 
+                                           v-model="form.customer_id"
                                            :loading="loading_search"
                                            :remote-method="searchRemoteCustomers"
                                            class="border-left rounded-left border-info"
@@ -2563,6 +2564,7 @@ export default {
                 this.$http.get(`/${this.resource}/search/customers?${parameters}`)
                     .then(response => {
                         this.customers = response.data.customers
+                        this.keyChangeCustomer(input)
                         this.loading_search = false
                         this.input_person.number = null
 
@@ -3547,6 +3549,7 @@ export default {
             this.form.customer_address_id = null;
 
             let customer = _.find(this.customers, {'id': this.form.customer_id});
+            this.keyChangeCustomer();
             this.customer_addresses = customer.addresses;
             if (customer.address) {
                 this.customer_addresses.unshift({
@@ -3741,7 +3744,14 @@ export default {
                 if(this.showDialogAddItem ) this.showDialogAddItem = false
             }
 
-        }
+        },
+        keyChangeCustomer(input) {
+                console.log(input)
+                let exist_persons = this.customers.find(this.customers, {'description': input});
+                console.log(exist_persons)
+                /* this.customers = (exist_persons.length == 0) ? this.input_person.number : null */
+
+        },
     }
 }
 </script>
