@@ -284,7 +284,7 @@
                                             </tr>
                                         </thead>
                                         <tbody v-if="form.items.length > 0">
-                                            <tr v-for="(row, index) in form.items">
+                                            <tr v-for="(row, index) in form.items" :key="index">
                                                 <td>{{ index + 1 }}</td>
                                                 <td>{{ row.item.description }} <template v-if="row.item.presentation">{{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}</template><br/><small>{{ row.affectation_igv_type.description }}</small></td>
                                                 <td class="text-center">{{ row.item.unit_type_id }}</td>
@@ -298,6 +298,12 @@
                                                 <td class="text-center">{{ currency_type.symbol }} {{ row.total }}</td>
                                                 <td class="text-center">
 
+                                                    <button class="btn waves-effect waves-light btn-xs btn-info"
+                                                            type="button"
+                                                            @click="clickEdiItem(row, index)">
+                                                        <span style='font-size:10px;'>&#9998;</span>
+                                                    </button>
+
                                                     <!-- <template v-if="row.id">
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteSNItem(row.id, index)">x</button>
                                                     </template> -->
@@ -305,7 +311,9 @@
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteSNItem(row.record_id, index)">x</button>
                                                     </template>
                                                     <template v-else>
-                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
+                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
                                                     </template>
 
                                                 </td>
@@ -326,7 +334,7 @@
                                         content="Presiona F2">
                                         <el-button slot="reference"
                                                    type="button" class="btn waves-effect waves-light btn-primary"
-                                                   @click.prevent="showDialogAddItem = true"
+                                                   @click.prevent="clickAddItem"
                                         >
                                             + Agregar Producto
                                             </el-button>
@@ -409,6 +417,7 @@
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
                            :configuration="config"
+                           :recordItem="recordItem"
                            @add="addRow"></sale-notes-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -524,6 +533,7 @@
                 total_discount_no_base: 0,
                 total_global_charge: 0,
                 global_charge_types: [],
+                recordItem: null
             }
         },
         async created() {
@@ -567,6 +577,15 @@
             ...mapActions([
                 'loadConfiguration',
             ]),
+            clickEdiItem(row, index) {
+                row.aux_index = index
+                this.recordItem = row
+                this.showDialogAddItem = true
+            },
+            clickAddItem() {
+                this.recordItem = null
+                this.showDialogAddItem = true
+            },
             changePaymentMethodType(index){
 
                 let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payments[index].payment_method_type_id})
@@ -832,7 +851,17 @@
             },
             addRow(row) {
                 // this.form.items.push(row)
-                this.form.items.push(JSON.parse(JSON.stringify(row)));
+                
+                if (this.recordItem) 
+                {
+                    this.form.items[this.recordItem.aux_index] = row
+                    this.recordItem = null
+                } 
+                else 
+                {
+                    this.form.items.push(JSON.parse(JSON.stringify(row)));
+                }
+            
                 this.calculateTotal()
             },
             clickRemoveItem(index) {
