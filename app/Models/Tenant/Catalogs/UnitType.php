@@ -3,6 +3,7 @@
 namespace App\Models\Tenant\Catalogs;
 
 use Hyn\Tenancy\Traits\UsesTenantConnection;
+use Modules\Item\Models\ItemPriceType;
 use Illuminate\Database\Eloquent\Builder;
 
 class UnitType extends ModelCatalog
@@ -32,5 +33,10 @@ class UnitType extends ModelCatalog
     public function item_unit_types()
     {
         return $this->hasMany(ItemUnitType::class);
+    }
+
+    public function item_price_types()
+    {
+        return $this->hasMany(ItemPriceType::class);
     }
 }

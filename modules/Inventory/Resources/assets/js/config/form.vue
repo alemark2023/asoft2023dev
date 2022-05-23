@@ -40,7 +40,7 @@
             }
         },
         async created() {
-            await this.initForm();
+            this.initForm();
             await this.getRecord()
         },
         methods: {
@@ -57,7 +57,7 @@
                     if (response.data !== '') this.form = response.data.data;
                 });
             },
-            submit() {
+            async submit() {
                 this.loading_submit = true;
 
                 this.$http.post(`/${this.resource}`, this.form).then(response => {

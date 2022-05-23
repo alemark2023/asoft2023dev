@@ -12,6 +12,8 @@ use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use App\Models\Tenant\Catalogs\Province;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\PersonType;
+use Modules\Item\Models\NamePrice;
+use Modules\Item\Models\ListPrice;
 use Exception;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Excel;
@@ -20,7 +22,8 @@ class PersonTypeController extends Controller
 {
     public function index()
     {
-        return view('tenant.person_types.index');
+        $item_price_types = NamePrice::with('list_price')->get();
+        return view('tenant.person_types.index', compact('item_price_types'));
     }
 
     public function columns()
@@ -35,7 +38,7 @@ class PersonTypeController extends Controller
 
         $records = PersonType::where($request->column, 'like', "%{$request->value}%")
                             ->latest();
-
+        /* dd($records); */
         return new PersonTypeCollection($records->paginate(config('tenant.items_per_page')));
     }
 
@@ -55,6 +58,15 @@ class PersonTypeController extends Controller
     public function store(PersonTypeRequest $request)
     {
         $id = $request->input('id');
+        $price_id=$request->input('price_id');
+        /* dd($name); */
+        
+        if($price_id){
+            $list_price = NamePrice::where('id',$price_id);
+            $list_price = $list_price->update([
+                'type_customer_id' => $id
+            ]);
+        }
         $person_type = PersonType::firstOrNew(['id' => $id]);
         $person_type->fill($request->all());
         $person_type->save();
@@ -72,7 +84,7 @@ class PersonTypeController extends Controller
             
             $person_type = PersonType::findOrFail($id);
             $person_type_type = 'Tipo de cliente';
-            $person_type->delete(); 
+            $person_type->delete();
 
             return [
                 'success' => true,

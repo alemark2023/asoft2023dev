@@ -58,7 +58,6 @@ class DocumentCollection extends ResourceCollection
                 'total_charge' => $row->total_charge,
 
 
-
                 'state_type_id' => $row->state_type_id,
                 'state_type_description' => $row->state_type->description,
                 'document_type_description' => $row->document_type->description,

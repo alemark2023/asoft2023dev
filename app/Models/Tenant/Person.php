@@ -128,6 +128,7 @@
             'trade_name',
             'internal_code',
             'country_id',
+            'nationality_id',
             'department_id',
             'province_id',
             'district_id',
@@ -231,6 +232,11 @@
         public function country()
         {
             return $this->belongsTo(Country::class);
+        }
+
+        public function nationality()
+        {
+            return $this->belongsTo(Country::class, 'nationality_id');
         }
 
         /**
@@ -566,6 +572,7 @@
                 'type' => $this->type,
                 'trade_name' => $this->trade_name,
                 'country_id' => $this->country_id,
+                'nationality_id' => $this->nationality_id,
                 'department_id' => $department['id']??null,
                 'department' => $department,
 

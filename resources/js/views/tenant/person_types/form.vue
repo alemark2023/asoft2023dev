@@ -10,7 +10,23 @@
                             <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                         </div>
                     </div> 
-                </div>  
+                </div>
+                <div class="col-md-3">
+                    <div :class="{'has-danger': errors.price_id}"
+                            class="form-group">
+                        <label class="control-label">Listado de Precios</label>
+                        <el-select v-model="form.price_id"
+                                    dusk="unit_type_id">
+                            <el-option v-for="option in itemPriceTypes"
+                                        :key="option.id"
+                                        :label="option.description"
+                                        :value="option.id"></el-option>
+                        </el-select>
+                        <small v-if="errors.price_id"
+                                class="form-control-feedback"
+                                v-text="errors.price_id[0]"></small>
+                    </div>
+                </div>
             </div>
             <div class="form-actions text-right mt-4">
                 <el-button @click.prevent="close()">Cancelar</el-button>
@@ -24,7 +40,7 @@
 
 
     export default {
-        props: ['showDialog', 'recordId'],
+        props: ['showDialog', 'recordId','itemPriceTypes'],
         data() {
             return {
                 titleDialog: null,
@@ -42,7 +58,8 @@
                 this.errors = {}
                 this.form = {
                     id: null,
-                    description: null, 
+                    description: null,
+                    price_name: null,
                 }
             },
             create() { 
