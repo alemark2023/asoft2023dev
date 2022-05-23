@@ -46,6 +46,7 @@
                             <th>Series</th>
                             <th>Plataforma</th>
                             <th class="">Moneda</th>
+                            <th v-if="columns.sale_unit_price.visible" class="">Valor unitario ( venta )</th>
                             <th class="">Valor unitario</th>
                             <th class="">Total</th>
                             <template v-if="type == 'sale'">
@@ -89,6 +90,7 @@
                                     </el-tooltip>
                                 </template>
                             </td>
+                            <td  v-if="columns.sale_unit_price.visible">{{row.sale_unit_value}}</td>
                             <td>{{row.unit_value}}</td>
                             <td>{{row.total}}</td>
                             <template v-if="type == 'sale'">
@@ -145,6 +147,11 @@
                     },
                     platform: {
                         title: 'Plataforma',
+                        visible: false,
+                        disable: false,
+                    },
+                    sale_unit_price: {
+                        title: 'Precio unitario ( venta )',
                         visible: false,
                         disable: false,
                     },

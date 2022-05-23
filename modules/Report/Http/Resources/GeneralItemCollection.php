@@ -44,6 +44,7 @@ class GeneralItemCollection extends ResourceCollection
             $item = $row->getModelItem();
             $model = $item->model;
             $platform = $item->getWebPlatformModel();
+            $sale_price = $item->sale_unit_price;
             if($platform !== null){
                 $platform = $platform->name;
             }
@@ -75,6 +76,7 @@ class GeneralItemCollection extends ResourceCollection
                 'series' => $resource['series'],
                 'alone_number' => $resource['alone_number'],
                 'quantity' => number_format($row->quantity, 2),
+                'sale_unit_value' => number_format($sale_price, 2),
                 'unit_value' => number_format($row_unit_value, 2),
                 // 'unit_value' => number_format($row->unit_value, 2),
                 'total' => number_format($row_total, 2),
