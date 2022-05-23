@@ -743,6 +743,7 @@
                     this.all_suppliers = response.data
                     this.suppliers = this.all_suppliers
                     this.calculatePerception()
+                    this.selectSupplier()
 
                 })
             },
