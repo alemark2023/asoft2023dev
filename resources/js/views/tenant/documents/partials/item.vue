@@ -76,6 +76,19 @@
                                             <i class="fa fa-search"></i>
                                         </el-button>
                                     </el-tooltip>
+                                    <el-tooltip
+                                        slot="append"
+                                        :disabled="recordItem != null"
+                                        class="item"
+                                        content="Historial de ventas"
+                                        effect="dark"
+                                        placement="bottom">
+                                        <el-button
+                                            :disabled="isEditItemNote"
+                                            @click.prevent="clickHistorySales()">
+                                            <i class="fa fa-list"></i>
+                                        </el-button>
+                                    </el-tooltip>
                                 </el-input>
                             </template>
                             <template v-else>
@@ -124,6 +137,10 @@
                                                                             barras
                                 </el-checkbox>
                                 <br>
+                                <template v-if="search_item_by_barcode">
+                                    <el-checkbox v-model="search_item_by_barcode_presentation">Por presentación</el-checkbox>
+                                    <br>
+                                </template>
                             </template>
                             <el-checkbox v-model="form.has_plastic_bag_taxes"
                                          :disabled="isEditItemNote">Impuesto a la
@@ -321,6 +338,73 @@
                                                     class="btn waves-effect waves-light btn-xs"
                                                     type="button"
                                                     @click.prevent="selectedPrice(row)">
+                                                <i class="el-icon-check"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div v-if="personTypeId"
+                             class="col-md-12">
+                            <div class="table-responsive"
+                                 style="margin:3px">
+                                <h5 class="separator-title">
+                                    Lista de Precios por Tipo de cliente
+                                    <el-tooltip class="item"
+                                                content="Aplica para realizar compra/venta en presentacion de diferentes precios y/o cantidades"
+                                                effect="dark"
+                                                placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </h5>
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center">Unidad</th>
+                                        <th class="text-center">Descripción</th>
+                                        <th class="text-center">Factor</th>
+                                        <!-- <th class="text-center">Precio 1</th>
+                                        <th class="text-center">Precio 2</th>
+                                        <th class="text-center">Precio 3</th>
+                                        <th class="text-center">Precio 4</th> -->
+                                        <template v-for="(row, index) in form.prices_types.prices" >
+                                            <th style="width: 80px;" width="13%" :key="index">precio {{index+1}}</th>
+                                        </template>
+                                        <th class="text-center">Precio Default</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td class="text-center">{{ form.prices_types.unit_type_id }}</td>
+                                        <td class="text-center">{{ form.prices_types.description }}</td>
+                                        <td class="text-center">{{ form.prices_types.quantity_unit }}</td>
+                                        <template v-for="(row, index) in form.prices_types.prices" >
+                                            <td v-if="index<3" width="15%" :key="index">
+                                                <div style="width: 100px;" class="form-group">
+                                                    <el-input v-model="row.price">{{row.price}}</el-input>
+                                                </div>
+                                            </td>
+                                            <td v-else width="15%"  :key="index">
+                                                <div style="width: 100px;" class="d-flex w-100" >
+                                                    <span class="pr-1">%</span>
+                                                    <div class="form-group">
+                                                        <el-input v-model="row.price">{{row.price}}</el-input>
+                                                        <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
+                                                    </div>
+                                                </div>
+                                                
+                                            </td>
+                                        </template>
+                                        <td class="text-center">Precio {{ form.prices_types.price_default }}</td>
+                                        <td class="series-table-actions text-right">
+                                            <button :class="getSelectedClass(form.prices_types)"
+                                                    class="btn waves-effect waves-light btn-xs"
+                                                    type="button"
+                                                    @click.prevent="selectedPrice(form.prices_types,true)">
                                                 <i class="el-icon-check"></i>
                                             </button>
                                         </td>
@@ -533,7 +617,12 @@
             :showDialog.sync="showWarehousesDetail"
             :warehouses="warehousesDetail">
         </warehouses-detail>
-
+        <history-sales-form
+            :showDialog.sync="showDialogHistorySales"
+            :item_id="history_item_id"
+            :customer_id="this.customerId"
+            :type="true"
+        ></history-sales-form>
         <lots-group
             :lots_group="form.lots_group"
             :quantity="form.quantity"
@@ -550,6 +639,7 @@
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
 
+        
 
     </el-dialog>
 </template>
@@ -575,6 +665,8 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 import Keypress from "vue-keypress";
 
+import HistorySalesForm from "../../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
+
 export default {
     props: [
         'recordItem',
@@ -588,13 +680,15 @@ export default {
         'documentTypeId',
         'noteCreditOrDebitTypeId',
         'displayDiscount',
-        'customerId'
+        'customerId',
+        'personTypeId',
     ],
     components: {
         ItemForm,
         WarehousesDetail,
         Keypress,
         LotsGroup,
+        HistorySalesForm,
         SelectLotsForm,
         'vue-ckeditor': VueCkeditor.component
     },
@@ -641,7 +735,8 @@ export default {
             },
             value1: 'hello',
             readonly_total: 0,
-            itemLastPrice: null
+            itemLastPrice: null,
+            showDialogHistorySales: false,
             //item_unit_type: {}
         }
     },
@@ -847,17 +942,20 @@ export default {
             this.calculateTotal()
         },
         async searchRemoteItems(input) {
-            if (input.length > 2) {
+
+            if (input.length > 2) 
+            {
                 this.loading_search = true
                 const params = {
                     'input': input,
-                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0
+                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0,
+                    'search_item_by_barcode_presentation': this.search_item_by_barcode_presentation ? 1 : 0,
                 }
                 await this.$http.get(`/${this.resource}/search-items/`, {params})
                     .then(response => {
                         this.items = response.data.items
                         this.loading_search = false
-                        this.enabledSearchItemsBarcode()
+                        this.enabledSearchItemsBarcode(input)
                         this.enabledSearchItemBySeries()
                         if (this.items.length == 0) {
                             this.filterItems()
@@ -871,14 +969,37 @@ export default {
         filterItems() {
             this.items = this.all_items
         },
-        enabledSearchItemsBarcode() {
+        enabledSearchItemsBarcode(input) {
             if (this.search_item_by_barcode) {
+
                 this.$refs.selectBarcode.$data.selectedLabel = '';
-                if (this.items.length == 1) {
-                    this.form.item_id = this.items[0].id;
-                    this.$refs.selectBarcode.blur();
-                    this.changeItem();
+
+                //busqueda por presentacion
+                if(this.search_item_by_barcode_presentation)
+                {
+                    if (this.items.length == 1)
+                    {
+                        const item_unit_type = _.find(this.items[0].item_unit_types, { barcode : input})
+    
+                        if(!_.isEmpty(item_unit_type))
+                        {
+                            this.form.item_id = this.items[0].id;
+                            this.$refs.selectBarcode.blur();
+                            this.changeItem()
+                            this.selectedPrice(item_unit_type)
+                        }
+                    }
                 }
+                //busqueda comun
+                else
+                {
+                    if (this.items.length == 1) {
+                        this.form.item_id = this.items[0].id;
+                        this.$refs.selectBarcode.blur();
+                        this.changeItem();
+                    }
+                }
+
             }
         },
         async enabledSearchItemBySeries() {
@@ -953,13 +1074,22 @@ export default {
                 has_igv: null,
                 is_set: false,
                 item_unit_types: [],
+                item_price_types: [],
                 has_plastic_bag_taxes: false,
                 series_enabled: false,
                 warehouse_id: null,
                 lots_group: [],
                 IdLoteSelected: null,
                 document_item_id: null,
-                name_product_pdf: ''
+                name_product_pdf: '',
+                prices_types:{ 
+                    id: null,
+                    description: null,
+                    unit_type_id: 'NIU',
+                    quantity_unit: 0,
+                    price_default: 2,
+                    prices: [],
+                },
             };
 
             this.activePanel = 0;
@@ -979,6 +1109,22 @@ export default {
             let operation_type = await _.find(this.operation_types, {id: this.operationTypeId})
             this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
 //
+            this.$http.get(`/price/search/${this.personTypeId}`)
+            .then(response => {
+                console.log(response.data)
+                this.form.prices_types.prices = [];
+                response.data.forEach(value => {
+                    console.log(value.price)
+                    this.form.prices_types.prices.push({price:value.price})
+                });
+                console.log(this.form.prices_types.length)
+                this.form.prices_types.id=response.data[0].name_price.id
+                console.log(this.form.prices_types.id)
+                this.form.prices_types.description=response.data[0].name_price.description
+                this.form.prices_types.unit_type_id=response.data[0].name_price.unit_type_id
+                this.form.prices_types.quantity_unit=response.data[0].name_price.quantity_unit
+                this.form.prices_types.price_default=response.data[0].name_price.price_default
+            })
 
             if (this.recordItem) {
                 if (this.recordItem.item !== undefined && this.recordItem.item.extra !== undefined) {
@@ -1150,7 +1296,25 @@ export default {
 
             this.form.item = _.find(this.items, {'id': this.form.item_id});
             this.form.item = this.setExtraFieldOfitem(this.form.item)
+            
             this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
+
+            if(this.personTypeId){
+                await this.$http.get(`/price/search/${this.personTypeId}`)
+                .then(response => {
+                    console.log(response.data)
+                    this.form.item_price_types = [];
+                    if(response.data.length > 0){
+                        response.data.forEach(price => {
+                            this.form.item_price_types.push(price)
+                        });
+                    }
+                })
+            }
+            
+            
+
+            
             this.form.unit_price_value = this.form.item.sale_unit_price;
             this.lots = this.form.item.lots
 
@@ -1223,6 +1387,8 @@ export default {
         },
         async clickAddItem() {
 
+            if(parseFloat(this.form.unit_price_value) <= 0) return this.$message.error('El Precio Unitario debe ser mayor a 0');
+
             // if(this.form.quantity < this.getMinQuantity()){
             //     return this.$message.error(`La cantidad no puede ser inferior a ${this.getMinQuantity()}`);
             // }
@@ -1252,6 +1418,18 @@ export default {
 
                 }
             }
+
+            
+            //validar precio compra y venta
+            if(this.configuration.validate_purchase_sale_unit_price)
+            {
+                let val_purchase_unit_price = parseFloat(this.form.item.purchase_unit_price)
+                
+                if(val_purchase_unit_price > parseFloat(unit_price)){
+                    return this.$message.error(`El precio de compra no puede ser superior al precio de venta (P. Compra: ${val_purchase_unit_price})`)
+                }
+            }
+
 
             this.form.input_unit_price_value = this.form.unit_price_value;
 
@@ -1289,6 +1467,8 @@ export default {
             this.row.IdLoteSelected = IdLoteSelected
             this.row.document_item_id = document_item_id
 
+            this.showMessageDetraction()
+
             this.$emit('add', this.row);
 
             if (this.search_item_by_barcode) {
@@ -1300,6 +1480,14 @@ export default {
             } else {
                 this.setFocusSelectItem();
             }
+        },
+        showMessageDetraction(){
+
+            let total = (this.currencyTypeIdActive === 'PEN') ? this.row.total : (this.row.total * this.exchangeRateSale)
+            let total_restriction = 700
+
+            if (total >= total_restriction && this.row.item.subject_to_detraction) this.$message.warning('El producto/servicio vendido está sujeto a detracción')
+
         },
         cleanItems() {
             this.items = []
@@ -1374,7 +1562,7 @@ export default {
             }
             return false
         },
-        selectedPrice(row) {
+        selectedPrice(row,typePrice=false) {
 
             if (this.isSelectedPrice(row)) {
 
@@ -1385,20 +1573,40 @@ export default {
                 this.form.item.unit_type_id = this.form.item.original_unit_type_id
 
             } else {
-
                 let valor = 0
-                switch (row.price_default) {
-                    case 1:
-                        valor = row.price1
-                        break
-                    case 2:
-                        valor = row.price2
-                        break
-                    case 3:
-                        valor = row.price3
-                        break
+                if (typePrice) {
+                    switch (row.price_default) {
+                        case 1:
+                            valor = row.prices[0].price
+                            break
+                        case 2:
+                            valor = row.prices[1].price
+                            break
+                        case 3:
+                            valor = row.prices[2].price
+                            break
 
+                    }
+                    if(row.price_default>2){
+                        let indice=row.price_default
+                        valor = this.form.item.sale_unit_price*(100/row.prices[indice].price)
+                    }
+                } else {
+                    
+                    switch (row.price_default) {
+                        case 1:
+                            valor = row.price1
+                            break
+                        case 2:
+                            valor = row.price2
+                            break
+                        case 3:
+                            valor = row.price3
+                            break
+
+                    }
                 }
+                console.log(row.id)
                 this.form.item_unit_type_id = row.id
                 this.item_unit_type = row
                 this.form.unit_price = valor
@@ -1569,7 +1777,17 @@ export default {
                 }
             }
            
-        }
+        },
+        clickHistorySales() {
+            if (!this.form.item_id) {
+                return this.$message.error('Seleccione un item');
+            }
+
+            let item = _.find(this.items, {'id': this.form.item_id});
+            this.history_item_id = item.id;
+            this.showDialogHistorySales = true;
+            // console.log(item)
+        },
     }
 }
 

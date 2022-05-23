@@ -491,6 +491,10 @@
                                         <a class="nav-link"
                                            href="{{route('tenant.zone.index')}}">Zonas</a>
                                     </li>
+                                    <li class="{{ ($firstLevel === 'price')?'nav-active':'' }}">
+                                        <a class="nav-link"
+                                           href="{{route('tenant.price.index')}}">Precios</a>
+                                    </li>
 
                             </ul>
                         </li>
@@ -847,7 +851,7 @@
                         </li>
                     @endif
                     @if(in_array('reports', $vc_modules))
-                        <li class="{{  ($firstLevel === 'reports' && in_array($secondLevel, ['purchases', 'search','sales','customers','items', 'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated', 'order-notes-general', 'sales-consolidated', 'user-commissions', 'fixed-asset-purchases', 'massive-downloads'])) ? 'nav-active' : ''}} {{ $firstLevel === 'list-reports' ? 'nav-active' : '' }}">
+                        <li class="{{  ($firstLevel === 'reports' && in_array($secondLevel, ['purchases', 'search','sales','customers','items', 'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated', 'order-notes-general', 'sales-consolidated', 'user-commissions', 'fixed-asset-purchases', 'massive-downloads', 'tips'])) ? 'nav-active' : ''}} {{ $firstLevel === 'list-reports' ? 'nav-active' : '' }}">
                             <a class="nav-link"
                                href="{{ url('list-reports') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -1286,6 +1290,7 @@
                                                     ($firstLevel === 'machine-production') ||
                                                     ($firstLevel === 'packaging') ||
                                                     ($firstLevel === 'machine-type-production') ||
+                                                    ($firstLevel === 'workers') ||
                                                     ($firstLevel === 'mill-production')
                                                 ) ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link"
@@ -1329,6 +1334,12 @@
                                     </a>
                                 </li>
 
+                                <li class="{{ (($firstLevel === 'workers')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                        href="{{ route('tenant.workers.index') }}">
+                                        Empleados
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     @endif

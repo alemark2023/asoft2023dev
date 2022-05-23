@@ -50,6 +50,16 @@
                                         <el-option v-for="option in customer_addresses" :key="option.id" :value="option.id" :label="option.address"></el-option>
                                     </el-select>
                                 </div>
+                                <div
+                                 class="form-group col-sm-6 mb-0">
+                                    <label class="control-label font-weight-bold text-info">Tipo de cliente</label>
+                                    <el-select v-model="form.person_type_id">
+                                        <el-option v-for="option in person_types"
+                                                :key="option.id"
+                                                :label="option.description"
+                                                :value="option.id"></el-option>
+                                    </el-select>
+                                </div>
                             </div>
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
@@ -245,16 +255,17 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
-                                                <th class="font-weight-bold">Descripción</th>
-                                                <th class="text-center font-weight-bold">Unidad</th>
-                                                <th class="text-right font-weight-bold">Cantidad</th>
-                                                <th class="text-right font-weight-bold">Valor Unitario</th>
-                                                <th class="text-right font-weight-bold">Precio Unitario</th>
-                                                <th class="text-right font-weight-bold">Subtotal</th>
+                                                <th width="5%">#</th>
+                                                <th class="font-weight-bold"
+                                                    width="30%">Descripción</th>
+                                                <th width="8%" class="text-center font-weight-bold">Unidad</th>
+                                                <th width="8%" class="text-center font-weight-bold">Cantidad</th>
+                                                <th class="text-center font-weight-bold">Valor Unitario</th>
+                                                <th class="text-center font-weight-bold">Precio Unitario</th>
+                                                <th class="text-center font-weight-bold">Subtotal</th>
                                                 <!--<th class="text-right font-weight-bold">Cargo</th>-->
-                                                <th class="text-right font-weight-bold">Total</th>
-                                                <th></th>
+                                                <th class="text-center font-weight-bold">Total</th>
+                                                <th width="8%"></th>
                                             </tr>
                                         </thead>
                                         <tbody v-if="form.items.length > 0">
@@ -263,15 +274,15 @@
                                                 <td>
                                                     {{ setDescriptionOfItem (row.item) }} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
-                                                <td class="text-right">{{row.quantity}}</td>
+                                                <td class="text-center">{{row.quantity}}</td>
                                                 <!-- <td class="text-right">{{currency_type.symbol}} {{row.unit_price}}</td> -->
-                                                <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
-                                                <td class="text-right">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
+                                                <td class="text-center">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
+                                                <td class="text-center">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
 
-                                                <td class="text-right">{{currency_type.symbol}} {{row.total_value}}</td>
+                                                <td class="text-center">{{currency_type.symbol}} {{row.total_value}}</td>
                                                 <!--<td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>-->
-                                                <td class="text-right">{{currency_type.symbol}} {{row.total}}</td>
-                                                <td class="text-right">
+                                                <td class="text-center">{{currency_type.symbol}} {{row.total}}</td>
+                                                <td class="text-center">
                                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click="ediItem(row, index)" ><span style='font-size:10px;'>&#9998;</span> </button>
                                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
                                                 </td>
@@ -321,6 +332,7 @@
                              :recordItem="recordItem"
                              :configuration="config"
                              :customer-id="form.customer_id"
+                             :person-type-id="form.person_type_id"
                            @add="addRow"></quotation-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -388,6 +400,7 @@
                 loading_search:false,
                 recordItem: null,
                 total_discount_no_base: 0,
+                person_types:[]
             }
         },
         async created() {
@@ -409,6 +422,7 @@
                     this.payment_destinations = data.payment_destinations
                     // this.configuration = data.configuration
                     this.sellers = data.sellers;
+                    this.person_types=data.person_types;
 
                     this.changeEstablishment()
                     this.changeDateOfIssue()
@@ -638,6 +652,7 @@
                     sale_opportunity_id:null,
                     contact:null,
                     phone:null,
+                    person_type_id:null
                 }
 
                 this.total_discount_no_base = 0

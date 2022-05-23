@@ -56,6 +56,7 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
+use App\Models\Tenant\PersonType;
 
 // use App\Models\Tenant\Warehouse;
 
@@ -513,6 +514,7 @@ class SaleNoteController extends Controller
         $currency_types = CurrencyType::whereActive()->get();
         $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
+        $global_charge_types = ChargeDiscountType::whereIn('id', ['50'])->get();
         $company = Company::active();
         $payment_method_types = PaymentMethodType::all();
         $series = collect(Series::all())->transform(function($row) {
@@ -528,10 +530,11 @@ class SaleNoteController extends Controller
         $configuration = Configuration::select('destination_sale','ticket_58')->first();
         // $sellers = User::GetSellers(false)->get();
         $sellers = User::getSellersToNvCpe($establishment_id,$userId);
+        $person_types = PersonType::all();
 
 
         return compact('customers', 'establishments','currency_types', 'discount_types', 'configuration',
-                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers');
+                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers', 'global_charge_types','person_types');
     }
 
     public function changed($id)
@@ -626,13 +629,19 @@ class SaleNoteController extends Controller
 
                 if(isset($row['IdLoteSelected']))
                 {
-                    if(is_array($row['IdLoteSelected'])) {
+                    if(is_array($row['IdLoteSelected'])) 
+                    {
+                        // presentacion - factor de lista de precios
+                        $quantity_unit = isset($sale_note_item->item->presentation->quantity_unit) ? $sale_note_item->item->presentation->quantity_unit : 1;
 
-                        foreach ($row['IdLoteSelected'] as $item) {
+                        foreach ($row['IdLoteSelected'] as $item) 
+                        {
                             $lot = ItemLotsGroup::query()->find($item['id']);
-                            $lot->quantity = $lot->quantity - $item['compromise_quantity'];
+                            $lot->quantity = $lot->quantity - ($quantity_unit * $item['compromise_quantity']);
+                            $this->validateStockLotGroup($lot, $sale_note_item);
                             $lot->save();
                         }
+                        
                     }
                     else {
 
@@ -1587,23 +1596,29 @@ class SaleNoteController extends Controller
         ]);
         $clientId = $request->client_id;
         $records = SaleNote::without(['user', 'soap_type', 'state_type', 'currency_type', 'payments'])
-                            ->select('series', 'number', 'id', 'date_of_issue')
+                            ->select('series', 'number', 'id', 'date_of_issue', 'total')
                             ->where('customer_id', $clientId)
                             ->whereNull('document_id')
                             ->whereIn('state_type_id', ['01', '03', '05'])
                             ->orderBy('number', 'desc');
 
         $dateOfIssue = $request->date_of_issue;
-        if ($dateOfIssue) {
+        $dateOfDue = $request->date_of_due;
+        if ($dateOfIssue&&!$dateOfDue) {
             $records = $records->where('date_of_issue', $dateOfIssue);
         }
-
+        
+        if ($dateOfIssue&&$dateOfDue) {
+            $records = $records->whereBetween('date_of_issue', [$dateOfIssue,$dateOfDue]);
+        }
+        $sum_total=0;
         $records = $records->take(20)
             ->get();
-
+        $sum_total=number_format($records->sum('total'),2);
         return response()->json([
             'success' => true,
             'data' => $records,
+            'sum_total' => $sum_total,
         ], 200);
     }
 
