@@ -37,6 +37,7 @@
                             <th class="text-center" v-if="columns.web_platforms.visible">Plataforma</th>
                             <th>Orden de compra</th>
                             <th v-if="columns.total_charge.visible">Total Cargos</th>
+                            <th v-if="columns.total_discount.visible">Total Descuento</th>
                             <th>Total Exonerado</th>
                             <th>Total Inafecto</th>
                             <th>Total Gratuito</th>
@@ -92,6 +93,7 @@
                                 }}
                             </td>
 
+                            <td  v-if="columns.total_discount.visible">{{  row.total_discount }}</td>
 
                             <td>{{
                                     (row.document_type_id == '07') ? ((row.total_exonerated == 0) ? '0.00' : '-' + row.total_exonerated) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_exonerated)
@@ -183,6 +185,10 @@
                     },
                     total_charge: {
                         title: 'Total Cargos',
+                        visible: false
+                    },
+                    total_discount: {
+                        title: 'Total Descuento',
                         visible: false
                     },
                 },
