@@ -239,6 +239,7 @@
             'restrict_voided_send',
             'shipping_time_days_voided',
             'enabled_tips_pos',
+            'legend_forest_to_xml',
             'change_currency_item',
             'enabled_advanced_records_search',
         ];
@@ -321,6 +322,7 @@
             'restrict_voided_send' => 'bool',
             'shipping_time_days_voided' => 'int',
             'enabled_tips_pos' => 'bool',
+            'legend_forest_to_xml' => 'bool',
             'change_currency_item' => 'bool',
             'enabled_advanced_records_search' => 'bool',
             
@@ -516,6 +518,7 @@
                 'restrict_voided_send' => $this->restrict_voided_send,
                 'shipping_time_days_voided' => $this->shipping_time_days_voided,
                 'enabled_tips_pos' => $this->enabled_tips_pos,
+                'legend_forest_to_xml' => $this->legend_forest_to_xml,
                 'change_currency_item' => $this->change_currency_item,
                 'enabled_advanced_records_search' => $this->enabled_advanced_records_search,
 
@@ -2113,6 +2116,18 @@
         public function scopeGetUnitPriceDispatchRelatedRecord($query)
         {
             return $query->select('set_unit_price_dispatch_related_record')->first()->set_unit_price_dispatch_related_record;
+        }
+         
+        
+        /**
+         * Usado en:
+         * LegendInput, para facturas y boletas
+         *
+         * @return bool
+         */
+        public static function isEnabledLegendForestToXml()
+        {
+            return Configuration::select('legend_forest_to_xml')->firstOrFail()->legend_forest_to_xml;
         }
                 
         /**
