@@ -24,7 +24,7 @@ $unit_price = '';
 $unit_value = '';
 $total = '';
 $total_value = '';
-$total_item_purchase = number_format($total_item_purchase, 2);
+$total_item_purchase = round($total_item_purchase, 2);
 $utility_item = number_format($utility_item, 2);
 $relation_item = $value->relation_item;
 $web_platform = '';
@@ -59,13 +59,13 @@ if (!isset($qty)) {
     // aplicar conversión si es que esta habilitada la configuracion
     if($apply_conversion_to_pen && $value->isCurrencyTypeUsd())
     {
-        $total = number_format($value->getConvertTotalToPen(), 2);
-        $utility_item = number_format($total - $total_item_purchase, 2);
-        $unit_price = number_format($value->getConvertUnitPriceToPen(), 6);
-        $unit_value = number_format($value->getConvertUnitValueToPen(), 6);
-        $total_value = number_format($value->getConvertTotalValueToPen(), 2);
-        $igv = number_format($value->getConvertTotalIgvToPen(), 2);
-        $total_isc = number_format($value->getConvertTotalIscToPen(), 2);
+        $total = round($value->getConvertTotalToPen(), 2);
+        $utility_item = round($total - $total_item_purchase, 2);
+        $unit_price = round($value->getConvertUnitPriceToPen(), 6);
+        $unit_value = round($value->getConvertUnitValueToPen(), 6);
+        $total_value = round($value->getConvertTotalValueToPen(), 2);
+        $igv = round($value->getConvertTotalIgvToPen(), 2);
+        $total_isc = round($value->getConvertTotalIscToPen(), 2);
         $description_apply_conversion_to_pen = '(Se aplicó conversión a soles)';
     }
     // aplicar conversión si es que esta habilitada la configuracion
