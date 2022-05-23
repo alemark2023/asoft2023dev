@@ -242,6 +242,8 @@
             'legend_forest_to_xml',
             'change_currency_item',
             'enabled_advanced_records_search',
+            'change_decimal_quantity_unit_price_pdf',
+            'decimal_quantity_unit_price_pdf',
         ];
 
         protected $casts = [
@@ -325,6 +327,8 @@
             'legend_forest_to_xml' => 'bool',
             'change_currency_item' => 'bool',
             'enabled_advanced_records_search' => 'bool',
+            'change_decimal_quantity_unit_price_pdf' => 'bool',
+            'decimal_quantity_unit_price_pdf' => 'int',
             
         ];
 
@@ -521,6 +525,8 @@
                 'legend_forest_to_xml' => $this->legend_forest_to_xml,
                 'change_currency_item' => $this->change_currency_item,
                 'enabled_advanced_records_search' => $this->enabled_advanced_records_search,
+                'change_decimal_quantity_unit_price_pdf' => $this->change_decimal_quantity_unit_price_pdf,
+                'decimal_quantity_unit_price_pdf' => $this->decimal_quantity_unit_price_pdf,
 
             ];
         }
@@ -2142,5 +2148,17 @@
             return $query->select('enabled_advanced_records_search')->firstOrFail()->enabled_advanced_records_search;
         }
 
+
+        /**
+         * 
+         * Obtener configuracion de decimales para el precio unitario en pdf
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public function scopeGetDataDecimalQuantity($query)
+        {
+            return $query->select('change_decimal_quantity_unit_price_pdf', 'decimal_quantity_unit_price_pdf')->firstOrFail();
+        }
 
     }
