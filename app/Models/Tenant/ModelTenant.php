@@ -120,5 +120,19 @@
             return preg_split('/\s+/', $search_term, -1, PREG_SPLIT_NO_EMPTY);
         }
 
+    
+        /**
+         * 
+         * Aplicar formato
+         *
+         * @param  $value
+         * @param  int $decimals
+         * @return string
+         */
+        public function generalApplyNumberFormat($value, $decimals = 2)
+        {
+            return number_format($value, $decimals, ".", "");
+        }
+        
 
     }
