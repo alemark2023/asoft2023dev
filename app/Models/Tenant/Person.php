@@ -15,6 +15,8 @@
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Modules\DocumentaryProcedure\Models\DocumentaryFile;
     use Modules\Expense\Models\Expense;
+    use Modules\FullSuscription\Models\Tenant\FullSuscriptionServerDatum;
+    use Modules\FullSuscription\Models\Tenant\FullSuscriptionUserDatum;
     use Modules\Order\Models\OrderForm;
     use Modules\Order\Models\OrderNote;
     use Modules\Purchase\Models\FixedAssetPurchase;
@@ -475,7 +477,7 @@
          *
          * @return array
          */
-        public function getCollectionData($withFullAddress = false, $childrens = false)
+        public function getCollectionData($withFullAddress = false, $childrens = false, $servers=false)
         {
 
             $addresses = $this->addresses;
@@ -603,6 +605,19 @@
                 }
 
                 $data['parent'] = $parent;
+
+            }
+
+            if($servers == true){
+                $serv = FullSuscriptionServerDatum::where('person_id',$this->id)->get();
+                $extra_data = FullSuscriptionUserDatum::where('person_id',$this->id)->first();
+                if(empty($extra_data)){ $extra_data = new FullSuscriptionUserDatum();}
+                 $data['servers'] = $serv;
+                $data['person_id']=$extra_data->getPersonId();
+                $data['discord_user']=$extra_data->getDiscordUser();
+                $data['slack_channel']=$extra_data->getSlackChannel();
+                $data['discord_channel']=$extra_data->getDiscordChannel();
+                $data['gitlab_user']=$extra_data->getGitlabUser();
 
             }
 
