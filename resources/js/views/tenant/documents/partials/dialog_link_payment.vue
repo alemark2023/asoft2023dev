@@ -8,7 +8,7 @@
                     <template  v-if="payment_configuration.enabled_yape">
 
                         <div class="row">
-                            <div class="col-md-7 bg-yape text-center pr-0">
+                            <div class="col-md-7 col-lg-5 bg-yape text-center pr-0">
                                 <img src="/logo/yape-logo.png" class="my-1" style="max-width:80px;" alt="Yape">
                                 <div class="card mx-4">
                                     <div class="card-body">
@@ -62,9 +62,7 @@
                                     </template>
                                 </div>
                             </div>
-                            <div class="col-md-1 pt-2">
-                            </div>
-                            <div class="col-md-4 pt-2">
+                            <div class="col-md-5 col-lg-7 pt-2 d-flex justify-content-center">
                                 <template v-if="has_payment_link">
                                     <!-- <el-button type="primary">Adjuntar pago</el-button> -->
 
