@@ -6,6 +6,7 @@ use Modules\Finance\Models\GlobalPayment;
 use Modules\Finance\Models\PaymentFile;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder;
+use Modules\Payment\Models\PaymentLink;
 
 
 class DocumentPayment extends ModelTenant
@@ -99,5 +100,10 @@ class DocumentPayment extends ModelTenant
         ];
     }
     
+
+    public function payment_links()
+    {
+        return $this->morphMany(PaymentLink::class, 'payment');
+    }
 
 }

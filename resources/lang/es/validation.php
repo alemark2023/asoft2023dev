@@ -87,6 +87,10 @@ return [
 	'uploaded' => 'Subir :attribute ha fallado.',
 	'url'      => 'El formato :attribute es inválido.',
 
+    'gt' => [
+        'numeric' => 'El campo :attribute debe ser mayor que :value.',
+    ],
+
 	/*
 	|--------------------------------------------------------------------------
 	| Custom Validation Language Lines
@@ -308,6 +312,11 @@ return [
 		'gitlab_user' => 'usuario de gitlab.com',
 		'domain' => 'dominio',
 		'occupation' => 'cargo',
+
+		'qrcode_yape' => 'código QR',
+		'name_yape' => 'nombres y apellidos',
+		'telephone_yape' => 'teléfono',
+
 
 	],
 ];

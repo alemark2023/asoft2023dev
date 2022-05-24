@@ -448,6 +448,12 @@ class SaleNoteController extends Controller
         if($request != null && $request->has('onlySuscription') && (bool)$request->onlySuscription == true){
             $records->whereNotNull('grade')->whereNotNull('section') ;
         }
+        // Solo devuelve Suscripciones que tengan relacion en user_rel_suscription_plans.
+        if($request != null && $request->has('onlyFullSuscription') && (bool)$request->onlyFullSuscription == true){
+            $records->whereNotNull('user_rel_suscription_plan_id')
+                ->whereNull('grade')->whereNull('section')
+            ;
+        }
         if($request->column == 'customer'){
             $records->whereHas('person', function($query) use($request){
                                     $query
