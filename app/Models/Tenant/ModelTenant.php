@@ -24,6 +24,7 @@
 
         public const RESERVED_SYMBOLS_FILTER = ['-', '+', '<', '>', '@', '(', ')', '~'];
 
+        public const VOIDED_REJECTED_IDS = ['09', '11'];
 
         /**
          * Devuelve un esqueleto del array de data extra. Previene error de no enconrarse la funcion en otros modelos
