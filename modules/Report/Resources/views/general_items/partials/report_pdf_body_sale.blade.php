@@ -22,7 +22,7 @@ if ($platform !== null) {
 }*/
 $unit_price = number_format($value->unit_price, 2);
 $total = number_format($value->total, 2);
-$total_item_purchase = number_format($total_item_purchase, 2);
+$total_item_purchase = round($total_item_purchase, 2);
 $utility_item = number_format($utility_item, 2);
 $web_platform = '';
 $purchase_unit_price = '';
@@ -52,7 +52,7 @@ if (!isset($qty)) {
     if($apply_conversion_to_pen && $value->isCurrencyTypeUsd())
     {
         $total = $value->getConvertTotalToPen();
-        $utility_item = number_format($total - $total_item_purchase, 2);
+        $utility_item = round($total - $total_item_purchase, 2);
         $unit_price = $value->getConvertUnitPriceToPen();
         $description_apply_conversion_to_pen = '(Conv.)';
     }

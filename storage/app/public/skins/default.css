@@ -142,6 +142,9 @@ html.sidebar-red:not(.dark) ul.nav-main li.nav-active:not(.nav-parent) > a {
   background: #dc3545;
   box-shadow: none;
 }
+html.sidebar-red:not(.sidebar-light) ul.nav-main li .nav-children li a:after {
+  background: #dc3545;
+}
 
 /* cajas de contenido */
 html.sidebar-red .card-header.bg-info {

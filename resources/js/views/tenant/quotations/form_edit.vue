@@ -242,15 +242,16 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
-                                                <th class="font-weight-bold">Descripción</th>
-                                                <th class="text-center font-weight-bold">Unidad</th>
-                                                <th class="text-right font-weight-bold">Cantidad</th>
-                                                <th class="text-right font-weight-bold">Valor Unitario</th>
-                                                <th class="text-right font-weight-bold">Precio Unitario</th>
-                                                <th class="text-right font-weight-bold">Subtotal</th>
-                                                <th class="text-right font-weight-bold">Total</th>
-                                                <th></th>
+                                                <th width="5%">#</th>
+                                                <th class="font-weight-bold"
+                                                    width="30%">Descripción</th>
+                                                <th width="8%" class="text-center font-weight-bold">Unidad</th>
+                                                <th width="8%" class="text-center font-weight-bold">Cantidad</th>
+                                                <th class="text-center font-weight-bold">Valor Unitario</th>
+                                                <th class="text-center font-weight-bold">Precio Unitario</th>
+                                                <th class="text-center font-weight-bold">Subtotal</th>
+                                                <th class="text-center font-weight-bold">Total</th>
+                                                <th width="8%"></th>
                                             </tr>
                                         </thead>
                                         <tbody v-if="form.items.length > 0">
@@ -258,13 +259,13 @@
                                                 <td>{{index + 1}}</td>
                                                 <td>{{setDescriptionOfItem (row.item)}} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
-                                                <td class="text-right">{{row.quantity}}</td>
-                                                <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
+                                                <td class="text-center">{{row.quantity}}</td>
+                                                <td class="text-center">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
                                                 <td class="text-right">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
 
-                                                <td class="text-right">{{currency_type.symbol}} {{row.total_value}}</td>
-                                                <td class="text-right">{{currency_type.symbol}} {{row.total}}</td>
-                                                <td class="text-right">
+                                                <td class="text-center">{{currency_type.symbol}} {{row.total_value}}</td>
+                                                <td class="text-center">{{currency_type.symbol}} {{row.total}}</td>
+                                                <td class="text-center">
                                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click="ediItem(row, index)" ><span style='font-size:10px;'>&#9998;</span> </button>
                                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
                                                 </td>

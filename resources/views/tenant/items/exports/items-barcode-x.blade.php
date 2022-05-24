@@ -42,7 +42,7 @@
                         <tr>
                             @for($j=0; $j < $format; $j++)
                                 @if($format == 1)
-                                    <td class="celda" width="100%" style="text-align: center; padding-top: 10px; padding-bottom: 10px; font-size: 9px; vertical-align: top; width: 100%;">
+                                    <td class="celda" width="100%" style="text-align: center; padding-top: 0px; padding-bottom: 10px; font-size: 9px; vertical-align: top; width: 100%;">
                                         <tr>
                                             <td colspan="2" width="80%" style="text-align: center;">
                                                 {{ $record->name }}

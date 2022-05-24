@@ -62,6 +62,7 @@ use Modules\Item\Models\ItemLotsGroup;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use setasign\Fpdi\Fpdi;
+use Modules\Inventory\Models\InventoryConfiguration;
 
 
 class ItemController extends Controller
@@ -97,6 +98,7 @@ class ItemController extends Controller
             'lot_code' => 'Código lote',
             'active' => 'Habilitados',
             'inactive' => 'Inhabilitados',
+            'category' => 'Categoria'
         ];
     }
 
@@ -118,10 +120,17 @@ class ItemController extends Controller
     public function getRecords(Request $request){
 
         $records = Item::whereTypeUser()->whereNotIsSet();
-        switch ($request->column) {
+        
+        switch ($request->column) 
+        {
 
             case 'brand':
                 $records->whereHas('brand',function($q) use($request){
+                                    $q->where('name', 'like', "%{$request->value}%");
+                                });
+                break;
+            case 'category':
+                $records->whereHas('category',function($q) use($request){
                                     $q->where('name', 'like', "%{$request->value}%");
                                 });
                 break;
@@ -136,9 +145,19 @@ class ItemController extends Controller
 
             default:
                 if($request->has('column'))
-                $records->where($request->column, 'like', "%{$request->value}%");
+                {
+                    if($this->applyAdvancedRecordsSearch() && $request->column === 'description')
+                    {
+                        if($request->value) $records->whereAdvancedRecordsSearch($request->column, $request->value);
+                    }
+                    else
+                    {
+                        $records->where($request->column, 'like', "%{$request->value}%");
+                    }
+                }
                 break;
         }
+
         if ($request->type) {
             if($request->type ==='PRODUCTS') {
                 // listar solo productos en la lista de productos
@@ -200,6 +219,7 @@ class ItemController extends Controller
         }
         /** Informacion adicional */
         $configuration = $configuration->getCollectionData();
+        $inventory_configuration = InventoryConfiguration::firstOrFail();
         /*
         $configuration = Configuration::select(
             'affectation_igv_type_id',
@@ -227,7 +247,8 @@ class ItemController extends Controller
             'CatItemStatus',
             'CatItemPackageMeasurement',
             'CatItemProductFamily',
-            'CatItemUnitsPerPackage'
+            'CatItemUnitsPerPackage',
+            'inventory_configuration'
         );
     }
 
@@ -324,6 +345,15 @@ class ItemController extends Controller
             $item_unit_type->price_default = $value['price_default'];
             $item_unit_type->save();
 
+            // migracion desarrollo sin terminar #1401
+            if(!$value['barcode']) {
+                $item_unit_type->barcode = $item_unit_type->id.$item_unit_type->unit_type_id.$item_unit_type->quantity_unit;
+                $item_unit_type->save();
+            }
+            else {
+                $item_unit_type->barcode = $value['barcode'];
+                $item_unit_type->save();
+            }
         }
         if (isset($request->supplies)) {
             foreach($request->supplies as $value){
@@ -534,6 +564,17 @@ class ItemController extends Controller
         }
 
         $item->update();
+
+        // migracion desarrollo sin terminar #1401
+        $inventory_configuration = InventoryConfiguration::firstOrFail();
+
+        if($inventory_configuration->generate_internal_id == 1) {
+            if(!$item->internal_id) {
+                $items = Item::count();
+                $item->internal_id = (string)($items + 1);
+                $item->save();
+            }
+        }
         /********************************* SECCION PARA PRECIO POR ALMACENES ******************************************/
 
         // Precios por almacenes

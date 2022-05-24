@@ -46,7 +46,10 @@ class DocumentPaymentController extends Controller
 
         $total_paid = collect($document->payments)->sum('payment');
         $total = $document->total;
-        $total_difference = round($total - $total_paid, 2);
+        $credit_notes_total = $document->getCreditNotesTotal();
+
+        $total_difference = round($total - $total_paid - $credit_notes_total, 2);
+        // $total_difference = round($total - $total_paid, 2);
 
         return [
             'number_full' => $document->number_full,
@@ -55,6 +58,7 @@ class DocumentPaymentController extends Controller
             'total_difference' => $total_difference,
             'currency_type_id' => $document->currency_type_id,
             'exchange_rate_sale' => (float) $document->exchange_rate_sale,
+            'credit_notes_total' => $credit_notes_total
         ];
 
     }
@@ -99,7 +103,7 @@ class DocumentPaymentController extends Controller
                     'document_id' => $request->document_id,
                     'sale_note_id' => null
                 ];
-    
+
                 $cash->cash_documents()->updateOrCreate($req);
 
             }

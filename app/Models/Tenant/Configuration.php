@@ -245,6 +245,12 @@
             'top_menu_c_id',
             'top_menu_d_id',
             'skin_id',
+            'enabled_tips_pos',
+            'legend_forest_to_xml',
+            'change_currency_item',
+            'enabled_advanced_records_search',
+            'change_decimal_quantity_unit_price_pdf',
+            'decimal_quantity_unit_price_pdf',
         ];
 
         protected $casts = [
@@ -329,6 +335,13 @@
             'top_menu_c_id' => 'int',
             'top_menu_d_id' => 'int',
             'skin_id' => 'int',
+            'enabled_tips_pos' => 'bool',
+            'legend_forest_to_xml' => 'bool',
+            'change_currency_item' => 'bool',
+            'enabled_advanced_records_search' => 'bool',
+            'change_decimal_quantity_unit_price_pdf' => 'bool',
+            'decimal_quantity_unit_price_pdf' => 'int',
+
         ];
 
         protected $hidden = [
@@ -528,6 +541,13 @@
                 'skin_id' => $this->skin_id,
                 'skins' => $skins,
                 'facturalo_server' => true, // $this->getFacturaloConfig(),
+                'enabled_tips_pos' => $this->enabled_tips_pos,
+                'legend_forest_to_xml' => $this->legend_forest_to_xml,
+                'change_currency_item' => $this->change_currency_item,
+                'enabled_advanced_records_search' => $this->enabled_advanced_records_search,
+                'change_decimal_quantity_unit_price_pdf' => $this->change_decimal_quantity_unit_price_pdf,
+                'decimal_quantity_unit_price_pdf' => $this->decimal_quantity_unit_price_pdf,
+
             ];
         }
 
@@ -2122,6 +2142,42 @@
         public function scopeGetUnitPriceDispatchRelatedRecord($query)
         {
             return $query->select('set_unit_price_dispatch_related_record')->first()->set_unit_price_dispatch_related_record;
+        }
+
+        /**
+         * Usado en:
+         * LegendInput, para facturas y boletas
+         *
+         * @return bool
+         */
+        public static function isEnabledLegendForestToXml()
+        {
+            return Configuration::select('legend_forest_to_xml')->firstOrFail()->legend_forest_to_xml;
+        }
+
+        /**
+         *
+         * Obtener configuracion avanzada de busqueda
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public function scopeIsEnabledAdvancedRecordsSearch($query)
+        {
+            return $query->select('enabled_advanced_records_search')->firstOrFail()->enabled_advanced_records_search;
+        }
+
+
+        /**
+         *
+         * Obtener configuracion de decimales para el precio unitario en pdf
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public function scopeGetDataDecimalQuantity($query)
+        {
+            return $query->select('change_decimal_quantity_unit_price_pdf', 'decimal_quantity_unit_price_pdf')->firstOrFail();
         }
 
         public function top_menu_a()

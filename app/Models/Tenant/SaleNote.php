@@ -15,6 +15,7 @@
     use Modules\Item\Models\WebPlatform;
     use Modules\Order\Models\OrderNote;
     use Modules\Sale\Models\TechnicalService;
+    use Modules\Pos\Models\Tip;
 
     /**
      * Class SaleNote
@@ -1079,6 +1080,10 @@
             return $this->hasMany(SaleNotePayment::class);
         }
 
+        public function tip()
+        {
+            return $this->morphOne(Tip::class, 'origin');
+        }
 
         /**
          *
@@ -1267,6 +1272,32 @@
             }
 
             return $total_factor;
+        }
+
+        
+        /**
+         * 
+         * Filtrar por rango de fechas
+         * 
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         * 
+         */
+        public function scopeFilterRangeDateOfIssue($query, $date_start, $date_end)
+        {
+            return $query->whereBetween('date_of_issue', [$date_start, $date_end]);
+        }
+
+        
+        /**
+         * 
+         * Obtener la fecha de vencimiento y aplicar formato
+         *
+         * @return string
+         */
+        public function getFormatDueDate()
+        {
+            return $this->due_date ? $this->generalFormatDate($this->due_date) : null;
         }
 
     }

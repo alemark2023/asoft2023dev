@@ -1389,6 +1389,8 @@
             :showDialog.sync="showDialogAddItem"
             :typeUser="typeUser"
             :customer-id="form.customer_id"
+            :currency-types="currency_types"
+            :is-from-invoice="true"
             @add="addRow"></document-form-item>
 
         <person-form :document_type_id=form.document_type_id

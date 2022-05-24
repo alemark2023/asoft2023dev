@@ -311,6 +311,7 @@ return [
 		'full_name' => 'Nombre completo',
 		'gitlab_user' => 'usuario de gitlab.com',
 		'domain' => 'dominio',
+		'occupation' => 'cargo',
 
 		'qrcode_yape' => 'código QR',
 		'name_yape' => 'nombres y apellidos',

@@ -127,6 +127,7 @@
                     <th class="text-center">Nombre de Transportista</th>
                     
                     <th class="text-center"># Pedido</th>
+                    <th class="text-center">O.Pedido</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -169,6 +170,7 @@
                         $num_doc=$dispatcher['number'];
                         $name_dispatcher=$dispatcher['name'];
                         $transfer_description = $dispatches['transfer_reason_description']? $dispatches['transfer_reason_description'] : 0;
+                        $order_form_description = $dispatches['order_form_description'];
                         ?>
 
                         <td class="celda">{{$loop->iteration}}</td>
@@ -187,12 +189,13 @@
                         <td class="celda">{{$num_doc}}</td>
                         <td class="celda">{{$name_dispatcher}}</td>
                         <td class="celda">{{$order_note}}</td>
+                        <td class="celda">{{ $order_form_description }}</td>
                     @php
                         $acum_total += $qty
                     @endphp
                 @endforeach
                 <tr>
-                    <td class="celda" colspan="7"></td>
+                    <td class="celda" colspan="8"></td>
                     <td class="celda"><strong>Total</strong></td>
                     <td class="celda">{{number_format($acum_total,2)}}</td>
                 </tr>
