@@ -1,3 +1,210 @@
+## 5.0.0
+
+### docs
+2022-03-22 : docs | update changelog<br>
+
+
+### fixed
+2022-05-23 : fixed | #1688 | Validar propiedad prepayments no disponible en notas sin external id<br>
+2022-05-20 : fixed | #1684 | Ajustes en querys para error en reporte productos - caja chica<br>
+2022-05-19 : fixed | #1663 | Se agrega descripcion para configuracion prod de una ubicacion<br>
+2022-05-19 : fixed | #1670 | se elimina clg<br>
+2022-05-19 : fixed | #1670 | Se agrupa totales por producto y tipo de unidad para ventas individuales y por presentaciones - Consolidado de items, ajuste al genera guia, suma de cantidad<br>
+2022-05-17 : fixed | #1394 | Se agrega propiedad para que cambio de moneda solo afecte en model invoice<br>
+2022-05-16 : fixed | #1497 | Se agrega notas de credito a cuentas por pagar/pagos cpe<br>
+2022-05-16 : fixed | #1519 | Ajuste redondeo total compra, error relacionado al calculo<br>
+2022-05-16 : fixed | #1519 | Ajuste para modificar la funcion de redondeo en reportes general de productos, compras y  ventas / reporte compras<br>
+2022-05-13 : fixed | #1654 | Mostrar notificaciones de forma separada - se agrega indice en bd para busqueda de cpe por rectificar<br>
+2022-05-13 : fixed | #1665 | Ajuste f vencimiento en notas venta, edicion y formatos pdf<br>
+2022-05-12 : fixed | #1480 | Ajustes para formato ventas, aplicar conversion al t/c - se modifica a codigo de moneda<br>
+2022-05-12 : fixed | #1611 | Se agrega precio de compra / calculos a packs para calcular utilidades<br>
+2022-05-12 : fixed | #1660 | Ajuste para asignar item correctamente al agregar producto en pos - error de asignacion lista precio<br>
+2022-05-11 : fixed | temas de colores ocultos y arreglos en los que se muestran - iconos de cantidades en admin<br>
+2022-05-10 : fixed | tema dark<br>
+2022-05-06 : fixed | #1632 | Ajuste para mostrar mensaje en reporte movimientos<br>
+2022-05-06 : fixed | #1632 | Se modifica ProcessMovementsReport a cola por defecto<br>
+2022-05-06 : fixed | #1537 | Ajuste para error al enviar correo cuando el cpe no tiene cdr<br>
+2022-05-06 : fixed | #1631 | mejoras en lista de banco para a4 y altura de pagina en guia, plantilla default3_new_unit_value<br>
+2022-05-05 : fixed | #1636 | Ajuste para asignar igv al editam - se elimina asignacion del total_base_igv a precio unitario - cotizaciones<br>
+2022-05-05 : fixed | #1634 | Ajuste para registros duplicados - resumen de boletas<br>
+2022-05-04 : fixed | #1623 | Ajuste para mostrar productos correspondientes al almacen que tiene ingreso<br>
+2022-05-03 : fixed | #1593 | Se elimina propiedad de configuracion no relacionado a permisos pagos<br>
+2022-05-02 : fixed | #1478 | Ajuste para filtros productos inhabilitados en transferencia masiva inventario - Problemas de acceso a propiedad en busqueda items<br>
+2022-05-02 : fixed | #1575 | corregir espaciado entre columnas en cotizacion, nota de venta, contrato, pedidos<br>
+2022-05-02 : fixed | #1570 | bug multiopcion mostrar/ocultar columnas en modulo notas de venta<br>
+2022-04-28 : fixed | #1565 | Se agrega codigo m pago api - pago credito<br>
+2022-04-28 : fixed | #1605 | Ajuste lotes al generar cpe desde pedido - ajustes en formato defaul end date<br>
+2022-04-27 : fixed | #1605 | Ajuste lotes al generar cpe desde pedido<br>
+2022-04-26 : fixed | #1406 | Se agrega validacion para montos mayores a 0, p unitario - nuevo cpe<br>
+2022-04-26 : fixed | #1507 | Ajustes para compras en usd, asignacion correcta moneda, error por acceso a prop al cambiar de moneda<br>
+2022-04-26 : fixed | #1608 | Ajuste para mostrar estado de pago anulado en n venta<br>
+2022-04-26 : fixed | #1401 | Se elimina propiedad sin uso<br>
+2022-04-25 : fixed | #1570 | bug multiopcion mostrar/ocultar columnas en modulo notas de venta<br>
+2022-04-25 : fixed | #1401 | Recuperando cambios obsoletos del issue #1401 que quedaron sin culminar<br>
+2022-04-22 : fixed | #1574 | Obtener precios desde documento relacionado pedido al generar cpe desde guia (configurable)<br>
+2022-04-22 : fixed | #1574 - #1619 | Obtener precios desde documento relacionado (cot, nv) al generar cpe desde guia (configurable) - ajuste para relacionar nota de venta a guia<br>
+2022-04-22 : fixed | #1598 | logo de sucursal modulo configuracion<br>
+2022-04-22 : fixed | #1543 | Modificar tipo de dato campo obs nota de venta<br>
+2022-04-21 : fixed | #1613 | Ajustes para error al ingresar compras de lotes por presentacion<br>
+2022-04-21 : fixed | #1589 | Ajustes para descuento de lotes por presentacion - anulacion/rechazo cpe, registro n venta<br>
+2022-04-21 : fixed | #1575 | corregir espaciado entre columnas en cotizacion, nota de venta, contrato, pedidos<br>
+2022-04-20 : fixed | #1589 | Correccion descuento de stock de lotes por presentacion - ajustes em ventas y n credito<br>
+2022-04-20 : fixed | #1602 | bug nombre de cliente desde modulo hotel<br>
+2022-04-20 : fixed | #1506 | Ajustes a filtros cat/marca reporte inventario - formatos / ajustes bandeja de descargas<br>
+2022-04-19 : fixed | #1506 | Ajustes filtros categoria/marca en vista - reporte inventario<br>
+2022-04-19 : fixed | #1519 | P3 - Se agrega configuracion para agregar igv en edicion de compras<br>
+2022-04-19 : fixed | #1595 | Ajuste para mostrar precio unitario con decimales/entero - productos/servicios<br>
+2022-04-18 : fixed | #1313 | Se agrega vueltos a pdf default notas de venta<br>
+2022-04-18 : fixed | #1591 | Se agrega control de lotes a n venta generada desde ecommerce<br>
+2022-04-11 : fixed | #1535 | Ajustes para eliminar cpe, nv, cot en entorno demo<br>
+2022-04-11 : fixed | #1583 | Ajustes para manejar el nombre producto pdf al generar guia y contrato desde cotizacion<br>
+2022-04-11 : fixed | #1571 | Ajustes para pago por defecto - pos rapido<br>
+2022-04-08 : fixed | #1571 | Modificando componente pagos pos rapido<br>
+2022-04-07 : fixed | #1564 | Ajuste para error al duplicar n venta - se duplica con misma relacion al cpe y no se puede generar uno nuevo<br>
+2022-04-07 : fixed | #947 | Ajuste para error certificado, sobreescribe valor nulo al guardar datos de empresa<br>
+2022-04-07 : fixed | #1391 | Ajustes campo unico filename en notas de venta - filtros pos rapido<br>
+2022-04-07 : fixed | restaurante | change route api<br>
+2022-04-06 : fixed | restaurate | get users relations<br>
+2022-04-06 : fixed | #1391 | Se agrega campo unico para restriccione en n ventas<br>
+2022-04-06 : fixed | #1344 | Ajustes para filtro serie al cambiar cliente - filtrar serie al iniciar componente pago (pos rapido)<br>
+2022-04-05 : fixed | #1459 | Se modifica componente btn para bloquearlo al generar venta (registros duplicados) - venta rapida pos<br>
+2022-04-05 : fixed | #1284 | Ajustes en formato y totales, reporte utilidades detallado<br>
+2022-04-05 : fixed | #1284 | Ajustes para mostrar el detalle del producto - reporte detallado de utilidades<br>
+2022-04-01 : fixed | #1562 | Modificacion de flujo para calcular cotizaciones que solo tengan pagos - caja pos<br>
+2022-04-01 : fixed | #1357 | fecha de pago a credito no debe ser inferior o igual a la fecha de emision (nota a cpe)<br>
+2022-03-25 : fixed | #1360 | Ajustes para error al actualizar vendedor - nuevo cpe, nc, cot<br>
+2022-03-24 : fixed | #1356 | Ajustes para reporte ventas por producto (muestra totales incorrectos) - dashboard<br>
+2022-03-24 : fixed | #1476 | Ajustes para calcular totales por linea y globales usando decimales sin redondeo, pos<br>
+2022-03-23 : fixed | #1449 | Ajuste de error en utilidades cuando se genera nv con dscto - dashboard<br>
+2022-03-23 : fixed | #1514 | error htmlspecialchars en pedidos creados desde ecommerce al generarse la nota de venta - tiene que ver con fecha de vencimiento de productos con lote<br>
+2022-03-21 : fixed | #1536 | Ajuste a condicion para agregar tag LineExtensionAmount cuando el valor es 0, para nc tipo 03<br>
+
+
+### feature
+2022-05-23 : feature | #1666 | Se agrega funcionalidad para mostrar decimales de p unitario en fact/boletas para template default - configurable<br>
+2022-05-20 : feature | #1622 | Se agrega reporte de caja por metodo de pago efectivo con destino caja, para cpe, nv, cot, s tecnico, compras, gastos - se consideran anulados<br>
+2022-05-20 : feature | #888-2 | reporte caja chica efectivo<br>
+2022-05-19 : feature | #1526 | guia de remision añadir campo descripcion de motivo<br>
+2022-05-19 : feature | #1675 | Se agregan ejemplos de listado marcas/categorias - actualizar item<br>
+2022-05-19 : feature | #1675 | Se agregan propiedad a listado de productos por api, lista de categorias y marcas, nuevo servicio para actualizar campos disponibles en items<br>
+2022-05-19 : feature | #1526 | agregar serie a guia de remision<br>
+2022-05-18 : feature | #1678 | Se agrega componente para busqueda avanzada de items en reporte kardex<br>
+2022-05-18 : feature | #1517 | historial de ventas productos<br>
+2022-05-18 : feature | #1517 | historial de ventas productos<br>
+2022-05-18 : feature | #1517 | historial de ventas productos<br>
+2022-05-17 : feature | #1436 | Se agrega busqueda avanzada por coincidencias a listado de productos/servicios/movimientos configurable<br>
+2022-05-16 : feature | #1394 | Validacion de propiedad al mostrar p unitario para cambiar moneda en item<br>
+2022-05-13 : feature | #1394 | Se agrega cambio de moneda al agregar producto, configurable en nuevo cpe<br>
+2022-05-13 : feature | #1554 | modulo hotel - actualizacion de estado pendiente a pagado<br>
+2022-05-13 : feature | #1659 | Se agrega funcionalidad para agregar leyenda 2001 al xml, configurable<br>
+2022-05-11 : feature | cambio de imagen de fondo de png a svg<br>
+2022-05-11 : feature | Se agrega generador de links de pago, otros<br>
+2022-05-11 : feature | - | Integracion m pago desde cpe, ajuste en form m pago, eliminar link de pago de pruebas, demo<br>
+2022-05-11 : feature | icono de editar menu alineado en tema light - imagen de logo en crear documento<br>
+2022-05-11 : feature | #1614 | filtro de categoria en pestaña de producto y servicio<br>
+2022-05-10 : feature | data por defecto seteada al crear tenant<br>
+2022-05-10 : feature | - | Integrando mercado pago, configuraciones, validaciones<br>
+2022-05-10 : feature | #888-2 | reporte efectivo modulo caja chica<br>
+2022-05-10 : feature | - | Ajuste configuracion, se agrega email, wp a m pago, t/c en vista publica<br>
+2022-05-10 : feature | - | adicionales pagos yape - subida de archivos, etc<br>
+2022-05-09 : feature | valores por default en menu header - modo noche en panel derecho - color uniforme en panel derecho - boton descargar css - errores en colores de labels en temas especificos - imagen de fondo login<br>
+2022-05-09 : feature | - | Agregando links de pago<br>
+2022-05-08 : feature | visual para enlaces de pago en listado de documentos<br>
+2022-05-08 : feature | cambios visuales - temas - menu de accesos directos - iconos visuales - menu y titulos en administrador<br>
+2022-05-08 : feature | - | Compile js<br>
+2022-05-06 : feature | #1607 | mostrar sumatoria de notas de venta<br>
+2022-05-06 : feature | #1547 | Se agrega reporte de ventas grifo - contabilidad<br>
+2022-05-06 : feature | #1555 | completada funcionalidad de plantilla en a5 y ticket<br>
+2022-05-05 : feature | #1540 | Se agrega campo para diferenciar tipo de entorno y eliminar data de prueba - productos fabricados, indumos, embalaje<br>
+2022-05-05 : feature | gestionar skins 100%<br>
+2022-05-04 : feature | upload css - registro del mismo en bd para su listado en configuracion visual<br>
+2022-05-04 : feature | #1540 | Se agrega decimales en insumos - agrega empleados a produccion<br>
+2022-05-04 : feature | #1604 | Se agrega op externa al generar guia desde cpe, pedidos - ajuste en columna reporte guia<br>
+2022-05-04 : feature | termino de colores en sidebar - notificacion azul para descarga de documentos<br>
+2022-05-03 : feature | cambio de css general (no hay modulo para cargar css personalizado)<br>
+2022-05-03 : feature | #1604 | Se agrega orden de pedido a reporte consolidado de guias<br>
+2022-05-03 : feature | #1548 | Se agrega reporte venta rapida - caja, ventas grifo<br>
+2022-05-02 : feature | edicion de menu de acceso de directo<br>
+2022-05-02 : feature | #1633 | Se agrega distrito 250307<br>
+2022-05-02 : feature | #888-2 | reporte efectivo modulo caja chica<br>
+2022-05-02 : feature | #1585 | Se agrega total efectivo cpe, nv reporte caja / ajuste para reporte propina, estado del documento<br>
+2022-05-02 : feature | #1607 | mostrar sumatoria de notas de venta<br>
+2022-04-30 : feature | grupos de seleccion en modulos y empresa al registrar cliente en admin<br>
+2022-04-30 : feature | icono de soporte se configura desde admin<br>
+2022-04-30 : feature | change numbers<br>
+2022-04-30 : feature | #888-2 | reporte efectivo modulo caja chica<br>
+2022-04-29 : feature | #1585 | Se agrega propinas en pos configurable / reportes / total en reporte caja<br>
+2022-04-29 : feature | #1601 | Se agrega actualizacion de precios masiva por excel - productos<br>
+2022-04-29 : feature | #1604 | Validacion campo op externo<br>
+2022-04-28 : feature | #1604 | Se agrega modal para visualizar stock por producto / campo para o pedido externo - guias<br>
+2022-04-27 : feature | #1198 | Se agrega validacion para el plazo de envio de comunicaciones de baja - configurable<br>
+2022-04-26 : feature | #1401 | Se agrega busqueda por cod barra presentacion - pos/nuevo cpe<br>
+2022-04-25 : feature | #1401 | Agregando filtros por cod barra en presentaciones - pos/nuevo cpe<br>
+2022-04-25 : feature | #1569 | ajustes formato 1x1 para plantilla a 80mm<br>
+2022-04-22 : feature | #1568 | Se agrega filtro para ordenar listado - modifica campo m traslado opcional, reporte movimientos<br>
+2022-04-22 : feature | #1483 | reporte de productos campo observacion<br>
+2022-04-22 : feature | #1495 | nombre pdf productos<br>
+2022-04-22 : feature | #1579-2 | sale note template default brand<br>
+2022-04-21 : feature | #1486 | Se agrega cargos a notas de venta<br>
+2022-04-21 : feature | #1483 | reporte de productos campo observacion<br>
+2022-04-20 : feature | #1483 | reporte de productios campo observacion<br>
+2022-04-20 : feature | #1325 | Se agrega configuracion en productos para detraccion - mostrar alerta de producto sujeto a detraccion en nuevo cpe<br>
+2022-04-19 : feature | #1569 | nuevos modelos de plantillas para etiquetas por producto<br>
+2022-04-19 : feature | #1215 | Se agrega json de deduccion de anticipos exonerados - api<br>
+2022-04-19 : feature | #1519 | Se agrega configuracion para asignar moneda global a los items por defecto - p4<br>
+2022-04-19 : feature | #1505 | imagen para plantilla<br>
+2022-04-19 : feature | #1505 | new template ticket_internal_code<br>
+2022-04-18 : feature | #1593 | Se agregan permisos agregar/eliminar para pagos cpe, desde usuarios<br>
+2022-04-13 : feature | #1519 | Se agrega configuracion para conversion a soles en reportes: Ventas - Reporte general de productos, Compras - Reporte general de productos, Compras - Compras totales<br>
+2022-04-12 : feature | #1519 | p3 - Actualizar precio unitario y aplicar igv global en compra - configurable, p6 - Agrega fecha cpe relacionado en report, p7- agrega nv relacionada en reporte cpe<br>
+2022-04-12 : feature | #1554 | modulo hotel - actualizacion de estado pendiente a pagado<br>
+2022-04-08 : feature | #1546 | Se agrega total pagado a reporte de caja<br>
+2022-04-08 : feature | #1312 | Se agrega limite de dias cpe no enviados - validacion limite de envio por api<br>
+2022-04-07 : feature | #1586 | busqueda de clientes por CE<br>
+2022-04-07 : feature | #1491-2 | cambios cotiza<br>
+2022-04-07 : feature | #1495 | nombre pdf productos<br>
+2022-04-07 : feature | #1495 | nombre pdf productos<br>
+2022-04-06 : feature | restaurant | roles asignados a usuarios activos en pro4<br>
+2022-04-06 : feature | #1483 | reporte productos añadir campo observaciones y vendedor asignado<br>
+2022-04-05 : feature | restaurate | ampliando datos de partners<br>
+2022-04-05 : feature | #1526 | guia de remision series<br>
+2022-04-05 : feature | #1526 | guia de remision series<br>
+2022-04-04 : feature | restaurant | habilitar opciones de menu de comanda en configuracion de restaurante<br>
+2022-04-04 : feature | #1551 | template para ticket con nombre de empresa y nombre comercial<br>
+2022-04-04 : feature | #1563 | filtro placa en busqueda de listado de comprobantes<br>
+2022-03-31 : feature | #1513 | pos - venta rapida en el administrador<br>
+2022-03-31 : feature | #1509 | modulo compras - gastos diversos añadir estado al reporte<br>
+2022-03-31 : feature | #1511 | revision reporte caja chica<br>
+2022-03-31 : feature | #1554 | modulo hotel - actualizacion de estado pendiente a pagado<br>
+2022-03-30 : feature | #1027 | Agregar exportar excel pedidos - cambios<br>
+2022-03-30 : feature | #1510 | buscar y crear cliente por codigo de barras - hotel<br>
+2022-03-29 : feature | restaurant| actualizacion de menu, configuracion de cantidad de mesas<br>
+2022-03-28 : feature | #1485 | guia de remision - reporte exportable - datos del transportista<br>
+2022-03-25 : feature | #1513 | pos - venta rapida en el administrador<br>
+2022-03-25 : feature | #1271 | Se agrega validacion para que el p compra no sea superior al de venta (configurable) - nv/cpe<br>
+2022-03-25 : feature | #1389 | Se agrega filtro por vendedor para clientes - lista clientes / nuevo cpe<br>
+2022-03-25 : feature | #1027 | Agregar exportar excel pedidos - cambios<br>
+2022-03-25 : feature | #1510 | buscar y crear cliente por codigo de barras - hotel<br>
+2022-03-25 : feature | #1435 | pdf tickets<br>
+2022-03-25 : feature | #1496 |inconveniente con el formato ticket para notas de venta<br>
+2022-03-24 : feature | #1485 | guia de remision - reporte exportable - datos del transportista<br>
+2022-03-24 : feature | #1027 | Agregar exportar excel pedidos - cambios<br>
+2022-03-24 : feature | #869 | Se agrega descuento por % en pos<br>
+2022-03-24 : feature | #1496 |inconveniente con el formato ticket para notas de venta<br>
+2022-03-24 : feature | #1496 |inconveniente con el formato ticket para notas de venta<br>
+2022-03-23 : feature | #1496 |inconveniente con el formato ticket para notas de venta<br>
+2022-03-23 : feature | #1027 | Agregar exportar excel pedidos - cambios<br>
+2022-03-23 : feature | #1496 |inconveniente con el formato ticket para notas de venta<br>
+2022-03-23 : feature | #1491 | reporte ventas con direccion de cliente - username<br>
+2022-03-21 : feature | #1496 |inconveniente con el formato ticket para notas de venta<br>
+2022-03-14 : feature | #1027 | Agregar exportar excel pedidos<br>
+2022-03-11 : feature | #1496 |inconveniente con el formato ticket para notas de venta<br>
+2022-03-11 : feature | #1027 | Agregar exportar excel pedidos - cambios<br>
+2022-03-07 : feature | #1027 | Agregar exportar excel pedidos<br>
+2022-03-05 : feature | #1027 | Agregar exportar excel pedidos<br>
+2022-03-03 : feature | #1027 | Agregar exportar excel pedidos<br>
+
+
 ## 4.2.0
 
 ### docs
