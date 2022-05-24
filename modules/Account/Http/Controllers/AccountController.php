@@ -13,6 +13,7 @@ use Modules\Account\Exports\ReportAccountingConcarExport;
 use Modules\Account\Exports\ReportAccountingFoxcontExport;
 use Modules\Account\Exports\ReportAccountingContasisExport;
 use Modules\Account\Exports\ReportAccountingSumeriusExport;
+use Modules\Account\Exports\ReportAccountingAmicontExport;
 
 class AccountController extends Controller
 {
@@ -97,8 +98,74 @@ class AccountController extends Controller
                 return (new ReportAccountingSumeriusExport)
                     ->data($data)
                     ->download($filename.'.xlsx');
+
+                    
+            case 'amicont':
+
+                // dd( $this->getStructureAmicont($d_start, $d_end));
+                $data = [
+                    'records' => $this->getStructureAmicont($d_start, $d_end),
+                ];
+
+                return (new ReportAccountingAmicontExport)
+                    ->data($data)
+                    ->download($filename.'.xlsx');
         }
     }
+
+    
+    /**
+     * 
+     * Estructura para formato contable amicont
+     *
+     * @param  string $d_start
+     * @param  string $d_end
+     * @return array
+     */
+    private function getStructureAmicont($d_start, $d_end)
+    {
+        
+        $documents = Document::whereBetween('date_of_issue', [$d_start, $d_end])->orderBy('series')->orderBy('number')->get();
+
+        return $documents->transform(function($row) {
+ 
+            $extra_data_amicont = $row->getExtraDataReportAmicont();
+
+            return [
+                'document_type_id' => $row->document_type_id,
+                'series' => $row->series,
+                'number' => str_pad($row->number, 8, '0', STR_PAD_LEFT),
+                'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
+
+                'customer_number' => $row->customer->number,
+                'customer_name' => $row->customer->name,
+                'customer_address' => $row->customer->address,
+
+                'currency_type_description' => $extra_data_amicont['currency_type_description'],
+                'exchange_rate_sale' => $extra_data_amicont['exchange_rate_sale'],
+
+                'total_taxed' => $row->generalApplyNumberFormat($row->total_taxed),
+                'total_exonerated' => $row->generalApplyNumberFormat($row->total_exonerated),
+                'total_unaffected' => $row->generalApplyNumberFormat($row->total_unaffected),
+                'total_free' => $row->generalApplyNumberFormat($row->total_free),
+                'total_exportation' => $row->generalApplyNumberFormat($row->total_exportation),
+                'total_igv' => $row->generalApplyNumberFormat($row->total_igv),
+                'total_isc' => $row->generalApplyNumberFormat($row->total_isc),
+                'total_plastic_bag_taxes' => $row->generalApplyNumberFormat($row->total_plastic_bag_taxes),
+                'total' => $row->generalApplyNumberFormat($row->total),
+                'voided_description' => $row->state_type_id === '11' ? 'A' : null,
+                'payment_condition_description' => $extra_data_amicont['payment_condition_description'],
+                
+                'reference_document' => $extra_data_amicont['reference_document'],
+
+                'date_of_due' => $extra_data_amicont['date_of_due'],
+                'xxxxxxx' => "regula",
+
+            ];
+        });
+
+    }
+
 
     private function getStructureSumerius($documents)
     {

@@ -1308,4 +1308,65 @@
                         ->groupBy('affected_document_id');
         }
 
+        
+        /**
+         * 
+         * Datos adicionales para amicont
+         *
+         * @return array
+         */
+        public function getExtraDataReportAmicont()
+        {
+            
+            $currency_type_description = null;
+            $exchange_rate_sale = null;
+            $reference_document = null;
+            $payment_condition_description = null;
+            $date_of_due = null;
+
+            //condicion de pago credito
+            if($this->payment_condition_id === '02')
+            {
+                $payment_condition_description = 'S';
+                $date_of_due = $this->invoice->date_of_due->format('d/m/Y');
+            }
+
+
+            //documento relacionado a la nota credito
+            if($this->document_type_id === '07')
+            {
+                $affected_document = $this->note->affected_document;
+
+                $reference_document = [
+                    'document_type_id' => $affected_document->document_type_id,
+                    'series' => $affected_document->series,
+                    'number' => str_pad($affected_document->number, 8, '0', STR_PAD_LEFT),
+                    'date_of_issue' => $affected_document->date_of_issue->format('d/m/Y'),
+                ];
+            }
+
+
+            //moneda y tipo de cambio
+            if($this->currency_type_id === 'PEN')
+            {
+                $currency_type_description = 'S';
+            }
+            else
+            {
+                $currency_type_description = 'D';
+                $exchange_rate_sale = $this->exchange_rate_sale;
+            }
+            
+
+            return [
+                'currency_type_description' => $currency_type_description,
+                'exchange_rate_sale' => $exchange_rate_sale,
+                'reference_document' => $reference_document,
+                'payment_condition_description' => $payment_condition_description,
+                'date_of_due' => $date_of_due,
+            ];
+
+        }
+
+
     }
