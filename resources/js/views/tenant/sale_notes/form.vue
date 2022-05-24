@@ -307,14 +307,14 @@
                                                     <!-- <template v-if="row.id">
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteSNItem(row.id, index)">x</button>
                                                     </template> -->
-                                                    <template v-if="row.record_id">
+                                                    <!-- <template v-if="row.record_id">
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteSNItem(row.record_id, index)">x</button>
                                                     </template>
-                                                    <template v-else>
+                                                    <template v-else> -->
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
-                                                    </template>
+                                                    <!-- </template> -->
 
                                                 </td>
                                             </tr>
@@ -640,51 +640,51 @@
                 this.series = _.filter(this.all_series, {'establishment_id': this.form.establishment_id, 'document_type_id': '80', 'contingency': this.is_contingency});
                 this.form.series_id = (this.series.length > 0)?this.series[0].id:null
             },
-            async clickDeleteSNItem(id, index){
+            // async clickDeleteSNItem(id, index){
 
-                this.$confirm('¿Desea eliminar el item?', 'Eliminar', {
-                    confirmButtonText: 'Eliminar',
-                    cancelButtonText: 'Cancelar',
-                    type: 'warning'
-                }).then(() => {
+            //     this.$confirm('¿Desea eliminar el item?', 'Eliminar', {
+            //         confirmButtonText: 'Eliminar',
+            //         cancelButtonText: 'Cancelar',
+            //         type: 'warning'
+            //     }).then(() => {
 
-                    this.$http.delete(`/${this.resource}/destroy_sale_note_item/${id}`)
-                        .then(res => {
+            //         this.$http.delete(`/${this.resource}/destroy_sale_note_item/${id}`)
+            //             .then(res => {
 
-                            this.clickRemoveItem(index)
-                            this.$eventHub.$emit('reloadDataItems', null)
+            //                 this.clickRemoveItem(index)
+            //                 this.$eventHub.$emit('reloadDataItems', null)
 
-                            this.$http.post(`/${this.resource}`, this.form).then(response => {
-                                if (response.data.success) {
-                                    this.isUpdate()
-                                }
-                                else {
-                                    this.$message.error(response.data.message);
-                                }
-                            }).catch(error => {
-                                if (error.response.status === 422) {
-                                    this.errors = error.response.data;
-                                }
-                                else {
-                                    this.$message.error(error.response.data.message);
-                                }
-                            })
+            //                 this.$http.post(`/${this.resource}`, this.form).then(response => {
+            //                     if (response.data.success) {
+            //                         this.isUpdate()
+            //                     }
+            //                     else {
+            //                         this.$message.error(response.data.message);
+            //                     }
+            //                 }).catch(error => {
+            //                     if (error.response.status === 422) {
+            //                         this.errors = error.response.data;
+            //                     }
+            //                     else {
+            //                         this.$message.error(error.response.data.message);
+            //                     }
+            //                 })
 
-                        })
-                        .catch(error => {
-                            if (error.response.status === 500) {
-                                this.$message.error('Error al intentar eliminar');
-                            } else {
-                                console.log(error.response.data.message)
-                            }
-                        })
+            //             })
+            //             .catch(error => {
+            //                 if (error.response.status === 500) {
+            //                     this.$message.error('Error al intentar eliminar');
+            //                 } else {
+            //                     console.log(error.response.data.message)
+            //                 }
+            //             })
 
 
-                }).catch(error => {
-                    console.log(error)
-                });
+            //     }).catch(error => {
+            //         console.log(error)
+            //     });
 
-            },
+            // },
             getFormatUnitPriceRow(unit_price){
                 return _.round(unit_price, 6)
                 // return unit_price.toFixed(6)
@@ -1108,7 +1108,7 @@
                 if(!this.enabled_payments){
                     this.form.payments = []
                 }
-                this.loading_submit = true
+                // this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
                     if (response.data.success) {

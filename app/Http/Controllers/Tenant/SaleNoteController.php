@@ -596,6 +596,7 @@ class SaleNoteController extends Controller
         return $this->storeWithData($request->all());
     }
 
+
     public function storeWithData($inputs)
     {
         DB::connection('tenant')->beginTransaction();
@@ -608,7 +609,12 @@ class SaleNoteController extends Controller
 
             $this->deleteAllPayments($this->sale_note->payments);
 
-            foreach($data['items'] as $row) {
+            //se elimina los items para activar el evento deleted del modelo y controlar el inventario
+            $this->deleteAllItems($this->sale_note->items);
+
+
+            foreach($data['items'] as $row) 
+            {
 
                 // $item_id = isset($row['id']) ? $row['id'] : null;
                 $item_id = isset($row['record_id']) ? $row['record_id'] : null;
@@ -618,7 +624,10 @@ class SaleNoteController extends Controller
                     $row['item']['lots'] = isset($row['lots']) ? $row['lots']:$row['item']['lots'];
                 }
 
+                $this->setIdLoteSelectedToItem($row);
                 $sale_note_item->fill($row);
+
+                // dd($sale_note_item->item->IdLoteSelected, $row['IdLoteSelected']);
                 $sale_note_item->sale_note_id = $this->sale_note->id;
                 $sale_note_item->save();
 
@@ -630,6 +639,7 @@ class SaleNoteController extends Controller
                         $record_lot->update();
                     }
                 }
+
 
                 if(isset($row['IdLoteSelected']))
                 {
@@ -687,6 +697,26 @@ class SaleNoteController extends Controller
             ];
         }
     }
+
+
+    /**
+     * Asignar lote a item
+     *
+     * @param  array $row
+     * @return void
+     */
+    private function setIdLoteSelectedToItem(&$row)
+    {
+        if(isset($row['IdLoteSelected']))
+        {
+            $row['item']['IdLoteSelected'] = $row['IdLoteSelected'];
+        }
+        else
+        {
+            $row['item']['IdLoteSelected'] = null;
+        }
+    }
+
 
     private function regularizePayments($payments){
 

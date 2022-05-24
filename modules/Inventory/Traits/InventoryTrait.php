@@ -728,4 +728,20 @@ trait InventoryTrait
         }
     }
 
+        
+    /**
+     * 
+     * Eliminar item de forma individual para activar el evento deleted del modelo asociado
+     *
+     * @param  $items
+     * @return void
+     */
+    public function deleteAllItems($items)
+    {
+        foreach ($items as $item) 
+        {
+            $item->delete();
+        }
+    }
+
 }

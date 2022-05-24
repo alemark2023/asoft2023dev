@@ -465,6 +465,8 @@
             :lots_group="form.lots_group"
             :quantity="form.quantity"
             :showDialog.sync="showDialogLots"
+            :isUpdateItem="isUpdateItem"
+            :oldSelectedLotsGroup="old_selected_lots_group"
             @addRowLotGroup="addRowLotGroup">
         </lots-group>
 
@@ -564,7 +566,8 @@ export default {
                 classic: ClassicEditor
             },
             value1: 'hello',
-            readonly_total: 0
+            readonly_total: 0,
+            old_selected_lots_group: []
             //item_unit_type: {}
         }
     },
@@ -883,6 +886,7 @@ export default {
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
 
+                this.old_selected_lots_group = (this.recordItem.item.IdLoteSelected) ? this.recordItem.item.IdLoteSelected : this.recordItem.item.lots_group
 
                 // if (this.isEditItemNote) {
                 //     this.form.item.currency_type_id = this.currencyTypeIdActive
