@@ -48,7 +48,8 @@
                                                placeholder="Escriba el nombre o número de documento del cliente"
                                                :remote-method="searchRemoteCustomers"
                                                :loading="loading_search"
-                                               @change="changeCustomer">
+                                               @change="changeCustomer"
+                                               @keyup.enter.native="keyupCustomer">
 
                                         <el-option v-for="option in customers" :key="option.id" :value="option.id"
                                                    :label="option.description"></el-option>
@@ -250,6 +251,7 @@
         <person-form :showDialog.sync="showDialogNewPerson"
                      type="customers"
                      :external="true"
+                     :input_person="input_person"
                      :document_type_id=form.document_type_id></person-form>
 
         <order-note-options :showDialog.sync="showDialogOptions"
@@ -297,7 +299,8 @@ export default {
             currency_type: {},
             orderNoteNewId: null,
             activePanel: 0,
-            loading_search: false
+            loading_search: false,
+            input_person: {},
         }
     },
     created() {
@@ -311,6 +314,9 @@ export default {
         this.$eventHub.$on('reloadDataPersons', (customer_id) => {
             this.reloadDataCustomers(customer_id)
         })
+        this.$eventHub.$on('initInputPerson', () => {
+            this.initInputPerson()
+        });
         this.$http.get(`/${this.resource}/tables`)
             .then(response => {
                 this.currency_types = response.data.currency_types
@@ -410,12 +416,14 @@ export default {
                     .then(response => {
                         this.customers = response.data.customers
                         this.loading_search = false
-                        if (this.customers.length == 0) {
+                        /* if (this.customers.length == 0) {
                             this.allCustomers()
-                        }
+                        } */
+                        this.input_person.number=(this.customers.length==0)? input : null
                     })
             } else {
                 this.allCustomers()
+                this.input_person.number= null
             }
 
         },
@@ -463,6 +471,7 @@ export default {
                     format_pdf: 'a4',
                 }
             }
+            this.initInputPerson()
         },
         resetForm() {
             this.activePanel = 0
@@ -617,7 +626,37 @@ export default {
         },
         setDescriptionOfItem(item){
             return showNamePdfOfDescription(item,this.config.show_pdf_name)
-        }
+        },
+        keyupCustomer() {
+
+            if (this.input_person.number) {
+
+                if (!isNaN(parseInt(this.input_person.number))) {
+
+                    switch (this.input_person.number.length) {
+                        case 8:
+                            this.input_person.identity_document_type_id = '1'
+                            this.showDialogNewPerson = true
+                            break;
+
+                        case 11:
+                            this.input_person.identity_document_type_id = '6'
+                            this.showDialogNewPerson = true
+                            break;
+                        default:
+                            this.input_person.identity_document_type_id = '6'
+                            this.showDialogNewPerson = true
+                            break;
+                    }
+                }
+            }
+        },
+        initInputPerson() {
+            this.input_person = {
+                number: null,
+                identity_document_type_id: null
+            }
+        },
     },
     computed: {
         ...mapState([

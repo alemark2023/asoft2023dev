@@ -45,7 +45,8 @@
                                                @change="changeCustomer"
                                                @focus="focus_on_client = true"
                                                @blur="focus_on_client = false"
-                                               :loading="loading_search">
+                                               :loading="loading_search"
+                                               @keyup.enter.native="keyupCustomer">
 
                                         <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
 
@@ -414,6 +415,7 @@
         <person-form :showDialog.sync="showDialogNewPerson"
                        type="customers"
                        :external="true"
+                       :input_person="input_person"
                        :document_type_id = form.document_type_id></person-form>
 
         <sale-notes-options :showDialog.sync="showDialogOptions"
@@ -473,6 +475,7 @@
         },
         data() {
             return {
+                input_person: {},
                 pickerOptions :{
                     disabledDate: date => {
                         let now = new Date();
@@ -560,6 +563,9 @@
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
                 this.reloadDataCustomers(customer_id)
             })
+            this.$eventHub.$on('initInputPerson', () => {
+                this.initInputPerson()
+            });
             this.isUpdate()
             this.changeCurrencyType()
         },
@@ -726,10 +732,12 @@
                             .then(response => {
                                 this.customers = response.data.customers
                                 this.loading_search = false
-                                if(this.customers.length == 0){this.allCustomers()}
+                                /* if(this.customers.length == 0){this.allCustomers()} */
+                                this.input_person.number=(this.customers.length==0)? input : null
                             })
                 } else {
                     this.allCustomers()
+                    this.input_person.number= null
                 }
 
             },
@@ -792,6 +800,7 @@
                 this.clickAddPayment()
                 this.enabled_payments = true
                 this.total_global_charge = 0
+                this.initInputPerson()
 
             },
             resetForm() {
@@ -1208,7 +1217,37 @@
                 }
 
 
-            }
+            },
+            keyupCustomer() {
+
+                if (this.input_person.number) {
+
+                    if (!isNaN(parseInt(this.input_person.number))) {
+
+                        switch (this.input_person.number.length) {
+                            case 8:
+                                this.input_person.identity_document_type_id = '1'
+                                this.showDialogNewPerson = true
+                                break;
+
+                            case 11:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                            default:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                        }
+                    }
+                }
+            },
+            initInputPerson() {
+                this.input_person = {
+                    number: null,
+                    identity_document_type_id: null
+                }
+            },
 
         }
     }
