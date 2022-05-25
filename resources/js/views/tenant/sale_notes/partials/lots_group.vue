@@ -143,17 +143,18 @@ export default {
         },
         checkQuantityUpdate(){
 
-            if(this.isUpdateItem && this.oldSelectedLotsGroup.length > 0)
-            {
+            // if(this.isUpdateItem && this.oldSelectedLotsGroup.length > 0)
+            // {
 
-                //buscar la cantidad comprometida de cada lote y asignar valor (para edicion)
-                this.oldSelectedLotsGroup.forEach(lot => {
+            //     //buscar la cantidad comprometida de cada lote y asignar valor (para edicion)
+            //     this.oldSelectedLotsGroup.forEach(lot => {
                     
-                    const search_lot = _.find(this.lots_group_, { id : lot.id})
+            //         let search_lot = _.find(this.lots_group_, { id : lot.id})
 
-                    if(search_lot) search_lot.compromise_quantity = lot.compromise_quantity
-                })
-            }
+            //         if(search_lot) search_lot.compromise_quantity = lot.compromise_quantity
+
+            //     })
+            // }
 
         },
         async submit() {

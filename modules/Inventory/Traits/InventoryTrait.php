@@ -511,6 +511,21 @@ trait InventoryTrait
             }
         }
     }
+
+        
+    /**
+     * 
+     * Obtener factor de presentación
+     *
+     * @param  mixed $model_item
+     * @return float
+     */
+    public function getQuantityUnitPresentation($model_item)
+    {
+        return isset($model_item->item->presentation->quantity_unit) ? (float) $model_item->item->presentation->quantity_unit : 1;
+    }
+
+
     /**
      * Valida los lotes de un item para borrarlos individualmente
      *
@@ -518,17 +533,34 @@ trait InventoryTrait
      */
     private function deleteItemLots($item)
     {
-        $i_lots_group = isset($item->item->lots_group) ? $item->item->lots_group : [];
-        $lot_group_selecteds_filter = collect($i_lots_group)->where('compromise_quantity', '>', 0);
-        $lot_group_selecteds =  $lot_group_selecteds_filter->all();
+        // dd($item->item);
 
-        if (count($lot_group_selecteds) > 0) {
-            foreach ($lot_group_selecteds as $lt) {
+        // lotes
+        if(isset($item->item->IdLoteSelected))
+        {
+            $lot_group_selecteds =  $item->item->IdLoteSelected;
+        }
+        else
+        {
+            $i_lots_group = isset($item->item->lots_group) ? $item->item->lots_group : [];
+            $lot_group_selecteds_filter = collect($i_lots_group)->where('compromise_quantity', '>', 0);
+            $lot_group_selecteds =  $lot_group_selecteds_filter->all();
+        }
+
+        if (count($lot_group_selecteds) > 0) 
+        {
+
+            $quantity_unit = $this->getQuantityUnitPresentation($item);
+
+            foreach ($lot_group_selecteds as $lt) 
+            {
                 $lot = ItemLotsGroup::find($lt->id);
-                $lot->quantity = $lot->quantity + $lt->compromise_quantity;
+                $lot->quantity = $lot->quantity + ($quantity_unit * $lt->compromise_quantity);
                 $lot->save();
             }
         }
+        // lotes
+
         if (isset($item->item->lots)) {
             foreach ($item->item->lots as $it) {
                 if ($it->has_sale == true) {
@@ -539,6 +571,8 @@ trait InventoryTrait
             }
         }
     }
+
+
     /**
      * Valida los documentos cuando es un set
      *

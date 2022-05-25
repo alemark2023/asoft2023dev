@@ -626,8 +626,6 @@ class SaleNoteController extends Controller
 
                 $this->setIdLoteSelectedToItem($row);
                 $sale_note_item->fill($row);
-
-                // dd($sale_note_item->item->IdLoteSelected, $row['IdLoteSelected']);
                 $sale_note_item->sale_note_id = $this->sale_note->id;
                 $sale_note_item->save();
 
@@ -640,15 +638,18 @@ class SaleNoteController extends Controller
                     }
                 }
 
+                // control de lotes
 
-                if(isset($row['IdLoteSelected']))
+                $id_lote_selected = $this->getIdLoteSelectedItem($row);
+                
+                if($id_lote_selected)
                 {
-                    if(is_array($row['IdLoteSelected'])) 
+                    if(is_array($id_lote_selected)) 
                     {
                         // presentacion - factor de lista de precios
                         $quantity_unit = isset($sale_note_item->item->presentation->quantity_unit) ? $sale_note_item->item->presentation->quantity_unit : 1;
 
-                        foreach ($row['IdLoteSelected'] as $item) 
+                        foreach ($id_lote_selected as $item) 
                         {
                             $lot = ItemLotsGroup::query()->find($item['id']);
                             $lot->quantity = $lot->quantity - ($quantity_unit * $item['compromise_quantity']);
@@ -663,32 +664,31 @@ class SaleNoteController extends Controller
                         if(isset($row['item']) && isset($row['item']['presentation'])&&isset($row['item']['presentation']['quantity_unit'])){
                             $quantity_unit = $row['item']['presentation']['quantity_unit'];
                         }
-                        $lot = ItemLotsGroup::find($row['IdLoteSelected']);
+                        $lot = ItemLotsGroup::find($id_lote_selected);
                         $lot->quantity = ($lot->quantity - ($row['quantity'] * $quantity_unit));
                         $lot->save();
                     }
 
                 }
+                // control de lotes
 
             }
 
             //pagos
-            // foreach ($data['payments'] as $row) {
-            //     $this->sale_note->payments()->create($row);
-            // }
-
             $this->savePayments($this->sale_note, $data['payments']);
 
             $this->setFilename();
             $this->createPdf($this->sale_note,"a4", $this->sale_note->filename);
             $this->regularizePayments($data['payments']);
             DB::connection('tenant')->commit();
+
             return [
                 'success' => true,
                 'data' => [
                     'id' => $this->sale_note->id,
                 ],
             ];
+
         } catch (Exception $e) {
             DB::connection('tenant')->rollBack();
             return [
@@ -700,7 +700,37 @@ class SaleNoteController extends Controller
 
 
     /**
-     * Asignar lote a item
+     * 
+     * Obtener lote seleccionado
+     *
+     * @todo regularizar lots_group, no se debe guardar en bd, ya que tiene todos los lotes y no los seleccionados, reemplazar por IdLoteSelected
+     * 
+     * @param  array $row
+     * @return array
+     */
+    private function getIdLoteSelectedItem($row)
+    {
+        $id_lote_selected = null;
+
+        if(isset($row['IdLoteSelected']))
+        {
+            $id_lote_selected = $row['IdLoteSelected'];
+        }
+        else
+        {
+            if(isset($row['item']['lots_group']))
+            {
+                $id_lote_selected = collect($row['item']['lots_group'])->where('compromise_quantity', '>', 0)->toArray();
+            }
+        }
+
+        return $id_lote_selected;
+    }
+
+
+    /**
+     * 
+     * Asignar lote a item (regularizar propiedad en json item)
      *
      * @param  array $row
      * @return void

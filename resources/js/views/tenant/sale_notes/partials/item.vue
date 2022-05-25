@@ -873,6 +873,61 @@ export default {
             this.updateItem()
 
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
+
+        },
+        searchGetIdLoteSelected(){
+
+            if(this.old_selected_lots_group.length > 0)
+            {
+                let new_id_lote_selected = []
+
+                this.old_selected_lots_group.forEach(lot => {
+                    
+                    let search_lot = _.find(this.form.lots_group, { id : lot.id})
+
+                    if(search_lot)
+                    {
+                        search_lot.compromise_quantity = lot.compromise_quantity
+                        new_id_lote_selected.push(lot)
+                    }
+                    
+                })
+
+                if(new_id_lote_selected.length > 0)
+                {
+                    return new_id_lote_selected
+                }
+            }
+            
+            return null
+
+        },
+        regularizeCompromiseQuantityLots(){
+            
+            this.form.IdLoteSelected.forEach(lot => {
+                let search_lot = _.find(this.form.lots_group, { id : lot.id})
+                if(search_lot)  search_lot.compromise_quantity = lot.compromise_quantity
+            })
+
+        },
+        setIdLoteSelected(){
+            console.log(this.recordItem.item.IdLoteSelected)
+
+            if(this.recordItem.item.IdLoteSelected)
+            {
+                this.old_selected_lots_group = this.recordItem.item.IdLoteSelected
+                this.form.IdLoteSelected = this.recordItem.item.IdLoteSelected
+                this.regularizeCompromiseQuantityLots()
+            }
+            else
+            {
+                if(this.recordItem.item.lots_group)
+                {
+                    this.old_selected_lots_group = _.filter(this.recordItem.item.lots_group, function(lot) { return lot.compromise_quantity > 0 })
+                    this.form.IdLoteSelected = this.searchGetIdLoteSelected()
+                }
+            }
+
         },
         async updateItem(){
             
@@ -886,7 +941,7 @@ export default {
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
 
-                this.old_selected_lots_group = (this.recordItem.item.IdLoteSelected) ? this.recordItem.item.IdLoteSelected : this.recordItem.item.lots_group
+                this.setIdLoteSelected()
 
                 // if (this.isEditItemNote) {
                 //     this.form.item.currency_type_id = this.currencyTypeIdActive
@@ -902,8 +957,8 @@ export default {
 
                 // } else {
 
-                    this.form.item.lots = this.recordItem.item.lots
-                    this.lots = this.recordItem.item.lots
+                    // this.form.item.lots = this.recordItem.item.lots
+                    // this.lots = this.recordItem.item.lots
                 // }
 
                 this.setPresentationEditItem()
@@ -1096,6 +1151,36 @@ export default {
         cleanTotalItem() {
             this.total_item = null
         },
+        getResponseMessage(success, message = null){
+            
+            return {
+                success: success,
+                message: message,
+            }
+            
+        },
+        validateIdLoteSelected(){
+            
+            if (this.form.item.lots_enabled) 
+            {
+                if (!this.form.IdLoteSelected)
+                {
+                    return this.getResponseMessage(false, 'Debe seleccionar un lote.')
+                }
+                else
+                {
+                    const compromise_quantity = parseFloat(_.sumBy(this.form.IdLoteSelected, 'compromise_quantity'))
+
+                    if(compromise_quantity != parseFloat(this.form.quantity)) 
+                    {
+                        return this.getResponseMessage(false, 'La suma de cantidades comprometidas de los lotes debe der igual a la cantidad pedida.')
+                    }
+                }
+            }
+
+            return this.getResponseMessage(true)
+
+        },
         async clickAddItem() {
 
             // if(this.form.quantity < this.getMinQuantity()){
@@ -1103,10 +1188,8 @@ export default {
             // }
             this.validateQuantity()
 
-            if (this.form.item.lots_enabled) {
-                if (!this.form.IdLoteSelected)
-                    return this.$message.error('Debe seleccionar un lote.');
-            }
+            const validate_id_lote_selected = this.validateIdLoteSelected()
+            if(!validate_id_lote_selected.success) return this.$message.error(validate_id_lote_selected.message)
 
 
             if (this.validateTotalItem().total_item) return;
