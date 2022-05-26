@@ -6,6 +6,8 @@ $cash_documents = $cash->cash_documents;
 
 $cash_documents_credit = $cash->cash_documents_credit;
 
+$totals_income_summary = $cash->getTotalsIncomeSummary();
+
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -52,13 +54,15 @@ $cash_documents_credit = $cash->cash_documents_credit;
                 font-size: 12px;
             }
             
-            thead {
+            thead tr th {
                 font-weight: bold;
                 background: #0088cc;
                 color: white;
                 text-align: center;
             }
-            .td-custom { line-height: 0.1em; }
+            .width-custom {
+                width: 50%
+            }
         </style>
     </head>
     <body>
@@ -68,7 +72,7 @@ $cash_documents_credit = $cash->cash_documents_credit;
         <div style="margin-top:20px; margin-bottom:20px;">
             <table> 
                 <tr>
-                    <td class="td-custom">
+                    <td class="td-custom width-custom">
                         <p><strong>Empresa: </strong>{{$company->name}}</p>
                     </td>
                     <td class="td-custom">
@@ -79,7 +83,7 @@ $cash_documents_credit = $cash->cash_documents_credit;
                     <td class="td-custom">
                         <p><strong>Ruc: </strong>{{$company->number}}</p>
                     </td>
-                    <td class="td-custom">
+                    <td class="td-custom width-custom">
                         <p><strong>Establecimiento: </strong>{{$establishment->address}} - {{$establishment->department->description}} - {{$establishment->district->description}}</p>
                     </td>
                 </tr>
@@ -101,6 +105,15 @@ $cash_documents_credit = $cash->cash_documents_credit;
                         <p><strong>Fecha y hora cierre: </strong>{{$cash->date_closed}} {{$cash->time_closed}}</p>
                     </td>
                     @endif
+                </tr> 
+                
+                <tr>
+                    <td class="td-custom">
+                        <p><strong>Total comprobantes: </strong>S/ {{ $totals_income_summary['document_total_payments'] }}</p>
+                    </td>
+                    <td class="td-custom">
+                        <p><strong>Total notas de venta: </strong>S/ {{ $totals_income_summary['sale_note_total_payments'] }}</p>
+                    </td>
                 </tr> 
             </table> 
         </div>

@@ -131,5 +131,38 @@ class Cash extends ModelTenant
     {
         return $this->hasMany(CashDocumentCredit::class);
     }
+    
+
+    /**
+     * 
+     * Obtener total de ingresos por tipo de documento
+     *
+     * @return array
+     */
+    public function getTotalsIncomeSummary()
+    {
+
+        $document_total_payments = $this->cash_documents()
+                            ->whereHas('document')
+                            ->get()
+                            ->sum(function($row){
+                                return $row->document->getTotalAllPayments();
+                            });
+        
+        
+        $sale_note_total_payments = $this->cash_documents()
+                            ->whereHas('sale_note')
+                            ->get()
+                            ->sum(function($row){
+                                return $row->sale_note->getTotalAllPayments();
+                            });
+
+        return [
+            'document_total_payments' => $this->generalApplyNumberFormat($document_total_payments),
+            'sale_note_total_payments' => $this->generalApplyNumberFormat($sale_note_total_payments),
+        ];
+        
+    }
+
 
 }

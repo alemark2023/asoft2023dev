@@ -1337,6 +1337,30 @@
         {
             return in_array($this->state_type_id, self::VOIDED_REJECTED_IDS);
         }
+        
 
+        /**
+         * 
+         * Retornar el total de pagos
+         *
+         * @return float
+         */
+        public function getTotalAllPayments()
+        {
+
+            $total_payments = 0;
+
+            if(!$this->isVoidedOrRejected())
+            {
+                $total_payments = $this->payments->sum('payment');
+    
+                if($this->currency_type_id === 'USD')
+                {
+                    $total_payments = $this->generalConvertValueToPen($total_payments, $this->exchange_rate_sale);
+                }
+            }
+
+            return $total_payments;
+        }
 
     }

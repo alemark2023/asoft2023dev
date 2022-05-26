@@ -180,6 +180,21 @@
             </td>
         </tr>
         <tr>
+            <td class="td-custom">
+                <p>
+                    <strong>
+                        Total caja:
+                    </strong>
+                    S/. {{$data['total_cash_payment_method_type_01']}} 
+                    {{-- (Saldo inicial + Efectivo) --}}
+                </p>
+            </td>
+            <td class="td-custom">
+            </td>
+        </tr>
+
+
+        <tr>
             <td><hr></td>
             <td><hr></td>
         </tr>

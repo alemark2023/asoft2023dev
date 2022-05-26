@@ -134,6 +134,7 @@ class CashController extends Controller
         $data['total_tips'] = 0;
         $data['total_payment_cash_01_document'] = 0;
         $data['total_payment_cash_01_sale_note'] = 0;
+        $data['total_cash_payment_method_type_01'] = 0;
 
         $nota_credito = 0;
         $nota_debito = 0;
@@ -328,22 +329,25 @@ class CashController extends Controller
                 ];
             }
             /** Documentos de Tipo Gastos */
-            elseif ($cash_document->expense_payment) {
+            elseif ($cash_document->expense_payment) 
+            {
                 $expense_payment = $cash_document->expense_payment;
-                //    $usado = '<br>No se usan pagos<br>';
+                $total_expense_payment = 0;
 
-                if ($expense_payment->expense->state_type_id == '05') {
-                    $total = self::CalculeTotalOfCurency(
+                if ($expense_payment->expense->state_type_id == '05') 
+                {
+                    $total_expense_payment = self::CalculeTotalOfCurency(
                         $expense_payment->payment,
                         $expense_payment->expense->currency_type_id,
                         $expense_payment->expense->exchange_rate_sale
                     );
-                    //        $usado = '<br>Se usan para cash<br>';
 
-                    $cash_egress += $total;
-                    $final_balance -= $total;
-
+                    $cash_egress += $total_expense_payment;
+                    $final_balance -= $total_expense_payment;
+                    // $cash_egress += $total;
+                    // $final_balance -= $total;
                 }
+
                 $temp = [
                     'type_transaction'          => 'Gasto',
                     'document_type_description' => $expense_payment->expense->expense_type->description,
@@ -352,12 +356,14 @@ class CashController extends Controller
                     'date_sort'                 => $expense_payment->expense->date_of_issue,
                     'customer_name'             => $expense_payment->expense->supplier->name,
                     'customer_number'           => $expense_payment->expense->supplier->number,
-                    'total'                     => -$expense_payment->payment,
+                    'total'                     => -$total_expense_payment,
+                    // 'total'                     => -$expense_payment->payment,
                     'currency_type_id'          => $expense_payment->expense->currency_type_id,
                     'usado'                     => $usado." ".__LINE__,
 
                     'tipo' => 'expense_payment',
-                    'total_payments'            => -$expense_payment->payment,
+                    'total_payments'            => $total_expense_payment,
+                    // 'total_payments'            => -$expense_payment->payment,
 
                 ];
             }
@@ -519,11 +525,13 @@ class CashController extends Controller
         $data['all_documents'] = $all_documents;
         $temp = [];
 
-        foreach ($methods_payment as $index => $item) {
+        foreach ($methods_payment as $index => $item) 
+        {
             $temp[] = [
                 'iteracion' => $index + 1,
                 'name'      => $item->name,
                 'sum'       => self::FormatNumber($item->sum),
+                'payment_method_type_id'       => $item->id ?? null,
             ];
         }
 
@@ -538,9 +546,34 @@ class CashController extends Controller
 
         $data['cash_income'] = self::FormatNumber($cash_income);
 
+        $data['total_cash_payment_method_type_01'] = self::FormatNumber($this->getTotalCashPaymentMethodType01($data));
+
         //$cash_income = ($final_balance > 0) ? ($cash_final_balance - $cash->beginning_balance) : 0;
         return $data;
     }
+    
+
+    /**
+     * 
+     * Obtener total caja, suma del total de pagos en efectivo mas saldo inicial
+     *
+     * @param  array $data
+     * @return float
+     */
+    private function getTotalCashPaymentMethodType01($data)
+    {
+
+        $total_cash_payment_method_type_01 = 0;
+        $payment_method_01 = collect($data['methods_payment'])->where('payment_method_type_id', '01')->first();
+
+        if($payment_method_01)
+        {
+            $total_cash_payment_method_type_01 = $payment_method_01['sum'] + $data['cash_beginning_balance'];
+        }
+
+        return $total_cash_payment_method_type_01;
+    }
+
 
     /**
      * @param int    $total
@@ -588,7 +621,8 @@ class CashController extends Controller
      * @throws \Mpdf\MpdfException
      * @throws \Throwable
      */
-    private function getPdf($cash, $format = 'ticket', $mm = null) {
+    private function getPdf($cash, $format = 'ticket', $mm = null) 
+    {
         $data = $this->setDataToReport($cash);
         $quantity_rows = 30;//$cash->cash_documents()->count();
 
