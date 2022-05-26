@@ -471,7 +471,7 @@
         </lots-group>
 
         <select-lots-form
-            :documentItemId="documentItem"
+            :saleNoteItemId="form.sale_note_item_id"
             :itemId="form.item_id"
             :lots="lots"
             :quantity="form.quantity"
@@ -845,7 +845,8 @@ export default {
                 lots_group: [],
                 IdLoteSelected: null,
                 document_item_id: null,
-                name_product_pdf: ''
+                name_product_pdf: '',
+                sale_note_item_id: null,
             };
 
             this.activePanel = 0;
@@ -868,7 +869,7 @@ export default {
                 }
             }
 
-            console.log(this.recordItem, "aq")
+            console.log(this.recordItem, this.recordItem.record_id, "aq")
 
             this.updateItem()
 
@@ -911,7 +912,7 @@ export default {
 
         },
         setIdLoteSelected(){
-            console.log(this.recordItem.item.IdLoteSelected)
+            // console.log(this.recordItem.item.IdLoteSelected)
 
             if(this.recordItem.item.IdLoteSelected)
             {
@@ -956,9 +957,9 @@ export default {
                 //     }
 
                 // } else {
-
-                    // this.form.item.lots = this.recordItem.item.lots
-                    // this.lots = this.recordItem.item.lots
+                    this.form.sale_note_item_id = this.recordItem.record_id
+                    this.form.item.lots = this.recordItem.item.lots
+                    this.lots = this.recordItem.item.lots
                 // }
 
                 this.setPresentationEditItem()
