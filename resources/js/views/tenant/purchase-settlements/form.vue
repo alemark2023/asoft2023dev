@@ -1058,13 +1058,13 @@ export default {
                             this.resetForm()
                             this.purchaseNewId = response.data.data.id
                             this.showDialogOptions = true
-                            console.log(response.data)
+                            this.close()
                     } else {
                         this.$message.error(response.data.message)
                     }
                 })
                 .catch(error => {
-                        this.$message.error(error.response.data.message)
+                        this.$message.error(error.response)
                 })
                 .then(() => {
                     this.loading_submit = false
