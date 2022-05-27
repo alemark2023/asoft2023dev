@@ -62,7 +62,7 @@
                                         effect="dark"
                                         placement="bottom">
                                         <el-button
-                                            :disabled="isEditItemNote"
+                                            :disabled="isUpdateItem"
                                             @click.prevent="clickWarehouseDetail()">
                                             <i class="fa fa-search"></i>
                                         </el-button>
@@ -100,7 +100,7 @@
                                         effect="dark"
                                                 placement="bottom">
                                         <el-button
-                                            :disabled="isEditItemNote"
+                                            :disabled="isUpdateItem"
                                             @click.prevent="clickWarehouseDetail()">
                                             <i class="fa fa-search"></i>
                                         </el-button>
@@ -847,6 +847,7 @@ export default {
                 document_item_id: null,
                 name_product_pdf: '',
                 sale_note_item_id: null,
+                record_id: null,
             };
 
             this.activePanel = 0;
@@ -869,13 +870,14 @@ export default {
                 }
             }
 
-            console.log(this.recordItem, this.recordItem.record_id, "aq")
+            console.log(this.recordItem, "aq")
 
             this.updateItem()
 
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
 
         },
+        // edicion de item
         searchGetIdLoteSelected(){
 
             if(this.old_selected_lots_group.length > 0)
@@ -930,6 +932,23 @@ export default {
             }
 
         },
+        setItemLots(){
+
+            if(this.recordItem.item.lots)
+            {
+                this.form.sale_note_item_id = this.recordItem.record_id
+                this.form.item.lots = this.recordItem.item.lots
+                this.lots = this.recordItem.item.lots
+            }
+
+        },
+        setNameProductPdf(){
+
+            if (this.recordItem.item.name_product_pdf) {
+                this.form.name_product_pdf = this.recordItem.item.name_product_pdf
+            }
+
+        },
         async updateItem(){
             
             if (this.isUpdateItem)
@@ -941,45 +960,13 @@ export default {
                 this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
+                this.form.record_id = this.recordItem.record_id
+                this.form.affectation_igv_type_id = this.recordItem.affectation_igv_type_id
 
                 this.setIdLoteSelected()
-
-                // if (this.isEditItemNote) {
-                //     this.form.item.currency_type_id = this.currencyTypeIdActive
-                //     this.form.item.currency_type_symbol = (this.currencyTypeIdActive == 'PEN') ? 'S/' : '$'
-
-                //     if (this.documentTypeId == '07' && this.noteCreditOrDebitTypeId == '07') {
-
-                //         this.form.document_item_id = this.recordItem.id ? this.recordItem.id : this.recordItem.document_item_id
-                //         this.form.item.lots = this.recordItem.item.lots
-                //         await this.regularizeLots()
-                //         this.lots = this.form.item.lots
-                //     }
-
-                // } else {
-                    this.form.sale_note_item_id = this.recordItem.record_id
-                    this.form.item.lots = this.recordItem.item.lots
-                    this.lots = this.recordItem.item.lots
-                // }
-
+                this.setItemLots()
                 this.setPresentationEditItem()
-
-                if (this.recordItem.item.name_product_pdf) {
-                    this.form.name_product_pdf = this.recordItem.item.name_product_pdf
-                }
-                
-
-                // if (this.recordItem.item.change_free_affectation_igv) {
-
-                //     this.form.affectation_igv_type_id = '15'
-                //     this.form.item.change_free_affectation_igv = true
-
-                // } else {
-                    if (this.recordItem.item.original_affectation_igv_type_id) {
-                        this.form.affectation_igv_type_id = this.recordItem.item.original_affectation_igv_type_id
-                    }
-                // }
-
+                this.setNameProductPdf()
                 this.calculateQuantity()
 
             } else {
@@ -987,6 +974,7 @@ export default {
             }
 
         },
+        // edicion de item
         setPresentationEditItem() {
 
             if (!_.isEmpty(this.recordItem.item.presentation)) {
@@ -1093,7 +1081,9 @@ export default {
             this.$emit('update:showDialog', false)
         },
         async changeItem() {
-            this.form.item = _.find(this.items, {'id': this.form.item_id});
+            
+            this.form.item = { ..._.find(this.items, {'id': this.form.item_id}) }
+            // this.form.item = _.find(this.items, {'id': this.form.item_id});
             this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
             this.form.unit_price_value = this.form.item.sale_unit_price;
             this.lots = this.form.item.lots

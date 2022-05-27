@@ -355,15 +355,15 @@ class DocumentController extends Controller
     public function getRecordsForSaleNoteItem($records, $sale_note_item_id, $request)
     {
         // obtener series disponibles
-        $records->whereAvailableItemLot($request->item_id);
+        $records->whereAvailableItemLot($request->item_id)->latest();
 
         // obtener series vendidas en la nv
         $sale_note_item = SaleNoteItem::findOrFail($sale_note_item_id);
         $lots = $sale_note_item->item->lots;
         
-        $sale_lots = ItemLot::whereIn('id', collect($lots)->pluck('id')->toArray())->where('has_sale', true);
+        $sale_lots = ItemLot::whereIn('id', collect($lots)->pluck('id')->toArray())->where('has_sale', true)->latest();
 
-        return $records->union($sale_lots)->latest();
+        return $sale_lots->union($records);
     }
 
 

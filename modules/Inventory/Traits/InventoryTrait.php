@@ -533,7 +533,6 @@ trait InventoryTrait
      */
     private function deleteItemLots($item)
     {
-        // dd($item->item);
 
         // lotes
         if(isset($item->item->IdLoteSelected))
@@ -561,15 +560,21 @@ trait InventoryTrait
         }
         // lotes
 
-        if (isset($item->item->lots)) {
-            foreach ($item->item->lots as $it) {
-                if ($it->has_sale == true) {
-                    $ilt = ItemLot::find($it->id);
-                    $ilt->has_sale = false;
-                    $ilt->save();
+        // series
+        if (isset($item->item->lots)) 
+        {
+            foreach ($item->item->lots as $it) 
+            {
+                if ($it->has_sale) 
+                {
+                    $item_lot = ItemLot::find($it->id);
+                    $item_lot->has_sale = false;
+                    $item_lot->save();
                 }
             }
         }
+        // series
+
     }
 
 

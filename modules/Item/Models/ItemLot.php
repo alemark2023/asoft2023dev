@@ -223,7 +223,6 @@ class ItemLot extends ModelTenant
      */
     public function scopeWhereAvailableItemLot($query, $item_id)
     {
-        // dd($this->getCurrentWarehouseId());
         $query->where('item_id', $item_id)->where('has_sale', false)->where('warehouse_id', $this->getCurrentWarehouseId());
     }
 

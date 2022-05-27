@@ -194,11 +194,13 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
         });
     }
+    
 
     /**
      * Se dispara  al generar una nota de venta
      */
-    private function sale_note() {
+    private function sale_note() 
+    {
         SaleNoteItem::created(function (SaleNoteItem $sale_note_item) {
 
             if(!$sale_note_item->item->is_set){
@@ -230,19 +232,21 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
             }
 
+            // series
             if(isset($sale_note_item->item->lots) )
             {
-                foreach ($sale_note_item->item->lots as $it) {
-
+                foreach ($sale_note_item->item->lots as $it) 
+                {
                     if($it->has_sale == true)
                     {
                         $r = ItemLot::find($it->id);
                         $r->has_sale =  true;
                         $r->save();
                     }
-
                 }
             }
+            // series
+
         });
     }
 
