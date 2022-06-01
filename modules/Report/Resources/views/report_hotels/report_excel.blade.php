@@ -213,7 +213,8 @@
                     $days_arrival=1;
                     $customer = $value->customer;
                     $room = $value->room;
-                    $rates = $value->room->rates[0]->price;
+                    $rates=$value->searchRateRoom($value);
+                    $rates = $rates? $rates[0]->price : 0;
                     $category = $value->room->category;
                     /* dd($category['description']); */
                     $category = $category['description'];

@@ -9,6 +9,7 @@
     use Illuminate\Database\Eloquent\Builder;
     use Illuminate\Database\Eloquent\Collection;
     use App\Models\Tenant\Person;
+    use Modules\Hotel\Models\HotelRoomRate;
 
     /**
      * Class \Modules\Hotel\Models\HotelRent
@@ -53,6 +54,7 @@
             'notes',
             'towels',
             'hotel_room_id',
+            'hotel_rate_id',
             'duration',
             'quantity_persons',
             'payment_status',
@@ -89,6 +91,11 @@
         public function room()
         {
             return $this->belongsTo(HotelRoom::class, 'hotel_room_id');
+        }
+
+        public function rate()
+        {
+            return $this->belongsTo(HotelRate::class, 'hotel_rate_id');
         }
 
         /**
@@ -146,6 +153,20 @@
                 $data=Person::with('nationality')
                 ->orderBy('id', 'DESC');
                 return $data = $data->where('id',$id)->get();
+            }
+        }
+
+        public function searchRateRoom($value)
+        {
+            $id ='';
+            $room_id='';
+            if ($value->rate) {
+                if ($value->rate->id) {
+                    $id = $value->rate->id;
+                    $room_id=$value->hotel_room_id;
+                    return $data = HotelRoomRate::where('hotel_rate_id',$id)->where('hotel_room_id',$room_id)->get();
+                }
+                
             }
         }
 
