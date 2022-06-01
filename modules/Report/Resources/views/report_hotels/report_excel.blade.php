@@ -9,6 +9,19 @@
     <meta http-equiv="X-UA-Compatible"
           content="ie=edge">
     <title>RH</title>
+    <style>
+        .td-custom {
+            line-height: 0.1em;
+        }
+        .celda {
+            text-align: center;
+            padding: 5px;
+            border: 0.1px solid black;
+        }
+        .width-custom {
+            width: 50%
+        }
+    </style>
 </head>
 <body>
 <div>
@@ -19,7 +32,7 @@
 <div style="margin-top:20px; margin-bottom:15px;">
     <table>
         <tr>
-            <td>
+            <td class="td-custom width-custom">
                 <p><b>Empresa: </b></p>
             </td>
             <td align="center">
@@ -39,17 +52,125 @@
             <td align="center">{{$company->number}}</td>
 
         </tr>
+        @php
+
+        $available=0;
+        $busy=0;
+        $cleaning = 0;
+        @endphp
+        @foreach($rooms as $key => $value)
+        @php
+        $status=$value->status;
+        if ($status === 'DISPONIBLE') {
+            $available+=1;
+        }else if ($status === 'OCUPADO'){
+            $busy+=1;
+        }
+            else {
+            $cleaning += 1;
+        }
+        @endphp
+        @endforeach
+        <tr>
+            <td class="td-custom">
+                <p><strong>Habitaciones disponibles: </strong></p>
+                
+            </td>
+            <td align="center">{{$available}}</td>
+        </tr>
+        <tr>
+            <td class="td-custom">
+                <p><strong>Habitaciones ocupadas:</strong></p>
+            </td>
+            <td align="center">{{$busy}}</td>
+        </tr>
+        <tr>
+            <td class="td-custom">
+                <p>
+                    <strong>
+                        Habitaciones en limpieza: 
+                    </strong>
+                    
+                </p>
+                
+            </td>
+            <td align="center">{{$cleaning}}</td>
+        </tr>
     </table>
 </div>
-<br>
+
 {{-- @php
     dd($records);
 @endphp --}}
+<div class="">
+    <div class=" ">
+<table>
+    <thead>
+    <tr>
+        <th align="center" colspan="4">
+            <p><strong>Listado de habitaciones</strong></p>
+        </th>
+    </tr>
+    <tr>
+        <th>#</th>
+        <th>Habitacion</th>
+        <th>Estado</th>
+        <th>Horas</th>
+    </tr>
+    </thead>
+    <tbody>
+        @php
+
+        $available=0;
+        $busy=0;
+        $cleaning = 0;
+        $status = 0;
+        $name_room = 0;
+        $hours= 0;
+        $hours_total=0;
+        $hours_now=0;
+        $symbol = 'h';
+        @endphp
+    @foreach($rooms as $key => $value)
+    @php
+    $status=$value->status;
+    if ($status === 'DISPONIBLE') {
+        $available+=1;
+    }else if ($status === 'OCUPADO'){
+        $busy+=1;
+    }
+     else {
+        $cleaning += 1;
+    }
+    $hours = $value->updated_at;
+    $hours = \Carbon\Carbon::parse($hours);
+    $hours_now = \Carbon\Carbon::now();
+    $hours_total = $hours->diffInHours($hours_now);
+    if ($hours_total === 0) {
+        $hours_total = $hours->diffInMinutes($hours_now);
+        $symbol = 'm';
+    }
+    $name_room = $value->name;
+    @endphp
+        
+        <tr>
+            <td class="celda">{{$key+1}}</td>
+            <td class="celda">{{$name_room}}</td>
+            <td class="celda">{{$status}}</td>
+            <td class="celda">{{ $hours_total.' '.$symbol}}</td>
+        </tr>
+    @endforeach
+    </tbody>
+</table>
+<br>
 @if(!empty($records))
-    <div class="">
-        <div class=" ">
             <table class="">
                 <thead>
+                    <tr>
+                        <th align="center" colspan="15">
+                            <p><strong>Reporte General</strong></p>
+                        </th>
+                    </tr>
                 <tr>
                     {{-- <th>#</th>
                     <th>Nombres y Apellidos</th>
@@ -157,62 +278,8 @@
                         <td class="celda">{{$total_nigth_days}}</td>
                     </tr>
                     <tr></tr>
-                    <tr>
-                        <th>Habitacion</th>
-                        <th>Estado</th>
-                        <th>Horas</th>
-                    </tr>
-                    @php
-
-                    $available=0;
-                    $busy=0;
-                    $cleaning = 0;
-                    $status = 0;
-                    $name_room = 0;
-                    $hours= 0;
-                    $hours_total=0;
-                    $hours_now=0;
-                    $symbol = 'h';
-                    @endphp
-                @foreach($rooms as $key => $value)
-                @php
-                $status=$value->status;
-                if ($status === 'DISPONIBLE') {
-                    $available+=1;
-                }else if ($status === 'OCUPADO'){
-                    $busy+=1;
-                }
-                 else {
-                    $cleaning += 1;
-                }
-                $hours = $value->updated_at;
-                $hours = \Carbon\Carbon::parse($hours);
-                $hours_now = \Carbon\Carbon::now();
-                $hours_total = $hours->diffInHours($hours_now);
-                if ($hours_total === 0) {
-                    $hours_total = $hours->diffInMinutes($hours_now);
-                    $symbol = 'm';
-                }
-                $name_room = $value->name;
-                @endphp
                     
-                    <tr>
-                        <td>{{$name_room}}</td>
-                        <td>{{$status}}</td>
-                        <td>{{ $hours_total.' '.$symbol}}</td>
-                    </tr>
-                @endforeach
                     <tr></tr>
-                    <tr>
-                        <th>Disponible</th>
-                        <th>Ocupado</th>
-                        <th>Limpieza</th>
-                    </tr>
-                    <tr>
-                        <td>{{$available}}</td>
-                        <td>{{$busy}}</td>
-                        <td>{{$cleaning}}</td>
-                    </tr>
                 </tbody>
             </table>
         </div>
