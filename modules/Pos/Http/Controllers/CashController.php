@@ -135,6 +135,7 @@ class CashController extends Controller
         $data['total_payment_cash_01_document'] = 0;
         $data['total_payment_cash_01_sale_note'] = 0;
         $data['total_cash_payment_method_type_01'] = 0;
+        $data['separate_cash_transactions'] = Configuration::getSeparateCashTransactions();
 
         $nota_credito = 0;
         $nota_debito = 0;
@@ -177,6 +178,7 @@ class CashController extends Controller
                     $data['total_tips'] += $sale_note->tip ? $sale_note->tip->total : 0;
                 }
 
+                $order_number = 3;
 
                 $temp = [
                     'type_transaction'          => 'Venta',
@@ -192,10 +194,14 @@ class CashController extends Controller
                     'usado'                     => $usado." ".__LINE__,
                     'tipo'                      => 'sale_note',
                     'total_payments'            => (!in_array($sale_note->state_type_id, $status_type_id)) ? 0 : $sale_note->payments->sum('payment'),
+                    'type_transaction_prefix'   => 'income',
+                    'order_number_key'          => $order_number.'_'.$sale_note->created_at->format('YmdHis'),
                 ];
+
             } 
             /** Documentos de Tipo Document */
-            elseif ($cash_document->document) {
+            elseif ($cash_document->document) 
+            {
                 $record_total = 0;
                 $document = $cash_document->document;
                 $payment_condition_id = $document->payment_condition_id;
@@ -276,6 +282,7 @@ class CashController extends Controller
                     $usado .= '<br> Los montos son diferentes '.$document->total." vs ".$pagado."<br>";
                 }
 
+                $order_number = $document->document_type_id === '01' ? 1 : 2;
 
                 $temp = [
                     'type_transaction'          => 'Venta',
@@ -292,6 +299,8 @@ class CashController extends Controller
 
                     'tipo' => 'document',
                     'total_payments'            => (!in_array($document->state_type_id, $status_type_id)) ? 0 : $document->payments->sum('payment'),
+                    'type_transaction_prefix'   => 'income',
+                    'order_number_key'          => $order_number.'_'.$document->created_at->format('YmdHis'),
 
                 ];
                 /* Notas de credito o debito*/
@@ -313,6 +322,9 @@ class CashController extends Controller
                         }
                     }
                 }
+
+                $order_number = 4;
+
                 $temp = [
                     'type_transaction'          => 'Venta',
                     'document_type_description' => 'Servicio técnico',
@@ -326,7 +338,10 @@ class CashController extends Controller
                     'usado'                     => $usado." ".__LINE__,
                     'tipo'                      => 'technical_service',
                     'total_payments'            => $technical_service->payments->sum('payment'),
+                    'type_transaction_prefix'   => 'income',
+                    'order_number_key'          => $order_number.'_'.$technical_service->created_at->format('YmdHis'),
                 ];
+
             }
             /** Documentos de Tipo Gastos */
             elseif ($cash_document->expense_payment) 
@@ -348,6 +363,8 @@ class CashController extends Controller
                     // $final_balance -= $total;
                 }
 
+                $order_number = 9;
+
                 $temp = [
                     'type_transaction'          => 'Gasto',
                     'document_type_description' => $expense_payment->expense->expense_type->description,
@@ -364,6 +381,8 @@ class CashController extends Controller
                     'tipo' => 'expense_payment',
                     'total_payments'            => $total_expense_payment,
                     // 'total_payments'            => -$expense_payment->payment,
+                    'type_transaction_prefix'   => 'egress',
+                    'order_number_key'          => $order_number.'_'.$expense_payment->expense->created_at->format('YmdHis'),
 
                 ];
             }
@@ -397,6 +416,8 @@ class CashController extends Controller
 
                 }
 
+                $order_number = $purchase->document_type_id == '01' ? 7 : 8;
+
                 $temp = [
                     'type_transaction'          => 'Compra',
                     'document_type_description' => $purchase->document_type->description,
@@ -410,8 +431,10 @@ class CashController extends Controller
                     'usado'                     => $usado." ".__LINE__,
                     'tipo'                      => 'purchase',
                     'total_payments'            => (!in_array($purchase->state_type_id, $status_type_id)) ? 0 : $purchase->payments->sum('payment'),
-
+                    'type_transaction_prefix'   => 'egress',
+                    'order_number_key'          => $order_number.'_'.$purchase->created_at->format('YmdHis'),
                 ];
+
             }
             /** Cotizaciones */
             else if ($cash_document->quotation) 
@@ -443,6 +466,8 @@ class CashController extends Controller
                             }
                         }
                     }
+
+                    $order_number = 5;
     
                     $temp = [
                         'type_transaction'          => 'Venta (Pago a cuenta)',
@@ -457,7 +482,8 @@ class CashController extends Controller
                         'usado'                     => $usado." ".__LINE__,
                         'tipo'                      => 'quotation',
                         'total_payments'            => (!in_array($quotation->state_type_id, $status_type_id)) ? 0 : $quotation->payments->sum('payment'),
-
+                        'type_transaction_prefix'   => 'income',
+                        'order_number_key'          => $order_number.'_'.$quotation->created_at->format('YmdHis'),
                     ];
 
                 }
@@ -495,6 +521,9 @@ class CashController extends Controller
                             $final_balance -= $record_total;
                             $usado .= "Id de documento {$document->id} - Nota de Credito /* $record_total * /<br>";
                         }
+
+                        $order_number = $note->isDebit() ? 6 : 10;
+
                         $temp = [
                             'type_transaction'          => $type,
                             'document_type_description' => $document->document_type->description,
@@ -508,6 +537,8 @@ class CashController extends Controller
                             'currency_type_id'          => $document->currency_type_id,
                             'usado'                     => $usado.' '.__LINE__,
                             'tipo'                      => 'document',
+                            'type_transaction_prefix'   => $note->isDebit() ? 'income' : 'egress',
+                            'order_number_key'          => $order_number.'_'.$document->created_at->format('YmdHis'),
                         ];
 
                         $temp['usado'] = isset($temp['usado']) ? $temp['usado'] : '--';
@@ -624,6 +655,8 @@ class CashController extends Controller
     private function getPdf($cash, $format = 'ticket', $mm = null) 
     {
         $data = $this->setDataToReport($cash);
+        // dd($data);
+
         $quantity_rows = 30;//$cash->cash_documents()->count();
 
         $width = 78;

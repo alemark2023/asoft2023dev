@@ -163,6 +163,34 @@ class Cash extends ModelTenant
         ];
         
     }
+    
+    
+    /**
+     * 
+     * Obtener comprobantes y notas de venta ordenados para reporte ingresos en caja
+     *
+     * @return array
+     */
+    public function getIncomePaymentsData()
+    {
+        
+        $documents = $this->cash_documents()
+                        ->join('documents', 'documents.id', '=', 'cash_documents.document_id')
+                        ->orderBy('documents.document_type_id')
+                        ->orderBy('documents.created_at')
+                        ->get();
+        
+        $sale_notes = $this->cash_documents()
+                            ->join('sale_notes', 'sale_notes.id', '=', 'cash_documents.sale_note_id')
+                            ->orderBy('sale_notes.created_at')
+                            ->get();
+
+        return [
+            'documents' => $documents,
+            'sale_notes' => $sale_notes,
+        ];
+        
+    }
 
 
 }
