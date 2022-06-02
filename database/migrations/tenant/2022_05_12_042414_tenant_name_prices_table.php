@@ -15,11 +15,7 @@ class TenantNamePricesTable extends Migration
     {
         Schema::create('name_prices', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('description');
-            $table->string('unit_type_id');
-            $table->decimal('quantity_unit',12,4);
             $table->boolean('price_default')->default(2);
-            $table->foreign('unit_type_id')->references('id')->on('cat_unit_types');
             
         });
     }
