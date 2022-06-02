@@ -217,7 +217,7 @@
                                 </el-tooltip>
                             </label>
 
-                            <template v-if="configuration.change_currency_item && isFromInvoice">
+                            <template v-if="applyChangeCurrencyItem && isFromInvoice">
 
                                 <template v-if="form.item">
                                     <el-input v-model="form.unit_price_value"
@@ -795,6 +795,13 @@ export default {
                 return this.config.allow_edit_unit_price_to_seller;
             }
             return false;
+        },
+        applyChangeCurrencyItem(){
+
+            if(this.configuration) return this.configuration.change_currency_item
+
+            return false
+
         }
     },
     methods: {
@@ -1340,12 +1347,15 @@ export default {
 
             
             //validar precio compra y venta
-            if(this.configuration.validate_purchase_sale_unit_price)
+            if(this.configuration)
             {
-                let val_purchase_unit_price = parseFloat(this.form.item.purchase_unit_price)
-                
-                if(val_purchase_unit_price > parseFloat(unit_price)){
-                    return this.$message.error(`El precio de compra no puede ser superior al precio de venta (P. Compra: ${val_purchase_unit_price})`)
+                if(this.configuration.validate_purchase_sale_unit_price)
+                {
+                    let val_purchase_unit_price = parseFloat(this.form.item.purchase_unit_price)
+                    
+                    if(val_purchase_unit_price > parseFloat(unit_price)){
+                        return this.$message.error(`El precio de compra no puede ser superior al precio de venta (P. Compra: ${val_purchase_unit_price})`)
+                    }
                 }
             }
 
