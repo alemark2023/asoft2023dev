@@ -251,6 +251,8 @@
             'enabled_advanced_records_search',
             'change_decimal_quantity_unit_price_pdf',
             'decimal_quantity_unit_price_pdf',
+            'separate_cash_transactions',
+            'order_cash_income',
         ];
 
         protected $casts = [
@@ -341,6 +343,8 @@
             'enabled_advanced_records_search' => 'bool',
             'change_decimal_quantity_unit_price_pdf' => 'bool',
             'decimal_quantity_unit_price_pdf' => 'int',
+            'separate_cash_transactions' => 'bool',
+            'order_cash_income' => 'bool',
 
         ];
 
@@ -547,6 +551,8 @@
                 'enabled_advanced_records_search' => $this->enabled_advanced_records_search,
                 'change_decimal_quantity_unit_price_pdf' => $this->change_decimal_quantity_unit_price_pdf,
                 'decimal_quantity_unit_price_pdf' => $this->decimal_quantity_unit_price_pdf,
+                'separate_cash_transactions' => $this->separate_cash_transactions,
+                'order_cash_income' => $this->order_cash_income,
 
             ];
         }
@@ -2209,4 +2215,27 @@
         {
             return (bool) \Config('extra.suscription_facturalo');
         }
+
+        
+        /**
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public function scopeGetSeparateCashTransactions($query)
+        {
+            return $query->select('separate_cash_transactions')->firstOrFail()->separate_cash_transactions;
+        }
+
+        
+        /**
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public function scopeGetOrderCashIncome($query)
+        {
+            return $query->select('order_cash_income')->firstOrFail()->order_cash_income;
+        }
+
     }
