@@ -226,7 +226,8 @@
     export default {
         props:[
             'typeUser',
-            'soapCompany'
+            'soapCompany',
+            'generateOrderNoteFromQuotation',
         ],
         mixins: [
             deletable
@@ -298,16 +299,23 @@
                 'loadConfiguration',
             ]),
             canMakeOrderNote(row){
-                let sal = true;
-                if(row.order_note.full_number ) {
-                    // Si ya tiene Pedidos, no se genera uno nuevo
-                    sal = false
+
+                let permission = true
+
+                // Si ya tiene Pedidos, no se genera uno nuevo
+                if(row.order_note.full_number) 
+                {
+                    permission = false
                 }
-                if(this.typeUser !== 'admin') {
-                    // solo administradores pueden hacer pedidos desde cotizacion
-                    sal = false;
+                else
+                {
+                    if(this.typeUser !== 'admin') 
+                    {
+                        permission = this.generateOrderNoteFromQuotation
+                    }
                 }
-                return sal;
+
+                return permission
             },
             clickPrintContract(external_id){
                 window.open(`/contracts/print/${external_id}/a4`, '_blank');

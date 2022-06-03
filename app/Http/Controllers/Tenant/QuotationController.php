@@ -59,8 +59,9 @@ class QuotationController extends Controller
     {
         $company = Company::select('soap_type_id')->first();
         $soap_company  = $company->soap_type_id;
+        $generate_order_note_from_quotation = Configuration::getRecordIndividualColumn('generate_order_note_from_quotation');
 
-        return view('tenant.quotations.index', compact('soap_company'));
+        return view('tenant.quotations.index', compact('soap_company', 'generate_order_note_from_quotation'));
     }
 
 

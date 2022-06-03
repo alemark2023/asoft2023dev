@@ -253,6 +253,7 @@
             'decimal_quantity_unit_price_pdf',
             'separate_cash_transactions',
             'order_cash_income',
+            'generate_order_note_from_quotation',
         ];
 
         protected $casts = [
@@ -345,7 +346,8 @@
             'decimal_quantity_unit_price_pdf' => 'int',
             'separate_cash_transactions' => 'bool',
             'order_cash_income' => 'bool',
-
+            'generate_order_note_from_quotation' => 'bool',
+            
         ];
 
         protected $hidden = [
@@ -553,7 +555,8 @@
                 'decimal_quantity_unit_price_pdf' => $this->decimal_quantity_unit_price_pdf,
                 'separate_cash_transactions' => $this->separate_cash_transactions,
                 'order_cash_income' => $this->order_cash_income,
-
+                'generate_order_note_from_quotation' => $this->generate_order_note_from_quotation,
+                
             ];
         }
 
@@ -2237,5 +2240,20 @@
         {
             return $query->select('order_cash_income')->firstOrFail()->order_cash_income;
         }
+
+         
+        /**
+         * 
+         * Obtener campo individual de la configuracion
+         *
+         * @param  Builder $query
+         * @param  string $column
+         * @return Builder
+         */
+        public function scopeGetRecordIndividualColumn($query, $column)
+        {
+            return $query->select($column)->firstOrFail()->{$column};
+        }
+        
 
     }

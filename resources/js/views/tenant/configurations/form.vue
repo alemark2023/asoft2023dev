@@ -646,6 +646,23 @@
                                 </div>
                             </div>
 
+                            
+                            <div class="col-md-6 mt-4">
+                                
+                                <label class="control-label">Permitir generar pedidos desde cotización a vendedores</label>
+                               
+                                <div :class="{'has-danger': errors.generate_order_note_from_quotation}"
+                                        class="form-group">
+                                    <el-switch v-model="form.generate_order_note_from_quotation"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.generate_order_note_from_quotation"
+                                            class="form-control-feedback"
+                                            v-text="errors.generate_order_note_from_quotation[0]"></small>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="third">
@@ -1810,6 +1827,7 @@ export default {
                 decimal_quantity_unit_price_pdf: false,
                 separate_cash_transactions: false,
                 order_cash_income: false,
+                generate_order_note_from_quotation: false,
             };
         },
         UpdateFormPurchase(e) {
