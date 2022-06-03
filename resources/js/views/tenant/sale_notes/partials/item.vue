@@ -126,7 +126,7 @@
                         <div :class="{'has-danger': errors.affectation_igv_type_id}" class="form-group">
                             <label class="control-label">Afectación Igv</label>
                             <el-select v-model="form.affectation_igv_type_id"
-                                       :disabled="!change_affectation_igv_type_id" filterable>
+                                       :disabled="!change_affectation_igv_type_id || isUpdateItem" filterable>
                                 <el-option
                                     v-for="option in affectation_igv_types"
                                            :key="option.id"
@@ -949,14 +949,26 @@ export default {
             }
 
         },
+        setUnitPriceValue(){
+
+            if(this.recordItem.item.has_igv)
+            {
+                this.form.unit_price_value = this.recordItem.input_unit_price_value ? this.recordItem.input_unit_price_value : this.recordItem.unit_price
+            }
+            else
+            {
+                this.form.unit_price_value = this.recordItem.input_unit_price_value ? this.recordItem.input_unit_price_value : this.recordItem.unit_value
+            }
+
+        },
         async updateItem(){
             
             if (this.isUpdateItem)
             {
                 await this.reloadDataItems(this.recordItem.item_id)
                 
-                this.form.quantity = this.recordItem.quantity
-                this.form.unit_price_value = this.recordItem.input_unit_price_value ? this.recordItem.input_unit_price_value : this.recordItem.unit_price
+                this.form.quantity = parseFloat(this.recordItem.quantity)
+                this.setUnitPriceValue()
                 this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
