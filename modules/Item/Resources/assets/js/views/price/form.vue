@@ -32,6 +32,9 @@
                             <tbody>
                             <tr>
                                 <template>
+                                    
+                                </template>
+                                <template>
                                     <template v-for="(row, index) in form.prices" >
                                         <td v-if="index<1" width="13%" :key="index">
                                             <div style="width: 80px;" class="form-group">

@@ -4,7 +4,7 @@
 
     use Illuminate\Http\Request;
     use Illuminate\Http\Resources\Json\ResourceCollection;
-    use Modules\Item\Models\NamePrice;
+    use Modules\Item\Models\ListPrice;
 
     class NamePriceCollection extends ResourceCollection
     {
@@ -17,11 +17,12 @@
          */
         public function toArray($request)
         {
-            return $this->collection->transform(function (NamePrice $row, $key) {
-
+            return $this->collection->transform(function (ListPrice $row, $key) {
+                $number=$key+1;
                 return [
                     'id' => $row->id,
-                    'name' => $row->description,
+                    'name' => "Precio {$number}",
+                    'price' => $row->price,
                 ];
             });
 

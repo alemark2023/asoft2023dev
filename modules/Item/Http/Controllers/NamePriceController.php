@@ -24,14 +24,15 @@ class NamePriceController extends Controller
     public function columns()
     {
         return [
-            'description' => 'descripcion',
+            'id' => 'id',
         ];
     }
 
     public function records(Request $request)
     {
-        $records = NamePrice::where($request->column, 'like', "%{$request->value}%");
-        return new NamePriceCollection($records->paginate(config('tenant.items_per_page')));
+        /* $records =ListPrice::all(); */
+        /* dd(ListPrice::all()); */
+        return new NamePriceCollection(ListPrice::paginate(config('tenant.items_per_page')));
     }
 
 
@@ -77,9 +78,6 @@ class NamePriceController extends Controller
             $record_id = NamePrice::WhereIdPrice();
             $record_id+=1;
             $name_price = NamePrice::firstOrNew(['id'=>$record_id]);
-            $name_price->description = $request->description;
-            $name_price->unit_type_id = $request->unit_type_id;
-            $name_price->quantity_unit = $request->quantity_unit;
             $name_price->price_default = $request->price_default;
             $name_price->save();
 
@@ -92,11 +90,10 @@ class NamePriceController extends Controller
                 $item_unit_type->save();
                 
             }
+
+
         }else{
             $name_price = NamePrice::firstOrNew(['id'=>$request->id]);
-            $name_price->description = $request->description;
-            $name_price->unit_type_id = $request->unit_type_id;
-            $name_price->quantity_unit = $request->quantity_unit;
             $name_price->price_default = $request->price_default;
             $name_price->save();
 
