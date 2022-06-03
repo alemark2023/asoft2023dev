@@ -464,7 +464,10 @@
                 </template>
             </div>
 
+            <!-- controlar series y lotes -->
             <series-form v-if="generate && form.quotation" :items="form.quotation.items" :config="config"></series-form>
+            <!-- controlar series y lotes -->
+
             <div  v-show="document.total > 0" class="col-lg-12">
                 <div class="form-group pull-right">
                     <label class="control-label"> Total </label> <br>
@@ -881,7 +884,7 @@ export default {
         },
         async submit() {
 
-            let validate_items = await this.validateQuantityandSeries();
+            let validate_items = await this.validateQuantityandSeriesLots();
             if (!validate_items.success)
                 return this.$message.error(validate_items.message);
 
@@ -1146,16 +1149,35 @@ export default {
                     this.loading = false;
                 });
         },
-        async validateQuantityandSeries() {
+        async validateQuantityandSeriesLots() {
+
             let error = 0;
+            let error_lots_group = 0
+
             await this.form.quotation.items.forEach((element) => {
+
                 if (element.item.series_enabled) {
                     const select_lots = _.filter(element.item.lots, {
                         has_sale: true,
                     }).length;
                     if (select_lots != element.quantity) error++;
                 }
+
+                if (element.item.lots_enabled) 
+                {
+                    if (!element.IdLoteSelected) error_lots_group++
+                }
+
             });
+
+            if(error_lots_group > 0) 
+            {
+                return {
+                    success: false,
+                    message: 'Las cantidades y lotes seleccionados deben ser iguales.',
+                }
+            }
+            
             if (error > 0)
                 return {
                     success: false,

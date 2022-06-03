@@ -618,6 +618,7 @@ class SaleNoteController extends Controller
                     $row['item']['lots'] = isset($row['lots']) ? $row['lots']:$row['item']['lots'];
                 }
 
+                $this->setIdLoteSelectedToItem($row);
                 $sale_note_item->fill($row);
                 $sale_note_item->sale_note_id = $this->sale_note->id;
                 $sale_note_item->save();
@@ -687,6 +688,27 @@ class SaleNoteController extends Controller
             ];
         }
     }
+
+
+    /**
+     * 
+     * Asignar lote a item (regularizar propiedad en json item)
+     *
+     * @param  array $row
+     * @return void
+     */
+    private function setIdLoteSelectedToItem(&$row)
+    {
+        if(isset($row['IdLoteSelected']))
+        {
+            $row['item']['IdLoteSelected'] = $row['IdLoteSelected'];
+        }
+        else
+        {
+            $row['item']['IdLoteSelected'] = isset($row['item']['IdLoteSelected']) ? $row['item']['IdLoteSelected'] : null;
+        }
+    }
+
 
     private function regularizePayments($payments){
 
