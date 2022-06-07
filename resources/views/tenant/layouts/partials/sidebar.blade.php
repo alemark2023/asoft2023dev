@@ -1311,6 +1311,13 @@
                                     </a>
                                 </li>
                                 {{--                                @endif--}}
+
+                                <li class="{{ (($firstLevel === 'suscription') && ($secondLevel === 'grade_section')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.suscription.grade_section.index') }}">
+                                        Grados y Secciones
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     @endif
