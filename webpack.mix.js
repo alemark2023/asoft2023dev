@@ -36,6 +36,7 @@ mix.webpackConfig({
             '@viewsModuleDocumentary': path.resolve(__dirname, 'modules/DocumentaryProcedure/Resources/assets/js/views'),
             '@viewsModulePayment': path.resolve(__dirname, 'modules/Payment/Resources/assets/js/views'),
             '@viewsModuleMercadoPago': path.resolve(__dirname, 'modules/MercadoPago/Resources/assets/js/views'),
+            '@viewsModuleSuscription': path.resolve(__dirname, 'modules/Suscription/Resources/assets/js/views'),
         }
     }
 }).sourceMaps()
