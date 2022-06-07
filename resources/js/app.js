@@ -374,6 +374,9 @@ Vue.component('tenant-suscription-payments-index', require('../../modules/Suscri
 Vue.component('data-table-payment-receipt', require('../js/components/DataTablePaymentReceipt.vue') );
 Vue.component('tenant-index-payment-receipt', require('../../modules/Suscription/Resources/assets/js/payment_receipt/index.vue') );
 
+// Grados y secciones
+Vue.component('tenant-suscription-grades-index', require('@viewsModuleSuscription/grades/index.vue') );
+Vue.component('tenant-suscription-sections-index', require('@viewsModuleSuscription/sections/index.vue') );
 
 
 /** Modulo Suscripcion **/
