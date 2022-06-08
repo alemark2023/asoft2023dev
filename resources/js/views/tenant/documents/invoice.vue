@@ -329,13 +329,6 @@
                                                    style="width: 100%;">
                                                 <tr v-if="form.total > 0 && enabled_discount_global">
                                                     <td>
-                                                        <el-tooltip class="item"
-                                                            :content="global_discount_type.description"
-                                                            effect="dark"
-                                                            placement="top">
-                                                            <i class="fa fa-info-circle"></i>
-                                                        </el-tooltip>
-
                                                         DESCUENTO
                                                         <template v-if="is_amount"> MONTO</template>
                                                         <template v-else> %</template>
@@ -694,12 +687,6 @@
                                        style="width: 100%;">
                                     <tr v-if="form.total > 0 && enabled_discount_global">
                                         <td>
-                                            <el-tooltip class="item"
-                                                :content="global_discount_type.description"
-                                                effect="dark"
-                                                placement="top">
-                                                <i class="fa fa-info-circle"></i>
-                                            </el-tooltip>
                                             DESCUENTO
                                             <template v-if="is_amount"> MONTO</template>
                                             <template v-else> %</template>
@@ -1574,11 +1561,7 @@ export default {
             payment_conditions: [],
             affectation_igv_types: [],
             total_discount_no_base: 0,
-            show_has_retention: true,
-            global_discount_types: [],
-            global_discount_type: {},
-            error_global_discount: false,
-
+            show_has_retention: true
         }
     },
     computed: {
@@ -1604,9 +1587,6 @@ export default {
         },
         detractionDecimalQuantity: function () {
             return (this.configuration.detraction_amount_rounded_int) ? 0 : 2
-        },
-        isGlobalDiscountBase: function () {
-            return (this.configuration.global_discount_type_id === '02')
         },
     },
     async created() {
@@ -1646,8 +1626,6 @@ export default {
                 this.payment_destinations = response.data.payment_destinations
                 this.payment_conditions = response.data.payment_conditions;
 
-                this.global_discount_types = response.data.global_discount_types
-
                 this.seller_class = (this.user == 'admin') ? 'col-lg-4 pb-2' : 'col-lg-6 pb-2';
 
                 // this.default_document_type = response.data.document_id;
@@ -1660,7 +1638,6 @@ export default {
                 this.changeDestinationSale()
                 this.changeCurrencyType()
                 this.setDefaultDocumentType();
-                this.setConfigGlobalDiscountType()
             })
         this.loading_form = true
         this.$eventHub.$on('reloadDataPersons', (customer_id) => {
@@ -2566,12 +2543,12 @@ export default {
                     .then(response => {
                         this.customers = response.data.customers
                         this.loading_search = false
-                        this.input_person.number = null
+                        this.input_person.number = (this.customers.length==0)? input : null
 
-                        if (this.customers.length == 0) {
+                        /* if (this.customers.length == 0) {
                             this.filterCustomers()
                             this.input_person.number = input
-                        }
+                        } */
                     })
             } else {
                 this.filterCustomers()
@@ -3286,8 +3263,7 @@ export default {
         },
         deleteDiscountGlobal() {
 
-            let discount = _.find(this.form.discounts, {'discount_type_id': this.configuration.global_discount_type_id})
-            // let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
+            let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
             let index = this.form.discounts.indexOf(discount)
 
             if (index > -1) {
@@ -3295,20 +3271,6 @@ export default {
                 this.form.total_discount = 0
             }
 
-        },
-        setConfigGlobalDiscountType()
-        {
-            this.global_discount_type = _.find(this.global_discount_types, { id : this.configuration.global_discount_type_id})
-        },
-        setGlobalDiscount(factor, amount, base)
-        {
-            this.form.discounts.push({
-                discount_type_id: this.global_discount_type.id,
-                description: this.global_discount_type.description,
-                factor: factor,
-                amount: amount,
-                base: base
-            })
         },
         discountGlobal() {
 
@@ -3336,6 +3298,7 @@ export default {
                 }
 
                 this.form.total_discount = _.round(amount, 2)
+                this.form.total = _.round(this.form.total - amount, 2)
 
                 // descuentos que afectan la bi
                 if(this.isGlobalDiscountBase)
