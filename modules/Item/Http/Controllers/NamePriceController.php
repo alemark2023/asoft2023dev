@@ -60,6 +60,14 @@ class NamePriceController extends Controller
         return $records;
     }
 
+    public function priceDefault()
+    {
+        $name_price = NamePrice::all();
+        $default=$name_price[0]->price_default;
+        $records = ListPrice::where('id', $default)->get();
+        return $records;
+    }
+
     /**
      * Crea o edita una nueva categoría.
      * El nombre de categoría debe ser único, por lo tanto se valida cuando el nombre existe.
@@ -103,11 +111,13 @@ class NamePriceController extends Controller
             
 
             for ($i=0; $i < $length_prices; $i++) { 
+                $list_prices[$i]->update([
+                    'price' => $item_price[$i]['price'],
+                ]);
+                
+            };
 
-                $list_prices[$i]->price = $item_price[$i]->price;
-            }
-
-            $list_prices->save();
+            
 
             
         }

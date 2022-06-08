@@ -36,12 +36,7 @@
                                 </template>
                                 <template>
                                     <template v-for="(row, index) in form.prices" >
-                                        <td v-if="index<1" width="13%" :key="index">
-                                            <div style="width: 80px;" class="form-group">
-                                                <el-input v-model="row.price"></el-input>
-                                            </div>
-                                        </td>
-                                        <td v-else width="13%"  :key="index">
+                                        <td width="13%"  :key="index">
                                             <div style="width: 80px;" class="d-flex w-100" >
                                                 <span class="pr-1">%</span>
                                                 <div class="form-group">

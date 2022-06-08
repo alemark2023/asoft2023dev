@@ -41,6 +41,7 @@ if($hostname) {
                 Route::get('/tables', 'NamePriceController@tables');
                 Route::get('/record/{brand}', 'NamePriceController@record');
                 Route::get('/search/{brand}', 'NamePriceController@searchPrices');
+                Route::get('/priceDefault', 'NamePriceController@priceDefault');
                 Route::get('/columns', 'NamePriceController@columns');
                 Route::delete('/{brand}', 'NamePriceController@destroy');
                 Route::delete('/list/{brand}', 'NamePriceController@list');
