@@ -14,7 +14,7 @@ class TenantAddTypeCustomerIdToNamePrices extends Migration
     public function up()
     {
         Schema::table('name_prices', function (Blueprint $table) {
-            $table->unsignedInteger('type_customer_id')->nullable()->after('description');
+            $table->unsignedInteger('type_customer_id')->nullable()->after('id');
             $table->foreign('type_customer_id')->references('id')->on('person_types');
         });
     }

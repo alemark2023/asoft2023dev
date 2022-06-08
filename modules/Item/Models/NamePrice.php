@@ -22,10 +22,11 @@ use Modules\Item\Models\ListPrice;
  */
 class NamePrice extends ModelTenant
 {
-     protected $with = ['list_price'];
+     protected $with = ['person_type','list_price'];
     public $timestamps = false;
 
     protected $fillable = [
+        'type_customer_id',
         'price_default'
     ];
 
