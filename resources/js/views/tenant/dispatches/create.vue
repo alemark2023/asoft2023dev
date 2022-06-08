@@ -750,6 +750,7 @@
 
         <person-form :external="true"
                      :showDialog.sync="showDialogNewPerson"
+                     :input_person="input_person"
                      type="customers"></person-form>
 
         <items
@@ -817,6 +818,7 @@ export default {
             IdLoteSelected: false,
             showDialogLots: false,
             min_qty: 0.0001,
+            input_person: {},
             // min_qty: 0.1,
             showDialogOptions: false,
             showDialogNewPerson: false,
@@ -955,6 +957,9 @@ export default {
         this.$eventHub.$on('reloadDataPersons', (customer_id) => {
             this.reloadDataCustomers(customer_id)
         })
+        this.$eventHub.$on('initInputPerson', () => {
+            this.initInputPerson()
+        });
     },
     methods: {
         clickWarehouseDetail(){
@@ -1157,12 +1162,14 @@ export default {
                     .then(response => {
                         this.customers = response.data.customers
                         this.loading_search = false
-                        if (this.customers.length == 0) {
+                        /* if (this.customers.length == 0) {
                             this.filterCustomers()
-                        }
+                        } */
+                        this.input_person.number=(this.customers.length==0)? input : null
                     })
             } else {
                 this.filterCustomers()
+                this.input_person.number= null
             }
 
         },
@@ -1643,6 +1650,12 @@ export default {
         },
         focusDescription() {
                 this.$refs.selectItem.$el.getElementsByTagName('input')[0].focus()
+        },
+        initInputPerson() {
+            this.input_person = {
+                number: null,
+                identity_document_type_id: null
+            }
         },
     }
 }
