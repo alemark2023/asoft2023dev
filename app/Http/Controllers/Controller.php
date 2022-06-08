@@ -254,4 +254,28 @@ $string = var_export($header,true);
             return Configuration::isEnabledAdvancedRecordsSearch();
         }
 
+
+        /**
+         * 
+         * Asignar lote a item (regularizar propiedad en json item)
+         * 
+         * Usado en:
+         * OrderNoteController
+         *
+         * @param  array $row
+         * @return void
+         */
+        public function generalSetIdLoteSelectedToItem(&$row)
+        {
+            if(isset($row['IdLoteSelected']))
+            {
+                $row['item']['IdLoteSelected'] = $row['IdLoteSelected'];
+            }
+            else
+            {
+                $row['item']['IdLoteSelected'] = isset($row['item']['IdLoteSelected']) ? $row['item']['IdLoteSelected'] : null;
+            }
+        }
+
+
     }

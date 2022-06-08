@@ -632,7 +632,9 @@ class SaleNoteController extends Controller
                     }
                 }
 
-                if(isset($row['IdLoteSelected']))
+                
+                // si tiene lotes y no fue generado a partir de otro documento (pedido...)
+                if(isset($row['IdLoteSelected']) && !$this->sale_note->isGeneratedFromExternalRecord())
                 {
                     if(is_array($row['IdLoteSelected'])) 
                     {

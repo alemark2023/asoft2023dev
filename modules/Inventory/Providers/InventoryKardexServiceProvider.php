@@ -422,9 +422,24 @@ class InventoryKardexServiceProvider extends ServiceProvider
             // $this->createInventoryKardex($order_note_item->order_note, $order_note_item->item_id, (-1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
             // $this->updateStock($order_note_item->item_id, (-1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
             
-            /*
-             * Calculando el stock por lote por factor según la unidad
-             */
+            // control de lotes
+            if (isset($order_note_item->item->IdLoteSelected)) 
+            {
+                $IdLoteSelected = $order_note_item->item->IdLoteSelected;
+
+                if(is_array($IdLoteSelected))
+                {
+                    foreach ($IdLoteSelected as $lot_selected) 
+                    {
+                        $lot = ItemLotsGroup::find($lot_selected->id);
+                        $lot->quantity = $lot->quantity - ($lot_selected->compromise_quantity * $presentationQuantity ?? 1);
+                        $lot->save();
+                    }
+                }
+            }
+            else
+            {
+
             if (isset($order_note_item->item->lots_group)) {
                     if(is_array($order_note_item->item->lots_group) && count($order_note_item->item->lots_group) > 0) {
                             $lots_group = $order_note_item->item->lots_group;
@@ -436,6 +451,10 @@ class InventoryKardexServiceProvider extends ServiceProvider
                             }
                     }
             }
+
+            }
+            // control de lotes
+            
 
 
             if(isset($item->lots) )
