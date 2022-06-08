@@ -3486,7 +3486,6 @@ export default {
             await this.$http.get(`/${this.resource}/search/customer/${customer_id}`).then((response) => {
                 this.customers = response.data.customers
                 this.form.customer_id = customer_id
-                this.filterCustomers()
             })
         },
         changeCustomer() {
