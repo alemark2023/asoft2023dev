@@ -124,5 +124,25 @@
             return $code;
         }
 
+        
+        /**
+         * 
+         * Retornar cantidad de lotes seleccionados
+         *
+         * @param  int $id_lot_selected
+         * @return string
+         */
+        public function getQuantityLotsSelected($id_lot_selected)
+        {
+            $description = null;
+
+            if($id_lot_selected)
+            {
+                if(is_array($id_lot_selected)) $description = count($id_lot_selected).' Und';
+            }
+
+            return $description;
+        }
+
 
     }
