@@ -251,6 +251,10 @@
             'enabled_advanced_records_search',
             'change_decimal_quantity_unit_price_pdf',
             'decimal_quantity_unit_price_pdf',
+            'separate_cash_transactions',
+            'order_cash_income',
+            'generate_order_note_from_quotation',
+            'list_items_by_warehouse',
         ];
 
         protected $casts = [
@@ -341,7 +345,11 @@
             'enabled_advanced_records_search' => 'bool',
             'change_decimal_quantity_unit_price_pdf' => 'bool',
             'decimal_quantity_unit_price_pdf' => 'int',
-
+            'separate_cash_transactions' => 'bool',
+            'order_cash_income' => 'bool',
+            'generate_order_note_from_quotation' => 'bool',
+            'list_items_by_warehouse' => 'bool',
+            
         ];
 
         protected $hidden = [
@@ -547,7 +555,11 @@
                 'enabled_advanced_records_search' => $this->enabled_advanced_records_search,
                 'change_decimal_quantity_unit_price_pdf' => $this->change_decimal_quantity_unit_price_pdf,
                 'decimal_quantity_unit_price_pdf' => $this->decimal_quantity_unit_price_pdf,
-
+                'separate_cash_transactions' => $this->separate_cash_transactions,
+                'order_cash_income' => $this->order_cash_income,
+                'generate_order_note_from_quotation' => $this->generate_order_note_from_quotation,
+                'list_items_by_warehouse' => $this->list_items_by_warehouse,
+                
             ];
         }
 
@@ -2209,4 +2221,42 @@
         {
             return (bool) \Config('extra.suscription_facturalo');
         }
+
+        
+        /**
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public function scopeGetSeparateCashTransactions($query)
+        {
+            return $query->select('separate_cash_transactions')->firstOrFail()->separate_cash_transactions;
+        }
+
+        
+        /**
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public function scopeGetOrderCashIncome($query)
+        {
+            return $query->select('order_cash_income')->firstOrFail()->order_cash_income;
+        }
+
+         
+        /**
+         * 
+         * Obtener campo individual de la configuracion
+         *
+         * @param  Builder $query
+         * @param  string $column
+         * @return Builder
+         */
+        public function scopeGetRecordIndividualColumn($query, $column)
+        {
+            return $query->select($column)->firstOrFail()->{$column};
+        }
+        
+
     }

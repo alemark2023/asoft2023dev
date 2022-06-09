@@ -117,9 +117,11 @@ class ItemController extends Controller
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getRecords(Request $request){
-
-        $records = Item::whereTypeUser()->whereNotIsSet();
+    public function getRecords(Request $request)
+    {
+ 
+        // $records = Item::whereTypeUser()->whereNotIsSet();
+        $records = $this->getInitialQueryRecords();
         
         switch ($request->column) 
         {
@@ -177,6 +179,29 @@ class ItemController extends Controller
         return $records->orderBy('description');
 
     }
+
+    
+    /**
+     * 
+     * Aplicar filtros iniciales a la consulta
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function getInitialQueryRecords()
+    {
+        
+        if(Configuration::getRecordIndividualColumn('list_items_by_warehouse'))
+        {
+            $records = Item::whereWarehouse()->whereNotIsSet();
+        }
+        else
+        {
+            $records = Item::whereTypeUser()->whereNotIsSet();
+        }
+
+        return $records;
+    }
+
 
     public function create()
     {

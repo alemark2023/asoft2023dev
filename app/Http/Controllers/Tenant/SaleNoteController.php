@@ -642,7 +642,8 @@ class SaleNoteController extends Controller
 
                 $id_lote_selected = $this->getIdLoteSelectedItem($row);
                 
-                if($id_lote_selected)
+                // si tiene lotes y no fue generado a partir de otro documento (pedido...)
+                if($id_lote_selected && !$this->sale_note->isGeneratedFromExternalRecord())
                 {
                     if(is_array($id_lote_selected)) 
                     {
@@ -743,7 +744,7 @@ class SaleNoteController extends Controller
         }
         else
         {
-            $row['item']['IdLoteSelected'] = null;
+            $row['item']['IdLoteSelected'] = isset($row['item']['IdLoteSelected']) ? $row['item']['IdLoteSelected'] : null;
         }
     }
 

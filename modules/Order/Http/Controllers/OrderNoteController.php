@@ -410,28 +410,18 @@
             /* @todo Deberia pasarse a facturalo para tenerlo como standar */
             DB::connection('tenant')->transaction(function () use ($data) {
                 $this->order_note = OrderNote::create($data);
-                foreach ($data['items'] as $row) {
+
+                foreach ($data['items'] as $row) 
+                {
+                    $this->generalSetIdLoteSelectedToItem($row);
                     $this->order_note->items()->create($row);
                 }
+
                 $this->setFilename();
                 $this->createPdf($this->order_note, "a4", $this->order_note->filename);
 
             });
-            /*
-            @todo Quedaria con una estructura similar
-            $fact = DB::connection('tenant')->transaction(function () use ($data) {
-                $facturalo = new Facturalo();
-                $facturalo->save($data);
-                $facturalo->createXmlUnsigned();
-                $facturalo->signXmlUnsigned();
-                $facturalo->updateHash();
-                $facturalo->updateQr();
-                $facturalo->createPdf();
-                $facturalo->senderXmlSignedBill();
-
-                return $facturalo;
-            });
-            */
+            
             return [
                 'success' => true,
                 'data' => [
@@ -693,6 +683,7 @@
                     // $this->order_note->items()->create($row);
                     $item_id = isset($row['id']) ? $row['id'] : null;
                     $order_note_item = OrderNoteItem::firstOrNew(['id' => $item_id]);
+                    $this->generalSetIdLoteSelectedToItem($row);
                     $order_note_item->fill($row);
                     $order_note_item->order_note_id = $this->order_note->id;
                     $order_note_item->save();

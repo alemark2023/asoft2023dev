@@ -1337,6 +1337,55 @@
         {
             return in_array($this->state_type_id, self::VOIDED_REJECTED_IDS);
         }
+        
 
+        /**
+         * 
+         * Retornar el total de pagos
+         *
+         * @return float
+         */
+        public function getTotalAllPayments()
+        {
 
+            $total_payments = 0;
+
+            if(!$this->isVoidedOrRejected())
+            {
+                $total_payments = $this->payments->sum('payment');
+    
+                if($this->currency_type_id === 'USD')
+                {
+                    $total_payments = $this->generalConvertValueToPen($total_payments, $this->exchange_rate_sale);
+                }
+            }
+
+            return $total_payments;
+        }
+
+        
+        /**
+         * 
+         * Validar si la nota de venta fue generada a partir de un registro externo
+         *
+         * Usado en:
+         * SaleNoteController
+         * 
+         * @return bool
+         */
+        public function isGeneratedFromExternalRecord()
+        {
+            $generated = false;
+
+            if(!is_null($this->order_note_id))
+            {
+                $generated = true;
+            }
+            
+            // @todo agregar mas registros relacionados
+
+            return $generated;
+        }
+
+        
     }

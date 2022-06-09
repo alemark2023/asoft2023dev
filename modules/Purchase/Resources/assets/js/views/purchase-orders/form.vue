@@ -60,8 +60,17 @@
                                         Proveedor
                                         <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
                                     </label>
-                                    <el-select v-model="form.supplier_id" filterable @change="changeSupplier" ref="select_person" @keyup.native="keyupSupplier" @keyup.enter.native="keyupEnterSupplier">
-                                        <el-option v-for="option in suppliers" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    <el-select v-model="form.supplier_id" 
+                                        filterable 
+                                        @change="changeSupplier" 
+                                        ref="select_person" 
+                                        @keyup.native="keyupSupplier" 
+                                        @keyup.enter.native="keyupEnterSupplier">
+
+                                        <el-option v-for="option in suppliers" 
+                                            :key="option.id" 
+                                            :value="option.id" 
+                                            :label="option.description"></el-option>
                                     </el-select>
                                     <small class="form-control-feedback" v-if="errors.supplier_id" v-text="errors.supplier_id[0]"></small>
                                 </div>
@@ -732,7 +741,9 @@
 
                     this.aux_supplier_id = supplier_id
                     this.all_suppliers = response.data
-                    this.filterSuppliers()
+                    this.suppliers = this.all_suppliers
+                    this.calculatePerception()
+                    this.selectSupplier()
 
                 })
             },
