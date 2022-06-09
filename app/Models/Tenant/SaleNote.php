@@ -1363,4 +1363,29 @@
             return $total_payments;
         }
 
+        
+        /**
+         * 
+         * Validar si la nota de venta fue generada a partir de un registro externo
+         *
+         * Usado en:
+         * SaleNoteController
+         * 
+         * @return bool
+         */
+        public function isGeneratedFromExternalRecord()
+        {
+            $generated = false;
+
+            if(!is_null($this->order_note_id))
+            {
+                $generated = true;
+            }
+            
+            // @todo agregar mas registros relacionados
+
+            return $generated;
+        }
+
+        
     }

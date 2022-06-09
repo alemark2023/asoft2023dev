@@ -195,17 +195,28 @@
 
             </td>
             <td class="text-center align-top">
+
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
                 @php
-                    $lot_code = [];
-                    if(isset($row->item->lots_group)) {
-                        $lot_codes_compromise = collect($row->item->lots_group)->where('compromise_quantity', '>', 0);
-                        $lot_code =  $lot_codes_compromise->all();
+
+                    // utilizar propiedad si la nv esta regularizada con dicho campo
+                    if(isset($row->item->IdLoteSelected))
+                    {
+                        $lot_code = $row->item->IdLoteSelected;
                     }
+                    else
+                    {
+                        // para nv con error de propiedad
+                        $lot_code = [];
+                        if(isset($row->item->lots_group)) {
+                            $lot_codes_compromise = collect($row->item->lots_group)->where('compromise_quantity', '>', 0);
+                            $lot_code =  $lot_codes_compromise->all();
+                        }
+                    }
+
                 @endphp
-                {{
-                    $itemLotGroup->getLote($lot_code)
-                }}
+
+                {{ $itemLotGroup->getLote($lot_code) }}
 
             </td>
             <td class="text-center align-top">
