@@ -584,7 +584,7 @@
                 'loadConfiguration',
             ]),
             clickEdiItem(row, index) {
-                console.log(row.item_id)
+                // console.log(row.item_id)
                 row.aux_index = index
                 this.recordItem = row
                 this.showDialogAddItem = true

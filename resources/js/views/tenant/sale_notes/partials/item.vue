@@ -870,7 +870,7 @@ export default {
                 }
             }
 
-            console.log(this.recordItem, "aq")
+            // console.log(this.recordItem, "aq")
 
             this.updateItem()
 
