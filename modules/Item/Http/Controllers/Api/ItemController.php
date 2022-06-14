@@ -7,11 +7,28 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use App\Models\Tenant\Item;
 use Modules\Item\Http\Requests\Api\ItemRequest;
+use Modules\Finance\Helpers\UploadFileHelper;
+use Modules\Item\Http\Resources\Api\ItemCollection;
 
 
 class ItemController extends Controller
 {
-    
+        
+    /**
+     * 
+     * Obtener registros paginados
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function records(Request $request)
+    {
+        $records = Item::whereFilterRecordsApi($request->input);
+
+        return new ItemCollection($records->paginate(5));
+    }
+
+
     /**
      * 
      * Actualizar item
@@ -54,6 +71,37 @@ class ItemController extends Controller
                 'brand_id' => $item->brand_id,
                 'barcode' => $item->barcode,
             ]
+        ];
+    }
+
+    
+    /**
+     * 
+     * Cargar imágen desde app
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function uploadTempImage(Request $request)
+    {
+
+        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,svg');
+        if(!$validate_upload['success']) return $validate_upload;
+
+
+        if ($request->hasFile('file'))
+        {
+            $new_request = [
+                'file' => $request->file('file'),
+                'type' => $request->input('type') ?? null,
+            ];
+
+            return UploadFileHelper::getTempFile($new_request);
+        }
+
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
         ];
     }
 

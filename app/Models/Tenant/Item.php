@@ -2323,6 +2323,69 @@ class Item extends ModelTenant
         return "{$description}{$category}{$brand}";
     }
 
+        
+    /**
+     * 
+     * Obtener datos para lista de items en app
+     *
+     * @return array
+     */
+    public function getApiRowResource()
+    {
+        
+        $currency = $this->currency_type;
+        $show_sale_unit_price = "{$currency->symbol} {$this->getFormatSaleUnitPrice()}";
+
+        return [
+            'id' => $this->id,
+            'full_description' => $this->getFullDescriptionAdvancedSearch(),
+            'unit_type_id' => $this->unit_type_id,
+            'unit_type_description' => $this->getUnitTypeText(),
+            'description' => $this->description,
+            'name' => $this->name,
+            'second_name' => $this->second_name,
+            'barcode' => $this->barcode,
+            'internal_id' => $this->internal_id,
+            'item_code' => $this->item_code,
+            'currency_type_id' => $this->currency_type_id,
+            'currency_type_symbol' => $currency->symbol,
+            'sale_affectation_igv_type_id' => $this->sale_affectation_igv_type_id,
+            'has_igv' => (bool)$this->has_igv,
+            'sale_unit_price' => $show_sale_unit_price,
+            'image_url' => $this->getImageUrl(),
+        ];
+    }
+    
+
+    /**
+     * 
+     * Obtener url de la imagen del producto
+     *
+     * @return string
+     */
+    public function getImageUrl()
+    {
+        return ($this->image !== 'imagen-no-disponible.jpg') ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image) : asset("/logo/{$this->image}");
+    }
+
+    
+    /**
+     * 
+     * Filtro para búsqueda de items desde el listado de la app
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeWhereFilterRecordsApi($query, $input)
+    {
+        return $query->where('description', 'like', "%{$input}%" )
+                    ->orWhere('internal_id', 'like', "%{$input}%")
+                    ->whereHasInternalId()
+                    ->whereWarehouse()
+                    ->whereIsActive()
+                    ->orderBy('description');
+    }
+
 
 }
 
