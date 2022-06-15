@@ -76,16 +76,20 @@ if ($hostname) {
 } else {
     Route::domain(env('APP_URL_BASE'))->group(function () {
 
-        //reseller
-        Route::post('reseller/detail', 'System\Api\ResellerController@resellerDetail');
-        Route::post('reseller/lockedAdmin', 'System\Api\ResellerController@lockedAdmin');
-        Route::post('reseller/lockedTenant', 'System\Api\ResellerController@lockedTenant');
 
         Route::middleware(['auth:system_api'])->group(function () {
+            
+            //reseller
+            Route::post('reseller/detail', 'System\Api\ResellerController@resellerDetail');
+            // Route::post('reseller/lockedAdmin', 'System\Api\ResellerController@lockedAdmin');
+            // Route::post('reseller/lockedTenant', 'System\Api\ResellerController@lockedTenant');
+
             Route::get('restaurant/partner/list', 'System\Api\RestaurantPartnerController@list');
             Route::post('restaurant/partner/store', 'System\Api\RestaurantPartnerController@store');
             Route::post('restaurant/partner/search', 'System\Api\RestaurantPartnerController@search');
+
         });
+
     });
 
 }
