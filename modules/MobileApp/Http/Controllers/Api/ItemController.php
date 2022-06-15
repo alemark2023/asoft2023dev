@@ -1,14 +1,18 @@
 <?php
 
-namespace Modules\Item\Http\Controllers\Api;
+namespace Modules\MobileApp\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use App\Models\Tenant\Item;
-use Modules\Item\Http\Requests\Api\ItemRequest;
+use Modules\MobileApp\Http\Requests\Api\ItemRequest;
 use Modules\Finance\Helpers\UploadFileHelper;
-use Modules\Item\Http\Resources\Api\ItemCollection;
+use Modules\MobileApp\Http\Resources\Api\{
+    ItemCollection,
+    ItemResource,
+};
+use App\Http\Controllers\Tenant\ItemController as ItemControllerWeb;
 
 
 class ItemController extends Controller
@@ -25,9 +29,22 @@ class ItemController extends Controller
     {
         $records = Item::whereFilterRecordsApi($request->input);
 
-        return new ItemCollection($records->paginate(5));
+        return new ItemCollection($records->paginate(config('tenant.items_per_page')));
     }
 
+    
+    /**
+     * obtener registro
+     *
+     * @param  int $id
+     * @return ItemResource
+     * 
+     */
+    public function record($id)
+    {
+        return new ItemResource(Item::findOrFail($id));
+    }
+    
 
     /**
      * 
@@ -41,6 +58,7 @@ class ItemController extends Controller
 
         $item = Item::findOrFail($request->id);
         $item->fill($request->all());
+        $this->saveImage($item, $request);
         $item->update();
 
         return [
@@ -72,6 +90,57 @@ class ItemController extends Controller
                 'barcode' => $item->barcode,
             ]
         ];
+    }
+
+        
+    /**
+     * 
+     * Eliminar item, usa método del proceso por web
+     *
+     * @param  int $id
+     * @return array
+     */
+    public function destroy($id)
+    {
+        return app(ItemControllerWeb::class)->destroy($id);
+    }
+
+
+    /**
+     * 
+     * Guardar imágen de diferentes tamaños
+     *
+     * @param  Item $item
+     * @param  ItemRequest $request
+     * @return void
+     */
+    public function saveImage(&$item, $request)
+    {
+        $temp_path = $request->temp_path;
+
+        if($temp_path) 
+        {
+            $old_filename = $request->image;
+            $folder = 'items';
+
+            $item->image = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, $temp_path, "{$item->description}-{$item->id}", true);
+
+            //size medium
+            $image_medium = $item->getImageResize($temp_path, 512);
+            $item->image_medium = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, $image_medium->encode('jpg', 30), "{$item->description}-{$item->id}", false, 'medium');
+
+              //size small
+            $image_small = $item->getImageResize($temp_path, 256);
+            $item->image_small = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, $image_small->encode('jpg', 20), "{$item->description}-{$item->id}", false, 'small');
+        }
+        else if(!$request->image && !$request->temp_path && !$request->image_url)
+        {
+            $description = 'imagen-no-disponible.jpg';
+            $item->image = $description;
+            $item->image_medium = $description;
+            $item->image_small = $description;
+        }
+
     }
 
     

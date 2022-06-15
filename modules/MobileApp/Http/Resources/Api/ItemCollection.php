@@ -1,11 +1,12 @@
 <?php
 
-namespace Modules\Item\Http\Resources\Api;
+namespace Modules\MobileApp\Http\Resources\Api;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class ItemCollection extends ResourceCollection
 {
+    
     /**
      * Transform the resource collection into an array.
      *

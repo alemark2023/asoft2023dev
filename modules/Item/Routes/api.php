@@ -13,9 +13,7 @@ if ($hostname)
 
             Route::prefix('items')->group(function () {
                 
-                Route::get('records', 'Api\ItemController@records');
-                Route::post('update', 'Api\ItemController@update');
-                Route::post('upload-temp-image', 'Api\ItemController@uploadTempImage');
+                // Route::post('update', 'Api\ItemController@update');
 
             });
 

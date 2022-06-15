@@ -2351,8 +2351,12 @@ class Item extends ModelTenant
             'currency_type_symbol' => $currency->symbol,
             'sale_affectation_igv_type_id' => $this->sale_affectation_igv_type_id,
             'has_igv' => (bool)$this->has_igv,
-            'sale_unit_price' => $show_sale_unit_price,
+            'sale_unit_price' => (float) $this->sale_unit_price,
+            'show_sale_unit_price' => $show_sale_unit_price,
             'image_url' => $this->getImageUrl(),
+            'purchase_affectation_igv_type_id' => $this->purchase_affectation_igv_type_id,
+            'purchase_unit_price' => $this->purchase_unit_price,
+
         ];
     }
     
@@ -2384,6 +2388,27 @@ class Item extends ModelTenant
                     ->whereWarehouse()
                     ->whereIsActive()
                     ->orderBy('description');
+    }
+    
+
+    /**
+     * 
+     * Redimensionar imagen
+     *
+     * @param  string $temp_path
+     * @param  float $size
+     * @return \Image
+     */
+    public function getImageResize($temp_path, $size)
+    {
+        
+        $image = \Image::make($temp_path);
+        
+        return $image->resize($size, null, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+
     }
 
 
