@@ -105,6 +105,27 @@ class ItemController extends Controller
         return app(ItemControllerWeb::class)->destroy($id);
     }
 
+        
+    /**
+     * 
+     * Activar/Desactivar producto
+     *
+     * @param  int $id
+     * @param  bool $active
+     * @return array
+     */
+    public function changeActive($id, $active)
+    {
+        $record = Item::findOrFail($id);
+        $record->active = $active;
+        $record->save();
+        
+        return [
+            'success' => true,
+            'message' => $active ? 'Producto habilitado con éxito' : 'Producto inhabilitado con éxito'
+        ];
+    }
+
 
     /**
      * 

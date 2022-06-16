@@ -30,6 +30,8 @@ use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Warehouse;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Finance\Traits\FinanceTrait;
+use Modules\MobileApp\Models\AppConfiguration;
+
 
 class MobileController extends Controller
 {
@@ -56,10 +58,24 @@ class MobileController extends Controller
             'token' => $user->api_token,
             'restaurant_role_id' => $user->restaurant_role_id,
             'ruc' => $company->number,
-            'logo' => $company->logo
+            'logo' => $company->logo,
+            'app_configuration' => $this->getAppConfiguration(),
         ];
 
     }
+    
+
+    /**
+     * 
+     * Obtener configuracion para app
+     *
+     * @return array
+     */
+    public function getAppConfiguration()
+    {
+        return optional(AppConfiguration::first())->getRowResource();
+    }
+    
 
     public function customers()
     {

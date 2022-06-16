@@ -2356,6 +2356,7 @@ class Item extends ModelTenant
             'image_url' => $this->getImageUrl(),
             'purchase_affectation_igv_type_id' => $this->purchase_affectation_igv_type_id,
             'purchase_unit_price' => $this->purchase_unit_price,
+            'active' => (bool) $this->active,
 
         ];
     }
@@ -2386,7 +2387,7 @@ class Item extends ModelTenant
                     ->orWhere('internal_id', 'like', "%{$input}%")
                     ->whereHasInternalId()
                     ->whereWarehouse()
-                    ->whereIsActive()
+                    // ->whereIsActive()
                     ->orderBy('description');
     }
     
