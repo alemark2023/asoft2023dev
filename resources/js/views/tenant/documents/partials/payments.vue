@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="title" :visible="showDialog" @close="close" @open="getData" width="65%">
+    <el-dialog :title="title" :visible="showDialog" @close="close" @open="getData" width="80%">
         <div class="form-body">
             <div class="row">
                 <div class="col-md-12" v-if="records.length > 0">
@@ -15,8 +15,8 @@
                                 <th>Fecha de pago</th>
                                 <th>Método de pago</th>
                                 <th>Destino</th>
-                                <th>Referencia</th>
-                                <th>Voucher/Link de pago</th>
+                                <!-- <th>Referencia</th> -->
+                                <th>¿Pago recibido?</th>
                                 <th class="text-right">Monto</th>
                                 <th></th>
                             </tr>
@@ -28,14 +28,42 @@
                                     <td>{{ row.date_of_payment }}</td>
                                     <td>{{ row.payment_method_type_description }}</td>
                                     <td>{{ row.destination_description }}</td>
-                                    <td>{{ row.reference }}</td>
-                                    <!-- <td>{{ row.filename }}</td> -->
-                                    <td class="text-center">
-                                        <button  type="button" v-if="row.filename" class="btn waves-effect waves-light btn-xs btn-primary mb-2" @click.prevent="clickDownloadFile(row.filename)">
-                                            <i class="fas fa-file-download"></i>
-                                        </button>
+                                    <!-- <td>{{ row.reference }}</td> -->
+                                    <td class="text-left">
 
-                                        <el-button type="primary" @click="showDialogLinkPayment(row)">Link de pago</el-button>
+                                        <!-- pagos que no cuenten con la opcion pago recibido -->
+                                        <template v-if="row.payment_received === null">
+
+                                            <span class="d-block" v-if="row.reference"><b>Referencia:</b> {{ row.reference }}</span>
+                                            <button  type="button" v-if="row.filename" class="btn waves-effect waves-light btn-xs btn-primary mb-2  mt-2" @click.prevent="clickDownloadFile(row.filename)">
+                                                <i class="fas fa-file-download"></i>
+                                                Descargar voucher
+                                            </button>
+                                            <!-- <el-button type="primary" @click="showDialogLinkPayment(row)">Link de pago</el-button> -->
+
+                                        </template>
+                                        <!-- nuevo flujo -->
+                                        <template v-else> 
+
+                                            <span class="d-block mb-2 font-bold">{{ row.payment_received_description }}</span>
+
+                                            <template v-if="row.payment_received">
+
+                                                <span class="d-block" v-if="row.reference"><b>Referencia:</b> {{ row.reference }}</span>
+                                                <button  type="button" v-if="row.filename" class="btn waves-effect waves-light btn-xs btn-primary mb-2  mt-2" @click.prevent="clickDownloadFile(row.filename)">
+                                                    <i class="fas fa-file-download"></i>
+                                                    Descargar voucher
+                                                </button>
+
+                                            </template>
+                                            <template v-else>
+                                                <button  type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click="showDialogLinkPayment(row)">
+                                                    <i class="fas fa-link"></i>
+                                                    Link de pago
+                                                </button>
+                                            </template>
+
+                                        </template>
 
                                     </td>
                                     <td class="text-right">{{ row.payment }}</td>
@@ -76,16 +104,20 @@
                                             <small class="form-control-feedback" v-if="row.errors.payment_destination_id" v-text="row.errors.payment_destination_id[0]"></small>
                                         </div>
                                     </td>
-                                    <td>
+                                    <!-- <td>
                                         <div class="form-group mb-0" :class="{'has-danger': row.errors.reference}">
                                             <el-input v-model="row.reference"></el-input>
                                             <small class="form-control-feedback" v-if="row.errors.reference" v-text="row.errors.reference[0]"></small>
                                         </div>
-                                    </td>
+                                    </td> -->
                                     <td>
-                                        <div class="form-group mb-0">
-
-                                            <el-upload
+                                        
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <el-radio v-model="row.payment_received" label="1">SI</el-radio>
+                                            </div>
+                                            <div class="col-md-5 col-sm-12 col-xs-12">
+                                                <el-upload
                                                     :data="{'index': index}"
                                                     :headers="headers"
                                                     :multiple="false"
@@ -95,9 +127,46 @@
                                                     :file-list="fileList"
                                                     :on-success="onSuccess"
                                                     :limit="1"
+                                                    :disabled="row.payment_received == '0'"
                                                     >
-                                                <el-button slot="trigger" type="primary">Cargar voucher</el-button>
-                                            </el-upload>
+
+                                                    <template v-if="row.payment_received == '0'">
+                                                        <el-button type="info" class="btn waves-effect waves-light btn-xs">Cargar voucher</el-button>
+                                                    </template>
+                                                    <template v-else>
+                                                        <button  type="button" class="btn waves-effect waves-light btn-xs btn-primary"  slot="trigger">
+                                                            <i class="fas fa-upload"></i>
+                                                            Cargar voucher
+                                                        </button>
+                                                    </template>
+
+                                                </el-upload>
+                                            </div>
+                                            <div class="col-md-5 col-sm-12 col-xs-12">
+                                                <div class="form-group mb-0"  :class="{'has-danger': row.errors.reference}">
+                                                    <el-input v-model="row.reference" placeholder="Referencia y/o N° Operación" :disabled="row.payment_received == '0'"></el-input>
+                                                    <small class="form-control-feedback" v-if="row.errors.reference" v-text="row.errors.reference[0]"></small>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-md-2">
+                                                <el-radio v-model="row.payment_received" label="0">NO</el-radio>
+                                            </div>
+                                            <div class="col-md-10">
+
+                                                <template v-if="row.payment_received == '1'">
+                                                    <el-button type="info" class="btn waves-effect waves-light btn-xs">Link de pago</el-button>
+                                                </template>
+                                                <template v-else>
+                                                    <button  type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click="showDialogLinkPayment(row)">
+                                                        <i class="fas fa-link"></i>
+                                                        Link de pago
+                                                    </button>
+                                                </template>
+
+                                            </div>
                                         </div>
 
                                     </td>
@@ -158,6 +227,7 @@
             :exchangeRateSale="document.exchange_rate_sale"
             :payment="documentPayment.payment"
             :showDialog.sync="showDialogLink"
+            :documentPayment="documentPayment"
             >
         </dialog-link-payment>
     </el-dialog>
@@ -201,11 +271,44 @@
                     this.permissions = response.data.permissions
                     //this.initDocumentTypes()
                 })
+            await this.events();
+
         },
         methods: {
+            events(){
+                this.$eventHub.$on('reloadDataPayments', ()=>{
+                    this.getData()
+                })
+            },
+            getObjectResponse(success, message = null){
+                return {
+                    success: success,
+                    message: message,
+                }
+            },
+            validateDataPayment(row){
+
+                if(!row.payment_destination_id) return this.getObjectResponse(false, 'El campo destino es obligatorio.')
+
+                if(!row.payment_method_type_id) return this.getObjectResponse(false, 'El campo método de pago es obligatorio.')
+
+                if(!row.payment || row.payment <= 0 || isNaN(row.payment)) return this.getObjectResponse(false, 'El campo monto es obligatorio y debe ser mayor que 0.')
+
+                return this.getObjectResponse(true)
+                
+            },
             showDialogLinkPayment(row){
+
+                if(!row.id)
+                {
+                    const validate_data_payment = this.validateDataPayment(row)
+                    if(!validate_data_payment.success) return this.$message.error(validate_data_payment.message)
+                }
+
                 this.showDialogLink = true
                 this.documentPayment = row
+                this.documentPayment.document_id = this.documentId
+
             },
             clickDownloadFile(filename) {
                 window.open(
@@ -275,7 +378,8 @@
                     temp_path: null,
                     payment: 0,
                     errors: {},
-                    loading: false
+                    loading: false,
+                    payment_received: '1',
                 });
                 this.showAddButton = false;
             },
@@ -285,10 +389,12 @@
                 this.showAddButton = true;
             },
             clickSubmit(index) {
+
                 if(this.records[index].payment > parseFloat(this.document.total_difference)) {
                     this.$message.error('El monto ingresado supera al monto pendiente de pago, verifique.');
                     return;
                 }
+
                 let form = {
                     id: this.records[index].id,
                     document_id: this.documentId,
@@ -299,7 +405,9 @@
                     filename: this.records[index].filename,
                     temp_path: this.records[index].temp_path,
                     payment: this.records[index].payment,
+                    payment_received: this.records[index].payment_received,
                 };
+
                 this.$http.post(`/${this.resource}`, form)
                     .then(response => {
                         if (response.data.success) {

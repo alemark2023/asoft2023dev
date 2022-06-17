@@ -316,6 +316,7 @@ return [
 		'qrcode_yape' => 'código QR',
 		'name_yape' => 'nombres y apellidos',
 		'telephone_yape' => 'teléfono',
+		'payment' => 'monto',
 
 
 	],
