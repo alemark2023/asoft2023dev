@@ -891,3 +891,7 @@ html.sidebar-dark:not(.sidebar-light) .card-header.bg-info {
 .card-header.bg-success {
   background: #47a447 !important;
 }
+
+.c-btn-disabled{
+  color: #606266;
+}

@@ -69,7 +69,7 @@ class DocumentPaymentController extends Controller
 
         $id = $request->input('id');
 
-        DB::connection('tenant')->transaction(function () use ($id, $request) {
+        $data = DB::connection('tenant')->transaction(function () use ($id, $request) {
 
             $record = DocumentPayment::firstOrNew(['id' => $id]);
             $record->fill($request->all());
@@ -77,6 +77,7 @@ class DocumentPaymentController extends Controller
             $this->createGlobalPayment($record, $request->all());
             $this->saveFiles($record, $request, 'documents');
 
+            return $record;
         });
 
         $document_balance = (object)$this->document($request->document_id);
@@ -110,14 +111,13 @@ class DocumentPaymentController extends Controller
 
         }
 
-
-
-
         return [
             'success' => true,
-            'message' => ($id)?'Pago editado con éxito':'Pago registrado con éxito'
+            'message' => ($id)?'Pago editado con éxito':'Pago registrado con éxito',
+            'id' => $data->id,
         ];
     }
+
 
     public function destroy($id)
     {
