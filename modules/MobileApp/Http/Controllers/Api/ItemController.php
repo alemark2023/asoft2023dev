@@ -27,7 +27,7 @@ class ItemController extends Controller
      */
     public function records(Request $request)
     {
-        $records = Item::whereFilterRecordsApi($request->input);
+        $records = Item::whereFilterRecordsApi($request->input, $request->search_by_barcode);
 
         return new ItemCollection($records->paginate(config('tenant.items_per_page')));
     }

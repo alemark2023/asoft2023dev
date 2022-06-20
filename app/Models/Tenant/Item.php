@@ -2379,15 +2379,24 @@ class Item extends ModelTenant
      * Filtro para búsqueda de items desde el listado de la app
      *
      * @param  Builder $query
+     * @param  string $input
+     * @param  int $search_by_barcode
      * @return Builder
      */
-    public function scopeWhereFilterRecordsApi($query, $input)
+    public function scopeWhereFilterRecordsApi($query, $input, $search_by_barcode)
     {
-        return $query->where('description', 'like', "%{$input}%" )
-                    ->orWhere('internal_id', 'like', "%{$input}%")
-                    ->whereHasInternalId()
+        
+        if((bool) $search_by_barcode)
+        {
+            $query->where('barcode', $input)->limit(1);
+        }
+        else
+        {
+            $query->where('description', 'like', "%{$input}%")->orWhere('internal_id', 'like', "%{$input}%");
+        }
+
+        return $query->whereHasInternalId()
                     ->whereWarehouse()
-                    // ->whereIsActive()
                     ->orderBy('description');
     }
     
