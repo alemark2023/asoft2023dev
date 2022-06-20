@@ -15,9 +15,9 @@
                                 <th>Fecha de pago</th>
                                 <th>Método de pago <span class="text-danger">*</span></th>
                                 <th>Destino <span class="text-danger">*</span></th>
+                                <th class="text-center">Monto <span class="text-danger">*</span></th>
                                 <!-- <th>Referencia</th> -->
                                 <th>¿Pago recibido?</th>
-                                <th class="text-right">Monto <span class="text-danger">*</span></th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -29,6 +29,8 @@
                                     <td>{{ row.payment_method_type_description }}</td>
                                     <td>{{ row.destination_description }}</td>
                                     <!-- <td>{{ row.reference }}</td> -->
+                                    <td class="text-center">{{ row.payment }}</td>
+
                                     <td class="text-left">
 
                                         <!-- pagos que no cuenten con la opcion pago recibido -->
@@ -66,7 +68,6 @@
                                         </template>
 
                                     </td>
-                                    <td class="text-right">{{ row.payment }}</td>
                                     <td class="series-table-actions text-right">
 
                                         <template v-if="permissions.delete_payment">
@@ -104,6 +105,14 @@
                                             <small class="form-control-feedback" v-if="row.errors.payment_destination_id" v-text="row.errors.payment_destination_id[0]"></small>
                                         </div>
                                     </td>
+                                    
+                                    <td>
+                                        <div class="form-group mb-0" :class="{'has-danger': row.errors.payment}">
+                                            <el-input v-model="row.payment"></el-input>
+                                            <small class="form-control-feedback" v-if="row.errors.payment" v-text="row.errors.payment[0]"></small>
+                                        </div>
+                                    </td>
+
                                     <!-- <td>
                                         <div class="form-group mb-0" :class="{'has-danger': row.errors.reference}">
                                             <el-input v-model="row.reference"></el-input>
@@ -167,12 +176,6 @@
                                                 <el-input v-model="row.reference" placeholder="Referencia y/o N° Operación" :disabled="row.payment_received == '0'"></el-input>
                                                 <small class="form-control-feedback" v-if="row.errors.reference" v-text="row.errors.reference[0]"></small>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="form-group mb-0" :class="{'has-danger': row.errors.payment}">
-                                            <el-input v-model="row.payment"></el-input>
-                                            <small class="form-control-feedback" v-if="row.errors.payment" v-text="row.errors.payment[0]"></small>
                                         </div>
                                     </td>
                                     <td class="series-table-actions text-right px-0">
@@ -363,6 +366,7 @@
 
             },
             clickAddRow() {
+                
                 this.records.push({
                     id: null,
                     date_of_payment: moment().format('YYYY-MM-DD'),
@@ -371,7 +375,8 @@
                     reference: null,
                     filename: null,
                     temp_path: null,
-                    payment: 0,
+                    payment: parseFloat(this.document.total_difference),
+                    // payment: 0,                    
                     errors: {},
                     loading: false,
                     payment_received: '1',
