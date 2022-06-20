@@ -13,11 +13,11 @@
                             <tr>
                                 <th>#</th>
                                 <th>Fecha de pago</th>
-                                <th>Método de pago</th>
-                                <th>Destino</th>
+                                <th>Método de pago <span class="text-danger">*</span></th>
+                                <th>Destino <span class="text-danger">*</span></th>
                                 <!-- <th>Referencia</th> -->
                                 <th>¿Pago recibido?</th>
-                                <th class="text-right">Monto</th>
+                                <th class="text-right">Monto <span class="text-danger">*</span></th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -36,29 +36,29 @@
 
                                             <span class="d-block" v-if="row.reference"><b>Referencia:</b> {{ row.reference }}</span>
                                             <button  type="button" v-if="row.filename" class="btn waves-effect waves-light btn-xs btn-primary mb-2  mt-2" @click.prevent="clickDownloadFile(row.filename)">
-                                                <i class="fas fa-file-download"></i>
+                                                <i class="fas fa-fw fa-file-download"></i>
                                                 Descargar voucher
                                             </button>
                                             <!-- <el-button type="primary" @click="showDialogLinkPayment(row)">Link de pago</el-button> -->
 
                                         </template>
                                         <!-- nuevo flujo -->
-                                        <template v-else> 
+                                        <template v-else>
 
                                             <span class="d-block mb-2 font-bold">{{ row.payment_received_description }}</span>
 
                                             <template v-if="row.payment_received">
 
                                                 <span class="d-block" v-if="row.reference"><b>Referencia:</b> {{ row.reference }}</span>
-                                                <button  type="button" v-if="row.filename" class="btn waves-effect waves-light btn-xs btn-primary mb-2  mt-2" @click.prevent="clickDownloadFile(row.filename)">
-                                                    <i class="fas fa-file-download"></i>
+                                                <button  type="button" v-if="row.filename" class="btn btn-sm btn-primary mb-2  mt-2" @click.prevent="clickDownloadFile(row.filename)">
+                                                    <i class="fas fa-fw fa-file-download"></i>
                                                     Descargar voucher
                                                 </button>
 
                                             </template>
                                             <template v-else>
-                                                <button  type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click="showDialogLinkPayment(row)">
-                                                    <i class="fas fa-link"></i>
+                                                <button  type="button" class="btn btn-sm btn-primary" @click="showDialogLinkPayment(row)">
+                                                    <i class="fas fa-fw fa-link"></i>
                                                     Link de pago
                                                 </button>
                                             </template>
@@ -110,65 +110,64 @@
                                             <small class="form-control-feedback" v-if="row.errors.reference" v-text="row.errors.reference[0]"></small>
                                         </div>
                                     </td> -->
-                                    <td>
-                                        
-                                        <div class="row">
-                                            <div class="col-md-2">
-                                                <el-radio v-model="row.payment_received" label="1">SI</el-radio>
-                                            </div>
-                                            <div class="col-md-5 col-sm-12 col-xs-12">
-                                                <el-upload
-                                                    :data="{'index': index}"
-                                                    :headers="headers"
-                                                    :multiple="false"
-                                                    :on-remove="handleRemove"
-                                                    :action="`/finances/payment-file/upload`"
-                                                    :show-file-list="true"
-                                                    :file-list="fileList"
-                                                    :on-success="onSuccess"
-                                                    :limit="1"
-                                                    :disabled="row.payment_received == '0'"
-                                                    >
+                                    <td class="row no-gutters px-0">
 
-                                                    <template v-if="row.payment_received == '0'">
-                                                        <el-button type="info" class="btn waves-effect waves-light btn-xs">Cargar voucher</el-button>
+                                        <div class="col-md-7">
+                                            <div class="row no-gutters">
+                                                <div class="col-md-3">
+                                                    <el-radio class="mb-3 pt-2" v-model="row.payment_received" label="1">SI</el-radio>
+                                                    <el-radio v-model="row.payment_received" label="0">NO</el-radio>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <el-upload
+                                                        :data="{'index': index}"
+                                                        :headers="headers"
+                                                        :multiple="false"
+                                                        :on-remove="handleRemove"
+                                                        :action="`/finances/payment-file/upload`"
+                                                        :show-file-list="true"
+                                                        :file-list="fileList"
+                                                        :on-success="onSuccess"
+                                                        :limit="1"
+                                                        :disabled="row.payment_received == '0'"
+                                                        class="pb-1"
+                                                        >
+
+                                                        <template v-if="row.payment_received == '0'">
+                                                            <el-button type="info" class="btn btn-sm">
+                                                                <i class="fas fa-fw fa-upload"></i>
+                                                                Cargar voucher
+                                                            </el-button>
+                                                        </template>
+                                                        <template v-else>
+                                                            <button  type="button" class="btn btn-sm btn-primary"  slot="trigger">
+                                                                <i class="fas fa-fw fa-upload"></i>
+                                                                Cargar voucher
+                                                            </button>
+                                                        </template>
+                                                    </el-upload>
+                                                    <template v-if="row.payment_received == '1'">
+                                                        <el-button type="info" class="btn btn-sm">
+                                                            <i class="fas fa-fw fa-link"></i>
+                                                            Link de pago
+                                                        </el-button>
                                                     </template>
                                                     <template v-else>
-                                                        <button  type="button" class="btn waves-effect waves-light btn-xs btn-primary"  slot="trigger">
-                                                            <i class="fas fa-upload"></i>
-                                                            Cargar voucher
+                                                        <button  type="button" class="btn btn-sm btn-primary" @click="showDialogLinkPayment(row)">
+                                                            <i class="fas fa-fw fa-link"></i>
+                                                            Link de pago
                                                         </button>
                                                     </template>
-
-                                                </el-upload>
-                                            </div>
-                                            <div class="col-md-5 col-sm-12 col-xs-12">
-                                                <div class="form-group mb-0"  :class="{'has-danger': row.errors.reference}">
-                                                    <el-input v-model="row.reference" placeholder="Referencia y/o N° Operación" :disabled="row.payment_received == '0'"></el-input>
-                                                    <small class="form-control-feedback" v-if="row.errors.reference" v-text="row.errors.reference[0]"></small>
                                                 </div>
                                             </div>
 
                                         </div>
-                                        <div class="row mt-3">
-                                            <div class="col-md-2">
-                                                <el-radio v-model="row.payment_received" label="0">NO</el-radio>
-                                            </div>
-                                            <div class="col-md-10">
-
-                                                <template v-if="row.payment_received == '1'">
-                                                    <el-button type="info" class="btn waves-effect waves-light btn-xs">Link de pago</el-button>
-                                                </template>
-                                                <template v-else>
-                                                    <button  type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click="showDialogLinkPayment(row)">
-                                                        <i class="fas fa-link"></i>
-                                                        Link de pago
-                                                    </button>
-                                                </template>
-
+                                        <div class="col-md-5">
+                                            <div class="form-group mb-0" :class="{'has-danger': row.errors.reference}">
+                                                <el-input v-model="row.reference" placeholder="Referencia y/o N° Operación" :disabled="row.payment_received == '0'"></el-input>
+                                                <small class="form-control-feedback" v-if="row.errors.reference" v-text="row.errors.reference[0]"></small>
                                             </div>
                                         </div>
-
                                     </td>
                                     <td>
                                         <div class="form-group mb-0" :class="{'has-danger': row.errors.payment}">
@@ -176,13 +175,13 @@
                                             <small class="form-control-feedback" v-if="row.errors.payment" v-text="row.errors.payment[0]"></small>
                                         </div>
                                     </td>
-                                    <td class="series-table-actions text-right">
-                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickSubmit(index)">
-                                            <i class="fa fa-check"></i>
+                                    <td class="series-table-actions text-right px-0">
+                                        <button type="button" class="btn waves-effect waves-light btn-sm btn-info" @click.prevent="clickSubmit(index)">
+                                            <i class="fa fa-check d-block"></i>
                                         </button>
 
-                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
-                                            <i class="fa fa-trash"></i>
+                                        <button type="button" class="btn waves-effect waves-light btn-sm btn-danger" @click.prevent="clickCancel(index)">
+                                            <i class="fa fa-trash d-block"></i>
                                         </button>
                                     </td>
                                 </template>
@@ -192,22 +191,18 @@
                             <tr>
                                 <td colspan="6" class="text-right">TOTAL PAGADO</td>
                                 <td class="text-right">{{ document.total_paid }}</td>
-                                <td></td>
                             </tr>
                             <tr v-if="document.credit_notes_total">
                                 <td colspan="6" class="text-right">TOTAL NOTA CRÉDITO</td>
                                 <td class="text-right">{{ document.credit_notes_total }}</td>
-                                <td></td>
                             </tr>
                             <tr>
                                 <td colspan="6" class="text-right">TOTAL A PAGAR</td>
                                 <td class="text-right">{{ document.total }}</td>
-                                <td></td>
                             </tr>
                             <tr>
                                 <td colspan="6" class="text-right">PENDIENTE DE PAGO</td>
                                 <td class="text-right">{{ document.total_difference }}</td>
-                                <td></td>
                             </tr>
                             </tfoot>
                         </table>
@@ -220,8 +215,8 @@
                 </div>
             </div>
         </div>
-        
-        <dialog-link-payment 
+
+        <dialog-link-payment
             :documentPaymentId="documentPayment.id"
             :currencyTypeId="document.currency_type_id"
             :exchangeRateSale="document.exchange_rate_sale"
@@ -295,7 +290,7 @@
                 if(!row.payment || row.payment <= 0 || isNaN(row.payment)) return this.getObjectResponse(false, 'El campo monto es obligatorio y debe ser mayor que 0.')
 
                 return this.getObjectResponse(true)
-                
+
             },
             showDialogLinkPayment(row){
 
