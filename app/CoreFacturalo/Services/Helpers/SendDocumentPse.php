@@ -97,14 +97,11 @@ class SendDocumentPse
             'tipo_doc_procesar' => $document->getDocumentTypeForPse(),
             'nombre_archivo_xml' => $document->filename,
             'archivo' => base64_encode($xmlUnsigned),
-
-            'token' => $this->token,
-
         ];
 
         $response = $this->sendRequest($this->company->url_signature_pse, $params);
-        dd($response, $this->token);
-        
+        if(!$response) $this->throwException('Error al firmar xml (error desconocido).');
+
         if(!$response['correcto']) $this->throwException("Documento: {$document->filename} - {$response['mensaje']}");
 
         // obtener xml firmado y guardar rpta ws en bd
@@ -166,7 +163,8 @@ class SendDocumentPse
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => json_encode($params),
             CURLOPT_HTTPHEADER => array(
-                'Content-Type: application/json'
+                'Content-Type: application/json',
+                'Authorization: Bearer '.$this->token
             )
         ));
         
