@@ -284,6 +284,7 @@ class MobileController extends Controller
                 'currency_type_id' => $row->currency_type_id,
                 'internal_id' => $row->internal_id,
                 'item_code' => $row->item_code,
+                'barcode' => $row->barcode,
                 'currency_type_symbol' => $row->currency_type->symbol,
                 'sale_unit_price' => number_format( $row->sale_unit_price, 2),
                 'purchase_unit_price' => $row->purchase_unit_price,
