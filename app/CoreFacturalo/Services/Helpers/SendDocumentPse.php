@@ -11,10 +11,36 @@ class SendDocumentPse
 {
     
     private $company;
+    private $token;
     
     public function __construct($company)
     {
         $this->company = $company; 
+        $this->login();
+    }
+
+    
+    /**
+     * 
+     * Autenticar con servicio PSE, asignar token
+     *
+     * @return void
+     */
+    public function login()
+    {
+        $params = [
+            'usuario' => $this->company->number,
+            'contraseña' => $this->company->password_pse
+        ];
+
+        $response = $this->sendRequest($this->company->url_login_pse, $params);
+
+        $this->token = isset($response['token']) ? $response['token'] : null;
+
+        if(!$this->token)
+        {
+            $this->throwException("Error al autenticar con PSE: ".$response['mensaje'] ?? '');
+        }
     }
 
     
@@ -74,7 +100,8 @@ class SendDocumentPse
         ];
 
         $response = $this->sendRequest($this->company->url_signature_pse, $params);
-        
+        if(!$response) $this->throwException('Error al firmar xml (error desconocido).');
+
         if(!$response['correcto']) $this->throwException("Documento: {$document->filename} - {$response['mensaje']}");
 
         // obtener xml firmado y guardar rpta ws en bd
@@ -136,7 +163,8 @@ class SendDocumentPse
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => json_encode($params),
             CURLOPT_HTTPHEADER => array(
-                'Content-Type: application/json'
+                'Content-Type: application/json',
+                'Authorization: Bearer '.$this->token
             )
         ));
         
