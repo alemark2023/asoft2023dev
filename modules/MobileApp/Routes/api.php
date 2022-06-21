@@ -27,6 +27,10 @@ if ($hostname)
 
             });
 
+            Route::prefix('documents')->group(function () {
+                Route::post('validate-document', 'Api\ValidateDocumentController@validateDocument');
+            });
+
         }); 
     });
 } 

@@ -6,9 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use App\Models\Tenant\Document;
-use App\Models\Tenant\Series;
 use App\Models\Tenant\StateType;
-use Modules\Document\Http\Requests\ValidateDocumentsRequest;
+use Modules\MobileApp\Http\Requests\Api\ValidateDocumentRequest;
 use App\Models\Tenant\Company;
 use Illuminate\Support\Facades\DB;
 use App\CoreFacturalo\Services\IntegratedQuery\{
@@ -21,61 +20,45 @@ class ValidateDocumentController extends Controller
 
     protected $access_token;
 
-
-
-    public function records(ValidateDocumentsRequest $request)
+    public function setToken()
     {
-
-
         $auth_api = (new AuthApi())->getToken();
         if(!$auth_api['success']) return $auth_api;
-        $this->access_token = $auth_api['data']['access_token'];
+        $this->access_token = $auth_api['data']['access_token'] ?? null;
 
-        $records = $this->getRecords($request);
-        $validate_documents = $this->validateDocuments($records);
-
-        return new ValidateDocumentsCollection($validate_documents);
-
+        if(!$this->access_token) throw new Exception('Error al obtener token de autenticación SUNAT');
     }
 
 
-    public function validateDocuments(ValidateDocumentsRequest $request)
+    public function validateDocument(ValidateDocumentRequest $request)
     {
 
+        $this->setToken();
+        $company_number = Company::getRecordIndividualColumn('number');
+        $validate_cpe = new ValidateCpe($this->access_token,$company_number, $request->document_type_id, $request->series, $request->number, $request->date_of_issue, $request->total);
+        $response = $validate_cpe->search();
 
-        // dd($this->access_token, $records_paginate->getCollection());
+        dd($response);
 
+        $data_response = [
+            'message' => $response['message'],
+            'sunat_state_type_id' => null,
+            'code' => '-2',
+            'response' => $response,
+        ];
 
-            $validate_cpe = new ValidateCpe(
-                                $this->access_token,
-                                $document->company->number,
-                                $document->document_type_id,
-                                $document->series,
-                                $document->number,
-                                $document->date_of_issue,
-                                $document->total
-                            );
+        if ($response['success']) 
+        {
+            $data_response['sunat_state_type_id'] = $response['data']['state_type_id'],
+            $data_response['code'] = $response['data']['estadoCp']
+        }
+        
+        return $this->processResponse($data_response);
 
-            $response = $validate_cpe->search();
+    }
 
-            // dd($response);
-
-            if ($response['success']) {
-
-                $document->message = $response['message'];
-                $document->sunat_state_type_id = $response['data']['state_type_id'];
-                $document->code = $response['data']['estadoCp'];
-                $document->response = $response;
-
-            } else{
-
-                $document->message = $response['message'];
-                $document->sunat_state_type_id = null;
-                $document->code = '-2';  //custom code
-                $document->response = $response;
-
-            }
-
+    public function processResponse($data_response)
+    {
 
     }
 
