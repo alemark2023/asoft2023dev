@@ -16,7 +16,6 @@ class SendDocumentPse
     public function __construct($company)
     {
         $this->company = $company; 
-        $this->login();
     }
 
     
@@ -59,6 +58,8 @@ class SendDocumentPse
         $quantity_files = count($cdr);
         $xml_cdr = ($quantity_files == 1) ? $cdr[0]['content'] : $cdr[$quantity_files - 1]['content'];
 
+        if(!$this->token) $this->login();
+
         $params = [
             'cliente_id' => $this->company->client_id_pse,
             'nombre_archivo_xml' => $document->filename,
@@ -88,6 +89,7 @@ class SendDocumentPse
      */
     public function signXml($xmlUnsigned, $document)
     {
+        if(!$this->token) $this->login();
 
         $params = [
             'cliente_id' => $this->company->client_id_pse,
