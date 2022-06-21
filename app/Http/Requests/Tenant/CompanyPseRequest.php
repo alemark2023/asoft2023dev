@@ -19,9 +19,10 @@ class CompanyPseRequest extends FormRequest
         return [
             'url_signature_pse' => 'required_if:send_document_to_pse, "true"',
             'url_send_cdr_pse' => 'required_if:send_document_to_pse, "true"',
-            'client_id_pse' => 'required_if:send_document_to_pse, "true"',
+            // 'client_id_pse' => 'required_if:send_document_to_pse, "true"',
             // 'password_pse' => 'required_if:send_document_to_pse, "true"',
             'url_login_pse' => 'required_if:send_document_to_pse, "true"',
+            'user_pse' => 'required_if:send_document_to_pse, "true"',
         ];
     }
 }
