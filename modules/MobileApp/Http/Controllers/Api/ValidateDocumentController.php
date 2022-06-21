@@ -19,7 +19,15 @@ class ValidateDocumentController extends Controller
 {
 
     protected $access_token;
+    protected $validate_cpe;
+    
 
+    /**
+     * 
+     * Obtener token de sunat y asignarlo
+     *
+     * @return void
+     */
     public function setToken()
     {
         $auth_api = (new AuthApi())->getToken();
@@ -29,16 +37,22 @@ class ValidateDocumentController extends Controller
         if(!$this->access_token) throw new Exception('Error al obtener token de autenticación SUNAT');
     }
 
-
+    
+    /**
+     * Validar cpe
+     *
+     * @param  ValidateDocumentRequest $request
+     * @return array
+     */
     public function validateDocument(ValidateDocumentRequest $request)
     {
-
+        
         $this->setToken();
         $company_number = Company::getRecordIndividualColumn('number');
-        $validate_cpe = new ValidateCpe($this->access_token,$company_number, $request->document_type_id, $request->series, $request->number, $request->date_of_issue, $request->total);
-        $response = $validate_cpe->search();
+        $this->validate_cpe = new ValidateCpe($this->access_token,$company_number, $request->document_type_id, $request->series, $request->number, $request->date_of_issue, $request->total);
+        $response = $this->validate_cpe->search();
 
-        dd($response);
+        if(!$response['success']) return $response;
 
         $data_response = [
             'message' => $response['message'],
@@ -49,19 +63,50 @@ class ValidateDocumentController extends Controller
 
         if ($response['success']) 
         {
-            $data_response['sunat_state_type_id'] = $response['data']['state_type_id'],
-            $data_response['code'] = $response['data']['estadoCp']
+            $data_response['sunat_state_type_id'] = $response['data']['state_type_id'];
+            $data_response['code'] = $response['data']['estadoCp'];
         }
         
-        return $this->processResponse($data_response);
+        return $this->getResponse($data_response);
 
     }
-
-    public function processResponse($data_response)
+    
+    
+    /**
+     * 
+     * Generar respuesta
+     *
+     * @param  array $data_response
+     * @return array
+     */
+    public function getResponse($data_response)
     {
 
+        $sunat_state_type_id = $data_response['sunat_state_type_id'];
+
+        if(is_null($sunat_state_type_id))
+        {
+            $sunat_state_type_description = 'Error en la busqueda: '.$data_response['message'];
+        }
+        else
+        {
+            $sunat_state_type_description = null;
+            $state_type = StateType::find($sunat_state_type_id);
+            $sunat_state_type_description = ($state_type) ? $state_type->description : 'No existe';
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Consulta realizada correctamente.',
+            'data' => [
+                'state_type_id' => $sunat_state_type_id,
+                'state_type_description' => $sunat_state_type_description,
+                'code_sunat' => $data_response['code'],
+                'message_sunat' => $data_response['message'],
+                'state_ruc' => $this->validate_cpe->getCompanyState($data_response['response']['data']['estadoRuc']),
+                'condition_ruc' => $this->validate_cpe->getConditionState($data_response['response']['data']['condDomiRuc']),
+            ]
+        ];
     }
-
-
 
 }

@@ -12,12 +12,28 @@ use Modules\MobileApp\Http\Resources\Api\{
     ItemCollection,
     ItemResource,
 };
+use Modules\Item\Models\{
+    Category
+};
 use App\Http\Controllers\Tenant\ItemController as ItemControllerWeb;
 
 
 class ItemController extends Controller
 {
-        
+          
+    /**
+     * 
+     * Obtener tablas relacionadas
+     *
+     * @return array
+     */
+    public function tables()
+    {
+        return [
+            'categories' => Category::filterForTables()->get()
+        ];
+    }  
+
     /**
      * 
      * Obtener registros paginados

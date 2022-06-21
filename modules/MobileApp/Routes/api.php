@@ -8,6 +8,10 @@ if ($hostname)
 
         Route::middleware(['auth:api', 'locked.tenant'])->group(function () {
 
+            Route::get('categories-records', 'Api\CategoryController@records');
+            Route::get('brands-records', 'Api\BrandController@records');
+
+
             Route::prefix('app-configurations')->group(function () {
 
                 Route::get('record', 'Api\AppConfigurationController@record');
@@ -18,6 +22,7 @@ if ($hostname)
             
             Route::prefix('items')->group(function () {
                 
+                Route::get('tables', 'Api\ItemController@tables');
                 Route::post('update', 'Api\ItemController@update');
                 Route::get('records', 'Api\ItemController@records');
                 Route::get('record/{id}', 'Api\ItemController@record');
