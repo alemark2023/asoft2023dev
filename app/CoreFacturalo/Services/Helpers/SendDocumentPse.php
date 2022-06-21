@@ -11,10 +11,36 @@ class SendDocumentPse
 {
     
     private $company;
+    private $token;
     
     public function __construct($company)
     {
         $this->company = $company; 
+        $this->login();
+    }
+
+    
+    /**
+     * 
+     * Autenticar con servicio PSE, asignar token
+     *
+     * @return void
+     */
+    public function login()
+    {
+        $params = [
+            'usuario' => $this->company->number,
+            'contraseña' => $this->company->password_pse
+        ];
+
+        $response = $this->sendRequest($this->company->url_login_pse, $params);
+
+        $this->token = isset($response['token']) ? $response['token'] : null;
+
+        if(!$this->token)
+        {
+            $this->throwException("Error al autenticar con PSE: ".$response['mensaje'] ?? '');
+        }
     }
 
     
@@ -71,9 +97,13 @@ class SendDocumentPse
             'tipo_doc_procesar' => $document->getDocumentTypeForPse(),
             'nombre_archivo_xml' => $document->filename,
             'archivo' => base64_encode($xmlUnsigned),
+
+            'token' => $this->token,
+
         ];
 
         $response = $this->sendRequest($this->company->url_signature_pse, $params);
+        dd($response, $this->token);
         
         if(!$response['correcto']) $this->throwException("Documento: {$document->filename} - {$response['mensaje']}");
 

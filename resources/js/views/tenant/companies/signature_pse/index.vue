@@ -47,6 +47,30 @@
                         </div>
 
                         <div class="col-md-12 mt-3">
+                            <div class="form-group" :class="{'has-danger': errors.url_login_pse}">
+                                <label class="control-label">Url autenticación <span class="text-danger">*</span></label>
+                                <el-input v-model="form.url_login_pse"></el-input>
+                                <small class="form-control-feedback" v-if="errors.url_login_pse" v-text="errors.url_login_pse[0]"></small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-12 mt-3">
+                            <div class="form-group" :class="{'has-danger': errors.password_pse}">
+                                <label class="control-label">Contraseña autenticación <span class="text-danger">*</span>
+                                    <el-tooltip
+                                        class="item"
+                                        content="Registrar solo si desea modificar la contraseña actual"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <el-input v-model="form.password_pse" show-password></el-input>
+                                <small class="form-control-feedback" v-if="errors.password_pse" v-text="errors.password_pse[0]"></small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mt-3">
                             <div class="form-group" :class="{'has-danger': errors.url_signature_pse}">
                                 <label class="control-label">Url firma digital del documento <span class="text-danger">*</span></label>
                                 <el-input v-model="form.url_signature_pse"></el-input>
@@ -122,6 +146,8 @@
                     url_signature_pse : null,
                     url_send_cdr_pse : null,
                     client_id_pse: null,
+                    url_login_pse: null,
+                    password_pse: null,
                 }
 
                 this.errors = {}
