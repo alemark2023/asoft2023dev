@@ -37,14 +37,14 @@
                     
                     <template v-if="form.send_document_to_pse">
 
-                        <div class="col-md-3 mt-3">
+                        <!-- <div class="col-md-3 mt-3">
                             <div class="form-group" :class="{'has-danger': errors.client_id_pse}">
                                 <label class="control-label">ID Cliente <span class="text-danger">*</span>
                                 </label>
                                 <el-input v-model="form.client_id_pse"></el-input>
                                 <small class="form-control-feedback" v-if="errors.client_id_pse" v-text="errors.client_id_pse[0]"></small>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="col-md-12 mt-3">
                             <div class="form-group" :class="{'has-danger': errors.url_login_pse}">
@@ -54,7 +54,15 @@
                             </div>
                         </div>
                         
-                        <div class="col-md-12 mt-3">
+                        <div class="col-md-6 mt-3">
+                            <div class="form-group" :class="{'has-danger': errors.user_pse}">
+                                <label class="control-label">Usuario autenticación <span class="text-danger">*</span></label>
+                                <el-input v-model="form.user_pse"></el-input>
+                                <small class="form-control-feedback" v-if="errors.user_pse" v-text="errors.user_pse[0]"></small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mt-3">
                             <div class="form-group" :class="{'has-danger': errors.password_pse}">
                                 <label class="control-label">Contraseña autenticación <span class="text-danger">*</span>
                                     <el-tooltip
@@ -148,6 +156,7 @@
                     client_id_pse: null,
                     url_login_pse: null,
                     password_pse: null,
+                    user_pse: null,
                 }
 
                 this.errors = {}

@@ -40,6 +40,7 @@ class Company extends ModelTenant
         'client_id_pse',
         'password_pse',
         'url_login_pse',
+        'user_pse',
 
     ];
 

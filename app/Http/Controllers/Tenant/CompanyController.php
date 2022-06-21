@@ -121,6 +121,7 @@ class CompanyController extends Controller
         $company->url_send_cdr_pse = $request->url_send_cdr_pse;
         $company->client_id_pse = $request->client_id_pse;
         $company->url_login_pse = $request->url_login_pse;
+        $company->user_pse = $request->user_pse;
         $company->password_pse = $request->password_pse ?? $company->password_pse;
         $company->save();
 
@@ -148,6 +149,7 @@ class CompanyController extends Controller
             'url_send_cdr_pse' => $company->url_send_cdr_pse,
             'client_id_pse' => $company->client_id_pse,
             'url_login_pse' => $company->url_login_pse,
+            'user_pse' => $company->user_pse,
             // 'password_pse' => $company->password_pse,
         ];
         

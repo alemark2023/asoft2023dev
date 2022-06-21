@@ -29,7 +29,7 @@ class SendDocumentPse
     public function login()
     {
         $params = [
-            'usuario' => $this->company->number,
+            'usuario' => $this->company->user_pse,
             'contraseña' => $this->company->password_pse
         ];
 
