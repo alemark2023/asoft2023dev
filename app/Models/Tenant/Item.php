@@ -2423,5 +2423,20 @@ class Item extends ModelTenant
     }
 
 
+    /**
+     * 
+     * Filtrar por categoria
+     *
+     * @param  Builder $query
+     * @param  int $category_id
+     * @return Builder
+     */
+    public function scopeFilterByCategory($query, $category_id)
+    {
+        if($category_id)  $query->where('category_id', $category_id);
+
+        return $query;
+    }
+
 }
 

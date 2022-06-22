@@ -372,6 +372,7 @@ class DocumentTransform
                         'payment_destination_id' => $row['codigo_destino_pago'],
                         'reference' => Functions::valueKeyInArray($row, 'referencia'),
                         'payment' => Functions::valueKeyInArray($row, 'monto', 0),
+                        'payment_received' => Functions::valueKeyInArray($row, 'pago_recibido'),
                     ];
                 }
 

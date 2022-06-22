@@ -345,21 +345,23 @@ class MobileController extends Controller
         $establishment_id = auth()->user()->establishment_id;
         $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
         $search_by_barcode = $request->has('search_by_barcode') && (bool) $request->search_by_barcode;
-
+        $category_id = $request->category_id ?? null;
+        
         $item_query = Item::query();
         
         if($search_by_barcode)
         {
-            $items = $item_query->where('barcode', $request->input)->limit(1);
+            $item_query->where('barcode', $request->input)->limit(1);
         }
         else
         {
-            $items = $item_query->where('description', 'like', "%{$request->input}%")->orWhere('internal_id', 'like', "%{$request->input}%");
+            $item_query->where('description', 'like', "%{$request->input}%")->orWhere('internal_id', 'like', "%{$request->input}%");
         }
 
-        $items = $items->whereHasInternalId()
+        $items = $item_query->whereHasInternalId()
                     ->whereWarehouse()
                     // ->whereNotIsSet()
+                    ->filterByCategory($category_id)
                     ->whereIsActive()
                     ->orderBy('description')
                     ->get()
