@@ -145,7 +145,6 @@ use Modules\Restaurant\Models\RestaurantRole;
  * @property int|null $voideds_count
  * @property int|null $zone_id
  * @property int|null $restaurant_role_id
-
  */
 class User extends Authenticatable
 {
@@ -177,7 +176,7 @@ class User extends Authenticatable
         'recreate_documents',
         'zone_id',
         'restaurant_role_id',
-        
+
         'delete_payment',
         'create_payment',
 
@@ -199,7 +198,7 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'series_id'=> 'int',
+        'series_id' => 'int',
         'permission_edit_cpe' => 'boolean',
         'recreate_documents' => 'boolean',
         'establishment_id' => 'int',
@@ -226,14 +225,13 @@ class User extends Authenticatable
             return true;
         }
         abort(401,
- 'Esta acción no está autorizada.');
+            'Esta acción no está autorizada.');
     }
 
     public function hasAnyModule($modules)
     {
         if (is_array($modules)) {
-            foreach ($modules as $module)
-            {
+            foreach ($modules as $module) {
                 if ($this->hasModule($module)) {
                     return true;
                 }
@@ -249,12 +247,11 @@ class User extends Authenticatable
     public function hasModule($module)
     {
         if ($this->modules()->where('name',
- $module)->first()) {
+            $module)->first()) {
             return true;
         }
         return false;
     }
-
 
 
     public function getModule()
@@ -279,7 +276,7 @@ class User extends Authenticatable
     public function searchModule($module)
     {
         if ($this->modules()->where('value',
- $module)->first()) {
+            $module)->first()) {
             return true;
         }
         return false;
@@ -312,8 +309,8 @@ class User extends Authenticatable
     public function seller_documents()
     {
         return $this->hasMany(Document::class,
-'seller_id',
-'id');
+            'seller_id',
+            'id');
     }
 
     public function sale_notes()
@@ -324,8 +321,8 @@ class User extends Authenticatable
     public function seller_sale_notes()
     {
         return $this->hasMany(SaleNote::class,
-'seller_id',
-'id');
+            'seller_id',
+            'id');
     }
 
     public function restaurant_role()
@@ -337,9 +334,8 @@ class User extends Authenticatable
     {
         $user = auth()->user();
         return ($user->type == 'seller') ? $query->where('id',
- $user->id) : null;
+            $user->id) : null;
     }
-
 
 
     public function getLevel()
@@ -364,7 +360,7 @@ class User extends Authenticatable
     public function searchLevel($Level)
     {
         if ($this->levels()->where('value',
- $Level)->first()) {
+            $Level)->first()) {
             return true;
         }
         return false;
@@ -386,7 +382,8 @@ class User extends Authenticatable
     /**
      * @return mixed
      */
-    public function getDocumentId() {
+    public function getDocumentId()
+    {
         return $this->document_id;
     }
 
@@ -395,7 +392,8 @@ class User extends Authenticatable
      *
      * @return User
      */
-    public function setDocumentId($document_id) {
+    public function setDocumentId($document_id)
+    {
         $this->document_id = $document_id;
         return $this;
     }
@@ -403,7 +401,8 @@ class User extends Authenticatable
     /**
      * @return mixed
      */
-    public function getSeriesId() {
+    public function getSeriesId()
+    {
         return $this->series_id;
     }
 
@@ -412,7 +411,8 @@ class User extends Authenticatable
      *
      * @return User
      */
-    public function setSeriesId($series_id) {
+    public function setSeriesId($series_id)
+    {
         $this->series_id = $series_id;
         return $this;
     }
@@ -420,7 +420,8 @@ class User extends Authenticatable
     /**
      * @return mixed
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
@@ -429,7 +430,8 @@ class User extends Authenticatable
      *
      * @return User
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
         return $this;
     }
@@ -441,8 +443,9 @@ class User extends Authenticatable
      *
      * @return $this
      */
-    public function setModuleAndLevelModule($modules= [],
-$modules_levels = []){
+    public function setModuleAndLevelModule($modules = [],
+                                            $modules_levels = [])
+    {
         $user_array = [
             'user_id' => $this->id,
 
@@ -452,21 +455,21 @@ $modules_levels = []){
         $module_array = $modules;
 
         $work = DB::connection('tenant')
-                  ->table('module_user')
-                  ->where($user_array);
+            ->table('module_user')
+            ->where($user_array);
 
         $deletes = $work
             ->whereNotIn('module_id',
- $module_array)
+                $module_array)
             ->delete();
         $total_modules = count($module_array);
         for ($i = 0; $i < $total_modules; $i++) {
             $item = (int)$module_array[$i];
             $module_ = $work
                 ->where([
-                            'module_id' => $item,
+                    'module_id' => $item,
 
-                        ])->first();
+                ])->first();
             if (empty($module_)) {
                 $user_array['module_id'] = $item;
                 $work->insert($user_array);
@@ -474,15 +477,14 @@ $modules_levels = []){
         }
         unset($user_array['module_id']);
 
-        $levels_array =$modules_levels;
+        $levels_array = $modules_levels;
 
-        $work =DB::connection('tenant')
-                 ->table('module_level_user')
-                 ->where($user_array)
-        ;
+        $work = DB::connection('tenant')
+            ->table('module_level_user')
+            ->where($user_array);
         $deletes = $work->whereNotIn('module_level_id',
- $levels_array)
-                        ->delete();
+            $levels_array)
+            ->delete();
 
         $total_modules_levels = count($levels_array);
 
@@ -492,9 +494,9 @@ $modules_levels = []){
 
             $module_ = $work
                 ->where([
-                            'module_level_id' => $item,
+                    'module_level_id' => $item,
 
-                        ])->first();
+                ])->first();
             if (empty($module_)) {
                 $user_array['module_level_id'] = $item;
                 $work->insert($user_array);
@@ -508,55 +510,56 @@ $modules_levels = []){
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCurrentModuleLevelByTenant(){
-        return  DB::connection('tenant')
-                      ->table('module_level_user')
-                      ->select('module_level_id')
-                      ->where('user_id',
- $this->id)
-                      ->get();
+    public function getCurrentModuleLevelByTenant()
+    {
+        return DB::connection('tenant')
+            ->table('module_level_user')
+            ->select('module_level_id')
+            ->where('user_id',
+                $this->id)
+            ->get();
 
     }
+
     /**
      * Obtiene los modulo definidos por tenant
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCurrentModuleByTenant(){
-        return  DB::connection('tenant')
-                  ->table('module_user')
-                  ->select('module_id')
-                  ->where('user_id',
- $this->id)
-                  ->get();
+    public function getCurrentModuleByTenant()
+    {
+        return DB::connection('tenant')
+            ->table('module_user')
+            ->select('module_id')
+            ->where('user_id',
+                $this->id)
+            ->get();
 
     }
 
     /**
      * Devuelve una lista de usuarios vendedores junto con el usuario actual.
      * Si $withEstablishment es verdadero,
- * devuelve usuarios con establecimientos asignados carlomagno83/facturadorpro4#627
+     * devuelve usuarios con establecimientos asignados carlomagno83/facturadorpro4#627
      * Si $withEstablishment es falso,
- * devuelve usuarios sin establecimientos asignados carlomagno83/facturadorpro4#233
+     * devuelve usuarios sin establecimientos asignados carlomagno83/facturadorpro4#233
      *
      * @param \Illuminate\Database\Query\Builder|Builder $query
-     * @param bool                                       $withEstablishment
+     * @param bool $withEstablishment
      *
      * @return \Illuminate\Database\Query\Builder|Builder
      */
-    public function scopeGetSellers(  $query,
-$withEstablishment = true){
-        if($withEstablishment == false) {
+    public function scopeGetSellers($query, $withEstablishment = true)
+    {
+        if ($withEstablishment == false) {
             $query->without(['establishment']);
-        }else{
+        } else {
             $query->with(['establishment']);
-
         }
-        $query->whereIn('type',
- ['seller']);
-        $query->orWhere('id',
- auth()->user()->id);
-        return  $query;
+        $query->whereIn('type', ['seller']);
+        $query->orWhere('id', auth()->user()->id);
+
+        return $query;
     }
 
     /**
@@ -564,11 +567,12 @@ $withEstablishment = true){
      *
      * @return mixed
      */
-    public function scopeGetWorkers($query){
+    public function scopeGetWorkers($query)
+    {
         $query->whereIn('type',
- ['seller',
-'admin']);
-        return  $query;
+            ['seller',
+                'admin']);
+        return $query;
     }
 
     /**
@@ -594,17 +598,18 @@ $withEstablishment = true){
     /**
      * @return array
      */
-    public function getCollectionData(){
+    public function getCollectionData()
+    {
         $type = '';
         switch ($this->type) {
             case 'admin':
-                $type =  'Administrador' ;
+                $type = 'Administrador';
                 break;
             case 'seller':
-                $type =  'Vendedor' ;
+                $type = 'Vendedor';
                 break;
             case 'client':
-                $type =  'Cliente' ;
+                $type = 'Cliente';
                 break;
             default:
                 # code...
@@ -622,13 +627,13 @@ $withEstablishment = true){
 
             'document_id' => $this->document_id,
 
-            'serie_id' => ($this->series_id == 0)?null:$this->series_id,
+            'serie_id' => ($this->series_id == 0) ? null : $this->series_id,
 
             'establishment_description' => optional($this->establishment)->description,
 
             'type' => $type,
 
-            'locked' => (bool) $this->locked,
+            'locked' => (bool)$this->locked,
 
         ];
     }
@@ -636,14 +641,15 @@ $withEstablishment = true){
     /**
      * @return array
      */
-    public function getCollectionRestaurantData(){
+    public function getCollectionRestaurantData()
+    {
         return [
             'id' => $this->id,
             'email' => $this->email,
             'name' => $this->name,
             'restaurant_role_id' => $this->restaurant_role_id,
             'restaurant_role_name' => $this->restaurant_role_id ? $this->restaurant_role->name : '',
-            'locked' => (bool) $this->locked,
+            'locked' => (bool)$this->locked,
         ];
     }
 
@@ -852,19 +858,20 @@ $withEstablishment = true){
      *
      * @return Series[]|Builder[]|Collection|\Illuminate\Support\Collection
      */
-    public function getSeries(){
+    public function getSeries()
+    {
 
-        $document_id =  $this->document_id;
-        $series_id =  $this->series_id;
-        $establishment_id =  $this->establishment_id;
+        $document_id = $this->document_id;
+        $series_id = $this->series_id;
+        $establishment_id = $this->establishment_id;
         $userType = $this->type;
 
-        return  Series::FilterSeries($establishment_id)
+        return Series::FilterSeries($establishment_id)
             ->get()
-            ->transform(function($row) use($document_id,$series_id,$userType) {
-            /** @var Series $row */
-            return $row->getCollectionData($document_id,$series_id,$userType);
-        })->where('disabled',false);
+            ->transform(function ($row) use ($document_id, $series_id, $userType) {
+                /** @var Series $row */
+                return $row->getCollectionData($document_id, $series_id, $userType);
+            })->where('disabled', false);
     }
 
     /**
@@ -882,21 +889,22 @@ $withEstablishment = true){
      *
      * @return User[]|Builder[]|Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection
      */
-    public static function  getSellersToNvCpe($establishment_id =0,$userId=0){
-        return  self::where('establishment_id',$establishment_id)
+    public static function getSellersToNvCpe($establishment_id = 0, $userId = 0)
+    {
+        return self::where('establishment_id', $establishment_id)
             ->whereIn('type', ['seller', 'admin'])->orWhere('id', $userId)
             ->get();
 
     }
 
-        
+
     /**
-     * 
+     *
      * Validar si aplica el filtro por vendedor para el usuario en sesión (filtrar clientes por vendedor asignado)
      *
      * Usado en:
      * Person - scopeWhereFilterCustomerBySeller
-     * 
+     *
      * @return bool
      */
     public function applyCustomerFilterBySeller()
@@ -906,9 +914,9 @@ $withEstablishment = true){
         return ($this->type === 'seller' && $configuration->customer_filter_by_seller);
     }
 
-    
+
     /**
-     * 
+     *
      * Obtener permisos para pagos de comprobantes
      *
      * @return array

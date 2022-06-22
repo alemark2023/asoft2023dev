@@ -2,15 +2,11 @@
     $invoice = $document->invoice;
     $establishment = $document->establishment;
     $customer = $document->customer;
-
     $document_xml_service = new Modules\Document\Services\DocumentXmlService;
-    
     // Cargos globales que no afectan la base imponible del IGV/IVAP
     $tot_charges = $document_xml_service->getGlobalChargesNoBase($document);
-   
     //descuento global - item que no afectan la base imponible
     $total_discount_no_base = $document_xml_service->getGlobalDiscountsNoBase($document) + $document_xml_service->getItemsDiscountsNoBase($document);
-
 @endphp
 {!!  '<'.'?xml version="1.0" encoding="utf-8" standalone="no"?'.'>'  !!}
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"

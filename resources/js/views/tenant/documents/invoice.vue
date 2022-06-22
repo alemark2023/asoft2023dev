@@ -1447,6 +1447,9 @@
 </style>
 <script>
 import DocumentFormItem from './partials/item.vue'
+
+// import DocumentFormItem from '../Store/StoreItem';
+
 import PersonForm from '../persons/form.vue'
 import DocumentOptions from '../documents/partials/options.vue'
 import {exchangeRate, functions} from '../../../mixins/functions'

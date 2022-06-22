@@ -89,8 +89,6 @@
                         </template>
                     </td>
                         <td>
-                            <!-- {{ row.sale_opportunity_number_full }} -->
-
                             <el-popover
                                 placement="right"
                                 v-if="row.sale_opportunity"
@@ -160,32 +158,32 @@
                         </td>
 
                         <td class="text-right">
-                            <button v-if="row.btn_options"
-                                    type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickOptions(row.id)" >
-                                Generar comprobante
-                            </button>
+<!--                            <button v-if="row.btn_options"-->
+<!--                                    type="button"-->
+<!--                                    class="btn waves-effect waves-light btn-xs btn-info"-->
+<!--                                    @click.prevent="clickOptions(row.id)" >-->
+<!--                                Generar comprobante-->
+<!--                            </button>-->
 
-                            <a v-if="row.documents.length == 0 && row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
-                            <button v-if="row.documents.length == 0 && row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
+                            <a v-if="row.documents.length === 0 && row.state_type_id !== '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
+                            <button v-if="row.documents.length === 0 && row.state_type_id !== '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
                             <button @click="duplicate(row.id)"  type="button" class="btn waves-effect waves-light btn-xs btn-info">Duplicar</button>
-                            <a :href="`/dispatches/create/${row.id}/q`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2">Guía</a>
+<!--                            <a :href="`/dispatches/create/${row.id}/q`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2">Guía</a>-->
 
-                            <template v-if="row.btn_generate_cnt && row.state_type_id != '11'">
-                                <a  :href="`/contracts/generate-quotation/${row.id}`" class="btn waves-effect waves-light btn-xs btn-primary m-1__2">Generar contrato</a>
+                            <template v-if="row.btn_generate_cnt && row.state_type_id !== '11'">
+<!--                                <a  :href="`/contracts/generate-quotation/${row.id}`" class="btn waves-effect waves-light btn-xs btn-primary m-1__2">Generar contrato</a>-->
                             </template>
                             <template v-else>
                                 <button  type="button" @click="clickPrintContract(row.external_id_contract)"  class="btn waves-effect waves-light btn-xs btn-primary m-1__2">Ver contrato</button>
                             </template>
                             <!-- pedidos -->
-                            <button
-                                v-if="canMakeOrderNote(row)"
-                                @click="makeOrder(row.id)"
-                                type="button"
-                                class="btn waves-effect waves-light btn-xs btn-tumblr">
-                                Generar Pedido
-                            </button>
+<!--                            <button-->
+<!--                                v-if="canMakeOrderNote(row)"-->
+<!--                                @click="makeOrder(row.id)"-->
+<!--                                type="button"-->
+<!--                                class="btn waves-effect waves-light btn-xs btn-tumblr">-->
+<!--                                Generar Pedido-->
+<!--                            </button>-->
 
                         </td>
 
@@ -303,13 +301,13 @@
                 let permission = true
 
                 // Si ya tiene Pedidos, no se genera uno nuevo
-                if(row.order_note.full_number) 
+                if(row.order_note.full_number)
                 {
                     permission = false
                 }
                 else
                 {
-                    if(this.typeUser !== 'admin') 
+                    if(this.typeUser !== 'admin')
                     {
                         permission = this.generateOrderNoteFromQuotation
                     }

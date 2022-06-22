@@ -1,0 +1,14 @@
+{
+    "name": "Quotation",
+    "alias": "quotation",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\Quotation\\Providers\\QuotationServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

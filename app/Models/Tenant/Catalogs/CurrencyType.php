@@ -2,35 +2,29 @@
 
 namespace App\Models\Tenant\Catalogs;
 
-use Illuminate\Database\Eloquent\Builder;
 use Hyn\Tenancy\Traits\UsesTenantConnection;
 
 class CurrencyType extends ModelCatalog
 {
-    use UsesTenantConnection;
+  use UsesTenantConnection;
 
+  protected $table = "cat_currency_types";
+  public $incrementing = false;
+  public $timestamps = false;
 
-    // protected static function boot()
-    // {
-    //     parent::boot();
+  protected $fillable = [
+    'id',
+    'active',
+    'symbol',
+    'description',
+  ];
 
-    //     static::addGlobalScope('active', function (Builder $builder) {
-    //         $builder->where('active', 1);
-    //     });
-    // }
+  protected $casts = [
+    'active' => true,
+  ];
 
-    protected $table = "cat_currency_types";
-    public $incrementing = false;
-    public $timestamps = false;
-
-    protected $fillable = [
-        'id',
-        'active',
-        'symbol',
-        'description',
-    ];
-
-    public function scopeActives($query){
-        return $query->where('active',1);
-}
+  public function scopeActives($query)
+  {
+    return $query->where('active', 1);
+  }
 }

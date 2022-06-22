@@ -1,0 +1,25 @@
+{
+    "name": "eriquegasparcarlos/person",
+    "description": "",
+    "authors": [
+        {
+            "name": "Carlos Alfredo Erique",
+            "email": "eriquegasparcarlos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\Person\\Providers\\PersonServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Person\\": ""
+        }
+    }
+}

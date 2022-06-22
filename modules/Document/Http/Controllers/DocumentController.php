@@ -30,14 +30,12 @@ use Modules\Item\Models\ItemLot;
 use Modules\Document\Http\Resources\ItemLotCollection;
 use App\Models\Tenant\Configuration;
 
-
 class DocumentController extends Controller
 {
     use OfflineTrait, SearchTrait;
 
     public function index()
     {
-
         $is_client = $this->getIsClient();
 
         return view('document::documents.not_sent', compact('is_client'));
@@ -45,16 +43,13 @@ class DocumentController extends Controller
 
     public function records(Request $request)
     {
-
         $records = $this->getRecords($request);
 
         return new DocumentNotSentCollection($records->paginate(config('tenant.items_per_page')));
-
     }
 
     public function getRecords($request)
     {
-
         /** @var User $user */
         $user = \Auth::user();
 
@@ -97,7 +92,6 @@ class DocumentController extends Controller
 
     public function data_table()
     {
-
         $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
             return [
                 'id' => $row->id,
@@ -114,14 +108,10 @@ class DocumentController extends Controller
         $state_types = StateType::get();
 
         return compact( 'customers', 'document_types','series','establishments', 'state_types');
-
     }
-
-
 
     public function upload(Request $request)
     {
-
         $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,gif,svg');
 
         if(!$validate_upload['success']){
@@ -163,10 +153,8 @@ class DocumentController extends Controller
         ];
     }
 
-
     public function detractionTables()
     {
-
         $cat_payment_method_types = CatPaymentMethodType::whereActive()->get();
         $detraction_types = DetractionType::whereActive()->get();
 
@@ -199,14 +187,10 @@ class DocumentController extends Controller
         }
 
         return compact( 'detraction_types', 'cat_payment_method_types', 'locations');
-
     }
-
 
     public function dataTableCustomers(Request $request)
     {
-
-
         $customers = Person::where('number','like', "%{$request->input}%")
                             ->orWhere('name','like', "%{$request->input}%")
                             ->whereType('customers')->orderBy('name')
@@ -222,8 +206,6 @@ class DocumentController extends Controller
 
         return compact('customers');
     }
-
-
 
     public function savePayConstancy(Request $request)
     {
@@ -259,10 +241,8 @@ class DocumentController extends Controller
         ];
     }
 
-
     public function prepayments($type)
     {
-
         $prepayment_documents = Document::whereHasPrepayment()->whereAffectationTypePrepayment($type)->get()->transform(function($row) {
 
             $total = round($row->pending_amount_prepayment, 2);
@@ -285,16 +265,19 @@ class DocumentController extends Controller
 
     }
 
-
     public function searchItems(Request $request)
     {
-
         $items = SearchItemController::getItemsToDocuments($request);
 
         return compact('items');
-
     }
 
+    public function searchStoreItems(Request $request)
+    {
+        $items = SearchItemController::getItemsToDocuments($request);
+
+        return compact('items');
+    }
 
     /**
      * @param \Illuminate\Http\Request $request
@@ -303,8 +286,6 @@ class DocumentController extends Controller
      */
     public function searchLots(Request $request)
     {
-
-
         $records = ItemLot::where('series', 'like', "%{$request->input}%");
         if ($request->document_item_id) {
             //proccess credit note
@@ -330,36 +311,28 @@ class DocumentController extends Controller
         return new ItemLotCollection($records->paginate(config('tenant.items_per_page')));
     }
 
-
     public function regularizeLots(Request $request)
     {
-
         $document_item = DocumentItem::findOrFail($request->document_item_id);
 
         return ItemLot::where('series','like', "%{$request->input}%")
                                         ->whereIn('id', collect($document_item->item->lots)->pluck('id')->toArray())
                                         ->where('has_sale', true)
                                         ->get();
-
-
     }
-
 
     public function searchItemById($id)
     {
         // $items = SearchItemController::searchByIdToModal($id);
         $items = SearchItemController::getItemsToDocuments(null, $id);
+
         return compact('items');
     }
 
-
     public function consultCdr($document_id)
     {
-
         $document = Document::find($document_id);
 
         return (new ConsultCdr)->search($document);
-
     }
-
 }

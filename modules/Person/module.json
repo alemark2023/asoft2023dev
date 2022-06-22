@@ -1,0 +1,14 @@
+{
+    "name": "Person",
+    "alias": "person",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\Person\\Providers\\PersonServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

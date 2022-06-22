@@ -4,18 +4,17 @@ namespace App\Traits;
 use Modules\Offline\Models\OfflineConfiguration;
 
 trait OfflineTrait
-{ 
-
+{
     private function getIsClient() {
-        return (bool) OfflineConfiguration::firstOrFail()->is_client;
+        return OfflineConfiguration::query()->firstOrFail()->is_client;
     }
 
     private function getUrlServer() {
-        return OfflineConfiguration::firstOrFail()->url_server;
+        return OfflineConfiguration::query()->firstOrFail()->url_server;
     }
-    
+
     private function getTokenServer() {
-        return OfflineConfiguration::firstOrFail()->token_server;
+        return OfflineConfiguration::query()->firstOrFail()->token_server;
     }
-    
+
 }

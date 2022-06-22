@@ -13,11 +13,13 @@
     {
         use AttributePerItems;
         public $timestamps = false;
-        protected $with = ['affectation_igv_type', 'system_isc_type', 'price_type'];
+//        protected $with = ['affectation_igv_type', 'system_isc_type', 'price_type'];
         protected $fillable = [
             'quotation_id',
             'item_id',
             'item',
+            'name',
+            'unit_type_id',
             'quantity',
             'unit_value',
 
@@ -53,6 +55,7 @@
             'additional_information',
             'warehouse_id',
             'name_product_pdf',
+            'factor_discount'
         ];
 
 

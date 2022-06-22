@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models\Tenant;
+
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\CatColorsItem;
 use App\Models\Tenant\Catalogs\CatItemMoldCavity;
@@ -103,15 +104,14 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemWarehouse[] $warehouses
  * @property int|null $warehouses_count
  * @property WebPlatform $web_platform
- * @method  array getCollectionData()
  * @method static Builder|Item whereFilterValuedKardexFormatSunat($params)
-* @property \Illuminate\Database\Eloquent\Collection|ItemSupply[] $supplies
-* @property \Illuminate\Database\Eloquent\Collection|ItemSupply[] supplies_items
-
+ * @property \Illuminate\Database\Eloquent\Collection|ItemSupply[] $supplies
+ * @property \Illuminate\Database\Eloquent\Collection|ItemSupply[] supplies_items
  */
 class Item extends ModelTenant
 {
-    protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags','item_lots'];
+//    protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags', 'item_lots'];
+
     protected $fillable = [
         'warehouse_id',
         'name',
@@ -175,14 +175,21 @@ class Item extends ModelTenant
         'purchase_has_isc',
 
         'subject_to_detraction',
+        'text_filter'
         // 'warehouse_id'
     ];
 
     protected $casts = [
         'date_of_due' => 'date',
-        'is_for_production' => 'bool',
-        'purchase_has_isc' => 'bool',
-        'subject_to_detraction' => 'bool',
+        'is_for_production' => 'boolean',
+        'purchase_has_isc' => 'boolean',
+        'subject_to_detraction' => 'boolean',
+        'calculate_quantity' => 'boolean',
+        'series_enabled' => 'boolean',
+        'has_plastic_bag_taxes' => 'boolean',
+        'has_igv' => 'boolean',
+        'has_isc' => 'boolean',
+        'is_set' => 'boolean',
     ];
 
     /**
@@ -293,7 +300,7 @@ class Item extends ModelTenant
     {
         return $this->belongsTo(SystemIscType::class, 'system_isc_type_id');
     }
-    
+
     /**
      * @return BelongsTo
      */
@@ -301,7 +308,7 @@ class Item extends ModelTenant
     {
         return $this->belongsTo(SystemIscType::class, 'purchase_system_isc_type_id');
     }
-    
+
     /**
      * @return HasMany
      */
@@ -973,7 +980,7 @@ class Item extends ModelTenant
             'percentage_isc' => $this->percentage_isc,
             'is_for_production'=>$this->isIsForProduction(),
             'subject_to_detraction' => $this->subject_to_detraction,
-            
+            'probado0' => '123456'
         ];
 
         // El nombre de producto, por defecto, sera la misma descripcion.
@@ -1159,7 +1166,7 @@ class Item extends ModelTenant
         ];
     }
 
-    
+
     /**
      * Obtener precio unitario entero o con decimales
      *
@@ -2111,7 +2118,7 @@ class Item extends ModelTenant
             ->distinct();
     }
 
-    
+
     /**
      * Almacenes asociados al producto
      *
@@ -2156,15 +2163,15 @@ class Item extends ModelTenant
             $query->where('stock', '>', $stockmin);
         });
     }
-    
+
 
     /**
-     * 
+     *
      * Obtener presentaciones
      *
-     * Usado en: 
+     * Usado en:
      * PosController
-     * 
+     *
      * @param  bool $search_item_by_barcode_presentation
      * @param  string $barcode_presentation
      * @return array
@@ -2175,12 +2182,12 @@ class Item extends ModelTenant
     }
 
     /**
-     * 
+     *
      * Filtrar por codigo de barra de presentacion
-     * 
-     * Usado en: 
+     *
+     * Usado en:
      * PosController
-     * 
+     *
      * @param Builder $query
      * @return Builder
      */
@@ -2192,12 +2199,12 @@ class Item extends ModelTenant
     }
 
     /**
-     * 
+     *
      * Filtrar por codigo de barra de presentacion
-     * 
-     * Usado en: 
+     *
+     * Usado en:
      * SearchItemController
-     * 
+     *
      * @param Builder $query
      * @return Builder
      */
@@ -2210,12 +2217,12 @@ class Item extends ModelTenant
 
 
     /**
-     * 
+     *
      * Filtro para no incluir relaciones en consulta
      *
      * @param Builder $query
      * @return Builder
-     */  
+     */
     public function scopeWhereFilterWithOutRelations($query)
     {
         return $query->withOut(['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags']);
@@ -2223,43 +2230,43 @@ class Item extends ModelTenant
 
 
     /**
-     * 
+     *
      * Filtro para consulta al actualizar precios
-     * 
+     *
      * Usado en:
      * ItemUpdatePriceImport
      *
      * @param Builder $query
      * @param  string $internal_id
      * @return Builder
-     */  
+     */
     public function scopeWhereFilterUpdatePrices($query, $internal_id)
     {
         return $query->whereFilterWithOutRelations()->where('internal_id', $internal_id)->select('id', 'internal_id', 'sale_unit_price', 'purchase_unit_price');
     }
 
-    
+
     /**
-     * 
+     *
      * Filtro avanzado para busqueda
      * Usado en:
      * ItemController - records
      * Modules\Inventory\Http\Controllers\ItemController - advancedItemsSearch
      * Modules\Inventory\Http\Controllers\InventoryController - records
-     * 
+     *
      * @param Builder $query
      * @param  string $column
      * @param  string $value
      * @return Builder
-     * 
-     */  
+     *
+     */
     public function scopeWhereAdvancedRecordsSearch($query, $column, $value)
     {
         $search_values = $this->getSearchValues($value);
 
         return $query->where(function($q) use($search_values, $column){
 
-            foreach ($search_values as $search_value) 
+            foreach ($search_values as $search_value)
             {
                 $q->where($column, 'like', "%{$search_value}%");
             }
@@ -2267,9 +2274,9 @@ class Item extends ModelTenant
         });
     }
 
-    
+
     /**
-     * 
+     *
      * Filtro para busqueda avanzada de items en reporte kardex
      *
      * @param  Builder $query
@@ -2279,15 +2286,15 @@ class Item extends ModelTenant
     {
         return $query->whereNotIsSet()->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']]);
     }
-    
+
 
     /**
-     * 
+     *
      * Datos del item para busqueda avanzada
-     * 
+     *
      * Usado en:
      * Modules\Inventory\Http\Controllers\ItemController
-     * 
+     *
      * @return array
      */
     public function getRowResourceAdvancedSearch()
@@ -2303,9 +2310,9 @@ class Item extends ModelTenant
         ];
     }
 
-    
+
     /**
-     * 
+     *
      * Descripcion del item para busqueda avanzada
      *
      * @return string

@@ -45,14 +45,15 @@
 
         public $incrementing = false;
         protected $table = "cat_identity_document_types";
-        protected $casts = [
-            'active' => 'bool'
-        ];
 
         protected $fillable = [
             'id',
             'active',
             'description'
+        ];
+
+        protected $casts = [
+            'active' => 'boolean'
         ];
 
         /**
