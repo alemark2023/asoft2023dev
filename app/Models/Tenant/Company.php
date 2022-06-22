@@ -38,6 +38,9 @@ class Company extends ModelTenant
         'url_send_cdr_pse',
         'url_signature_pse',
         'client_id_pse',
+        'password_pse',
+        'url_login_pse',
+        'user_pse',
 
     ];
 

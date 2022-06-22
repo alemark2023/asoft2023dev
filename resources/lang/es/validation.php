@@ -317,6 +317,9 @@ return [
 		'name_yape' => 'nombres y apellidos',
 		'telephone_yape' => 'teléfono',
 		'payment' => 'monto',
+		'password_pse' => 'contraseña autenticación',
+		'url_login_pse' => 'url autenticación',
+		'user_pse' => 'usuario autenticación',
 
 
 	],
