@@ -31,6 +31,9 @@ use App\Models\Tenant\Warehouse;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\MobileApp\Models\AppConfiguration;
+use Modules\Item\Models\{
+    Category
+};
 
 
 class MobileController extends Controller
@@ -161,7 +164,11 @@ class MobileController extends Controller
 
         return [
             'success' => true,
-            'data' => array('items' => $items, 'affectation_types' => $affectation_igv_types)
+            'data' => [
+                'items' => $items, 
+                'affectation_types' => $affectation_igv_types, 
+                'categories' => Category::filterForTables()->get()
+            ]
         ];
 
     }

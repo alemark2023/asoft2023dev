@@ -2356,6 +2356,7 @@ class Item extends ModelTenant
             'image_url' => $this->getImageUrl(),
             'purchase_affectation_igv_type_id' => $this->purchase_affectation_igv_type_id,
             'purchase_unit_price' => $this->purchase_unit_price,
+            'category_id' => $this->category_id,
             'active' => (bool) $this->active,
 
         ];
