@@ -25,16 +25,35 @@ class DownloadController extends Controller
      * @param  string $format
      * @return string
      */
-    public function documentPrintPdf($model, $external_id, $format) 
+    public function documentPrintPdf($model, $external_id, $format, $size_width = null) 
     {
         $model = "App\\Models\\Tenant\\".ucfirst($model);
         $document = $model::where('external_id', $external_id)->first();
 
         if (!$document) throw new Exception("El código {$external_id} es inválido, no se encontro documento relacionado");
 
+        $html = $this->getHtmlPdf($document, 'invoice', $format);
+        
+        // $start = strpos($html, '<style>');
+        // $end = strlen('<style>');
+
+        // $string_init = substr($html, $start, $end);
+        // $string_end = substr($html, $end);
+
+        
+        if($size_width)
+        {
+            $replace_size = "<style> @media print { .page, .page-content, html, body, .framework7-root, .views, .view { height: auto !important; width: 78mm !important;}}";
+    
+            $new = str_replace('<style>', $replace_size, $html);
+            // dd($new);
+
+            return $new;
+        }
+
         return $this->getHtmlPdf($document, 'invoice', $format);
     }
-    
+
 
     /**
      * Reload Ticket
