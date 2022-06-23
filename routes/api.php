@@ -5,7 +5,6 @@ if ($hostname) {
     Route::domain($hostname->fqdn)->group(function () {
 
         Route::post('login', 'Tenant\Api\MobileController@login');
-        Route::get('printticket/{model}/{external_id}/{format?}', 'Tenant\DownloadController@toTicket');
 
         Route::middleware(['auth:api', 'locked.tenant'])->group(function () {
             //MOBILE
