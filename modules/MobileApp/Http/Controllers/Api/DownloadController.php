@@ -34,24 +34,16 @@ class DownloadController extends Controller
 
         $html = $this->getHtmlPdf($document, 'invoice', $format);
         
-        // $start = strpos($html, '<style>');
-        // $end = strlen('<style>');
-
-        // $string_init = substr($html, $start, $end);
-        // $string_end = substr($html, $end);
-
-        
+        // se reemplaza ancho para impresion desde app
         if($size_width)
         {
-            $replace_size = "<style> @media print { .page, .page-content, html, body, .framework7-root, .views, .view { height: auto !important; width: 78mm !important;}}";
+            $search_key = '<style>';
+            $replace_size = "{$search_key} @media print { .page, .page-content, html, body, .framework7-root, .views, .view { width: {$size_width}mm !important;}}";
     
-            $new = str_replace('<style>', $replace_size, $html);
-            // dd($new);
-
-            return $new;
+            return str_replace($search_key, $replace_size, $html);
         }
 
-        return $this->getHtmlPdf($document, 'invoice', $format);
+        return $html;
     }
 
 
