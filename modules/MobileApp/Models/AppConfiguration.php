@@ -9,6 +9,7 @@ class AppConfiguration extends ModelTenant
 
     protected $fillable = [
         'show_image_item',
+        'print_format_pdf',
     ];
 
     protected $casts = [
@@ -20,6 +21,7 @@ class AppConfiguration extends ModelTenant
         return [
             'id' => $this->id,
             'show_image_item' => $this->show_image_item,
+            'print_format_pdf' => $this->print_format_pdf,
         ];
     }
 
