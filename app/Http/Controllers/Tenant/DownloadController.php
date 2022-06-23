@@ -100,7 +100,7 @@ class DownloadController extends Controller
 
     public function toTicket($model, $external_id, $format = null) {
         $model = "App\\Models\\Tenant\\".ucfirst($model);
-        $document = $model::where('id', $external_id)->first();
+        $document = $model::where('external_id', $external_id)->first();
 
         if (!$document) throw new Exception("El código {$external_id} es inválido, no se encontro documento relacionado");
 
