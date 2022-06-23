@@ -8,7 +8,7 @@ if ($hostname)
 
         Route::middleware(['auth:api', 'locked.tenant'])->group(function () {
 
-            Route::get('document-print-pdf/{model}/{external_id}/{format}/{size_width?}', 'Api\DownloadController@documentPrintPdf');
+            Route::get('document-print-pdf/{model}/{external_id}/{format}', 'Api\DownloadController@documentPrintPdf');
 
             Route::get('categories-records', 'Api\CategoryController@records');
             Route::get('brands-records', 'Api\BrandController@records');

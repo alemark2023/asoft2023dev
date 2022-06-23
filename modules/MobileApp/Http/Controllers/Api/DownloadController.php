@@ -25,7 +25,7 @@ class DownloadController extends Controller
      * @param  string $format
      * @return string
      */
-    public function documentPrintPdf($model, $external_id, $format, $size_width = null) 
+    public function documentPrintPdf($model, $external_id, $format) 
     {
         $model = "App\\Models\\Tenant\\".ucfirst($model);
         $document = $model::where('external_id', $external_id)->first();
@@ -33,8 +33,10 @@ class DownloadController extends Controller
         if (!$document) throw new Exception("El código {$external_id} es inválido, no se encontro documento relacionado");
 
         $html = $this->getHtmlPdf($document, 'invoice', $format);
-        
-        // se reemplaza ancho para impresion desde app
+
+        // se reemplaza ancho para impresion desde app para tickets
+        $size_width = $this->getSizeWidth($format);
+
         if($size_width)
         {
             $search_key = '<style>';
@@ -44,6 +46,35 @@ class DownloadController extends Controller
         }
 
         return $html;
+    }
+    
+
+    /**
+     * 
+     * Obtener medida del formato ticket para asignar el valor a la impresión
+     *
+     * @param  string $format
+     * @return float
+     */
+    public function getSizeWidth($format)
+    {
+        $size_width = null;
+
+        switch ($format) {
+            case 'ticket_50':
+                $size_width = 45;
+                break;
+            
+            case 'ticket_58':
+                $size_width = 56;
+                break;
+
+            case 'ticket':
+                $size_width = 78;
+                break;
+        }
+
+        return $size_width;
     }
 
 
