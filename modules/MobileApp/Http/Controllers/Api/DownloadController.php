@@ -38,7 +38,7 @@ class DownloadController extends Controller
         if($size_width)
         {
             $search_key = '<style>';
-            $replace_size = "{$search_key} @media print { .page, .page-content, html, body, .framework7-root, .views, .view { width: {$size_width}mm !important;}}";
+            $replace_size = "{$search_key} @media print { .page, .page-content, html, body, .framework7-root, .views, .view { height: auto !important; width: {$size_width}mm !important;}}";
     
             return str_replace($search_key, $replace_size, $html);
         }
