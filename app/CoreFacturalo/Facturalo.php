@@ -657,7 +657,22 @@ class Facturalo
             $ticket_html = file_get_contents($path_html);
             $pdf->WriteHTML($ticket_html, HTMLParserMode::HEADER_CSS);
             $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
-            return "<style>".$ticket_html.$stylesheet."</style>".$html;
+            return "<style>".$ticket_html.$stylesheet."@media print {
+                .page, .page-content, html, body, .framework7-root, .views, .view {
+                    height: auto !important;
+                    width: 80px !important;
+                }
+
+                html, body, .framework7-root, .views, .view {
+                    overflow: visible !important;
+                    overflow-x: visible !important;
+                }
+
+                .page.page-previous {
+                    display: none;
+                }
+            }
+            </style>".$html;
         }
         else {
             $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
