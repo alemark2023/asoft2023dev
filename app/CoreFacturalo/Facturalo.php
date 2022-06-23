@@ -660,17 +660,9 @@ class Facturalo
             return "<style>".$ticket_html.$stylesheet."@media print {
                 .page, .page-content, html, body, .framework7-root, .views, .view {
                     height: auto !important;
-                    width: 80px !important;
+                    width: 78mm !important;
                 }
 
-                html, body, .framework7-root, .views, .view {
-                    overflow: visible !important;
-                    overflow-x: visible !important;
-                }
-
-                .page.page-previous {
-                    display: none;
-                }
             }
             </style>".$html;
         }
