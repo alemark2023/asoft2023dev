@@ -633,6 +633,7 @@
                 'created_at' => $this->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
                 'print_a4' => url('') . "/order-notes/print/{$this->external_id}/a4",
+                'filename' => $this->filename,
             ];
         }
 

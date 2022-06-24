@@ -753,6 +753,7 @@
                 'customer_email' => $customer_email,
                 'customer_telephone' => optional($this->person)->telephone,
                 'seller' => $this->seller,
+                'filename' => $this->filename,
                 'seller_name'                     => ((int)$this->seller_id !=0)?$this->seller->name:'',
 // 'number' => $this->number,
             ];
