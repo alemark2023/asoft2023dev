@@ -174,17 +174,14 @@ class MobileController extends Controller
     }
 
 
-    public function getSeries(){
+    public function getSeries()
+    {
 
         return Series::where('establishment_id', auth()->user()->establishment_id)
                     ->whereIn('document_type_id', ['01', '03'])
                     ->get()
                     ->transform(function($row) {
-                        return [
-                            'id' => $row->id,
-                            'document_type_id' => $row->document_type_id,
-                            'number' => $row->number
-                        ];
+                        return $row->getApiRowResource();
                     });
 
     }

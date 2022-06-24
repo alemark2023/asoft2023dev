@@ -46,7 +46,7 @@ class SaleNoteController extends Controller
 
     public function lists()
     {
-        $record = SaleNote::orderBy('series', 'desc')->orderBy('number', 'desc')->take(50)->get();
+        $record = SaleNote::latest()->take(50)->get();
         $records = new SaleNoteCollection($record);
 
         return $records;
@@ -454,11 +454,7 @@ class SaleNoteController extends Controller
                     ->where('document_type_id', '80')
                     ->get()
                     ->transform(function ($row) {
-                        return [
-                            'id'               => $row->id,
-                            'document_type_id' => $row->document_type_id,
-                            'number'           => $row->number
-                        ];
+                        return $row->getApiRowResource();
                     });
     }
 

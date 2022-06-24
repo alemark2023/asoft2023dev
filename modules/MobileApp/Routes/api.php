@@ -38,6 +38,19 @@ if ($hostname)
                 Route::post('validate-document', 'Api\ValidateDocumentController@validateDocument');
             });
 
+
+            Route::prefix('persons')->group(function () {
+
+                Route::get('{type}/records', 'Api\PersonController@records');
+                Route::get('default-customer', 'Api\PersonController@getDefaultCustomer');
+                Route::get('change-enabled/{id}/{enabled}', 'Api\PersonController@changeEnabled');
+                Route::delete('{id}', 'Api\PersonController@destroy');
+                Route::get('record/{id}', 'Api\PersonController@record');
+                Route::post('update', 'Api\PersonController@update');
+
+            });
+
+
         }); 
     });
 } 
