@@ -566,6 +566,7 @@ class Purchase extends ModelTenant
                 ];
             }),
             'print_a4'                       => url('')."/purchases/print/{$this->external_id}/a4",
+            'filename'                         => $this->filename,
         ];
     }
 
