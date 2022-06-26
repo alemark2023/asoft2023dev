@@ -50,6 +50,19 @@ if ($hostname)
 
             });
 
+            Route::prefix('cash')->group(function () {
+
+                Route::get('records', 'Api\CashController@records');
+                Route::get('check-open-cash', 'Api\CashController@checkOpenCash');
+                Route::get('record/{id}', 'Api\CashController@record');
+                Route::delete('{id}', 'Api\CashController@destroy');
+                Route::post('', 'Api\CashController@store');
+                Route::get('close/{cash}', 'Api\CashController@close');
+                Route::post('email', 'Api\CashController@email');
+
+                // Route::get('change-enabled/{id}/{enabled}', 'Api\PersonController@changeEnabled');
+
+            });
 
         }); 
     });

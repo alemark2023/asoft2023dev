@@ -193,4 +193,64 @@ class Cash extends ModelTenant
     }
 
 
+    /**
+     * 
+     * Filtrar cajas del usuario que realiza la petición
+     * 
+     * Usado en:
+     * caja - app
+     *
+     * @param  Builder $query
+     * @param  string $input
+     * @return Builder
+     */
+    public function scopeWhereFilterRecordsApi($query, $input)
+    {
+
+        return $query->where(function($q) use($input){
+                        $q->where('income', 'like', "%{$input}%" )
+                            ->orWhere('reference_number','like', "%{$input}%");
+                    })
+                    ->where('user_id', auth()->id())
+                    ->latest();
+    }
+
+        
+    /**
+     * 
+     * Obtener datos para api (app)
+     *
+     * @return array
+     */
+    public function getApiRowResource()
+    {
+        return [
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'user_name' => $this->user->name,
+            'date_opening' => $this->date_opening,
+            'time_opening' => $this->time_opening,
+            'opening' => "{$this->date_opening} {$this->time_opening}",
+            'date_closed' => $this->date_closed,
+            'time_closed' => $this->time_closed, 
+            'closed' => !$this->state ? "{$this->date_closed} {$this->time_closed}" : null,
+            'beginning_balance' => (float) $this->beginning_balance,
+            'final_balance' => (float) $this->final_balance,
+            'income' => (float) $this->income,
+            'state' => (bool) $this->state, 
+            'state_description' => $this->state_description,
+            'reference_number' => $this->reference_number,
+        ];
+    }
+
+    
+    /**
+     * 
+     * @return string
+     */
+    public function getStateDescriptionAttribute()
+    {
+        return ($this->state) ? 'Aperturada':'Cerrada';
+    }
+
 }

@@ -17,6 +17,16 @@ use Mpdf\Mpdf;
 
 class CashController extends Controller
 {
+    
+    /**
+     * 
+     * Usado en:
+     * CashController - App
+     *
+     * @param  Request $request
+     * @return array
+     * 
+     */
     public function email(Request $request) {
         $request->validate(
             ['email' => 'required']

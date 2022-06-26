@@ -320,6 +320,7 @@ return [
 		'password_pse' => 'contraseña autenticación',
 		'url_login_pse' => 'url autenticación',
 		'user_pse' => 'usuario autenticación',
+		'beginning_balance' => 'saldo inicial',
 
 
 	],
