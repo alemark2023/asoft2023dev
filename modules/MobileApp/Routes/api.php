@@ -60,6 +60,12 @@ if ($hostname)
                 Route::get('close/{cash}', 'Api\CashController@close');
                 Route::post('email', 'Api\CashController@email');
 
+                Route::get('general-report/{cash}/{format?}', 'Api\CashController@generalReport');
+                Route::get('product-report/{cash}', 'Api\CashController@productReport');
+                Route::get('income-egress-report/{cash}', 'Api\CashController@incomeEgressReport');
+                Route::get('income-summary-report/{cash}', 'Api\CashController@incomeSummaryReport');
+
+
                 // Route::get('change-enabled/{id}/{enabled}', 'Api\PersonController@changeEnabled');
 
             });

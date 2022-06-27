@@ -11,8 +11,9 @@ use Modules\MobileApp\Http\Resources\Api\{
 	CashResource,
 };
 use App\Http\Controllers\Tenant\CashController as CashControllerWeb;
-use App\Http\Requests\Tenant\CashRequest;
 use Modules\Pos\Http\Controllers\CashController as CashControllerWebPos;
+use Modules\Report\Http\Controllers\ReportIncomeSummaryController;
+use App\Http\Requests\Tenant\CashRequest;
 
 
 class CashController extends Controller
@@ -109,6 +110,7 @@ class CashController extends Controller
         
     /**
      * 
+     * Envio de email
      *
      * @param  Request $request
      * @return array
@@ -122,4 +124,63 @@ class CashController extends Controller
         return app(CashControllerWebPos::class)->email($request);
     }
 
+    
+    /**
+     * 
+     * Reporte general de caja, usa método del proceso por web
+     *
+     * @param  int $id
+     * @param  string $format
+     * @return mixed
+     */
+    public function generalReport($id, $format = 'a4')
+    {
+        
+        if($format == 'ticket')
+        {
+            return app(CashControllerWebPos::class)->reportTicket($id, 80);
+        }
+
+        return app(CashControllerWebPos::class)->reportA4($id);
+    }
+
+
+    /**
+     * 
+     * Reporte de productos
+     *
+     * @param  int $id
+     * @return mixed
+     */
+    public function productReport($id)
+    {
+        return app(CashControllerWeb::class)->report_products($id);
+    }
+
+    
+    /**
+     * 
+     * Reporte de ingresos y egresos en efectivo con destino caja
+     *
+     * @param  int $id
+     * @return mixed
+     */
+    public function incomeEgressReport($id)
+    {
+        return app(CashControllerWebPos::class)->reportCashIncomeEgress($id);
+    }
+
+
+    /**
+     * 
+     * Reporte de ingresos 
+     *
+     * @param  int $id
+     * @return mixed
+     */
+    public function incomeSummaryReport($id)
+    {
+        return app(ReportIncomeSummaryController::class)->pdf($id);
+    }
+    
 }

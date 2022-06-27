@@ -420,7 +420,17 @@ class CashController extends Controller
         return $pdf->download($filename.'.pdf');
 
     }
+    
 
+    /**
+     * 
+     * Usado en:
+     * CashController - App
+     *
+     * @param  int $id
+     * @param  bool $is_garage
+     * @return mixed
+     */
     public function report_products($id, $is_garage = false)
     {
 
