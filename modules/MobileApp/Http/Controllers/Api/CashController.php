@@ -183,4 +183,25 @@ class CashController extends Controller
         return app(ReportIncomeSummaryController::class)->pdf($id);
     }
     
+
+    /**
+     * 
+     * Asociar documento a caja
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function storeCashDocument(Request $request)
+    {
+
+        $request->validate([
+            'document_id' => 'required_if:sale_note_id, ""',
+            'sale_note_id' => 'required_if:document_id, ""',
+        ]);
+
+        return app(CashControllerWeb::class)->cash_document($request);
+
+    }
+
+    
 }

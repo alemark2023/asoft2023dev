@@ -268,6 +268,10 @@ class CashController extends Controller
     }
 
     /**
+     * 
+     * Usado en:
+     * CashController - App
+     * 
      * @param \Illuminate\Http\Request $request
      *
      * @return array
