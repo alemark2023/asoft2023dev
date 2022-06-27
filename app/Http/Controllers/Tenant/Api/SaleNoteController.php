@@ -113,6 +113,8 @@ class SaleNoteController extends Controller
                 'id'     => $this->sale_note->id,
                 'number' => $this->sale_note->number_full,
                 'external_id' => $this->sale_note->external_id,
+                'filename' => $this->sale_note->filename,
+                'print_ticket' => $this->sale_note->getUrlPrintPdf('ticket'),
             ],
         ];
     }

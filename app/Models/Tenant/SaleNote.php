@@ -1389,4 +1389,17 @@
         }
 
         
+        /**
+         * 
+         * Obtener url para impresión
+         *
+         * @param  string $format
+         * @return string
+         */
+        public function getUrlPrintPdf($format = "a4")
+        {
+            return url("sale-notes/print/{$this->external_id}/{$format}");
+        }
+
+        
     }
