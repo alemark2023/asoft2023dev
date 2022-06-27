@@ -66,9 +66,12 @@ if ($hostname)
                 Route::get('income-summary-report/{cash}', 'Api\CashController@incomeSummaryReport');
 
                 Route::post('store-cash-document', 'Api\CashController@storeCashDocument');
+ 
+            });
 
-                // Route::get('change-enabled/{id}/{enabled}', 'Api\PersonController@changeEnabled');
-
+            
+            Route::prefix('reports')->group(function () {
+                Route::post('general-sale', 'Api\ReportController@reportGeneralSale');
             });
 
         }); 
