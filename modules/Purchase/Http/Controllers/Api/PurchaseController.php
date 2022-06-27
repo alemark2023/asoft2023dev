@@ -152,6 +152,8 @@ class PurchaseController extends Controller
                 'id' => $purchase->id,
                 'number_full' => "{$purchase->series}-{$purchase->number}",
                 'external_id' => $purchase->external_id,
+                'filename' => $purchase->filename,
+                'print_a4' => $purchase->getUrlPrintPdf(),
             ],
         ];
     }

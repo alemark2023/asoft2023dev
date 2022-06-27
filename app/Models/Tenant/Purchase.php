@@ -749,5 +749,18 @@ class Purchase extends ModelTenant
         return in_array($this->state_type_id, self::VOIDED_REJECTED_IDS);
     }
 
+        
+    /**
+     * 
+     * Obtener url para impresión
+     *
+     * @param  string $format
+     * @return string
+     */
+    public function getUrlPrintPdf($format = "a4")
+    {
+        return url("purchases/print/{$this->external_id}/{$format}");
+    }
+        
 
 }

@@ -249,7 +249,8 @@ class SaleNoteController extends Controller
 
     private function setFilename()
     {
-        $name = [$this->sale_note->prefix, $this->sale_note->id, date('Ymd')];
+        $name = [$this->sale_note->series, $this->sale_note->number, date('Ymd')];
+        // $name = [$this->sale_note->prefix, $this->sale_note->id, date('Ymd')];
         $this->sale_note->filename = join('-', $name);
         $this->sale_note->unique_filename = $this->sale_note->filename; //campo único para evitar duplicados
         $this->sale_note->save();
