@@ -44,9 +44,17 @@ class SaleNoteController extends Controller
 
     protected $company;
 
-    public function lists()
+    public function lists(Request $request)
     {
-        $record = SaleNote::latest()->take(50)->get();
+
+        $record = SaleNote::where(function($q) use($request){
+                                $q->where('series', 'like', "%{$request->input}%" )
+                                    ->orWhere('number','like', "%{$request->input}%");
+                            })
+                            ->latest()
+                            ->take(config('tenant.items_per_page'))
+                            ->get();
+
         $records = new SaleNoteCollection($record);
 
         return $records;
