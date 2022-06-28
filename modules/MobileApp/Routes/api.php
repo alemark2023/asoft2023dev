@@ -36,6 +36,7 @@ if ($hostname)
 
             Route::prefix('documents')->group(function () {
                 Route::post('validate-document', 'Api\ValidateDocumentController@validateDocument');
+                Route::get('notifications', 'Api\DocumentController@getNotifications');
             });
 
 

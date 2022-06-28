@@ -155,15 +155,21 @@ class DocumentController extends Controller
 
     public function lists($startDate = null, $endDate = null)
     {
-        if ($startDate == null) {
-            $record = Document::orderBy('date_of_issue', 'desc')
-                ->take(50)
-                ->get();
-        } else {
+
+        if ($startDate == null) 
+        {
+            $record = Document::whereTypeUser()
+                                ->orderBy('date_of_issue', 'desc')
+                                ->take(50)
+                                ->get();
+        }
+        else 
+        {
             $record = Document::whereBetween('date_of_issue', [$startDate, $endDate])
                 ->orderBy('date_of_issue', 'desc')
                 ->get();
         }
+
         $records = new DocumentCollection($record);
         return $records;
     }
