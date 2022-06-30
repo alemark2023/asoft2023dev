@@ -112,6 +112,8 @@
                 this.form = {
                     input_validate: null
                 }
+
+                this.is_available_delete = false
             },
             create(){
                 this.title = `Eliminar cliente`
