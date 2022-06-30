@@ -17,5 +17,9 @@ class Category extends ModelTenant
         return $this->hasMany(Item::class);
     }
  
+    public function scopeFilterForTables($query)
+    {
+        return $query->select('id', 'name')->orderBy('name');
+    }
 
 }

@@ -276,6 +276,22 @@ $string = var_export($header,true);
                 $row['item']['IdLoteSelected'] = isset($row['item']['IdLoteSelected']) ? $row['item']['IdLoteSelected'] : null;
             }
         }
-
+        
+        
+        /**
+         * 
+         * Retornar array para respuestas en peticiones
+         *
+         * @param  bool $success
+         * @param  string $message
+         * @return array
+         */
+        public function generalResponse($success, $message = null)
+        {
+            return [
+                'success' => $success,
+                'message' => $message,
+            ];
+        }
 
     }

@@ -17,6 +17,16 @@ use Mpdf\Mpdf;
 
 class CashController extends Controller
 {
+    
+    /**
+     * 
+     * Usado en:
+     * CashController - App
+     *
+     * @param  Request $request
+     * @return array
+     * 
+     */
     public function email(Request $request) {
         $request->validate(
             ['email' => 'required']
@@ -697,6 +707,9 @@ class CashController extends Controller
     /**
      * Reporte en Ticket formato cash_pdf_ticket
      *
+     * Usado en:
+     * CashController - App
+     * 
      * @param $cash
      * @param integer $mm
      *
@@ -715,6 +728,9 @@ class CashController extends Controller
     /**
      * Reporte en A4 formato cash_pdf_a4
      *
+     * Usado en:
+     * CashController - App
+     * 
      * @param $cash
      *
      * @return mixed
@@ -801,6 +817,9 @@ class CashController extends Controller
      * 
      * Generar reporte de ingresos y egresos por metodo de pago efectivo con destino caja
      *
+     * Usado en:
+     * CashController - App
+     * 
      * @param  int $cash
      */
     public function reportCashIncomeEgress($cash)

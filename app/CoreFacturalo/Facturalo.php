@@ -1141,7 +1141,8 @@ class Facturalo
                     "reference" => $row['reference'],
                     "payment_destination_id" => isset($row['payment_destination_id']) ? $row['payment_destination_id'] : null,
                     "change" => $change,
-                    "payment" => $payment
+                    "payment" => $payment,
+                    "payment_received" => isset($row['payment_received']) ? $row['payment_received'] : null,
                 ];
 
             });

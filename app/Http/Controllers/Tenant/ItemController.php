@@ -680,7 +680,17 @@ class ItemController extends Controller
         }
     }
 
-
+    
+    /**
+     * Eliminar item
+     * 
+     * Usado en:
+     * Modules\MobileApp\Http\Controllers\Api\ItemController
+     *
+     * @param  int $id
+     * @return array
+     * 
+     */
     public function destroy($id)
     {
         try {

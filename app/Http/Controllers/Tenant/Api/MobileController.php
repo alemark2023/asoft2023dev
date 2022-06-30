@@ -30,6 +30,11 @@ use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Warehouse;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Finance\Traits\FinanceTrait;
+use Modules\MobileApp\Models\AppConfiguration;
+use Modules\Item\Models\{
+    Category
+};
+
 
 class MobileController extends Controller
 {
@@ -56,10 +61,24 @@ class MobileController extends Controller
             'token' => $user->api_token,
             'restaurant_role_id' => $user->restaurant_role_id,
             'ruc' => $company->number,
-            'logo' => $company->logo
+            'logo' => $company->logo,
+            'app_configuration' => $this->getAppConfiguration(),
         ];
 
     }
+    
+
+    /**
+     * 
+     * Obtener configuracion para app
+     *
+     * @return array
+     */
+    public function getAppConfiguration()
+    {
+        return optional(AppConfiguration::first())->getRowResource();
+    }
+    
 
     public function customers()
     {
@@ -145,23 +164,24 @@ class MobileController extends Controller
 
         return [
             'success' => true,
-            'data' => array('items' => $items, 'affectation_types' => $affectation_igv_types)
+            'data' => [
+                'items' => $items, 
+                'affectation_types' => $affectation_igv_types, 
+                'categories' => Category::filterForTables()->get()
+            ]
         ];
 
     }
 
 
-    public function getSeries(){
+    public function getSeries()
+    {
 
         return Series::where('establishment_id', auth()->user()->establishment_id)
                     ->whereIn('document_type_id', ['01', '03'])
                     ->get()
                     ->transform(function($row) {
-                        return [
-                            'id' => $row->id,
-                            'document_type_id' => $row->document_type_id,
-                            'number' => $row->number
-                        ];
+                        return $row->getApiRowResource();
                     });
 
     }
@@ -268,6 +288,7 @@ class MobileController extends Controller
                 'currency_type_id' => $row->currency_type_id,
                 'internal_id' => $row->internal_id,
                 'item_code' => $row->item_code,
+                'barcode' => $row->barcode,
                 'currency_type_symbol' => $row->currency_type->symbol,
                 'sale_unit_price' => number_format( $row->sale_unit_price, 2),
                 'purchase_unit_price' => $row->purchase_unit_price,
@@ -320,12 +341,24 @@ class MobileController extends Controller
     {
         $establishment_id = auth()->user()->establishment_id;
         $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+        $search_by_barcode = $request->has('search_by_barcode') && (bool) $request->search_by_barcode;
+        $category_id = $request->category_id ?? null;
+        
+        $item_query = Item::query();
+        
+        if($search_by_barcode)
+        {
+            $item_query->where('barcode', $request->input)->limit(1);
+        }
+        else
+        {
+            $item_query->where('description', 'like', "%{$request->input}%")->orWhere('internal_id', 'like', "%{$request->input}%");
+        }
 
-        $items = Item::where('description', 'like', "%{$request->input}%" )
-                    ->orWhere('internal_id', 'like', "%{$request->input}%")
-                    ->whereHasInternalId()
+        $items = $item_query->whereHasInternalId()
                     ->whereWarehouse()
                     // ->whereNotIsSet()
+                    ->filterByCategory($category_id)
                     ->whereIsActive()
                     ->orderBy('description')
                     ->get()

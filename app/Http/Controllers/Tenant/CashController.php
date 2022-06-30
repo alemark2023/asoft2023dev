@@ -93,21 +93,46 @@ class CashController extends Controller
 
         return compact('cash');
     }
-
+    
+    /**
+     * 
+     * Usado en:
+     * CashController - App
+     *
+     * @param  int $user_id
+     * @return array
+     */
     public function opening_cash_check($user_id)
     {
         $cash = Cash::where([['user_id', $user_id],['state', true]])->first();
         return compact('cash');
     }
 
-
+    
+    /**
+     * 
+     * Usado en:
+     * CashController - App
+     *
+     * @param  int $id
+     * @return array
+     */
     public function record($id)
     {
         $record = new CashResource(Cash::findOrFail($id));
 
         return $record;
     }
-
+    
+    
+    /**
+     * 
+     * Usado en:
+     * CashController - App
+     *
+     * @param  CashRequest $request
+     * @return array
+     */
     public function store(CashRequest $request) {
 
         $id = $request->input('id');
@@ -156,7 +181,15 @@ class CashController extends Controller
 
     }
 
-
+    
+    /**
+     * 
+     * Usado en:
+     * CashController - App
+     *
+     * @param  int $id
+     * @return array
+     */
     public function close($id) {
 
         $cash = Cash::findOrFail($id);
@@ -235,6 +268,10 @@ class CashController extends Controller
     }
 
     /**
+     * 
+     * Usado en:
+     * CashController - App
+     * 
      * @param \Illuminate\Http\Request $request
      *
      * @return array
@@ -301,7 +338,15 @@ class CashController extends Controller
         ];
     }
 
-
+    
+    /**
+     * 
+     * Usado en:
+     * CashController - App
+     *
+     * @param  int $id
+     * @return array
+     */
     public function destroy($id)
     {
 
@@ -379,7 +424,17 @@ class CashController extends Controller
         return $pdf->download($filename.'.pdf');
 
     }
+    
 
+    /**
+     * 
+     * Usado en:
+     * CashController - App
+     *
+     * @param  int $id
+     * @param  bool $is_garage
+     * @return mixed
+     */
     public function report_products($id, $is_garage = false)
     {
 

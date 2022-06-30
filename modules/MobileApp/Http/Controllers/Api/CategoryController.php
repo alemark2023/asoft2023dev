@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Item\Http\Controllers\Api;
+namespace Modules\MobileApp\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
