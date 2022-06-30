@@ -418,7 +418,7 @@
                                         v-if="deletePermission == true"
                                         class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
                                         type="button"
-                                        @click.prevent="clickDelete(row.id)"
+                                        @click.prevent="clickDelete(row)"
                                     >Eliminar
                                     </button>
                                 </template>
@@ -467,6 +467,9 @@
 
         <account-status :clientId="recordId"
                         :showDialog.sync="showDialogAccountStatus"></account-status>
+
+        <client-delete :record="record"
+                        :showDialog.sync="showDialogDelete"></client-delete>
     </div>
 </template>
 
@@ -478,6 +481,7 @@ import {changeable} from "../../../mixins/changeable";
 import ChartLine from "./charts/Line";
 import ClientPayments from "./partials/payments.vue";
 import AccountStatus from "./partials/account_status.vue";
+import ClientDelete from "./partials/delete.vue";
 
 export default {
     mixins: [
@@ -495,7 +499,8 @@ export default {
         CompaniesForm,
         ChartLine,
         ClientPayments,
-        AccountStatus
+        AccountStatus,
+        ClientDelete
     },
     data() {
         return {
@@ -521,7 +526,9 @@ export default {
                         data: null
                     }
                 ]
-            }
+            },
+            showDialogDelete: false,
+            record: {}
         };
     },
     async mounted() {
@@ -655,10 +662,13 @@ export default {
         clickPassword(id) {
             this.change(`/${this.resource}/password/${id}`);
         },
-        clickDelete(id) {
-            this.destroy(`/${this.resource}/${id}`).then(() =>
-                this.$eventHub.$emit("reloadData")
-            );
+        clickDelete(record) {
+
+            this.record = record
+            this.showDialogDelete = true
+            // this.destroy(`/${this.resource}/${id}`).then(() =>
+            //     this.$eventHub.$emit("reloadData")
+            // );
         },
         clickEdit(recordId) {
             this.recordId = recordId;
