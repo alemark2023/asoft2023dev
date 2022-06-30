@@ -23,11 +23,15 @@ use App\Models\Tenant\Establishment;
 use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\Company;
 use Modules\Finance\Traits\FinanceTrait; 
+use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use Exception;
+
 
 class IncomeController extends Controller
 {
 
-    use FinanceTrait;
+    use FinanceTrait, StorageDocument;
 
     public function index()
     {
@@ -99,6 +103,9 @@ class IncomeController extends Controller
                 $this->createGlobalPayment($record_payment, $row);
             }
 
+            $this->setFilename($doc);
+            $this->createPdf($doc);
+
             return $doc;
         });
 
@@ -109,6 +116,34 @@ class IncomeController extends Controller
             ],
         ];
     }
+
+    
+    public function toPrint($external_id, $format = 'a4') 
+    {
+        $record = Income::where('external_id', $external_id)->first();
+
+        if (!$record) throw new Exception("El código {$external_id} es inválido, no se encontro el registro relacionado");
+
+        $this->createPdf($record, $format, $record->filename);
+
+        return GeneralPdfHelper::getPreviewTempPdf('income', $this->getStorage($record->filename, 'income'));
+    }
+
+
+    private function setFilename($income)
+    {
+        $income->filename = GeneralPdfHelper::getNumberIdFilename($income->number, $income->id);
+        $income->save();
+    }
+
+    
+    public function createPdf($income, $format_pdf = 'a4') 
+    {
+        $file_content = GeneralPdfHelper::getBasicPdf('income', $income, $format_pdf = 'a4');
+
+        $this->uploadStorage($income->filename, $file_content, 'income');
+    }
+
 
     public static function merge_inputs($inputs)
     {
