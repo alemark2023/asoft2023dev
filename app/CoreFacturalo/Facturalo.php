@@ -732,6 +732,10 @@ class Facturalo
                     $this->sendDocumentPse->throwException('Documento a anular no es factura o no fue enviado al PSE.');
                 }
             }
+            elseif($this->type === 'summary')
+            {
+                $send_to_pse = $this->document->getSendToPse($this->sendDocumentPse);
+            }
 
         }
 
@@ -917,8 +921,15 @@ class Facturalo
                 if($extService->getCustomStatusCode() === 0){
 
                     // if($this->document->summary_status_type_id === '1') {
-                    if(in_array($this->document->summary_status_type_id, ['1', '2'])) {
+                    if(in_array($this->document->summary_status_type_id, ['1', '2'])) 
+                    {
+                        
+                        //enviar cdr a pse
+                        $this->sendCdrToPse($res->getCdrZip(), $this->document);
+                        //enviar cdr a pse
+
                         $this->updateStateDocuments(self::ACCEPTED);
+
                     } else {
                         $this->updateStateDocuments(self::VOIDED);
                     }
