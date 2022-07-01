@@ -11,10 +11,17 @@ use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Company;
 
 
-
 class GeneralPdfHelper
 {
-
+    
+    /**
+     * 
+     * Retornar archivo temporal para vista previa
+     *
+     * @param  string $temp_folder
+     * @param  string $file_content
+     * @return mixed
+     */
     public static function getPreviewTempPdf($temp_folder, $file_content)
     {
         $temp = tempnam(sys_get_temp_dir(), $temp_folder);
@@ -24,7 +31,18 @@ class GeneralPdfHelper
         return response()->file($temp);
     }
 
-
+    
+    /**
+     * 
+     * Crear pdf general
+     * Disponible: A4
+     *
+     * @param  string $document_type
+     * @param  mixed $document
+     * @param  string $format_pdf
+     * @param  string $filename
+     * @return mixed
+     */
     public static function getBasicPdf($document_type, $document, $format_pdf = 'a4', $filename = null)
     {
         
@@ -87,10 +105,20 @@ class GeneralPdfHelper
 
     }
 
-
-    public static function getNumberIdFilename($number, $id)
+    
+    /**
+     * 
+     * Retornar nombre de archivo
+     *
+     * @param  int|string $number
+     * @param  int $id
+     * @return string
+     */
+    public static function getNumberIdFilename($id, $number = null)
     {
-        return join('-', [ $number, $id, date('Ymd') ]);
+        $data = $number ? [ $number, $id, date('Ymd') ] : [ $id, date('Ymd') ];
+
+        return join('-', $data);
     }
 
 }

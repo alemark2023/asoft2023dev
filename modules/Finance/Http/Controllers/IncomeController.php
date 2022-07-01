@@ -117,29 +117,55 @@ class IncomeController extends Controller
         ];
     }
 
-    
+        
+    /**
+     * 
+     * Imprimir ingreso
+     *
+     * @param  string $external_id
+     * @param  string $format
+     * @return mixed
+     */
     public function toPrint($external_id, $format = 'a4') 
     {
         $record = Income::where('external_id', $external_id)->first();
 
         if (!$record) throw new Exception("El código {$external_id} es inválido, no se encontro el registro relacionado");
 
+        // si no tienen nombre de archivo, se regulariza
+        if(!$record->filename) $this->setFilename($record);
+
         $this->createPdf($record, $format, $record->filename);
 
         return GeneralPdfHelper::getPreviewTempPdf('income', $this->getStorage($record->filename, 'income'));
     }
 
-
-    private function setFilename($income)
+    
+    /**
+     * 
+     * Asignar nombre de archivo
+     *
+     * @param  Income $income
+     * @return void
+     */
+    private function setFilename(Income $income)
     {
-        $income->filename = GeneralPdfHelper::getNumberIdFilename($income->number, $income->id);
+        $income->filename = GeneralPdfHelper::getNumberIdFilename($income->id, $income->number);
         $income->save();
     }
 
-    
-    public function createPdf($income, $format_pdf = 'a4') 
+        
+    /**
+     * 
+     * Crear pdf para ingresos
+     *
+     * @param  Income $income
+     * @param  string $format_pdf
+     * @return void
+     */
+    public function createPdf(Income $income, $format_pdf = 'a4') 
     {
-        $file_content = GeneralPdfHelper::getBasicPdf('income', $income, $format_pdf = 'a4');
+        $file_content = GeneralPdfHelper::getBasicPdf('income', $income, $format_pdf);
 
         $this->uploadStorage($income->filename, $file_content, 'income');
     }

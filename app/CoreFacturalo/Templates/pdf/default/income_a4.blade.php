@@ -72,7 +72,7 @@
 <table class="full-width mt-10 mb-10">
     <thead class="">
     <tr class="bg-grey">
-        <th class="border-top-bottom text-left py-2" width="5%">#</th>
+        <th class="border-top-bottom text-center py-2" width="5%">#</th>
         <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
         <th class="border-top-bottom text-right py-2" width="12%">TOTAL</th>
     </tr>
@@ -80,7 +80,7 @@
     <tbody>
     @foreach($document->items as $row)
         <tr>
-            <td class="text-left">
+            <td class="text-center">
                 {{ $loop->iteration }}
             </td>
             <td class="text-left">

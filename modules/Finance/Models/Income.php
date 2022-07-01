@@ -31,6 +31,7 @@ class Income extends ModelTenant
         'time_of_issue',
         'exchange_rate_sale',
         'total',
+        'filename',
     ];
 
     protected $casts = [

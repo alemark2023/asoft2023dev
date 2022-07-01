@@ -86,8 +86,11 @@ trait StorageDocument
                 break;
             case 'income':
                 $extension = 'pdf';
+            case 'expense':
+                $extension = 'pdf';
                 break;
         }
+
         $this->_filename = $filename.'.'.$extension;
         $this->_folder = ($root)?$root.DIRECTORY_SEPARATOR.$file_type:$file_type;
     }
