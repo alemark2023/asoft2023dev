@@ -661,6 +661,7 @@ class DocumentController extends Controller
           'success' => true,
           'data' => [
               'id' => $document->id,
+              'number_full' => $document->number_full,
               'response' =>$response
           ]
         ];

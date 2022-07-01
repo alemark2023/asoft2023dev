@@ -699,6 +699,7 @@ export default {
             itemLastPrice: null,
             search_item_by_barcode_presentation: false,
             showDialogHistorySales: false,
+            history_item_id: null
             //item_unit_type: {}
         }
     },

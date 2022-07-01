@@ -521,7 +521,8 @@ export default {
         'businessTurns', 
         'isPrint', 
         'globalDiscountTypeId', 
-        'enabledTipsPos'
+        'enabledTipsPos',
+        'hidePdfViewDocuments',
     ],
     data() {
         return {
@@ -1152,7 +1153,9 @@ export default {
                     }
 
                     this.documentNewId = response.data.data.id;
-                    this.showDialogOptions = true;
+                    
+                    // this.showDialogOptions = true;
+                    this.showOptionsDialog(response)
 
                     // this.savePaymentMethod();
                     this.saveCashDocument();
@@ -1177,6 +1180,22 @@ export default {
                 this.locked_submit = false
             });
         },
+        
+        showOptionsDialog(response){
+
+            if(this.hidePdfViewDocuments)
+            {
+                const response_data = response.data.data
+                this.$message.success(`Documento registrado: ${response_data.number_full}`)
+                this.clickCancel()
+            }
+            else
+            {
+                this.showDialogOptions = true
+            }
+            
+        },
+
         gethtml(){
             this.form.datahtml="";
             var doc='salenote';
@@ -1212,7 +1231,19 @@ export default {
                     options: opts
                 }
             ];
-            qz.print(configg, printData).catch(displayError);
+            // qz.print(configg, printData).catch(displayError);
+            
+            qz.print(configg, printData)
+                .then(()=>{
+                    
+                    this.$notify({
+                        title: '',
+                        message: 'Impresión en proceso...',
+                        type: 'success'
+                    })
+
+                })
+                .catch(displayError)
         },
         saveCashDocument() {
             this.$http.post(`/cash/cash_document`, this.form_cash_document)
