@@ -820,10 +820,43 @@
 
         }
 
+        
+        /**
+         * 
+         * Validar si el valor de confirmacion ingresado por el usuario es
+         * igual al ruc o nombre de la empresa, para poder eliminar el cliente
+         *
+         * @param  Client $client
+         * @param  string $input_validate
+         * @return array
+         */
+        public function checkInputValidateDelete(Client $client, $input_validate)
+        {
+            
+            if($input_validate === $client->name || $input_validate === $client->number)
+            {
+                return $this->generalResponse(true);
+            }
 
-        public function destroy($id)
+            return $this->generalResponse(false, 'El valor ingresado no coincide con el nombre o número de ruc de la empresa.');
+
+        }
+
+        
+        /**
+         * 
+         * Eliminar cliente
+         *
+         * @param  int $id
+         * @param  string $input_validate
+         * @return array
+         */
+        public function destroy($id, $input_validate)
         {
             $client = Client::find($id);
+
+            $check_input_validate_delete = $this->checkInputValidateDelete($client, $input_validate);
+            if(!$check_input_validate_delete['success']) return $check_input_validate_delete;
 
             if ($client->locked) {
                 return [
