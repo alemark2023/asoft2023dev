@@ -591,15 +591,18 @@ class ItemController extends Controller
         $item->update();
 
         // migracion desarrollo sin terminar #1401
-        $inventory_configuration = InventoryConfiguration::firstOrFail();
+        // $inventory_configuration = InventoryConfiguration::firstOrFail();
 
-        if($inventory_configuration->generate_internal_id == 1) {
-            if(!$item->internal_id) {
-                $items = Item::count();
-                $item->internal_id = (string)($items + 1);
-                $item->save();
-            }
-        }
+        // if($inventory_configuration->generate_internal_id == 1) {
+        //     if(!$item->internal_id) {
+        //         $items = Item::count();
+        //         $item->internal_id = (string)($items + 1);
+        //         $item->save();
+        //     }
+        // }
+
+        $this->generateInternalId($request, $item);
+        
         /********************************* SECCION PARA PRECIO POR ALMACENES ******************************************/
 
         // Precios por almacenes
@@ -653,6 +656,27 @@ class ItemController extends Controller
             'id' => $item->id
         ];
     }
+
+    
+    /**
+     * 
+     * Generar codigo interno de forma automatica
+     *
+     * @param  ItemRequest $request
+     * @param  Item $item
+     * @return void
+     */
+    private function generateInternalId(ItemRequest $request, Item &$item)
+    {
+        $inventory_configuration = InventoryConfiguration::select('generate_internal_id')->firstOrFail();
+
+        if($inventory_configuration->generate_internal_id && !$item->internal_id) 
+        {
+            $item->internal_id = str_pad($item->id, 5, '0', STR_PAD_LEFT);
+            $item->save();
+        }
+    }
+
 
 
     /**
