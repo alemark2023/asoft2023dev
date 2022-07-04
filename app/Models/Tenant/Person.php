@@ -130,6 +130,7 @@
             'trade_name',
             'internal_code',
             'country_id',
+            'nationality_id',
             'department_id',
             'province_id',
             'district_id',
@@ -233,6 +234,11 @@
         public function country()
         {
             return $this->belongsTo(Country::class);
+        }
+
+        public function nationality()
+        {
+            return $this->belongsTo(Country::class, 'nationality_id');
         }
 
         /**
@@ -568,6 +574,7 @@
                 'type' => $this->type,
                 'trade_name' => $this->trade_name,
                 'country_id' => $this->country_id,
+                'nationality_id' => $this->nationality_id,
                 'department_id' => $department['id']??null,
                 'department' => $department,
 
@@ -785,5 +792,74 @@
             return $query;
         }
 
+        
+        /**
+         * 
+         * Obtener datos para api (app)
+         *
+         * @return array
+         */
+        public function getApiRowResource()
+        {
+            return [
+                'id' => $this->id,
+                'description' => $this->getPersonDescription(),
+                'name' => $this->name,
+                'number' => $this->number,
+                'identity_document_type_id' => $this->identity_document_type_id,
+                'identity_document_type_code' => $this->identity_document_type->code,
+                'address' => $this->address,
+                'telephone' => $this->telephone,
+                'country_id' => $this->country_id,
+                'district_id' => $this->district_id,
+                'email' => $this->email,
+                'enabled' => $this->enabled,
+                'selected' => false,
+                'identity_document_type_description' => $this->identity_document_type->description,
+            ];
+        }
+        
+
+        /**
+         * 
+         * Descripción para mostrar en campos de búsqueda, etc
+         *
+         * @return string
+         */
+        public function getPersonDescription()
+        {
+            return "{$this->number} - {$this->name}";
+        }
+
+
+        /**
+         * 
+         * Filtro para búsqueda de clientes/proveedores
+         * 
+         * Usado en:
+         * clientes - app
+         *
+         * @param  Builder $query
+         * @param  string $input
+         * @param  string $type
+         * @return Builder
+         */
+        public function scopeWhereFilterRecordsApi($query, $input, $type)
+        {
+            return $query->where('name', 'like', "%{$input}%" )
+                        ->orWhere('number','like', "%{$input}%")
+                        ->whereType($type)
+                        ->orderBy('name');
+        }
+    
+
+        /**
+         * 
+         * @return string
+         */
+        public function getTitlePersonDescription()
+        {
+            return $this->type === 'customers' ? 'Cliente' : 'Proveedor';
+        }
 
     }

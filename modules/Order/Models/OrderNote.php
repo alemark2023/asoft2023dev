@@ -633,8 +633,24 @@
                 'created_at' => $this->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
                 'print_a4' => url('') . "/order-notes/print/{$this->external_id}/a4",
+                'filename' => $this->filename,
+                'print_ticket' => $this->getUrlPrintPdf('ticket'),
             ];
         }
+
+        
+        /**
+         * 
+         * Obtener url para impresión
+         *
+         * @param  string $format
+         * @return string
+         */
+        public function getUrlPrintPdf($format = "a4")
+        {
+            return url("order-notes/print/{$this->external_id}/{$format}");
+        }
+        
 
         /**
          * @return Dispatch[]|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|Collection|mixed

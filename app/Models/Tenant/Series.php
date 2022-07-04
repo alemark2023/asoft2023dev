@@ -154,4 +154,43 @@
 
         }
 
+        
+        /**
+         * 
+         * Validar y determinar serie por defecto para el usuario
+         *
+         * @return bool
+         */
+        public function getIsDefaultAttribute()
+        {
+            $is_default = false;
+            $user = auth()->user();
+            $default_series_id = $user->series_id;
+            $default_document_type_id = $user->document_id;
+
+            if($default_document_type_id === $this->document_type_id && $default_series_id === $this->id)
+            {
+                $is_default = true;
+            }
+
+            return $is_default;
+        }
+
+        
+        /**
+         * 
+         * Obtener datos para api (app)
+         *
+         * @return array
+         */
+        public function getApiRowResource()
+        {
+            return [
+                'id' => $this->id,
+                'document_type_id' => $this->document_type_id,
+                'number' => $this->number,
+                'is_default' => $this->is_default,
+            ];
+        }
+
     }

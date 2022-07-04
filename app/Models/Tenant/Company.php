@@ -38,6 +38,9 @@ class Company extends ModelTenant
         'url_send_cdr_pse',
         'url_signature_pse',
         'client_id_pse',
+        'password_pse',
+        'url_login_pse',
+        'user_pse',
 
     ];
 
@@ -103,4 +106,18 @@ class Company extends ModelTenant
         return Company::select('soap_type_id')->withOut(['identity_document_type'])->firstOrFail()->soap_type_id;
     }
 
+
+    /**
+     * 
+     * Obtener campo individual
+     *
+     * @param  Builder $query
+     * @param  string $column
+     * @return Builder
+     */
+    public function scopeGetRecordIndividualColumn($query, $column)
+    {
+        return $query->select($column)->firstOrFail()->{$column};
+    }
+        
 }

@@ -21,7 +21,15 @@ use App\Models\Tenant\Configuration;
 
 class ReportIncomeSummaryController extends Controller
 {
-      
+     
+    /**
+     * 
+     * Usado en:
+     * CashController - App
+     * 
+     * @param  int $cash_id
+     * 
+     */ 
     public function pdf($cash_id) {
 
         $company = Company::active();

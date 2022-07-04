@@ -479,6 +479,9 @@ class SaleNoteController extends Controller
         if($request->purchase_order) {
             $records->where('purchase_order', $request->purchase_order);
         }
+        if($request->license_plate) {
+            $records->where('license_plate', $request->license_plate);
+        }
         return $records;
     }
 

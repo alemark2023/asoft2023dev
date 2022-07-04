@@ -427,6 +427,9 @@
                 'data' => [
                     'id' => $this->order_note->id,
                     'external_id' => $this->order_note->external_id,
+                    'number_full' => $this->order_note->number_full,
+                    'filename' => $this->order_note->filename,
+                    'print_ticket' => $this->order_note->getUrlPrintPdf('ticket'),
                 ],
             ];
         }
