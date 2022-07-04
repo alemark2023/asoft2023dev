@@ -209,7 +209,8 @@ class InventoryKardex extends ModelTenant
                 $data['balance'] = $nv_balance;
                 // $data['balance'] = $balance += $qty;
                 $data['number'] = optional($inventory_kardexable)->number_full;
-                $data['type_transaction'] = "Nota de venta";
+                $data['type_transaction'] = ($qty < 0) ? "Nota de venta" : "Anulación Nota de venta";
+                // $data['type_transaction'] = "Nota de venta";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 break;
             case $models[3]:

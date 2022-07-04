@@ -5,6 +5,8 @@
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
     use Illuminate\Database\Eloquent\Model;
+    use Modules\Inventory\Models\Warehouse;
+
 
     /**
      * Class ModelTenant
@@ -133,6 +135,18 @@
         public function generalApplyNumberFormat($value, $decimals = 2)
         {
             return number_format($value, $decimals, ".", "");
+        }
+        
+        
+        /**
+         * 
+         * Obtener el id del almacen relacionado al establecimiento asignado al usuario
+         *
+         * @return int
+         */
+        public function getCurrentWarehouseId()
+        {
+            return Warehouse::select('id')->where('establishment_id', auth()->user()->establishment_id)->first()->id;
         }
         
 

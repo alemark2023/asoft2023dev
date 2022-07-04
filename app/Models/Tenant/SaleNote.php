@@ -626,6 +626,39 @@
             return $this->belongsTo(PaymentMethodType::class);
         }
 
+        
+        /**
+         * 
+         * Validar condicion para el boton edicion
+         *
+         * @param  int $total_documents
+         * @return bool
+         * 
+         */
+        public function getBtnGenerate($total_documents)
+        {
+            if($total_documents > 0)
+            {
+                $btn_generate = false;
+            }
+            else
+            {
+                // si proviene de un pedido o registro externo que afecta inventario se deshabilita la opcion editar
+                // si se habilita se deben controlar los movimientos que afectan a inventario
+                if($this->isGeneratedFromExternalRecord())
+                {
+                    $btn_generate = false;
+                }
+                else
+                {
+                    $btn_generate = true;
+                }
+            }
+
+            return $btn_generate;
+        }
+
+
         /**
          * @param Configuration|null $configuration
          *
@@ -649,7 +682,8 @@
             }
             $total_documents = $documents->count();
 
-            $btn_generate = ($total_documents > 0) ? false : true;
+            $btn_generate = $this->getBtnGenerate($total_documents);
+            // $btn_generate = ($total_documents > 0) ? false : true;
             $btn_payments = ($total_documents > 0) ? false : true;
             $due_date = ( !empty($this->due_date)) ? $this->due_date->format('Y-m-d') : null;
 

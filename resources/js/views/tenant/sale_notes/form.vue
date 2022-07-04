@@ -285,7 +285,7 @@
                                             </tr>
                                         </thead>
                                         <tbody v-if="form.items.length > 0">
-                                            <tr v-for="(row, index) in form.items">
+                                            <tr v-for="(row, index) in form.items" :key="index">
                                                 <td>{{ index + 1 }}</td>
                                                 <td>{{ row.item.description }} <template v-if="row.item.presentation">{{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}</template><br/><small>{{ row.affectation_igv_type.description }}</small></td>
                                                 <td class="text-center">{{ row.item.unit_type_id }}</td>
@@ -299,15 +299,23 @@
                                                 <td class="text-center">{{ currency_type.symbol }} {{ row.total }}</td>
                                                 <td class="text-center">
 
+                                                    <button class="btn waves-effect waves-light btn-xs btn-info"
+                                                            type="button"
+                                                            @click="clickEdiItem(row, index)">
+                                                        <span style='font-size:10px;'>&#9998;</span>
+                                                    </button>
+
                                                     <!-- <template v-if="row.id">
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteSNItem(row.id, index)">x</button>
                                                     </template> -->
-                                                    <template v-if="row.record_id">
+                                                    <!-- <template v-if="row.record_id">
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteSNItem(row.record_id, index)">x</button>
                                                     </template>
-                                                    <template v-else>
-                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
-                                                    </template>
+                                                    <template v-else> -->
+                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    <!-- </template> -->
 
                                                 </td>
                                             </tr>
@@ -327,7 +335,7 @@
                                         content="Presiona F2">
                                         <el-button slot="reference"
                                                    type="button" class="btn waves-effect waves-light btn-primary"
-                                                   @click.prevent="showDialogAddItem = true"
+                                                   @click.prevent="clickAddItem"
                                         >
                                             + Agregar Producto
                                             </el-button>
@@ -410,6 +418,7 @@
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
                            :configuration="config"
+                           :recordItem="recordItem"
                            @add="addRow"></sale-notes-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -527,6 +536,7 @@
                 total_discount_no_base: 0,
                 total_global_charge: 0,
                 global_charge_types: [],
+                recordItem: null
             }
         },
         async created() {
@@ -573,6 +583,16 @@
             ...mapActions([
                 'loadConfiguration',
             ]),
+            clickEdiItem(row, index) {
+                // console.log(row.item_id)
+                row.aux_index = index
+                this.recordItem = row
+                this.showDialogAddItem = true
+            },
+            clickAddItem() {
+                this.recordItem = null
+                this.showDialogAddItem = true
+            },
             changePaymentMethodType(index){
 
                 let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payments[index].payment_method_type_id})
@@ -627,51 +647,51 @@
                 this.series = _.filter(this.all_series, {'establishment_id': this.form.establishment_id, 'document_type_id': '80', 'contingency': this.is_contingency});
                 this.form.series_id = (this.series.length > 0)?this.series[0].id:null
             },
-            async clickDeleteSNItem(id, index){
+            // async clickDeleteSNItem(id, index){
 
-                this.$confirm('¿Desea eliminar el item?', 'Eliminar', {
-                    confirmButtonText: 'Eliminar',
-                    cancelButtonText: 'Cancelar',
-                    type: 'warning'
-                }).then(() => {
+            //     this.$confirm('¿Desea eliminar el item?', 'Eliminar', {
+            //         confirmButtonText: 'Eliminar',
+            //         cancelButtonText: 'Cancelar',
+            //         type: 'warning'
+            //     }).then(() => {
 
-                    this.$http.delete(`/${this.resource}/destroy_sale_note_item/${id}`)
-                        .then(res => {
+            //         this.$http.delete(`/${this.resource}/destroy_sale_note_item/${id}`)
+            //             .then(res => {
 
-                            this.clickRemoveItem(index)
-                            this.$eventHub.$emit('reloadDataItems', null)
+            //                 this.clickRemoveItem(index)
+            //                 this.$eventHub.$emit('reloadDataItems', null)
 
-                            this.$http.post(`/${this.resource}`, this.form).then(response => {
-                                if (response.data.success) {
-                                    this.isUpdate()
-                                }
-                                else {
-                                    this.$message.error(response.data.message);
-                                }
-                            }).catch(error => {
-                                if (error.response.status === 422) {
-                                    this.errors = error.response.data;
-                                }
-                                else {
-                                    this.$message.error(error.response.data.message);
-                                }
-                            })
+            //                 this.$http.post(`/${this.resource}`, this.form).then(response => {
+            //                     if (response.data.success) {
+            //                         this.isUpdate()
+            //                     }
+            //                     else {
+            //                         this.$message.error(response.data.message);
+            //                     }
+            //                 }).catch(error => {
+            //                     if (error.response.status === 422) {
+            //                         this.errors = error.response.data;
+            //                     }
+            //                     else {
+            //                         this.$message.error(error.response.data.message);
+            //                     }
+            //                 })
 
-                        })
-                        .catch(error => {
-                            if (error.response.status === 500) {
-                                this.$message.error('Error al intentar eliminar');
-                            } else {
-                                console.log(error.response.data.message)
-                            }
-                        })
+            //             })
+            //             .catch(error => {
+            //                 if (error.response.status === 500) {
+            //                     this.$message.error('Error al intentar eliminar');
+            //                 } else {
+            //                     console.log(error.response.data.message)
+            //                 }
+            //             })
 
 
-                }).catch(error => {
-                    console.log(error)
-                });
+            //     }).catch(error => {
+            //         console.log(error)
+            //     });
 
-            },
+            // },
             getFormatUnitPriceRow(unit_price){
                 return _.round(unit_price, 6)
                 // return unit_price.toFixed(6)
@@ -841,7 +861,17 @@
             },
             addRow(row) {
                 // this.form.items.push(row)
-                this.form.items.push(JSON.parse(JSON.stringify(row)));
+                
+                if (this.recordItem) 
+                {
+                    this.form.items[this.recordItem.aux_index] = row
+                    this.recordItem = null
+                } 
+                else 
+                {
+                    this.form.items.push(JSON.parse(JSON.stringify(row)));
+                }
+            
                 this.calculateTotal()
             },
             clickRemoveItem(index) {
