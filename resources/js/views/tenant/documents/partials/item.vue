@@ -208,7 +208,7 @@
                         <div :class="{'has-danger': errors.unit_price_value}"
                              class="form-group">
                             <label class="control-label">
-                                Precio Unitario 
+                                Precio Unitario
 
                                 <el-tooltip v-if="itemLastPrice" class="item" :content="itemLastPrice"
                                                 effect="dark"
@@ -236,7 +236,7 @@
                                         </template>
                                     </el-input>
                                 </template>
-                                
+
                             </template>
                             <template v-else>
 
@@ -699,6 +699,7 @@ export default {
             itemLastPrice: null,
             search_item_by_barcode_presentation: false,
             showDialogHistorySales: false,
+            history_item_id: null,
             //item_unit_type: {}
         }
     },
@@ -912,7 +913,7 @@ export default {
         },
         async searchRemoteItems(input) {
 
-            if (input.length > 2) 
+            if (input.length > 2)
             {
                 this.loading_search = true
                 const params = {
@@ -949,7 +950,7 @@ export default {
                     if (this.items.length == 1)
                     {
                         const item_unit_type = _.find(this.items[0].item_unit_types, { barcode : input})
-    
+
                         if(!_.isEmpty(item_unit_type))
                         {
                             this.form.item_id = this.items[0].id;
@@ -1345,14 +1346,14 @@ export default {
                 }
             }
 
-            
+
             //validar precio compra y venta
             if(this.configuration)
             {
                 if(this.configuration.validate_purchase_sale_unit_price)
                 {
                     let val_purchase_unit_price = parseFloat(this.form.item.purchase_unit_price)
-                    
+
                     if(val_purchase_unit_price > parseFloat(unit_price)){
                         return this.$message.error(`El precio de compra no puede ser superior al precio de venta (P. Compra: ${val_purchase_unit_price})`)
                     }
@@ -1681,11 +1682,11 @@ export default {
                         if(response.data.unit_price) {
                             this.itemLastPrice = `Último precio de venta: ${response.data.unit_price}`
                         }
-                        
+
                     })
                 }
             }
-           
+
         }
         ,
         clickHistorySales() {
