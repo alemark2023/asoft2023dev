@@ -1186,7 +1186,23 @@ export default {
             if(this.hidePdfViewDocuments)
             {
                 const response_data = response.data.data
-                this.$message.success(`Documento registrado: ${response_data.number_full}`)
+
+                if(this.form.document_type_id === '80')
+                {
+                    this.$message.success(`Nota de venta registrada: ${response_data.number_full}`)
+                }
+                else
+                {
+                    if(response_data.response.sent)
+                    {
+                        this.$message.success(response_data.response.description)
+                    }
+                    else
+                    {
+                        this.$message.success(`Comprobante registrado: ${response_data.number_full}`)
+                    }
+                }
+
                 this.clickCancel()
             }
             else
