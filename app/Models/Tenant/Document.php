@@ -141,6 +141,8 @@
         use UsesTenantConnection;
         use SellerIdTrait;
 
+        public const DOCUMENT_TYPE_TICKET = '03';
+
         protected $with = [
             'user',
             'soap_type',
@@ -252,6 +254,9 @@
 
             'sale_notes_relateds', //generar cpe desde multiples notas de venta
             'unique_filename', //registra nombre de archivo unico (campo validador para evitar duplicidad)
+
+            'ticket_single_shipment',
+
         ];
 
         protected $casts = [
@@ -261,6 +266,7 @@
             'enabled_concurrency' => 'bool',
             'apply_concurrency' => 'bool',
             'send_to_pse' => 'bool',
+            'ticket_single_shipment' => 'bool',
         ];
 
         public static function boot()
@@ -1358,5 +1364,39 @@
 
             return $total_payments;
         }
+
+        
+        /**
+         * 
+         * Filtrar documentos para generar resumen diario
+         * 
+         * @param Builder $query
+         * @param string $date_of_reference
+         * @param string $soap_type_id
+         * @return Builder
+         * 
+         */
+        public function scopeFilterDocumentsForSummary($query, $date_of_reference, $soap_type_id)
+        {
+            return $query->where('date_of_issue', $date_of_reference)
+                            ->where('soap_type_id', $soap_type_id)
+                            ->where('group_id', '02')
+                            ->where('state_type_id', '01')
+                            ->where('ticket_single_shipment', false)
+                            ->take(500);
+        }
+
+
+        /**
+         * 
+         * Validar si la boleta se envio de forma individual
+         * 
+         * @return bool
+         */
+        public function isSingleDocumentShipment()
+        {
+            return $this->document_type_id === self::DOCUMENT_TYPE_TICKET && $this->ticket_single_shipment;
+        }
+
         
     }

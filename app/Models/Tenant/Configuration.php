@@ -255,6 +255,7 @@
             'order_cash_income',
             'generate_order_note_from_quotation',
             'list_items_by_warehouse',
+            'ticket_single_shipment',
         ];
 
         protected $casts = [
@@ -349,6 +350,7 @@
             'order_cash_income' => 'bool',
             'generate_order_note_from_quotation' => 'bool',
             'list_items_by_warehouse' => 'bool',
+            'ticket_single_shipment' => 'bool',
             
         ];
 
@@ -559,6 +561,7 @@
                 'order_cash_income' => $this->order_cash_income,
                 'generate_order_note_from_quotation' => $this->generate_order_note_from_quotation,
                 'list_items_by_warehouse' => $this->list_items_by_warehouse,
+                'ticket_single_shipment' => $this->ticket_single_shipment,
                 
             ];
         }

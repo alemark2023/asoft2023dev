@@ -64,6 +64,11 @@ class DocumentInput
 
         $items = self::items($inputs);
 
+        //configuracion para envio individual de boleta 
+        $ticket_single_shipment = self::getTicketSingleShipment($inputs);
+        $inputs['ticket_single_shipment'] = $ticket_single_shipment;
+
+
         return [
             'type' => $inputs['type'],
             'group_id' => $inputs['group_id'],
@@ -145,8 +150,10 @@ class DocumentInput
             'total_pending_payment' => Functions::valueKeyInArray($inputs, 'total_pending_payment', 0),
             // 'pending_amount_detraction' => Functions::valueKeyInArray($inputs, 'pending_amount_detraction', 0),
             'tip' => self::tip($inputs, $soap_type_id),
+            'ticket_single_shipment' => $ticket_single_shipment,
         ];
     }
+    
 
     public static function items($inputs)
     {
@@ -624,4 +631,23 @@ class DocumentInput
         return null;
     }
     
+        
+    /**
+     * 
+     * Retornar configuracion para envio individual de boletas
+     *
+     * @param  array $inputs
+     * @return bool
+     */
+    public static function getTicketSingleShipment($inputs)
+    {
+        if($inputs['document_type_id'] === Document::DOCUMENT_TYPE_TICKET)
+        {
+            return Configuration::getRecordIndividualColumn('ticket_single_shipment');
+        }
+
+        return false;
+    }
+
+
 }
