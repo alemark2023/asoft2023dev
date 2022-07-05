@@ -234,6 +234,7 @@ class InventoryKardex extends ModelTenant
                 $user = auth()->user();
                 $data['balance'] = $balance += $qty;
                 $data['type_transaction'] = $inventory_kardexable->description;
+                $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 if ($inventory_kardexable->warehouse_destination_id === $user->establishment_id) {
                     $data['input'] = $output;
                     $data['output'] = $input;
