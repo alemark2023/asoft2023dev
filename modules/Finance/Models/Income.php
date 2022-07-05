@@ -7,7 +7,7 @@ use App\Models\Tenant\SoapType;
 use App\Models\Tenant\StateType;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Establishment;
-use App\Models\Tenant\CurrencyType;
+use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\ModelTenant;
 
 class Income extends ModelTenant
@@ -31,6 +31,7 @@ class Income extends ModelTenant
         'time_of_issue',
         'exchange_rate_sale',
         'total',
+        'filename',
     ];
 
     protected $casts = [

@@ -84,6 +84,7 @@
             'supplier',
             'exchange_rate_sale',
             'total',
+            'filename',
         ];
 
         protected $casts = [
