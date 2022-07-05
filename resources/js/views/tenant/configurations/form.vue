@@ -1581,7 +1581,11 @@
                                                     effect="dark"
                                                     placement="top-start">
                                             <div slot="content">
-                                                Al realizar un pago se envía el documento a la impresora, seguir documentación para un funcionamiento correcto.
+
+                                                <b>Disponible en POS y Nuevo CPE</b><br/><br/>
+                                                <b>POS:</b> Al realizar un pago se envía el documento a la impresora, seguir documentación para un funcionamiento correcto.<br/>
+                                                <b>Nuevo CPE:</b> Al finalizar el registro del comprobante se envía a la impresora
+
                                             </div>
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
@@ -1598,6 +1602,33 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        Ocultar vista previa de PDF
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">
+                                                Disponible en POS y Nuevo CPE
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.hide_pdf_view_documents}"
+                                            class="form-group">
+                                        <el-switch v-model="form.hide_pdf_view_documents"
+                                                    active-text="Si"
+                                                    inactive-text="No"
+                                                    @change="submit"></el-switch>
+                                        <small v-if="errors.hide_pdf_view_documents"
+                                                class="form-control-feedback"
+                                                v-text="errors.hide_pdf_view_documents[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="col-6 mt-4">
                                 <div class="form-group">
                                     <label>
@@ -1852,6 +1883,7 @@ export default {
                 order_cash_income: false,
                 generate_order_note_from_quotation: false,
                 list_items_by_warehouse: false,
+                hide_pdf_view_documents: false,
             };
         },
         UpdateFormPurchase(e) {

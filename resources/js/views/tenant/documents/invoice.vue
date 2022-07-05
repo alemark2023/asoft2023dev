@@ -1588,6 +1588,24 @@ export default {
         detractionDecimalQuantity: function () {
             return (this.configuration.detraction_amount_rounded_int) ? 0 : 2
         },
+        isAutoPrint: function () {
+
+            if(this.configuration)
+            {
+                return this.configuration.auto_print
+            }
+
+            return false
+        },
+        hidePreviewPdf: function () {
+
+            if(this.configuration)
+            {
+                return this.configuration.hide_pdf_view_documents
+            }
+
+            return false
+        },
     },
     async created() {
         this.loadConfiguration()
@@ -1720,11 +1738,21 @@ export default {
             localStorage.removeItem('notes')
         }
 
+        this.startConnectionQzTray()
+
     },
     methods: {
         ...mapActions([
             'loadConfiguration',
         ]),
+        startConnectionQzTray(){
+
+            if (!qz.websocket.isActive() && this.isAutoPrint) 
+            {
+                startConnection();
+            }
+
+        },
         async changeRowFreeAffectationIgv(row, index) {
 
             if (row.item.change_free_affectation_igv) {
@@ -3435,17 +3463,22 @@ export default {
             let temp = this.form.payment_condition_id;
             // Condicion de pago Credito con cuota pasa a credito
             if (this.form.payment_condition_id === '03') this.form.payment_condition_id = '02';
+
             this.$http.post(path, this.form).then(response => {
                 if (response.data.success) {
                     this.$eventHub.$emit('reloadDataItems', null)
                     this.resetForm();
                     this.documentNewId = response.data.data.id;
-                    this.showDialogOptions = true;
+                    
+                    this.showOptionsDialog(response)
 
                     this.form_cash_document.document_id = response.data.data.id;
 
                     // this.savePaymentMethod();
                     this.saveCashDocument();
+
+                    this.autoPrintDocument()
+
                 } else {
                     this.$message.error(response.data.message);
                 }
@@ -3460,6 +3493,72 @@ export default {
                 this.loading_submit = false;
                 this.setDefaultDocumentType();
             });
+
+        },
+        showOptionsDialog(response){
+
+            if(this.hidePreviewPdf)
+            {
+                const response_data = response.data.data
+
+                if(response_data.response.sent)
+                {
+                    this.$message.success(response_data.response.description)
+                }
+                else
+                {
+                    this.$message.success(`Comprobante registrado: ${response_data.number_full}`)
+                }
+            }
+            else
+            {
+                this.showDialogOptions = true
+            }
+            
+        },
+        autoPrintDocument(){
+
+            if(this.isAutoPrint)
+            {
+                this.$http.get(`/printticket/document/${this.documentNewId}/ticket`)
+                        .then(response => {
+                            this.printTicket(response.data)
+                        })
+                        .catch(error => {
+                            console.log(error)
+                        })
+            }
+
+        },
+        printTicket(html_pdf){
+
+            if (html_pdf.length > 0)
+            {
+                const config = getUpdatedConfig()
+                const opts = getUpdatedConfig()
+
+                const printData = [
+                    {
+                        type: 'html',
+                        format: 'plain',
+                        data: html_pdf,
+                        options: opts
+                    }
+                ]
+
+                qz.print(config, printData)
+                    .then(()=>{
+                        
+                        this.$notify({
+                            title: '',
+                            message: 'Impresión en proceso...',
+                            type: 'success'
+                        })
+
+                    })
+                    .catch(displayError)
+            }
+
         },
         saveCashDocument() {
             this.$http.post(`/cash/cash_document`, this.form_cash_document)

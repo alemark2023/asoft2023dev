@@ -255,6 +255,7 @@
             'order_cash_income',
             'generate_order_note_from_quotation',
             'list_items_by_warehouse',
+            'hide_pdf_view_documents',
         ];
 
         protected $casts = [
@@ -349,6 +350,7 @@
             'order_cash_income' => 'bool',
             'generate_order_note_from_quotation' => 'bool',
             'list_items_by_warehouse' => 'bool',
+            'hide_pdf_view_documents' => 'bool',
             
         ];
 
@@ -559,6 +561,7 @@
                 'order_cash_income' => $this->order_cash_income,
                 'generate_order_note_from_quotation' => $this->generate_order_note_from_quotation,
                 'list_items_by_warehouse' => $this->list_items_by_warehouse,
+                'hide_pdf_view_documents' => $this->hide_pdf_view_documents,
                 
             ];
         }

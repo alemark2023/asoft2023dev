@@ -852,6 +852,7 @@
                 :is-print="isPrint"
                 :globalDiscountTypeId="configuration.global_discount_type_id"
                 :enabledTipsPos="configuration.enabled_tips_pos"
+                :hidePdfViewDocuments="configuration.hide_pdf_view_documents"
             ></payment-form>
         </template>
 
