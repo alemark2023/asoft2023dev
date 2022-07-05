@@ -130,6 +130,8 @@ class Facturalo
                 $this->savePayments($document, $inputs['payments']);
                 $this->saveFee($document, $inputs['fee']);
                 foreach ($inputs['items'] as $row) {
+//                    $purchase_unit_price = $row['purchase_unit_price'];
+//                    $row['item']['purchase_unit_price'] = $purchase_unit_price;
                     $document->items()->create($row);
                     // $row['document_id']=  $document->id;
                     // $item = new DocumentItem($row);
@@ -921,9 +923,9 @@ class Facturalo
                 if($extService->getCustomStatusCode() === 0){
 
                     // if($this->document->summary_status_type_id === '1') {
-                    if(in_array($this->document->summary_status_type_id, ['1', '2'])) 
+                    if(in_array($this->document->summary_status_type_id, ['1', '2']))
                     {
-                        
+
                         //enviar cdr a pse
                         $this->sendCdrToPse($res->getCdrZip(), $this->document);
                         //enviar cdr a pse
@@ -941,7 +943,7 @@ class Facturalo
                 }
 
             } else {
-                
+
                 //enviar cdr a pse
                 $this->sendCdrToPse($res->getCdrZip(), $this->document);
                 //enviar cdr a pse

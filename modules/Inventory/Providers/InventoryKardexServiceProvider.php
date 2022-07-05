@@ -194,11 +194,13 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
         });
     }
+    
 
     /**
      * Se dispara  al generar una nota de venta
      */
-    private function sale_note() {
+    private function sale_note() 
+    {
         SaleNoteItem::created(function (SaleNoteItem $sale_note_item) {
 
             if(!$sale_note_item->item->is_set){
@@ -230,19 +232,21 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
             }
 
+            // series
             if(isset($sale_note_item->item->lots) )
             {
-                foreach ($sale_note_item->item->lots as $it) {
-
+                foreach ($sale_note_item->item->lots as $it) 
+                {
                     if($it->has_sale == true)
                     {
                         $r = ItemLot::find($it->id);
                         $r->has_sale =  true;
                         $r->save();
                     }
-
                 }
             }
+            // series
+
         });
     }
 
@@ -263,7 +267,9 @@ class InventoryKardexServiceProvider extends ServiceProvider
     /**
      * Se dispara al borrar un item de nota de venta
      */
-    private function sale_note_item_delete() {
+    private function sale_note_item_delete() 
+    {
+
         SaleNoteItem::deleted(function (SaleNoteItem $sale_note_item) {
 
             // dd($sale_note_item);
@@ -275,7 +281,8 @@ class InventoryKardexServiceProvider extends ServiceProvider
                 // $warehouse = $this->findWarehouse();
                 $warehouse = ($sale_note_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($sale_note_item->warehouse_id)->establishment_id) : $this->findWarehouse($sale_note_item->sale_note->establishment_id);
 
-                $this->deleteInventoryKardex($sale_note_item->sale_note, $sale_note_item->inventory_kardex_id);
+                $this->createInventoryKardex($sale_note_item->sale_note, $sale_note_item->item_id, ($sale_note_item->quantity * $presentationQuantity), $warehouse->id);
+                // $this->deleteInventoryKardex($sale_note_item->sale_note, $sale_note_item->inventory_kardex_id);
                 $this->updateStock($sale_note_item->item_id, (1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
 
             }else{
@@ -288,7 +295,10 @@ class InventoryKardexServiceProvider extends ServiceProvider
                     $item_set_quantity  = ($it->quantity) ? $it->quantity : 1;
                     $presentationQuantity = 1;
                     $warehouse = $this->findWarehouse();
-                    $this->deleteInventoryKardex($sale_note_item->sale_note, $sale_note_item->inventory_kardex_id);
+                    
+                    $this->createInventoryKardex($sale_note_item->sale_note, $ind_item->id, ($sale_note_item->quantity * $presentationQuantity * $item_set_quantity), $warehouse->id);
+                    // $this->deleteInventoryKardex($sale_note_item->sale_note, $sale_note_item->inventory_kardex_id);
+
                     $this->updateStock($ind_item->id , (1 * ($sale_note_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
 
                 }
