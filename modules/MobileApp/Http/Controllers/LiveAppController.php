@@ -10,7 +10,7 @@ class LiveAppController extends Controller
 {
     public function index()
     {
-        return view('mobileapp::index');
+        return view('mobileapp::mobile_app.index');
     }
 
     public function configuration()

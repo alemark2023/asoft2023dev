@@ -12,6 +12,10 @@ class AppConfigurationController extends Controller
 {
     
     /**
+     * 
+     * Usado en:
+     * AppConfigurationController - web
+     * 
      * @return AppConfigurationResource
      */
     public function record()
