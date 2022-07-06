@@ -11,6 +11,14 @@
 |
 */
 
-Route::prefix('mobileapp')->group(function() {
-    Route::get('/', 'MobileAppController@index');
+// Route::prefix('mobileapp')->group(function() {
+//     Route::get('/', 'MobileAppController@index');
+// });
+
+Route::prefix('live-app')->group(function() {
+    Route::get('/', 'LiveAppController@index')->name('tenant.liveapp.index');
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/configuration', 'LiveAppController@configuration')->name('tenant.liveapp.configuration');
+    });
 });
