@@ -34,13 +34,29 @@ class AppConfigurationController extends Controller
     public function store(AppConfigurationRequest $request)
     {
         $record = AppConfiguration::firstOrFail();
-        $record->fill($request->all());
+        // $record->fill($request->all());
+        $record->show_image_item = $request->show_image_item;
+        $record->print_format_pdf = $request->print_format_pdf;
         $record->save();
 
         return [
             'success' => true,
             'message' => 'Configuración actualizada',
             'data' => $record->getRowResource(),
+        ];
+    }
+    
+    
+    /**
+     * 
+     * Obtener parametros iniciales de configuracion
+     *
+     * @return array
+     */
+    public function getInitialSettings()
+    {
+        return [
+            'style_settings' => AppConfiguration::firstOrFail()->getRowInitialSettings()
         ];
     }
 

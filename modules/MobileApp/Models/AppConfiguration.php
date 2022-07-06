@@ -7,6 +7,8 @@ use App\Models\Tenant\ModelTenant;
 class AppConfiguration extends ModelTenant
 {
 
+    public const APP_STYLES_PATH  = 'liveapp'.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR;
+
     protected $fillable = [
         'show_image_item',
         'print_format_pdf',
@@ -18,6 +20,10 @@ class AppConfiguration extends ModelTenant
         'show_image_item' => 'bool',
     ];
 
+    
+    /**
+     * @return array
+     */
     public function getRowResource()
     {
         return [
@@ -29,5 +35,77 @@ class AppConfiguration extends ModelTenant
         ];
     }
 
+    
+    /**
+     * 
+     * Obtener parametros iniciales de configuracion
+     *
+     * @return array
+     */
+    public function getRowInitialSettings()
+    {
+        return [
+            'theme_color' => $this->theme_color,
+            'card_color' => $this->card_color,
+            'style_theme_content' => $this->getStyleThemeContent(),
+            'style_card_content' => $this->getStyleCardContent(),
+        ];
+    }
+
+
+    /**
+     * 
+     * Determinar tema del card y obtener estilo
+     *
+     * @return string
+     */
+    public function getStyleCardContent()
+    {
+        $content = null;
+
+        switch ($this->card_color) {
+            case 'unicolor':
+                $content = $this->getFileStyleContents('cards.css');
+                break;
+        }
+
+        return $content;
+    }
+
+        
+    /**
+     * 
+     * Determinar tema y obtener estilo
+     *
+     * @return string
+     */
+    public function getStyleThemeContent()
+    {
+        $content = null;
+
+        switch ($this->theme_color) {
+            case 'red':
+                $content = $this->getFileStyleContents('skin-red.css');
+                break;
+            case 'dark':
+                $content = $this->getFileStyleContents('skin-dark.css');
+                break;
+        }
+
+        return $content;
+    }
+
+        
+    /**
+     * 
+     * Obtener contenido del estilo
+     *
+     * @param  string $filename
+     * @return string
+     */
+    public function getFileStyleContents($filename)
+    {
+        return file_get_contents(public_path(self::APP_STYLES_PATH.$filename));
+    }
 
 }

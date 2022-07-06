@@ -18,6 +18,7 @@ if ($hostname)
 
                 Route::get('record', 'Api\AppConfigurationController@record');
                 Route::post('', 'Api\AppConfigurationController@store');
+                Route::get('initial-settings', 'Api\AppConfigurationController@getInitialSettings');
 
             });
 
