@@ -10,49 +10,59 @@
         </div>
         <div class="row">
             <div class="col-md-7">
-                <div class="card">
-                    <div class="card-body">
-                        <h4>Configuración gráfica</h4>
-                        <el-form ref="form" :model="form" label-width="145px" size="mini">
-                            <el-form-item label="Color de tema" class="mb-0">
-                                <el-radio-group class="pt-1" v-model="form.theme_color" @change="changeThemePrimary()">
-                                    <el-radio label="blue">Azul</el-radio>
-                                    <el-radio label="red">Rojo</el-radio>
-                                    <el-radio label="dark">Oscuro</el-radio>
-                                </el-radio-group>
-                            </el-form-item>
-                            <el-form-item label="Color de cajas" class="mb-0">
-                                <el-radio-group class="pt-1" v-model="form.card_color" @change="changeThemeCards()">
-                                    <el-radio label="multicolored">Multicolor</el-radio>
-                                    <el-radio label="unicolor">Unicolor</el-radio>
-                                </el-radio-group>
-                            </el-form-item>
-                            <el-form-item label="Encabezado" class="mb-0">
-                                <el-radio-group class="pt-1" v-model="form.header_waves">
-                                    <el-radio :label="0">Plano</el-radio>
-                                    <el-radio :label="1">Ondulado</el-radio>
-                                </el-radio-group>
-                            </el-form-item>
 
-                            <!-- no funcionales desde aqui -->
-                            <!-- <el-form-item label="Tipo de operación" class="mb-0">
-                                <el-radio-group class="pt-1" v-model="form.operation_type">
-                                    <el-radio :label="1">Facturación</el-radio>
-                                    <el-radio :label="2">POS</el-radio>
-                                </el-radio-group>
-                            </el-form-item>
-                            <el-form-item label="Permisos" class="mb-0">
-                            </el-form-item> -->
-                            <div class="form-actions text-right mt-4">
-                                <el-button type="primary" @click.prevent="submit" :loading="loading_submit">Guardar</el-button>
+                <div class="row">
+                    <div class="short-div col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4>Configuración gráfica</h4>
+                                <el-form ref="form" :model="form" label-width="145px" size="mini">
+                                    <el-form-item label="Color de tema" class="mb-0">
+                                        <el-radio-group class="pt-1" v-model="form.theme_color" @change="changeThemePrimary()">
+                                            <el-radio label="blue">Azul</el-radio>
+                                            <el-radio label="red">Rojo</el-radio>
+                                            <el-radio label="dark">Oscuro</el-radio>
+                                        </el-radio-group>
+                                    </el-form-item>
+                                    <el-form-item label="Color de cajas" class="mb-0">
+                                        <el-radio-group class="pt-1" v-model="form.card_color" @change="changeThemeCards()">
+                                            <el-radio label="multicolored">Multicolor</el-radio>
+                                            <el-radio label="unicolor">Unicolor</el-radio>
+                                        </el-radio-group>
+                                    </el-form-item>
+                                    <el-form-item label="Encabezado" class="mb-0">
+                                        <el-radio-group class="pt-1" v-model="form.header_waves">
+                                            <el-radio :label="0">Plano</el-radio>
+                                            <el-radio :label="1">Ondulado</el-radio>
+                                        </el-radio-group>
+                                    </el-form-item>
+
+                                    <!-- no funcionales desde aqui -->
+                                    <!-- <el-form-item label="Tipo de operación" class="mb-0">
+                                        <el-radio-group class="pt-1" v-model="form.operation_type">
+                                            <el-radio :label="1">Facturación</el-radio>
+                                            <el-radio :label="2">POS</el-radio>
+                                        </el-radio-group>
+                                    </el-form-item>
+                                    <el-form-item label="Permisos" class="mb-0">
+                                    </el-form-item> -->
+                                    <div class="form-actions text-right mt-4">
+                                        <el-button type="primary" @click.prevent="submit" :loading="loading_submit">Guardar</el-button>
+                                    </div>
+                                </el-form>
                             </div>
-                        </el-form>
+                        </div>
+                    </div>
+                    <div class="short-div col-md-12">
+                        <tenant-mobile-app-permissions></tenant-mobile-app-permissions>
                     </div>
                 </div>
+                
             </div>
             <div class="col-md-5">
                 <iframe :src="path_app" frameborder="0" height="600" ref="appIframe" style="z-index: 999;min-width: 350px;"></iframe>
             </div>
+
         </div>
     </div>
 </template>

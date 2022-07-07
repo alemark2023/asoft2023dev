@@ -56,7 +56,8 @@ class AppConfigurationController extends Controller
     public function getInitialSettings()
     {
         return [
-            'style_settings' => AppConfiguration::firstOrFail()->getRowInitialSettings()
+            'style_settings' => AppConfiguration::firstOrFail()->getRowInitialSettings(),
+            'permissions' => auth()->user()->getAppPermission()
         ];
     }
 
