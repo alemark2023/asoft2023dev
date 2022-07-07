@@ -14,13 +14,14 @@ class AppConfiguration extends ModelTenant
         'print_format_pdf',
         'theme_color',
         'card_color',
+        'header_waves',
     ];
 
     protected $casts = [
         'show_image_item' => 'bool',
     ];
 
-    
+
     /**
      * @return array
      */
@@ -32,12 +33,13 @@ class AppConfiguration extends ModelTenant
             'print_format_pdf' => $this->print_format_pdf,
             'theme_color' => $this->theme_color,
             'card_color' => $this->card_color,
+            'header_waves' => $this->header_waves,
         ];
     }
 
-    
+
     /**
-     * 
+     *
      * Obtener parametros iniciales de configuracion
      *
      * @return array
@@ -47,6 +49,7 @@ class AppConfiguration extends ModelTenant
         return [
             'theme_color' => $this->theme_color,
             'card_color' => $this->card_color,
+            'header_waves' => $this->header_waves,
             'style_theme_content' => $this->getStyleThemeContent(),
             'style_card_content' => $this->getStyleCardContent(),
         ];
@@ -54,7 +57,7 @@ class AppConfiguration extends ModelTenant
 
 
     /**
-     * 
+     *
      * Determinar tema del card y obtener estilo
      *
      * @return string
@@ -72,9 +75,9 @@ class AppConfiguration extends ModelTenant
         return $content;
     }
 
-        
+
     /**
-     * 
+     *
      * Determinar tema y obtener estilo
      *
      * @return string
@@ -95,9 +98,9 @@ class AppConfiguration extends ModelTenant
         return $content;
     }
 
-        
+
     /**
-     * 
+     *
      * Obtener contenido del estilo
      *
      * @param  string $filename

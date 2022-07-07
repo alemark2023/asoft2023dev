@@ -27,18 +27,18 @@
                                     <el-radio label="unicolor">Unicolor</el-radio>
                                 </el-radio-group>
                             </el-form-item>
+                            <el-form-item label="Encabezado" class="mb-0">
+                                <el-radio-group class="pt-1" v-model="form.header_waves">
+                                    <el-radio :label="0">Plano</el-radio>
+                                    <el-radio :label="1">Ondulado</el-radio>
+                                </el-radio-group>
+                            </el-form-item>
 
                             <!-- no funcionales desde aqui -->
                             <!-- <el-form-item label="Tipo de operación" class="mb-0">
                                 <el-radio-group class="pt-1" v-model="form.operation_type">
                                     <el-radio :label="1">Facturación</el-radio>
                                     <el-radio :label="2">POS</el-radio>
-                                </el-radio-group>
-                            </el-form-item>
-                            <el-form-item label="Encabezado" class="mb-0">
-                                <el-radio-group class="pt-1" v-model="form.header">
-                                    <el-radio :label="1">Plano</el-radio>
-                                    <el-radio :label="2">Ondulado</el-radio>
                                 </el-radio-group>
                             </el-form-item>
                             <el-form-item label="Permisos" class="mb-0">
@@ -51,13 +51,80 @@
                 </div>
             </div>
             <div class="col-md-5">
-                <iframe :src="path_app" frameborder="0" height="600" ref="appIframe" style="z-index: 999;"></iframe>
+                <iframe :src="path_app" frameborder="0" height="600" ref="appIframe" style="z-index: 999;min-width: 350px;"></iframe>
             </div>
         </div>
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+.iphone-x {
+  position: relative;
+  margin: 40px auto;
+  min-width: 330px;
+  height: 740px;
+  background-color: #7371ee;
+  background-image: linear-gradient(60deg, #7371ee 1%, #a1d9d6 100%);
+  border-radius: 40px;
+  box-shadow: 0px 0px 0px 11px #1f1f1f, 0px 0px 0px 13px #191919,
+    0px 0px 0px 20px #111;
+
+  &:before,
+  &:after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  // frontal camera/speaker frame
+  &:before {
+    top: 0px;
+    width: 56%;
+    height: 30px;
+    background-color: #1f1f1f;
+    border-radius: 0px 0px 40px 40px;
+  }
+
+  // speaker
+  i {
+    top: 0px;
+    left: 50%;
+    transform: translate(-50%, 6px);
+    height: 8px;
+    width: 15%;
+    background-color: #101010;
+    border-radius: 8px;
+    box-shadow: inset 0px -3px 3px 0px rgba(256, 256, 256, 0.2);
+  }
+
+  // camera
+  b {
+    left: 10%;
+    top: 0px;
+    transform: translate(180px, 4px);
+    width: 12px;
+    height: 12px;
+    background-color: #101010;
+    border-radius: 12px;
+    box-shadow: inset 0px -3px 2px 0px rgba(256, 256, 256, 0.2);
+
+    &:after {
+      content: "";
+      position: absolute;
+      background-color: #2d4d76;
+      width: 6px;
+      height: 6px;
+      top: 2px;
+      left: 2px;
+      top: 3px;
+      left: 3px;
+      display: block;
+      border-radius: 4px;
+      box-shadow: inset 0px -2px 2px rgba(0, 0, 0, 0.5);
+    }
+  }
+}
 </style>
 
 <script>
@@ -81,27 +148,27 @@
         },
         methods: {
             async getRecord(){
-                
-                this.loading = true 
+
+                this.loading = true
 
                 await this.$http.get(`/${this.resource}/record`)
                         .then(response => {
                             this.form = response.data.data
                         })
                         .then(()=>{
-                            this.loading = false 
+                            this.loading = false
                         })
 
 
             },
             initForm(){
-                
+
                 this.form = {
                     theme_color: 'blue',
                     card_color: 'multicolored',
+                    header_waves: false,
                     // operation_type: 1,
                     // permissions: {},
-                    // header: 1,
                 }
 
             },

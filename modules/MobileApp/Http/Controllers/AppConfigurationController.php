@@ -11,7 +11,7 @@ use Modules\MobileApp\Http\Controllers\Api\AppConfigurationController as AppConf
 
 class AppConfigurationController extends Controller
 {
-    
+
 
     /**
      * @return array
@@ -21,9 +21,9 @@ class AppConfigurationController extends Controller
         return app(AppConfigurationControllerApi::class)->record();
     }
 
-    
+
     /**
-     * 
+     *
      * Actualizar configuracion gráfica de la app
      *
      * @param  Request $request
@@ -35,6 +35,7 @@ class AppConfigurationController extends Controller
         $record = AppConfiguration::firstOrFail();
         $record->theme_color = $request->theme_color;
         $record->card_color = $request->card_color;
+        $record->header_waves = $request->header_waves;
         $record->save();
 
         return [
@@ -44,5 +45,5 @@ class AppConfigurationController extends Controller
         ];
     }
 
-    
+
 }
