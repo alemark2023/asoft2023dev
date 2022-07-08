@@ -7,24 +7,47 @@ use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Document;
 use App\Http\Resources\Tenant\DocumentCollection;
+use App\Models\Tenant\StateType;
+use App\Http\Resources\Tenant\DocumentResource;
 
 
 class DocumentController extends Controller
 {
+        
+    /**
+     *
+     * @return array
+     */
+    public function record($id)
+    {
+        return new DocumentResource(Document::findOrFail($id));
+    }
+
     
+    /**
+     *
+     * @return array
+     */
+    public function tables()
+    {
+        $state_types = StateType::getDataApiApp();
+
+        return compact('state_types');
+    }
+    
+    
+    /**
+     * 
+     * Listado de documentos
+     *
+     * @param  Request $request
+     * @return DocumentCollection
+     */
     public function records(Request $request)
     {
+        $records = Document::filterRecordsAppApi($request);
 
-        $records = Document::whereTypeUser()
-                            ->where(function($q) use($request){
-                                $q->where('series', 'like', "%{$request->input}%" )
-                                    ->orWhere('number','like', "%{$request->input}%");
-                            })
-                            ->where('document_type_id', $request->document_type_id)
-                            ->latest()
-                            ->take(config('tenant.items_per_page'));
-
-        return new DocumentCollection($records->get());
+        return new DocumentCollection($records->latest()->take(config('tenant.items_per_page'))->get());
     }
 
     /**
