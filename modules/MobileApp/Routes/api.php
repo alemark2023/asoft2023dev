@@ -18,6 +18,7 @@ if ($hostname)
 
                 Route::get('record', 'Api\AppConfigurationController@record');
                 Route::post('', 'Api\AppConfigurationController@store');
+                Route::get('initial-settings', 'Api\AppConfigurationController@getInitialSettings');
 
             });
 
@@ -38,6 +39,8 @@ if ($hostname)
                 Route::post('validate-document', 'Api\ValidateDocumentController@validateDocument');
                 Route::get('notifications', 'Api\DocumentController@getNotifications');
                 Route::get('records', 'Api\DocumentController@records');
+                Route::get('record/{id}', 'Api\DocumentController@record');
+                Route::get('tables', 'Api\DocumentController@tables');
             });
 
 

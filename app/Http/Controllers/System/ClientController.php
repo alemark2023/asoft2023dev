@@ -22,6 +22,7 @@
     use Illuminate\Support\Collection;
     use Illuminate\Support\Facades\DB;
     use Modules\Document\Helpers\DocumentHelper;
+    use Modules\MobileApp\Models\System\AppModule;
 
 
     class ClientController extends Controller
@@ -712,6 +713,9 @@
                 }
                 DB::connection('tenant')->table('module_user')->insert($array_modules);
                 DB::connection('tenant')->table('module_level_user')->insert($array_levels);
+
+                $this->insertAppModules($user_id);
+
             } else {
                 DB::connection('tenant')->table('module_user')->insert([
                     ['module_id' => 1, 'user_id' => $user_id],
@@ -736,6 +740,27 @@
             }
 
         }
+
+        
+        /**
+         * 
+         * Registrar modulos de la app al usuario principal
+         *
+         * @param  int $user_id
+         * @return void
+         */
+        private function insertAppModules($user_id)
+        {
+            $all_app_modules = AppModule::get()->map(function($row) use($user_id){
+                                    return [
+                                        'app_module_id' => $row->id,
+                                        'user_id' => $user_id,
+                                    ];
+                                })->toArray();
+
+            DB::connection('tenant')->table('app_module_user')->insert($all_app_modules);
+        }
+
 
         public function renewPlan(Request $request)
         {

@@ -423,6 +423,10 @@ Vue.component('tenant-payment-configurations-index', require('@viewsModulePaymen
 Vue.component('tenant-public-payment-links-index', require('@viewsModulePayment/payment_links/public/index.vue'));
 Vue.component('tenant-payment-links-index', require('@viewsModulePayment/payment_links/index.vue'));
 
+// MobileApp ::
+Vue.component('tenant-mobile-app-configuration', require('@viewsModuleMobileApp/configuration/index.vue'));
+Vue.component('tenant-mobile-app-permissions', require('@viewsModuleMobileApp/permissions/index.vue'));
+
 
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)

@@ -1,0 +1,256 @@
+<template>
+    <div v-loading="loading">
+        <div class="page-header pr-0">
+            <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
+            <ol class="breadcrumbs">
+                <li class="active"><span> App 2.0</span></li>
+                <li class="active"><span> Configuración</span></li>
+            </ol>
+            <div class="right-wrapper pull-right"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-7">
+
+                <div class="row">
+                    <div class="short-div col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4>Configuración gráfica</h4>
+                                <el-form ref="form" :model="form" label-width="145px" size="mini">
+                                    <el-form-item label="Color de tema" class="mb-0">
+                                        <el-radio-group class="pt-1" v-model="form.theme_color" @change="changeThemePrimary()">
+                                            <el-radio label="blue">Azul</el-radio>
+                                            <el-radio label="red">Rojo</el-radio>
+                                            <el-radio label="dark">Oscuro</el-radio>
+                                        </el-radio-group>
+                                    </el-form-item>
+                                    <el-form-item label="Color de cajas" class="mb-0">
+                                        <el-radio-group class="pt-1" v-model="form.card_color" @change="changeThemeCards()">
+                                            <el-radio label="multicolored">Multicolor</el-radio>
+                                            <el-radio label="unicolor">Unicolor</el-radio>
+                                        </el-radio-group>
+                                    </el-form-item>
+                                    <el-form-item label="Encabezado" class="mb-0">
+                                        <el-radio-group class="pt-1" v-model="form.header_waves">
+                                            <el-radio :label="0">Plano</el-radio>
+                                            <el-radio :label="1">Ondulado</el-radio>
+                                        </el-radio-group>
+                                    </el-form-item>
+
+                                    <!-- no funcionales desde aqui -->
+                                    <!-- <el-form-item label="Tipo de operación" class="mb-0">
+                                        <el-radio-group class="pt-1" v-model="form.operation_type">
+                                            <el-radio :label="1">Facturación</el-radio>
+                                            <el-radio :label="2">POS</el-radio>
+                                        </el-radio-group>
+                                    </el-form-item>
+                                    <el-form-item label="Permisos" class="mb-0">
+                                    </el-form-item> -->
+                                    <div class="form-actions text-right mt-4">
+                                        <el-button type="primary" @click.prevent="submit" :loading="loading_submit">Guardar</el-button>
+                                    </div>
+                                </el-form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="short-div col-md-12">
+                        <tenant-mobile-app-permissions></tenant-mobile-app-permissions>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="col-md-5">
+                <iframe :src="path_app" frameborder="0" height="600" ref="appIframe" style="z-index: 999;min-width: 350px;"></iframe>
+            </div>
+
+        </div>
+    </div>
+</template>
+
+<style scoped lang="scss">
+.iphone-x {
+  position: relative;
+  margin: 40px auto;
+  min-width: 330px;
+  height: 740px;
+  background-color: #7371ee;
+  background-image: linear-gradient(60deg, #7371ee 1%, #a1d9d6 100%);
+  border-radius: 40px;
+  box-shadow: 0px 0px 0px 11px #1f1f1f, 0px 0px 0px 13px #191919,
+    0px 0px 0px 20px #111;
+
+  &:before,
+  &:after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  // frontal camera/speaker frame
+  &:before {
+    top: 0px;
+    width: 56%;
+    height: 30px;
+    background-color: #1f1f1f;
+    border-radius: 0px 0px 40px 40px;
+  }
+
+  // speaker
+  i {
+    top: 0px;
+    left: 50%;
+    transform: translate(-50%, 6px);
+    height: 8px;
+    width: 15%;
+    background-color: #101010;
+    border-radius: 8px;
+    box-shadow: inset 0px -3px 3px 0px rgba(256, 256, 256, 0.2);
+  }
+
+  // camera
+  b {
+    left: 10%;
+    top: 0px;
+    transform: translate(180px, 4px);
+    width: 12px;
+    height: 12px;
+    background-color: #101010;
+    border-radius: 12px;
+    box-shadow: inset 0px -3px 2px 0px rgba(256, 256, 256, 0.2);
+
+    &:after {
+      content: "";
+      position: absolute;
+      background-color: #2d4d76;
+      width: 6px;
+      height: 6px;
+      top: 2px;
+      left: 2px;
+      top: 3px;
+      left: 3px;
+      display: block;
+      border-radius: 4px;
+      box-shadow: inset 0px -2px 2px rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+</style>
+
+<script>
+    export default {
+        data() {
+            return {
+                form: {},
+                domain: window.location.origin,
+                path_app: window.location.origin + '/live-app',
+                loading_submit: false,
+                resource: 'app-configurations',
+                loading: false,
+            }
+        },
+        async created(){
+            await this.initForm()
+            await this.getRecord()
+        },
+        mounted(){
+            this.checkConfiguration()
+        },
+        methods: {
+            async getRecord(){
+
+                this.loading = true
+
+                await this.$http.get(`/${this.resource}/record`)
+                        .then(response => {
+                            this.form = response.data.data
+                        })
+                        .then(()=>{
+                            this.loading = false
+                        })
+
+
+            },
+            initForm(){
+
+                this.form = {
+                    theme_color: 'blue',
+                    card_color: 'multicolored',
+                    header_waves: false,
+                    // operation_type: 1,
+                    // permissions: {},
+                }
+
+            },
+            changeThemePrimary() {
+
+                let iframe = this.$refs.appIframe
+                let doc = iframe.contentDocument
+
+                switch (this.form.theme_color) {
+                    case 'red':
+                        doc.head.querySelectorAll('[href="' + this.domain + '/liveapp/assets/skin-dark.css"]').forEach(el => el.remove())
+                        doc.head.innerHTML = doc.head.innerHTML + '<link href="' + this.domain + '/liveapp/assets/skin-red.css" rel="stylesheet">'
+                        break
+                    case 'dark':
+                        doc.head.querySelectorAll('[href="' + this.domain + '/liveapp/assets/skin-red.css"]').forEach(el => el.remove())
+                        doc.head.innerHTML = doc.head.innerHTML + '<link href="' + this.domain + '/liveapp/assets/skin-dark.css" rel="stylesheet">'
+                        break
+                    default:
+                        doc.head.querySelectorAll('[href="' + this.domain + '/liveapp/assets/skin-dark.css"]').forEach(el => el.remove())
+                        doc.head.querySelectorAll('[href="' + this.domain + '/liveapp/assets/skin-red.css"]').forEach(el => el.remove())
+                        break
+                }
+
+            },
+            changeThemeCards() {
+                let iframe = this.$refs.appIframe
+                let doc = iframe.contentDocument
+
+                switch (this.form.card_color) {
+                    case 'unicolor':
+                        doc.head.innerHTML = doc.head.innerHTML + '<link href="' + this.domain + '/liveapp/assets/cards.css" rel="stylesheet">'
+                        break
+                    default:
+                        doc.head.querySelectorAll('[href="' + this.domain + '/liveapp/assets/cards.css"]').forEach(el => el.remove())
+                        break
+                }
+            },
+            async checkConfiguration(){
+
+                const iframe = this.$refs.appIframe
+                const context = this
+
+                await iframe.addEventListener('load', function() {
+                    context.changeThemePrimary()
+                    context.changeThemeCards()
+                })
+
+            },
+            async submit() {
+
+                this.loading_submit = true
+                await this.$http.post(`/${this.resource}`, this.form)
+                    .then(response => {
+                        if (response.data.success) {
+
+                            this.$message.success(response.data.message)
+
+                        } else {
+                            this.$message.error(response.data.message)
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.errors = error.response.data
+                        } else {
+                            console.log(error)
+                        }
+                    })
+                    .then(() => {
+                        this.loading_submit = false
+                    })
+            },
+        }
+    }
+</script>

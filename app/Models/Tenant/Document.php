@@ -1358,5 +1358,36 @@
 
             return $total_payments;
         }
+
+                
+        /**
+         * 
+         * Filtrar registros para listado de documentos - app
+         *
+         * @param  Builder $query
+         * @param  Request $request
+         * @return Builder
+         */
+        public static function scopeFilterRecordsAppApi($query, $request)
+        {
+
+            $state_type_id = $request->state_type_id ?? 'all';
+
+            $query->whereTypeUser()
+                    ->where(function($q) use($request){
+                        $q->where('series', 'like', "%{$request->input}%" )
+                            ->orWhere('number','like', "%{$request->input}%");
+                    })
+                    ->where('document_type_id', $request->document_type_id);
+
+
+            if($state_type_id !== 'all')
+            {
+                $query->where('state_type_id', $request->state_type_id);
+            }
+            
+            return $query;
+        }
+
         
     }
