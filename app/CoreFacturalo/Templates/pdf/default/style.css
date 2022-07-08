@@ -37,6 +37,9 @@ table {
 .text-center {
     text-align: center !important;
 }
+.text-uppercase {
+  text-transform: uppercase;
+}
 .text-left {
     text-align: left !important;
 }
