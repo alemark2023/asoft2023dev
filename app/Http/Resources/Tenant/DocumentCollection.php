@@ -83,7 +83,13 @@ class DocumentCollection extends ResourceCollection
             }
 
             $total_payment = $row->payments->sum('payment');
-            $balance = number_format($row->total - $total_payment,2, ".", "");
+
+            if($row->retention) {
+                $balance = number_format($row->total - $row->retention->amount - $total_payment,2, ".", "");
+            } else {
+                $balance = number_format($row->total - $total_payment,2, ".", "");
+            }
+
 
             $message_regularize_shipping = null;
 

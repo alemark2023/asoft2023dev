@@ -359,13 +359,6 @@
                                                     </tr>
                                                 </template>
 
-                                                <template v-if="form.retention">
-                                                    <tr v-if="form.retention.amount > 0">
-                                                        <td>M. RETENCIÓN ({{form.retention.percentage * 100}}%):</td>
-                                                        <td>{{ currency_type.symbol }} {{ form.retention.amount }}</td>
-                                                    </tr>
-                                                </template>
-
                                                 <tr v-if="form.total_exportation > 0">
                                                     <td>OP.EXPORTACIÓN:</td>
                                                     <td>{{ currency_type.symbol }} {{ form.total_exportation }}</td>
@@ -429,10 +422,27 @@
                                                     </td>
                                                 </tr>
 
-                                                <tr v-if="form.total > 0">
-                                                    <td><strong>TOTAL A PAGAR</strong>:</td>
-                                                    <td>{{ currency_type.symbol }} {{ form.total }}</td>
-                                                </tr>
+                                                <template v-if="form.has_retention">
+                                                    <tr v-if="form.total > 0">
+                                                        <td><strong>IMPORTE TOTAL</strong>:</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.total }}</td>
+                                                    </tr>
+                                                    <tr v-if="form.retention.amount > 0">
+                                                        <td>M. RETENCIÓN ({{form.retention.percentage * 100}}%):</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.retention.amount }}</td>
+                                                    </tr>
+                                                    <tr v-if="form.total > 0">
+                                                        <td><strong>TOTAL A PAGAR</strong>:</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.total - form.retention.amount }}</td>
+                                                    </tr>
+                                                </template>
+                                                <template v-if="!form.has_retention">
+                                                    <tr v-if="form.total > 0">
+                                                        <td><strong>TOTAL A PAGAR</strong>:</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.total }}</td>
+                                                    </tr>
+                                                </template>
+
 
                                                 <tr v-if="form.total > 0">
                                                     <td>CONDICIÓN DE PAGO:</td>
@@ -451,6 +461,7 @@
                                                         </el-select>
                                                     </td>
                                                 </tr>
+
 
 
                                                 <!-- <template v-if="form.detraction">
@@ -1747,7 +1758,7 @@ export default {
         ]),
         startConnectionQzTray(){
 
-            if (!qz.websocket.isActive() && this.isAutoPrint) 
+            if (!qz.websocket.isActive() && this.isAutoPrint)
             {
                 startConnection();
             }
@@ -3469,7 +3480,7 @@ export default {
                     this.$eventHub.$emit('reloadDataItems', null)
                     this.resetForm();
                     this.documentNewId = response.data.data.id;
-                    
+
                     this.showOptionsDialog(response)
 
                     this.form_cash_document.document_id = response.data.data.id;
@@ -3514,7 +3525,7 @@ export default {
             {
                 this.showDialogOptions = true
             }
-            
+
         },
         autoPrintDocument(){
 
@@ -3548,7 +3559,7 @@ export default {
 
                 qz.print(config, printData)
                     .then(()=>{
-                        
+
                         this.$notify({
                             title: '',
                             message: 'Impresión en proceso...',
@@ -3762,16 +3773,25 @@ export default {
             })
         },
         getTotal() {
+            let total_pay = this.form.total;
+            if(this.form.has_retention) {
+                total_pay -= this.form.retention.amount;
+            }
+            console.log(this.form.retention)
+            console.log(this.form.total_pending_payment)
+            console.log(this.form.total)
 
             if (!_.isEmpty(this.form.detraction) && this.form.total_pending_payment > 0) {
                 return this.form.total_pending_payment
             }
 
             if (!_.isEmpty(this.form.retention) && this.form.total_pending_payment > 0) {
+                console.log('1');
                 return this.form.total_pending_payment
             }
 
-            return this.form.total
+            console.log('2');
+            return total_pay
         },
         setDescriptionOfItem(item) {
             return showNamePdfOfDescription(item, this.config.show_pdf_name)
