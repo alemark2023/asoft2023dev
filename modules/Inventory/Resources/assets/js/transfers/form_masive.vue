@@ -1,5 +1,5 @@
 <template>
-    <div class="card mb-0 pt-2 pt-md-0">
+    <div class="card mb-0 pt-md-0">
         <div class="card-header bg-info">
             <h3 class="my-0">Nuevo Traslado</h3>
         </div>
@@ -83,7 +83,6 @@
                                     popper-class="el-select-document_type"
                                     @change="changeItem"
                                     :disabled="!form.warehouse_id"
-
                                     id="select-width"
                                     ref="selectSearchNormal"
                                     slot="prepend"
@@ -395,7 +394,7 @@ export default {
 
         async searchRemoteItems(input) {
             // console.error(input.length)
-                if (this.form.warehouse_id && this.form.warehouse_id > 0 && input.length > 2) {
+                if (this.form.warehouse_id && this.form.warehouse_id > 0 && input.length > 1) {
                     this.loading_search = true
                     const params = {
                         'input': input,
@@ -405,10 +404,10 @@ export default {
                     await this.$http
                         .post(`/${this.resource}/search-items`, {params})
                         .then(response => {
-                            this.items = response.data.items
-                            // this.enabledSearchItemsBarcode()
-                            // this.enabledSearchItemBySeries()
-                            if (this.items.length == 0) {
+                            let items = response.data.items;
+                            if (items.length > 0) {
+                                this.filterWords(input, items);
+                            } else {
                                 this.filterItems()
                             }
                         })
@@ -428,6 +427,15 @@ export default {
         focusSelectItem() {
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
         },
+
+        filterWords(input, items) {
+            let search_value = input.toLowerCase();
+            this.items = items.filter((item) => {
+                let text_filter = item.text_filter.toLowerCase();
+                return !search_value.split(' ')
+                    .some(p=> !text_filter.includes(p));
+            });
+        }
     }
 };
 </script>
