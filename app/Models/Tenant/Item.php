@@ -893,6 +893,7 @@ class Item extends ModelTenant
             'full_description'                 => $detail['full_description'],
             'model'                            => $this->model,
             'brand'                            => $detail['brand'],
+            'text_filter' => $this->text_filter,
             'stock_by_extra'                            =>  $stockPerCategory,
             'warehouse_description'            => $detail['warehouse_description'],
             'extra'                         => collect([

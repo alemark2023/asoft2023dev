@@ -405,13 +405,10 @@ export default {
                         .post(`/${this.resource}/search-items`, {params})
                         .then(response => {
                             let items = response.data.items;
-                            // this.items = response.data.items
-                            // this.enabledSearchItemsBarcode()
-                            // this.enabledSearchItemBySeries()
-                            if (this.items.length === 0) {
-                                this.filterItems()
-                            } else {
+                            if (items.length > 0) {
                                 this.filterWords(input, items);
+                            } else {
+                                this.filterItems()
                             }
                         })
                     .finally(()=>{
