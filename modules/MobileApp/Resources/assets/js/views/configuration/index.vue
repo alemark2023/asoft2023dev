@@ -31,7 +31,7 @@
                                         </el-radio-group>
                                     </el-form-item>
                                     <el-form-item label="Encabezado" class="mb-0">
-                                        <el-radio-group class="pt-1" v-model="form.header_waves">
+                                        <el-radio-group class="pt-1" v-model="form.header_waves" @change="changeHeaderWaves()">
                                             <el-radio :label="0">Plano</el-radio>
                                             <el-radio :label="1">Ondulado</el-radio>
                                         </el-radio-group>
@@ -57,10 +57,13 @@
                         <tenant-mobile-app-permissions></tenant-mobile-app-permissions>
                     </div>
                 </div>
-                
+
             </div>
             <div class="col-md-5">
-                <iframe :src="path_app" frameborder="0" height="600" ref="appIframe" style="z-index: 999;min-width: 350px;"></iframe>
+                <iframe :src="path_app" frameborder="0" height="750" ref="appIframe" style="z-index: 999;min-width: 350px;" class="">
+                    <i>Speaker</i>
+                    <b>Camera</b>
+                </iframe>
             </div>
 
         </div>
@@ -70,14 +73,13 @@
 <style scoped lang="scss">
 .iphone-x {
   position: relative;
-  margin: 40px auto;
+  margin: 25px auto;
   min-width: 330px;
-  height: 740px;
-  background-color: #7371ee;
-  background-image: linear-gradient(60deg, #7371ee 1%, #a1d9d6 100%);
+  height: 750px;
+  background-color: #ccc;
   border-radius: 40px;
-  box-shadow: 0px 0px 0px 11px #1f1f1f, 0px 0px 0px 13px #191919,
-    0px 0px 0px 20px #111;
+  box-shadow: 0px 0px 0px 7px #1f1f1f, 0px 0px 0px 13px #191919,
+    0px 0px 0px 14px #111;
 
   &:before,
   &:after {
@@ -169,7 +171,6 @@
                             this.loading = false
                         })
 
-
             },
             initForm(){
 
@@ -216,6 +217,26 @@
                         break
                 }
             },
+            changeHeaderWaves() {
+                let iframe = this.$refs.appIframe
+                let doc = iframe.contentDocument
+                let waves = doc.body.querySelectorAll('div.waves')
+
+                switch (this.form.header_waves) {
+                    case 0:
+                        waves.forEach(el => {
+                            el.parentNode.classList.remove('display-flex')
+                            el.parentNode.classList.add('display-none')
+                        })
+                        break
+                    default:
+                        waves.forEach(el => {
+                            el.parentNode.classList.add('display-flex')
+                            el.parentNode.classList.remove('display-none')
+                        })
+                        break
+                }
+            },
             async checkConfiguration(){
 
                 const iframe = this.$refs.appIframe
@@ -224,6 +245,7 @@
                 await iframe.addEventListener('load', function() {
                     context.changeThemePrimary()
                     context.changeThemeCards()
+                    context.changeHeaderWaves()
                 })
 
             },
