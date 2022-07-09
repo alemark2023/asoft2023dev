@@ -261,7 +261,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
 
     //procedimiento para agregar isc
-    if(has_isc){
+    if (has_isc) {
 
         row.total_base_isc = _.round(total_value, 2) //total valor antes de aplicar isc
         row.total_isc = _.round(total_value * (row.percentage_isc / 100), 2)
@@ -407,9 +407,22 @@ function sumAmountDiscountsNoBaseByItem(row) {
     return sum_discount_no_base
 }
 
-function FormatUnitPriceRow(unit_price){
+function FormatUnitPriceRow(unit_price) {
     return _.round(unit_price, 6)
     // return unit_price.toFixed(6)
 }
 
-export {calculateRowItem, getUniqueArray, showNamePdfOfDescription, sumAmountDiscountsNoBaseByItem, FormatUnitPriceRow}
+
+const filterWords = (input, items) => {
+    let search_value = input.toLowerCase();
+    return items.filter((item) => {
+        let text_filter = item.text_filter.toLowerCase();
+        return !search_value.split(' ')
+            .some(p => !text_filter.includes(p));
+    });
+}
+
+export {
+    calculateRowItem, getUniqueArray, showNamePdfOfDescription,
+    sumAmountDiscountsNoBaseByItem, FormatUnitPriceRow, filterWords
+}

@@ -217,6 +217,7 @@
 <script>
 import OutputLotsForm from "./partials/lots.vue";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../../../resources/js/helpers/modal_item";
+import {filterWords} from "../../../../../../resources/js/helpers/functions";
 
 export default {
     props: [],
@@ -406,7 +407,7 @@ export default {
                         .then(response => {
                             let items = response.data.items;
                             if (items.length > 0) {
-                                this.filterWords(input, items);
+                                this.items = filterWords(input, items);
                             } else {
                                 this.filterItems()
                             }
@@ -428,14 +429,7 @@ export default {
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
         },
 
-        filterWords(input, items) {
-            let search_value = input.toLowerCase();
-            this.items = items.filter((item) => {
-                let text_filter = item.text_filter.toLowerCase();
-                return !search_value.split(' ')
-                    .some(p=> !text_filter.includes(p));
-            });
-        }
+
     }
 };
 </script>
