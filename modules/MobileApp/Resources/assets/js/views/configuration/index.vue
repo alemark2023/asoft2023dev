@@ -60,7 +60,7 @@
 
             </div>
             <div class="col-md-5">
-                <iframe :src="path_app" frameborder="0" height="750" ref="appIframe" style="z-index: 999;min-width: 350px;" class="">
+                <iframe :src="path_app" frameborder="0" height="750" ref="appIframe" style="z-index: 999;min-width: 350px;" class="iphone-x">
                     <i>Speaker</i>
                     <b>Camera</b>
                 </iframe>
