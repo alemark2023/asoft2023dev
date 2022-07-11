@@ -3624,10 +3624,6 @@ export default {
             }
         },
         async reloadDataCustomers(customer_id) {
-            // this.$http.get(`/${this.resource}/table/customers`).then((response) => {
-            //     this.customers = response.data
-            //     this.form.customer_id = customer_id
-            // })
             await this.$http.get(`/${this.resource}/search/customer/${customer_id}`).then((response) => {
                 this.customers = response.data.customers
                 this.form.customer_id = customer_id
