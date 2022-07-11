@@ -1851,6 +1851,7 @@ export default {
                 total_pending_payment: 0,
                 has_retention: false,
                 retention: {},
+                quotation_id: null,
             }
 
             this.form_cash_document = {
@@ -2088,6 +2089,8 @@ export default {
             this.form.fee = data.fee;
             this.form.retention = data.retention
 
+            this.form.quotation_id = data.quotation_id;
+            console.log('11111');
             // this.form.fee = [];
             this.prepareDataDetraction()
             this.prepareDataRetention()

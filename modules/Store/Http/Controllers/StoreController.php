@@ -5,6 +5,7 @@ namespace Modules\Store\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Quotation;
+use App\Models\Tenant\Series;
 
 class StoreController extends Controller
 {
@@ -27,15 +28,33 @@ class StoreController extends Controller
         $person = $record->person;
 
         $rec = $record->toArray();
-        $rec['document_type_id'] = $person->identity_document_type_id === '6'?'01':'03';
+        $document_type_id = $person->identity_document_type_id === '6'?'01':'03';
+
+        $series = Series::query()
+            ->select('number')
+            ->where('establishment_id', $rec['establishment_id'])
+            ->where('document_type_id', $document_type_id)
+            ->first();
+
+        foreach ($rec['items'] as &$item) {
+            $item['total_plastic_bag_taxes'] = 0;
+        }
+
+        $rec['document_type_id'] = $document_type_id;
         $rec['operation_type_id'] = '0101';
+        $rec['number'] = '#';
         $rec['date_of_issue'] = now()->format('Y-m-d');
         $rec['fee'] = [];
         $rec['charges'] = [];
         $rec['discounts'] = [];
         $rec['payments'] = [];
         $rec['payment_condition_id'] = '01';
-
+        $rec['series'] = $series->number;
+        $rec['ubl_version'] = '2.1';
+        $rec['unique_filename'] = '';
+        $rec['user_rel_suscription_plan_id'] = 0;
+        $rec['was_deducted_prepayment'] = 0;
+        $rec['quotation_id'] = $table_id;
         return [
             'success' => true,
             'data' => $rec

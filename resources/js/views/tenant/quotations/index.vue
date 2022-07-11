@@ -178,7 +178,7 @@
                                     type="button"
                                     class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)" >
-                                Generar comprobante 2
+                                Generar nota de venta
                             </button>
 
                             <a v-if="row.documents.length == 0 && row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
