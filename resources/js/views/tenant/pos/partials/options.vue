@@ -209,7 +209,11 @@
                 }
                 else if(this.resource == 'documents')
                 {
-                    window.open(`downloads/documents/${type}/${external_id}/${format}`, '_blank');
+                    if(format=='ticket'){
+                        window.open(`/downloads/Document/${type}/${external_id}/pdf`, '_blank');
+                    }else{
+                        window.open(`downloads/documents/${type}/${external_id}/${format}`, '_blank');
+                    }
                 }
 
             },
@@ -295,9 +299,14 @@
                 window.open(`${url}`, '_blank');
             },
             changeActiveName() {
-                this.activeName = this.config.show_ticket_80 ? 'first' : 'second';
-                this.activeName = this.config.show_ticket_58 ? 'first' : 'second';
-                this.activeName = this.config.show_ticket_50 ? 'first' : 'second';
+                this.loadConfiguration();
+                this.activeName =( this.config!== null && this.config.show_ticket_80) ? 'first' : 'quarter';
+                if((!this.config.show_ticket_80&&this.config.show_ticket_50)||(!this.config.show_ticket_80&&!this.config.show_ticket_50)){
+                    this.activeName = ( this.config!== null &&this.config.show_ticket_58) ? 'second' : 'third';
+                }
+                if(!this.config.show_ticket_58&&!this.config.show_ticket_80){
+                    this.activeName = ( this.config!== null &&this.config.show_ticket_50) ? 'third' : 'quarter';
+                }
             }
             // clickConsultCdr(document_id) {
             //     this.$http.get(`/${this.resource}/consult_cdr/${document_id}`)
