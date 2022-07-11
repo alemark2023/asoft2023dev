@@ -2,7 +2,7 @@
     <div>
         <div class="card">
             <div class="card-body">
-                <h4>Asignar permisos</h4>
+                <h4>Gestionar permisos</h4>
 
                 <div class="table-responsive">
                     <table class="table">
@@ -79,7 +79,7 @@
                     this.$message.warning('El usuario principal tiene todos los permisos asignados, no puede modificarlos.')
                 }
 
-            }, 
+            },
         }
     }
 </script>
