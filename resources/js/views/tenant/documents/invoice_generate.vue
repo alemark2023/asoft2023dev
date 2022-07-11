@@ -1417,6 +1417,7 @@
                           :isContingency="is_contingency"
                           :isUpdate="isUpdate"
                           :recordId="documentNewId"
+                          :table="table"
                           :showClose="false"
                           :showDialog.sync="showDialogOptions"></document-options>
 
@@ -3616,7 +3617,11 @@ export default {
 
         },
         close() {
-            location.href = (this.is_contingency) ? `/contingencies` : `/${this.resource}`
+            if(this.table) {
+                location.href = `/${this.table}`
+            } else {
+                location.href = (this.is_contingency) ? `/contingencies` : `/${this.resource}`
+            }
         },
         async reloadDataCustomers(customer_id) {
             // this.$http.get(`/${this.resource}/table/customers`).then((response) => {
