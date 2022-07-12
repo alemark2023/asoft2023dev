@@ -17,35 +17,65 @@
                             <div class="card-body">
                                 <h4>Configuración gráfica</h4>
                                 <el-form ref="form" :model="form" label-width="145px" size="mini">
-                                    <el-form-item label="Color de tema" class="mb-0">
-                                        <el-radio-group class="pt-1" v-model="form.theme_color" @change="changeThemePrimary()">
-                                            <el-radio label="blue">Azul</el-radio>
-                                            <el-radio label="red">Rojo</el-radio>
-                                            <el-radio label="dark">Oscuro</el-radio>
-                                        </el-radio-group>
-                                    </el-form-item>
-                                    <el-form-item label="Color de cajas" class="mb-0">
-                                        <el-radio-group class="pt-1" v-model="form.card_color" @change="changeThemeCards()">
-                                            <el-radio label="multicolored">Multicolor</el-radio>
-                                            <el-radio label="unicolor">Unicolor</el-radio>
-                                        </el-radio-group>
-                                    </el-form-item>
-                                    <el-form-item label="Encabezado" class="mb-0">
-                                        <el-radio-group class="pt-1" v-model="form.header_waves" @change="changeHeaderWaves()">
-                                            <el-radio :label="0">Plano</el-radio>
-                                            <el-radio :label="1">Ondulado</el-radio>
-                                        </el-radio-group>
-                                    </el-form-item>
-
-                                    <!-- no funcionales desde aqui -->
-                                    <!-- <el-form-item label="Tipo de operación" class="mb-0">
-                                        <el-radio-group class="pt-1" v-model="form.operation_type">
-                                            <el-radio :label="1">Facturación</el-radio>
-                                            <el-radio :label="2">POS</el-radio>
-                                        </el-radio-group>
-                                    </el-form-item>
-                                    <el-form-item label="Permisos" class="mb-0">
-                                    </el-form-item> -->
+                                    <el-tabs tab-position="left" style="min-height: 200px;">
+                                        <el-tab-pane label="Color de tema">
+                                            <el-radio-group class="pt-2" v-model="form.theme_color" @change="changeThemePrimary()">
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <el-radio label="blue">Azul</el-radio>
+                                                        <div style="width: 60px; height: 60px; background-color: #4A2CB3;"></div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <el-radio label="red">Rojo</el-radio>
+                                                        <div style="width: 60px; height: 60px; background-color: #cb2027;"></div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <el-radio label="dark">Oscuro</el-radio>
+                                                        <div style="width: 60px; height: 60px; background-color: #1A1F1D;"></div>
+                                                    </div>
+                                                </div>
+                                            </el-radio-group>
+                                        </el-tab-pane>
+                                        <el-tab-pane label="Color de cajas">
+                                            <el-radio-group class="pt-2" v-model="form.card_color" @change="changeThemeCards()">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <el-radio style="display:block;" label="multicolored">Multicolor</el-radio>
+                                                        <div style="width: 30px; height: 30px; background-color: #4A2CB3;display: inline-block;"></div>
+                                                        <div style="width: 30px; height: 30px; background-color: #3827B4;display: inline-block;"></div>
+                                                        <div style="width: 30px; height: 30px; background-color: #331B83;display: inline-block;"></div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <el-radio label="unicolor">Unicolor</el-radio>
+                                                        <div style="width: 20px; height: 20px; background-color: #4A2CB3;"></div>
+                                                    </div>
+                                                </div>
+                                            </el-radio-group>
+                                        </el-tab-pane>
+                                        <el-tab-pane label="Encabezado">
+                                            <el-radio-group class="pt-2" v-model="form.header_waves" @change="changeHeaderWaves()">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <el-radio :label="0" style="display:block">Plano</el-radio>
+                                                        <div style="width: 150px; height: 40px; background-color: #4A2CB3;"></div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <el-radio :label="1" style="display:block;">Ondulado</el-radio>
+                                                        <div style="width: 150px; height: 10px; background-color: #4A2CB3;"></div>
+                                                        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 180" preserveAspectRatio="none" style="width: 150px;height: 120px;">
+                                                            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" style="fill:#4A2CB3;"></path>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </el-radio-group>
+                                        </el-tab-pane>
+                                        <!-- <el-tab-pane label="Tipo de operación">
+                                            <el-radio-group class="pt-2" v-model="form.operation_type">
+                                                <el-radio :label="1">Facturación</el-radio>
+                                                <el-radio :label="2">POS</el-radio>
+                                            </el-radio-group>
+                                        </el-tab-pane> -->
+                                    </el-tabs>
                                     <div class="form-actions text-right mt-4">
                                         <el-button type="primary" @click.prevent="submit" :loading="loading_submit">Guardar</el-button>
                                     </div>
