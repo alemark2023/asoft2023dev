@@ -217,6 +217,8 @@
             'subtotal',
             'total_igv_free',
             'unique_filename', //registra nombre de archivo unico (campo para evitar duplicidad)
+            
+            'terms_condition',
         ];
 
         protected $casts = [

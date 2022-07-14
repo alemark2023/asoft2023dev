@@ -1180,6 +1180,29 @@
                                             v-text="errors.cotizaction_finance[0]"></small>
                                 </div>
                             </div>
+
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Afectacion de terminos y condiciones - ventas en todos los comprobantes
+                                    <el-tooltip class="item"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <div slot="content">Leyenda: facturas, boletas, notas de ventas, guias de remision
+                                        </div>
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.affect_all_documents}"
+                                        class="form-group">
+                                    <el-switch v-model="form.affect_all_documents"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.affect_all_documents"
+                                            class="form-control-feedback"
+                                            v-text="errors.affect_all_documents[0]"></small>
+                                </div>
+                            </div>
+
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">Mostrar leyenda en footer - pdf
                                     <el-tooltip class="item"
@@ -1884,6 +1907,8 @@ export default {
                 generate_order_note_from_quotation: false,
                 list_items_by_warehouse: false,
                 hide_pdf_view_documents: false,
+
+                affect_all_documents:false,
             };
         },
         UpdateFormPurchase(e) {

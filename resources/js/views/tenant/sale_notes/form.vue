@@ -813,6 +813,7 @@
                     payment_method_type_id:null,
                     paid: false,
                     observation: null,
+                    terms_condition:null,
                 }
 
                 this.total_discount_no_base = 0
@@ -1089,6 +1090,10 @@
 
             },
             async submit() {
+
+                if (this.config.affect_all_documents) {
+                    this.form.terms_condition = this.config.terms_condition_sale;
+                }
 
                 let validate = await this.validate_payments()
                 if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
