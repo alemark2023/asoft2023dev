@@ -61,7 +61,7 @@ class MobileController extends Controller
             'token' => $user->api_token,
             'restaurant_role_id' => $user->restaurant_role_id,
             'ruc' => $company->number,
-            'logo' => $company->logo,
+            'app_logo' => $company->app_logo,
             'app_configuration' => $this->getAppConfiguration(),
         ];
 
