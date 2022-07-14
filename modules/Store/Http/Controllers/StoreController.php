@@ -38,6 +38,9 @@ class StoreController extends Controller
 
         foreach ($rec['items'] as &$item) {
             $item['total_plastic_bag_taxes'] = 0;
+            $item['attributes'] = ($item['attributes'])?(array)$item['attributes']:[];
+            $item['charges'] = ($item['charges'])?(array)$item['charges']:[];
+            $item['discounts'] = ($item['discounts'])?(array)$item['discounts']:[];
         }
 
         $rec['document_type_id'] = $document_type_id;
@@ -48,6 +51,7 @@ class StoreController extends Controller
         $rec['charges'] = [];
         $rec['discounts'] = [];
         $rec['payments'] = [];
+        $rec['guides'] = [];
         $rec['payment_condition_id'] = '01';
         $rec['series'] = $series->number;
         $rec['ubl_version'] = '2.1';
