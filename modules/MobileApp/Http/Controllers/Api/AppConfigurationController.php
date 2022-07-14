@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Modules\MobileApp\Http\Resources\Api\AppConfigurationResource;
 use Modules\MobileApp\Http\Requests\Api\AppConfigurationRequest;
 use Modules\MobileApp\Models\AppConfiguration;
+use App\Models\Tenant\{
+    Company
+};
 
 
 class AppConfigurationController extends Controller
@@ -57,7 +60,10 @@ class AppConfigurationController extends Controller
     {
         return [
             'style_settings' => AppConfiguration::firstOrFail()->getRowInitialSettings(),
-            'permissions' => auth()->user()->getAppPermission()
+            'permissions' => auth()->user()->getAppPermission(),
+            'generals' => [
+                'app_logo' => Company::getAppUrlLogo()
+            ],
         ];
     }
 

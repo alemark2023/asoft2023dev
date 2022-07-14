@@ -83,6 +83,12 @@ class CompanyController extends Controller
 			    $file->storeAs('public/uploads/favicons', $filename);
             }
 
+            if (($type === 'app_logo')) 
+            {
+                request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048']);
+                $file->storeAs('public/uploads/logos', $name);
+            }
+
 
             if (($type === 'img_firm')) request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
 
