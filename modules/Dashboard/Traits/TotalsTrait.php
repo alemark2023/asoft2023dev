@@ -10,6 +10,8 @@ use Carbon\Carbon;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Purchase;
 use Modules\Expense\Models\Expense;
+use Modules\Order\Models\OrderNote;
+
 
 trait TotalsTrait
 {
@@ -232,6 +234,32 @@ trait TotalsTrait
                 'total' => round($document_total,2),
             ]
         ];
+    }
+
+        
+    /**
+     * 
+     * Obtener suma total de pedidos
+     *
+     * @param  int $establishment_id
+     * @param  string $date_start
+     * @param  string $date_end
+     * @return float
+     */
+    public function getTotalsOrderNote($establishment_id, $date_start, $date_end)
+    {
+        
+        $order_notes = OrderNote::where('establishment_id', $establishment_id)->whereStateTypeAccepted();
+
+        if($date_start && $date_end)
+        {
+            $order_notes->whereBetween('date_of_issue', [$date_start, $date_end]);
+        }
+
+        return $order_notes->get()->sum(function($row){
+            return $row->getTransformTotal();
+        });
+
     }
 
 }

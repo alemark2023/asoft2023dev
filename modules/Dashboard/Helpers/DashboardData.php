@@ -912,7 +912,13 @@ class DashboardData
      */
     public function getGeneralTotals($establishment_id, $d_start, $d_end, $period, $month_start, $month_end)
     {
-        return $this->totals($establishment_id, $d_start, $d_end, $period, $month_start, $month_end);
+        $data = $this->totals($establishment_id, $d_start, $d_end, $period, $month_start, $month_end);
+
+        $data['totals']['total_order_notes'] = $this->getTotalsOrderNote($establishment_id, $d_start, $d_end);
+        // dd($data);
+
+        return $data;
     }
+
 
 }

@@ -532,6 +532,8 @@ class Purchase extends ModelTenant
             'number'                         => $this->number_full,
             'supplier_name'                  => $this->supplier->name,
             'supplier_number'                => $this->supplier->number,
+            'supplier_telephone'             => optional($this->supplier)->telephone,
+            'supplier_email'                 => optional($this->supplier)->email,
             'currency_type_id'               => $this->currency_type_id,
             'total_exportation'              => $this->total_exportation,
             'total_free'                     => self::NumberFormat($this->total_free),

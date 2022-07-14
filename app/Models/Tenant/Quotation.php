@@ -366,6 +366,8 @@ class Quotation extends ModelTenant
             'customer_id' => $row->customer_id,
             'customer_name' => $row->customer->name,
             'customer_number' => $row->customer->number,
+            'customer_telephone' => $row->customer->telephone,
+            'customer_email' => optional($row->customer)->email,
             'currency_type_id' => $row->currency_type_id,
             'total_exportation' => number_format($row->total_exportation,2),
             'total_free' => number_format($row->total_free,2),
