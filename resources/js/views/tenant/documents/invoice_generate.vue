@@ -1706,8 +1706,6 @@ export default {
         if (this.table) {
             await this.$http.get(`/store/record/${this.table}/${this.tableId}`)
                 .then(response => {
-                    console.log('*****');
-                    console.log(response.data);
                     this.onSetFormData(response.data.data);
                 })
                 .finally(() => this.loading_submit = false);
@@ -2020,7 +2018,6 @@ export default {
             this.form.customer_id = data.customer_id;
             this.form.currency_type_id = data.currency_type_id;
             this.form.exchange_rate_sale = data.exchange_rate_sale;
-            this.form.additional_information = this.onPrepareAdditionalInformation(data.additional_information);
             this.form.external_id = data.external_id;
             this.form.filename = data.filename;
             this.form.group_id = data.group_id;
@@ -2091,7 +2088,10 @@ export default {
             this.form.retention = data.retention
 
             this.form.quotation_id = data.quotation_id;
-            console.log('11111');
+
+            this.form.additional_information = this.onPrepareAdditionalInformation(data.additional_information);
+
+            // this.form.additional_information = data.additional_information;
             // this.form.fee = [];
             this.prepareDataDetraction()
             this.prepareDataRetention()
@@ -2176,28 +2176,17 @@ export default {
             }
         },
         onPrepareAdditionalInformation(data) {
-
             let obs = null
-
             if (Array.isArray(data)) {
-
                 if (data.length > 0) {
                     if (data[0] == '') {
                         return obs;
                     }
                 }
-
-                obs = data.join('|')
-
+                return data.join('|')
             }
-            // if (typeof data === 'object') {
-            //     if (data[0]) {
-            //         return data;
-            //     }
-            //     return null;
-            // }
 
-            return obs;
+            return data;
         },
         onPrepareItems(items) {
             return items.map(i => {
@@ -2770,7 +2759,6 @@ export default {
 
         },
         async changeOperationType() {
-            this.form.customer_id = null
             await this.filterCustomers();
             await this.setDataDetraction();
         },
@@ -2993,8 +2981,15 @@ export default {
         },
         filterCustomers() {
             if (['0101', '1001', '1004'].includes(this.form.operation_type_id)) {
-
                 if (this.form.document_type_id === '01') {
+
+                    if(!_.isNull(this.form.customer_id)) {
+                        const cus = _.find(this.all_customers, {'id': this.form.customer_id});
+                        if(cus && cus.identity_document_type_id !== '6') {
+                            this.form.customer_id = null
+                        }
+                    }
+
                     this.customers = _.filter(this.all_customers, {'identity_document_type_id': '6'})
                 } else {
                     if (this.document_type_03_filter) {
@@ -3005,7 +3000,6 @@ export default {
                         this.customers = this.all_customers
                     }
                 }
-
             } else {
                 this.customers = this.all_customers
             }

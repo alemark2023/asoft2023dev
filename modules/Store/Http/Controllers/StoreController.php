@@ -55,6 +55,9 @@ class StoreController extends Controller
         $rec['user_rel_suscription_plan_id'] = 0;
         $rec['was_deducted_prepayment'] = 0;
         $rec['quotation_id'] = $table_id;
+        $rec['quotation_id'] = $table_id;
+        $rec['additional_information'] = $rec['description'];
+
         return [
             'success' => true,
             'data' => $rec
