@@ -143,7 +143,8 @@ class MobileController extends Controller
                             'internal_id' => $row->internal_id,
                             'item_code' => $row->item_code,
                             'currency_type_symbol' => $row->currency_type->symbol,
-                            'sale_unit_price' => number_format( $row->sale_unit_price, 2),
+                            'sale_unit_price' => $row->generalApplyNumberFormat($row->sale_unit_price),
+                            // 'sale_unit_price' => number_format($row->sale_unit_price, 2),
                             'price' => $row->sale_unit_price,
                             'purchase_unit_price' => $row->purchase_unit_price,
                             'unit_type_id' => $row->unit_type_id,
@@ -153,11 +154,10 @@ class MobileController extends Controller
                             'has_igv' => (bool) $row->has_igv,
                             'is_set' => (bool) $row->is_set,
                             'aux_quantity' => 1,
-                    'brand' => $row->brand->name,
-                    'category' => $row->brand->name,
-                    'stock' => $row->unit_type_id!='ZZ' ? ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock : '0',
-                    'image' => $row->image != "imagen-no-disponible.jpg" ? url("/storage/uploads/items/" . $row->image) : url("/logo/" . $row->image),
-
+                            'brand' => $row->brand->name,
+                            'category' => $row->brand->name,
+                            'stock' => $row->unit_type_id!='ZZ' ? ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock : '0',
+                            'image' => $row->image != "imagen-no-disponible.jpg" ? url("/storage/uploads/items/" . $row->image) : url("/logo/" . $row->image),
                         ];
                     });
 
@@ -376,7 +376,8 @@ class MobileController extends Controller
                             'internal_id' => $row->internal_id,
                             'item_code' => $row->item_code ?? '',
                             'currency_type_symbol' => $row->currency_type->symbol,
-                            'sale_unit_price' => number_format( $row->sale_unit_price, 2),
+                            'sale_unit_price' => $row->generalApplyNumberFormat($row->sale_unit_price),
+                            // 'sale_unit_price' => number_format( $row->sale_unit_price, 2),
                             'purchase_unit_price' => $row->purchase_unit_price,
                             'unit_type_id' => $row->unit_type_id,
                             'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
