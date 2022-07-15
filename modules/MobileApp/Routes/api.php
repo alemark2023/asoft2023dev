@@ -76,6 +76,7 @@ if ($hostname)
 
             
             Route::prefix('reports')->group(function () {
+                Route::get('filters', 'Api\ReportController@filters');
                 Route::post('general-sale', 'Api\ReportController@reportGeneralSale');
             });
 

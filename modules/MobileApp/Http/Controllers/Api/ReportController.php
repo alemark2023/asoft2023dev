@@ -8,23 +8,37 @@ use App\Http\Controllers\Controller;
 use Modules\Dashboard\Helpers\DashboardData;
 use App\CoreFacturalo\Helpers\Functions\FunctionsHelper;
 use Modules\MobileApp\Http\Requests\Api\ReportGeneralSaleRequest;
+use App\Models\Tenant\Establishment;
 
 
 class ReportController extends Controller
 {
-
     
+    /**
+     *
+     * @return array
+     */
+    public function filters()
+    {
+        $establishments = Establishment::filterDataForTables()->get();
+
+        return compact('establishments');
+    }
+    
+
     /**
      * 
      * Reporte general de ventas
+     * Totales incluye pedidos, notas de venta, cpe
+     * Gráfico incluye notas de venta, cpe
      *
-     * @param  Request $request
+     * @param  ReportGeneralSaleRequest $request
      * @return array
      */
     public function reportGeneralSale(ReportGeneralSaleRequest $request)
     {
 
-        $establishment_id = auth()->user()->establishment_id;
+        $establishment_id = $request['establishment_id'] ?? auth()->user()->establishment_id;
         $period = $request['period'];
         $month_start = $request['month_start'];
         $month_end = $request['month_end'];

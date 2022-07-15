@@ -248,18 +248,24 @@ trait TotalsTrait
      */
     public function getTotalsOrderNote($establishment_id, $date_start, $date_end)
     {
-        
-        $order_notes = OrderNote::where('establishment_id', $establishment_id)->whereStateTypeAccepted();
-
-        if($date_start && $date_end)
-        {
-            $order_notes->whereBetween('date_of_issue', [$date_start, $date_end]);
-        }
+        $order_notes = OrderNote::filterTotalsReport($establishment_id, $date_start, $date_end);
 
         return $order_notes->get()->sum(function($row){
             return $row->getTransformTotal();
         });
-
+    }
+    
+    
+    /**
+     * Redondear número
+     *
+     * @param  float $value
+     * @param  int $decimals
+     * @return float
+     */
+    public function roundNumber($value, $decimals = 2)
+    {
+        return number_format($value, $decimals, ".", "");
     }
 
 }

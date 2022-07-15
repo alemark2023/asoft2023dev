@@ -78,4 +78,31 @@ class Establishment extends ModelTenant
         }
         return $query->where('id',$user->establishment_id);
     }
+
+        
+    /**
+     * Filtro para no incluir relaciones y obtener campos necesarios
+     * Usado para obtener data para filtros, dependencias.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterDataForTables($query)
+    {   
+        $query->whereFilterWithOutRelations()->select('id', 'description');
+    }
+
+    
+    /**
+     * 
+     * Filtro para no incluir relaciones en consulta
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */  
+    public function scopeWhereFilterWithOutRelations($query)
+    {
+        return $query->withOut(['country', 'department', 'province', 'district']);
+    }
+
 }

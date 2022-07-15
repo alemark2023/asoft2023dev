@@ -712,4 +712,30 @@
             return ($this->currency_type_id === 'PEN') ? $this->total : ($this->total * $this->exchange_rate_sale);
         }
         
+        
+        /**
+         * 
+         * Obtener suma total del pedidos
+         *
+         * @param  Builder $query
+         * @param  string $date_start
+         * @param  string $date_end
+         * @return Builder
+         */
+        public function scopeFilterTotalsReport($query, $establishment_id, $date_start, $date_end)
+        {
+            $query->whereDoesntHave('documents')
+                    ->whereDoesntHave('sale_notes')
+                    ->where('establishment_id', $establishment_id)
+                    ->whereStateTypeAccepted();
+
+            if($date_start && $date_end)
+            {
+                $query->whereBetween('date_of_issue', [$date_start, $date_end]);
+            }
+
+            return $query;
+        }
+
+
     }
