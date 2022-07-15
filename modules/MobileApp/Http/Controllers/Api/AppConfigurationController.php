@@ -58,11 +58,15 @@ class AppConfigurationController extends Controller
      */
     public function getInitialSettings()
     {
+
+        $user = auth()->user();
+
         return [
             'style_settings' => AppConfiguration::firstOrFail()->getRowInitialSettings(),
-            'permissions' => auth()->user()->getAppPermission(),
+            'permissions' => $user->getAppPermission(),
             'generals' => [
-                'app_logo' => Company::getAppUrlLogo()
+                'app_logo' => Company::getAppUrlLogo(),
+                'user_data' => $user->getGeneralDataApp()
             ],
         ];
     }

@@ -1003,7 +1003,22 @@ $withEstablishment = true){
             return $row->getPermissionsApp();
         });
     }
-
     
+
+    /**
+     * 
+     * Obtener datos generales del usuario
+     * 
+     * Usado para carga inicial en app
+     *
+     * @return array
+     */
+    public function getGeneralDataApp()
+    {
+        return [
+            'type' => $this->type,
+            'establishment_id' => $this->establishment_id,
+        ];
+    }
 
 }
