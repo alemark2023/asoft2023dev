@@ -980,7 +980,8 @@ $withEstablishment = true){
     public function getAppPermission()
     {
         // si es usuario principal y no tiene permisos asignados
-        if($this->id === 1 && $this->type === 'admin' && $this->app_modules->count() === 0)
+        if($this->id === 1 && $this->type === 'admin')
+        // if($this->id === 1 && $this->type === 'admin' && $this->app_modules->count() === 0)
         {
             return $this->getTransformPermissionsApp(AppModule::get());
         }
