@@ -47,7 +47,6 @@
                 </a>
             </li>
         </ul>
-
         @if($vc_document > 0 || $vc_document_regularize_shipping > 0 || $vc_finished_downloads > 0)
         <span class="separator"></span>
         <ul class="notifications">
@@ -56,10 +55,8 @@
                     <i class="far fa-bell text-secondary"></i>
                     <span class="badge {{ $vc_document == 0 && $vc_document_regularize_shipping == 0 && $vc_finished_downloads > 0 ? 'badge-info' : '' }}">!</span>
                 </a>
-
                 <div id="dn-menu" class="dropdown-menu notification-menu" style="">
                     <div class="notification-title"></div>
-
                     <div class="content">
                         <ul>
                             @if($vc_document > 0)
