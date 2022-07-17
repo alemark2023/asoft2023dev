@@ -407,7 +407,7 @@ export default {
                         .then(response => {
                             let items = response.data.items;
                             if (items.length > 0) {
-                                this.items = filterWords(input, items);
+                                this.items = items; //filterWords(input, items);
                             } else {
                                 this.filterItems()
                             }

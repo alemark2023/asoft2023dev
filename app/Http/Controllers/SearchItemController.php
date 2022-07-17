@@ -253,6 +253,7 @@
             $input = self::setInputByRequest($request);
 
             if (!empty($input)) {
+
                 $whereItem[] = ['description', 'like', '%' . str_replace(' ','%',$input) . '%'];
                 $whereItem[] = ['internal_id', 'like', '%' . $input . '%'];
                 $whereItem[] = ['barcode', '=', $input];
@@ -275,6 +276,7 @@
                             $query->where($whereExtra);
                         });
                 }
+
                 $item->OrWhereJsonContains('attributes', ['value' => $input]);
                 //  Limita los resultados de busqueda, inicial 250, puede modificarse en el .env con NUMBER_SEARCH_ITEMS
                 $item->take(\Config('extra.number_items_in_search'));
@@ -1171,16 +1173,16 @@
             }
 
             if(!empty($whereItem)) {
-
-                $data
+                $data = func_filter_items($data, $input);
+//                $data
 //                    ->selectRaw(
 //                            'match(text_filter) against(? in natural language mode) as score',
 //                            [$params['input']]
 //                        )
-                        ->whereRaw(
-                            'match(text_filter) against(? in natural language mode) > 0.0000001',
-                            [$params['input']]
-                        );
+//                        ->whereRaw(
+//                            'match(text_filter) against(? in natural language mode) > 0.0000001',
+//                            [$params['input']]
+//                        );
 //                        ->orderBy('score', 'desc');
 //                });
 
