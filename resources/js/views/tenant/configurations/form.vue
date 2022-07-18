@@ -58,6 +58,23 @@
                                     </div>
                                 </div>
                             </div>
+
+                            
+                            <div v-if="typeUser != 'integrator'"
+                                    class="col-md-6 mt-4">
+                                <label class="control-label">Enviar boletas de forma individual</label>
+                                <div :class="{'has-danger': errors.ticket_single_shipment}"
+                                        class="form-group">
+                                    <el-switch v-model="form.ticket_single_shipment"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.ticket_single_shipment"
+                                            class="form-control-feedback"
+                                            v-text="errors.ticket_single_shipment[0]"></small>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="second">
@@ -1883,6 +1900,7 @@ export default {
                 order_cash_income: false,
                 generate_order_note_from_quotation: false,
                 list_items_by_warehouse: false,
+                ticket_single_shipment: false,
                 hide_pdf_view_documents: false,
             };
         },
