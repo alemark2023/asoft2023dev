@@ -601,7 +601,7 @@ class ItemController extends Controller
         //     }
         // }
 
-        $this->generateInternalId($request, $item);
+        $this->generateInternalId($item);
         
         /********************************* SECCION PARA PRECIO POR ALMACENES ******************************************/
 
@@ -662,11 +662,10 @@ class ItemController extends Controller
      * 
      * Generar codigo interno de forma automatica
      *
-     * @param  ItemRequest $request
      * @param  Item $item
      * @return void
      */
-    private function generateInternalId(ItemRequest $request, Item &$item)
+    public function generateInternalId(Item &$item)
     {
         $inventory_configuration = InventoryConfiguration::select('generate_internal_id')->firstOrFail();
 

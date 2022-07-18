@@ -34,6 +34,7 @@ use Modules\MobileApp\Models\AppConfiguration;
 use Modules\Item\Models\{
     Category
 };
+use App\Http\Controllers\Tenant\ItemController as ItemWebController;
 
 
 class MobileController extends Controller
@@ -143,7 +144,8 @@ class MobileController extends Controller
                             'internal_id' => $row->internal_id,
                             'item_code' => $row->item_code,
                             'currency_type_symbol' => $row->currency_type->symbol,
-                            'sale_unit_price' => number_format( $row->sale_unit_price, 2),
+                            'sale_unit_price' => $row->generalApplyNumberFormat($row->sale_unit_price),
+                            // 'sale_unit_price' => number_format($row->sale_unit_price, 2),
                             'price' => $row->sale_unit_price,
                             'purchase_unit_price' => $row->purchase_unit_price,
                             'unit_type_id' => $row->unit_type_id,
@@ -153,11 +155,11 @@ class MobileController extends Controller
                             'has_igv' => (bool) $row->has_igv,
                             'is_set' => (bool) $row->is_set,
                             'aux_quantity' => 1,
-                    'brand' => $row->brand->name,
-                    'category' => $row->brand->name,
-                    'stock' => $row->unit_type_id!='ZZ' ? ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock : '0',
-                    'image' => $row->image != "imagen-no-disponible.jpg" ? url("/storage/uploads/items/" . $row->image) : url("/logo/" . $row->image),
-
+                            'brand' => $row->brand->name,
+                            'category' => $row->brand->name,
+                            'stock' => $row->getWarehouseCurrentStock($warehouse),
+                            // 'stock' => $row->unit_type_id!='ZZ' ? ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock : '0',
+                            'image' => $row->image != "imagen-no-disponible.jpg" ? url("/storage/uploads/items/" . $row->image) : url("/logo/" . $row->image),
                         ];
                     });
 
@@ -228,51 +230,60 @@ class MobileController extends Controller
 
     public function item(ItemRequest $request)
     {
-        $row = new Item();
-        $row->item_type_id = '01';
-        $row->amount_plastic_bag_taxes = Configuration::firstOrFail()->amount_plastic_bag_taxes;
-        $row->fill($request->all());
-        $temp_path = $request->input('temp_path');
 
-        if($temp_path) {
+        $row = DB::connection('tenant')->transaction(function () use ($request) {
 
-            $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR;
+            $row = new Item();
+            $row->item_type_id = '01';
+            $row->amount_plastic_bag_taxes = Configuration::firstOrFail()->amount_plastic_bag_taxes;
+            $row->fill($request->all());
+            $temp_path = $request->input('temp_path');
 
-            $file_name_old = $request->input('image');
-            $file_name_old_array = explode('.', $file_name_old);
-            $file_content = file_get_contents($temp_path);
-            $datenow = date('YmdHis');
-            $file_name = Str::slug($row->description).'-'.$datenow.'.'.$file_name_old_array[1];
-            Storage::put($directory.$file_name, $file_content);
-            $row->image = $file_name;
+            if($temp_path) {
 
-            //--- IMAGE SIZE MEDIUM
-            $image = \Image::make($temp_path);
-            $file_name = Str::slug($row->description).'-'.$datenow.'_medium'.'.'.$file_name_old_array[1];
-            $image->resize(512, null, function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
-            Storage::put($directory.$file_name,  (string) $image->encode('jpg', 30));
-            $row->image_medium = $file_name;
+                $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR;
 
-              //--- IMAGE SIZE SMALL
-            $image = \Image::make($temp_path);
-            $file_name = Str::slug($row->description).'-'.$datenow.'_small'.'.'.$file_name_old_array[1];
-            $image->resize(256, null, function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
-            Storage::put($directory.$file_name,  (string) $image->encode('jpg', 20));
-            $row->image_small = $file_name;
+                $file_name_old = $request->input('image');
+                $file_name_old_array = explode('.', $file_name_old);
+                $file_content = file_get_contents($temp_path);
+                $datenow = date('YmdHis');
+                $file_name = Str::slug($row->description).'-'.$datenow.'.'.$file_name_old_array[1];
+                Storage::put($directory.$file_name, $file_content);
+                $row->image = $file_name;
+
+                //--- IMAGE SIZE MEDIUM
+                $image = \Image::make($temp_path);
+                $file_name = Str::slug($row->description).'-'.$datenow.'_medium'.'.'.$file_name_old_array[1];
+                $image->resize(512, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
+                Storage::put($directory.$file_name,  (string) $image->encode('jpg', 30));
+                $row->image_medium = $file_name;
+
+                //--- IMAGE SIZE SMALL
+                $image = \Image::make($temp_path);
+                $file_name = Str::slug($row->description).'-'.$datenow.'_small'.'.'.$file_name_old_array[1];
+                $image->resize(256, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
+                Storage::put($directory.$file_name,  (string) $image->encode('jpg', 20));
+                $row->image_small = $file_name;
 
 
 
-        }else if(!$request->input('image') && !$request->input('temp_path') && !$request->input('image_url')){
-            $row->image = 'imagen-no-disponible.jpg';
-        }
+            }else if(!$request->input('image') && !$request->input('temp_path') && !$request->input('image_url')){
+                $row->image = 'imagen-no-disponible.jpg';
+            }
 
-        $row->save();
+            $row->save();
+
+            (new ItemWebController)->generateInternalId($row);
+
+            return $row;
+
+        });
 
         $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
 
@@ -376,7 +387,8 @@ class MobileController extends Controller
                             'internal_id' => $row->internal_id,
                             'item_code' => $row->item_code ?? '',
                             'currency_type_symbol' => $row->currency_type->symbol,
-                            'sale_unit_price' => number_format( $row->sale_unit_price, 2),
+                            'sale_unit_price' => $row->generalApplyNumberFormat($row->sale_unit_price),
+                            // 'sale_unit_price' => number_format( $row->sale_unit_price, 2),
                             'purchase_unit_price' => $row->purchase_unit_price,
                             'unit_type_id' => $row->unit_type_id,
                             'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
@@ -390,7 +402,8 @@ class MobileController extends Controller
                             'brand' => optional($row->brand)->name,
                             'category_id' => $row->category_id,
                             'category' => optional($row->category)->name,
-                            'stock' => $row->unit_type_id!='ZZ' ? ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock : '0',
+                            'stock' => $row->getWarehouseCurrentStock($warehouse),
+                            // 'stock' => $row->unit_type_id!='ZZ' ? ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock : '0',
                             'image' => $row->image != "imagen-no-disponible.jpg" ? url("/storage/uploads/items/" . $row->image) : url("/logo/" . $row->image),
                             'warehouses' => collect($row->warehouses)->transform(function($row) {
                                 return [
