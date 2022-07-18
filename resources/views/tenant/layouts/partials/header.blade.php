@@ -47,7 +47,45 @@
                 </a>
             </li>
         </ul>
-        @if($vc_document > 0 || $vc_document_regularize_shipping > 0 || $vc_finished_downloads > 0)
+
+        @if($vc_document > 0)
+            <span class="separator"></span>
+            <ul class="notifications">
+                <li>
+                    <a href="{{route('tenant.documents.not_sent')}}" class="notification-icon text-secondary" data-toggle="tooltip" data-placement="bottom" title="Comprobantes no enviados/por enviar">
+                        <i class="far fa-bell text-secondary"></i>
+                        <span class="badge badge-pill badge-danger badge-up cart-item-count">{{ $vc_document }}</span>
+                    </a>
+                </li>
+            </ul>
+        @endif
+
+        @if($vc_document_regularize_shipping > 0)
+            <span class="separator"></span>
+            <ul class="notifications">
+                <li>
+                    <a href="{{route('tenant.documents.regularize_shipping')}}" class="notification-icon text-secondary" data-toggle="tooltip" data-placement="bottom" title="Comprobantes pendientes de rectificación">
+                        <i class="fas fa-exclamation-triangle text-secondary"></i>
+                        <span class="badge badge-pill badge-danger badge-up cart-item-count">{{ $vc_document_regularize_shipping }}</span>
+                    </a>
+                </li>
+            </ul>
+        @endif
+
+        @if($vc_finished_downloads > 0)
+            <span class="separator"></span>
+            <ul class="notifications">
+                <li>
+                    
+                    <a href="{{route('tenant.reports.download-tray.index')}}" class="notification-icon text-secondary" data-toggle="tooltip" data-placement="bottom" title="Bandeja de descargas (Reportes procesados)">
+                        <i class="fas fa-file-download text-secondary"></i>
+                        <span class="badge badge-pill badge-info badge-up cart-item-count">{{ $vc_finished_downloads }}</span>
+                    </a>
+                </li>
+            </ul>
+        @endif
+
+        {{-- @if($vc_document > 0 || $vc_document_regularize_shipping > 0 || $vc_finished_downloads > 0)
         <span class="separator"></span>
         <ul class="notifications">
             <li class="showed" id="dropdown-notifications">
@@ -98,7 +136,7 @@
                 </div>
             </li>
         </ul>
-        @endif
+        @endif --}}
 
         <span class="separator"></span>
         <div id="userbox" class="userbox">
