@@ -91,6 +91,9 @@ if($hostname) {
                     Route::get('record/{record}', 'IncomeController@record');
                     Route::get('voided/{record}', 'IncomeController@voided');
 
+                    Route::get('print/{external_id}/{format?}', 'IncomeController@toPrint');
+
+
                 });
 
                 /**

@@ -28,6 +28,9 @@
 
         public const VOIDED_REJECTED_IDS = ['09', '11'];
 
+        public const STATE_TYPES_ACCEPTED = ['01', '03', '05', '07', '13'];
+
+
         /**
          * Devuelve un esqueleto del array de data extra. Previene error de no enconrarse la funcion en otros modelos
          *

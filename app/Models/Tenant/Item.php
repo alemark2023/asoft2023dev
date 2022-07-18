@@ -111,6 +111,9 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 class Item extends ModelTenant
 {
     protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags','item_lots'];
+
+    public const SERVICE_UNIT_TYPE = 'ZZ';
+
     protected $fillable = [
         'warehouse_id',
         'name',
@@ -893,6 +896,7 @@ class Item extends ModelTenant
             'full_description'                 => $detail['full_description'],
             'model'                            => $this->model,
             'brand'                            => $detail['brand'],
+            'text_filter' => $this->text_filter,
             'stock_by_extra'                            =>  $stockPerCategory,
             'warehouse_description'            => $detail['warehouse_description'],
             'extra'                         => collect([
@@ -2372,6 +2376,7 @@ class Item extends ModelTenant
             'purchase_unit_price' => $this->purchase_unit_price,
             'category_id' => $this->category_id,
             'active' => (bool) $this->active,
+            'stock' => $this->getWarehouseCurrentStock(),
 
         ];
     }
@@ -2450,6 +2455,33 @@ class Item extends ModelTenant
         if($category_id)  $query->where('category_id', $category_id);
 
         return $query;
+    }
+
+    
+    /**
+     * 
+     * Obtener stock del almacen asociado al usuario
+     *
+     * @param  Warehouse $warehouse
+     * @return float
+     */
+    public function getWarehouseCurrentStock($warehouse = null)
+    {
+        $stock = 0;
+
+        if($this->unit_type_id !== self::SERVICE_UNIT_TYPE)
+        {
+            $warehouse = $warehouse ?? Warehouse::select('id')->where('establishment_id', auth()->user()->establishment_id)->first();
+
+            if($warehouse)
+            {
+                $item_warehouse =  ItemWarehouse::select('stock')->where([['item_id', $this->id],['warehouse_id', $warehouse->id]])->first();
+                
+                if($item_warehouse) $stock = $item_warehouse->stock;
+            }
+        }
+
+        return (float) $stock;
     }
 
 }

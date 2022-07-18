@@ -1503,6 +1503,17 @@
                         </li>
                     @endif
 
+                    
+                    @if(in_array('app_2_generator', $vc_modules))
+                        <li class="{{ ($firstLevel === 'live-app')?'nav-active':'' }}">
+                            <a class="nav-link"
+                               href="{{ route('tenant.liveapp.configuration') }}">
+                                <i class="fas fa-puzzle-piece"></i>
+                                <span>Generador APP 2.0</span>
+                            </a>
+                        </li>
+                    @endif
+
                     {{-- APP --}}
                     @if(in_array('apps', $vc_modules))
                         <li class="">

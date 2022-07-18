@@ -257,7 +257,8 @@
         }
 
 
-        public function searchItems(Request  $request){
+        public function searchItems(Request  $request)
+        {
             $items = SearchItemController::getItemToTrasferWithSearch($request);
             return compact('items');
 

@@ -60,6 +60,7 @@ if ($hostname) {
             // Cotizaciones
             Route::get('quotations/list', 'Tenant\Api\QuotationController@list');
             Route::post('quotations', 'Tenant\Api\QuotationController@store');
+            Route::post('quotations/email', 'Tenant\Api\QuotationController@email');
 
             //Caja
             Route::post('cash/restaurant', 'Tenant\Api\CashController@storeRestaurant');

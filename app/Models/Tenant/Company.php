@@ -33,6 +33,7 @@ class Company extends ModelTenant
         'cod_digemid',
         'integrated_query_client_id',
         'integrated_query_client_secret',
+        'app_logo',
         
         'send_document_to_pse',
         'url_send_cdr_pse',
@@ -119,5 +120,25 @@ class Company extends ModelTenant
     {
         return $query->select($column)->firstOrFail()->{$column};
     }
+
+            
+    /**
+     * 
+     * Obtener logo de la app
+     *
+     * @param  Builder $query
+     * @return string
+     */
+    public static function getAppUrlLogo()
+    {
+        $app_logo = self::select('app_logo')->firstOrFail()->app_logo;
+
+        if($app_logo)
+        {
+            $app_logo = asset('storage/uploads/logos/'.$app_logo);
+        }
         
+        return $app_logo;
+    }
+
 }

@@ -256,6 +256,7 @@
             'generate_order_note_from_quotation',
             'list_items_by_warehouse',
             'ticket_single_shipment',
+            'hide_pdf_view_documents',
         ];
 
         protected $casts = [
@@ -351,6 +352,7 @@
             'generate_order_note_from_quotation' => 'bool',
             'list_items_by_warehouse' => 'bool',
             'ticket_single_shipment' => 'bool',
+            'hide_pdf_view_documents' => 'bool',
             
         ];
 
@@ -562,6 +564,7 @@
                 'generate_order_note_from_quotation' => $this->generate_order_note_from_quotation,
                 'list_items_by_warehouse' => $this->list_items_by_warehouse,
                 'ticket_single_shipment' => $this->ticket_single_shipment,
+                'hide_pdf_view_documents' => $this->hide_pdf_view_documents,
                 
             ];
         }

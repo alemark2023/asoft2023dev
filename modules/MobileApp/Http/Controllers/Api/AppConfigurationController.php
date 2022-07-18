@@ -6,12 +6,19 @@ use App\Http\Controllers\Controller;
 use Modules\MobileApp\Http\Resources\Api\AppConfigurationResource;
 use Modules\MobileApp\Http\Requests\Api\AppConfigurationRequest;
 use Modules\MobileApp\Models\AppConfiguration;
+use App\Models\Tenant\{
+    Company
+};
 
 
 class AppConfigurationController extends Controller
 {
     
     /**
+     * 
+     * Usado en:
+     * AppConfigurationController - web
+     * 
      * @return AppConfigurationResource
      */
     public function record()
@@ -30,13 +37,37 @@ class AppConfigurationController extends Controller
     public function store(AppConfigurationRequest $request)
     {
         $record = AppConfiguration::firstOrFail();
-        $record->fill($request->all());
+        // $record->fill($request->all());
+        $record->show_image_item = $request->show_image_item;
+        $record->print_format_pdf = $request->print_format_pdf;
         $record->save();
 
         return [
             'success' => true,
             'message' => 'Configuración actualizada',
             'data' => $record->getRowResource(),
+        ];
+    }
+    
+    
+    /**
+     * 
+     * Obtener parametros iniciales de configuracion
+     *
+     * @return array
+     */
+    public function getInitialSettings()
+    {
+
+        $user = auth()->user();
+
+        return [
+            'style_settings' => AppConfiguration::firstOrFail()->getRowInitialSettings(),
+            'permissions' => $user->getAppPermission(),
+            'generals' => [
+                'app_logo' => Company::getAppUrlLogo(),
+                'user_data' => $user->getGeneralDataApp()
+            ],
         ];
     }
 

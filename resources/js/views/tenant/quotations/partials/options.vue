@@ -126,12 +126,12 @@
                             popper-class="el-select-document_type"
                             @change="changeDocumentType"
                         >
-                            <el-option
-                                v-for="option in document_types"
-                                :key="option.id"
-                                :label="option.description"
-                                :value="option.id"
-                            ></el-option>
+<!--                            <el-option-->
+<!--                                v-for="option in document_types"-->
+<!--                                :key="option.id"-->
+<!--                                :label="option.description"-->
+<!--                                :value="option.id"-->
+<!--                            ></el-option>-->
                             <el-option key="nv" label="NOTA DE VENTA" value="nv"></el-option>
                         </el-select>
                         <small
@@ -594,7 +594,7 @@ export default {
             }
             window.open(`https://wa.me/51${this.form.customer_telephone}?text=${this.form.message_text}`, '_blank');
         },
-        
+
         validateCustomerRetention(identity_document_type_id) {
 
             if (identity_document_type_id != '6') {
@@ -607,7 +607,7 @@ export default {
 
         },
         disabledRetention(){
-            
+
             if (this.document.has_retention) {
                 this.document.has_retention = false
                 this.changeRetention()
@@ -850,7 +850,7 @@ export default {
                 is_receivable: false,
                 payments: [],
                 hotel: {},
-                
+
                 total_pending_payment: 0,
                 has_retention: false,
                 retention: {},
@@ -863,10 +863,12 @@ export default {
         resetDocument() {
             this.generate = this.showGenerate ? true : false;
             this.initDocument();
-            this.document.document_type_id =
-                this.document_types.length > 0
-                    ? this.document_types[0].id
-                    : null;
+            // this.document.document_type_id =
+            //     this.document_types.length > 0
+            //         ? this.document_types[0].id
+            //         : null;
+
+            this.document.document_type_id = 'nv';
             this.changeDocumentType();
         },
         validatePaymentDestination() {
@@ -1087,13 +1089,16 @@ export default {
                 this.document_types = this.all_document_types;
             }
 
-            this.document.document_type_id =
-                this.document_types.length > 0
-                    ? this.document_types[0].id
-                    : null;
+            // this.document.document_type_id =
+            //     this.document_types.length > 0
+            //         ? this.document_types[0].id
+            //         : null;
+
+            this.document.document_type_id = 'nv';
+
             await this.changeDocumentType();
 
-            
+
             // retencion para clientes con ruc
             this.validateCustomerRetention(customer.identity_document_type_id)
 
@@ -1163,21 +1168,21 @@ export default {
                     if (select_lots != element.quantity) error++;
                 }
 
-                if (element.item.lots_enabled) 
+                if (element.item.lots_enabled)
                 {
                     if (!element.IdLoteSelected) error_lots_group++
                 }
 
             });
 
-            if(error_lots_group > 0) 
+            if(error_lots_group > 0)
             {
                 return {
                     success: false,
                     message: 'Las cantidades y lotes seleccionados deben ser iguales.',
                 }
             }
-            
+
             if (error > 0)
                 return {
                     success: false,

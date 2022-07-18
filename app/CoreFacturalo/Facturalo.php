@@ -428,7 +428,7 @@ class Facturalo
             } elseif($this->configuration->legend_footer AND $format_pdf === 'ticket_58') {
                 $height_legend = 30;
             } elseif($this->configuration->legend_footer AND $format_pdf === 'ticket_50') {
-                $height_legend = 50;
+                $height_legend = 10;
             } else {
                 $height_legend = 10;
             }
@@ -437,7 +437,7 @@ class Facturalo
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
-                    180 +
+                    80 +
                     (($quantity_rows * 8) + $extra_by_item_description) +
                     ($document_payments * 8) +
                     ($discount_global * 8) +

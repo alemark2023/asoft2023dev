@@ -3,11 +3,61 @@
 namespace App\CoreFacturalo\Helpers\Functions;
 
 use App\Models\Tenant\Catalogs\District;
-
+use Illuminate\Database\Query\Builder;
+use DB;
 
 class SetDataHelper
 {
+     
+    /**
+     * 
+     * Obtener data para insertar modulo en tenant
+     *
+     * @param  string $value
+     * @param  string $description
+     * @param  int $order_menu
+     * @return array
+     */
+    public static function getModuleData($value, $description, $order_menu)
+    {
+        return [
+            'value' => $value,
+            'description' => $description,
+            'order_menu' => $order_menu,
+        ];
+    }
+
+
+    /**
+     * Obtener data para insertar modulo en system
+     *
+     * @param  string $value
+     * @param  string $description
+     * @param  int $sort
+     * @return array
+     */
+    public static function getModuleDataSystem($value, $description, $sort)
+    {
+        return [
+            'value' => $value,
+            'description' => $description,
+            'sort' => $sort,
+        ];
+    }
+
     
+    /**
+     * 
+     * Obtener conexion con la tabla modules
+     *
+     * @return Builder
+     */
+    public static function getModuleConnection($connection)
+    {
+        return DB::connection($connection)->table('modules');
+    }
+
+
     /**
      * 
      * Validar y registrar distrito
