@@ -522,6 +522,9 @@
                         <div class="col-xl-6 col-md-12 col-lg-12">
                             <dashboard-stock></dashboard-stock>
                         </div>
+                        <div class="col-xl-6 col-md-12 col-lg-12">
+                            <dashboard-inventory></dashboard-inventory>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -547,10 +550,11 @@ import DashboardStock from "./partials/dashboard_stock.vue";
 import queryString from "query-string";
 import LoaderGraph from "../components/loaders/l-graph.vue";
 import RowTop from "./RowTop";
+import DashboardInventory from "./partials/dashboard_inventory.vue";
 
 export default {
   props: ["typeUser", "soapCompany"],
-  components: { DashboardStock, LoaderGraph, RowTop },
+  components: { DashboardStock, LoaderGraph, RowTop, DashboardInventory },
   data() {
     return {
       loading_search: false,

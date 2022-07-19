@@ -17,6 +17,7 @@ use App\Models\Tenant\Company;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Arr;
+use Modules\Dashboard\Helpers\DashboardInventory;
 
 /**
  * Class DashboardController
@@ -125,6 +126,11 @@ class DashboardController extends Controller
         return $array;
 
 
+    }
+
+    public function productOfDue(Request $request)
+    {
+        return  (new DashboardInventory())->data($request);
     }
 
 }

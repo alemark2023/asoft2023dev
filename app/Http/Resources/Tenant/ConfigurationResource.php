@@ -58,6 +58,10 @@ class ConfigurationResource extends JsonResource
             'update_document_on_dispaches' => (bool) $this->update_document_on_dispaches,
             'is_pharmacy' => (bool) $this->is_pharmacy,
             'active_warehouse_prices' => (bool) $this->active_warehouse_prices,
+            'dashboard_sales' => (bool)$this->dashboard_sales,
+            'dashboard_general' => (bool)$this->dashboard_general,
+            'dashboard_clients' => (bool)$this->dashboard_clients,
+            'dashboard_products' => (bool)$this->dashboard_products,
         ];
     }
 }

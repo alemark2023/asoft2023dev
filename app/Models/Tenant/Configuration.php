@@ -99,6 +99,10 @@ class Configuration extends ModelTenant
         'show_extra_info_to_item',
         'group_items_generate_document',
         'enabled_global_igv_to_purchase',
+        'dashboard_sales',
+        'dashboard_general',
+        'dashboard_clients',
+        'dashboard_products',
     ];
 
     protected $casts = [
@@ -454,6 +458,10 @@ class Configuration extends ModelTenant
                 'document_id'=>$document_id,
                 'type'=>$typeUser,
             ],
+            'dashboard_sales' => (bool)$this->dashboard_sales,
+            'dashboard_general' => (bool)$this->dashboard_general,
+            'dashboard_clients' => (bool)$this->dashboard_clients,
+            'dashboard_products' => (bool)$this->dashboard_products,
 
         ];
     }
