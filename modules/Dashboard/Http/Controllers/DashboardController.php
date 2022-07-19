@@ -18,6 +18,7 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Arr;
 use Modules\Dashboard\Helpers\DashboardInventory;
+use App\Models\Tenant\Configuration;
 
 /**
  * Class DashboardController
@@ -34,8 +35,9 @@ class DashboardController extends Controller
 
         $company = Company::select('soap_type_id')->first();
         $soap_company  = $company->soap_type_id;
+        $configuration = Configuration::first();
 
-        return view('dashboard::index', compact('soap_company'));
+        return view('dashboard::index', compact('soap_company','configuration'));
     }
 
     public function filter()
