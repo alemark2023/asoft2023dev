@@ -714,31 +714,14 @@ class Facturalo
 
         if($this->company->send_document_to_pse)
         {
-            if(in_array($this->type, ['invoice', 'dispatch']))
+            if(in_array($this->type, ['invoice', 'dispatch', 'credit', 'debit']))
             {
                 $send_to_pse = true;
             }
-            elseif($this->type === 'voided')
-            {
-                // validar si los documentos informados en la RA son facturas y fueron enviados a pse
-                $filter_quantity_documents = $this->document->documents->where('document.document_type_id', '01')
-                                                                        ->where('document.send_to_pse', true)
-                                                                        ->count();
-
-                if($this->document->documents->count() === $filter_quantity_documents)
-                {
-                    $send_to_pse = true;
-                }
-                else
-                {
-                    $this->sendDocumentPse->throwException('Documento a anular no es factura o no fue enviado al PSE.');
-                }
-            }
-            elseif($this->type === 'summary')
+            elseif(in_array($this->type, ['voided', 'summary']))
             {
                 $send_to_pse = $this->document->getSendToPse($this->sendDocumentPse);
             }
-
         }
 
         return $send_to_pse;
@@ -925,16 +908,16 @@ class Facturalo
                     // if($this->document->summary_status_type_id === '1') {
                     if(in_array($this->document->summary_status_type_id, ['1', '2']))
                     {
-
-                        //enviar cdr a pse
-                        $this->sendCdrToPse($res->getCdrZip(), $this->document);
-                        //enviar cdr a pse
-
                         $this->updateStateDocuments(self::ACCEPTED);
-
-                    } else {
+                    } 
+                    else 
+                    {
                         $this->updateStateDocuments(self::VOIDED);
                     }
+                    
+                    //enviar cdr a pse
+                    $this->sendCdrToPse($res->getCdrZip(), $this->document);
+                    //enviar cdr a pse
 
                 }else if($extService->getCustomStatusCode() === 99){
 
