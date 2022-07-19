@@ -69,6 +69,18 @@
                                                 </div>
                                             </el-radio-group>
                                         </el-tab-pane>
+                                        <el-tab-pane label="Modo">
+                                            <el-radio-group class="pt-2" v-model="form.app_mode" @change="changeMode()">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <el-radio label="default" style="display:block">Tradicional</el-radio>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <el-radio label="pos" style="display:block;">Punto de venta</el-radio>
+                                                    </div>
+                                                </div>
+                                            </el-radio-group>
+                                        </el-tab-pane>
                                         <!-- <el-tab-pane label="Tipo de operación">
                                             <el-radio-group class="pt-2" v-model="form.operation_type">
                                                 <el-radio :label="1">Facturación</el-radio>
@@ -196,6 +208,7 @@
                 await this.$http.get(`/${this.resource}/record`)
                         .then(response => {
                             this.form = response.data.data
+                            console.log(response.data.data)
                         })
                         .then(()=>{
                             this.loading = false
@@ -208,9 +221,13 @@
                     theme_color: 'blue',
                     card_color: 'multicolored',
                     header_waves: false,
+                    app_mode: 'default',
                     // operation_type: 1,
                     // permissions: {},
                 }
+
+            },
+            changeMode(){
 
             },
             changeThemePrimary() {
