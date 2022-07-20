@@ -87,7 +87,6 @@ class ProcessGlobalPaymentReport implements ShouldQueue
 
                 $this->showLogInfo('Render pdf init');
                 $pdf = PDF::loadView('finance::global_payments.report_pdf', compact('records', 'company', 'establishment'))->setPaper('a4', 'landscape');
-                $this->showLogInfo('Render pdf finish::'.$pdf->stream($filename.'.'.$format));
 
                 $this->showLogInfo('Upload pdf init');
                 $this->uploadStorage($filename, $pdf->stream($filename.'.'.$format), $path);
