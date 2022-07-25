@@ -268,4 +268,21 @@
             return in_array($this->state_type_id, self::VOIDED_REJECTED_IDS);
         }
 
+
+        /**
+         * 
+         * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeFilterRelationsGlobalPayment($query)
+        {
+            return $query->with([
+                    'document_type'=> function($q){
+                        $q->select('id', 'description');
+                    }, 
+                ]);
+        }
+
     }

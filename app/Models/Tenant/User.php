@@ -1022,4 +1022,19 @@ $withEstablishment = true){
         ];
     }
 
+    
+    /**
+     * 
+     * Filtro para no incluir relaciones en consulta
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */  
+    public function scopeWhereFilterWithOutRelations($query)
+    {
+        return $query->withOut([
+            'establishment',
+        ]);
+    }
+
 }

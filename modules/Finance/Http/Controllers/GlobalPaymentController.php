@@ -55,7 +55,7 @@ class GlobalPaymentController extends Controller
     {
         /** @var \Illuminate\Database\Eloquent\Builder $records */
         $records = $this->getRecords($request->all(), GlobalPayment::class);
-
+        
         return new GlobalPaymentCollection($records->paginate(config('tenant.items_per_page')));
     }
 
@@ -90,7 +90,8 @@ class GlobalPaymentController extends Controller
             'user_id' => $request['user_id'] ?? null,
         ];
 
-        $records = $model::whereFilterPaymentType($params);
+        // $records = $model::whereFilterPaymentType($params);
+        $records = $model::whereFilterReportPayments($params); //filtros optimizados
 
         if($payment_type){
             $records = $records->whereDefinePaymentType($payment_type);
@@ -123,7 +124,7 @@ class GlobalPaymentController extends Controller
         // $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         // $records = $this->getRecords($request->all(), GlobalPayment::class)->get();
 
-        // $pdf = PDF::loadView('finance::global_payments.report_pdf', compact("records", "company", "establishment"))->setPaper('a4', 'landscape');;
+        // $pdf = PDF::loadView('finance::global_payments.report_pdf', compact("records", "company", "establishment"))->setPaper('a4', 'landscape');
 
         // $filename = 'Reporte_Pagos_'.date('YmdHis');
 
