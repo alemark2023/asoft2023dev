@@ -83,14 +83,15 @@ class ProcessGlobalPaymentReport implements ShouldQueue
             // procesar reporte
             if($format === 'pdf')
             {
-                ini_set("pcre.backtrack_limit", "50000000");
+                //@todo revisar formato, genera error
+                // ini_set("pcre.backtrack_limit", "50000000");
 
-                $this->showLogInfo('Render pdf init');
-                $pdf = PDF::loadView('finance::global_payments.report_pdf', compact('records', 'company', 'establishment'))->setPaper('a4', 'landscape');
+                // $this->showLogInfo('Render pdf init');
+                // $pdf = PDF::loadView('finance::global_payments.report_pdf', compact('records', 'company', 'establishment'))->setPaper('a4', 'landscape');
 
-                $this->showLogInfo('Upload pdf init');
-                $this->uploadStorage($filename, $pdf->stream($filename.'.'.$format), $path);
-                $this->showLogInfo('Upload pdf finish');
+                // $this->showLogInfo('Upload pdf init');
+                // $this->uploadStorage($filename, $pdf->stream($filename.'.'.$format), $path);
+                // $this->showLogInfo('Upload pdf finish');
             }
             else
             {
