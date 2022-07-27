@@ -43,6 +43,8 @@ if ($hostname)
                 Route::get('records', 'Api\DocumentController@records');
                 Route::get('record/{id}', 'Api\DocumentController@record');
                 Route::get('tables', 'Api\DocumentController@tables');
+                Route::get('tables-sale-detail', 'Api\DocumentController@getTablesSaleDetail');
+                Route::get('tables-sale-payment', 'Api\DocumentController@getTablesSalePayment');
             });
 
 

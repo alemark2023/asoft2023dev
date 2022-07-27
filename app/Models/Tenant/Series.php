@@ -192,5 +192,18 @@
                 'is_default' => $this->is_default,
             ];
         }
+        
+        /**
+         * 
+         * Filtrar series para documentos de venta, cpe y nv - modo pos app
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeOnlySaleDocuments($query)
+        {
+            return $query->where('establishment_id', auth()->user()->establishment_id)
+                    ->whereIn('document_type_id', DocumentType::SALE_DOCUMENT_TYPES);
+        }
 
     }

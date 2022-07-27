@@ -2535,6 +2535,7 @@ class Item extends ModelTenant
             'image_url' => $this->getImageUrl(),
             'brand_id' => $this->brand_id,
             'category_id' => $this->category_id,
+            'is_set' => $this->is_set,
         ];
     }
 
