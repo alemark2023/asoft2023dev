@@ -25,6 +25,8 @@ if ($hostname)
             
             Route::prefix('items')->group(function () {
                 
+                Route::get('records-sale', 'Api\ItemController@recordsSale');
+                Route::get('table/{table}', 'Api\ItemController@table');
                 Route::get('tables', 'Api\ItemController@tables');
                 Route::post('update', 'Api\ItemController@update');
                 Route::get('records', 'Api\ItemController@records');
