@@ -91,7 +91,7 @@
         <td>Motivo Traslado: {{ $document->transfer_reason_type->description }}</td>
         <td>Modalidad de Transporte: {{ $document->transport_mode_type->description }}</td>
     </tr>
-    
+
     @if($document->related)
     <tr>
         <td>Número de documento (DAM): {{ $document->related->number }}</td>
@@ -109,6 +109,12 @@
         <td>P.Partida: {{ $document->origin->location_id }} - {{ $document->origin->address }}</td>
         <td>P.Llegada: {{ $document->delivery->location_id }} - {{ $document->delivery->address }}</td>
     </tr>
+    @if($document->order_form_external)
+    <tr>
+        <td>Orden de pedido: {{ $document->order_form_external }}</td>
+        <td></td>
+    </tr>
+    @endif
     </tbody>
 </table>
 <table class="full-width border-box mt-10 mb-10">

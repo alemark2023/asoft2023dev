@@ -90,7 +90,7 @@
                             </div>
                         </div>
 
-                        
+
 
                         <!-- numero de DAM -->
                         <template v-if="form.transfer_reason_type_id === '09'">
@@ -121,7 +121,7 @@
                                                 :key="option.id"
                                                 :label="option.description"
                                                 :value="option.id"></el-option>
-                                    </el-select> 
+                                    </el-select>
                                     <small v-if="errors['related.document_type_id']" class="form-control-feedback" v-text="errors['related.document_type_id'][0]"></small>
                                 </div>
                             </div>
@@ -202,7 +202,7 @@
                                        v-text="errors.observations[0]"></small>
                             </div>
                         </div>
-                        
+
                         <div class="col-lg-2" v-if="showOrderFormExternal">
                             <div :class="{'has-danger': errors.order_form_external}"
                                  class="form-group">
@@ -487,7 +487,7 @@
                             <tbody>
                             <tr v-for="(row, index) in form.items" :key="index">
                                 <td>{{ index + 1 }}</td>
-                                <td>{{ setDescriptionOfItem(row.item) }}</td>
+                                <td>{{ setDescriptionOfItem(row) }}</td>
                                 <!-- <td>{{ row.item.description }}</td> -->
                                 <td class="text-right">{{ row.quantity }}</td>
                                 <td class="text-right">
@@ -706,7 +706,12 @@ export default {
     },
     methods: {
         setDescriptionOfItem(item) {
-            return showNamePdfOfDescription(item, this.configuration.show_pdf_name)
+            if(this.configuration.show_pdf_name) {
+                if(item.name_product_pdf !== '' && !_.isNull(item.name_product_pdf)) {
+                    return item.name_product_pdf;
+                }
+            }
+            return item.description;
         },
         changeTransferReasonType(){
 

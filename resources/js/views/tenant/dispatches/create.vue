@@ -155,7 +155,7 @@
                                                 :key="option.id"
                                                 :label="option.description"
                                                 :value="option.id"></el-option>
-                                    </el-select> 
+                                    </el-select>
                                     <small v-if="errors['related.document_type_id']" class="form-control-feedback" v-text="errors['related.document_type_id'][0]"></small>
                                 </div>
                             </div>
@@ -770,7 +770,7 @@
             :showDialog.sync="showDialogLots"
             @addRowLotGroup="addRowLotGroup">
         </lots-group>
-        
+
         <warehouses-detail
             :showDialog.sync="showWarehousesDetail"
             :warehouses="warehousesDetail">
@@ -930,7 +930,7 @@ export default {
             this.identityDocumentTypes = response.data.identityDocumentTypes;
             this.transferReasonTypes = response.data.transferReasonTypes;
             this.related_document_types = response.data.related_document_types
-            
+
             this.transportModeTypes = response.data.transportModeTypes;
             this.establishments = response.data.establishments;
             this.departments = response.data.departments;
@@ -1562,7 +1562,7 @@ export default {
             //             success: false,
             //             message: 'El campo Número de documento (DAM) no cumple con el formato establecido - XXXX-XX-XXX-XXXXXX'
             //         }
-            //     } 
+            //     }
 
             // }
 
