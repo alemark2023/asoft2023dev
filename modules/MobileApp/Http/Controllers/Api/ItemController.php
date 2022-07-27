@@ -11,11 +11,13 @@ use Modules\Finance\Helpers\UploadFileHelper;
 use Modules\MobileApp\Http\Resources\Api\{
     ItemCollection,
     ItemResource,
+    ItemSaleCollection
 };
 use Modules\Item\Models\{
     Category
 };
 use App\Http\Controllers\Tenant\ItemController as ItemControllerWeb;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
 
 
 class ItemController extends Controller
@@ -30,13 +32,36 @@ class ItemController extends Controller
     public function tables()
     {
         return [
-            'categories' => Category::filterForTables()->get()
+            'categories' => $this->table('categories')
         ];
-    }  
+    } 
+    
+
+    /**
+     * 
+     * @return array
+     */
+    public function table($table)
+    {
+        $data = [];
+
+        switch ($table) {
+            case 'categories':
+                $data = Category::filterForTables()->get();
+                break;
+            case 'affectation_igv_types':
+                $data = AffectationIgvType::whereActive()->get();
+                break;
+        }
+
+        return $data;
+    } 
+    
 
     /**
      * 
      * Obtener registros paginados
+     * Mantenimiento items - App
      *
      * @param  Request $request
      * @return array
@@ -44,10 +69,26 @@ class ItemController extends Controller
     public function records(Request $request)
     {
         $records = Item::whereFilterRecordsApi($request->input, $request->search_by_barcode);
-
+        
         return new ItemCollection($records->paginate(config('tenant.items_per_page')));
     }
 
+    
+    /**
+     * 
+     * Obtener registros paginados para ventas - Modo POS App
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function recordsSale(Request $request)
+    {
+        $records = Item::filterRecordsSaleApi($request);
+
+        return new ItemSaleCollection($records->paginate(config('tenant.items_per_page')));
+    }
+    
+ 
     
     /**
      * obtener registro

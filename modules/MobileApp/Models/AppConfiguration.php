@@ -15,6 +15,7 @@ class AppConfiguration extends ModelTenant
         'theme_color',
         'card_color',
         'header_waves',
+        'app_mode',
     ];
 
     protected $casts = [
@@ -34,6 +35,7 @@ class AppConfiguration extends ModelTenant
             'theme_color' => $this->theme_color,
             'card_color' => $this->card_color,
             'header_waves' => $this->header_waves,
+            'app_mode' => $this->app_mode,
         ];
     }
 
@@ -47,6 +49,7 @@ class AppConfiguration extends ModelTenant
     public function getRowInitialSettings()
     {
         return [
+            'app_mode' => $this->app_mode,
             'theme_color' => $this->theme_color,
             'card_color' => $this->card_color,
             'header_waves' => $this->header_waves,
