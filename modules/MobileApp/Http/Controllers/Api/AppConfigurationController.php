@@ -40,6 +40,7 @@ class AppConfigurationController extends Controller
         // $record->fill($request->all());
         $record->show_image_item = $request->show_image_item;
         $record->print_format_pdf = $request->print_format_pdf;
+        $record->direct_print = $request->direct_print;
         $record->save();
 
         return [
