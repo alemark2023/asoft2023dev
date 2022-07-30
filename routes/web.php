@@ -285,6 +285,11 @@ if ($hostname) {
             Route::get('documents/payments/excel/{month}/{anulled}', 'Tenant\DocumentController@report_payments')->name('tenant.document.payments.excel');
             Route::get('documents/payments-complete', 'Tenant\DocumentController@report_payments');
 
+
+            Route::post('documents/import_excel_format', 'Tenant\DocumentController@importExcelFormat');
+            Route::get('documents/import_excel_tables', 'Tenant\DocumentController@importExcelTables');
+
+
             Route::delete('documents/delete_document/{document_id}', 'Tenant\DocumentController@destroyDocument');
 
             Route::get('documents/data-table/items', 'Tenant\DocumentController@getDataTableItem');
