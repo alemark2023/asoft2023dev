@@ -31,18 +31,16 @@ class DocumentImportExcelFormat implements ToCollection
                 'date_of_issue' => $date_of_issue,
                 'customer_number' => trim($row[3]),
                 'customer_name' => trim($row[4]),
-                'currency_type_id' => (func_str_to_upper_utf8($row[5]) === 'S') ? 'PEN' : null,
-//                'subtotal' => $row[6],
-//                'impuesto' => $row[7],
-//                'total' => $row[8],
-                'customer_address' => trim($row[9]),
-                'plate_number' => trim($row[10]),
-                'item_name' => trim($row[11]),
-                'unit_type_id' => trim($row[12]),
-                'quantity' => trim($row[13]),
-                'unit_price' => trim($row[14]),
-                'subtotal' => trim($row[15]),
-                'total_igv' => trim($row[16]),
+                'customer_address' => trim($row[5]),
+                'customer_email' => trim($row[6]),
+                'plate_number' => trim($row[7]),
+                'currency_type_id' => (func_str_to_upper_utf8($row[8]) === 'S') ? 'PEN' : null,
+                'item_name' => trim($row[9]),
+                'unit_type_id' => trim($row[10]),
+                'quantity' => trim($row[11]),
+                'unit_price' => trim($row[12]),
+                'subtotal' => trim($row[13]),
+                'total_igv' => trim($row[14]),
             ];
         }
 
@@ -167,7 +165,6 @@ class DocumentImportExcelFormat implements ToCollection
             $url = url('/api/documents');
             $token = auth()->user()->api_token;
 
-            $message = '';
             try {
                 $client = new \GuzzleHttp\Client();
                 $res = $client->post($url, [
@@ -179,7 +176,6 @@ class DocumentImportExcelFormat implements ToCollection
                     'json' => $json
                 ]);
                 $response = json_decode($res->getBody()->getContents(), true);
-//                dd($response['success']);
                 if($response['success']) {
                     $registered += 1;
                     $message = 'Registrado';
@@ -188,10 +184,6 @@ class DocumentImportExcelFormat implements ToCollection
                 }
             } catch (Exception $e) {
                 $message = $e->getMessage();
-//                return [
-//                    'success' => false,
-//                    'message' => $e->getMessage()
-//                ];
             }
 
             $data[] = [
