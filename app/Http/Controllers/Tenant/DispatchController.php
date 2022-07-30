@@ -141,6 +141,10 @@ class DispatchController extends Controller
             $document = Document::find($document_id);
         }
 
+        if (!$document) {
+            return view('tenant.dispatches.create');
+        }
+
         $configuration = Configuration::query()->first();
         $items = [];
         foreach ($document->items as $item) {
@@ -152,10 +156,6 @@ class DispatchController extends Controller
                 'description' => $item->item->description,
                 'name_product_pdf' => $name_product_pdf
             ];
-        }
-
-        if (!$document) {
-            return view('tenant.dispatches.create');
         }
 
         $dispatch = Dispatch::find($dispatch_id);

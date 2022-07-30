@@ -134,7 +134,6 @@
      * @mixin Eloquent
      * @method static EloquentBuilder|Document whereValuedKardexFormatSunat($params)
      * @property mixed                                $retention
-     * @method static EloquentBuilder|Document whereEstablishmentId($establishment_id = 0)
      */
     class Document extends ModelTenant
     {
@@ -676,10 +675,10 @@
                     $user = new User();
                 }
             }
-            else { 
+            else {
                 $user = auth()->user();
             }
-           
+
             return ($user->type === 'admin') ? null : $query->where('user_id', $user->id)->orWhere('seller_id', $user->id)->latest();
             // return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
         }
@@ -946,7 +945,7 @@
         {
             return $this->hasMany(GuideFile::class);
         }
-        
+
         public function tip()
         {
             return $this->morphOne(Tip::class, 'origin');
@@ -1088,9 +1087,9 @@
         {
             $plate_numbers = collect();
 
-            if(in_array($this->document_type_id, ['01', '03'])) 
+            if(in_array($this->document_type_id, ['01', '03']))
             {
-                
+
                 if($this->plate_number) return $plate_numbers->push(['description' => $this->plate_number]);
 
                 //obtener las placas registradas por cada item
@@ -1108,13 +1107,13 @@
 
         }
 
-        
+
         /**
          * Obtener tipo de documento válido para enviar el xml a firmar al pse
          *
          * Usado en:
          * App\CoreFacturalo\Services\Helpers\SendDocumentPse
-         * 
+         *
          * @return string
          */
         public function getDocumentTypeForPse()
@@ -1131,7 +1130,7 @@
             return $allowed_document_types[$this->document_type_id];
 
         }
-        
+
         public function getResponseSendCdrPseAttribute($value)
         {
             return (is_null($value)) ? null : (object)json_decode($value);
@@ -1151,7 +1150,7 @@
         {
             $this->attributes['response_signature_pse'] = (is_null($value)) ? null : json_encode($value);
         }
-        
+
         /**
          * registros asociados cuando se genera cpe desde multiples notas de venta
          *
@@ -1171,14 +1170,14 @@
         {
             $this->attributes['sale_notes_relateds'] = (is_null($value)) ? null : json_encode($value);
         }
-        
+
         /**
-         * 
+         *
          * Filtro para no incluir relaciones en consulta
          *
          * @param \Illuminate\Database\Eloquent\Builder $query
          * @return \Illuminate\Database\Eloquent\Builder
-         */  
+         */
         public function scopeWhereFilterWithOutRelations($query)
         {
             return $query->withOut([
@@ -1196,10 +1195,10 @@
             ]);
         }
 
-                
+
         /**
          * Obtener diferencia de días en base a la fecha de emisión
-         * 
+         *
          * Usado en:
          * VoidedController - Validación de plazo de envío
          *
@@ -1212,14 +1211,14 @@
 
             return $this->date_of_issue->diffInDays($date);
         }
-        
-        
+
+
         /**
          * Validar si el documento fue generado a partir de un registro externo
          *
          * Usado en:
          * InventoryKardexServiceProvider
-         * 
+         *
          * @return bool
          */
         public function isGeneratedFromExternalRecord()
@@ -1230,20 +1229,20 @@
             {
                 $generated = true;
             }
-            
+
             // @todo agregar mas registros relacionados
 
             return $generated;
         }
-        
+
 
         /**
-         * 
+         *
          * Filtrar por rango de fechas
-         * 
+         *
          * @param \Illuminate\Database\Eloquent\Builder $query
          * @return \Illuminate\Database\Eloquent\Builder
-         * 
+         *
          */
         public function scopeFilterRangeDateOfIssue($query, $date_start, $date_end)
         {
@@ -1251,12 +1250,12 @@
         }
 
         /**
-         * 
+         *
          * Filtrar facturas y boletas
-         * 
+         *
          * @param \Illuminate\Database\Eloquent\Builder $query
          * @return \Illuminate\Database\Eloquent\Builder
-         * 
+         *
          */
         public function scopeFilterDocumentTypeInvoice($query)
         {
@@ -1264,18 +1263,18 @@
         }
 
         /**
-         * 
+         *
          * @return string
-         * 
+         *
          */
         public function getVoidedDescription()
         {
             return $this->state_type_id === '11' ? 'SI' : 'NO';
         }
 
-        
+
         /**
-         * 
+         *
          * Obtener pagos en efectivo
          *
          * @return Collection
@@ -1289,9 +1288,9 @@
 
 
         /**
-         * 
+         *
          * Validar si el registro esta rechazado o anulado
-         * 
+         *
          * @return bool
          */
         public function isVoidedOrRejected()
@@ -1299,9 +1298,9 @@
             return in_array($this->state_type_id, self::VOIDED_REJECTED_IDS);
         }
 
-                
+
         /**
-         * 
+         *
          * Obtener el total de notas de credito de cada cpe
          *
          * @return float
@@ -1316,15 +1315,15 @@
                         ->sum('documents.total');
         }
 
-        
+
         /**
-         * 
+         *
          * Obtener query de nc para subconsulta de cuentas por cobrar
-         * 
+         *
          * Usado en:
          * DashboardView
          * AccountsReceivable
-         * 
+         *
          * @return \Illuminate\Database\Eloquent\Builder
          */
         public static function getQueryCreditNotes()
@@ -1337,9 +1336,9 @@
                         ->groupBy('affected_document_id');
         }
 
-                
+
         /**
-         * 
+         *
          * Retornar el total de pagos
          *
          * @return float
@@ -1352,7 +1351,7 @@
             if(!$this->isVoidedOrRejected())
             {
                 $total_payments = $this->payments->sum('payment');
-    
+
                 if($this->currency_type_id === 'USD')
                 {
                     $total_payments = $this->generalConvertValueToPen($total_payments, $this->exchange_rate_sale);
@@ -1362,16 +1361,16 @@
             return $total_payments;
         }
 
-        
+
         /**
-         * 
+         *
          * Filtrar documentos para generar resumen diario
-         * 
+         *
          * @param Builder $query
          * @param string $date_of_reference
          * @param string $soap_type_id
          * @return Builder
-         * 
+         *
          */
         public function scopeFilterDocumentsForSummary($query, $date_of_reference, $soap_type_id)
         {
@@ -1385,19 +1384,19 @@
 
 
         /**
-         * 
+         *
          * Validar si la boleta se envio de forma individual
-         * 
+         *
          * @return bool
          */
         public function isSingleDocumentShipment()
         {
             return $this->document_type_id === self::DOCUMENT_TYPE_TICKET && $this->ticket_single_shipment;
         }
-        
-                
+
+
         /**
-         * 
+         *
          * Filtrar registros para listado de documentos - app
          *
          * @param  Builder $query
@@ -1421,9 +1420,9 @@
             {
                 $query->where('state_type_id', $request->state_type_id);
             }
-            
+
             return $query;
         }
 
-        
+
     }
