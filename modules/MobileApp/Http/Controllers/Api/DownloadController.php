@@ -52,13 +52,13 @@ class DownloadController extends Controller
     
     public function documentPrintPdf2($model, $external_id, $format) 
     {
-        // $html = $this->documentPrintPdf($model, $external_id, $format);
+        $html = $this->documentPrintPdf($model, $external_id, $format);
 
         // dd($html);
-        // return trim((new Html2Text($html))->getText());
-        $file = file_get_contents(public_path('logo'.DIRECTORY_SEPARATOR.'bol_test.png'));
+        return trim((new Html2Text($html))->getText());
+        // $file = file_get_contents(public_path('logo'.DIRECTORY_SEPARATOR.'bol_test.png'));
 
-        return base64_encode($file);
+        // return base64_encode($file);
     }
 
 
