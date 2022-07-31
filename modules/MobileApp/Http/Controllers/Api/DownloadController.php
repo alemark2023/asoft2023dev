@@ -10,6 +10,7 @@ use App\CoreFacturalo\Template;
 use App\Models\Tenant\Company;
 use Mpdf\Mpdf;
 use Exception;
+use Html2Text\Html2Text;
 
 
 class DownloadController extends Controller
@@ -48,6 +49,17 @@ class DownloadController extends Controller
         return $html;
     }
     
+    
+    public function documentPrintPdf2($model, $external_id, $format) 
+    {
+        $html = $this->documentPrintPdf($model, $external_id, $format);
+
+        // dd($html);
+        return trim((new Html2Text($html))->getText());
+
+        return $html;
+    }
+
 
     /**
      * 
