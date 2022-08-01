@@ -1,6 +1,6 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
-        <form autocomplete="off" @submit.prevent="submit">
+    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create" >
+        <form autocomplete="off" @submit.prevent="submit" v-loading="loading">
             <div class="form-body">
                 <div class="row">
                     <!-- <div class="col-md-6">
@@ -49,21 +49,28 @@
                 resource: 'app-permissions',
                 errors: {},
                 form: {},
+                app_configuration: {},
                 app_modules: [],
+                loading: false,
+                pos_document_types: []
             }
         },
         async created() {
-            // await this.getTables()
             await this.initForm()
         },
         methods: {
-            // async getTables(){
+            async getTables(){
                 
-            //     await this.$http.get(`/${this.resource}/tables`)
-            //         .then(response => {
-            //             this.app_modules = response.data.app_modules
-            //         })
-            // },
+                this.loading = true
+                await this.$http.get(`/${this.resource}/tables`)
+                    .then(response => {
+                        this.app_configuration = response.data.app_configuration
+                        this.pos_document_types = response.data.pos_document_types
+                    })
+                    .then(()=>{
+                        this.loading = false
+                    })
+            },
             initForm(){
                 this.errors = {}
                 this.form = {
@@ -73,15 +80,20 @@
                     app_modules: [],
                 }
             },
-            create(){
-                this.getRecord()
+            async create(){
+                await this.getTables()
+                await this.getRecord()
             },
-            getRecord(){
+            async getRecord(){
 
-                this.$http.get(`/${this.resource}/record/${this.recordId}`)
+                this.loading = true
+                await this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
                             this.form = response.data.data
                             this.titleDialog = `Asignar permisos: ${this.form.name}`
+                        })
+                        .then(()=>{
+                            this.loading = false
                         })
 
             },
@@ -94,6 +106,27 @@
                     return {
                         success: false,
                         message: 'Debe seleccionar al menos una opción'
+                    }
+                }
+
+                if(this.app_configuration.app_mode === 'pos')
+                {
+
+                    let selected_module = 0
+
+                    this.pos_document_types.forEach(value => {
+                        
+                        const find_selected_module = _.some(this.form.app_modules, { value: value, checked: true})
+
+                        if(find_selected_module) selected_module++
+                    })
+                    
+                    if(selected_module === 0)
+                    {
+                        return {
+                            success: false,
+                            message: 'Si tiene configurado el modo POS, debe habilitar al menos una opción: Factura, Boleta o Nota de venta.'
+                        } 
                     }
                 }
 

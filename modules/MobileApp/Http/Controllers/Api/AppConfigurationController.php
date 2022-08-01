@@ -66,6 +66,7 @@ class AppConfigurationController extends Controller
             'style_settings' => AppConfiguration::firstOrFail()->getRowInitialSettings(),
             'permissions' => $user->getAppPermission(),
             'generals' => [
+                'pos_document_types' => $user->getPosDocumentTypes(),
                 'app_logo' => Company::getAppUrlLogo(),
                 'user_data' => $user->getGeneralDataApp()
             ],

@@ -208,7 +208,7 @@
                 await this.$http.get(`/${this.resource}/record`)
                         .then(response => {
                             this.form = response.data.data
-                            console.log(response.data.data)
+                            // console.log(response.data.data)
                         })
                         .then(()=>{
                             this.loading = false
