@@ -91,6 +91,10 @@
             </td>
         </tr>
     @endif
+    <tr>
+        <td>Vendedor:</td>
+        <td> @if($document->seller_id != 0){{$document->seller->name }} @else {{ $document->user->name }} @endif</td>
+    </tr>
     @if ($document->plate_number !== null)
     <tr>
         <td class="align-top"><p class="desc">N° Placa:</p></td>
