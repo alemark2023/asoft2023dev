@@ -133,6 +133,10 @@ class UserController extends Controller
         $user->create_payment = $request->input('create_payment');
         $user->delete_payment = $request->input('delete_payment');
 
+        $user->edit_purchase = $request->input('edit_purchase');
+        $user->annular_purchase = $request->input('annular_purchase');
+        $user->delete_purchase = $request->input('delete_purchase');
+
         $user->save();
 
         if ($user->id != 1) {
