@@ -11,6 +11,7 @@ use App\Models\Tenant\Company;
 use Mpdf\Mpdf;
 use Exception;
 use Html2Text\Html2Text;
+use Illuminate\Http\Request;
 
 
 class DownloadController extends Controller
@@ -26,7 +27,7 @@ class DownloadController extends Controller
      * @param  string $format
      * @return string
      */
-    public function documentPrintPdf($model, $external_id, $format) 
+    public function documentPrintPdf($model, $external_id, $format, $extend_pdf_height = 0) 
     {
         $model = "App\\Models\\Tenant\\".ucfirst($model);
         $document = $model::where('external_id', $external_id)->first();
@@ -43,7 +44,16 @@ class DownloadController extends Controller
             $search_key = '<style>';
             $replace_size = "{$search_key} @media print { .page, .page-content, html, body, .framework7-root, .views, .view { height: auto !important; width: {$size_width}mm !important;}}";
     
-            return str_replace($search_key, $replace_size, $html);
+            $html = str_replace($search_key, $replace_size, $html);
+        }
+
+        // se agrega un div para aumentar la altura del pdf, se utiliza para impresion directa desde app
+        if($extend_pdf_height > 0)
+        {
+            $search_key_extend = '</body>';
+            $replace_size_extend = "<div style='height:".$extend_pdf_height."px'></div></body>";
+    
+            $html = str_replace($search_key_extend, $replace_size_extend, $html);
         }
 
         return $html;
@@ -65,6 +75,27 @@ class DownloadController extends Controller
 
         return trim((new Html2Text($html))->getText());
     }
+
+        
+    /**
+     * Usado para pruebas
+     *
+     * @param  Request $request
+     * @return void
+     */
+    // public function documentPrintPdfUpload(Request $request) 
+    // {
+
+    //     $data = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $request->image));
+
+    //     file_put_contents(public_path('logo'.DIRECTORY_SEPARATOR.$request->external_id.".png"), $data);
+
+    //     return [
+    //         'successs' => true
+    //     ];
+        
+    // }
+
 
 
     /**
