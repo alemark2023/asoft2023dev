@@ -65,21 +65,14 @@ class PersonController extends Controller
     public function tables()
     {
         $countries = Country::whereActive()->orderByDescription()->get();
-        $departments = Department::whereActive()->orderByDescription()->get();
-        $provinces = Province::whereActive()->orderByDescription()->get();
-        $districts = District::whereActive()->orderByDescription()->get();
         $identity_document_types = IdentityDocumentType::whereActive()->get();
         $person_types = PersonType::get();
-        $locations = $this->getLocationCascade();
+        $locations = func_get_locations();
         $zones = Zone::all();
         $sellers = $this->getSellers();
-
-        // $configuration = Configuration::first();
-        // $api_service_token = $configuration->token_apiruc == 'false' ? config('configuration.api_service_token') : $configuration->token_apiruc;
         $api_service_token = \App\Models\Tenant\Configuration::getApiServiceToken();
 
-
-        return compact('countries', 'departments', 'provinces', 'districts', 'identity_document_types', 'locations','person_types','api_service_token'
+        return compact('countries', 'identity_document_types', 'locations','person_types','api_service_token'
         ,'zones','sellers');
     }
 
@@ -114,6 +107,14 @@ class PersonController extends Controller
         $data = $request->all();
         unset($data['optional_email'],$data['id']);
         $person->fill($data);
+
+        $location_id = $request->input('location_id');
+        if(count($location_id) === 3) {
+            $person->district_id = $location_id[2];
+            $person->province_id = $location_id[1];
+            $person->department_id = $location_id[0];
+        }
+
         $person->save();
 
         $person->addresses()->delete();
@@ -186,39 +187,39 @@ class PersonController extends Controller
             'message' =>  __('app.actions.upload.error'),
         ];
     }
-
-    public function getLocationCascade()
-    {
-        $locations = [];
-        $departments = Department::where('active', true)->get();
-        foreach ($departments as $department)
-        {
-            $children_provinces = [];
-            foreach ($department->provinces as $province)
-            {
-                $children_districts = [];
-                foreach ($province->districts as $district)
-                {
-                    $children_districts[] = [
-                        'value' => $district->id,
-                        'label' => $district->id." - ". $district->description
-                    ];
-                }
-                $children_provinces[] = [
-                    'value' => $province->id,
-                    'label' => $province->description,
-                    'children' => $children_districts
-                ];
-            }
-            $locations[] = [
-                'value' => $department->id,
-                'label' => $department->description,
-                'children' => $children_provinces
-            ];
-        }
-
-        return $locations;
-    }
+//
+//    public function getLocationCascade()
+//    {
+//        $locations = [];
+//        $departments = Department::where('active', true)->get();
+//        foreach ($departments as $department)
+//        {
+//            $children_provinces = [];
+//            foreach ($department->provinces as $province)
+//            {
+//                $children_districts = [];
+//                foreach ($province->districts as $district)
+//                {
+//                    $children_districts[] = [
+//                        'value' => $district->id,
+//                        'label' => $district->id." - ". $district->description
+//                    ];
+//                }
+//                $children_provinces[] = [
+//                    'value' => $province->id,
+//                    'label' => $province->description,
+//                    'children' => $children_districts
+//                ];
+//            }
+//            $locations[] = [
+//                'value' => $department->id,
+//                'label' => $department->description,
+//                'children' => $children_provinces
+//            ];
+//        }
+//
+//        return $locations;
+//    }
 
 
     public function enabled($type, $id)
@@ -302,7 +303,7 @@ class PersonController extends Controller
         $id = $request->id;
 
         $record = Person::find($id);
-        
+
 
         $pdf = new Mpdf([
                 'mode' => 'utf-8',

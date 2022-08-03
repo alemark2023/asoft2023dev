@@ -107,7 +107,11 @@
     </tr>
     <tr>
         <td>P.Partida: {{ $document->origin->location_id }} - {{ $document->origin->address }}</td>
+        @if($document->transfer_reason_type_id === '09')
+        <td>P.Llegada: {{ $document->delivery->country_id }} - {{ $document->delivery->address }}</td>
+        @else
         <td>P.Llegada: {{ $document->delivery->location_id }} - {{ $document->delivery->address }}</td>
+        @endif
     </tr>
     @if($document->order_form_external)
     <tr>

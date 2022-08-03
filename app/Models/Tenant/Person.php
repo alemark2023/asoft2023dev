@@ -485,7 +485,6 @@
          */
         public function getCollectionData($withFullAddress = false, $childrens = false, $servers=false)
         {
-
             $addresses = $this->addresses;
             if ($withFullAddress == true) {
                 $addresses = collect($addresses)->transform(function ($row) {
@@ -518,6 +517,7 @@
                 ];
             }
 
+            $location_id = [];
             /** @var \App\Models\Tenant\Catalogs\Department  $department */
             $department = \App\Models\Tenant\Catalogs\Department::find($this->department_id);
             if(!empty($department)){
@@ -526,6 +526,7 @@
                 "description" => $department->description,
                 "active" => $department->active,
                 ];
+                array_push($location_id, $department['id']);
             }
             $province = \App\Models\Tenant\Catalogs\Province::find($this->province_id);
 
@@ -535,6 +536,7 @@
                     "description" => $province->description,
                     "active" => $province->active,
                 ];
+                array_push($location_id, $province['id']);
             }
             $district = \App\Models\Tenant\Catalogs\District::find($this->district_id);
 
@@ -544,6 +546,7 @@
                     "description" => $district->description,
                     "active" => $district->active,
                 ];
+                array_push($location_id, $district['id']);
             }
             $seller = User::find($this->seller_id);
             if(!empty($seller)){
@@ -599,6 +602,7 @@
                 'optional_email' => $optional_mail,
                 'optional_email_send' => implode(',', $optional_mail_send),
                 'childrens' => [],
+                'location_id' => $location_id
 
             ];
             if ($childrens == true) {
@@ -765,14 +769,14 @@
 
         }
 
-        
+
         /**
-         * 
+         *
          * Aplicar filtro por vendedor asignado al cliente
          *
          * Usado en:
          * PersonController - records
-         * 
+         *
          * @param \Illuminate\Database\Eloquent\Builder $query
          * @param string $type
          * @return \Illuminate\Database\Eloquent\Builder
@@ -782,7 +786,7 @@
             if($type === 'customers')
             {
                 $user = auth()->user();
-                
+
                 if($user->applyCustomerFilterBySeller())
                 {
                     return $query->where('seller_id', $user->id);
@@ -792,9 +796,9 @@
             return $query;
         }
 
-        
+
         /**
-         * 
+         *
          * Obtener datos para api (app)
          *
          * @return array
@@ -818,10 +822,10 @@
                 'identity_document_type_description' => $this->identity_document_type->description,
             ];
         }
-        
+
 
         /**
-         * 
+         *
          * Descripción para mostrar en campos de búsqueda, etc
          *
          * @return string
@@ -833,9 +837,9 @@
 
 
         /**
-         * 
+         *
          * Filtro para búsqueda de clientes/proveedores
-         * 
+         *
          * Usado en:
          * clientes - app
          *
@@ -851,25 +855,25 @@
                         ->whereType($type)
                         ->orderBy('name');
         }
-    
+
 
         /**
-         * 
+         *
          * @return string
          */
         public function getTitlePersonDescription()
         {
             return $this->type === 'customers' ? 'Cliente' : 'Proveedor';
         }
-        
-        
+
+
         /**
-         * 
+         *
          * Filtro para no incluir relaciones en consulta
          *
          * @param \Illuminate\Database\Eloquent\Builder $query
          * @return \Illuminate\Database\Eloquent\Builder
-         */  
+         */
         public function scopeWhereFilterWithOutRelations($query)
         {
             return $query->withOut([
@@ -881,7 +885,7 @@
             ]);
         }
 
-        
+
         /**
          * Obtener datos iniciales para mostrar lista de clientes - App
          *
@@ -896,5 +900,4 @@
                         ->orderBy('name')
                         ->take($take);
         }
-
     }

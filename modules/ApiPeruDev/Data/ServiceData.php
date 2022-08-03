@@ -159,9 +159,10 @@
                         'name' => $data['nombre_o_razon_social'],
                         'trade_name' => '',
                         'address' => $address,
-                        'department_id' => $department_id,
-                        'province_id' => $province_id,
-                        'district_id' => $district_id,
+//                        'department_id' => $department_id,
+//                        'province_id' => $province_id,
+//                        'district_id' => $district_id,
+                        'location_id' => $data['ubigeo'],
                         'condition' => $data['condicion'],
                         'state' => $data['estado'],
                     ];
