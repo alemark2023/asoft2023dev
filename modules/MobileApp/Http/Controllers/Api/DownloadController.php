@@ -12,12 +12,12 @@ use Mpdf\Mpdf;
 use Exception;
 use Html2Text\Html2Text;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Tenant\Api\SaleNoteController;
 
 
 class DownloadController extends Controller
 {
     
-
     /**
      * 
      * Retornar pdf en html
@@ -29,13 +29,30 @@ class DownloadController extends Controller
      */
     public function documentPrintPdf($model, $external_id, $format, $extend_pdf_height = 0) 
     {
-        $model = "App\\Models\\Tenant\\".ucfirst($model);
-        $document = $model::where('external_id', $external_id)->first();
+        $path_model = "App\\Models\\Tenant\\".ucfirst($model);
+        $document = $path_model::where('external_id', $external_id)->first();
 
         if (!$document) throw new Exception("El código {$external_id} es inválido, no se encontro documento relacionado");
 
-        $html = $this->getHtmlPdf($document, 'invoice', $format);
+        $html = $this->getHtmlPdf($model, $document, $format);
 
+        $this->replaceElementsInHtml($html, $format, $extend_pdf_height);
+
+        return $html;
+    }
+
+    
+    /**
+     * 
+     * Reemplazar ancho en formato pdf - altura adicional para ticket (impresion directa app)
+     *
+     * @param  string $html
+     * @param  string $format
+     * @param  float $extend_pdf_height
+     * @return void
+     */
+    private function replaceElementsInHtml(&$html, $format, $extend_pdf_height)
+    {
         // se reemplaza ancho para impresion desde app para tickets
         $size_width = $this->getSizeWidth($format);
 
@@ -51,14 +68,67 @@ class DownloadController extends Controller
         if($extend_pdf_height > 0)
         {
             $search_key_extend = '</body>';
-            $replace_size_extend = "<div style='height:".$extend_pdf_height."px'></div></body>";
+            $replace_size_extend = "<div style='height:".$extend_pdf_height."px'></div>{$search_key_extend}";
     
             $html = str_replace($search_key_extend, $replace_size_extend, $html);
+        }
+    }
+
+
+    /**
+     * 
+     * Obtener medida del formato ticket para asignar el valor a la impresión
+     *
+     * @param  string $format
+     * @return float
+     */
+    public function getSizeWidth($format)
+    {
+        $size_width = null;
+
+        switch ($format) 
+        {
+            case 'ticket_50':
+                $size_width = 45;
+                break;
+            
+            case 'ticket_58':
+                $size_width = 56;
+                break;
+
+            case 'ticket':
+                $size_width = 78;
+                break;
+        }
+
+        return $size_width;
+    }
+
+
+    /**
+     * 
+     * Reload Ticket
+     * 
+     * @param  string $document
+     * @param  string $format
+     * @return string
+     */
+    private function getHtmlPdf($model, $document, $format) 
+    {
+        $html = null;
+
+        if($model === 'document')
+        {
+            $html = (new Facturalo)->createPdf($document, 'invoice', $format, 'html');
+        }
+        else
+        {
+            $html = app(SaleNoteController::class)->createPdf($document, $format, null, 'html');
         }
 
         return $html;
     }
-    
+
     
     /**
      * 
@@ -97,46 +167,4 @@ class DownloadController extends Controller
     // }
 
 
-
-    /**
-     * 
-     * Obtener medida del formato ticket para asignar el valor a la impresión
-     *
-     * @param  string $format
-     * @return float
-     */
-    public function getSizeWidth($format)
-    {
-        $size_width = null;
-
-        switch ($format) {
-            case 'ticket_50':
-                $size_width = 45;
-                break;
-            
-            case 'ticket_58':
-                $size_width = 56;
-                break;
-
-            case 'ticket':
-                $size_width = 78;
-                break;
-        }
-
-        return $size_width;
-    }
-
-
-    /**
-     * Reload Ticket
-     * @param  string $document
-     * @param  string $format
-     * @return string
-     */
-    private function getHtmlPdf($document, $type, $format) 
-    {
-        return (new Facturalo)->createPdf($document, $type, $format, 'html');
-    }
-
-    
 }
