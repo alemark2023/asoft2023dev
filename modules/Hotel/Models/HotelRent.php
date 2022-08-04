@@ -122,18 +122,18 @@
          *
          * @return Builder
          */
-        public function scopeSearchByDate(Builder $query, $date_start = null, $date_end = null)
+        public function scopeSearchByDate(Builder $query, $date_start, $date_end)
         {
 
-            if ($date_end !== null && $date_start !== null) {
-                $query->where([['input_date', '>=', $date_start], ['output_date', '<=', $date_end]]);
+            if ($date_start) {
+                $query->where('input_date', '>=', $date_start);
+            }
+            if ($date_end) {
+                $query->where('output_date', '<=', $date_end);
             }
 
             return $query;
         }
-
-        public function searchPersonDetails($value)
-        {
             $id ='';
 
             if ($value->customer->id) {
