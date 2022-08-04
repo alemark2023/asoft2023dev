@@ -134,6 +134,9 @@
 
             return $query;
         }
+
+        public function searchPersonDetails($value)
+        {
             $id ='';
 
             if ($value->customer->id) {
