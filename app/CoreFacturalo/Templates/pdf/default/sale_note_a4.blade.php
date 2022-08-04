@@ -84,7 +84,7 @@
         <td>Teléfono:</td>
         <td>{{ $customer->telephone }}</td>
         <td>Vendedor:</td>
-        <td> @if($document->seller_id != 0)){{$document->seller->name }} @else {{ $document->user->name }} @endif</td>
+        <td> @if($document->seller_id != 0){{$document->seller->name }} @else {{ $document->user->name }} @endif</td>
     </tr>
     @if ($document->plate_number !== null)
     <tr>
