@@ -14,6 +14,10 @@
                                 <th>Referencia</th>
                                 <th>Archivo</th>
                                 <th class="text-right">Monto</th>
+                                <template v-if="external">
+                                    <th>Imprimir</th>
+                                </template>
+                                
                                 <th></th>
                             </tr>
                             </thead>
@@ -31,6 +35,12 @@
                                         </button>
                                     </td>
                                     <td class="text-right">{{ row.payment }}</td>
+                                <template v-if="external">
+                                    <td class="series-table-actions text-center">
+                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickPrint(document.external_id)"><i class="fas fa-file-upload"></i></button>
+                                    </td>
+                                </template>
+
                                     <td class="series-table-actions text-right">
                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)"><i class="fas fa-trash"></i></button>
                                         <!--<el-button type="danger" icon="el-icon-delete" plain @click.prevent="clickDelete(row.id)"></el-button>-->
@@ -151,7 +161,7 @@
     import {deletable} from '../../../../mixins/deletable'
 
     export default {
-        props: ['showDialog', 'documentId'],
+        props: ['showDialog', 'documentId','external'],
         mixins: [deletable],
         data() {
             return {
@@ -321,7 +331,10 @@
                     }
                     // this.initDocumentTypes()
                 )
-            }
+            },
+            clickPrint(external_id) {
+                 window.open(`/finances/unpaid/print/${external_id}/sale`, '_blank');
+            },
         }
     }
 </script>

@@ -18,6 +18,10 @@
                                 <th class="text-center">Monto <span class="text-danger">*</span></th>
                                 <!-- <th>Referencia</th> -->
                                 <th>¿Pago recibido?</th>
+                                <template v-if="external">
+                                    <th>Imprimir</th>
+                                </template>
+                                
                                 <th></th>
                             </tr>
                             </thead>
@@ -68,6 +72,13 @@
                                         </template>
 
                                     </td>
+                                <template  v-if="external">
+                                    <td class="series-table-actions text-center">
+                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickPrint(document.external_id)"><i class="fas fa-file-upload"></i></button>
+                                    </td>
+                                </template>
+                                    
+
                                     <td class="series-table-actions text-right">
 
                                         <template v-if="permissions.delete_payment">
@@ -238,7 +249,7 @@
     import DialogLinkPayment from './dialog_link_payment'
 
     export default {
-        props: ['showDialog', 'documentId'],
+        props: ['showDialog', 'documentId', 'external'],
         mixins: [deletable],
         components: {
             DialogLinkPayment,
@@ -457,7 +468,10 @@
             clickDownloadReport(id)
             {
                 window.open(`/${this.resource}/report/${this.documentId}`, '_blank');
-            }
+            },
+            clickPrint(external_id) {
+                 window.open(`/finances/unpaid/print/${external_id}/document`, '_blank');
+            },
         }
     }
 </script>

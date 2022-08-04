@@ -26,11 +26,25 @@ use App\Models\Tenant\PaymentMethodType;
 use Modules\Finance\Http\Resources\UnpaidCollection;
 use Modules\Finance\Traits\UnpaidTrait;
 use Modules\Item\Models\WebPlatform;
+use App\Models\Tenant\SaleNote;
+use App\Models\Tenant\Document;
+use ErrorException;
+use Exception;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+use Mpdf\HTMLParserMode;
+use Mpdf\Mpdf;
+use App\CoreFacturalo\Template;
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 
 class UnpaidController extends Controller
 {
 
     use FinanceTrait, UnpaidTrait;
+    use StorageDocument;
+
+    protected $sale_note;
+    protected $company;
 
     public function index()
     {
@@ -123,6 +137,93 @@ class UnpaidController extends Controller
 
         return $pdf->download($filename.'.pdf');
 
+    }
+
+    public function toPrint($external_id,$type) {
+        if ($type=='sale') {
+            $sale_note = SaleNote::where('external_id', $external_id)->first();
+        } else {
+            $sale_note = Document::where('external_id', $external_id)->first();
+        }
+        
+
+        if (!$sale_note) throw new Exception("El código {$external_id} es inválido, no se encontro la nota de venta relacionada");
+        $format='a4';
+        $this->reloadPDF($sale_note, $format, $sale_note->filename);
+        $temp = tempnam(sys_get_temp_dir(), 'unpaid');
+
+        file_put_contents($temp, $this->getStorage($sale_note->filename, 'unpaid'));
+
+        return response()->file($temp);
+    }
+
+    private function reloadPDF($sale_note, $format, $filename) {
+        $this->createPdf($sale_note, $format, $filename);
+    }
+
+    public function createPdf($sale_note = null, $format_pdf = null, $filename = null) {
+
+        ini_set("pcre.backtrack_limit", "5000000");
+        $template = new Template();
+        $pdf = new Mpdf();
+
+        $this->company = ($this->company != null) ? $this->company : Company::active();
+        $this->document = ($sale_note != null) ? $sale_note : $this->sale_note;
+
+        $this->configuration = Configuration::first();
+        // $configuration = $this->configuration->formats;
+        $base_template = Establishment::find($this->document->establishment_id)->template_pdf;
+
+        $html = $template->pdf($base_template, "unpaid", $this->company, $this->document, $format_pdf);
+
+        /* cuentas por cobrar formato a4 */
+
+            $pdf_font_regular = config('tenant.pdf_name_regular');
+            $pdf_font_bold = config('tenant.pdf_name_bold');
+
+            if ($pdf_font_regular != false) {
+                $defaultConfig = (new ConfigVariables())->getDefaults();
+                $fontDirs = $defaultConfig['fontDir'];
+
+                $defaultFontConfig = (new FontVariables())->getDefaults();
+                $fontData = $defaultFontConfig['fontdata'];
+
+                $pdf = new Mpdf([
+                    'fontDir' => array_merge($fontDirs, [
+                        app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                                DIRECTORY_SEPARATOR.'pdf'.
+                                                DIRECTORY_SEPARATOR.$base_template.
+                                                DIRECTORY_SEPARATOR.'font')
+                    ]),
+                    'fontdata' => $fontData + [
+                        'custom_bold' => [
+                            'R' => $pdf_font_bold.'.ttf',
+                        ],
+                        'custom_regular' => [
+                            'R' => $pdf_font_regular.'.ttf',
+                        ],
+                    ]
+                ]);
+            }
+
+
+        $path_css = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                             DIRECTORY_SEPARATOR.'pdf'.
+                                             DIRECTORY_SEPARATOR.$base_template.
+                                             DIRECTORY_SEPARATOR.'style.css');
+
+        $stylesheet = file_get_contents($path_css);
+
+        $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+        
+        $this->uploadFile($this->document->filename, $pdf->output('', 'S'), 'unpaid');
+    }
+
+    public function uploadFile($filename, $file_content, $file_type)
+    {
+        $this->uploadStorage($filename, $file_content, $file_type);
     }
 
 }
