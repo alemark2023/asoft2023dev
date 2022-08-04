@@ -27,9 +27,10 @@ class AppPermissionController extends Controller
      */
     public function tables()
     {
-        $app_modules = AppModule::orderBy('order_menu')->get();
+        $app_configuration = app(AppConfigurationController::class)->record();
+        $pos_document_types = collect(auth()->user()->getPosDocumentTypes())->pluck('module');
 
-        return compact('app_modules');
+        return compact('app_configuration', 'pos_document_types');
     }
 
 

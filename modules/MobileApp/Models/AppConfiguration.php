@@ -16,10 +16,12 @@ class AppConfiguration extends ModelTenant
         'card_color',
         'header_waves',
         'app_mode',
+        'direct_print',
     ];
 
     protected $casts = [
         'show_image_item' => 'bool',
+        'direct_print' => 'bool',
     ];
 
 
@@ -36,6 +38,7 @@ class AppConfiguration extends ModelTenant
             'card_color' => $this->card_color,
             'header_waves' => $this->header_waves,
             'app_mode' => $this->app_mode,
+            'direct_print' => $this->direct_print,
         ];
     }
 
