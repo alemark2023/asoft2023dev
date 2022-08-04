@@ -322,6 +322,14 @@ return [
 		'user_pse' => 'usuario autenticación',
 		'beginning_balance' => 'saldo inicial',
 
+		'send_type' => 'tipo de envío',
+		'message' => 'mensaje',
+		'phone_number' => 'número de teléfono',
+
+		'document.link' => 'enlace del documento',
+		'document.filename' => 'nombre de archivo',
+
+
 
 	],
 ];
