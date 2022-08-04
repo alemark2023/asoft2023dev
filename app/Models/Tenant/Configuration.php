@@ -257,6 +257,10 @@
             'list_items_by_warehouse',
             'ticket_single_shipment',
             'hide_pdf_view_documents',
+            'dashboard_sales',
+            'dashboard_general',
+            'dashboard_clients',
+            'dashboard_products',
         ];
 
         protected $casts = [
@@ -565,6 +569,10 @@
                 'list_items_by_warehouse' => $this->list_items_by_warehouse,
                 'ticket_single_shipment' => $this->ticket_single_shipment,
                 'hide_pdf_view_documents' => $this->hide_pdf_view_documents,
+                'dashboard_sales' => (bool)$this->dashboard_sales,
+                'dashboard_general' => (bool)$this->dashboard_general,
+                'dashboard_clients' => (bool)$this->dashboard_clients,
+                'dashboard_products' => (bool)$this->dashboard_products,
                 
             ];
         }
