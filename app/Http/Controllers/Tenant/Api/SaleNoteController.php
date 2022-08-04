@@ -285,7 +285,7 @@ class SaleNoteController extends Controller
         $this->createPdf($sale_note, $format, $filename);
     }
 
-    public function createPdf($sale_note = null, $format_pdf = null, $filename = null)
+    public function createPdf($sale_note = null, $format_pdf = null, $filename = null, $output = 'pdf')
     {
         $template = new Template();
         $pdf = new Mpdf();
@@ -442,6 +442,19 @@ class SaleNoteController extends Controller
                                              DIRECTORY_SEPARATOR . 'style.css');
 
         $stylesheet = file_get_contents($path_css);
+
+        
+        // retornar html del pdf para impresion directa
+        if($output === 'html') 
+        {
+            $path_html = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'ticket_html.css');
+            $ticket_html = file_get_contents($path_html);
+            $pdf->WriteHTML($ticket_html, HTMLParserMode::HEADER_CSS);
+            $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+            return "<style>".$ticket_html.$stylesheet."</style>".$html;
+        }
+        
 
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
