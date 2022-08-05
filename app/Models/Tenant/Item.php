@@ -177,6 +177,7 @@ class Item extends ModelTenant
         'purchase_has_isc',
 
         'subject_to_detraction',
+        'favorite',
         // 'warehouse_id'
     ];
 
@@ -189,6 +190,7 @@ class Item extends ModelTenant
         'subject_to_detraction' => 'boolean',
         'sale_unit_price' => 'float',
         'purchase_unit_price' => 'float',
+        'favorite' => 'boolean',
     ];
 
     /**
@@ -2377,6 +2379,7 @@ class Item extends ModelTenant
             'category_id' => $this->category_id,
             'active' => (bool) $this->active,
             'stock' => $this->getWarehouseCurrentStock(),
+            'favorite' => $this->favorite,
 
         ];
     }

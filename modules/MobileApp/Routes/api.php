@@ -37,8 +37,10 @@ if ($hostname)
                 Route::post('upload-temp-image', 'Api\ItemController@uploadTempImage');
                 Route::delete('{id}', 'Api\ItemController@destroy');
                 Route::get('change-active/{id}/{active}', 'Api\ItemController@changeActive');
+                Route::get('change-favorite/{id}/{favorite}', 'Api\ItemController@changeFavorite');
 
             });
+            
 
             Route::prefix('documents')->group(function () {
                 Route::post('validate-document', 'Api\ValidateDocumentController@validateDocument');
