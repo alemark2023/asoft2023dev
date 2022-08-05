@@ -3,6 +3,9 @@
 namespace Modules\WhatsAppApi\Services;
 
 use Modules\WhatsAppApi\Helpers\HttpConnectionApi;
+use App\Models\Tenant\{
+    Company
+};
 use Exception;
 
 
@@ -22,11 +25,13 @@ class WhatsAppCloudApi
      */
     public function __construct()
     {
+        $company = Company::selectDataWhatsAppApi()->first();
+        $this->phone_number_id = $company->ws_api_phone_number_id;
+        $this->token = $company->ws_api_token;
         $this->api_version = config('whatsappapi.whatsapp_cloud_api_version');
-        $this->phone_number_id = 'xxxxxxxx5';
-        $this->token = 'xxxx';
         $this->base_url = self::GRAPH_URL.$this->api_version.'/'.$this->phone_number_id.'/';
         $this->http_connection = new HttpConnectionApi($this->token);
+
     }
     
     
@@ -39,13 +44,18 @@ class WhatsAppCloudApi
      * @return array
      * 
      */
-    public function sendMessage($params_data, $prefix_number = '51')
+    public function sendMessage($params_data)
     {
+        $validate_data = $this->validateData();
+        if(!$validate_data['success']) return $validate_data;
+
         try
         {
-            $params = $this->getGeneralParams($params_data, $prefix_number);
+            $params = $this->getGeneralParams($params_data);
+            // dd($params, $this->base_url, $this->token);
 
             $response = $this->http_connection->sendRequest("{$this->base_url}messages", $params, 'POST');
+            // dd($response);
 
             return $this->processResponse($response);
             
@@ -56,6 +66,40 @@ class WhatsAppCloudApi
         }
     }
     
+        
+    /**
+     * 
+     * Validar datos
+     *
+     * @return array
+     */
+    private function validateData()
+    {
+        // datos de configuracion
+        if(!$this->phone_number_id)
+        {
+            return [
+                'success' => false,
+                'message' => 'No tiene registrado correctamente el identificador de número de teléfono',
+            ];
+        }
+
+        if(!$this->token)
+        {
+            return [
+                'success' => false,
+                'message' => 'No tiene registrado correctamente el token de acceso',
+            ];
+        }
+        // datos de configuracion
+
+        
+        return [
+            'success' => true,
+            'message' => null,
+        ];
+    }
+
 
     /**
      * 
@@ -91,12 +135,12 @@ class WhatsAppCloudApi
      * Obtener parámetros
      *
      * @param  array $params
-     * @param  string $prefix_number
      * @return array
      */
-    private function getGeneralParams($params, $prefix_number)
+    private function getGeneralParams($params)
     {
         $type = $params['send_type'];
+        $prefix_number = $params['prefix_number'] ?? '51';
 
         $data = [
             'messaging_product' => 'whatsapp',

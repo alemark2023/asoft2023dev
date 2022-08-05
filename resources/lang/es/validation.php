@@ -329,7 +329,8 @@ return [
 		'document.link' => 'enlace del documento',
 		'document.filename' => 'nombre de archivo',
 
-
+		'ws_api_phone_number_id' => 'identificador de número de teléfono',
+		'ws_api_token' => 'token',
 
 	],
 ];

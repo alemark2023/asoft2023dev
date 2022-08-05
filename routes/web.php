@@ -81,6 +81,11 @@ if ($hostname) {
             Route::post('companies/store-send-pse', 'Tenant\CompanyController@storeSendPse');
             Route::get('companies/record-send-pse', 'Tenant\CompanyController@recordSendPse');
 
+            //configuracion WhatsApp Api
+            Route::post('companies/store-whatsapp-api', 'Tenant\CompanyController@storeWhatsAppApi');
+            Route::get('companies/record-whatsapp-api', 'Tenant\CompanyController@recordWhatsAppApi');
+            
+
             //Card Brands
             Route::get('card_brands/records', 'Tenant\CardBrandController@records');
             Route::get('card_brands/record/{card_brand}', 'Tenant\CardBrandController@record');
