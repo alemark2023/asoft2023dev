@@ -74,7 +74,7 @@
                                     </td>
                                 <template  v-if="external">
                                     <td class="series-table-actions text-center">
-                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickOptions()"><i class="fas fa-file-upload"></i></button>
+                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickOptionsPrint()"><i class="fas fa-file-upload"></i></button>
                                     </td>
                                 </template>
                                     
@@ -242,7 +242,7 @@
 
         <document-options
             :recordId="this.documentId"
-            :showDialog="showDialogOptions"
+            :showDialogOptions.sync="showDialogOptions"
             :showClose="showDialogClose"
             :type="this.type"
             :configuration="this.configuration"
@@ -484,7 +484,7 @@
             clickPrint(external_id) {
                  window.open(`/finances/unpaid/print/${external_id}/document`, '_blank');
             },
-            clickOptions() {
+            clickOptionsPrint() {
                 this.showDialogOptions = true
                 this.showDialogClose=true
             },

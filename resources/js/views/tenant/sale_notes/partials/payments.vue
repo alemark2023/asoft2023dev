@@ -143,7 +143,7 @@
 
         <document-options
             :recordId="this.documentId"
-            :showDialog="showDialogOptions"
+            :showDialogOptions="showDialogOptions"
             :showClose="showDialogClose"
             :type="this.type"
             :configuration="this.configuration"

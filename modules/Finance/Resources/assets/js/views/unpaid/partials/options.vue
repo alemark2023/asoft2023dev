@@ -1,12 +1,11 @@
 <template>
-    <el-dialog :close-on-click-modal="false"
-               :close-on-press-escape="false"
-               :show-close="false"
+    <el-dialog 
                :title="titleDialog"
-               :visible="showDialog"
+               :visible="showDialogOptions"
                append-to-body
                width="30%"
-               @open="create">
+               @open="create"
+               @close="closeUnpaid">
         <!--
         <Keypress
             key-event="keyup"
@@ -67,12 +66,6 @@
                     <p>50MM</p>
                 </div>
         </div>
-        <span slot="footer"
-              class="dialog-footer">
-            <template v-if="showClose">
-                <el-button @click="clickClose()">Cerrar</el-button>
-            </template>
-        </span>
     </el-dialog>
 </template>
 
@@ -80,7 +73,7 @@
 import {mapState, mapActions} from "vuex/dist/vuex.mjs";
 
 export default {
-    props: ['showDialog', 'recordId', 'showClose', 'isUpdate', 'configuration', 'type'],
+    props: ['showDialogOptions', 'recordId', 'showClose', 'isUpdate', 'configuration', 'type'],
     components: {
     },
     data() {
@@ -192,9 +185,14 @@ export default {
         clickPrint(format) {
             window.open(`${this.resource}/print/${this.form.external_id}/${this.type}/${format}`, '_blank');
         },
-        clickClose() {
-            this.$emit('update:showDialog', false)
+        clickCloseUnpaid() {
+            this.$emit('update:showDialogOptions', false)
             this.initForm()
+        },
+        closeUnpaid() {
+            this.$emit('update:showDialogOptions', false);
+            // this.initDocumentTypes()
+            // this.initForm()
         },
     }
 }
