@@ -160,7 +160,7 @@
             <td class="text-left align-top">{{ $row->item->model ?? '' }}</td>
             <td class="text-center align-top">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
-                {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
+                {{ $row->item->IdLoteSelected ? $itemLotGroup->getLote($row->item->IdLoteSelected):'' }}
 
             </td>
             <td class="text-center align-top">

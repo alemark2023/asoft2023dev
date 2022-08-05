@@ -74,7 +74,7 @@
                                     </td>
                                 <template  v-if="external">
                                     <td class="series-table-actions text-center">
-                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickPrint(document.external_id)"><i class="fas fa-file-upload"></i></button>
+                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickOptions()"><i class="fas fa-file-upload"></i></button>
                                     </td>
                                 </template>
                                     
@@ -239,6 +239,14 @@
             :documentPayment="documentPayment"
             >
         </dialog-link-payment>
+
+        <document-options
+            :recordId="this.documentId"
+            :showDialog="showDialogOptions"
+            :showClose="showDialogClose"
+            :type="this.type"
+            :configuration="this.configuration"
+        ></document-options>
     </el-dialog>
 
 </template>
@@ -247,12 +255,13 @@
 
     import {deletable} from '../../../../mixins/deletable'
     import DialogLinkPayment from './dialog_link_payment'
-
+    import DocumentOptions from '../../../../../../modules/Finance/Resources/assets/js/views/unpaid/partials/options'
     export default {
-        props: ['showDialog', 'documentId', 'external'],
+        props: ['showDialog', 'documentId', 'external','configuration'],
         mixins: [deletable],
         components: {
             DialogLinkPayment,
+            DocumentOptions
         },
         data() {
             return {
@@ -269,6 +278,9 @@
                 index_file: null,
                 documentPayment: {},
                 showDialogLink: false,
+                showDialogOptions: false,
+                showDialogClose:false,
+                type:'document',
             }
         },
         async created() {
@@ -471,6 +483,10 @@
             },
             clickPrint(external_id) {
                  window.open(`/finances/unpaid/print/${external_id}/document`, '_blank');
+            },
+            clickOptions() {
+                this.showDialogOptions = true
+                this.showDialogClose=true
             },
         }
     }

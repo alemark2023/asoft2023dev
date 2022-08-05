@@ -48,7 +48,8 @@ class UnpaidController extends Controller
 
     public function index()
     {
-        return view('finance::unpaid.index');
+        $configuration = Configuration::getPublicConfig();
+        return view('finance::unpaid.index',compact('configuration'));
     }
 
     public function filter()
@@ -139,7 +140,7 @@ class UnpaidController extends Controller
 
     }
 
-    public function toPrint($external_id,$type) {
+    public function toPrint($external_id,$type,$format) {
         if ($type=='sale') {
             $sale_note = SaleNote::where('external_id', $external_id)->first();
         } else {
@@ -148,7 +149,6 @@ class UnpaidController extends Controller
         
 
         if (!$sale_note) throw new Exception("El código {$external_id} es inválido, no se encontro la nota de venta relacionada");
-        $format='a4';
         $this->reloadPDF($sale_note, $format, $sale_note->filename);
         $temp = tempnam(sys_get_temp_dir(), 'unpaid');
 
@@ -177,8 +177,70 @@ class UnpaidController extends Controller
         $html = $template->pdf($base_template, "unpaid", $this->company, $this->document, $format_pdf);
 
         /* cuentas por cobrar formato a4 */
+        if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58')OR ($format_pdf=='ticket_50')) {
 
-            $pdf_font_regular = config('tenant.pdf_name_regular');
+            $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
+            if(config('tenant.enabled_template_ticket_80')) $width = 76;
+            if($format_pdf === 'ticket_50') $width = 45;
+
+            $company_logo      = ($this->company->logo) ? 40 : 0;
+            $company_name      = (strlen($this->company->name) / 20) * 10;
+            $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
+            $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
+            $customer_name     = strlen($this->document->customer->name) > '25' ? '10' : '0';
+            $customer_address  = (strlen($this->document->customer->address) / 200) * 10;
+            $p_order           = $this->document->purchase_order != '' ? '10' : '0';
+
+            $total_exportation = $this->document->total_exportation != '' ? '10' : '0';
+            $total_free        = $this->document->total_free != '' ? '10' : '0';
+            $total_unaffected  = $this->document->total_unaffected != '' ? '10' : '0';
+            $total_exonerated  = $this->document->total_exonerated != '' ? '10' : '0';
+            $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
+            $quantity_rows     = count($this->document->items);
+            $payments     = $this->document->payments()->count() * 2;
+            $discount_global = 0;
+            $extra_by_item_description = 0;
+            foreach ($this->document->items as $it) {
+                if(strlen($it->item->description)>100){
+                    $extra_by_item_description +=24;
+                }
+                if ($it->discounts) {
+                    $discount_global = $discount_global + 1;
+                }
+            }
+            $legends = $this->document->legends != '' ? '10' : '0';
+            $bank_accounts = BankAccount::count() * 6;
+
+            $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    $width,
+                    120 +
+                    ($quantity_rows * 8)+
+                    ($discount_global * 3) +
+                    $company_logo +
+                    $payments +
+                    $company_name +
+                    $company_address +
+                    $company_number +
+                    $customer_name +
+                    $customer_address +
+                    $p_order +
+                    $legends +
+                    $bank_accounts +
+                    $total_exportation +
+                    $total_free +
+                    $total_unaffected +
+                    $total_exonerated +
+                    $extra_by_item_description +
+                    $total_taxed],
+                'margin_top' => 2,
+                'margin_right' => 5,
+                'margin_bottom' => 0,
+                'margin_left' => 5
+            ]);
+        }
+        else{    $pdf_font_regular = config('tenant.pdf_name_regular');
             $pdf_font_bold = config('tenant.pdf_name_bold');
 
             if ($pdf_font_regular != false) {
@@ -206,7 +268,7 @@ class UnpaidController extends Controller
                 ]);
             }
 
-
+        }
         $path_css = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
                                              DIRECTORY_SEPARATOR.'pdf'.
                                              DIRECTORY_SEPARATOR.$base_template.

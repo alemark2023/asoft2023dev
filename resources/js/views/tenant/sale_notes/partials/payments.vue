@@ -37,7 +37,7 @@
                                     <td class="text-right">{{ row.payment }}</td>
                                 <template v-if="external">
                                     <td class="series-table-actions text-center">
-                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickPrint(document.external_id)"><i class="fas fa-file-upload"></i></button>
+                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickOptions()"><i class="fas fa-file-upload"></i></button>
                                     </td>
                                 </template>
 
@@ -140,6 +140,15 @@
                 </div>
             </div>
         </div>
+
+        <document-options
+            :recordId="this.documentId"
+            :showDialog="showDialogOptions"
+            :showClose="showDialogClose"
+            :type="this.type"
+            :configuration="this.configuration"
+        ></document-options>
+
     </el-dialog>
 
 </template>
@@ -159,9 +168,10 @@
 <script>
 
     import {deletable} from '../../../../mixins/deletable'
+    import DocumentOptions from '../../../../../../modules/Finance/Resources/assets/js/views/unpaid/partials/options'
 
     export default {
-        props: ['showDialog', 'documentId','external'],
+        props: ['showDialog', 'documentId','external','configuration'],
         mixins: [deletable],
         data() {
             return {
@@ -174,7 +184,10 @@
                 index_file: null,
                 fileList: [],
                 showAddButton: true,
-                document: {}
+                document: {},
+                showDialogOptions: false,
+                showDialogClose:false,
+                type:'sale',
             }
         },
         async created() {
@@ -334,6 +347,10 @@
             },
             clickPrint(external_id) {
                  window.open(`/finances/unpaid/print/${external_id}/sale`, '_blank');
+            },
+            clickOptions() {
+                this.showDialogOptions = true
+                this.showDialogClose=true
             },
         }
     }
