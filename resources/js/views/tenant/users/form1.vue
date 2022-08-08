@@ -288,6 +288,48 @@
                             </div>
                         </div>
 
+                        <div class="row" v-if="typeUser != 'integrator'">
+                            <div  class="col-md-12 mt-4">
+                                <div class="form-comtrol">
+                                    <label class="control-label">Compras
+                                        <el-tooltip class="item"
+                                                    content="Disponible en: Listado de compras"
+                                                    effect="dark"
+                                                    placement="top">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                </div>
+                            </div>
+                            <div  class="col-md-4 mt-1">
+                                <div class="form-comtrol">
+                                    <el-checkbox v-model="form.edit_purchase">
+                                        Editar
+                                    </el-checkbox>
+                                </div>
+                            </div>
+                            <div  class="col-md-4 mt-1">
+                                <div class="form-comtrol">
+                                    <el-checkbox v-model="form.annular_purchase">
+                                        Anular
+                                    </el-checkbox>
+                                </div>
+                            </div>
+                            <div  class="col-md-4 mt-1">
+                                <div class="form-comtrol">
+                                    <el-checkbox v-model="form.delete_purchase">
+                                        Eliminar
+                                        <el-tooltip class="item"
+                                                    content="Disponible cuando se anule la compra"
+                                                    effect="dark"
+                                                    placement="top">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </el-checkbox>
+                                </div>
+                            </div>
+                        </div>
+
                     </el-tab-pane>
                 </el-tabs>
             </div>
@@ -461,6 +503,9 @@ export default {
                 recreate_documents: false,
                 create_payment: true,
                 delete_payment: true,
+                edit_purchase: true,
+                annular_purchase: true,
+                delete_purchase: true,
             };
         },
         create() {

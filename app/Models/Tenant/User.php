@@ -181,6 +181,9 @@ class User extends Authenticatable
         'delete_payment',
         'create_payment',
 
+        'edit_purchase',
+        'annular_purchase',
+        'delete_purchase',
 
         // 'email_verified_at',
         // 'api_token',
@@ -208,6 +211,10 @@ class User extends Authenticatable
 
         'delete_payment' => 'bool',
         'create_payment' => 'bool',
+
+        'edit_purchase'=>'bool',
+        'annular_purchase'=>'bool',
+        'delete_purchase'=>'bool',
     ];
 
     public function modules()
@@ -963,6 +970,7 @@ $withEstablishment = true){
             $app_modules[] = [
                 'id' => $app_module->id,
                 'description' => $app_module->description,
+                'value' => $app_module->value,
                 'checked' => (bool) in_array($app_module->id, $selected_app_modules)
             ];
         }
@@ -993,6 +1001,22 @@ $withEstablishment = true){
 
     /**
      * 
+     * Obtener modulos/opciones disponibles en pos app
+     *
+     * @return array
+     */
+    public function getPosDocumentTypes()
+    {
+        return [
+            ['document_type_id' => '01', 'module' => 'invoice'],
+            ['document_type_id' => '03', 'module' => 'invoice-ticket'],
+            ['document_type_id' => '80', 'module' => 'sale-note'],
+        ];
+    }
+
+
+    /**
+     * 
      * Retornar data para api
      *
      * @param  array $data
@@ -1019,6 +1043,15 @@ $withEstablishment = true){
         return [
             'type' => $this->type,
             'establishment_id' => $this->establishment_id,
+        ];
+    }
+    
+    public function getPermissionsPurchase()
+    {
+        return [
+            'edit_purchase' => $this->edit_purchase,
+            'annular_purchase' => $this->annular_purchase,
+            'delete_purchase' => $this->delete_purchase,
         ];
     }
 

@@ -895,3 +895,19 @@ html.sidebar-dark:not(.sidebar-light) .card-header.bg-info {
 .c-btn-disabled{
   color: #606266;
 }
+
+@media only screen and (max-width: 767px) {
+  .page-header {
+    display: flow-root;
+    position: relative;
+    box-shadow: none;
+    background: #fff;
+    left: 15px;
+    height: auto;
+    padding-bottom: 8px;
+    padding-left: 8px;
+  }
+  .page-header h2 {
+    display: none;
+  }
+}

@@ -36,6 +36,7 @@ class AppConfigurationController extends Controller
         $record->theme_color = $request->theme_color;
         $record->card_color = $request->card_color;
         $record->header_waves = $request->header_waves;
+        $record->app_mode = $request->app_mode;
         $record->save();
 
         return [

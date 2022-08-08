@@ -8,7 +8,10 @@ if ($hostname)
 
         Route::middleware(['auth:api', 'locked.tenant'])->group(function () {
 
-            Route::get('document-print-pdf/{model}/{external_id}/{format}', 'Api\DownloadController@documentPrintPdf');
+            Route::get('document-print-pdf/{model}/{external_id}/{format}/{extend_pdf_height?}', 'Api\DownloadController@documentPrintPdf');
+            
+            Route::get('document-print-pdf-text/{model}/{external_id}/{format}', 'Api\DownloadController@documentPrintText');
+            // Route::post('document-print-pdf-upload', 'Api\DownloadController@documentPrintPdfUpload');
 
             Route::get('categories-records', 'Api\CategoryController@records');
             Route::get('brands-records', 'Api\BrandController@records');
@@ -25,6 +28,8 @@ if ($hostname)
             
             Route::prefix('items')->group(function () {
                 
+                Route::get('records-sale', 'Api\ItemController@recordsSale');
+                Route::get('table/{table}', 'Api\ItemController@table');
                 Route::get('tables', 'Api\ItemController@tables');
                 Route::post('update', 'Api\ItemController@update');
                 Route::get('records', 'Api\ItemController@records');
@@ -41,6 +46,8 @@ if ($hostname)
                 Route::get('records', 'Api\DocumentController@records');
                 Route::get('record/{id}', 'Api\DocumentController@record');
                 Route::get('tables', 'Api\DocumentController@tables');
+                Route::get('tables-sale-detail', 'Api\DocumentController@getTablesSaleDetail');
+                Route::get('tables-sale-payment', 'Api\DocumentController@getTablesSalePayment');
             });
 
 

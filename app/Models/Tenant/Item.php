@@ -2484,5 +2484,61 @@ class Item extends ModelTenant
         return (float) $stock;
     }
 
+    
+    /**
+     *
+     * Filtro para no incluir todas las relaciones en consulta
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeFilterRecordsSaleApi($query, $request)
+    {
+
+        $category_id = $request->category_id ??  null;
+
+        return $query->whereFilterWithOutRelations()
+                    ->with(['category', 'brand', 'currency_type'])
+                    ->whereFilterRecordsApi($request->input, $request->search_by_barcode)
+                    ->filterByCategory($category_id)
+                    ->whereIsActive();
+    }
+
+
+    /**
+     *
+     * Obtener datos para lista de productos en ventas - Modo Pos
+     *
+     * @return array
+     */
+    public function getSaleApiRowResource($warehouse)
+    {
+        $currency = $this->currency_type;
+
+        return [
+            'id' => $this->id,
+            'item_id' => $this->id,
+            'name' => $this->name,
+            'full_description' => $this->getInternalIdDescription(),
+            'description' => $this->description,
+            'currency_type_id' => $this->currency_type_id,
+            'internal_id' => $this->internal_id,
+            'item_code' => $this->item_code,
+            'barcode' => $this->barcode,
+            'currency_type_symbol' => $currency->symbol,
+            'sale_unit_price' => $this->generalApplyNumberFormat($this->sale_unit_price),
+            'unit_type_id' => $this->unit_type_id,
+            'sale_affectation_igv_type_id' => $this->sale_affectation_igv_type_id,
+            'has_igv' => (bool) $this->has_igv,
+            'quantity' => 0,
+            'stock' => $this->getWarehouseCurrentStock($warehouse),
+            'image_url' => $this->getImageUrl(),
+            'brand_id' => $this->brand_id,
+            'category_id' => $this->category_id,
+            'is_set' => $this->is_set,
+        ];
+    }
+
+
 }
 

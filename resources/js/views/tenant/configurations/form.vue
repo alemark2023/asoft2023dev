@@ -1705,7 +1705,66 @@
                         <span slot="label">Reportes</span>
                         <report-configurations-index></report-configurations-index>
                     </el-tab-pane>
-                    
+                    <el-tab-pane class="mb-3" name="eleven">
+                        <span slot="label">Dashboard</span>
+                        <div class="row">
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Ventas
+                                    <el-tooltip class="item" effect="dark" placement="top-start">
+                                        <div slot="content">Leyenda: Grafico notas de ventas, comprobantes y totales</div>
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div class="form-group" :class="{'has-danger': errors.dashboard_sales}">
+                                    <el-switch v-model="form.dashboard_sales" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.dashboard_sales" v-text="errors.dashboard_sales[0]"></small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Productos
+                                    <el-tooltip class="item" effect="dark" placement="top-start">
+                                        <div slot="content">Leyenda: Ventas por producto, productos por agotarse, productos por vencer</div>
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div class="form-group" :class="{'has-danger': errors.dashboard_products}">
+                                    <el-switch v-model="form.dashboard_products" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.dashboard_products" v-text="errors.dashboard_products[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Balance general - compras
+                                    <el-tooltip class="item" effect="dark" placement="top-start">
+                                        <div slot="content">Leyenda: Grafico de balance, Utilidades/Ganancias y compras</div>
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div class="form-group" :class="{'has-danger': errors.dashboard_general}">
+                                    <el-switch v-model="form.dashboard_general" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.dashboard_general" v-text="errors.dashboard_general[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label class="control-label">Clientes
+                                        <el-tooltip class="item" effect="dark" placement="top-start">
+                                            <div slot="content">Leyenda: Top de clientes
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.dashboard_clients}" class="form-group">
+                                        <el-switch v-model="form.dashboard_clients" active-text="Si" inactive-text="No"
+                                                    @change="submit"></el-switch>
+                                        <small v-if="errors.dashboard_clients" class="form-control-feedback"
+                                                v-text="errors.dashboard_clients[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </el-tab-pane>
                 </el-tabs>
                 <terms-condition :form="form"
                                     :showClose="false"
@@ -1902,6 +1961,11 @@ export default {
                 list_items_by_warehouse: false,
                 ticket_single_shipment: false,
                 hide_pdf_view_documents: false,
+
+                dashboard_sales:true,
+                dashboard_products:false,
+                dashboard_general:true,
+                dashboard_clients:true,
             };
         },
         UpdateFormPurchase(e) {

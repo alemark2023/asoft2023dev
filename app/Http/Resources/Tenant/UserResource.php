@@ -43,6 +43,9 @@ class UserResource extends JsonResource {
             'series_id'        => ($this->series_id == 0) ? null : $this->series_id,
             'create_payment' => $this->create_payment,
             'delete_payment' => $this->delete_payment,
+            'edit_purchase' => $this->edit_purchase,
+            'annular_purchase' => $this->annular_purchase,
+            'delete_purchase' => $this->delete_purchase,
         ];
     }
 }

@@ -861,5 +861,40 @@
         {
             return $this->type === 'customers' ? 'Cliente' : 'Proveedor';
         }
+        
+        
+        /**
+         * 
+         * Filtro para no incluir relaciones en consulta
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         */  
+        public function scopeWhereFilterWithOutRelations($query)
+        {
+            return $query->withOut([
+                'identity_document_type',
+                'country',
+                'department',
+                'province',
+                'district'
+            ]);
+        }
+
+        
+        /**
+         * Obtener datos iniciales para mostrar lista de clientes - App
+         *
+         * @param  int $take
+         * @return array
+         */
+        public function scopeFilterApiInitialCustomers($query, $take = 10)
+        {
+            return $query->whereType('customers')
+                        ->whereFilterWithOutRelations()
+                        ->with(['identity_document_type'])
+                        ->orderBy('name')
+                        ->take($take);
+        }
 
     }
