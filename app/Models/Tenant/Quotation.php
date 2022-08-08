@@ -543,4 +543,16 @@ class Quotation extends ModelTenant
     }
         
 
+    /**
+     * 
+     * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterRelationsGlobalPayment($query)
+    {
+        return $query->whereFilterWithOutRelations();
+    }
+    
 }

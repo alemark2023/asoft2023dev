@@ -112,4 +112,22 @@ class Income extends ModelTenant
     {
         return $query->whereIn('state_type_id', ['01','03','05','07','13']);
     }
+
+    
+    /**
+     * 
+     * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterRelationsGlobalPayment($query)
+    {
+        return $query->with([
+                'document_type'=> function($q){
+                    $q->select('id', 'description');
+                }, 
+            ]);
+    }
+
 }

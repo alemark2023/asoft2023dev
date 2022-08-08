@@ -153,4 +153,33 @@
         }
         
 
+        /**
+         * 
+         * Obtener relaciones necesarias o aplicar filtros a documentos, para reporte pagos - finanzas 
+         * 
+         * Se define scope global para no afectar a modelos que no aplican filtros al reporte
+         * si se requiere usar filtros, sobreescribir el metodo en el modelo afectado
+         * 
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeFilterRelationsGlobalPayment($query)
+        {
+            return $query;
+        }
+        
+
+        /**
+         * 
+         * Filtro para no incluir relaciones en consultas de tablas asociadas a pagos
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         */  
+        public function scopeGeneralPaymentsWithOutRelations($query)
+        {
+            return $query->withOut(['payment_method_type', 'card_brand']);
+        }
+
     }

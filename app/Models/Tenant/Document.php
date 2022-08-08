@@ -1425,4 +1425,50 @@
         }
 
 
+        /**
+         * 
+         * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeFilterRelationsGlobalPayment($query)
+        {
+            return $query->whereFilterWithOutRelations()
+                        ->with([
+                            'document_type'=> function($q){
+                                $q->select('id', 'description');
+                            }, 
+                        ])
+                        ->select([
+                            'id',
+                            'user_id',
+                            'external_id',
+                            'establishment_id',
+                            'soap_type_id',
+                            'state_type_id',
+                            'document_type_id',
+                            'series',
+                            'number',
+                            'date_of_issue',
+                            'time_of_issue',
+                            'customer_id',
+                            'customer',
+                            'currency_type_id',
+                            'quotation_id',
+                            'exchange_rate_sale',
+                            'total',
+                            'filename',
+                            'sale_note_id',
+                            'total_canceled',
+                            'order_note_id',
+                            'payment_method_type_id',
+                            'seller_id',
+                            'payment_condition_id',
+                            'dispatch_id',
+                            'technical_service_id',
+                        ]);
+        }
+
+        
     }
