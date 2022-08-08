@@ -55,6 +55,7 @@ class DocumentImportExcelFormat implements ToCollection
             $date_of_issue = $group[0]['date_of_issue'];
             $currency_type_id = $group[0]['currency_type_id'];
             $purchase_order = $group[0]['purchase_order'];
+            $folio = $group[0]['folio'];
 
             //Customer
             $customer_number = $group[0]['customer_number'];
@@ -67,6 +68,7 @@ class DocumentImportExcelFormat implements ToCollection
 
             $customer_name = $group[0]['customer_name'];
             $customer_address = $group[0]['customer_address'];
+            $customer_email = $group[0]['customer_email'];
 
             $items = [];
             $sum_total_igv = 0;
@@ -135,6 +137,7 @@ class DocumentImportExcelFormat implements ToCollection
                 "codigo_tipo_moneda" => $currency_type_id,
                 "fecha_de_vencimiento" => $date_of_issue,
                 "numero_orden_de_compra" => $purchase_order,
+                "folio" => $folio,
                 "totales" => [
                     "total_exportacion" => 0.00,
                     "total_operaciones_gravadas" => $sum_subtotal,
@@ -156,10 +159,13 @@ class DocumentImportExcelFormat implements ToCollection
                     "codigo_pais" => "PE",
                     "ubigeo" => "010101",
                     "direccion" => $customer_address,
-                    "correo_electronico" => "",
+                    "correo_electronico" => $customer_email,
                     "telefono" => ""
                 ],
-                "items" => $items
+                "items" => $items,
+                "acciones" => [
+                    'enviar_email' => ($customer_email !== '')
+                ]
             );
 
             $url = url('/api/documents');

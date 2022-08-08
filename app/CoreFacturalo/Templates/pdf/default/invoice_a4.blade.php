@@ -404,6 +404,13 @@
         <td>{{ $document_base->note_description }}</td>
     </tr>
     @endif
+    @if($document->folio)
+    <tr>
+        <td>FOLIO</td>
+        <td>:</td>
+        <td>{{ $document->folio }}</td>
+    </tr>
+    @endif
 </table>
 
 {{--<table class="full-width mt-3">--}}
@@ -514,7 +521,7 @@
             @else
                 <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
             @endif
-            
+
             <td class="text-right align-top">
                 @if($row->discounts)
                     @php

@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\File;
 
-class DocumentEmail extends Mailable
+class DocumentTemplateEmail extends Mailable
 {
     use Queueable;
     use SerializesModels;
@@ -42,22 +42,12 @@ class DocumentEmail extends Mailable
             {
                 $cdr = $this->getStorage($this->document->filename, 'cdr');
             }
-
         }
-
 
         $image_detraction = ($this->document->detraction) ? (($this->document->detraction->image_pay_constancy) ? storage_path('app'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'image_detractions'.DIRECTORY_SEPARATOR.$this->document->detraction->image_pay_constancy):false):false;
-
-        $template_document_mail = config('tenant.template_document_mail');
-        if($template_document_mail === 'default') {
-            $template_document_mail_view = 'tenant.templates.email.document';
-        } else {
-            $template_document_mail_view = 'tenant.templates.email.'.$template_document_mail;
-        }
-
         $email = $this->subject('Envio de Comprobante de Pago Electrónico')
                     ->from(config('mail.username'), 'Comprobante electrónico')
-                    ->view($template_document_mail_view)
+                    ->view('tenant.templates.email.document_template')
                     ->attachData($pdf, $this->document->filename.'.pdf')
                     ->attachData($xml, $this->document->filename.'.xml');
 

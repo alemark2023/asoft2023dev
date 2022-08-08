@@ -54,7 +54,6 @@ class DocumentUpdateInput
             $data_json = Functions::valueKeyInArray($inputs, 'data_json');
         }
 
-
         return [
             'id' => $inputs['id'],
             'type' => $inputs['type'],
@@ -75,6 +74,7 @@ class DocumentUpdateInput
             'customer' => $customer,
             'currency_type_id' => $inputs['currency_type_id'],
             'purchase_order' => $inputs['purchase_order'],
+            'folio' => Functions::valueKeyInArray($inputs, 'folio'),
             'quotation_id' => Functions::valueKeyInArray($inputs, 'quotation_id'),
             'sale_note_id' => Functions::valueKeyInArray($inputs, 'sale_note_id'),
             'technical_service_id' => Functions::valueKeyInArray($inputs, 'technical_service_id'),
