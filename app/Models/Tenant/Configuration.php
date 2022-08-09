@@ -257,6 +257,7 @@
             'list_items_by_warehouse',
             'ticket_single_shipment',
             'hide_pdf_view_documents',
+            'quantity_sales_notes',
         ];
 
         protected $casts = [
