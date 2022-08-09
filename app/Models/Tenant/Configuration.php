@@ -262,6 +262,7 @@
             'dashboard_clients',
             'dashboard_products',
             'affect_all_documents',
+            'quantity_sales_notes',
         ];
 
         protected $casts = [
