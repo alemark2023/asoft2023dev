@@ -94,14 +94,14 @@
 </table>
 
 
-<table class="full-width mt-10 mb-10">
+<table class="full-width w-100 mt-10 mb-10">
     <thead class="">
         <tr>
-            <th class="border-top-bottom desc-9 text-left">CANT.</th>
-            <th class="border-top-bottom desc-9 text-left">UNIDAD</th>
-            <th class="border-top-bottom desc-9 text-left">DESCRIPCIÓN</th>
-            <th class="border-top-bottom desc-9 text-left">P.UNIT</th>
-            <th class="border-top-bottom desc-9 text-left">TOTAL</th>
+            <th class="border-top-bottom desc text-center" >CANT.</th>
+            <th class="border-top-bottom desc text-center" >UNIDAD</th>
+            <th class="border-top-bottom desc text-center" >DESCRIPCIÓN</th>
+            <th class="border-top-bottom desc text-center" >P.UNIT</th>
+            <th class="border-top-bottom desc text-center" >TOTAL</th>
         </tr>
     </thead>
     <tbody>
@@ -196,32 +196,32 @@
             <td class="text-rightdesc-9 align-top">-{{ number_format($p->total, 2) }}</td>
         </tr>
         <tr>
-            <td colspan="9" class="border-bottom"></td>
+            <td colspan="5" class="border-bottom"></td>
         </tr>
         @endforeach
     @endif
 
         @if($document->total_exportation > 0)
             <tr>
-                <td colspan="8" class="text-right font-bold desc">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
+                <td colspan="4" class="text-right font-bold desc">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_exportation, 2) }}</td>
             </tr>
         @endif
         @if($document->total_free > 0)
             <tr>
-                <td colspan="8" class="text-right font-bold desc">OP. GRATUITAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="4" class="text-right font-bold desc">OP. GRATUITAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_free, 2) }}</td>
             </tr>
         @endif
         @if($document->total_unaffected > 0)
             <tr>
-                <td colspan="8" class="text-right font-bold desc">OP. INAFECTAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="4" class="text-right font-bold desc">OP. INAFECTAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_unaffected, 2) }}</td>
             </tr>
         @endif
         @if($document->total_exonerated > 0)
             <tr>
-                <td colspan="8" class="text-right font-bold desc">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="4" class="text-right font-bold desc">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_exonerated, 2) }}</td>
             </tr>
         @endif
@@ -229,45 +229,45 @@
         @if ($document->document_type_id === '07')
             @if($document->total_taxed >= 0)
             <tr>
-                <td colspan="8" class="text-right font-bold desc">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="4" class="text-right font-bold desc">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
             </tr>
             @endif
         @elseif($document->total_taxed > 0)
             <tr>
-                <td colspan="8" class="text-right font-bold desc">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="4" class="text-right font-bold desc">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
             </tr>
         @endif
 
         @if($document->total_plastic_bag_taxes > 0)
             <tr>
-                <td colspan="8" class="text-right font-bold desc">ICBPER: {{ $document->currency_type->symbol }}</td>
+                <td colspan="4" class="text-right font-bold desc">ICBPER: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_plastic_bag_taxes, 2) }}</td>
             </tr>
         @endif
         <tr>
-            <td colspan="8" class="text-right font-bold desc">IGV: {{ $document->currency_type->symbol }}</td>
+            <td colspan="4" class="text-right font-bold desc">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
 
         @if($document->total_isc > 0)
         <tr>
-            <td colspan="8" class="text-right font-bold desc">ISC: {{ $document->currency_type->symbol }}</td>
+            <td colspan="4" class="text-right font-bold desc">ISC: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_isc, 2) }}</td>
         </tr>
         @endif
 
         @if($document->total_discount > 0 && $document->subtotal > 0)
         <tr>
-            <td colspan="8" class="text-right font-bold desc">SUBTOTAL: {{ $document->currency_type->symbol }}</td>
+            <td colspan="4" class="text-right font-bold desc">SUBTOTAL: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->subtotal, 2) }}</td>
         </tr>
         @endif
 
         @if($document->total_discount > 0)
             <tr>
-                <td colspan="8" class="text-right font-bold desc">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
+                <td colspan="4" class="text-right font-bold desc">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
@@ -281,12 +281,12 @@
                     }
                 @endphp
                 <tr>
-                    <td colspan="8" class="text-right font-bold desc">CARGOS ({{$total_factor}}%): {{ $document->currency_type->symbol }}</td>
+                    <td colspan="4" class="text-right font-bold desc">CARGOS ({{$total_factor}}%): {{ $document->currency_type->symbol }}</td>
                     <td class="text-right font-bold">{{ number_format($document->total_charge, 2) }}</td>
                 </tr>
             @else
                 <tr>
-                    <td colspan="8" class="text-right font-bold desc">CARGOS: {{ $document->currency_type->symbol }}</td>
+                    <td colspan="4" class="text-right font-bold desc">CARGOS: {{ $document->currency_type->symbol }}</td>
                     <td class="text-right font-bold">{{ number_format($document->total_charge, 2) }}</td>
                 </tr>
             @endif
@@ -294,27 +294,27 @@
 
         @if($document->perception)
             <tr>
-                <td colspan="8" class="text-right font-bold desc"> IMPORTE TOTAL: {{ $document->currency_type->symbol }}</td>
+                <td colspan="4" class="text-right font-bold desc"> IMPORTE TOTAL: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
             </tr>
             <tr>
-                <td colspan="8" class="text-right font-bold desc">PERCEPCIÓN: {{ $document->currency_type->symbol }}</td>
+                <td colspan="4" class="text-right font-bold desc">PERCEPCIÓN: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->perception->amount, 2) }}</td>
             </tr>
             <tr>
-                <td colspan="8" class="text-right font-bold desc">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
+                <td colspan="4" class="text-right font-bold desc">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format(($document->total + $document->perception->amount), 2) }}</td>
             </tr>
         @else
             <tr>
-                <td colspan="8" class="text-right font-bold desc">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
+                <td colspan="4" class="text-right font-bold desc">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
             </tr>
         @endif
 
         @if(($document->retention || $document->detraction) && $document->total_pending_payment > 0)
             <tr>
-                <td colspan="8" class="text-right font-bold desc">M. PENDIENTE: {{ $document->currency_type->symbol }}</td>
+                <td colspan="4" class="text-right font-bold desc">M. PENDIENTE: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_pending_payment, 2) }}</td>
             </tr>
         @endif
@@ -322,7 +322,7 @@
         @if($balance < 0)
 
             <tr>
-                <td colspan="8" class="text-right font-bold desc">VUELTO: {{ $document->currency_type->symbol }}</td>
+                <td colspan="4" class="text-right font-bold desc">VUELTO: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format(abs($balance),2, ".", "") }}</td>
             </tr>
 
