@@ -7,7 +7,7 @@
                     <h5 v-bind:class="{ 'text-danger': (toAttend < 0) }">Por Atender: {{toAttend}}</h5>
             </div>
             <div class="row" >
-                
+
 
                 <div class="col-md-6 col-lg-6 col-xl-6 ">
                     <template v-if="search_series_by_barcode">

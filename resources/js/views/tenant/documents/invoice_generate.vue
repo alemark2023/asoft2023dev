@@ -290,7 +290,10 @@
                                                              @change="changeRowFreeAffectationIgv(row, index)"></el-checkbox>
                                             </el-tooltip>
                                         </template>
-
+                                        <button  type="button" class="btn waves-effect waves-light btn-xs btn-success"
+                                                 @click.prevent="openDialogLots(row.item.lots, row.item_id)">
+                                            <i class="el-icon-check"></i> Series
+                                        </button>
                                         <button class="btn waves-effect waves-light btn-xs btn-danger"
                                                 type="button"
                                                 @click.prevent="clickRemoveItem(index)"><i class="fas fa-trash"></i>
@@ -1444,6 +1447,8 @@
             :isUpdateDocument="isUpdateDocument"
             :detractionDecimalQuantity="detractionDecimalQuantity"
             @addDocumentDetraction="addDocumentDetraction"></document-detraction>
+
+
     </div>
 </template>
 
@@ -1536,6 +1541,7 @@ export default {
             has_data_detraction: false,
             showDialogFormHotel: false,
             showDialogFormTransport: false,
+            showDialogSeriesIndex: false,
             is_client: false,
             recordItem: null,
             resource: 'documents',
@@ -3821,8 +3827,12 @@ export default {
             if (code === 'Escape') {
                 if (this.showDialogAddItem) this.showDialogAddItem = false
             }
-
-        }
+        },
+        openDialogLots(lt, item_id) {
+            this.item_id = item_id
+            this.showDialogSeriesIndex = true
+            this.lots = lt
+        },
     }
 }
 </script>
