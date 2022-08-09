@@ -35,4 +35,8 @@ return [
     'validator_cpe' => env('VALIDATOR_CPE', false),
     'auto_print' => env('AUTO_PRINT', false),
     'show_summary_status_type' => env('SHOW_SUMMARY_STATUS_TYPE', false),
+
+    'document_import_excel' => env('DOCUMENT_IMPORT_EXCEL', false),
+    'template_document_mail' => env('TEMPLATE_DOCUMENT_MAIL', 'default'),
+
 ];
