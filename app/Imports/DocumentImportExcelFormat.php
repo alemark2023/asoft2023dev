@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Carbon\Carbon;
@@ -108,7 +109,7 @@ class DocumentImportExcelFormat implements ToCollection
                     ];
                 }
                 $items[] = [
-                    "codigo_interno" => '',
+                    "codigo_interno" => Str::slug($row['item_name']),
                     "descripcion" => $row['item_name'],
                     "codigo_producto_sunat" => '',
                     "unidad_de_medida" => $unit_type_id,
