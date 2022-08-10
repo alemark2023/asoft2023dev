@@ -258,13 +258,15 @@
                                             row.item.presentation.hasOwnProperty('description') ?
                                                 row.item.presentation.description : ''
                                         }}
-
                                         <template v-if="row.total_plastic_bag_taxes > 0">
                                             <br/><small>ICBPER: {{ currency_type.symbol }}
                                             {{ row.total_plastic_bag_taxes }}</small>
                                         </template>
-
                                         <br/><small>{{ row.affectation_igv_type.description }}</small>
+                                        <template v-if="row.item.lots && row.item.lots.length > 0">
+                                            <br/>Series: {{ showItemSeries(row.item.lots) }}
+                                        </template>
+
                                     </td>
                                     <td class="text-center">{{ row.item.unit_type_id }}</td>
 
@@ -290,7 +292,11 @@
                                                              @change="changeRowFreeAffectationIgv(row, index)"></el-checkbox>
                                             </el-tooltip>
                                         </template>
-
+                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-success"
+                                                @click.prevent="openDialogLots(row)"
+                                                v-if="row.item.series_enabled">
+                                            <i class="el-icon-check"></i> Series
+                                        </button>
                                         <button class="btn waves-effect waves-light btn-xs btn-danger"
                                                 type="button"
                                                 @click.prevent="clickRemoveItem(index)"><i class="fas fa-trash"></i>
@@ -1444,6 +1450,11 @@
             :isUpdateDocument="isUpdateDocument"
             :detractionDecimalQuantity="detractionDecimalQuantity"
             @addDocumentDetraction="addDocumentDetraction"></document-detraction>
+
+        <store-item-series-index :show-dialog.sync="showDialogItemSeriesIndex"
+                                 :item="recordItem"
+                                 :document-id="documentId"
+                                 @success="successItemSeries"></store-item-series-index>
     </div>
 </template>
 
@@ -1486,6 +1497,7 @@ import DocumentDetraction from './partials/detraction.vue'
 import moment from 'moment'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import Keypress from "vue-keypress";
+import StoreItemSeriesIndex from "../Store/ItemSeriesIndex";
 
 export default {
     props: [
@@ -1498,6 +1510,7 @@ export default {
         'isUpdate'
     ],
     components: {
+        StoreItemSeriesIndex,
         DocumentFormItem,
         PersonForm,
         DocumentOptions,
@@ -1536,6 +1549,7 @@ export default {
             has_data_detraction: false,
             showDialogFormHotel: false,
             showDialogFormTransport: false,
+            showDialogItemSeriesIndex: false,
             is_client: false,
             recordItem: null,
             resource: 'documents',
@@ -2062,7 +2076,7 @@ export default {
             this.form.subtotal = parseFloat(data.subtotal);
             this.form.total_igv_free = parseFloat(data.total_igv_free);
             this.form.series_id = this.onSetSeriesId(data.document_type_id, data.series);
-            this.form.operation_type_id = data.invoice?data.invoice.operation_type_id:data.operation_type_id;
+            this.form.operation_type_id = data.invoice ? data.invoice.operation_type_id : data.operation_type_id;
             this.form.terms_condition = data.terms_condition || '';
             this.form.guides = data.guides || [];
             this.form.show_terms_condition = data.terms_condition ? true : false;
@@ -2077,8 +2091,8 @@ export default {
             this.form.customer_address_id = null;
             this.form.type = 'invoice';
             this.form.invoice = {
-                operation_type_id: data.invoice?data.invoice.operation_type_id:data.operation_type_id,
-                date_of_due: data.invoice?data.invoice.date_of_due:data.date_of_due,
+                operation_type_id: data.invoice ? data.invoice.operation_type_id : data.operation_type_id,
+                date_of_due: data.invoice ? data.invoice.date_of_due : data.date_of_due,
             };
             // this.form.payment_condition_id = '01';
 
@@ -2983,9 +2997,9 @@ export default {
             if (['0101', '1001', '1004'].includes(this.form.operation_type_id)) {
                 if (this.form.document_type_id === '01') {
 
-                    if(!_.isNull(this.form.customer_id)) {
+                    if (!_.isNull(this.form.customer_id)) {
                         const cus = _.find(this.all_customers, {'id': this.form.customer_id});
-                        if(cus && cus.identity_document_type_id !== '6') {
+                        if (cus && cus.identity_document_type_id !== '6') {
                             this.form.customer_id = null
                         }
                     }
@@ -3324,15 +3338,12 @@ export default {
             this.calculateTotal()
         },
         deleteDiscountGlobal() {
-
             let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
             let index = this.form.discounts.indexOf(discount)
-
             if (index > -1) {
                 this.form.discounts.splice(index, 1)
                 this.form.total_discount = 0
             }
-
         },
         discountGlobal() {
             this.deleteDiscountGlobal()
@@ -3445,6 +3456,20 @@ export default {
 
         },
         async submit() {
+
+            //Validando las series seleccionadas
+            let errorSeries = false;
+            _.forEach(this.form.items, row => {
+                if(row.item.series_enabled) {
+                    errorSeries = parseFloat(row.quantity) !== row.item.lots.length
+                    return false;
+                }
+            });
+            if(errorSeries) {
+                this.$message.error('No se han seleccionado todas las series');
+                return false;
+            }
+
             if (this.form.show_terms_condition) {
                 this.form.terms_condition = this.config.terms_condition_sale;
             }
@@ -3611,7 +3636,7 @@ export default {
 
         },
         close() {
-            if(this.table) {
+            if (this.table) {
                 location.href = `/${this.table}`
             } else {
                 location.href = (this.is_contingency) ? `/contingencies` : `/${this.resource}`
@@ -3821,7 +3846,18 @@ export default {
             if (code === 'Escape') {
                 if (this.showDialogAddItem) this.showDialogAddItem = false
             }
-
+        },
+        openDialogLots(item) {
+            console.log(item);
+            this.recordItem = item;
+            this.showDialogItemSeriesIndex = true;
+        },
+        successItemSeries(series) {
+            let itemIndex = _.findIndex(this.form.items, {'item_id': this.recordItem.item_id});
+            this.form.items[itemIndex].item.lots = series;
+        },
+        showItemSeries(series) {
+            return series.map(o => o['series']).join(', ');
         }
     }
 }
