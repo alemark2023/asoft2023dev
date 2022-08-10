@@ -4,8 +4,13 @@ namespace Modules\Store\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\DocumentItem;
 use App\Models\Tenant\Quotation;
 use App\Models\Tenant\Series;
+use Illuminate\Http\Request;
+use Modules\Document\Http\Resources\ItemLotCollection;
+use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
+use Modules\Item\Models\ItemLot;
 
 class StoreController extends Controller
 {
@@ -71,5 +76,69 @@ class StoreController extends Controller
     public function getItems()
     {
 
+    }
+
+    public function getItemSeries(Request $request)
+    {
+        $warehouse = ModuleWarehouse::query()
+            ->select('id')
+            ->where('establishment_id', auth()->user()->establishment_id)
+            ->first();
+
+        $input = $request->input('input');
+        $item_id = $request->input('item_id');
+        $document_item_id = $request->input('document_item_id');
+        $sale_note_item_id = $request->input('sale_note_item_id');
+
+        return ItemLot::query()
+            ->select('id', 'series', 'date', 'has_sale')
+            ->where('series', 'like', "%$input%")
+            ->where('item_id', $item_id)
+            ->where('has_sale', false)
+            ->where('warehouse_id', $warehouse->id)
+            ->latest()
+            ->get()
+            ->transform(function ($row) {
+                return [
+                    'id'           => $row->id,
+                    'series'       => $row->series,
+                    'date'         => $row->date,
+//                    'item_id'      => $row->item_id,
+//                    'warehouse_id' => $row->warehouse_id,
+                    'has_sale'     => $row->has_sale,
+//                    'lot_code'     => ($row->item_loteable_type) ? $lot_code : null,
+                ];
+            });
+
+//        $sale_note_item_id = $request->has('sale_note_item_id') ? $request->sale_note_item_id : null;
+//
+//        if ($request->document_item_id)
+//        {
+//            //proccess credit note
+//            $document_item = DocumentItem::query()
+//                ->findOrFail($request->document_item_id);
+//            /** @var array $lots */
+//            $lots = $document_item->item->lots;
+//            $records
+//                ->whereIn('id', collect($lots)->pluck('id')->toArray())
+//                ->where('has_sale', true)
+//                ->latest();
+//
+//        }
+//        else if($sale_note_item_id)
+//        {
+//            $records = $this->getRecordsForSaleNoteItem($records, $sale_note_item_id, $request);
+//        }
+//        else
+//        {
+//
+//            $records
+//                ->where('item_id', $request->item_id)
+//                ->where('has_sale', false)
+//                ->where('warehouse_id', $warehouse->id)
+//                ->latest();
+//        }
+
+//        return new ItemLotCollection($records->paginate(config('tenant.items_per_page')));
     }
 }
