@@ -170,6 +170,10 @@
                 $row->count_user = DB::connection('tenant')
                     ->table('users')
                     ->count();
+                $row->count_sales_notes = DB::connection('tenant')
+                ->table('configurations')
+                ->first()
+                ->quantity_sales_notes;
                 $quantity_pending_documents = $this->getQuantityPendingDocuments();
                 $row->document_regularize_shipping = $quantity_pending_documents['document_regularize_shipping'];
                 $row->document_not_sent = $quantity_pending_documents['document_not_sent'];
@@ -186,6 +190,24 @@
                     // dd($start_end_date);
 
                     $row->count_doc_month = DB::connection('tenant')->table('documents')->whereBetween('date_of_issue', [$init, $end])->count();
+
+                    $row->count_sales_notes_month = DB::connection('tenant')->table('sale_notes')->whereBetween('date_of_issue', [$init, $end])->count();
+
+                    if ($row->count_sales_notes_month>0) {
+                        if ($row->count_sales_notes!=$row->count_sales_notes_month) {
+                            $row->count_sales_notes = DB::connection('tenant')
+                            ->table('configurations')
+                            ->where('id', 1)
+                            ->update([
+                                'quantity_sales_notes' => $row->count_sales_notes_month
+                            ]);
+                        }
+                    }
+                    $row->count_sales_notes = DB::connection('tenant')
+                    ->table('configurations')
+                    ->first()
+                    ->quantity_sales_notes;
+                    //dd($row->count_sales_notes);
 
                 }
 
@@ -779,6 +801,7 @@
             ]);
 
             DB::connection('tenant')->table('configurations')->where('id', 1)->update(['quantity_documents' => 0]);
+            DB::connection('tenant')->table('configurations')->where('id', 1)->update(['quantity_sales_notes' => 0]);
 
 
             return [

@@ -246,6 +246,9 @@
                             <th class="text-center">F.Creación</th>
                             <th class="text-center">Consultas <br>API Peru <br>(mes)</th>
 
+                            <th class="text-center">Cant.Notas de venta</th>
+                            <th class="text-center">Total<br>(Comprobantes <br>y <br>notas de venta)</th>
+
                             <th class="text-center">Bloquear cuenta</th>
 
                             <th class="text-right">Limitar Doc.</th>
@@ -346,7 +349,7 @@
                                     </template>
                                 </strong>
                             </td>
-
+                            
                             <td class="text-center">
                                 <template v-if="row.max_users !== 0 && row.count_user > row.max_users">
                                     <el-popover
@@ -376,6 +379,9 @@
                             </td>
                             <td class="text-center">{{ row.created_at }}</td>
                             <td>{{ row.queries_to_apiperu }}</td>
+
+                            <td class="text-center"><strong>{{ row.count_sales_notes }}</strong></td>
+                            <td class="text-center"><strong>{{ row.count_doc_month + row.count_sales_notes_month }}</strong></td>
 
                             <td class="text-center">
                                 <template v-if="!row.locked">

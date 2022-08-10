@@ -261,6 +261,8 @@
             'dashboard_general',
             'dashboard_clients',
             'dashboard_products',
+            'affect_all_documents',
+            'quantity_sales_notes',
         ];
 
         protected $casts = [
@@ -357,6 +359,7 @@
             'list_items_by_warehouse' => 'bool',
             'ticket_single_shipment' => 'bool',
             'hide_pdf_view_documents' => 'bool',
+            'affect_all_documents'=>'bool',
             
         ];
 
@@ -573,6 +576,7 @@
                 'dashboard_general' => (bool)$this->dashboard_general,
                 'dashboard_clients' => (bool)$this->dashboard_clients,
                 'dashboard_products' => (bool)$this->dashboard_products,
+                'affect_all_documents' => (bool)$this->affect_all_documents,
                 
             ];
         }

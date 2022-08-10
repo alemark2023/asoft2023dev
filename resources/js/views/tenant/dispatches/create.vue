@@ -1349,6 +1349,7 @@ export default {
                 },
                 related: {},
                 order_form_external: null,
+                terms_condition:null
             }
 
             this.changeEstablishment();
@@ -1571,6 +1572,10 @@ export default {
             // }
         },
         async submit() {
+
+            if (this.config.affect_all_documents) {
+                this.form.terms_condition = this.config.terms_condition_sale;
+            }
 
             const validateQuantity = await this.verifyQuantityItems()
             if (!validateQuantity.validate) {

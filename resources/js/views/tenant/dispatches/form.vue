@@ -818,6 +818,7 @@ export default {
                 },
                 related: {},
                 order_form_external: null,
+                terms_condition: null,
             }
         },
         changeEstablishment() {
@@ -902,6 +903,11 @@ export default {
             this.form.items.splice(index, 1);
         },
         submit() {
+
+            if (this.config.affect_all_documents) {
+                this.form.terms_condition = this.config.terms_condition_sale;
+            }
+
             this.loading_submit = true;
 
             this.$http.post(`/${this.resource}`, this.form).then(response => {
