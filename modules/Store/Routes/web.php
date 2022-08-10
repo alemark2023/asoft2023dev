@@ -10,6 +10,7 @@ if($current_hostname) {
             Route::prefix('store')->group(function () {
 //                Route::get('quotation_to_document/{quotation}', 'StoreController@quotationToDocument');
                 Route::get('record/{table}/{table_id}', 'StoreController@getRecord');
+                Route::post('get_item_series', 'StoreController@getItemSeries');
             });
             Route::prefix('documents')->group(function () {
                 Route::get('create/{table?}/{table_id?}', 'StoreController@tableToDocument');
