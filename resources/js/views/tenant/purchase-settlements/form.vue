@@ -1003,7 +1003,7 @@ export default {
             
             //impuestos (isc + igv)
             this.form.total_taxes = _.round(total_igv, 2)
-
+            this.form.subtotal = _.round(total, 2)
             this.form.total = _.round(total, 2)
 
             // this.form.payments[0].payment = this.form.total
@@ -1055,9 +1055,7 @@ export default {
                 .then(response => {
                         
                     if (response.data.success) {
-                            this.resetForm()
-                            this.purchaseNewId = response.data.data.id
-                            this.showDialogOptions = true
+                            //this.resetForm()
                             this.close()
                     } else {
                         this.$message.error(response.data.message)

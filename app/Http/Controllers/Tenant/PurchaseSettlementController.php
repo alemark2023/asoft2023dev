@@ -138,6 +138,9 @@ class PurchaseSettlementController extends Controller
             'send_xml_signed'=>true,
             'format_pdf'=>'a4',
         ];
+        $suplier_info = PersonInput::set($inputs['supplier_id']);
+        $suplier_info['address_type_id'] = '01';
+        //dd($suplier_info);
         $last_number = PurchaseSettlement::getLastNumberBySerie($inputs['series']);
         // se actualiza el numero actual en $imputs
         $number_new= $last_number + 1;
@@ -147,7 +150,7 @@ class PurchaseSettlementController extends Controller
         $values = [
             'user_id' => auth()->id(),
             'external_id' => Str::uuid()->toString(),
-            'supplier' => PersonInput::set($inputs['supplier_id']),
+            'supplier' => $suplier_info,
             'soap_type_id' => $company->soap_type_id,
             'state_type_id' => '01',
             'establishment'=>EstablishmentInput::set($inputs['establishment_id']),
