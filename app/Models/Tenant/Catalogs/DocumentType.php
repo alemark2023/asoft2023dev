@@ -159,6 +159,11 @@
             return $query->OnlyActive()->wherein('id', ['01', '02', '03', 'GU75', 'NE76', '14', '07', '08']);
         }
 
+        public function scopeDocumentsActiveToSettlement($query)
+        {
+            return $query->OnlyActive()->wherein('id', ['04']);
+        }
+
 
         /**
          * @return HasMany
