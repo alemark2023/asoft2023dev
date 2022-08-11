@@ -670,7 +670,8 @@
                 'skin_id' => 2,
                 'top_menu_a_id' => 1,
                 'top_menu_b_id' => 15,
-                'top_menu_c_id' => 76
+                'top_menu_c_id' => 76,
+                'quantity_sales_notes' => 0
             ]);
 
 
@@ -763,9 +764,9 @@
 
         }
 
-        
+
         /**
-         * 
+         *
          * Registrar modulos de la app al usuario principal
          *
          * @param  int $user_id
@@ -868,9 +869,9 @@
 
         }
 
-        
+
         /**
-         * 
+         *
          * Validar si el valor de confirmacion ingresado por el usuario es
          * igual al ruc o nombre de la empresa, para poder eliminar el cliente
          *
@@ -880,7 +881,7 @@
          */
         public function checkInputValidateDelete(Client $client, $input_validate)
         {
-            
+
             if($input_validate === $client->name || $input_validate === $client->number)
             {
                 return $this->generalResponse(true);
@@ -890,9 +891,9 @@
 
         }
 
-        
+
         /**
-         * 
+         *
          * Eliminar cliente
          *
          * @param  int $id
