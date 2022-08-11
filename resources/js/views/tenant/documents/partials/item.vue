@@ -89,19 +89,6 @@
                                             <i class="fa fa-list"></i>
                                         </el-button>
                                     </el-tooltip>
-                                    <el-tooltip
-                                        slot="append"
-                                        :disabled="recordItem != null"
-                                        class="item"
-                                        content="Historial de ventas"
-                                        effect="dark"
-                                        placement="bottom">
-                                        <el-button
-                                            :disabled="isEditItemNote"
-                                            @click.prevent="clickHistorySales()">
-                                            <i class="fa fa-list"></i>
-                                        </el-button>
-                                    </el-tooltip>
                                 </el-input>
                             </template>
                             <template v-else>
@@ -663,7 +650,6 @@ export default {
         WarehousesDetail,
         Keypress,
         LotsGroup,
-        HistorySalesForm,
         SelectLotsForm,
         HistorySalesForm,
         'vue-ckeditor': VueCkeditor.component
