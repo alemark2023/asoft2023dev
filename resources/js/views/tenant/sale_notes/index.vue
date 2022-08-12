@@ -31,6 +31,7 @@
                         <th class="text-right"  v-if="columns.seller_name.visible" >Vendedor</th>
 
                         <th class="text-center">Fecha Emisión</th>
+                        <th class="text-center">Fecha de pago</th>
                         <th>Cliente</th>
                         <th>Nota de Venta</th>
                         <th>Estado</th>
@@ -77,8 +78,8 @@
                         <td>{{ index }}</td>
                     <td class="text-right"  v-if="columns.seller_name.visible" >{{ row.seller_name }}</td>
 
-
                         <td class="text-center">{{ row.date_of_issue }}</td>
+                        <td class="text-center" v-if="columns.date_payment.visible" >{{ row.date_of_payment }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                         <td>{{ row.full_number }}
                         </td>
@@ -385,6 +386,10 @@
                     },
                     region: {
                         title: 'Region',
+                        visible: false
+                    },
+                    date_payment: {
+                        title: 'Fecha de pago',
                         visible: false
                     }
 

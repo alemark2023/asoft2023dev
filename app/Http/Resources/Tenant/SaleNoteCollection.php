@@ -30,9 +30,15 @@
                 $btn_generate = (count($row->documents) > 0) ? false : true;
                 $btn_payments = (count($row->documents) > 0) ? false : true;
                 $due_date = (!empty($row->due_date)) ? $row->due_date->format('Y-m-d') : null;
-                //$depa=$row->customer->department->description;
+                $date_pay=$row->payments;
+                $payment='';
+                if (count($date_pay)>0) {
+                    foreach ($date_pay as $pay) {
+                        $payment=$pay->date_of_payment->format('Y-m-d');
+                    }
+                }
                 //$depa=$depa->description;
-                //return dd($depa);
+                //return dd($date);
                 return [
                     'id'                           => $row->id,
                     'soap_type_id'                 => $row->soap_type_id,
@@ -80,6 +86,7 @@
                     'print_a4'                     => url('')."/sale-notes/print/{$row->external_id}/a4",
                     'purchase_order'               => $row->purchase_order,
                     'due_date'                     => $due_date,
+                    'date_of_payment'              => $payment,
                 ];
             });
         }
