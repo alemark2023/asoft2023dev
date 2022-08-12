@@ -75,6 +75,7 @@
                                 <th class="text-center">Moneda</th>
                                 <th class="text-center">Plataforma</th>
                                 <th class="text-center">Orden de compra</th>
+                                <th class="text-center">Region</th>
                                 <th class="text-center">Comprobantes</th>
                                 <th class="text-center">Fecha comprobante</th>
                                 <th>Cotización</th>
@@ -107,6 +108,7 @@
                                     @endforeach
                                 </td>
                                 <td>{{$value->purchase_order}}</td>
+                                <td>{{$value->customer->department->description}}</td>
                                 @php
                                     $documents = $value->documents;
                                 @endphp

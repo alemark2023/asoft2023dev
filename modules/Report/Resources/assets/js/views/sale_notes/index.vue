@@ -34,6 +34,7 @@
                             <th class="text-center">Moneda</th>
                             <th class="text-center" v-if="columns.web_platforms.visible">Plataforma</th>
                             <th>Orden de compra</th>
+                            <th class="text-center" v-if="columns.region.visible">Region</th>
                             <th class="text-center">Comprobantes</th>
                             <th>Cotización</th>
                             <th>Caso</th>
@@ -63,6 +64,7 @@
                             </template>
                         </td>
                         <td>{{ row.purchase_order }}</td>
+                        <td v-if="columns.region.visible">{{row.customer_region}}</td>
                         <td>
                                 <template v-for="(doc,i) in row.documents">
                                     <label class="d-block"  :key="i">{{doc.number_full}}</label>
@@ -104,6 +106,10 @@
                 columns: {
                     web_platforms: {
                         title: 'Plataformas web',
+                        visible: false
+                    },
+                    region: {
+                        title: 'Region',
                         visible: false
                     },
                 }

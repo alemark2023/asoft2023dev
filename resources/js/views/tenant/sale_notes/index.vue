@@ -56,6 +56,9 @@
                         <th class="text-center" v-if="columns.recurrence.visible">
                             Recurrencia
                         </th>
+                        <td class="text-right" v-if="columns.region.visible">
+                            Region
+                        </td>
                          <th class="text-center" v-if="columns.type_period.visible" >
                             Tipo Periodo
                         </th>
@@ -129,6 +132,10 @@
                             <template v-if="row.type_period && row.quantity_period>0">
                                 <el-switch :disabled="row.apply_concurrency" v-model="row.enabled_concurrency" active-text="Si" inactive-text="No" @change="changeConcurrency(row)"></el-switch>
                             </template>
+                        </td>
+
+                        <td class="text-right" v-if="columns.region.visible">
+                            {{ row.customer_region }}
                         </td>
 
                         <td class="text-right" v-if="columns.type_period.visible">
@@ -374,6 +381,10 @@
                     },
                     recurrence: {
                         title: 'Recurrencia',
+                        visible: false
+                    },
+                    region: {
+                        title: 'Region',
                         visible: false
                     }
 
