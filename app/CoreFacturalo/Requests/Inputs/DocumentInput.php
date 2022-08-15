@@ -64,7 +64,7 @@ class DocumentInput
 
         $items = self::items($inputs);
 
-        //configuracion para envio individual de boleta 
+        //configuracion para envio individual de boleta
         $ticket_single_shipment = self::getTicketSingleShipment($inputs);
         $inputs['ticket_single_shipment'] = $ticket_single_shipment;
 
@@ -90,6 +90,7 @@ class DocumentInput
             'customer' => $customer,
             'currency_type_id' => $inputs['currency_type_id'],
             'purchase_order' => Functions::valueKeyInArray($inputs, 'purchase_order'),
+            'folio' => Functions::valueKeyInArray($inputs, 'folio'),
             'quotation_id' => Functions::valueKeyInArray($inputs, 'quotation_id'),
             'sale_note_id' => Functions::valueKeyInArray($inputs, 'sale_note_id'),
             'order_note_id' => Functions::valueKeyInArray($inputs, 'order_note_id'),
@@ -153,7 +154,7 @@ class DocumentInput
             'ticket_single_shipment' => $ticket_single_shipment,
         ];
     }
-    
+
 
     public static function items($inputs)
     {
@@ -182,7 +183,7 @@ class DocumentInput
                         'date_of_due' => (!empty($item->date_of_due)) ? $item->date_of_due->format('Y-m-d') : null,
                         'has_igv' => $row['item']['has_igv'] ?? true,
                         'unit_price' => $row['unit_price'] ?? 0,
-                        'purchase_unit_price' => $row['item']['purchase_unit_price'] ?? 0,  
+                        'purchase_unit_price' => $row['item']['purchase_unit_price'] ?? 0,
                     ],
                     'quantity' => $row['quantity'],
                     'unit_value' => $row['unit_value'],
@@ -221,7 +222,7 @@ class DocumentInput
         }
         return null;
     }
-    
+
     /**
      * Devuelve el nombre producto pdf en texto plano para ser usado en el xml
      *
@@ -235,7 +236,7 @@ class DocumentInput
 
             // validar configuracion
             $configuration = Configuration::select('name_product_pdf_to_xml')->firstOrFail();
-    
+
             if($configuration->name_product_pdf_to_xml)
             {
                 return trim((new Html2Text($row['name_product_pdf']))->getText());
@@ -423,7 +424,7 @@ class DocumentInput
         }
         return null;
     }
-    
+
     private static function retention($inputs)
     {
 
@@ -599,15 +600,15 @@ class DocumentInput
         ];
     }
 
-        
+
     /**
-     * 
+     *
      * Retorna datos para registro de propina
      *
      * Usado en:
      * DocumentInput
      * TipTrait
-     * 
+     *
      * @param  array $inputs
      * @param  string $soap_type_id
      * @return array
@@ -630,10 +631,10 @@ class DocumentInput
 
         return null;
     }
-    
-        
+
+
     /**
-     * 
+     *
      * Retornar configuracion para envio individual de boletas
      *
      * @param  array $inputs

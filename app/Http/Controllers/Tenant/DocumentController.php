@@ -12,6 +12,7 @@ use App\Http\Requests\Tenant\DocumentRequest;
 use App\Http\Requests\Tenant\DocumentUpdateRequest;
 use App\Http\Resources\Tenant\DocumentCollection;
 use App\Http\Resources\Tenant\DocumentResource;
+use App\Imports\DocumentImportExcelFormat;
 use App\Imports\DocumentsImport;
 use App\Imports\DocumentsImportTwoFormat;
 use App\Mail\Tenant\DocumentEmail;
@@ -84,6 +85,7 @@ class DocumentController extends Controller
         $is_client = $this->getIsClient();
         $import_documents = config('tenant.import_documents');
         $import_documents_second = config('tenant.import_documents_second_format');
+        $document_import_excel = config('tenant.document_import_excel');
         $configuration = Configuration::getPublicConfig();
 
         // apiperu
@@ -94,6 +96,7 @@ class DocumentController extends Controller
         return view('tenant.documents.index',
             compact('is_client','import_documents',
                 'import_documents_second',
+                'document_import_excel',
                 'configuration',
                 'view_apiperudev_validator_cpe',
                 'view_validator_cpe'));
@@ -1354,4 +1357,46 @@ class DocumentController extends Controller
         return response()->json(Document::where('external_id', $request->external_id)->first());
     }
 
+    public function importExcelFormat(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            try {
+                $import = new DocumentImportExcelFormat();
+                $import->import($request->file('file'), null, Excel::XLSX);
+                $data = $import->getData();
+
+                return [
+                    'success' => true,
+                    'message' =>  'Se importaron '.$data['registered'].' de '.$data['total_records'].' registros',
+                    'data' => $data
+                ];
+            } catch (Exception $e) {
+                return [
+                    'success' => false,
+                    'message' =>  $e->getMessage()
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
+    public function importExcelTables()
+    {
+        $document_types = DocumentType::query()
+            ->whereIn('id', ['01', '03'])
+            ->get();
+
+        $series = Series::query()
+            ->whereIn('document_type_id', ['01', '03'])
+            ->where('establishment_id', auth()->user()->establishment_id)
+            ->get();
+
+        return [
+            'document_types' => $document_types,
+            'series' => $series,
+        ];
+    }
 }

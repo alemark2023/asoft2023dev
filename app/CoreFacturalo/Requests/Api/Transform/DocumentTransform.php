@@ -28,6 +28,7 @@ class DocumentTransform
             'currency_type_id' => Functions::valueKeyInArray($inputs, 'codigo_tipo_moneda'),
             'exchange_rate_sale' => Functions::valueKeyInArray($inputs, 'factor_tipo_de_cambio', 1),
             'purchase_order' => Functions::valueKeyInArray($inputs, 'numero_orden_de_compra'),
+            'folio' => Functions::valueKeyInArray($inputs, 'folio'),
 //            'establishment' => EstablishmentTransform::transform($inputs['datos_del_emisor']),
             'customer' => PersonTransform::transform($inputs['datos_del_cliente_o_receptor']),
             'total_prepayment' => Functions::valueKeyInArray($totals, 'total_anticipos'),
@@ -205,7 +206,7 @@ class DocumentTransform
 
             $origin_location_id = Functions::valueKeyInArray($detraction, 'ubigeo_origen') ? self::parseLocation($detraction['ubigeo_origen']) : null;
             $delivery_location_id = Functions::valueKeyInArray($detraction, 'ubigeo_destino') ? self::parseLocation($detraction['ubigeo_destino']) : null;
-            
+
             return [
                 'detraction_type_id' => $detraction['codigo_tipo_detraccion'],
                 'percentage' => $detraction['porcentaje'],
@@ -216,7 +217,7 @@ class DocumentTransform
                 'trip_detail' => Functions::valueKeyInArray($detraction, 'detalle_viaje'),
                 'origin_address' => Functions::valueKeyInArray($detraction, 'direccion_origen'),
                 'delivery_address' => Functions::valueKeyInArray($detraction, 'direccion_destino'),
-                'origin_location_id' => $origin_location_id, 
+                'origin_location_id' => $origin_location_id,
                 'delivery_location_id' => $delivery_location_id,
                 'reference_value_payload' => Functions::valueKeyInArray($detraction, 'valor_referencial_carga_util'),
                 'reference_value_service' => Functions::valueKeyInArray($detraction, 'valor_referencial_servicio_transporte'),
@@ -225,7 +226,7 @@ class DocumentTransform
         }
         return null;
     }
-    
+
     private static function parseLocation($district_id)
     {
         $province_id = $district_id ? substr($district_id, 0 ,4) : null;
@@ -252,7 +253,7 @@ class DocumentTransform
         }
         return null;
     }
-    
+
     private static function retention($inputs)
     {
         // dd($inputs);
@@ -271,7 +272,7 @@ class DocumentTransform
 
         return null;
     }
-    
+
 
     private static function prepayments($inputs)
     {

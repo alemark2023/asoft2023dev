@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tenant\User;
 use Barryvdh\DomPDF\Facade as PDF;
 use Modules\Inventory\Exports\KardexExport;
 use Illuminate\Http\Request;
@@ -28,12 +29,6 @@ use App\Models\Tenant\Dispatch;
 
 class ReportKardexController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-
     protected $models = [
         "App\Models\Tenant\Document",
         "App\Models\Tenant\Purchase",
@@ -46,31 +41,68 @@ class ReportKardexController extends Controller
 
     public function index()
     {
-
-
         return view('inventory::reports.kardex.index');
     }
 
 
     public function filter()
     {
+        $warehouses = [];
+        $user = User::query()->find(auth()->id());
+        if ($user->type === 'admin') {
+            $warehouses[] = [
+                'id' => 'all',
+                'name' => 'Todos'
+            ];
+            $records = Warehouse::query()
+                ->get();
+        } else {
+            $records = Warehouse::query()
+                ->where('establishment_id', $user->establishment_id)
+                ->get();
+        }
 
-        $items = Item::query()->whereNotIsSet()
-            ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
-            ->latest()
-            ->get()->transform(function ($row) {
+        foreach ($records as $record) {
+            $warehouses[] = [
+                'id' => $record->id,
+                'name' => $record->description,
+            ];
+        }
+
+        return [
+            'warehouses' => $warehouses
+        ];
+    }
+
+    public function filterByWarehouse($warehouse_id)
+    {
+        $query = Item::query()->whereNotIsSet()
+            ->with('warehouses')
+            ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']]);
+
+        if ($warehouse_id !== 'all') {
+            $query->whereHas('warehouses', function ($query) use ($warehouse_id) {
+                return $query->where('warehouse_id', $warehouse_id);
+            });
+        }
+
+        $items = $query->latest()
+            ->get()
+            ->transform(function ($row) {
                 $full_description = $this->getFullDescription($row);
                 return [
                     'id' => $row->id,
                     'full_description' => $full_description,
                     'internal_id' => $row->internal_id,
                     'description' => $row->description,
+                    'warehouses' => $row->warehouses
                 ];
             });
 
-        return compact('items');
+        return [
+            'items' => $items
+        ];
     }
-
 
     public function records(Request $request)
     {
@@ -97,12 +129,12 @@ class ReportKardexController extends Controller
      */
     public function getRecords($request)
     {
-
+        $warehouse_id = $request['warehouse_id'];
         $item_id = $request['item_id'];
         $date_start = $request['date_start'];
         $date_end = $request['date_end'];
 
-        $records = $this->data($item_id, $date_start, $date_end);
+        $records = $this->data($item_id, $warehouse_id, $date_start, $date_end);
 
         return $records;
 
@@ -115,13 +147,14 @@ class ReportKardexController extends Controller
      * @param $date_end
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder|InventoryKardex
      */
-    private function data($item_id, $date_start, $date_end)
+    private function data($item_id, $warehouse_id, $date_start, $date_end)
     {
+        //$warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
-        $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
-
-        $data = InventoryKardex::with(['inventory_kardexable'])
-            ->where('warehouse_id', $warehouse->id);
+        $data = InventoryKardex::with(['inventory_kardexable']);
+        if($warehouse_id !== 'all') {
+            $data->where('warehouse_id', $warehouse_id);
+        }
         if ($date_start) {
             $data->where('date_of_issue', '>=', $date_start);
         }
@@ -157,7 +190,6 @@ class ReportKardexController extends Controller
 
     public function getFullDescription($row)
     {
-
         $desc = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
         $category = ($row->category) ? " - {$row->category->name}" : "";
         $brand = ($row->brand) ? " - {$row->brand->name}" : "";
