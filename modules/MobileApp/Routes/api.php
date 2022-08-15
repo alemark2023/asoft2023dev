@@ -56,7 +56,7 @@ if ($hostname)
             Route::prefix('persons')->group(function () {
 
                 Route::get('{type}/records', 'Api\PersonController@records');
-                Route::get('default-customer', 'Api\PersonController@getDefaultCustomer');
+                Route::get('default-customer/{document_type_id?}', 'Api\PersonController@getDefaultCustomer');
                 Route::get('change-enabled/{id}/{enabled}', 'Api\PersonController@changeEnabled');
                 Route::delete('{id}', 'Api\PersonController@destroy');
                 Route::get('record/{id}', 'Api\PersonController@record');

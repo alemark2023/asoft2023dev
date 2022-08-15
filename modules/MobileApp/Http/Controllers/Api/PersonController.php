@@ -70,26 +70,35 @@ class PersonController extends Controller
 
     /**
      * 
-     * Obtener cliente por defecto configurado en establecimiento
+     * Obtener cliente por defecto configurado en establecimiento o clientes varios
      *
      * Usado en:
      * App
      * 
      * @return array
      */
-    public function getDefaultCustomer()
+    public function getDefaultCustomer($document_type_id = null)
     {
-		$establishment = auth()->user()->establishment;
+        $customer = null;
 
-		if($establishment->customer_id)
-		{
-			$customer = Person::findOrFail($establishment->customer_id);
+        // se retorna clientes varios por defecto para modo pos
+        if(in_array($document_type_id, ['03', '80'], true))
+        {
+            $customer = Person::whereFilterVariousClients()->first();
+        }
+        else
+        {
+            $establishment = auth()->user()->establishment;
+            if($establishment->customer_id) $customer = Person::findOrFail($establishment->customer_id);
+        }
 
-			return [
-				'success' => true,
-				'data' => $customer->getApiRowResource() 
-			];
-		}
+        if($customer)
+        {
+            return [
+                'success' => true,
+                'data' => $customer->getApiRowResource() 
+            ];
+        }
 
 		return [
 			'success' => false,

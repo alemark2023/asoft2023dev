@@ -897,4 +897,21 @@
                         ->take($take);
         }
 
+        
+        /**
+         * 
+         * Filtro para cliente varios por defecto
+         *
+         * @param Builder $query
+         * @return Builder
+         */  
+        public function scopeWhereFilterVariousClients($query)
+        {
+            return $query->where([
+                ['identity_document_type_id', '0'],
+                ['number', '99999999'],
+                ['type', 'customers'],
+            ]);
+        }
+
     }
