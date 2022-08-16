@@ -64,6 +64,7 @@ class DocumentWebTransform
             // 'related' => self::related($inputs),
             // 'legends' => LegendTransform::transform($inputs),
             'informacion_adicional' => Functions::valueKeyInArray($inputs, 'additional_information'),
+            'dato_adicional' => Functions::valueKeyInArray($inputs, 'additional_data'),
             'acciones' => self::actions_transform($inputs),
             // 'hotel' => Functions::valueKeyInArray($inputs, 'hotel',[]),
             'pagos' => self::payments($inputs),

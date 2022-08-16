@@ -64,6 +64,7 @@ class DocumentTransform
             'related' => self::related($inputs),
             'legends' => LegendTransform::transform($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'informacion_adicional'),
+            'additional_data' => Functions::valueKeyInArray($inputs, 'dato_adicional'),
             'actions' => ActionTransform::transform($inputs),
             'hotel' => Functions::valueKeyInArray($inputs, 'hotel',[]),
             'transport' => Functions::valueKeyInArray($inputs, 'transport',[]),

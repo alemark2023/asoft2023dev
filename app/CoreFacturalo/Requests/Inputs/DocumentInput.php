@@ -134,6 +134,7 @@ class DocumentInput
             'hotel' => self::hotel($inputs),
             'transport' => self::transport($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'additional_information'),
+            'additional_data' => Functions::valueKeyInArray($inputs, 'additional_data'),
             'plate_number' => Functions::valueKeyInArray($inputs, 'plate_number'),
             'legends' => LegendInput::set($inputs),
             'actions' => ActionInput::set($inputs),
