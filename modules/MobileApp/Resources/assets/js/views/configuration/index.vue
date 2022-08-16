@@ -81,10 +81,10 @@
                                                 </div>
                                             </el-radio-group>
                                         </el-tab-pane>
-                                        <el-tab-pane label="Premium">
+                                        <el-tab-pane label="Pack Premium">
                                             <el-checkbox v-model="form.show_premium" @change="showPremium()">Ver Premium</el-checkbox>
                                             <br><br>
-                                            <p>Puedes ver los detalles y obtener el APK premium en <a href="https://facturaloperu.com/demos/" class="text-primary font-weight-bold">este enlace.</a></p>
+                                            <p>Para mayor información comunícate con tu administrador o distribuidor</p>
                                         </el-tab-pane>
                                         <!-- <el-tab-pane label="Tipo de operación">
                                             <el-radio-group class="pt-2" v-model="form.operation_type">
@@ -107,7 +107,10 @@
 
             </div>
             <div class="col-md-5">
-                <iframe :src="source_iframe" frameborder="0" height="750" ref="appIframe" style="z-index: 999;min-width: 350px;" class="iphone-x">
+                <video class="iphone-x" v-if="form.show_premium" autoplay="" loop="" muted="" playsinline="" width="350" style="height:620px">
+                    <source src="https://facturaloperu.com/video/FacturaloPeru-APPPremium.mp4" type="video/mp4">
+                </video>
+                <iframe v-else :src="source_iframe" frameborder="0" height="750" ref="appIframe" style="z-index: 999;min-width: 350px;" class="iphone-x">
                     <i>Speaker</i>
                     <b>Camera</b>
                 </iframe>
@@ -357,8 +360,11 @@
                     })
             },
             showPremium() {
-                console.log(this.form.show_premium)
-                this.source_iframe = this.form.show_premium ? this.path_premium : this.path_app
+                // if(this.form.show_premium) {
+
+                // }
+                // console.log(this.form.show_premium)
+                // this.source_iframe = this.form.show_premium ? this.path_premium : this.path_app
             }
         }
     }

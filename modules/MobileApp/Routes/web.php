@@ -11,7 +11,7 @@ if($current_hostname)
             Route::prefix('live-app')->group(function() {
 
                 Route::get('/', 'LiveAppController@index')->name('tenant.liveapp.index');
-                Route::get('/premium', 'LiveAppController@premium')->name('tenant.liveapp.premium');
+                // Route::get('/premium', 'LiveAppController@premium')->name('tenant.liveapp.premium');
                 Route::get('/configuration', 'LiveAppController@configuration')->name('tenant.liveapp.configuration');
 
             });
