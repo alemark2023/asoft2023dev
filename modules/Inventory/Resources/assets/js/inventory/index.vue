@@ -6,7 +6,7 @@
                 <li class="active"><span>{{ title }}</span></li>
             </ol>
             <div v-if="typeUser == 'admin'" class="right-wrapper pull-right">
-                <!--<button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button>-->
+                <button type="button" class="btn btn-success btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Imp. Ajuste de stock</button>
                 <button type="button" class="btn btn-success btn-sm  mt-2 mr-2" @click.prevent="clickReport()"><i class="fa fa-file-excel"></i> Reporte</button>
                 <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate('input')"><i class="fa fa-plus-circle"></i> Ingreso</button>
                 <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickOutput()"><i class="fa fa-minus-circle"></i> Salida</button>
@@ -30,6 +30,7 @@
                                     <el-dropdown-item @click.native="onChecktAll">Seleccionar todo</el-dropdown-item>
                                     <el-dropdown-item @click.native="onUnCheckAll">Deseleccionar todo</el-dropdown-item>
                                     <el-dropdown-item @click.native="onOpenModalMoveGlobal">Trasladar</el-dropdown-item>
+                                    <el-dropdown-item @click.native="onOpenModalStockGlobal">Ajustar stock</el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
                         </th>
@@ -51,6 +52,16 @@
                                     @click.prevent="clickMove(row.id)">Trasladar</button>
                             <button v-if="typeUser == 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-warning"
                                     @click.prevent="clickRemove(row.id)">Remover</button>
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-warning"
+                                    @click.prevent="clickStock(row.id)">
+                                    Ajuste
+                                    <el-tooltip class="item"
+                                                    content="Ajuste: stock del sistema no cuadre con el stock real"
+                                                    effect="dark"
+                                                    placement="top">
+                                            <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                            </button>
                         </td>
                     </tr>
                 </data-table>
@@ -75,6 +86,12 @@
                             :showDialog.sync="showDialogMovementReport"
                                 ></movement-report>
 
+            <inventories-stock :showDialog.sync="showDialogStock"
+                              :recordId="recordId"></inventories-stock>
+                            
+            <StockGlobal :products="selectedItems" :show.sync="showHideStockMoveGlobal"></StockGlobal>
+
+            <stock-import :showDialog.sync="showImportDialog"></stock-import>
         </div>
     </div>
 </template>
@@ -90,9 +107,15 @@
     import MoveGlobal from './MoveGlobal.vue';
     import MovementReport from './reports/movement_report.vue';
 
+    import InventoriesStock from './stock.vue'
+
+    import StockGlobal from './StockGlobal.vue';
+
+    import StockImport from './import.vue'
+
     export default {
         props: ['type', 'typeUser'],
-        components: {DataTable, InventoriesForm, InventoriesMove, InventoriesRemove, InventoriesFormOutput, MoveGlobal, MovementReport},
+        components: {DataTable, InventoriesForm, InventoriesMove, InventoriesRemove, InventoriesFormOutput, MoveGlobal, MovementReport, InventoriesStock, StockGlobal, StockImport},
         data() {
             return {
                 showHideModalMoveGlobal: false,
@@ -105,7 +128,10 @@
                 resource: 'inventory',
                 recordId: null,
                 typeTransaction:null,
-                showDialogMovementReport:false
+                showDialogMovementReport:false,
+                showDialogStock: false,
+                showHideStockMoveGlobal: false,
+                showImportDialog: false,
             }
         },
         created() {
@@ -164,7 +190,26 @@
             clickOutput() {
                 this.recordId = null
                 this.showDialogOutput = true
-            }
+            },
+            clickStock(recordId) {
+                this.recordId = recordId
+                this.showDialogStock = true
+            },
+            async onOpenModalStockGlobal() {
+                const itemsSelecteds = await this.$refs.datatable.records.filter(p => p.selected);
+                if (itemsSelecteds.length > 0) {
+                    this.selectedItems = itemsSelecteds;
+                    this.showHideStockMoveGlobal = true;
+                } else {
+                    this.$message({
+                        message: 'Selecciona uno o más productos.',
+                        type: 'warning'
+                    });
+                }
+            },
+            clickImport(){
+                this.showImportDialog = true
+            },
 
         }
     }
