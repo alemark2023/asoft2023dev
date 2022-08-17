@@ -615,6 +615,7 @@ export default {
         },
         clickDownload(type) {
             let query = queryString.stringify({
+                columns: JSON.stringify(this.visibleColumns),
                 ...this.form
             });
             delete(query.user_id)

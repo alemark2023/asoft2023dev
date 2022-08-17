@@ -30,12 +30,21 @@
                             <th>Doc. Afectado</th>
                             <th>Cotización</th>
                             <th>Caso</th>
+                            <th v-if="columns.district.visible" class="text-right">Distrito</th>
+                            <th v-if="columns.department.visible" class="text-right">Departamento</th>
+                            <th v-if="columns.province.visible" class="text-right">Provincia</th>
+                            <th v-if="columns.client_direction.visible" class="text-right">Direc. del cliente</th>
                             <th>Cliente</th>
+                            <th v-if="columns.ruc.visible" class="text-right">Ruc</th>
                             <th>Productos</th>
                             <th>Estado</th>
                             <th>Moneda</th>
                             <th class="text-center" v-if="columns.web_platforms.visible">Plataforma</th>
                             <th>Orden de compra</th>
+                            <th v-if="columns.note_sale.visible" class="text-right">Nota de venta</th>
+                            <th v-if="columns.date_note.visible" class="text-right">Fecha N.Venta</th>
+                            <th v-if="columns.payment_form.visible" class="text-right">Forma de pago</th>
+                            <th v-if="columns.payment_method.visible" class="text-right">Metodo de pago</th>
                             <th v-if="columns.total_charge.visible">Total Cargos</th>
                             <th>Total Exonerado</th>
                             <th>Total Inafecto</th>
@@ -66,7 +75,26 @@
                             <td>{{ row.affected_document }}</td>
                             <td>{{ row.quotation_number_full }}</td>
                             <td>{{ row.sale_opportunity_number_full }}</td>
+
+                            <td  v-if="columns.district.visible">
+                                {{row.district}}
+                            </td>
+                            <td  v-if="columns.department.visible">
+                                {{row.department}}
+                            </td>
+                            <td  v-if="columns.province.visible">
+                                {{row.province}}
+                            </td>
+                            <td  v-if="columns.client_direction.visible">
+                                {{row.client_direction}}
+                            </td>
+
                             <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
+
+                            <td  v-if="columns.ruc.visible">
+                                {{row.ruc}}
+                            </td>
+
                             <td class="text-center">
                                 <button
                                     class="btn waves-effect waves-light btn-xs btn-primary"
@@ -86,6 +114,20 @@
                                 </template>
                             </td>
                             <td>{{ row.purchase_order }}</td>
+
+                            <td  v-if="columns.note_sale.visible">
+                                {{row.note_sale}}
+                            </td>
+                            <td  v-if="columns.date_note.visible">
+                                {{row.date_note}}
+                            </td>
+                            <td  v-if="columns.payment_form.visible">
+                                {{row.payment_form}}
+                            </td>
+                            <td  v-if="columns.payment_method.visible">
+                                {{row.payment_method}}
+                            </td>
+
                             <td v-if="columns.total_charge.visible">
                                 {{
                                     (row.document_type_id == '07') ? ((row.total_charge == 0) ? '0.00' : '-' + row.total_charge) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_charge)
@@ -183,6 +225,42 @@
                     },
                     total_charge: {
                         title: 'Total Cargos',
+                        visible: false
+                    },
+                    district: {
+                        title: 'Distrito',
+                        visible: false
+                    },
+                    department: {
+                        title: 'Departamento',
+                        visible: false
+                    },
+                    province: {
+                        title: 'Provincia',
+                        visible: false
+                    },
+                    client_direction: {
+                        title: 'Direccion del cliente',
+                        visible: false
+                    },
+                    ruc: {
+                        title: 'Ruc',
+                        visible: false
+                    },
+                    note_sale: {
+                        title: 'Nota de venta',
+                        visible: false
+                    },
+                    date_note: {
+                        title: 'Fecha de N.Venta',
+                        visible: false
+                    },
+                    payment_form: {
+                        title: 'Forma de pago',
+                        visible: false
+                    },
+                    payment_method: {
+                        title: 'Metodo de pago',
                         visible: false
                     },
                 },

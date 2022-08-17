@@ -134,7 +134,8 @@ class ReportDocumentController extends Controller
 
 
     public function excel(Request $request) {
-        
+        $columns=json_decode($request->columns);
+        //dd($columns->guides);
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
 
@@ -168,7 +169,8 @@ class ReportDocumentController extends Controller
             ->establishment($establishment)
             ->filters($filters)
             ->categories($categories)
-            ->categories_services($categories_services);
+            ->categories_services($categories_services)
+            ->columns($columns);
          // return $documentExport->view();
         return $documentExport->download('Reporte_Ventas_'.Carbon::now().'.xlsx');
 
