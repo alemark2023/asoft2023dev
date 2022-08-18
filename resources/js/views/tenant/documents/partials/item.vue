@@ -908,7 +908,7 @@ export default {
 
         },
         clickIncrease() {
-            this.form.quantity = parseInt(this.form.quantity + 1)
+            this.form.quantity = parseInt(this.form.quantity) + 1
             this.calculateTotal()
         },
         async searchRemoteItems(input) {
