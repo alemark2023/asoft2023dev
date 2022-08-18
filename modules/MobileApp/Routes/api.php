@@ -50,6 +50,7 @@ if ($hostname)
                 Route::get('tables', 'Api\DocumentController@tables');
                 Route::get('tables-sale-detail', 'Api\DocumentController@getTablesSaleDetail');
                 Route::get('tables-sale-payment', 'Api\DocumentController@getTablesSalePayment');
+                Route::get('table/{table}', 'Api\DocumentController@table');
             });
 
 
