@@ -1,5 +1,5 @@
 <template>
-    <el-dialog 
+    <el-dialog
                :title="titleDialog"
                :visible="showDialogOptions"
                append-to-body
@@ -65,6 +65,7 @@
                     </el-popover>
                     <p>50MM</p>
                 </div>
+            </div>
         </div>
     </el-dialog>
 </template>
