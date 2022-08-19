@@ -277,7 +277,10 @@
                                        @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel"></i> Exportal
                                                                                                                 Excel
                             </el-button>
-
+                            <el-button class="submit"
+                                       type="info"
+                                       @click.prevent="clickEmail()">C. Electrónico
+                            </el-button>
                         </template>
 
                     </div>
@@ -377,7 +380,7 @@
                 </div>
             </div>
         </div>
-
+        <email-options :showDialog.sync="showEmailOptions" :data="this.form" :columns="this.visibleColumns"></email-options>
     </div>
 </template>
 <style>
@@ -389,8 +392,12 @@
 
 import moment from 'moment'
 import queryString from 'query-string'
+import EmailOptions from '../views/documents/partials/options.vue'
 
 export default {
+    components: {
+        EmailOptions
+    },
     props: {
         resource: String,
         applyCustomer: {
@@ -448,7 +455,8 @@ export default {
             sellers: [],
             items: [],
             all_items: [],
-            loading_search_items: false
+            loading_search_items: false,
+            showEmailOptions:false,
         }
     },
     computed: {
@@ -755,6 +763,9 @@ export default {
         },
         filterItems() {
             this.items = this.all_items
+        },
+        clickEmail(){
+            this.showEmailOptions = true
         },
     }
 }

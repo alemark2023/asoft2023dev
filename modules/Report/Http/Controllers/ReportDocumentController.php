@@ -16,6 +16,9 @@ use Modules\Report\Exports\DocumentExport;
 use Modules\Report\Http\Resources\DocumentCollection;
 use Modules\Report\Http\Resources\SaleNoteCollection;
 use Modules\Report\Traits\ReportTrait;
+use App\Http\Controllers\Tenant\EmailController;
+use Modules\Report\Mail\DocumentEmail;
+use Mpdf\Mpdf;
 
 
 class ReportDocumentController extends Controller
@@ -80,6 +83,7 @@ class ReportDocumentController extends Controller
 
     public function pdf(Request $request) {
         set_time_limit (1800); // Maximo 30 minutos
+        $columns=json_decode($request->columns);
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $documentTypeId = "01";
@@ -97,7 +101,7 @@ class ReportDocumentController extends Controller
 
         $filters = $request->all();
 
-        $pdf = PDF::loadView('report::documents.report_pdf', compact("records", "company", "establishment", "filters"))
+        $pdf = PDF::loadView('report::documents.report_pdf', compact("records", "company", "establishment", "filters","columns"))
             ->setPaper('a4', 'landscape');
 
         $filename = 'Reporte_Ventas_'.date('YmdHis');
@@ -194,6 +198,64 @@ class ReportDocumentController extends Controller
 
         return Category::whereIn('id', $aux_categories->unique()->toArray())->get();
 
+    }
+
+    public function email(Request $request) {
+        $request->validate(
+            ['email' => 'required']
+        );
+        $data=$request->data;
+        $columns=$request->columns;
+        $company = Company::active();
+        $email = $request->input('email');
+
+        $mailable = new DocumentEmail($company, $this->getPdf($data,$columns));
+        $sendIt = EmailController::SendMail($email, $mailable);
+        
+        return [
+            'success' => true
+        ];
+    }
+
+    private function getPdf($request,$columns, $format = 'ticket', $mm = null) 
+    {
+        $reques=json_decode(json_encode($request, JSON_FORCE_OBJECT));
+        set_time_limit (1800); // Maximo 30 minutos
+        $columns=json_decode(json_encode($columns));
+        $company = Company::first();
+        $establishment = ($reques->establishment_id) ? Establishment::findOrFail($reques->establishment_id) : auth()->user()->establishment;
+        $documentTypeId = "01";
+        if ($reques->document_type_id) {
+            $documentTypeId = str_replace('"', '', $reques->document_type_id);
+        }
+        $documentType = DocumentType::find($documentTypeId);
+        if (null === $documentType) {
+            $documentType = new DocumentType();
+        }
+
+        $classType = $documentType->getCurrentRelatiomClass();
+        $records = $this->getRecords($request, $classType);
+        $records= $records->get();
+
+        $filters = $request;
+        // dd($data);
+
+        $quantity_rows = 30;//$cash->cash_documents()->count();
+
+        $width = 78;
+        if($mm != null) {
+            $width = $mm - 2;
+        }
+
+        $view = view('report::documents.report_pdf', compact("records", "company", "establishment", "filters", "columns"));
+        $html = $view->render();
+        $pdf = new Mpdf([
+                            'mode' => 'utf-8',
+                        ]);
+
+        $pdf->WriteHTML($html);
+
+        return $pdf->output('', 'S');
     }
 
 

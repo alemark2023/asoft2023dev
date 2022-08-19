@@ -196,6 +196,7 @@
     import DataTable from '../../components/DataTableReports.vue'
     import DocumentOptions from '../../../../../../../resources/js/views/tenant/documents/partials/options'
     import ProductSale from './partials/product_sale.vue'
+    
 
     export default {
         props: ['configuration'],
