@@ -177,6 +177,7 @@ class Item extends ModelTenant
         'purchase_has_isc',
 
         'subject_to_detraction',
+        'favorite',
         // 'warehouse_id'
     ];
 
@@ -189,6 +190,7 @@ class Item extends ModelTenant
         'subject_to_detraction' => 'boolean',
         'sale_unit_price' => 'float',
         'purchase_unit_price' => 'float',
+        'favorite' => 'boolean',
     ];
 
     /**
@@ -2377,6 +2379,7 @@ class Item extends ModelTenant
             'category_id' => $this->category_id,
             'active' => (bool) $this->active,
             'stock' => $this->getWarehouseCurrentStock(),
+            'favorite' => $this->favorite,
 
         ];
     }
@@ -2496,12 +2499,30 @@ class Item extends ModelTenant
     {
 
         $category_id = $request->category_id ??  null;
+        $favorite = $request->has('favorite') && (bool) $request->favorite;
 
         return $query->whereFilterWithOutRelations()
                     ->with(['category', 'brand', 'currency_type'])
                     ->whereFilterRecordsApi($request->input, $request->search_by_barcode)
                     ->filterByCategory($category_id)
+                    ->filterFavorite($favorite)
                     ->whereIsActive();
+    }
+
+
+    /**
+     *
+     * Filtrar favoritos
+     *
+     * @param  Builder $query
+     * @param  bool $favorite
+     * @return Builder
+     */
+    public function scopeFilterFavorite($query, $favorite)
+    {
+        if($favorite)  $query->where('favorite', $favorite);
+
+        return $query;
     }
 
 

@@ -37,8 +37,10 @@ if ($hostname)
                 Route::post('upload-temp-image', 'Api\ItemController@uploadTempImage');
                 Route::delete('{id}', 'Api\ItemController@destroy');
                 Route::get('change-active/{id}/{active}', 'Api\ItemController@changeActive');
+                Route::get('change-favorite/{id}/{favorite}', 'Api\ItemController@changeFavorite');
 
             });
+            
 
             Route::prefix('documents')->group(function () {
                 Route::post('validate-document', 'Api\ValidateDocumentController@validateDocument');
@@ -48,13 +50,14 @@ if ($hostname)
                 Route::get('tables', 'Api\DocumentController@tables');
                 Route::get('tables-sale-detail', 'Api\DocumentController@getTablesSaleDetail');
                 Route::get('tables-sale-payment', 'Api\DocumentController@getTablesSalePayment');
+                Route::get('table/{table}', 'Api\DocumentController@table');
             });
 
 
             Route::prefix('persons')->group(function () {
 
                 Route::get('{type}/records', 'Api\PersonController@records');
-                Route::get('default-customer', 'Api\PersonController@getDefaultCustomer');
+                Route::get('default-customer/{document_type_id?}', 'Api\PersonController@getDefaultCustomer');
                 Route::get('change-enabled/{id}/{enabled}', 'Api\PersonController@changeEnabled');
                 Route::delete('{id}', 'Api\PersonController@destroy');
                 Route::get('record/{id}', 'Api\PersonController@record');

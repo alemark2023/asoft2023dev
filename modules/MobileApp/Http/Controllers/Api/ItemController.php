@@ -47,7 +47,9 @@ class ItemController extends Controller
 
         switch ($table) {
             case 'categories':
-                $data = Category::filterForTables()->get();
+                $data = Category::filterForTables()->get()->transform(function($row){
+                    return $row->getRowResourceApi();
+                });
                 break;
             case 'affectation_igv_types':
                 $data = AffectationIgvType::whereActive()->get();
@@ -183,7 +185,28 @@ class ItemController extends Controller
         ];
     }
 
+     
+    /**
+     * 
+     * Activar/Desactivar favorito
+     *
+     * @param  int $id
+     * @param  bool $favorite
+     * @return array
+     */
+    public function changeFavorite($id, $favorite)
+    {
+        $record = Item::findOrFail($id);
+        $record->favorite = $favorite;
+        $record->save();
+        
+        return [
+            'success' => true,
+            'message' => $favorite ? 'Agregado a favoritos' : 'Eliminado de favoritos'
+        ];
+    }
 
+    
     /**
      * 
      * Guardar imágen de diferentes tamaños

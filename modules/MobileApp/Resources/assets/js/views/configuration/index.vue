@@ -228,6 +228,7 @@
                 loading_submit: false,
                 resource: 'app-configurations',
                 loading: false,
+                change_mode: false,
             }
         },
         async created(){
@@ -266,8 +267,9 @@
                 this.source_iframe = this.path_app
 
             },
-            changeMode(){
-
+            changeMode()
+            {
+                this.change_mode = true
             },
             changeThemePrimary() {
 
@@ -343,6 +345,7 @@
                         if (response.data.success) {
 
                             this.$message.success(response.data.message)
+                            // if(this.change_mode) location.reload() //reinicia el modo pos, pero valida la configuracion con la url que se inicia, por ejemplo demo, no del proyecto local
 
                         } else {
                             this.$message.error(response.data.message)

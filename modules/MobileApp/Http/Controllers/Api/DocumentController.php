@@ -16,7 +16,8 @@ use App\Http\Resources\Tenant\DocumentCollection;
 use App\Models\Tenant\StateType;
 use App\Http\Resources\Tenant\DocumentResource;
 use App\Models\Tenant\Catalogs\{
-    DocumentType
+    DocumentType,
+    ChargeDiscountType
 };
 use Modules\Finance\Traits\FinanceTrait;
 
@@ -58,9 +59,33 @@ class DocumentController extends Controller
     {
         $affectation_igv_types = app(ItemController::class)->table('affectation_igv_types');
 
-        $document_types = DocumentType::onlySaleDocuments()->get();
+        $document_types = $this->table('document_types');
 
-        return compact('affectation_igv_types', 'document_types');
+        $item_discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
+
+        return compact('affectation_igv_types', 'document_types', 'item_discount_types');
+    }
+
+    
+    /**
+     * Tablas individuales
+     *
+     * @param  string $table
+     * @return array
+     */
+    public function table($table)
+    {
+        $data = [];
+
+        switch ($table) 
+        {
+            case 'document_types':
+                $data = DocumentType::onlySaleDocuments()->get();
+                break;
+            
+        }
+
+        return $data;
     }
 
     
