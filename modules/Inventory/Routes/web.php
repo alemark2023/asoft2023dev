@@ -142,6 +142,9 @@
                     Route::post('/transaction', 'InventoryController@store_transaction');
                     Route::post('move', 'InventoryController@move');
                     Route::post('move-multilple', 'InventoryController@moveMultiples');
+                    Route::post('stock', 'InventoryController@stock');
+                    Route::post('stock-multilple', 'InventoryController@stockMultiples');
+                    Route::post('import', 'InventoryController@import');
                     /**
                      * inventory/moves
                      * inventory/remove

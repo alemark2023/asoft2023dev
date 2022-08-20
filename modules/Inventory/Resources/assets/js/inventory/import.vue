@@ -14,7 +14,7 @@
                         <el-upload
                                 ref="upload"
                                 :headers="headers"
-                                action="/items/import"
+                                action="/inventory/import"
                                 :show-file-list="true"
                                 :auto-upload="false"
                                 :multiple="false"
@@ -28,7 +28,7 @@
                         <small class="form-control-feedback" v-if="errors.file" v-text="errors.file[0]"></small>
                     </div>
                     <div class="col-12 mt-4 mb-2">
-                        <a class="text-dark mr-auto" href="/formats/items.xlsx" target="_new">
+                        <a class="text-dark mr-auto" href="/formats/stock_real.xlsx" target="_new">
                             <span class="mr-2">Descargar formato de ejemplo para importar</span>
                             <i class="fa fa-download"></i>
                         </a>
@@ -52,7 +52,7 @@
                 loading_submit: false,
                 headers: headers_token,
                 titleDialog: null,
-                resource: 'items',
+                resource: 'inventory',
                 errors: {},
                 form: {},
                 warehouses: []

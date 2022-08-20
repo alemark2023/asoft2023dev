@@ -24,7 +24,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">Stock real</label>
-                            <el-input v-model="form.quantity_move"></el-input>
+                            <el-input v-model="form.quantity_real"></el-input>
                         </div>
                     </div>
                     
@@ -88,12 +88,10 @@
                     warehouse_id: null,
                     warehouse_description: null,
                     quantity: null,
-                    warehouse_new_id: null,
-                    quantity_move: null,
+                    quantity_real: null,
                     lots_enabled:false,
                     series_enabled:false,
                     lots:[],
-                    detail:null
                 }
             },
             create() {
@@ -114,7 +112,7 @@
                 }
 
                 this.loading_submit = true
-                await this.$http.post(`/${this.resource}/move`, this.form)
+                await this.$http.post(`/${this.resource}/stock`, this.form)
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)

@@ -43,7 +43,7 @@
             <td>{{ row.warehouse_description }}</td>
             <td>{{ row.quantity | toDecimals }}</td>
             <td>
-              <el-input v-model="row.quantity_move" type="number"></el-input>
+              <el-input v-model="row.quantity_real" type="number"></el-input>
             </td>
           </tr>
         </tbody>
@@ -103,7 +103,7 @@ export default {
         items: this.records,
       };
       this.$http
-        .post(`/${this.resource}/move-multilple`, data)
+        .post(`/${this.resource}/stock-multilple`, data)
         .then((response) => {
           this.$message({
             message: response.data.message,
