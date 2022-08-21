@@ -155,6 +155,8 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                     }
                     $clear_type=array_unique($clear_type);
                     $clear_serie=array_unique($clear_serie);
+                    $clear_type=array_values($clear_type);
+                    $clear_series=array_values($clear_series);
                     
                     //dd($clear_serie);
                 @endphp
@@ -179,10 +181,10 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                                     $serie_type=$series_document[$s];
                                     
                                 @endphp
-                                @if ($serie_type->number==$clear_serie[$cs])
+                                @if ($serie_type['number']==$clear_serie[$cs])
                                     @php
     
-                                        $serie_number=$serie_type->number;
+                                        $serie_number=$serie_type['number'];
                                     @endphp
                     <h3>{{$title}} - {{$serie_number}}</h3>
                     <table class="">
@@ -275,7 +277,7 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
         
                             ?>
                             @if ($document_types[$c]->id==$document_type->id)
-                            @if ($serie_type->number==$value->series)
+                            @if ($serie_type['number']==$value->series)
                             <tr>
                                 <td class="celda">{{$t+1}}</td>
                                 <td class="celda">
