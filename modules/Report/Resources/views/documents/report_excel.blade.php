@@ -100,7 +100,7 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
 </div>
 <br>
 @if(!empty($records))
-    <div class="">
+    {{-- <div class="">
         <div class=" ">
             @php
                 $acum_total_charges=0;
@@ -131,9 +131,7 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                 $clear_type=array_unique($clear_type);
                 $clear_serie=array_unique($clear_serie);
                 
-                //dd($clear_serie);
             @endphp
-            {{-- @foreach($document_types as $type) --}}
             
             @for ($i = 0; $i < count($clear_type); $i++)
                 @for ($c = 0; $c < count($document_types); $c++)
@@ -144,9 +142,9 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                                 'description'=>$document_types[$c]->description,
                             ];
                             $series_document=Series::FilterDocumentType($document_types[$c]->id)->select('number')->get();
-                            //dd($document_types[$c]->id==$clear_type[$i]);
+                            
                             $title=$document_types[$c]->description;
-                            //dd($series_document);
+                            
                         @endphp
                         @for ($cs = 0; $cs < count($clear_serie); $cs++)
                         @for ($s = 0; $s < count($series_document); $s++)
@@ -237,13 +235,12 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                     </tr>
                     </thead>
                     <tbody>
-                    {{-- @foreach($records as $key => $value) --}}
+                    
                     @for ($t = 0; $t < count($records); $t++)
                         
                         <?php
                         $value=$records[$t];
-                        /** @var \App\Models\Tenant\Document|App\Models\Tenant\SaleNote  $value */
-                        //$iteration = $loop->iteration;
+                       
                                         $userCreator = $value->user->name;
                         $document_type = $value->getDocumentType();
                         $seller = \App\CoreFacturalo\Helpers\Template\ReportHelper::getSellerData($value);
@@ -375,14 +372,7 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                             </td>
                             @endif
     
-                        <!-- <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_exonerated}} </td>
-                                    <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_unaffected}}</td>
-                                    <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_free}}</td>
-    
-                                    <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_taxed}}</td>
-    
-                                    <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_igv}}</td>
-                                    <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total}}</td> -->
+                        
     
                             @if($signal == '07')
     
@@ -439,7 +429,6 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
     
                                 @php
                                     $amount = 0;
-                                    // dd($item->relation_item->category_id);
     
                                     foreach ($value->items as $item) {
                                         if($item->relation_item->category_id == $category->id){
@@ -492,13 +481,6 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                         </tr>
                         @php
                             if($value->currency_type_id == 'PEN'){
-                                /*$acum_total_taxed +=  $signal != '07' ? $value->total_taxed : -$value->total_taxed ;
-                                $acum_total_igv +=  $signal != '07' ? $value->total_igv : -$value->total_igv ;
-                                $acum_total += $signal != '07' ? $value->total : -$value->total ;*/
-    
-                                /*$acum_total_exonerado += $signal != '07' ? $value->total_exonerated : -$value->total_exonerated ;
-                                $acum_total_inafecto += $signal != '07' ? $value->total_unaffected : -$value->total_unaffected ;
-                                $acum_total_free += $signal != '07' ? $value->total_free : -$value->total_free ;*/
     
     
                                 if(($signal == '07' && $state !== '11')){
@@ -573,14 +555,8 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                     @endfor
                     <tr>
                         @php
-                            //$acum_series=$acum_total;
-                            //array_push($acum_series,['total'=>$acum_total]);
                         @endphp
                         <td colspan="{{$col_num}}"></td>
-                    <!-- <td >Totales</td>
-                                    <td>{{$acum_total_exonerado}}</td>
-                                    <td>{{$acum_total_inafecto}}</td>
-                                    <td>{{$acum_total_free}}</td> -->
                         <td>Totales PEN</td>
                         @if ($columns->total_charge->visible)
                         <td>{{number_format($acum_total_charges, 2)}}</td>
@@ -624,16 +600,15 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                     'total' => $acum_total,
                 ];
             @endphp     
-                        @endif{{-- DOCUMENTOS SEGUN ID SERIE --}}
-                        @endfor{{-- SERIES TOTALES --}}
-                        @endfor{{-- SERIES TOTALES --}}
+                        @endif
+                        @endfor
+                        @endfor
                         
-                    @endif{{-- IGUALDAD DE ID --}}
-                @endfor{{-- LOS DOCUMENTOS --}}
-            @endfor{{-- TIPOS DE DOCUMENTO --}}
+                    @endif
+                @endfor
+            @endfor
             <h3>TOTAL POR SERIE Y DOCUMENTO</h3>
             @php
-                //dd($acum_series);
             @endphp
             <table>
                 <thead>
@@ -646,7 +621,6 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                 <tbody>
                     @foreach ($acum_documents as $document)
                     @php
-                        //dd($document['id']);
                     @endphp
                         @foreach ($acum_series as $serie)
                             @if ($document['id']==$serie['document_id'])
@@ -662,7 +636,7 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                 </tbody>
             </table>
         </div>
-    </div>
+    </div> --}}
 @else
     <div>
         <p>No se encontraron registros.</p>

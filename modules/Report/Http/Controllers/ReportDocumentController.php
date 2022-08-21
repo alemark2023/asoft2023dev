@@ -19,7 +19,10 @@ use Modules\Report\Traits\ReportTrait;
 use App\Http\Controllers\Tenant\EmailController;
 use Modules\Report\Mail\DocumentEmail;
 use Mpdf\Mpdf;
-
+use Modules\Report\Jobs\ProcessDocumentReport;
+use App\Models\Tenant\DownloadTray;
+use Hyn\Tenancy\Models\Hostname;
+use App\Models\System\Client;
 
 class ReportDocumentController extends Controller
 {
@@ -178,6 +181,28 @@ class ReportDocumentController extends Controller
          // return $documentExport->view();
         return $documentExport->download('Reporte_Ventas_'.Carbon::now().'.xlsx');
 
+    }
+
+    public function export(Request $request)
+    {
+        $host = $request->getHost();
+        $columns=json_decode(json_encode($request->columns));
+        $tray = DownloadTray::create([
+            'user_id' => auth()->user()->id,
+            'module' => 'DOCUMENTS',
+            'format' => $request->input('format'),
+            'date_init' => date('Y-m-d H:i:s'),
+            'type' => 'Reporte Ventas Documentos'
+        ]);
+
+        $trayId = $tray->id;
+
+        ProcessDocumentReport::dispatch($trayId, $request->all(), $columns );
+
+        return  [
+            'success' => true,
+            'message' => 'El reporte se esta procesando; puede ver el proceso en bandeja de descargas.'
+        ];
     }
 
 

@@ -3,6 +3,8 @@
 namespace Modules\Report\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use \App\CoreFacturalo\Helpers\Template\ReportHelper;
+use App\CoreFacturalo\Helpers\Template\TemplateHelper;
 
 class DocumentCollection extends ResourceCollection
 {
@@ -28,6 +30,22 @@ class DocumentCollection extends ResourceCollection
             $web_platforms = $row->getPlatformThroughItems();
             $seller = $row->getSellerData();
 
+            $stablishment_info=ReportHelper::getLocationData($row);
+
+            $payments_total= [];
+            $payment_description='';
+            $payments_total = TemplateHelper::getDetailedPayment($row);
+
+            foreach ($payments_total as $payment){
+                foreach ($payment as $pay){
+                    $payment_description=$pay['description'];
+                    if (count($payment) > 1){
+                        $payment_description.=' - ';
+                    }
+                }
+            }
+
+            //dd($row->sale_note);
             return [
                 'id' => $row->id,
                 'group_id' => $row->group_id,
@@ -39,15 +57,15 @@ class DocumentCollection extends ResourceCollection
                 'customer_name' => $row->customer->name,
                 'customer_number' => $row->customer->number,
                 'currency_type_id' => $row->currency_type_id,
-                'district' => $row->customer->name,
-                'department' => $row->customer->name,
-                'province' => $row->customer->name,
+                'district' => $stablishment_info['district'],
+                'department' => $stablishment_info['department'],
+                'province' => $stablishment_info['province'],
                 'client_direction' => $row->customer->name,
-                'ruc' => $row->customer->name,
-                'note_sale' => $row->customer->name,
-                'date_sale' => $row->customer->name,
-                'payment_form' => $row->customer->name,
-                'payment_method' => $row->customer->name,
+                'ruc' => $row->customer->number,
+                'note_sale' => $row->sale_note?$row->sale_note->number_full:'',
+                'date_sale' => $row->sale_note?$row->sale_note->date_of_issue->format('Y-m-d'):'',
+                'payment_form' => ($row->payments()->count() > 0) ? $row->payments()->first()->payment_method_type->description : '',
+                'payment_method' => $payment_description,
                 'series' => $row->series,
                 'establishment_id' => $row->establishment_id,
                 'alone_number' => $row->number,

@@ -263,7 +263,7 @@
                             <el-button class="submit"
                                        icon="el-icon-tickets"
                                        type="danger"
-                                       @click.prevent="clickDownload('pdf')">Exportar PDF
+                                       @click.prevent="clickExport('pdf')">Exportar PDF
                             </el-button>
 
                             <el-button  v-if="resource == 'reports/sales'" class="submit"
@@ -274,7 +274,7 @@
 
                             <el-button class="submit"
                                        type="success"
-                                       @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel"></i> Exportal
+                                       @click.prevent="clickExport('xlsx')"><i class="fa fa-file-excel"></i> Exportal
                                                                                                                 Excel
                             </el-button>
                             <el-button class="submit"
@@ -767,6 +767,40 @@ export default {
         clickEmail(){
             this.showEmailOptions = true
         },
+        async clickExport(format) {
+            this.loading = true;
+            this.loadingSubmit = true;
+            this.loadingPdf = (format === 'pdf');
+            this.loadingXlsx = (format === 'xlsx');
+            this.errors = {};
+            await this.$http({
+                url: `/${this.resource}/export`,
+                method: 'POST',
+                data: {
+                    'format': format,
+                    columns: JSON.stringify(this.visibleColumns),
+                    ...this.form
+                },
+            })
+                .then(response => {
+                    let res = response.data;
+                    if (res.success) {
+                        this.$message.success(res.message);
+                    } else {
+                        this.$message.error('Error al exportar');
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                    this.errors = error;
+                })
+                .then(() => {
+                    this.loadingPdf = false;
+                    this.loadingXlsx = false;
+                    this.loading = false;
+                });
+
+        }
     }
 }
 </script>
