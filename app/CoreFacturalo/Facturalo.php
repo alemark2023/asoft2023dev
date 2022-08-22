@@ -362,6 +362,12 @@ class Facturalo
             $pdf_margin_bottom = 15;
             $pdf_margin_left = 14;
         }
+        if (substr($base_pdf_template, 0, 7) === 'facnova') {
+            $pdf_margin_top = 5;
+            $pdf_margin_right = 2;
+            $pdf_margin_bottom = 5;
+            $pdf_margin_left = 5;
+        }
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $this->document, $format_pdf);
 
@@ -909,12 +915,12 @@ class Facturalo
                     if(in_array($this->document->summary_status_type_id, ['1', '2']))
                     {
                         $this->updateStateDocuments(self::ACCEPTED);
-                    } 
-                    else 
+                    }
+                    else
                     {
                         $this->updateStateDocuments(self::VOIDED);
                     }
-                    
+
                     //enviar cdr a pse
                     $this->sendCdrToPse($res->getCdrZip(), $this->document);
                     //enviar cdr a pse
