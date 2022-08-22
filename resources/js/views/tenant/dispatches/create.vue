@@ -67,34 +67,6 @@
                             </div>
                         </div>
                         <div class="col-lg-4">
-                            <div :class="{'has-danger': errors.customer_id}"
-                                 class="form-group">
-                                <label class="control-label">
-                                    Cliente<span class="text-danger"> *</span>
-                                    <a href="#"
-                                       @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
-                                </label>
-                                <el-select v-model="form.customer_id"
-                                           :loading="loading_search"
-                                           :remote-method="searchRemoteCustomers"
-                                           dusk="customer_id"
-                                           filterable
-                                           placeholder="Escriba el nombre o número de documento del cliente"
-                                           popper-class="el-select-customers"
-                                           remote
-                                           @change="changeCustomer"
-                                           @keyup.enter.native="keyupCustomer">
-                                    <el-option v-for="option in customers"
-                                               :key="option.id"
-                                               :label="option.description"
-                                               :value="option.id"></el-option>
-                                </el-select>
-                                <small v-if="errors.customer_id"
-                                       class="form-control-feedback"
-                                       v-text="errors.customer_id[0]"></small>
-                            </div>
-                        </div>
-                        <div class="col-lg-2">
                             <div :class="{'has-danger': errors.transport_mode_type_id}"
                                  class="form-group">
                                 <label class="control-label">Modo de traslado<span class="text-danger"> *</span></label>
@@ -112,7 +84,8 @@
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors.transfer_reason_type_id}"
                                  class="form-group">
-                                <label class="control-label">Motivo de traslado<span class="text-danger"> *</span></label>
+                                <label class="control-label">Motivo de traslado<span
+                                    class="text-danger"> *</span></label>
                                 <el-select v-model="form.transfer_reason_type_id"
                                            @change="changeTransferReasonType">
                                     <el-option v-for="option in transferReasonTypes"
@@ -125,11 +98,9 @@
                                        v-text="errors.transfer_reason_type_id[0]"></small>
                             </div>
                         </div>
-
                         <!-- numero de DAM -->
                         <template v-if="form.transfer_reason_type_id === '09'">
-
-                            <div class="col-lg-3">
+                            <div class="col-lg-4">
                                 <div :class="{'has-danger': errors['related.number']}"
                                      class="form-group">
                                     <label class="control-label">Número de documento (DAM)
@@ -146,8 +117,7 @@
                                            v-text="errors['related.number'][0]"></small>
                                 </div>
                             </div>
-
-                            <div class="col-lg-3">
+                            <div class="col-lg-4">
                                 <div :class="{'has-danger': errors['related.document_type_id']}"
                                      class="form-group">
                                     <label class="control-label">Tipo documento relacionado<span
@@ -163,7 +133,7 @@
                                 </div>
                             </div>
                         </template>
-                        <div :class="form.transfer_reason_type_id === '09' ? 'col-lg-12' : 'col-lg-6'">
+                        <div :class="form.transfer_reason_type_id === '09' ? 'col-lg-12' : 'col-lg-8'">
                             <div :class="{'has-danger': errors.transfer_reason_description}"
                                  class="form-group">
                                 <label class="control-label">Descripción de motivo de traslado</label>
@@ -239,7 +209,6 @@
                                        v-text="errors.observations[0]"></small>
                             </div>
                         </div>
-
                         <div class="col-lg-2" v-if="!order_form_id">
                             <div :class="{'has-danger': errors.order_form_external}"
                                  class="form-group">
@@ -256,7 +225,43 @@
                                        v-text="errors.order_form_external[0]"></small>
                             </div>
                         </div>
-
+                        <div class="col-lg-4">
+                            <div :class="{'has-danger': errors.customer_id}"
+                                 class="form-group">
+                                <label class="control-label">
+                                    Cliente<span class="text-danger"> *</span>
+                                    <a href="#"
+                                       @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
+                                </label>
+                                <el-select v-model="form.customer_id"
+                                           :loading="loading_search"
+                                           :remote-method="searchRemoteCustomers"
+                                           dusk="customer_id"
+                                           filterable
+                                           placeholder="Escriba el nombre o número de documento del cliente"
+                                           popper-class="el-select-customers"
+                                           remote
+                                           @change="changeCustomer"
+                                           @keyup.enter.native="keyupCustomer">
+                                    <el-option v-for="option in customers"
+                                               :key="option.id"
+                                               :label="option.description"
+                                               :value="option.id"></el-option>
+                                </el-select>
+                                <small v-if="errors.customer_id"
+                                       class="form-control-feedback"
+                                       v-text="errors.customer_id[0]"></small>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="control-label">Dirección</label>
+                            <el-select v-model="form.customer_address_id">
+<!--                                <el-option v-for="option in customer_addresses"-->
+<!--                                           :key="option.id"-->
+<!--                                           :label="option.address"-->
+<!--                                           :value="option.id"></el-option>-->
+                            </el-select>
+                        </div>
                     </div>
                     <div class="row">
                     </div>
@@ -266,22 +271,22 @@
                     <h4>Datos envío</h4>
                     <h6>Dirección partida</h6>
                     <div class="row">
-<!--                        <div class="col-lg-2">-->
-<!--                            <div :class="{'has-danger': errors.origin}"-->
-<!--                                 class="form-group">-->
-<!--                                <label class="control-label">País<span class="text-danger"> *</span></label>-->
-<!--                                <el-select v-model="form.origin.country_id"-->
-<!--                                           filterable>-->
-<!--                                    <el-option v-for="option in countries"-->
-<!--                                               :key="option.id"-->
-<!--                                               :label="option.description"-->
-<!--                                               :value="option.id"></el-option>-->
-<!--                                </el-select>-->
-<!--                                <small v-if="errors.origin"-->
-<!--                                       class="form-control-feedback"-->
-<!--                                       v-text="errors.origin.country_id[0]"></small>-->
-<!--                            </div>-->
-<!--                        </div>-->
+                        <!--                        <div class="col-lg-2">-->
+                        <!--                            <div :class="{'has-danger': errors.origin}"-->
+                        <!--                                 class="form-group">-->
+                        <!--                                <label class="control-label">País<span class="text-danger"> *</span></label>-->
+                        <!--                                <el-select v-model="form.origin.country_id"-->
+                        <!--                                           filterable>-->
+                        <!--                                    <el-option v-for="option in countries"-->
+                        <!--                                               :key="option.id"-->
+                        <!--                                               :label="option.description"-->
+                        <!--                                               :value="option.id"></el-option>-->
+                        <!--                                </el-select>-->
+                        <!--                                <small v-if="errors.origin"-->
+                        <!--                                       class="form-control-feedback"-->
+                        <!--                                       v-text="errors.origin.country_id[0]"></small>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
                         <div class="col-lg-5">
                             <div :class="{'has-danger': errors.origin}"
                                  class="form-group">
@@ -805,6 +810,7 @@ export default {
                 time_of_issue: moment().format('HH:mm:ss'),
                 date_of_shipping: moment().format('YYYY-MM-DD'),
                 customer_id: null,
+                customer_address_id: null,
                 observations: '',
                 transport_mode_type_id: null,
                 transfer_reason_type_id: null,
@@ -1362,7 +1368,7 @@ export default {
                 return this.$message.error('Los productos no pueden tener cantidad 0.')
             }
 
-            if(this.form.transfer_reason_type_id === '09') {
+            if (this.form.transfer_reason_type_id === '09') {
                 this.form.delivery.location_id = [];
             } else {
                 if (this.form.origin.location_id.length !== 3 || this.form.delivery.location_id.length !== 3) {
