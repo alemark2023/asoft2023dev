@@ -253,15 +253,15 @@
                                        v-text="errors.customer_id[0]"></small>
                             </div>
                         </div>
-                        <div class="col-lg-6">
-                            <label class="control-label">Dirección</label>
-                            <el-select v-model="form.customer_address_id">
-<!--                                <el-option v-for="option in customer_addresses"-->
-<!--                                           :key="option.id"-->
-<!--                                           :label="option.address"-->
-<!--                                           :value="option.id"></el-option>-->
-                            </el-select>
-                        </div>
+<!--                        <div class="col-lg-6">-->
+<!--                            <label class="control-label">Dirección</label>-->
+<!--                            <el-select v-model="form.customer_address_id">-->
+<!--&lt;!&ndash;                                <el-option v-for="option in customer_addresses"&ndash;&gt;-->
+<!--&lt;!&ndash;                                           :key="option.id"&ndash;&gt;-->
+<!--&lt;!&ndash;                                           :label="option.address"&ndash;&gt;-->
+<!--&lt;!&ndash;                                           :value="option.id"></el-option>&ndash;&gt;-->
+<!--                            </el-select>-->
+<!--                        </div>-->
                     </div>
                     <div class="row">
                     </div>
@@ -314,23 +314,24 @@
                     </div>
                     <h6>Dirección llegada</h6>
                     <div class="row">
-                        <div class="col-lg-5" v-if="form.transfer_reason_type_id === '09'">
-                            <div :class="{'has-danger': errors.delivery}"
-                                 class="form-group">
-                                <label class="control-label">País<span class="text-danger"> *</span></label>
-                                <el-select v-model="form.delivery.country_id"
-                                           filterable>
-                                    <el-option v-for="option in countries"
-                                               :key="option.id"
-                                               :label="option.description"
-                                               :value="option.id"></el-option>
-                                </el-select>
-                                <small v-if="errors.delivery"
-                                       class="form-control-feedback"
-                                       v-text="errors.delivery.country_id[0]"></small>
-                            </div>
-                        </div>
-                        <div class="col-lg-5" v-else>
+<!--                        <div class="col-lg-5" v-if="form.transfer_reason_type_id === '09'">-->
+<!--                            <div :class="{'has-danger': errors.delivery}"-->
+<!--                                 class="form-group">-->
+<!--                                <label class="control-label">País<span class="text-danger"> *</span></label>-->
+<!--                                <el-select v-model="form.delivery.country_id"-->
+<!--                                           filterable>-->
+<!--                                    <el-option v-for="option in countries"-->
+<!--                                               :key="option.id"-->
+<!--                                               :label="option.description"-->
+<!--                                               :value="option.id"></el-option>-->
+<!--                                </el-select>-->
+<!--                                <small v-if="errors.delivery"-->
+<!--                                       class="form-control-feedback"-->
+<!--                                       v-text="errors.delivery.country_id[0]"></small>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-lg-5" v-else>-->
+                        <div class="col-lg-5">
                             <div :class="{'has-danger': errors.delivery}"
                                  class="form-group">
                                 <label class="control-label">Ubigeo<span class="text-danger"> *</span></label>
@@ -342,6 +343,7 @@
                                        v-text="errors.delivery.location_id[0]"></small>
                             </div>
                         </div>
+<!--                        </div>-->
                         <template v-if="form.transfer_reason_type_id === '09'">
                             <div class="col-lg-7">
                                 <div :class="{'has-danger': errors['delivery.address']}"
@@ -810,7 +812,7 @@ export default {
                 time_of_issue: moment().format('HH:mm:ss'),
                 date_of_shipping: moment().format('YYYY-MM-DD'),
                 customer_id: null,
-                customer_address_id: null,
+                // customer_address_id: null,
                 observations: '',
                 transport_mode_type_id: null,
                 transfer_reason_type_id: null,
@@ -867,8 +869,8 @@ export default {
             this.transportModeTypes = response.data.transportModeTypes;
             this.establishments = response.data.establishments;
             this.unitTypes = response.data.unitTypes;
-            this.customers = response.data.customers;
-            this.all_customers = this.customers;
+            //this.customers = response.data.customers;
+            this.all_customers = []; //this.customers;
             this.countries = response.data.countries;
             this.locations = response.data.locations;
             this.seriesAll = response.data.series;
@@ -903,7 +905,7 @@ export default {
         changeTransferReasonType() {
             // exportacion
             if (this.form.transfer_reason_type_id === '09') {
-                this.form.delivery.country_id = null;
+                //this.form.delivery.country_id = null;
                 this.form.related = {
                     number: null,
                     document_type_id: '01'
@@ -1077,7 +1079,13 @@ export default {
                 }
                 this.$http.get(`/${this.resource}/search/customers?${parameters}`)
                     .then(response => {
-                        this.customers = response.data.customers
+                        if (this.form.transfer_reason_type_id === '09') {
+                            this.customers = response.data.customers
+                        } else {
+                            this.customers = _.filter(response.data.customers, (r) => {
+                                return r.identity_document_type_id !== '0';
+                            });
+                        }
                         this.loading_search = false
                         this.input_person.number = (this.customers.length == 0) ? input : null
                     })
@@ -1368,13 +1376,13 @@ export default {
                 return this.$message.error('Los productos no pueden tener cantidad 0.')
             }
 
-            if (this.form.transfer_reason_type_id === '09') {
-                this.form.delivery.location_id = [];
-            } else {
+            // if (this.form.transfer_reason_type_id === '09') {
+            //     this.form.delivery.location_id = [];
+            // } else {
                 if (this.form.origin.location_id.length !== 3 || this.form.delivery.location_id.length !== 3) {
                     return this.$message.error('El campo ubigeo es obligatorio')
                 }
-            }
+            // }
 
             this.loading_submit = true;
 

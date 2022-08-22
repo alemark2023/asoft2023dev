@@ -127,11 +127,11 @@ class DispatchInput
             $country_id = $delivery['country_id'];
             $address = $delivery['address'];
 
-            if($inputs['transfer_reason_type_id'] === '09') {
-                $location_id = [];
-            } else {
+//            if($inputs['transfer_reason_type_id'] === '09') {
+//                $location_id = [];
+//            } else {
                 $location_id = $delivery['location_id'][2] == '0' ? $delivery['location_id'] : $delivery['location_id'][2];
-            }
+//            }
 
             return [
                 'country_id' => $country_id,
