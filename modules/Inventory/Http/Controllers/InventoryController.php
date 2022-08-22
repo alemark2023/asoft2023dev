@@ -486,10 +486,24 @@ class InventoryController extends Controller
 					'message' => 'La cantidad de stock real debe ser mayor a 0'
 				];
 			}
+			$type=1;
+			$quantity_new=0;
+			$quantity_new=$quantity_real-$quantity;
+			if ($quantity_real<$quantity) {
+				$quantity_new=$quantity-$quantity_real;
+				$type=null;
+			}
 
-			//$inventory = Inventory::where('item_id', $item_id)->where('warehouse_id', $warehouse_id)->update(['quantity'=>$quantity_real]);
-
-			$inventory = ItemWarehouse::where('item_id', $item_id)->where('warehouse_id', $warehouse_id)->update(['stock'=>$quantity_real]);
+			$inventory = new Inventory();
+			$inventory->type = $type;
+			$inventory->description = 'STock Real';
+			$inventory->item_id = $item_id;
+			$inventory->warehouse_id = $warehouse_id;
+			$inventory->quantity = $quantity_new;
+			if ($quantity_real<$quantity) {
+				$inventory->inventory_transaction_id = 28;
+			}
+			$inventory->save();
 
 			return  [
 				'success' => true,
@@ -518,9 +532,25 @@ class InventoryController extends Controller
 					throw new Exception("La cantidad del producto {$item['item_description']} a modificar debe ser mayor a 0", 500);
 				}
 
-				$inventory = ItemWarehouse::where('item_id', $item_id)
-							->where('warehouse_id', $warehouse_id)
-							->update(['stock'=>$quantity_real]);
+				$type=1;
+				$quantity_new=0;
+				$quantity_new=$quantity_real-$quantity;
+				if ($quantity_real<$quantity) {
+					$quantity_new=$quantity-$quantity_real;
+					$type=null;
+				}
+
+				$inventory = new Inventory();
+				$inventory->type = $type;
+				$inventory->description = 'STock Real';
+				$inventory->item_id = $item_id;
+				$inventory->warehouse_id = $warehouse_id;
+				$inventory->quantity = $quantity_new;
+				if ($quantity_real<$quantity) {
+					$inventory->inventory_transaction_id = 28;
+				}
+				$inventory->save();
+				
 			}
 			DB::connection('tenant')->commit();
 

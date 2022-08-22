@@ -38,11 +38,29 @@ class StockImport implements ToCollection
                 $item = Item::where('internal_id', $internal_id)
                                     ->first();
 
-                $itemWarehouse=ItemWarehouse::where('item_id',$item->id)
+                $quantity=ItemWarehouse::where('item_id',$item->id)
                 ->where('warehouse_id',$warehouse_id_de)
-                ->update([
-                    'stock' => $quantity_real,
-                ]);
+                ->select('stock')->get();
+                $quantity=$quantity[0]->stock;
+                //dd($quantity);
+                $type=1;
+				$quantity_new=0;
+				$quantity_new=$quantity_real-$quantity;
+				if ($quantity_real<$quantity) {
+					$quantity_new=$quantity-$quantity_real;
+					$type=null;
+				}
+
+				$inventory = new Inventory();
+				$inventory->type = $type;
+				$inventory->description = 'STock Real';
+				$inventory->item_id = $item->id;
+				$inventory->warehouse_id = $warehouse_id_de;
+				$inventory->quantity = $quantity_new;
+				if ($quantity_real<$quantity) {
+					$inventory->inventory_transaction_id = 28;
+				}
+				$inventory->save();
 
                 $registered += 1;
             }

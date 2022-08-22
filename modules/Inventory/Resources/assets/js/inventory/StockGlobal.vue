@@ -92,7 +92,7 @@ export default {
     onApplyAll() {
       this.records = this.records.map((r) => {
         r.warehouse_new_id = this.form.warehouse_id;
-        r.quantity_move = this.form.quantity || 1;
+        r.quantity_real = this.form.quantity || 1;
         r.detail = this.form.reason || "";
         return r;
       });
