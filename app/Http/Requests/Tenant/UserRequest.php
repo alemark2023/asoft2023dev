@@ -18,15 +18,41 @@ class UserRequest extends FormRequest
                 'required'
             ],
             'email' => [
-                'required'
+                'required',
+                'email',
             ],
             'type' => [
+                'required'
+            ],
+            'establishment_id' => [
                 'required'
             ],
             'password' => [
                 'min:6',
                 'confirmed',
-            ]
+            ],
+
+            
+            'personal_email' => [
+                'nullable',
+                'email',
+            ],
+            'corporate_email' => [
+                'nullable',
+                'email',
+            ],
+            'personal_cell_phone' => [
+                'nullable',
+                'numeric',
+            ],
+            'corporate_cell_phone' => [
+                'nullable',
+                'numeric',
+            ],
+            'number' => [
+                'nullable',
+                'numeric',
+            ],
         ];
     }
 }

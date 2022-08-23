@@ -682,6 +682,9 @@ if ($hostname) {
             //Almacen de columnas por usuario
             Route::post('validate_columns','Tenant\SettingController@getColumnsToDatatable');
 
+            Route::post('general-upload-temp-image', 'Controller@generalUploadTempImage');
+
+
             // test theme
             // Route::get('testtheme', function () {
             //     return view('tenant.layouts.partials.testtheme');

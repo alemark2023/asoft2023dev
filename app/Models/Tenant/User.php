@@ -189,6 +189,21 @@ class User extends Authenticatable
         // 'api_token',
         // 'remember_token',
 
+        // informacion personal
+        'names',
+        'last_names',
+        'personal_email',
+        'corporate_email',
+        'personal_cell_phone',
+        'corporate_cell_phone',
+        'date_of_birth',
+        'contract_date',
+        'position',
+        'photo_filename',
+        // informacion personal
+
+        'multiple_default_document_types',
+
     ];
 
     /**
@@ -215,6 +230,7 @@ class User extends Authenticatable
         'edit_purchase'=>'bool',
         'annular_purchase'=>'bool',
         'delete_purchase'=>'bool',
+        'multiple_default_document_types'=>'bool',
     ];
 
     public function modules()
@@ -225,6 +241,11 @@ class User extends Authenticatable
     public function levels()
     {
         return $this->belongsToMany(ModuleLevel::class);
+    }
+
+    public function default_document_types()
+    {
+        return $this->hasMany(UserDefaultDocumentType::class);
     }
 
     public function authorizeModules($modules)
@@ -1053,6 +1074,16 @@ $withEstablishment = true){
             'annular_purchase' => $this->annular_purchase,
             'delete_purchase' => $this->delete_purchase,
         ];
+    }
+
+        
+    /**
+     *
+     * @return string
+     */
+    public function getPhotoForView()
+    {
+        return $this->photo_filename ? (new ModelTenant)->getPathPublicUploads('users', $this->photo_filename) : null;
     }
 
     

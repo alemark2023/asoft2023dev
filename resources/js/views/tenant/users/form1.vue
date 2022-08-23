@@ -13,7 +13,15 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div :class="{ 'has-danger': errors.name }" class="form-group">
-                            <label class="control-label">Nombre</label>
+                            <label class="control-label">
+                                Nombre
+                                <el-tooltip class="item"
+                                            content="Nombre que se muestra en el sistema al haber iniciado sesión"
+                                            effect="dark"
+                                            placement="top">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
                             <el-input v-model="form.name"></el-input>
                             <small
                                 v-if="errors.name"
@@ -24,7 +32,14 @@
                     </div>
                     <div class="col-md-6">
                         <div :class="{ 'has-danger': errors.email }" class="form-group">
-                            <label class="control-label">Correo Electrónico</label>
+                            <label class="control-label">Correo electrónico
+                                <el-tooltip class="item"
+                                            content="Correo de acceso/login"
+                                            effect="dark"
+                                            placement="top">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
                             <el-input
                                 v-model="form.email"
                                 :disabled="form.id != null"
@@ -98,52 +113,6 @@
                         </div>
                     </div>
                     -->
-                    <!-- Documento por defecto -->
-                    <div class="col-md-4">
-                        <div
-                            :class="{ 'has-danger': errors.document_id }"
-                            class="form-group"
-                        >
-                            <label class="control-label">Documento</label>
-                            <el-select v-model="form.document_id" filterable clearable @change="getSeries">
-                                <el-option
-                                    v-for="option in documents"
-                                    :key="option.id"
-                                    :label="option.description"
-                                    :value="option.id"
-                                ></el-option>
-                            </el-select>
-                            <small
-                                v-if="errors.document_id"
-                                class="form-control-feedback"
-                                v-text="errors.document_id[0]"
-                            ></small>
-                        </div>
-                    </div>
-                    <!-- Documento por defecto -->
-                    <!-- Serie por defecto -->
-                    <div class="col-md-4">
-                        <div
-                            :class="{ 'has-danger': errors.series_id }"
-                            class="form-group"
-                        >
-                            <label class="control-label">Serie</label>
-                            <el-select v-model="form.series_id" filterable clearable>
-                                <el-option
-                                    v-for="option in series"
-                                    :key="option.id"
-                                    :label="option.number"
-                                    :value="option.id"
-                                ></el-option>
-                            </el-select>
-                            <small
-                                v-if="errors.series_id"
-                                class="form-control-feedback"
-                                v-text="errors.series_id[0]"
-                            ></small>
-                        </div>
-                    </div>
-                    <!-- Serie por defecto -->
 
                     <div class="col-md-4">
                         <div :class="{ 'has-danger': errors.password }" class="form-group">
@@ -188,7 +157,7 @@
                             ></small>
                         </div>
                     </div>
-                    <div v-show="form.id" class="col-md-9">
+                    <div v-show="form.id" class="col-md-8">
                         <div :class="{ 'has-danger': errors.api_token }" class="form-group">
                             <label class="control-label">Api Token</label>
                             <el-input
@@ -202,7 +171,7 @@
                             ></small>
                         </div>
                     </div>
-                    <div v-show="form.id" class="col-md-3 text-center">
+                    <div v-show="form.id" class="col-md-3">
                         <label class="control-label full">&nbsp;</label>
                         <el-button
                             @click.prevent="updateToken()">
@@ -331,6 +300,194 @@
                         </div>
 
                     </el-tab-pane>
+                    
+                    <el-tab-pane class name="third">
+                        <span slot="label">Datos personales</span>
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.identity_document_type_id}"
+                                     class="form-group">
+                                    <label class="control-label">Tipo Doc. Identidad</label>
+                                    <el-select v-model="form.identity_document_type_id" clearable>
+                                        <el-option v-for="option in identity_document_types" :key="option.id" :label="option.description" :value="option.id"></el-option>
+                                    </el-select>
+                                    <small v-if="errors.identity_document_type_id" class="form-control-feedback" v-text="errors.identity_document_type_id[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div :class="{ 'has-danger': errors.number }" class="form-group">
+                                    <label class="control-label">Número</label>
+                                    <el-input v-model="form.number"></el-input>
+                                    <small v-if="errors.number" class="form-control-feedback" v-text="errors.number[0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div :class="{ 'has-danger': errors.names }" class="form-group">
+                                    <label class="control-label">Nombres</label>
+                                    <el-input v-model="form.names"></el-input>
+                                    <small v-if="errors.names" class="form-control-feedback" v-text="errors.names[0]"></small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div :class="{ 'has-danger': errors.last_names }" class="form-group">
+                                    <label class="control-label">Apellidos</label>
+                                    <el-input v-model="form.last_names"></el-input>
+                                    <small v-if="errors.last_names" class="form-control-feedback" v-text="errors.last_names[0]"></small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div :class="{ 'has-danger': errors.date_of_birth }" class="form-group">
+                                    <label class="control-label">Fecha de nacimiento</label>
+                                    <el-date-picker v-model="form.date_of_birth" type="date" value-format="yyyy-MM-dd"></el-date-picker>
+                                    <small v-if="errors.date_of_birth" class="form-control-feedback" v-text="errors.date_of_birth[0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div :class="{ 'has-danger': errors.personal_email }" class="form-group">
+                                    <label class="control-label">Correo electrónico personal</label>
+                                    <el-input v-model="form.personal_email"></el-input>
+                                    <small v-if="errors.personal_email" class="form-control-feedback" v-text="errors.personal_email[0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div :class="{ 'has-danger': errors.personal_cell_phone }" class="form-group">
+                                    <label class="control-label">N° Celular personal</label>
+                                    <el-input v-model="form.personal_cell_phone"></el-input>
+                                    <small v-if="errors.personal_cell_phone" class="form-control-feedback" v-text="errors.personal_cell_phone[0]"></small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div :class="{ 'has-danger': errors.address }" class="form-group">
+                                    <label class="control-label">Dirección</label>
+                                    <el-input v-model="form.address"></el-input>
+                                    <small v-if="errors.address" class="form-control-feedback" v-text="errors.address[0]"></small>
+                                </div>
+                            </div> 
+
+                            <div class="col-md-6">
+                                <div :class="{ 'has-danger': errors.corporate_email }" class="form-group">
+                                    <label class="control-label">Correo electrónico corporativo</label>
+                                    <el-input v-model="form.corporate_email"></el-input>
+                                    <small v-if="errors.corporate_email" class="form-control-feedback" v-text="errors.corporate_email[0]"></small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div :class="{ 'has-danger': errors.contract_date }" class="form-group">
+                                    <label class="control-label">Fecha de contratación</label>
+                                    <el-date-picker v-model="form.contract_date" type="date" value-format="yyyy-MM-dd"></el-date-picker>
+                                    <small v-if="errors.contract_date" class="form-control-feedback" v-text="errors.contract_date[0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div :class="{ 'has-danger': errors.corporate_cell_phone }" class="form-group">
+                                    <label class="control-label">N° Celular corporativo</label>
+                                    <el-input v-model="form.corporate_cell_phone"></el-input>
+                                    <small v-if="errors.corporate_cell_phone" class="form-control-feedback" v-text="errors.corporate_cell_phone[0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div :class="{ 'has-danger': errors.position }" class="form-group">
+                                    <label class="control-label">Cargo</label>
+                                    <el-input v-model="form.position"></el-input>
+                                    <small v-if="errors.position" class="form-control-feedback" v-text="errors.position[0]"></small>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6">
+                                <div class="form-group" >
+                                    <label class="control-label">Foto</label>
+                                    <el-upload class="avatar-uploader"
+                                            :headers="headers"
+                                            :action="`/general-upload-temp-image`"
+                                            :show-file-list="false"
+                                            :on-success="onUploadSuccess">
+                                        <img v-if="form.photo_temp_image" :src="form.photo_temp_image" class="avatar">
+                                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                    </el-upload>
+                                </div>
+                            </div>
+
+                        </div>
+                    </el-tab-pane>
+
+                    <el-tab-pane class name="fourth">
+                        <span slot="label">Config. Documentos</span>
+                        <div class="row">
+                            
+                            
+                            <div class="col-md-12">
+                                <label class="control-label">¿Múltiples documentos por defecto?</label>
+                                <div class="form-group">
+                                    <el-switch v-model="form.multiple_default_document_types" active-text="Si" inactive-text="No" ></el-switch>
+                                </div>
+                            </div>
+
+                            <template v-if="form.multiple_default_document_types">
+                                <p>multiple</p>
+                            </template>
+                            <template v-else>
+                                
+                                <!-- Documento por defecto -->
+                                <div class="col-md-4">
+                                    <div
+                                        :class="{ 'has-danger': errors.document_id }"
+                                        class="form-group"
+                                    >
+                                        <label class="control-label">Documento</label>
+                                        <el-select v-model="form.document_id" filterable clearable @change="getSeries">
+                                            <el-option
+                                                v-for="option in documents"
+                                                :key="option.id"
+                                                :label="option.description"
+                                                :value="option.id"
+                                            ></el-option>
+                                        </el-select>
+                                        <small
+                                            v-if="errors.document_id"
+                                            class="form-control-feedback"
+                                            v-text="errors.document_id[0]"
+                                        ></small>
+                                    </div>
+                                </div>
+                                <!-- Documento por defecto -->
+                                <!-- Serie por defecto -->
+                                <div class="col-md-4">
+                                    <div
+                                        :class="{ 'has-danger': errors.series_id }"
+                                        class="form-group"
+                                    >
+                                        <label class="control-label">Serie</label>
+                                        <el-select v-model="form.series_id" filterable clearable>
+                                            <el-option
+                                                v-for="option in series"
+                                                :key="option.id"
+                                                :label="option.number"
+                                                :value="option.id"
+                                            ></el-option>
+                                        </el-select>
+                                        <small
+                                            v-if="errors.series_id"
+                                            class="form-control-feedback"
+                                            v-text="errors.series_id[0]"
+                                        ></small>
+                                    </div>
+                                </div>
+                                <!-- Serie por defecto -->
+                            </template>
+                        </div>
+                    </el-tab-pane>
+
                 </el-tabs>
             </div>
             <div class="form-actions text-right mt-4">
@@ -349,6 +506,7 @@ export default {
     props: ["showDialog", "recordId", "typeUser"],
     data() {
         return {
+            headers: headers_token,
             defaultProps: {
                 children: "childrens",
                 label: "description",
@@ -389,6 +547,7 @@ export default {
             options: [],
             activeName: 'first',
             config_permission_to_edit_cpe : false,
+            identity_document_types: [],
         };
     },
     updated() {
@@ -405,12 +564,25 @@ export default {
             this.types = response.data.types;
             this.documents = response.data.documents;
             this.config_permission_to_edit_cpe = response.data.config_permission_to_edit_cpe
+            this.identity_document_types = response.data.identity_document_types
 
             this.getSeries();
         });
         await this.initForm();
     },
     methods: {
+        onUploadSuccess(response, file, fileList) {
+            if (response.success) 
+            {
+                this.form.photo_filename = response.data.filename
+                this.form.photo_temp_image = response.data.temp_image
+                this.form.photo_temp_path = response.data.temp_path
+            } 
+            else
+            {
+                this.$message.error(response.message)
+            }
+        },
         getSeries(){
             this.series = [];
             if(this.form.establishment_id !== null) {
@@ -506,6 +678,24 @@ export default {
                 edit_purchase: true,
                 annular_purchase: true,
                 delete_purchase: true,
+                
+                identity_document_type_id: null,
+                number: null,
+                address: null,
+                names: null,
+                last_names: null,
+                personal_email: null,
+                corporate_email: null,
+                personal_cell_phone: null,
+                corporate_cell_phone: null,
+                date_of_birth: null,
+                contract_date: null,
+                position: null,
+
+                photo_filename: null,
+                photo_temp_image: null,
+                photo_temp_path: null,
+                multiple_default_document_types: false,
             };
         },
         create() {

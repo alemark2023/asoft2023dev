@@ -13,6 +13,9 @@ use App\Models\Tenant\Series;
 use App\Models\Tenant\User;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Zone;
+use App\Models\Tenant\Catalogs\IdentityDocumentType;
+use Modules\Finance\Helpers\UploadFileHelper;
+
 
 class UserController extends Controller
 {
@@ -77,7 +80,10 @@ class UserController extends Controller
         $config_permission_to_edit_cpe = Configuration::select('permission_to_edit_cpe')->first()->permission_to_edit_cpe;
         $zones = Zone::all();
 
-        return compact('modules', 'establishments', 'types', 'documents', 'series', 'config_permission_to_edit_cpe','zones');
+        $identity_document_types = IdentityDocumentType::filterDataForPersons()->get();
+        $allowed_document_types = ['01', '03', '80'];
+
+        return compact('modules', 'establishments', 'types', 'documents', 'series', 'config_permission_to_edit_cpe','zones', 'identity_document_types');
     }
 
     public function regenerateToken(User $user){
@@ -137,7 +143,11 @@ class UserController extends Controller
         $user->annular_purchase = $request->input('annular_purchase');
         $user->delete_purchase = $request->input('delete_purchase');
 
+        $this->setAdditionalData($user, $request);
+
         $user->save();
+
+        $this->savePhoto($user, $request);
 
         if ($user->id != 1) {
             $user->setModuleAndLevelModule($request->modules,$request->levels);
@@ -166,6 +176,59 @@ class UserController extends Controller
             'message' => ($id) ? 'Usuario actualizado' : 'Usuario registrado'
         ];
     }
+
+    
+    /**
+     * 
+     * Asignar datos
+     *
+     * @param  User $user
+     * @param  UserRequest $request
+     * @return void
+     */
+    private function setAdditionalData(User &$user, $request)
+    {
+        $user->edit_purchase = $request->input('edit_purchase');
+
+        $user->identity_document_type_id = $request->identity_document_type_id;
+        $user->number = $request->number;
+        $user->address = $request->address;
+        $user->names = $request->names;
+        $user->last_names = $request->last_names;
+        $user->personal_email = $request->personal_email;
+        $user->corporate_email = $request->corporate_email;
+        $user->personal_cell_phone = $request->personal_cell_phone;
+        $user->corporate_cell_phone = $request->corporate_cell_phone;
+        $user->date_of_birth = $request->date_of_birth;
+        $user->contract_date = $request->contract_date;
+        $user->position = $request->position;
+        $user->photo_filename = $request->photo_filename;
+
+        $user->multiple_default_document_types = $request->multiple_default_document_types;
+    }
+
+
+    /**
+     * 
+     * Guardar imágen
+     *
+     * @param  User $user
+     * @param  UserRequest $request
+     * @return void
+     */
+    public function savePhoto(&$user, $request)
+    {
+        $temp_path = $request->photo_temp_path;
+
+        if($temp_path) 
+        {
+            $old_filename = $request->photo_filename;
+            $user->photo_filename = UploadFileHelper:: uploadImageFromTempFile('users', $old_filename, $temp_path, $user->id, true);
+            $user->save();
+        }
+    }
+
+    
 
     public function records()
     {

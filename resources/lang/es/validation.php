@@ -322,6 +322,11 @@ return [
 		'user_pse' => 'usuario autenticación',
 		'beginning_balance' => 'saldo inicial',
 
+		'personal_email' => 'correo electrónico personal',
+		'corporate_email' => 'correo electrónico corporativo',
+		'personal_cell_phone' => 'celular personal',
+		'corporate_cell_phone' => 'celular corporativo',
+		'establishment_id' => 'establecimiento',
 
 	],
 ];
