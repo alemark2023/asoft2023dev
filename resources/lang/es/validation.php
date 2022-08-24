@@ -328,5 +328,9 @@ return [
 		'corporate_cell_phone' => 'celular corporativo',
 		'establishment_id' => 'establecimiento',
 
+		'default_document_types.*.document_type_id' => 'tipo de documento',
+		'default_document_types.*.series_id' => 'serie',
+
+
 	],
 ];

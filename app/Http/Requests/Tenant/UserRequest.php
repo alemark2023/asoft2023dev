@@ -53,6 +53,11 @@ class UserRequest extends FormRequest
                 'nullable',
                 'numeric',
             ],
+            
+            'default_document_types' => 'required_if:multiple_default_document_types, "1"|array',
+            'default_document_types.*.document_type_id' => 'required',
+            'default_document_types.*.series_id' => 'required',
+
         ];
     }
 }

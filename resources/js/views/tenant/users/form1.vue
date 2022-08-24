@@ -5,7 +5,7 @@
         @close="close"
         @open="create"
     >
-        <form autocomplete="off" @submit.prevent="submit">
+        <form autocomplete="off" @submit.prevent="submit" v-loading="loading">
             <div class="form-body">
                 <el-tabs v-model="activeName">
                     <el-tab-pane class name="first">
@@ -57,7 +57,7 @@
                             class="form-group"
                         >
                             <label class="control-label">Establecimiento</label>
-                            <el-select v-model="form.establishment_id" filterable @change="getSeries">
+                            <el-select v-model="form.establishment_id" filterable @change="changeEstablishment">
                                 <el-option
                                     v-for="option in establishments"
                                     :key="option.id"
@@ -427,19 +427,76 @@
                             
                             
                             <div class="col-md-12">
-                                <label class="control-label">¿Múltiples documentos por defecto?</label>
+                                <label class="control-label">¿Múltiples tipos de documento por defecto?</label>
                                 <div class="form-group">
-                                    <el-switch v-model="form.multiple_default_document_types" active-text="Si" inactive-text="No" ></el-switch>
+                                    <el-switch v-model="form.multiple_default_document_types" active-text="Si" inactive-text="No" @change="changeMultipleDefaultDocumentType"></el-switch>
                                 </div>
                             </div>
 
-                            <template v-if="form.multiple_default_document_types">
-                                <p>multiple</p>
+                            <template v-if="form.multiple_default_document_types"> 
+
+                                <div class="col-md-12 mt-3">
+                                    <table class="table table-responsive table-bordered">
+                                        <thead>
+                                            <tr width="100%">
+                                                <template v-if="form.default_document_types.length > 0">
+                                                    <th class="pb-2" width="42%">Tipo de documento</th>
+                                                    <th class="pb-2" width="42%">Serie
+                                                        <el-tooltip class="item"
+                                                                    content="Si modifica el establecimiento, se filtrarán nuevamente las series"
+                                                                    effect="dark"
+                                                                    placement="top">
+                                                            <i class="fa fa-info-circle"></i>
+                                                        </el-tooltip>
+                                                    </th>
+                                                </template>
+                                                <th width="16%"><a href="#" @click.prevent="clickAddDefaultDocumentType" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(row, index) in form.default_document_types" :key="index" width="100%">
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2">
+                                                        <el-select v-model="row.document_type_id" @change="changeDefaultDocumentType(index)">
+                                                            <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                        </el-select>
+                                                        
+                                                        <template v-if="errors[`default_document_types.${index}.document_type_id`]">
+                                                            <div class="form-group" :class="{'has-danger': errors[`default_document_types.${index}.document_type_id`]}">
+                                                                <small class="form-control-feedback" v-text="errors[`default_document_types.${index}.document_type_id`][0]"></small>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2">
+                                                        <el-select v-model="row.series_id" filterable >
+                                                            <el-option v-for="option in row.default_series" :key="option.id" :value="option.id" :label="option.number"></el-option>
+                                                        </el-select>
+
+                                                        <template v-if="errors[`default_document_types.${index}.series_id`]">
+                                                            <div class="form-group" :class="{'has-danger': errors[`default_document_types.${index}.series_id`]}">
+                                                                <small class="form-control-feedback" v-text="errors[`default_document_types.${index}.series_id`][0]"></small>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </td>
+                                                <td class="series-table-actions text-center">
+                                                    <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteDefaultDocumentType(index)">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                                <br>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
                             </template>
                             <template v-else>
                                 
                                 <!-- Documento por defecto -->
-                                <div class="col-md-4">
+                                <div class="col-md-4 mt-3">
                                     <div
                                         :class="{ 'has-danger': errors.document_id }"
                                         class="form-group"
@@ -462,7 +519,7 @@
                                 </div>
                                 <!-- Documento por defecto -->
                                 <!-- Serie por defecto -->
-                                <div class="col-md-4">
+                                <div class="col-md-4 mt-3">
                                     <div
                                         :class="{ 'has-danger': errors.series_id }"
                                         class="form-group"
@@ -548,6 +605,8 @@ export default {
             activeName: 'first',
             config_permission_to_edit_cpe : false,
             identity_document_types: [],
+            document_types: [],
+            loading: false,
         };
     },
     updated() {
@@ -565,6 +624,7 @@ export default {
             this.documents = response.data.documents;
             this.config_permission_to_edit_cpe = response.data.config_permission_to_edit_cpe
             this.identity_document_types = response.data.identity_document_types
+            this.document_types = this.filterDocumentTypes(response.data.documents)
 
             this.getSeries();
         });
@@ -583,14 +643,14 @@ export default {
                 this.$message.error(response.message)
             }
         },
-        getSeries(){
+        async getSeries(){
             this.series = [];
             if(this.form.establishment_id !== null) {
                 let url = `/series/records/${this.form.establishment_id}`;
                 if (this.form.document_id !== null) {
                     url = url + `/${this.form.document_id}`;
                 }
-                this.$http
+                await this.$http
                     .get(url)
                     .then((response) => {
                         this.series = response.data.data;
@@ -696,12 +756,81 @@ export default {
                 photo_temp_image: null,
                 photo_temp_path: null,
                 multiple_default_document_types: false,
+                default_document_types: [],
             };
         },
-        create() {
-            this.titleDialog = this.recordId ? "Editar Usuario" : "Nuevo Usuario";
-            if (this.recordId) {
-                this.$http
+        async changeEstablishment()
+        {
+            await this.getSeries()
+            await this.initDataDefaultDocumentTypes()
+        },
+        initDataDefaultDocumentTypes(init_series_id = true)
+        {
+            this.form.default_document_types.forEach(row => {
+                if(init_series_id) row.series_id = null
+                row.default_series = this.getDefaultDocumentTypeSeries(row.document_type_id)
+            })
+        },
+        clickAddDefaultDocumentType()
+        {
+            if(!this.form.establishment_id) return this.$message.warning('Seleccione un establecimiento para buscar las series disponibles.')
+
+            this.form.default_document_types.push({
+                document_type_id: null,
+                series_id: null,
+                default_series: [],
+            })
+        },
+        changeMultipleDefaultDocumentType()
+        {
+            if(this.form.multiple_default_document_types)
+            {
+                this.form.document_id = null
+                this.getSeries()
+            } 
+            else
+            {
+                this.form.default_document_types = []
+            }
+        },
+        clickDeleteDefaultDocumentType(index)
+        {
+            this.form.default_document_types.splice(index, 1)
+        },
+        changeDefaultDocumentType(index)
+        {
+            this.form.default_document_types[index].series_id = null
+
+            const current_document_type_id = this.form.default_document_types[index].document_type_id
+
+            const exist_document_type = this.getExistDocumentType(current_document_type_id, index)
+
+            if(exist_document_type)
+            {
+                this.form.default_document_types[index].document_type_id = null
+                return this.$message.warning('Ya agregó ese tipo de documento')
+            }
+
+            this.form.default_document_types[index].default_series = this.getDefaultDocumentTypeSeries(current_document_type_id)
+        },
+        getExistDocumentType(current_document_type_id, index)
+        {
+            return this.form.default_document_types.find((row, row_index)=>{
+                    return row.document_type_id === current_document_type_id && index !== row_index
+                })
+        },
+        getDefaultDocumentTypeSeries(document_type_id)
+        {
+            return _.filter(this.series, { document_type_id : document_type_id })
+        },
+        async create() {
+            this.titleDialog = this.recordId ? "Editar Usuario" : "Nuevo Usuario"
+
+            this.loading = true
+
+            if (this.recordId) 
+            {
+                await this.$http
                     .get(`/${this.resource}/record/${this.recordId}`)
                     .then((response) => {
                         this.form = response.data.data;
@@ -710,7 +839,7 @@ export default {
                         const preSelecteds = [];
                         const preSelectedsModules = this.form.modules;
                         const preSelectedsLevels = this.form.levels;
-                        this.getSeries();
+                        // this.getSeries();
                         this.modules.map((m) => {
                             if (preSelectedsModules.includes(m.id)) {
                                 preSelecteds.push(m.id);
@@ -725,9 +854,16 @@ export default {
                         setTimeout(() => {
                             this.$refs.tree.setCheckedKeys(preSelecteds);
                         }, 1000);
+
                     });
-            } else {
-                this.$http.get(`/${this.resource}/tables`).then((response) => {
+
+                await this.getSeries()
+                await this.initDataDefaultDocumentTypes(false)
+
+            } 
+            else 
+            {
+                await this.$http.get(`/${this.resource}/tables`).then((response) => {
                     this.$refs.tree.setCheckedKeys([]);
                     this.modules = response.data.modules;
                     this.establishments = response.data.establishments;
@@ -735,8 +871,17 @@ export default {
                     this.types = response.data.types;
                     this.documents = response.data.documents;
                     this.series = response.data.series;
-                });
+                })
             }
+
+            this.loading = false
+
+        },
+        filterDocumentTypes(data)
+        {
+            return data.filter(element => {
+                return ['01', '03', '80'].includes(element.id) 
+            })
         },
         submit() {
             const modulesAndLevelsSelecteds = this.$refs.tree.getCheckedNodes();
@@ -759,6 +904,9 @@ export default {
             if (modules.length < 1) {
                 return this.$message.error("Debe seleccionar al menos un módulo");
             }
+            
+            if (this.form.multiple_default_document_types && this.form.default_document_types.length == 0) return this.$message.error('Debe agregar al menos un tipo de documento por defecto')
+
             this.loading_submit = true;
             this.$http
                 .post(`/${this.resource}`, this.form)

@@ -15,6 +15,7 @@ use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Zone;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use Modules\Finance\Helpers\UploadFileHelper;
+use Illuminate\Support\Facades\DB;
 
 
 class UserController extends Controller
@@ -81,7 +82,6 @@ class UserController extends Controller
         $zones = Zone::all();
 
         $identity_document_types = IdentityDocumentType::filterDataForPersons()->get();
-        $allowed_document_types = ['01', '03', '80'];
 
         return compact('modules', 'establishments', 'types', 'documents', 'series', 'config_permission_to_edit_cpe','zones', 'identity_document_types');
     }
@@ -101,7 +101,10 @@ class UserController extends Controller
         }
         return $data;
     }
-    public function store(UserRequest $request) {
+
+
+    public function store(UserRequest $request) 
+    {
         $id = $request->input('id');
 
         if (!$id) { //VALIDAR EMAIL DISPONIBLE
@@ -113,63 +116,52 @@ class UserController extends Controller
                 ];
             }
         }
-        /** @var User $user */
-        $user = User::firstOrNew(['id' => $id]);
-        $user->name = $request->input('name');
-        $user->email = $request->input('email');
-        $user->establishment_id = $request->input('establishment_id');
-        $user->type = $request->input('type');
-        // Zona por usuario
-        // $user->zone_id = $request->input('zone_id');
 
-        if (!$id) {
-            $user->api_token = str_random(50);
-            $user->password = bcrypt($request->input('password'));
-        } elseif ($request->has('password')) {
-            if (config('tenant.password_change')) {
+        DB::connection('tenant')->transaction(function () use ($request, $id) {
+
+            /** @var User $user */
+            $user = User::firstOrNew(['id' => $id]);
+            $user->name = $request->input('name');
+            $user->email = $request->input('email');
+            $user->establishment_id = $request->input('establishment_id');
+            $user->type = $request->input('type');
+            // Zona por usuario
+            // $user->zone_id = $request->input('zone_id');
+
+            if (!$id) {
+                $user->api_token = str_random(50);
                 $user->password = bcrypt($request->input('password'));
+            } elseif ($request->has('password')) {
+                if (config('tenant.password_change')) {
+                    $user->password = bcrypt($request->input('password'));
+                }
             }
-        }
-        $user->setDocumentId($request->input('document_id'))
-             ->setSeriesId($request->input('series_id'));
-        $user->establishment_id = $request->input('establishment_id');
 
-        $user->recreate_documents = $request->input('recreate_documents');
-        $user->permission_edit_cpe = $request->input('permission_edit_cpe');
-        $user->create_payment = $request->input('create_payment');
-        $user->delete_payment = $request->input('delete_payment');
+            $user->setDocumentId($request->input('document_id'))
+                ->setSeriesId($request->input('series_id'));
+            $user->establishment_id = $request->input('establishment_id');
 
-        $user->edit_purchase = $request->input('edit_purchase');
-        $user->annular_purchase = $request->input('annular_purchase');
-        $user->delete_purchase = $request->input('delete_purchase');
+            $user->recreate_documents = $request->input('recreate_documents');
+            $user->permission_edit_cpe = $request->input('permission_edit_cpe');
+            $user->create_payment = $request->input('create_payment');
+            $user->delete_payment = $request->input('delete_payment');
 
-        $this->setAdditionalData($user, $request);
+            $user->edit_purchase = $request->input('edit_purchase');
+            $user->annular_purchase = $request->input('annular_purchase');
+            $user->delete_purchase = $request->input('delete_purchase');
 
-        $user->save();
+            $this->setAdditionalData($user, $request);
 
-        $this->savePhoto($user, $request);
+            $user->save();
 
-        if ($user->id != 1) {
-            $user->setModuleAndLevelModule($request->modules,$request->levels);
-            /*
-            $array_modules = [];
-            $array_levels = [];
-            DB::connection('tenant')->table('module_user')->where('user_id', $user->id)->delete();
-            DB::connection('tenant')->table('module_level_user')->where('user_id', $user->id)->delete();
-            foreach ($request->modules as $module) {
-                array_push($array_modules, [
-                    'module_id' => $module, 'user_id' => $user->id
-                ]);
+            $this->savePhoto($user, $request);
+            $this->saveDefaultDocumentTypes($user, $request);
+
+            if ($user->id != 1) {
+                $user->setModuleAndLevelModule($request->modules,$request->levels);
             }
-            foreach ($request->levels as $level) {
-                array_push($array_levels, [
-                    'module_level_id' => $level, 'user_id' => $user->id
-                ]);
-            }
-            DB::connection('tenant')->table('module_user')->insert($array_modules);
-            DB::connection('tenant')->table('module_level_user')->insert($array_levels);
-            */
-        }
+
+        });
 
         return [
             'success' => true,
@@ -229,6 +221,24 @@ class UserController extends Controller
     }
 
     
+    /**
+     * 
+     * Guardar documentos por defecto
+     *
+     * @param  User $user
+     * @param  UserRequest $request
+     * @return void
+     */
+    public function saveDefaultDocumentTypes(User $user, UserRequest $request)
+    {
+        $user->default_document_types()->delete();
+
+        foreach ($request->default_document_types as $row) 
+        {
+            $user->default_document_types()->create($row);
+        }
+    }
+
 
     public function records()
     {

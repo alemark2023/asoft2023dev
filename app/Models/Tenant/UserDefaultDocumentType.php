@@ -43,4 +43,14 @@ class UserDefaultDocumentType extends ModelTenant
         return $this->belongsTo(Series::class, 'series_id');
     }
 
+    public function getDataMultipleDocumentType()
+    {
+        return [
+            'user_id' => $this->user_id,
+            'document_type_id' => $this->document_type_id,
+            'series_id' => $this->series_id,
+            'default_series' => [],
+        ];
+    }
+
 }

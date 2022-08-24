@@ -1101,4 +1101,44 @@ $withEstablishment = true){
         ]);
     }
 
+
+    public function getDataOnlyAuthUser()
+    {
+        return [
+            'name' => $this->name,
+            'email' => $this->email,
+            'password' => $this->password,
+            'establishment_id' => $this->establishment_id,
+            'type' => $this->type,
+            'locked' => $this->locked,
+            'identity_document_type_id' => $this->identity_document_type_id,
+            'number' => $this->number,
+            'address' => $this->address,
+            'telephone' => $this->telephone,
+            'document_id' => $this->document_id,
+            'series_id' => $this->series_id,
+            'permission_edit_cpe' => $this->permission_edit_cpe,
+            'recreate_documents' => $this->recreate_documents,
+            'zone_id' => $this->zone_id,
+            'restaurant_role_id' => $this->restaurant_role_id,
+            'delete_payment' => $this->delete_payment,
+            'create_payment' => $this->create_payment,
+            'edit_purchase' => $this->edit_purchase,
+            'annular_purchase' => $this->annular_purchase,
+            'delete_purchase' => $this->delete_purchase,
+            'names' => $this->names,
+            'last_names' => $this->last_names,
+            'personal_email' => $this->personal_email,
+            'corporate_email' => $this->corporate_email,
+            'personal_cell_phone' => $this->personal_cell_phone,
+            'corporate_cell_phone' => $this->corporate_cell_phone,
+            'date_of_birth' => $this->date_of_birth,
+            'contract_date' => $this->contract_date,
+            'position' => $this->position,
+            'photo_filename' => $this->photo_filename,
+            'multiple_default_document_types' => $this->multiple_default_document_types,
+            'default_document_types' => $this->default_document_types,
+        ];
+    }
+
 }

@@ -65,6 +65,10 @@ class UserResource extends JsonResource {
             'photo_filename' => $this->photo_filename,
             'photo_temp_image' => $this->getPhotoForView(),
             'photo_temp_path' => null,
+            'default_document_types' => $this->default_document_types->transform(function($row){
+                return $row->getDataMultipleDocumentType();
+            }),
+
         ];
     }
 }
