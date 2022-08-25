@@ -360,7 +360,7 @@
             'ticket_single_shipment' => 'bool',
             'hide_pdf_view_documents' => 'bool',
             'affect_all_documents'=>'bool',
-            
+
         ];
 
         protected $hidden = [
@@ -577,7 +577,7 @@
                 'dashboard_clients' => (bool)$this->dashboard_clients,
                 'dashboard_products' => (bool)$this->dashboard_products,
                 'affect_all_documents' => (bool)$this->affect_all_documents,
-                
+                'delete_relation_note_to_invoice' => (bool)config('tenant.delete_relation_note_to_invoice'),
             ];
         }
 
@@ -2240,7 +2240,7 @@
             return (bool) \Config('extra.suscription_facturalo');
         }
 
-        
+
         /**
          *
          * @param Builder $query
@@ -2251,7 +2251,7 @@
             return $query->select('separate_cash_transactions')->firstOrFail()->separate_cash_transactions;
         }
 
-        
+
         /**
          *
          * @param Builder $query
@@ -2262,9 +2262,9 @@
             return $query->select('order_cash_income')->firstOrFail()->order_cash_income;
         }
 
-         
+
         /**
-         * 
+         *
          * Obtener campo individual de la configuracion
          *
          * @param  Builder $query
@@ -2275,6 +2275,6 @@
         {
             return $query->select($column)->firstOrFail()->{$column};
         }
-        
+
 
     }

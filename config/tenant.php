@@ -38,5 +38,6 @@ return [
 
     'document_import_excel' => env('DOCUMENT_IMPORT_EXCEL', false),
     'template_document_mail' => env('TEMPLATE_DOCUMENT_MAIL', 'default'),
+    'delete_relation_note_to_invoice' => env('DELETE_RELATION_NOTE_TO_INVOICE', false),
 
 ];
