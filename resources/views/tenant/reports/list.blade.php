@@ -66,6 +66,12 @@
                                 Bandeja descarga de reportes
                             </a>
                         </li>
+                        
+                        <li>
+                            <a href="{{route('tenant.system_activity_logs.access.index')}}">
+                                Actividades del sistema - Accesos
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>

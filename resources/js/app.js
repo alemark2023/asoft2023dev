@@ -429,6 +429,10 @@ Vue.component('tenant-mobile-app-configuration', require('@viewsModuleMobileApp/
 Vue.component('tenant-mobile-app-permissions', require('@viewsModuleMobileApp/permissions/index.vue'));
 
 
+// LevelAccess
+Vue.component('tenant-system-activity-logs-access-index', require('@viewsModuleLevelAccess/system_activity_logs/access/index.vue'));
+
+
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)
 

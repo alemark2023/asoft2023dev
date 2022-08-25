@@ -1,16 +1,22 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+$hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
-Route::prefix('levelaccess')->group(function() {
-    Route::get('/', 'LevelAccessController@index');
-});
+if($hostname) {
+    Route::domain($hostname->fqdn)->group(function () {
+        Route::middleware(['auth', 'locked.tenant'])->group(function() {
+
+            Route::prefix('system-activity-logs')->group(function () {
+
+                Route::prefix('access')->group(function () {
+
+                    Route::get('', 'SystemActivityLogAccessController@index')->name('tenant.system_activity_logs.access.index');
+                    Route::get('records', 'SystemActivityLogAccessController@records');
+                    Route::get('columns', 'SystemActivityLogAccessController@columns');
+                });
+
+            });
+
+        });
+    });
+}

@@ -33,6 +33,8 @@ use Modules\Sale\Models\UserCommission;
 use App\Models\Tenant\Configuration;
 use Modules\Restaurant\Models\RestaurantRole;
 use Modules\MobileApp\Models\AppModule;
+use Modules\LevelAccess\Models\SystemActivityLog;
+
 
 /**
  * Class User
@@ -1068,6 +1070,24 @@ $withEstablishment = true){
         return $query->withOut([
             'establishment',
         ]);
+    }
+
+        
+    /**
+     * 
+     * Retorna nombre de la conexión
+     *
+     * @return string
+     */
+    public function getDbConnectionName()
+    {
+        return $this->getConnection()->getName();
+    }
+    
+
+    public function system_activity_logs()
+    {
+        return $this->morphMany(SystemActivityLog::class, 'origin');
     }
 
 }
