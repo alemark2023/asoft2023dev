@@ -496,7 +496,7 @@
                                     <td class="text-right">{{ row.quantity }}</td>
                                 </template>
                                 
-                                <template v-if="indexAffect[index]==index&&showEditQuantity[index]!=1">
+                                <template v-if="indexAffect[index]==index">
                                     <el-input
                                         :tabindex="'2'"
                                         ref="inputQuantity"
@@ -1042,8 +1042,9 @@ export default {
 
         },
         clickEditSuccess(index){
-            this.showEditQuantity[index]=1
-            return parseInt(this.form.items[index].quantity)
+            
+            this.indexAffect.splice(index, 1);
+            console.log(this.indexAffect[index])
         }
     },
     computed: {
