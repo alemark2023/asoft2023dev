@@ -15,6 +15,12 @@ if($hostname) {
                     Route::get('columns', 'SystemActivityLogAccessController@columns');
                 });
 
+                Route::prefix('transactions')->group(function () {
+
+                    Route::get('', 'SystemActivityLogTransactionController@index')->name('tenant.system_activity_logs.transactions.index');
+                    Route::get('records', 'SystemActivityLogTransactionController@records');
+                    Route::get('columns', 'SystemActivityLogTransactionController@columns');
+                });
             });
 
         });
