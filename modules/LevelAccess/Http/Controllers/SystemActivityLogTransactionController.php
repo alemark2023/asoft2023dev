@@ -7,59 +7,69 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\LevelAccess\Models\SystemActivityLog;
 use Modules\LevelAccess\Http\Resources\{
-    SystemActivityLogCollection
+    SystemActivityTransactionCollection
 };
-use Modules\LevelAccess\Helpers\GetClientIpHelper;
+use Illuminate\Support\Facades\DB;
+use App\Traits\ElectronicDocumentTrait;
+use App\Models\Tenant\{
+    Document,
+    Dispatch,
+    Perception,
+    PurchaseSettlement,
+    Retention,
+    Voided,
+    Summary,
+};
 
 
 class SystemActivityLogTransactionController extends Controller
 {
 
+    use ElectronicDocumentTrait;
+    
+
     public function index()
     {
-        return view('levelaccess::system_activity_logs.access.index');
+        return view('levelaccess::system_activity_logs.transactions.index');
     }
 
 
     public function columns()
     {
         return [
-            'date' => 'Fecha',
-            'time' => 'Hora',
-            'ip' => 'Ip',
+            'date_of_issue' => 'Fecha emisión',
+            'time_of_issue' => 'Hora emisión',
         ];
     }
 
-
+    
+    /**
+     * 
+     * Actividades del sistema - transacciones
+     * 
+     *
+     * @param  Request $request
+     * @return SystemActivityTransactionCollection
+     */
     public function records(Request $request)
     {
-        // $ip = (new GetClientIpHelper)->getClientIp();
-        // dd($ip);
+        $documents = $this->getQuerySystemActivityLogTransaction('documents', $request);
+        $dispatches = $this->getQuerySystemActivityLogTransaction('dispatches', $request);
+        $perceptions = $this->getQuerySystemActivityLogTransaction('perceptions', $request);
+        $purchase_settlements = $this->getQuerySystemActivityLogTransaction('purchase_settlements', $request);
+        $retentions = $this->getQuerySystemActivityLogTransaction('retentions', $request);
 
-        // dd(request()->getClientIp());
-        // // $getClientIp= new GetClientIpHelper();
-        
-        // $getClientIp = new GetClientIpHelper(array( "REMOTE_ADDR"           => "1.2.3.4",
-        //                               "REMOTE_PORT"           => "",
-        //                               "SERVER_ADDR"           => "1.1.1.1",
-        //                               "X_FORWARDED_FOR"       => "2.3.4.5,1.2.3.4, 1.2.3.4" ));
+        $summaries = $this->getQuerySystemActivityLogTransactionGroup('summaries', 'RC', $request);
+        $summary_voided = $this->getQuerySystemActivityLogTransactionGroup('summaries', 'RC', $request, true);
+        $voided = $this->getQuerySystemActivityLogTransactionGroup('voided', 'RA', $request);
 
-        // $ip = $getClientIp->getClientIp();
-        // $longIp = $getClientIp->getLongClientIp();
-        // dd($getClientIp, $ip, $longIp);
 
-        // if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-        //     $ip = $_SERVER['HTTP_CLIENT_IP'];
-        // } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        //     $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        // } else {
-        //     $ip = $_SERVER['REMOTE_ADDR'];
-        // }
-        // dd($ip, $_SERVER, empty($_SERVER['HTTP_CLIENT_IP']));
-        // $records = SystemActivityLog::where($request->column, 'like', "%{$request->value}%")
-        //                     ->latest();
+        $records = $documents->union($dispatches)
+                            ->union($perceptions)->union($purchase_settlements)
+                            ->union($retentions)->union($summaries)
+                            ->union($summary_voided)->union($voided);
 
-        // return new SystemActivityLogCollection($records->paginate(config('tenant.items_per_page')));
+        return new SystemActivityTransactionCollection($records->orderBy('date_of_issue', 'desc')->orderBy('time_of_issue', 'desc')->paginate(config('tenant.items_per_page')));
     }
 
 

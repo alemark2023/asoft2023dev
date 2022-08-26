@@ -1090,4 +1090,18 @@ $withEstablishment = true){
         return $this->morphMany(SystemActivityLog::class, 'origin');
     }
 
+    
+    /**
+     * 
+     * Filtro para no incluir relaciones en consulta y obtener el nombre de usuario
+     *
+     * @param Builder $query
+     * @return Builder
+     */  
+    public function scopeFilterOnlyUsername($query)
+    {
+        return $query->whereFilterWithOutRelations()->select('id', 'name');
+    }
+
+
 }

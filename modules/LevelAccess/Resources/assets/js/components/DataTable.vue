@@ -102,7 +102,6 @@ export default {
             default: true,
             required: false
         },
-        pharmacy: Boolean,
     },
     data() {
         return {
@@ -114,13 +113,9 @@ export default {
             records: [],
             pagination: {},
             loading_submit: false,
-            fromPharmacy: false,
         };
     },
     created() {
-        if(this.pharmacy !== undefined && this.pharmacy === true){
-            this.fromPharmacy = true;
-        }
         this.$eventHub.$on("reloadData", () => {
             this.getRecords();
         });
@@ -170,7 +165,6 @@ export default {
             return queryString.stringify({
                 page: this.pagination.current_page,
                 limit: this.limit,
-                isPharmacy:this.fromPharmacy,
                 ...this.search
             });
         },

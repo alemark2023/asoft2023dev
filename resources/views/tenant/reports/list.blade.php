@@ -67,11 +67,27 @@
                             </a>
                         </li>
                         
+                        {{-- Actividades del sistema --}}
                         <li>
-                            <a href="{{route('tenant.system_activity_logs.access.index')}}">
-                                Actividades del sistema - Accesos
+                            <a href="#" data-toggle="collapse" data-target="#system_activity_logs_id">
+                                Actividades del sistema
                             </a>
                         </li>
+
+                        <ul id="system_activity_logs_id" class="collapse">
+                            <li>
+                                <a href="{{route('tenant.system_activity_logs.access.index')}}">
+                                    Accesos
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{route('tenant.system_activity_logs.transactions.index')}}">
+                                    Transacciones
+                                </a>
+                            </li>
+                        </ul>
+                        {{-- Actividades del sistema --}}
+
                     </ul>
                 </div>
             </div>

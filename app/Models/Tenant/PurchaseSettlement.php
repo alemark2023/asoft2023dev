@@ -6,10 +6,12 @@ use App\Models\Tenant\Catalogs\{
     CurrencyType,
     DocumentType
 };
+use Illuminate\Database\Eloquent\Builder;
 
 
 class PurchaseSettlement extends ModelTenant
 {
+
 
     protected $fillable = [
         'user_id',
@@ -214,5 +216,17 @@ class PurchaseSettlement extends ModelTenant
         ];
     }
 
+    
+    /**
+     *
+     * Filtro para no incluir relaciones en consulta
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeWhereFilterWithOutRelations($query)
+    {
+        return $query;
+    }
 
 }
