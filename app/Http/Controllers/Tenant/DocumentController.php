@@ -592,6 +592,7 @@ class DocumentController extends Controller
 
             if($item['name_product_xml']){
                 // validar error 2027 sunat
+                dd(mb_strlen(trim($item['name_product_xml'])), mb_strlen(trim(preg_replace("[\n|\r|\n\r]", "", $item['name_product_xml']))));
                 if(mb_strlen($item['name_product_xml']) > 500){
                     return [
                         'success' => false,

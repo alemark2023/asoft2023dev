@@ -6,7 +6,7 @@ use Jenssegers\Agent\Agent;
 use Modules\LevelAccess\Models\{
     SystemActivityLog
 };
-use Modules\LevelAccess\Helpers\GetClientIpHelper;
+use Modules\LevelAccess\Helpers\DataClientHelper;
 
 
 trait SystemActivityTrait
@@ -87,6 +87,7 @@ trait SystemActivityTrait
         $agent = new Agent();
         $browser = $agent->browser();
         $platform = $agent->platform();
+        $data_client_helper = new DataClientHelper();
 
         return [
             'platform_name' => $platform,
@@ -95,7 +96,8 @@ trait SystemActivityTrait
             'browser_version' => $agent->version($browser),
             'device_name' => $agent->device(),
             'device_type' => $agent->deviceType(),
-            'ip' => (new GetClientIpHelper)->getClientIp(),
+            'ip' => $data_client_helper->getClientIp(),
+            'location' => $data_client_helper->getLocation(),
         ];
     }
 

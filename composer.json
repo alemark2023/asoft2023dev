@@ -33,6 +33,7 @@
         "robrichards/xmlseclibs": "3.0.*",
         "setasign/fpdf": "1.8.*",
         "setasign/fpdi": "^2.0",
+        "stevebauman/location": "^6.5",
         "symfony/process": "^4.4",
         "thiagoalessio/tesseract_ocr": "^2.7",
         "zanysoft/laravel-zip": "^1.0"
