@@ -39,6 +39,12 @@
         public $tray_id;
         public $params;
         public $columns;
+        public $records;
+        public $company;
+        public $establishment;
+        public $filters;
+        public $categories;
+        public $categories_services;
 
 
         /**
@@ -46,13 +52,18 @@
          *
          * @return void
          */
-        public function __construct( int $tray_id,   array $params, $columns)
+        public function __construct( int $tray_id,   $params, $company, $establishment, $filters, $categories=null, $categories_services=null,$columns)
         {
             //$this->website_id = $website_id;
             $this->tray_id = $tray_id;
             //$this->warehouse_id = $warehouse_id;
             //$this->filter = $filter;
             $this->params = $params;
+            $this->establishment = $establishment;
+            $this->filters = $filters;
+            $this->categories = $categories;
+            $this->categories_services = $categories_services;
+            $this->company = $company;
             $this->columns = $columns;
         }
 
@@ -64,7 +75,6 @@
         public function handle()
         {
             Log::debug("ProcessDocumentReport Start");
-            Log::debug("fdgfgfd");
             $tray = DownloadTray::find($this->tray_id);
             $path = null;
 
@@ -78,25 +88,6 @@
 
             } else {
                 try {
-                    $columns=$this->columns;
-                    //dd($columns->guides);
-                    $company = Company::first();
-                    $establishment = ($this->params->establishment_id) ? Establishment::findOrFail($this->params->establishment_id) : auth()->user()->establishment;
-
-                    $documentTypeId = "01";
-                    if ($request->has('document_type_id')) {
-                        $documentTypeId = str_replace('"', '', $request->document_type_id);
-                    }
-                    $documentType = DocumentType::find($documentTypeId);
-                    if (null === $documentType) {
-                        $documentType = new DocumentType();
-                    }
-
-                    $classType = $documentType->getCurrentRelatiomClass();
-
-                    $records = $this->getRecords($request->all(), $classType);
-                    $records= $records->get();
-                    $filters = $request->all();
                     //ini_set('max_execution_time', 0);
 
                     //$records = $this->getRecordsTranform($this->warehouse_id, $this->filter);
@@ -111,6 +102,12 @@
                         ini_set("pcre.backtrack_limit", "50000000");
 
                         Log::debug("Render pdf init");
+
+                        $records=$this->params;
+                        $company=$this->company;
+                        $establishment=$this->establishment;
+                        $filters=$this->filters;
+                        $columns=$this->columns;
                         
                         $html = view('report::documents.report_pdf', compact("records", "company", "establishment", "filters","columns"))->render();
 
@@ -171,26 +168,18 @@
 
                     } else {
 
-                        $categories = [];
-                        $categories_services = [];
-
-                        if($request->include_categories == "true"){
-                            $categories = ReportDocumentController::getCategories($records, false);
-                            $categories_services = ReportDocumentController::getCategories($records, true);
-                        }
-
                         Log::debug($records);
                         $filename = 'DOCUMENT_ReporteDoc_' . date('YmdHis') . '-' . $tray->user_id;
                         Log::debug("Render excel init");
                         $inventoryExport = new DocumentExport();
                         $inventoryExport
-                            ->records($records)
-                            ->company($company)
-                            ->establishment($establishment)
-                            ->filters($filters)
-                            ->categories($categories)
-                            ->categories_services($categories_services)
-                            ->columns($columns);
+                            ->records($this->params)
+                            ->company($this->company)
+                            ->establishment($this->establishment)
+                            ->filters($this->filters)
+                            ->categories($this->categories)
+                            ->categories_services($this->categories_services)
+                            ->columns($this->columns);
                         Log::debug("Render excel finish");
 
                         Log::debug("Upload excel init");

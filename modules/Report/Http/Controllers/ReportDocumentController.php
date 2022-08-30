@@ -186,7 +186,7 @@ class ReportDocumentController extends Controller
     public function export(Request $request)
     {
         $host = $request->getHost();
-        $columns=json_decode(json_encode($request->columns));
+        $columns=json_decode($request->columns);
         $tray = DownloadTray::create([
             'user_id' => auth()->user()->id,
             'module' => 'DOCUMENTS',
@@ -197,7 +197,33 @@ class ReportDocumentController extends Controller
 
         $trayId = $tray->id;
 
-        ProcessDocumentReport::dispatch($trayId, $request->all(), $columns );
+        $company = Company::first();
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+
+        $documentTypeId = "01";
+        if ($request->has('document_type_id')) {
+            $documentTypeId = str_replace('"', '', $request->document_type_id);
+        }
+        $documentType = DocumentType::find($documentTypeId);
+        if (null === $documentType) {
+            $documentType = new DocumentType();
+        }
+
+        $classType = $documentType->getCurrentRelatiomClass();
+        $records = $this->getRecords($request->all(), $classType);
+        $records= $records->get();
+        $filters = $request->all();
+
+        //get categories
+        $categories = [];
+        $categories_services = [];
+
+        if($request->include_categories == "true"){
+            $categories = $this->getCategories($records, false);
+            $categories_services = $this->getCategories($records, true);
+        }
+
+        ProcessDocumentReport::dispatch($trayId, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
 
         return  [
             'success' => true,
