@@ -97,7 +97,7 @@ trait SystemActivityTrait
             'device_name' => $agent->device(),
             'device_type' => $agent->deviceType(),
             'ip' => $data_client_helper->getClientIp(),
-            'location' => $data_client_helper->getLocation(),
+            // 'location' => $data_client_helper->getLocation(),
         ];
     }
 
