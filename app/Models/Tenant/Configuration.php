@@ -263,6 +263,7 @@
             'dashboard_products',
             'affect_all_documents',
             'quantity_sales_notes',
+            'regex_password_user',
         ];
 
         protected $casts = [
@@ -360,6 +361,7 @@
             'ticket_single_shipment' => 'bool',
             'hide_pdf_view_documents' => 'bool',
             'affect_all_documents'=>'bool',
+            'regex_password_user' => 'bool',
             
         ];
 
@@ -572,6 +574,7 @@
                 'list_items_by_warehouse' => $this->list_items_by_warehouse,
                 'ticket_single_shipment' => $this->ticket_single_shipment,
                 'hide_pdf_view_documents' => $this->hide_pdf_view_documents,
+                'regex_password_user' => $this->regex_password_user,
                 'dashboard_sales' => (bool)$this->dashboard_sales,
                 'dashboard_general' => (bool)$this->dashboard_general,
                 'dashboard_clients' => (bool)$this->dashboard_clients,

@@ -703,6 +703,30 @@
                                             v-text="errors.list_items_by_warehouse[0]"></small>
                                 </div>
                             </div>
+                            
+                            <div class="col-md-6 mt-4">
+                                
+                                <label class="control-label">
+                                    Habilitar contraseña segura
+                                    <el-tooltip class="item"
+                                                content="Se solicitará una contraseña segura (cumplir patrón) al registrar usuario"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                               
+                                <div :class="{'has-danger': errors.regex_password_user}"
+                                        class="form-group">
+                                    <el-switch v-model="form.regex_password_user"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.regex_password_user"
+                                            class="form-control-feedback"
+                                            v-text="errors.regex_password_user[0]"></small>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="third">
@@ -1982,6 +2006,7 @@ export default {
                 order_cash_income: false,
                 generate_order_note_from_quotation: false,
                 list_items_by_warehouse: false,
+                regex_password_user: false,
                 ticket_single_shipment: false,
                 hide_pdf_view_documents: false,
 

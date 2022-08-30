@@ -322,6 +322,8 @@ return [
 		'user_pse' => 'usuario autenticación',
 		'beginning_balance' => 'saldo inicial',
 
+		'certificate' => 'certificado',
+		'soap_url' => 'soap url envío',
 
 	],
 ];

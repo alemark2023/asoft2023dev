@@ -2,8 +2,11 @@
 
 namespace Modules\LevelAccess\Models;
 
-use App\Models\Tenant\ModelTenant;
-use App\Models\Tenant\User;
+use App\Models\Tenant\{
+    ModelTenant,
+    User,
+    Company,
+};
 
 
 class SystemActivityLog extends ModelTenant 
@@ -11,7 +14,7 @@ class SystemActivityLog extends ModelTenant
 
     protected $fillable = [
         'user_id',
-        'auth_transaction_type',
+        'transaction_type',
         'date',
         'time',
         'origin_id',
@@ -43,21 +46,38 @@ class SystemActivityLog extends ModelTenant
         return $this->belongsTo(User::class);
     }
 
-
     public function origin()
     {
         return $this->morphTo();
     }
-
-    public function getAuthTransactionTypesAttribute()
+    
+    
+    /**
+     * 
+     * Transacciones asociadas al registro de actividad del sistema
+     *
+     * @return array
+     */
+    public static function getTransactionTypes()
     {
-        return [
+        $login_transactions = [
             'failed' => 'Error de inicio de sesión',
             'logout' => 'Cerrar sesión',
             'login' => 'Iniciar sesión',
         ];
+
+        $company_transactions = (new Company)->getTransactionTypesForSystemActivity();
+
+        return array_merge($login_transactions, $company_transactions);
     }
     
+        
+    /**
+     * 
+     * Dispositivos
+     *
+     * @return array
+     */
     public function getDeviceTypesAttribute()
     {
         return [
@@ -67,16 +87,29 @@ class SystemActivityLog extends ModelTenant
             'robot' => 'Robot',
         ];
     }
-    
-    public function getAuthTransactionTypeDescriptionAttribute()
+        
+
+    /**
+     * Descripcion de la transaccion
+     *
+     * @param  array $transaction_types
+     * @return string
+     */
+    public function getTransactionTypeDescription($transaction_types)
     {
-        return $this->auth_transaction_types[$this->auth_transaction_type];
+        return $transaction_types[$this->transaction_type] ?? null;
     }
 
+    
+    /**
+     *
+     * @return string
+     */
     public function getDeviceTypeDescriptionAttribute()
     {
         return $this->device_types[$this->device_type];
     }
+    
     
     /**
      * 
@@ -99,12 +132,19 @@ class SystemActivityLog extends ModelTenant
     }
 
     
-    public function getRowResourceAccess()
+    /**
+     * 
+     * Datos para mostrar en vista - listado
+     *
+     * @param  array $transaction_types
+     * @return array
+     */
+    public function getRowResourceAccess($transaction_types)
     {
         return [
             'user_id' => $this->user_id,
-            'auth_transaction_type' => $this->auth_transaction_type,
-            'auth_transaction_type_description' => $this->auth_transaction_type_description,
+            'transaction_type' => $this->transaction_type,
+            'transaction_type_description' => $this->getTransactionTypeDescription($transaction_types),
             'date_time' => "{$this->date} - {$this->time}",
             'user_name' => optional($this->user)->name,
             'date' => $this->date,

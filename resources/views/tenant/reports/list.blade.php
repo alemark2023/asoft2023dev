@@ -76,13 +76,13 @@
 
                         <ul id="system_activity_logs_id" class="collapse">
                             <li>
-                                <a href="{{route('tenant.system_activity_logs.access.index')}}">
-                                    Accesos
+                                <a href="{{route('tenant.system_activity_logs.generals.index')}}">
+                                    Generales
                                 </a>
                             </li>
                             <li>
                                 <a href="{{route('tenant.system_activity_logs.transactions.index')}}">
-                                    Transacciones
+                                    Documentos electrónicos
                                 </a>
                             </li>
                         </ul>

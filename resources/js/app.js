@@ -430,7 +430,7 @@ Vue.component('tenant-mobile-app-permissions', require('@viewsModuleMobileApp/pe
 
 
 // LevelAccess
-Vue.component('tenant-system-activity-logs-access-index', require('@viewsModuleLevelAccess/system_activity_logs/access/index.vue'));
+Vue.component('tenant-system-activity-logs-generals-index', require('@viewsModuleLevelAccess/system_activity_logs/generals/index.vue'));
 Vue.component('tenant-system-activity-logs-transactions-index', require('@viewsModuleLevelAccess/system_activity_logs/transactions/index.vue'));
 
 

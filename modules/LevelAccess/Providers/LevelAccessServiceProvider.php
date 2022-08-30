@@ -30,6 +30,7 @@ class LevelAccessServiceProvider extends ServiceProvider
     {
         $this->app->register(RouteServiceProvider::class);
         $this->app->register(EventServiceProvider::class);
+        $this->app->register(SystemActivityLogServiceProvider::class);
     }
 
     /**

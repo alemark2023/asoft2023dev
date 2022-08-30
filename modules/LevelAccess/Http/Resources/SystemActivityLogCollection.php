@@ -3,6 +3,8 @@
 namespace Modules\LevelAccess\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Modules\LevelAccess\Models\SystemActivityLog;
+
 
 class SystemActivityLogCollection extends ResourceCollection
 {
@@ -15,8 +17,11 @@ class SystemActivityLogCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return $this->collection->transform(function($row, $key) {
-            return $row->getRowResourceAccess();
+
+        $transaction_types = SystemActivityLog::getTransactionTypes();
+
+        return $this->collection->transform(function($row, $key) use($transaction_types) {
+            return $row->getRowResourceAccess($transaction_types);
         });
 
     }

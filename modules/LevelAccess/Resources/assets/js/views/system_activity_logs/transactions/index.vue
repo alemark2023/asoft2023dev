@@ -1,16 +1,16 @@
 <template>
     <div>
         <div class="page-header pr-0">
-            <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
+            <h2><a href="/dashboard"><i class="fas fa-file-alt"></i></a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Actividades del sistema - Transacciones</span></li>
+                <li class="active"><span>Transacciones de documentos electrónicos</span></li>
             </ol>
             <div class="right-wrapper pull-right">
             </div>
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Actividades del sistema - Transacciones</h3>
+                <h3 class="my-0">Transacciones de documentos electrónicos</h3>
             </div>
             <div class="card-body">
                 <data-table :resource="resource">

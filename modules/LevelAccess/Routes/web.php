@@ -8,11 +8,11 @@ if($hostname) {
 
             Route::prefix('system-activity-logs')->group(function () {
 
-                Route::prefix('access')->group(function () {
+                Route::prefix('generals')->group(function () {
 
-                    Route::get('', 'SystemActivityLogAccessController@index')->name('tenant.system_activity_logs.access.index');
-                    Route::get('records', 'SystemActivityLogAccessController@records');
-                    Route::get('columns', 'SystemActivityLogAccessController@columns');
+                    Route::get('', 'SystemActivityLogGeneralController@index')->name('tenant.system_activity_logs.generals.index');
+                    Route::get('records', 'SystemActivityLogGeneralController@records');
+                    Route::get('columns', 'SystemActivityLogGeneralController@columns');
                 });
 
                 Route::prefix('transactions')->group(function () {

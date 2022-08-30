@@ -74,10 +74,12 @@ class UserController extends Controller
             ['type' => 'seller', 'description' => 'Vendedor'],
         ];
 
-        $config_permission_to_edit_cpe = Configuration::select('permission_to_edit_cpe')->first()->permission_to_edit_cpe;
+        $configuration = Configuration::select(['permission_to_edit_cpe', 'regex_password_user'])->first();
+        $config_permission_to_edit_cpe = $configuration->permission_to_edit_cpe;
+        $config_regex_password_user = $configuration->regex_password_user;
         $zones = Zone::all();
 
-        return compact('modules', 'establishments', 'types', 'documents', 'series', 'config_permission_to_edit_cpe','zones');
+        return compact('modules', 'establishments', 'types', 'documents', 'series', 'config_permission_to_edit_cpe','zones', 'config_regex_password_user');
     }
 
     public function regenerateToken(User $user){
