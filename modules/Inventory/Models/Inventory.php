@@ -217,4 +217,21 @@
             return $this->belongsTo(InventoryTransaction::class, 'inventory_transaction_id', 'id');
         }
 
+        public function scopeWhereFilterReportStock($query, $warehouse_id, $date_start, $date_end)
+    {
+
+        $query->with(['inventory_kardex'])
+                    ->whereHas('transaction')
+                    ->where('warehouse_id', $warehouse_id)
+                    ->where('description', 'like', 'STock Real')
+                    ->whereHas('inventory_kardex', function($query) use($date_start, $date_end){
+
+                        if ($date_start) $query->where('date_of_issue', '>=', $date_start);
+                        if ($date_end) $query->where('date_of_issue', '<=', $date_end);
+
+                    });
+
+        return $query;
+    }
+
     }

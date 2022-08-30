@@ -7,6 +7,7 @@
             </ol>
             <div v-if="typeUser == 'admin'" class="right-wrapper pull-right">
                 <button type="button" class="btn btn-success btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Imp. Ajuste de stock</button>
+                <button type="button" class="btn btn-success btn-sm  mt-2 mr-2" @click.prevent="clickReportStock()"><i class="fa fa-file-excel"></i> Reporte Aj. stock</button>
                 <button type="button" class="btn btn-success btn-sm  mt-2 mr-2" @click.prevent="clickReport()"><i class="fa fa-file-excel"></i> Reporte</button>
                 <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate('input')"><i class="fa fa-plus-circle"></i> Ingreso</button>
                 <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickOutput()"><i class="fa fa-minus-circle"></i> Salida</button>
@@ -92,6 +93,10 @@
             <StockGlobal :products="selectedItems" :show.sync="showHideStockMoveGlobal"></StockGlobal>
 
             <stock-import :showDialog.sync="showImportDialog"></stock-import>
+
+            <stock-report
+                            :showDialog.sync="showDialogStockReport"
+                                ></stock-report>
         </div>
     </div>
 </template>
@@ -113,9 +118,11 @@
 
     import StockImport from './import.vue'
 
+    import StockReport from './reports/stock_report.vue';
+
     export default {
         props: ['type', 'typeUser'],
-        components: {DataTable, InventoriesForm, InventoriesMove, InventoriesRemove, InventoriesFormOutput, MoveGlobal, MovementReport, InventoriesStock, StockGlobal, StockImport},
+        components: {DataTable, InventoriesForm, InventoriesMove, InventoriesRemove, InventoriesFormOutput, MoveGlobal, MovementReport, InventoriesStock, StockGlobal, StockImport, StockReport},
         data() {
             return {
                 showHideModalMoveGlobal: false,
@@ -132,6 +139,7 @@
                 showDialogStock: false,
                 showHideStockMoveGlobal: false,
                 showImportDialog: false,
+                showDialogStockReport:false,
             }
         },
         created() {
@@ -209,6 +217,9 @@
             },
             clickImport(){
                 this.showImportDialog = true
+            },
+            clickReportStock(){
+                this.showDialogStockReport = true
             },
 
         }
