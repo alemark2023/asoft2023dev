@@ -77,7 +77,28 @@ class SystemActivityLog extends ModelTenant
     {
         return $this->device_types[$this->device_type];
     }
+    
+    /**
+     * 
+     * Retorna datos para mostrar en vista
+     *
+     * @return array
+     */
+    public function getDataLocation()
+    {
+        if(!$this->location) return null;
 
+        return [
+            'country_code' => $this->location->country_code,
+            'country_name' => $this->location->country_name,
+            'region_code' => $this->location->region_code,
+            'region_name' => $this->location->region_name,
+            'city_name' => $this->location->city_name,
+            'timezone' => $this->location->timezone,
+        ];
+    }
+
+    
     public function getRowResourceAccess()
     {
         return [
@@ -98,7 +119,7 @@ class SystemActivityLog extends ModelTenant
             'browser_name' => $this->browser_name,
             'browser_version' => $this->browser_version,
             'browser_description' => "{$this->browser_name} - {$this->browser_version}",
-            'location' => $this->location,
+            'location' => $this->getDataLocation(),
         ];
     }
 
