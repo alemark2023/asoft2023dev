@@ -492,11 +492,11 @@
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ setDescriptionOfItem(row) }}</td>
                                 <!-- <td>{{ row.item.description }}</td> -->
-                                <template v-if="indexAffect[index]!=index">
+                                <template v-if="!filterIndex(index)">
                                     <td class="text-right">{{ row.quantity }}</td>
                                 </template>
                                 
-                                <template v-if="indexAffect[index]==index">
+                                <template v-if="filterIndex(index)">
                                     <el-input
                                         :tabindex="'2'"
                                         ref="inputQuantity"
@@ -513,8 +513,6 @@
                                                 style="padding-right: 5px ;padding-left: 12px"
                                                 @click="clickIncrease(index)"></el-button>
                                     </el-input>
-                                </template>
-                                <template v-if="indexAffect[index]==index">
                                     <td class="text-right">
                                         <button class="btn waves-effect waves-light btn-xs btn-success"
                                                 type="button"
@@ -522,7 +520,7 @@
                                         </button>
                                     </td>
                                 </template>
-                                <template v-if="document">
+                                <template v-if="document&&!filterIndex(index)">
                                     <td class="text-right">
                                         <button class="btn waves-effect waves-light btn-xs btn-primary"
                                                 type="button"
@@ -982,10 +980,10 @@ export default {
         close() {
             location.href = '/dispatches';
         },
-        clickEditQuantity(id){
-            this.quantityNew.push(this.form.items[id].quantity)
-            this.indexAffect.push(id)
-            this.showEditQuantity=true
+        async clickEditQuantity(id){
+            await this.quantityNew.push(this.form.items[id].quantity)
+            await this.indexAffect.push(id)
+            console.log('index '+this.indexAffect)
         },
         clickDecrease(index) {
             console.log(this.form.items[index].quantity)
@@ -1018,33 +1016,38 @@ export default {
         setMaxQuantity(index) {
             this.form.items[index].quantity = this.getMaxQuantity(index)
         },
-        validateQuantity(index) {
+        async validateQuantity(index) {
 
             if (!this.form.items[index].quantity) {
-                this.setMinQuantity(index)
+                await this.setMinQuantity(index)
             }
 
             if (isNaN(Number(this.form.items[index].quantity))) {
-                this.setMinQuantity(index)
+                await this.setMinQuantity(index)
             }
 
             if (typeof parseFloat(this.form.items[index].quantity) !== 'number') {
-                this.setMinQuantity(index)
+                await this.setMinQuantity(index)
             }
 
             if (this.form.items[index].quantity <= this.getMinQuantity()) {
-                this.setMinQuantity(index)
+                await this.setMinQuantity(index)
             }
             
             if (this.form.items[index].quantity >= this.getMaxQuantity(index)) {
-                this.setMaxQuantity(index)
+                await this.setMaxQuantity(index)
             }
 
         },
-        clickEditSuccess(index){
+        async clickEditSuccess(index){
             
-            this.indexAffect.splice(index, 1);
-            console.log(this.indexAffect[index])
+            await this.indexAffect.splice(this.indexAffect.indexOf(index), 1);
+            console.log(this.indexAffect)
+        },
+        filterIndex(index){
+            let value_index=this.indexAffect.some(i=>i==index)
+            console.log(value_index)
+            return value_index
         }
     },
     computed: {
