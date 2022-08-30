@@ -85,7 +85,7 @@ class DataClientHelper
             $ip = $_SERVER['REMOTE_ADDR'] ?? null;
         }
 
-        $this->$ip = $this->isValidIp($ip) ? $ip : null;
+        $this->ip = $this->isValidIp($ip) ? $ip : null;
     }
 
 
