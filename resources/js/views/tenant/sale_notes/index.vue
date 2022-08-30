@@ -143,8 +143,21 @@
                         </td>
 
                         <td class="text-right" v-if="columns.dispatch_status.visible">
-                            <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-danger"
-                                    @click.prevent="clickDispatchStatus(row.id)" >PENDIENTE</button>
+                            <template v-if="row.status_dispatch==='ENTREGADO'">
+                                <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-success"
+                                    @click.prevent="clickDispatchStatus(row.id)" >{{row.status_dispatch}}</button>
+                            </template>
+                            
+                            <template v-if="row.status_dispatch==='PENDIENTE'">
+                                <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-danger"
+                                    @click.prevent="clickDispatchStatus(row.id)" >{{row.status_dispatch}}</button>
+                            </template>
+
+                            <template v-if="row.status_dispatch==='PARCIAL'">
+                                <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-warning"
+                                    @click.prevent="clickDispatchStatus(row.id)" >{{row.status_dispatch}}</button>
+                            </template>
+                            
                         </td>
 
                         <td class="text-right" v-if="columns.type_period.visible">

@@ -56,6 +56,8 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
+use App\Models\Tenant\DispatchSaleNote;
+use App\Http\Resources\Tenant\DispatchSaleNoteCollection;
 
 // use App\Models\Tenant\Warehouse;
 
@@ -1839,5 +1841,43 @@ class SaleNoteController extends Controller
         return SearchItemController::TransformToModalSaleNote(Item::whereIn('id', $request->ids)->get());
     }
 
+    public function recordsDispatch($sale_note_id)
+    {
+        $records = DispatchSaleNote::where('sale_note_id', $sale_note_id)->get();
 
+        return new DispatchSaleNoteCollection($records);
+    }
+
+    public function recordDispatch(Request $request)
+    {
+        $id = $request->input('id');
+
+        $record = DispatchSaleNote::firstOrNew(['id' => $id]);
+        $record->fill($request->all());
+        $record->save();
+        return [
+            'success' => true,
+            'message' => ($id)?'Despacho editado con éxito':'Despacho registrado con éxito'
+        ];
+    }
+
+    public function statusUpdate(Request $request){
+        $id = $request->input('sale_note_id');
+
+        $records = DispatchSaleNote::where('sale_note_id' , $id)->get();
+
+        
+        foreach ($records as $value) {
+            //dd($value->status_dispatch);
+            $dispatch=DispatchSaleNote::where('id' , $value->id)->update([
+                'status' => $request->input('status_display'),
+            ]);
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Se actualizo el estado de despacho con éxito'
+        ];
+
+    }
 }

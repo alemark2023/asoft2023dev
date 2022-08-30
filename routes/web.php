@@ -564,6 +564,10 @@ if ($hostname) {
             Route::post('sale-notes/transform-data-order', 'Tenant\SaleNoteController@transformDataOrder');
             Route::post('sale-notes/items-by-ids', 'Tenant\SaleNoteController@getItemsByIds');
 
+            Route::get('sale-notes/dispatch/{id}', 'Tenant\SaleNoteController@recordsDispatch');
+            Route::post('sale-notes/dispatch', 'Tenant\SaleNoteController@recordDispatch');
+            Route::post('sale-notes/dispatch/statusUpdate', 'Tenant\SaleNoteController@statusUpdate');
+
             //POS
             Route::get('pos', 'Tenant\PosController@index')->name('tenant.pos.index');
             Route::get('pos_full', 'Tenant\PosController@index_full')->name('tenant.pos_full.index');

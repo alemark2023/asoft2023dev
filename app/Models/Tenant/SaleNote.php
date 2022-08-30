@@ -16,6 +16,7 @@
     use Modules\Order\Models\OrderNote;
     use Modules\Sale\Models\TechnicalService;
     use Modules\Pos\Models\Tip;
+    use App\Models\Tenant\DispatchSaleNote;
 
     /**
      * Class SaleNote
@@ -525,6 +526,11 @@
             return $this->hasMany(Document::class);
         }
 
+        public function dispatch_sale()
+        {
+            return $this->hasMany(DispatchSaleNote::class);
+        }
+
         /**
          * @return BelongsTo
          * order from ecommerce
@@ -721,6 +727,23 @@
             $mails = $person->getCollectionData();
             $customer_email=  $mails['optional_email_send'];
 
+            $status_dispatch=$this->dispatch_sale;
+            
+            if (count($status_dispatch)>0) {
+                //dd($status_dispatch[0]->status);
+                if (is_null($status_dispatch[0]->status)) {
+                    $status_dispatch='PENDIENTE';
+                }else if($status_dispatch[0]->status){
+                    $status_dispatch='ENTREGADO';
+                }else{
+                    //dd('parcial');
+                    $status_dispatch='PARCIAL';
+                }
+            }else {
+                $status_dispatch='PENDIENTE';
+            }
+            
+
             return [
                 'id' => $this->id,
                 'soap_type_id' => $this->soap_type_id,
@@ -791,7 +814,8 @@
                 'seller' => $this->seller,
                 'filename' => $this->filename,
                 'seller_name'                     => ((int)$this->seller_id !=0)?$this->seller->name:'',
-// 'number' => $this->number,
+
+                'status_dispatch'=>$status_dispatch,
             ];
         }
 

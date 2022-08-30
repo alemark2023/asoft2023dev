@@ -26,11 +26,11 @@
                             <tr v-for="(row, index) in records" :key="index">
                                 <template v-if="row.id">
                                     <td>DESPACHO-{{ row.id }}</td>
-                                    <td>{{ row.date_of_payment }}</td>
-                                    <td>{{ row.hour_of_payment }}</td>
-                                    <td>{{ row.destination_description }}</td>
+                                    <td>{{ row.date_dispatch }}</td>
+                                    <td>{{ row.time_dispatch }}</td>
+                                    <td>{{ row.person_pick }}</td>
                                     <td>{{ row.reference }}</td>
-                                    <td class="text-right">{{ row.payment }}</td>
+                                    <td class="text-right">{{ row.person_dispatch }}</td>
                                     <td class="series-table-actions text-right">
                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)"><i class="fas fa-trash"></i></button>
                                         <!--<el-button type="danger" icon="el-icon-delete" plain @click.prevent="clickDelete(row.id)"></el-button>-->
@@ -38,11 +38,11 @@
                                 </template>
                                 <template v-else>
                                     <td></td>
-                                    <td>{{ row.date_of_payment }}</td>
-                                    <td>{{ row.hour_of_payment }}</td>
+                                    <td>{{ row.date_dispatch }}</td>
+                                    <td>{{ row.time_dispatch }}</td>
                                     <td>
                                         <div class="form-group mb-0" :class="{'has-danger': row.errors.person_dispatch}">
-                                            <el-input v-model="row.person_dispatch"></el-input>
+                                            <el-input v-model="row.person_pick"></el-input>
                                             <small class="form-control-feedback" v-if="row.errors.person_dispatch" v-text="row.errors.person_dispatch[0]"></small>
                                         </div>
                                     </td>
@@ -53,13 +53,14 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="form-group mb-0" :class="{'has-danger': row.errors.payment}">
-                                            <el-input v-model="row.payment"></el-input>
-                                            <small class="form-control-feedback" v-if="row.errors.payment" v-text="row.errors.payment[0]"></small>
+                                        <div class="form-group mb-0" :class="{'has-danger': row.errors.reference}">
+                                            <el-input v-model="row.person_dispatch"></el-input>
+                                            <small class="form-control-feedback" v-if="row.errors.reference" v-text="row.errors.reference[0]"></small>
                                         </div>
                                     </td>
                                     <td class="series-table-actions text-right">
-                                        
+                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickSubmit(index)">
+                                            <i class="fa fa-check"></i></button>
                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
                                             <i class="fa fa-trash"></i>
                                         </button>
@@ -74,17 +75,13 @@
                     <div class="d-flex">
                         <div class="d-flex">
                             <div class="d-flex flex-column">
-                                <el-checkbox v-model="search_by_plate" :disabled="recordItem != null">
-                                    Entregado
-                                </el-checkbox>
-                                <el-checkbox v-model="search_by_plate" :disabled="recordItem != null">
-                                    Parcial
-                                </el-checkbox>
+                                <el-radio v-model="status_display" @change="statusUpdate" :checked="checked_display" label="1">Entregado</el-radio>
+                                <el-radio v-model="status_display" @change="statusUpdate" :checked="checked_display" label="0">Parcial</el-radio>
                             </div>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-light" @click.prevent="clickSubmit(index)">Borrar Check</button>
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-light" @click.prevent="statusUpdate('initial')">Borrar Check</button>
                         </div>
                         <div class="w-100 text-center">
-                            <button type="button" class="btn waves-effect waves-light btn btn-info" @click.prevent="clickSubmit(index)">Grabar</button>
+                            <!-- <button type="button" class="btn waves-effect waves-light btn btn-info" @click.prevent="clickSubmit(index)">Grabar</button> -->
                         </div>
                     </div>
                     
@@ -111,6 +108,7 @@
 <script>
 
     import {deletable} from '../../../../mixins/deletable'
+    import moment from 'moment'
 
     export default {
         props: ['showDialog', 'documentId'],
@@ -118,78 +116,40 @@
         data() {
             return {
                 title: null,
-                resource: 'sale_note_payments',
+                resource: 'sale-notes',
                 records: [],
-                payment_destinations: [],
-                payment_method_types: [],
                 headers: headers_token,
                 index_file: null,
-                fileList: [],
                 showAddButton: true,
-                document: {}
+                document: {},
+                status_display:null,
+                checked_display:null,
             }
         },
         async created() {
             await this.initForm();
-            await this.$http.get(`/${this.resource}/tables`)
-                .then(response => {
-                    this.payment_destinations = response.data.payment_destinations
-                    this.payment_method_types = response.data.payment_method_types;
-                    //this.initDocumentTypes()
-                })
         },
         methods: {
-            clickDownloadFile(filename) {
-                window.open(
-                    `/finances/payment-file/download-file/${filename}/sale_notes`,
-                    "_blank"
-                );
-            },
-            onSuccess(response, file, fileList) {
-
-                // console.log(response, file, fileList)
-                this.fileList = fileList
-
-                if (response.success) {
-
-                    this.index_file = response.data.index
-                    this.records[this.index_file].filename = response.data.filename
-                    this.records[this.index_file].temp_path = response.data.temp_path
-
-                } else {
-                    this.cleanFileList()
-                    this.$message.error(response.message)
-                }
-
-                // console.log(this.records)
-
-            },
-            cleanFileList(){
-                this.fileList = []
-            },
-            handleRemove(file, fileList) {
-
-                this.records[this.index_file].filename = null
-                this.records[this.index_file].temp_path = null
-                this.fileList = []
-                this.index_file = null
-
-            },
             initForm() {
                 this.records = [];
-                this.fileList = [];
                 this.showAddButton = true;
             },
             async getData() {
                 this.initForm();
-                await this.$http.get(`/${this.resource}/document/${this.documentId}`)
+                // search document
+                await this.$http.get(`/sale_note_payments/document/${this.documentId}`)
                     .then(response => {
                         this.document = response.data;
                         this.title = 'Estado de despacho del comprobante: '+this.document.number_full;
                     });
-                await this.$http.get(`/${this.resource}/records/${this.documentId}`)
+                // dispatch sale notes
+                await this.$http.get(`/${this.resource}/dispatch/${this.documentId}`) 
                     .then(response => {
                         this.records = response.data.data
+                        if(this.checked_display!=false){
+                            this.status_display = response.data.data[0]['status']? '1':'0'
+                        }
+                        
                     });
                 this.$eventHub.$emit('reloadDataUnpaid')
 
@@ -197,15 +157,11 @@
             clickAddRow() {
                 this.records.push({
                     id: null,
-                    date_of_payment: new Date().toLocaleDateString(),
-                    hour_of_payment: new Date().toLocaleTimeString(),
+                    date_dispatch: moment().format("YYYY/MM/DD"),
+                    time_dispatch: new Date().toLocaleTimeString(),
+                    person_pick:null,
                     person_dispatch: null,
-                    payment_method_type_id: null,
-                    payment_destination_id:null,
                     reference: null,
-                    filename: null,
-                    temp_path: null,
-                    payment: 0,
                     errors: {},
                     loading: false
                 });
@@ -214,33 +170,20 @@
             clickCancel(index) {
                 this.records.splice(index, 1);
                 this.showAddButton = true;
-                this.fileList = []
             },
             clickSubmit(index) {
-                if(this.records[index].payment > parseFloat(this.document.total_difference)) {
-                    this.$message.error('El monto ingresado supera al monto pendiente de pago, verifique.');
-                    return;
-                }
-                let paid = false
-                if( parseFloat(this.records[index].payment) == parseFloat(this.document.total_difference))
-                {
-                    paid = true
-                }
-
 
                 let form = {
                     id: this.records[index].id,
                     sale_note_id: this.documentId,
-                    date_of_payment: this.records[index].date_of_payment,
-                    payment_method_type_id: this.records[index].payment_method_type_id,
-                    payment_destination_id: this.records[index].payment_destination_id,
+                    date_dispatch: this.records[index].date_dispatch,
+                    time_dispatch: this.records[index].time_dispatch,
+                    person_pick:this.records[index].person_pick,
+                    person_dispatch: this.records[index].person_dispatch,
                     reference: this.records[index].reference,
-                    filename: this.records[index].filename,
-                    temp_path: this.records[index].temp_path,
-                    payment: this.records[index].payment,
-                    paid: paid
+                    //status_display:this.status_display,
                 };
-                this.$http.post(`/${this.resource}`, form)
+                this.$http.post(`/${this.resource}/dispatch`, form)
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message);
@@ -260,31 +203,45 @@
                         }
                     })
             },
-            // filterDocumentType(row){
-            //
-            //     if(row.contingency){
-            //         this.document_types = _.filter(this.all_document_types, item => (item.id == '01' || item.id =='03'))
-            //         row.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
-            //     }else{
-            //         row.document_type_id = null
-            //         this.document_types = this.all_document_types
-            //     }
-            // },
-            // initDocumentTypes(){
-            //     this.document_types = (this.all_document_types.length > 0) ? this.all_document_types : []
-            // },
             close() {
                 this.$emit('update:showDialog', false);
-                // this.initDocumentTypes()
-                // this.initForm()
             },
             clickDelete(id) {
                 this.destroy(`/${this.resource}/${id}`).then(() =>{
                         this.getData()
                         this.$eventHub.$emit('reloadData')
                     }
-                    // this.initDocumentTypes()
                 )
+            },
+            statusUpdate(value=null){
+                
+                let form = {
+                    sale_note_id: this.documentId,
+                    status_display:this.status_display==0?false:true,
+                };
+                if (value==='initial') {
+                    form.status_display=null
+                    this.status_display=3
+                }
+                this.$http.post(`/${this.resource}/dispatch/statusUpdate`, form)
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message);
+                            this.getData();
+                            // this.initDocumentTypes()
+                            this.$eventHub.$emit('reloadData')
+                            this.showAddButton = true;
+                        } else {
+                            this.$message.error(response.data.message);
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.records[index].errors = error.response.data;
+                        } else {
+                            console.log(error);
+                        }
+                    })
             }
         }
     }
