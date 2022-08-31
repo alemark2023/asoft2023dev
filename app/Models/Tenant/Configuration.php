@@ -264,6 +264,8 @@
             'affect_all_documents',
             'quantity_sales_notes',
             'regex_password_user',
+            'enabled_remember_change_password',
+            'quantity_month_remember_change_password',
         ];
 
         protected $casts = [
@@ -362,7 +364,8 @@
             'hide_pdf_view_documents' => 'bool',
             'affect_all_documents'=>'bool',
             'regex_password_user' => 'bool',
-            
+            'enabled_remember_change_password' => 'bool',
+            'quantity_month_remember_change_password' => 'int',
         ];
 
         protected $hidden = [
@@ -575,6 +578,8 @@
                 'ticket_single_shipment' => $this->ticket_single_shipment,
                 'hide_pdf_view_documents' => $this->hide_pdf_view_documents,
                 'regex_password_user' => $this->regex_password_user,
+                'enabled_remember_change_password' => $this->enabled_remember_change_password,
+                'quantity_month_remember_change_password' => $this->quantity_month_remember_change_password,
                 'dashboard_sales' => (bool)$this->dashboard_sales,
                 'dashboard_general' => (bool)$this->dashboard_general,
                 'dashboard_clients' => (bool)$this->dashboard_clients,

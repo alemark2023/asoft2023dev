@@ -139,6 +139,8 @@ class UserController extends Controller
         $user->annular_purchase = $request->input('annular_purchase');
         $user->delete_purchase = $request->input('delete_purchase');
 
+        if($user->isDirty('password')) $user->last_password_update = date('Y-m-d H:i:s');
+
         $user->save();
 
         if ($user->id != 1) {

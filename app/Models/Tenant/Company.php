@@ -157,14 +157,14 @@ class Company extends ModelTenant
      * @param  string $column
      * @return string
      */
-    public function getDescriptionColumnForSystemActivity($column)
-    {
-        $key = "validation.attributes.{$column}";
-        $trans = __($key);
-        $description = ($trans == $key) ? $column : $trans;
+    // public function getDescriptionColumnForSystemActivity($column)
+    // {
+    //     $key = "validation.attributes.{$column}";
+    //     $trans = __($key);
+    //     $description = ($trans == $key) ? $column : $trans;
 
-        return 'Actualización del campo '.$description.' en configuración de empresa';
-    }
+    //     return 'Actualización del campo '.$description.' en configuración de empresa';
+    // }
 
     
     /**
@@ -173,17 +173,17 @@ class Company extends ModelTenant
      *
      * @return array
      */
-    public function getTransactionTypesForSystemActivity()
-    {
-        $data = [];
+    // public function getTransactionTypesForSystemActivity()
+    // {
+    //     $data = [];
 
-        foreach ($this->getCheckColumnsForSystemActivity() as $column) 
-        {
-            $data [$this->getTransactionTypeForSystemActivity($column)] = $this->getDescriptionColumnForSystemActivity($column);
-        }
+    //     foreach ($this->getCheckColumnsForSystemActivity() as $column) 
+    //     {
+    //         $data [$this->getTransactionTypeForSystemActivity($column)] = $this->getDescriptionColumnForSystemActivity($column);
+    //     }
 
-        return $data;
-    }
+    //     return $data;
+    // }
 
 
     /**

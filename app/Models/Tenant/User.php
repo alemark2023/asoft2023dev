@@ -187,6 +187,8 @@ class User extends Authenticatable
         'annular_purchase',
         'delete_purchase',
 
+        'last_password_update',
+
         // 'email_verified_at',
         // 'api_token',
         // 'remember_token',

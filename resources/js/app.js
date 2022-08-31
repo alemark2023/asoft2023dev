@@ -432,6 +432,7 @@ Vue.component('tenant-mobile-app-permissions', require('@viewsModuleMobileApp/pe
 // LevelAccess
 Vue.component('tenant-system-activity-logs-generals-index', require('@viewsModuleLevelAccess/system_activity_logs/generals/index.vue'));
 Vue.component('tenant-system-activity-logs-transactions-index', require('@viewsModuleLevelAccess/system_activity_logs/transactions/index.vue'));
+Vue.component('tenant-remember-change-password', require('./views/tenant/users/partials/remember_change_password.vue'));
 
 
 import VueClipboard from 'vue-clipboard2'

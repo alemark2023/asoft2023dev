@@ -18,10 +18,8 @@ class SystemActivityLogCollection extends ResourceCollection
     public function toArray($request)
     {
 
-        $transaction_types = SystemActivityLog::getTransactionTypes();
-
-        return $this->collection->transform(function($row, $key) use($transaction_types) {
-            return $row->getRowResourceAccess($transaction_types);
+        return $this->collection->transform(function($row, $key) {
+            return $row->getRowResourceAccess();
         });
 
     }

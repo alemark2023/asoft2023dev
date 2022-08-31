@@ -14,7 +14,7 @@ class SystemActivityLog extends ModelTenant
 
     protected $fillable = [
         'user_id',
-        'transaction_type',
+        'system_activity_log_type_id',
         'date',
         'time',
         'origin_id',
@@ -28,6 +28,7 @@ class SystemActivityLog extends ModelTenant
         'browser_name',
         'browser_version',
         'location',
+        'route',
     ];
 
     
@@ -45,6 +46,11 @@ class SystemActivityLog extends ModelTenant
     {
         return $this->belongsTo(User::class);
     }
+    
+    public function system_activity_log_type() 
+    {
+        return $this->belongsTo(SystemActivityLogType::class);
+    }
 
     public function origin()
     {
@@ -54,22 +60,47 @@ class SystemActivityLog extends ModelTenant
     
     /**
      * 
+     * Filtro para el listado
+     *
+     * @param Builder $query
+     * @return Builder
+     */  
+    public function scopeFilterRecords($query, $request)
+    {
+        $query->with([
+                    'user' => function($q){
+                        $q->filterOnlyUsername();
+                    },
+                    'system_activity_log_type'
+                ]);
+
+        if($request->value)
+        {
+            $query->where($request->column, 'like', "%{$request->value}%");
+        }
+
+        return $query;
+    }
+
+
+    /**
+     * 
      * Transacciones asociadas al registro de actividad del sistema
      *
      * @return array
      */
-    public static function getTransactionTypes()
-    {
-        $login_transactions = [
-            'failed' => 'Error de inicio de sesión',
-            'logout' => 'Cerrar sesión',
-            'login' => 'Iniciar sesión',
-        ];
+    // public static function getTransactionTypes()
+    // {
+    //     $login_transactions = [
+    //         'failed' => 'Error de inicio de sesión',
+    //         'logout' => 'Cerrar sesión',
+    //         'login' => 'Iniciar sesión',
+    //     ];
 
-        $company_transactions = (new Company)->getTransactionTypesForSystemActivity();
+    //     $company_transactions = (new Company)->getTransactionTypesForSystemActivity();
 
-        return array_merge($login_transactions, $company_transactions);
-    }
+    //     return array_merge($login_transactions, $company_transactions);
+    // }
     
         
     /**
@@ -86,18 +117,6 @@ class SystemActivityLog extends ModelTenant
             'tablet' => 'Tablet',
             'robot' => 'Robot',
         ];
-    }
-        
-
-    /**
-     * Descripcion de la transaccion
-     *
-     * @param  array $transaction_types
-     * @return string
-     */
-    public function getTransactionTypeDescription($transaction_types)
-    {
-        return $transaction_types[$this->transaction_type] ?? null;
     }
 
     
@@ -133,18 +152,28 @@ class SystemActivityLog extends ModelTenant
 
     
     /**
+     *
+     * @return string
+     */
+    public function getSystemActivityLogTypeDescription()
+    {
+        $append_text = $this->route ? " - Ruta de acceso: {$this->route}" : '';
+        return $this->system_activity_log_type->description.$append_text;
+    }
+    
+
+    /**
      * 
      * Datos para mostrar en vista - listado
      *
-     * @param  array $transaction_types
      * @return array
      */
-    public function getRowResourceAccess($transaction_types)
+    public function getRowResourceAccess()
     {
         return [
             'user_id' => $this->user_id,
-            'transaction_type' => $this->transaction_type,
-            'transaction_type_description' => $this->getTransactionTypeDescription($transaction_types),
+            'system_activity_log_type_id' => $this->system_activity_log_type_id,
+            'system_activity_log_type_description' => $this->getSystemActivityLogTypeDescription(),
             'date_time' => "{$this->date} - {$this->time}",
             'user_name' => optional($this->user)->name,
             'date' => $this->date,

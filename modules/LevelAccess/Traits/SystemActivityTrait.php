@@ -24,10 +24,10 @@ trait SystemActivityTrait
      * Para cada Tenant
      *
      * @param  $event
-     * @param  string $transaction_type
+     * @param  string $system_activity_log_type_id
      * @return void
      */
-    public function saveSystemActivityUser($event, $transaction_type)
+    public function saveSystemActivityUser($event, $system_activity_log_type_id)
     {
         try 
         {
@@ -46,7 +46,7 @@ trait SystemActivityTrait
 
                 $base_data = [
                     'user_id' => $user->id ?? null,
-                    'transaction_type' => $transaction_type,
+                    'system_activity_log_type_id' => $system_activity_log_type_id,
                     'date' => date('Y-m-d'),
                     'time' => date('H:i:s'),
                     'origin_id' => $origin_id,
@@ -58,7 +58,7 @@ trait SystemActivityTrait
         } 
         catch (Exception $e) 
         {
-            $this->showErrorLog($e, User::class, $transaction_type);
+            $this->showErrorLog($e, User::class, $system_activity_log_type_id);
         }
     }
 
@@ -68,10 +68,10 @@ trait SystemActivityTrait
      * Registrar datos en log de actividades - transacciones en general
      *
      * @param  string $model
-     * @param  string $transaction_type
+     * @param  string $system_activity_log_type_id
      * @return void
      */
-    public function saveGeneralSystemActivity($model, $transaction_type)
+    public function saveGeneralSystemActivity($model, $system_activity_log_type_id, $route = null)
     {
         try 
         {
@@ -79,16 +79,17 @@ trait SystemActivityTrait
     
             $base_data = [
                 'user_id' => auth()->id(),
-                'transaction_type' => $transaction_type,
+                'system_activity_log_type_id' => $system_activity_log_type_id,
                 'date' => date('Y-m-d'),
                 'time' => date('H:i:s'),
+                'route' => $route,
             ];
     
             $model->system_activity_logs()->create($this->getParamsSystemActivity($client_data, $base_data));
         } 
         catch (Exception $e) 
         {
-            $this->showErrorLog($e, get_class($model), $transaction_type);
+            $this->showErrorLog($e, get_class($model), $system_activity_log_type_id);
         }
     }
 
@@ -97,12 +98,12 @@ trait SystemActivityTrait
      *
      * @param  Exception $e
      * @param  string $model
-     * @param  string $transaction_type
+     * @param  string $system_activity_log_type_id
      * @return void
      */
-    public function showErrorLog($e, $model, $transaction_type)
+    public function showErrorLog($e, $model, $system_activity_log_type_id)
     {
-        $this->setErrorLog($e, 'Ocurrió un error al registrar las actividades del sistema - SystemActivityLog, modelo asociado: '.$model. ' - tipo transacción: '.$transaction_type.' - Detalle del error: ');
+        $this->setErrorLog($e, 'Ocurrió un error al registrar las actividades del sistema - SystemActivityLog, modelo asociado: '.$model. ' - tipo transacción: '.$system_activity_log_type_id.' - Detalle del error: ');
     }
     
 

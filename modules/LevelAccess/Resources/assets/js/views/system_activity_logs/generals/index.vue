@@ -30,7 +30,7 @@
                         <td>{{ index }}</td>
                         <td class="text-center">{{ row.date_time }}</td>
                         <td>{{ row.user_name }}</td>
-                        <td>{{ row.transaction_type_description }}</td>
+                        <td class="text-justify">{{ row.system_activity_log_type_description }}</td>
                         <td class="text-center">{{ row.ip }}</td>
                         
                         <td class="text-center">

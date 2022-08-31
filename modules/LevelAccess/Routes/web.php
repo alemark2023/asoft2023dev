@@ -13,6 +13,7 @@ if($hostname) {
                     Route::get('', 'SystemActivityLogGeneralController@index')->name('tenant.system_activity_logs.generals.index');
                     Route::get('records', 'SystemActivityLogGeneralController@records');
                     Route::get('columns', 'SystemActivityLogGeneralController@columns');
+                    Route::post('check-last-password-update', 'SystemActivityLogGeneralController@checkLastPasswordUpdate');
                 });
 
                 Route::prefix('transactions')->group(function () {
