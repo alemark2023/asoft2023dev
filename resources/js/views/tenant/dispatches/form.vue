@@ -22,7 +22,7 @@
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.series_id}" class="form-group">
                                 <label class="control-label">Serie<span class="text-danger"> *</span></label>
-                                <el-select v-model="form.series_id">
+                                <el-select v-model="form.series_id" :disabled="generalDisabledSeries()">
                                     <el-option v-for="option in series" :key="option.id" :label="option.number"
                                                :value="option.id"></el-option>
                                 </el-select>
@@ -531,6 +531,7 @@ import Items from './items.vue';
 import DispatchOptions from './partials/options.vue'
 import {mapActions, mapState} from "vuex";
 import {showNamePdfOfDescription} from '@helpers/functions'
+import {setDefaultSeriesByMultipleDocumentTypes} from '@mixins/functions'
 
 export default {
     props: [
@@ -540,12 +541,14 @@ export default {
         'dispatch',
         'configuration',
         'sale_note',
+        'authUser',
     ],
     components: {
         PersonForm,
         Items,
         DispatchOptions
     },
+    mixins: [setDefaultSeriesByMultipleDocumentTypes],
     data() {
         return {
             showDialogOptions: false,
@@ -825,6 +828,7 @@ export default {
             this.form.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
             this.filterSeries()
             this.setOriginAddressByEstablishment()
+            this.generalSetDefaultSerieByDocumentType('09')
         },
         changeDateOfIssue() {
             this.form.date_of_shipping = this.form.date_of_issue

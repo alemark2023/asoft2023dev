@@ -263,6 +263,7 @@
             'dashboard_products',
             'affect_all_documents',
             'quantity_sales_notes',
+            'restrict_series_selection_seller',
         ];
 
         protected $casts = [
@@ -360,6 +361,8 @@
             'ticket_single_shipment' => 'bool',
             'hide_pdf_view_documents' => 'bool',
             'affect_all_documents'=>'bool',
+            'restrict_series_selection_seller'=>'bool',
+            
 
         ];
 
@@ -577,6 +580,8 @@
                 'dashboard_clients' => (bool)$this->dashboard_clients,
                 'dashboard_products' => (bool)$this->dashboard_products,
                 'affect_all_documents' => (bool)$this->affect_all_documents,
+                'restrict_series_selection_seller' => $this->restrict_series_selection_seller,
+                
                 'delete_relation_note_to_invoice' => (bool)config('tenant.delete_relation_note_to_invoice'),
             ];
         }

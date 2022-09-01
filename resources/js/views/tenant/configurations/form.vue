@@ -703,6 +703,30 @@
                                             v-text="errors.list_items_by_warehouse[0]"></small>
                                 </div>
                             </div>
+                            
+                            <div class="col-md-6 mt-4">
+                                
+                                <label class="control-label">
+                                    Restringir selección de serie para vendedor
+                                    <el-tooltip class="item"
+                                                content="Configurar la serie por defecto en el registro de usuarios - Disponible en Nuevo CPE y Notas de venta"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                               
+                                <div :class="{'has-danger': errors.restrict_series_selection_seller}"
+                                        class="form-group">
+                                    <el-switch v-model="form.restrict_series_selection_seller"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.restrict_series_selection_seller"
+                                            class="form-control-feedback"
+                                            v-text="errors.restrict_series_selection_seller[0]"></small>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="third">
@@ -1991,6 +2015,7 @@ export default {
                 dashboard_clients:true,
 
                 affect_all_documents:false,
+                restrict_series_selection_seller: false,
             };
         },
         UpdateFormPurchase(e) {

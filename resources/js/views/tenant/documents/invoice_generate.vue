@@ -112,7 +112,7 @@
                                 <div :class="{'has-danger': errors.series_id}"
                                      class="form-group">
                                     <label class="control-label">Serie</label>
-                                    <el-select v-model="form.series_id">
+                                    <el-select v-model="form.series_id" :disabled="disabledSeries()">
                                         <el-option v-for="option in series"
                                                    :key="option.id"
                                                    :label="option.number"
@@ -1508,7 +1508,8 @@ export default {
         'documentId',
         'table',
         'tableId',
-        'isUpdate'
+        'isUpdate',
+        'authUser',
     ],
     components: {
         StoreItemSeriesIndex,
@@ -2005,8 +2006,29 @@ export default {
 
             return item
         },
+        disabledSeries()
+        {
+            return (this.configuration.restrict_series_selection_seller && this.typeUser !== 'admin')
+        },
+        setDefaultSerieByDocument()
+        {
+            if(this.authUser.multiple_default_document_types)
+            {
+                const default_document_type_serie = _.find(this.authUser.default_document_types, { document_type_id : this.form.document_type_id})
+    
+                if(default_document_type_serie)
+                {
+                    const exist_serie = _.find(this.series, { id : default_document_type_serie.series_id})
+                    if(exist_serie) this.form.series_id = default_document_type_serie.series_id
+                }
+            }
+
+        },
         // #307 Ajuste para seleccionar automaticamente el tipo de comprobante y serie
         setDefaultDocumentType(from_function) {
+
+            if(this.authUser.multiple_default_document_types) return
+
             this.default_series_type = this.config.user.serie;
             this.default_document_type = this.config.user.document_id;
             // if (this.default_document_type === undefined) this.default_document_type = null;
@@ -2928,6 +2950,7 @@ export default {
             this.filterSeries();
             this.cleanCustomer();
             this.filterCustomers();
+            this.setDefaultSerieByDocument()
         },
         cleanCustomer() {
             this.form.customer_id = null

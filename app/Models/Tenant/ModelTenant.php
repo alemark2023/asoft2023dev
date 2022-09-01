@@ -181,5 +181,19 @@
         {
             return $query->withOut(['payment_method_type', 'card_brand']);
         }
+        
+        
+        /**
+         * 
+         * Url imagen
+         *
+         * @param  string $folder
+         * @param  string $filename
+         * @return string
+         */
+        public function getPathPublicUploads($folder, $filename)
+        {
+            return asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $filename);
+        }
 
     }

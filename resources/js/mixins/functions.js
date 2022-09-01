@@ -260,3 +260,41 @@ export const fnPaymentsFee = {
     }
 };
 
+
+
+// Funciones para asignar series por usuario para multiples tipos de documentos
+// Usado en:
+// purchases
+export const setDefaultSeriesByMultipleDocumentTypes = {
+    data() {
+        return {
+        }
+    },
+    methods: {
+        generalDisabledSeries()
+        {
+            if(this.authUser === undefined) return false
+
+            return (this.configuration.restrict_series_selection_seller && this.authUser.type !== 'admin')
+        },
+        generalSetDefaultSerieByDocumentType(document_type_id)
+        {
+            if(this.authUser !== undefined)
+            {
+                if(this.authUser.multiple_default_document_types)
+                {
+                    const default_document_type_serie = _.find(this.authUser.default_document_types, { document_type_id : document_type_id})
+        
+                    if(default_document_type_serie)
+                    {
+                        const exist_serie = _.find(this.series, { id : default_document_type_serie.series_id})
+                        if(exist_serie) this.form.series_id = default_document_type_serie.series_id
+                    }
+                }
+            }
+        },
+    }
+}
+
+
+

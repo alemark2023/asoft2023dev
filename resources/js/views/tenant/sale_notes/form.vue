@@ -76,9 +76,8 @@
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.series_id}">
                                     <label class="control-label">Serie</label>
-                                    <el-select v-model="form.series_id">
-                                        <el-option v-for="option in series" :key="option.id" :value="option.id"
-                                                   :label="option.number"></el-option>
+                                    <el-select v-model="form.series_id" :disabled="disabledSeries()">
+                                        <el-option v-for="option in series" :key="option.id" :value="option.id" :label="option.number"></el-option>
                                     </el-select>
                                     <small class="form-control-feedback" v-if="errors.series_id"
                                            v-text="errors.series_id[0]"></small>
@@ -495,52 +494,52 @@
 </template>
 
 <script>
-import SaleNotesFormItem from './partials/item.vue'
-import PersonForm from '../persons/form.vue'
-import SaleNotesOptions from './partials/options.vue'
-import {functions, exchangeRate} from '../../../mixins/functions'
-import {calculateRowItem, sumAmountDiscountsNoBaseByItem} from '../../../helpers/functions'
-import Logo from '../companies/logo.vue'
-import {mapActions, mapState} from "vuex/dist/vuex.mjs";
-import Keypress from "vue-keypress";
+    import SaleNotesFormItem from './partials/item.vue'
+    import PersonForm from '../persons/form.vue'
+    import SaleNotesOptions from './partials/options.vue'
+    import {functions, exchangeRate} from '../../../mixins/functions'
+    import {calculateRowItem, sumAmountDiscountsNoBaseByItem} from '../../../helpers/functions'
+    import Logo from '../companies/logo.vue'
+    import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+    import Keypress from "vue-keypress";
 
-export default {
-    props: [
-        'id',
-        'typeUser',
-        'configuration',
-    ],
-    components: {
-        SaleNotesFormItem,
-        PersonForm,
-        SaleNotesOptions,
-        Logo,
-        Keypress
-    },
-    mixins: [functions, exchangeRate],
-    computed: {
-        ...mapState([
-            'config',
-        ]),
-        sms_periodo: function () {
-            let text = '';
-            let type = this.form.type_period;
-            let time = this.form.quantity_period;
-            if (time > 0 && (type === 'year' || type === 'month')) {
-                text = "Se duplicará cada " + time;
-                if (type === 'year') {
-                    text = time > 1 ? text + ' años' : text + ' año';
-                } else if (type === 'month') {
-                    text = time > 1 ? text + ' meses' : text + ' mes';
-                } else {
-                    text = '';
+    export default {
+        props: [
+            'id',
+            'typeUser',
+            'configuration',
+            'authUser',
+        ],
+        components: {
+            SaleNotesFormItem,
+            PersonForm,
+            SaleNotesOptions,
+            Logo,
+            Keypress
+        },
+        mixins: [functions, exchangeRate],
+        computed:{
+            ...mapState([
+                'config',
+            ]),
+            sms_periodo : function(){
+                let text = '';
+                let type = this.form.type_period;
+                let time = this.form.quantity_period;
+                if(time > 0 && ( type === 'year' || type === 'month' )){
+                    text = "Se duplicará cada " + time;
+                    if (type === 'year') {
+                        text = time > 1 ? text + ' años' : text + ' año';
+                    }else if (type === 'month'){
+                        text = time > 1 ? text + ' meses' : text + ' mes';
+                    }else{
+                        text = '';
+                    }
+                    return text;
                 }
                 return text;
             }
-            return text;
-        }
-
-    },
+        },
     data() {
         return {
             input_person: {},
@@ -627,6 +626,7 @@ export default {
                 this.changeCurrencyType()
                 this.allCustomers()
                 this.selectDestinationSale()
+                this.setDefaultSerieByDocument()
             })
         await this.getPercentageIgv();
         this.loading_form = true
@@ -640,6 +640,24 @@ export default {
         this.changeCurrencyType()
     },
     methods: {
+        disabledSeries()
+        {
+            return (this.configuration.restrict_series_selection_seller && this.typeUser !== 'admin')
+        },
+        setDefaultSerieByDocument()
+        {
+            if(this.authUser.multiple_default_document_types)
+            {
+                const default_document_type_serie = _.find(this.authUser.default_document_types, { document_type_id : '80'})
+    
+                if(default_document_type_serie)
+                {
+                    const exist_serie = _.find(this.series, { id : default_document_type_serie.series_id})
+                    if(exist_serie) this.form.series_id = default_document_type_serie.series_id
+                }
+            }
+
+        },
         ...mapActions([
             'loadConfiguration',
         ]),
@@ -900,6 +918,7 @@ export default {
             this.changeDateOfIssue()
             this.changeCurrencyType()
             this.allCustomers()
+            this.setDefaultSerieByDocument()
         },
         changeEstablishment() {
             this.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
