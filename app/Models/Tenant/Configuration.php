@@ -264,6 +264,10 @@
             'affect_all_documents',
             'quantity_sales_notes',
             'restrict_series_selection_seller',
+
+            'enabled_point_system',
+            'point_system_sale_amount',
+            'quantity_of_points',
         ];
 
         protected $casts = [
@@ -362,8 +366,10 @@
             'hide_pdf_view_documents' => 'bool',
             'affect_all_documents'=>'bool',
             'restrict_series_selection_seller'=>'bool',
-            
 
+            'enabled_point_system'=>'bool',
+            'point_system_sale_amount'=>'float',
+            'quantity_of_points'=>'float',
         ];
 
         protected $hidden = [
@@ -582,6 +588,10 @@
                 'affect_all_documents' => (bool)$this->affect_all_documents,
                 'restrict_series_selection_seller' => $this->restrict_series_selection_seller,
                 
+                'enabled_point_system' => $this->enabled_point_system,
+                'point_system_sale_amount' => $this->point_system_sale_amount,
+                'quantity_of_points' => $this->quantity_of_points,
+
                 'delete_relation_note_to_invoice' => (bool)config('tenant.delete_relation_note_to_invoice'),
             ];
         }
