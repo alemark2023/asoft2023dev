@@ -315,7 +315,7 @@
                                         <el-input v-model="form.worker_full_name_tips"></el-input>
                                     </div>
                                 </div>
- 
+
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="control-label">Monto</label>
@@ -512,15 +512,15 @@ export default {
     components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress},
 
     props: [
-        'form', 
-        'customer', 
-        'currencyTypeActive', 
-        'exchangeRateSale', 
-        'is_payment', 
-        'soapCompany', 
-        'businessTurns', 
-        'isPrint', 
-        'globalDiscountTypeId', 
+        'form',
+        'customer',
+        'currencyTypeActive',
+        'exchangeRateSale',
+        'is_payment',
+        'soapCompany',
+        'businessTurns',
+        'isPrint',
+        'globalDiscountTypeId',
         'enabledTipsPos',
         'hidePdfViewDocuments',
     ],
@@ -706,8 +706,7 @@ export default {
 
             if (input_global_discount > 0 && !discount)
             {
-
-                const percentage_igv = 18
+                const percentage_igv = this.percentageIgv * 100
                 let base = (this.isGlobalDiscountBase) ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
                 let amount = 0
                 let factor = 0
@@ -1153,7 +1152,7 @@ export default {
                     }
 
                     this.documentNewId = response.data.data.id;
-                    
+
                     // this.showDialogOptions = true;
                     this.showOptionsDialog(response)
 
@@ -1180,7 +1179,7 @@ export default {
                 this.locked_submit = false
             });
         },
-        
+
         showOptionsDialog(response){
 
             if(this.hidePdfViewDocuments)
@@ -1209,7 +1208,7 @@ export default {
             {
                 this.showDialogOptions = true
             }
-            
+
         },
 
         gethtml(){
@@ -1248,10 +1247,10 @@ export default {
                 }
             ];
             // qz.print(configg, printData).catch(displayError);
-            
+
             qz.print(configg, printData)
                 .then(()=>{
-                    
+
                     this.$notify({
                         title: '',
                         message: 'Impresión en proceso...',
