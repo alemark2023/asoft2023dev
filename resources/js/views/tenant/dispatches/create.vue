@@ -28,7 +28,7 @@
                             <div :class="{'has-danger': errors.series}"
                                  class="form-group">
                                 <label class="control-label">Serie<span class="text-danger"> *</span></label>
-                                <el-select v-model="form.series_id">
+                                <el-select v-model="form.series_id" :disabled="generalDisabledSeries()">
                                     <el-option v-for="option in series"
                                                :key="option.id"
                                                :label="option.number"
@@ -788,11 +788,13 @@ import LotsGroup from '../documents/partials/lots_group.vue';
 import DispatchOptions from './partials/options.vue'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import WarehousesDetail from '@components/WarehousesDetail.vue'
+import {setDefaultSeriesByMultipleDocumentTypes} from '@mixins/functions'
 
 export default {
     props: [
         'order_form_id',
         'configuration',
+        'authUser',
     ],
     components: {
         itemForm,
@@ -802,6 +804,7 @@ export default {
         DispatchOptions,
         WarehousesDetail,
     },
+    mixins: [setDefaultSeriesByMultipleDocumentTypes],
     computed: {
         ...mapState([
             'config',
@@ -1366,6 +1369,7 @@ export default {
             this.form.series_id = null;
             this.setDefaultSerie();
             this.setOriginAddressByEstablishment()
+            this.generalSetDefaultSerieByDocumentType('09')
         },
         setOriginAddressByEstablishment() {
 

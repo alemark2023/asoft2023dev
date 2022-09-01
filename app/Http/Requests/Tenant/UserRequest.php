@@ -43,11 +43,11 @@ class UserRequest extends FormRequest
             ],
             'personal_cell_phone' => [
                 'nullable',
-                'numeric',
+                // 'numeric',
             ],
             'corporate_cell_phone' => [
                 'nullable',
-                'numeric',
+                // 'numeric',
             ],
             'number' => [
                 'nullable',

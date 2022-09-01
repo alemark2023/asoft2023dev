@@ -880,7 +880,7 @@ export default {
         filterDocumentTypes(data)
         {
             return data.filter(element => {
-                return ['01', '03', '80'].includes(element.id) 
+                return ['01', '03', '80', '09'].includes(element.id) 
             })
         },
         submit() {
