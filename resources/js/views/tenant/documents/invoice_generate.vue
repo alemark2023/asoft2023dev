@@ -1411,6 +1411,7 @@
             :customer-id="form.customer_id"
             :currency-types="currency_types"
             :is-from-invoice="true"
+            :percentage-igv="percentage_igv"
             @add="addRow"></document-form-item>
 
         <person-form :document_type_id=form.document_type_id
@@ -1700,6 +1701,7 @@ export default {
                 this.changeCurrencyType()
                 this.setDefaultDocumentType();
             })
+        await this.getPercentageIgv();
         this.loading_form = true
         this.$eventHub.$on('reloadDataPersons', (customer_id) => {
             this.reloadDataCustomers(customer_id)
@@ -1742,7 +1744,7 @@ export default {
                     return this.setItemFromResponse(i, itemsParsed);
                 });
                 this.form.items = itemsResponse.map(i => {
-                    return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale)
+                    return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv)
                 });
             });
         }
@@ -1760,7 +1762,7 @@ export default {
                     return this.setItemFromResponse(i, itemsParsed);
                 });
                 this.form.items = itemsResponse.map(i => {
-                    return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale)
+                    return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv)
                 });
             });
         }
@@ -1914,7 +1916,7 @@ export default {
                 this.form.items[index].affectation_igv_type = await _.find(this.affectation_igv_types, {id: this.form.items[index].affectation_igv_type_id})
             }
 
-            this.form.items[index] = await calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale)
+            this.form.items[index] = await calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv)
             await this.calculateTotal()
 
         },
@@ -2283,7 +2285,7 @@ export default {
 
             }
 
-            this.form.prepayments[index].total = (this.form.affectation_type_prepayment == 10) ? _.round(this.form.prepayments[index].amount * 1.18, 2) : this.form.prepayments[index].amount
+            this.form.prepayments[index].total = (this.form.affectation_type_prepayment == 10) ? _.round(this.form.prepayments[index].amount * (1 + this.percentage_igv), 2) : this.form.prepayments[index].amount
 
             this.changeTotalPrepayment()
 
@@ -2444,7 +2446,7 @@ export default {
 
                     this.form.total_discount = _.round(amount, 2)
                     this.form.total_taxed = _.round(this.form.total_taxed - amount, 2)
-                    this.form.total_igv = _.round(this.form.total_taxed * 0.18, 2)
+                    this.form.total_igv = _.round(this.form.total_taxed * this.percentage_igv, 2)
                     this.form.total_taxes = _.round(this.form.total_igv, 2)
                     this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
 
@@ -2464,7 +2466,7 @@ export default {
 
                         this.form.total_discount = _.round(amount, 2)
                         this.form.total_taxed = _.round(this.form.total_taxed - amount, 2)
-                        this.form.total_igv = _.round(this.form.total_taxed * 0.18, 2)
+                        this.form.total_igv = _.round(this.form.total_taxed * this.percentage_igv, 2)
                         this.form.total_taxes = _.round(this.form.total_igv, 2)
                         this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
 
@@ -2978,15 +2980,17 @@ export default {
             }
 
         },
-        changeDateOfIssue() {
+        async changeDateOfIssue() {
 
             this.validateDateOfIssue()
 
             this.form.date_of_due = this.form.date_of_issue
             // if (! this.isUpdate) {
-            this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+            await this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                 this.form.exchange_rate_sale = response
             });
+            await this.getPercentageIgv();
+            this.changeCurrencyType();
             // }
         },
         assignmentDateOfPayment() {
@@ -3078,7 +3082,7 @@ export default {
             this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
             let items = []
             this.form.items.forEach((row) => {
-                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv))
             });
             this.form.items = items
             this.calculateTotal()
@@ -3375,7 +3379,7 @@ export default {
             let input_global_discount = parseFloat(this.total_global_discount)
 
             if (input_global_discount > 0) {
-                const percentage_igv = 18
+                const percentage_igv = this.percentage_igv * 100;
                 let base = (this.isGlobalDiscountBase) ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
                 let amount = 0
                 let factor = 0

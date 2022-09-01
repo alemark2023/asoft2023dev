@@ -19,7 +19,6 @@ use App\Models\Tenant\Configuration;
 
 class DocumentInput
 {
-
     public static function set($inputs)
     {
         $document_type_id = $inputs['document_type_id'];
@@ -134,7 +133,7 @@ class DocumentInput
             'hotel' => self::hotel($inputs),
             'transport' => self::transport($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'additional_information'),
-            'additional_data' => Functions::valueKeyInArray($inputs, 'additional_data'),
+            //'additional_data' => Functions::valueKeyInArray($inputs, 'additional_data'),
             'plate_number' => Functions::valueKeyInArray($inputs, 'plate_number'),
             'legends' => LegendInput::set($inputs),
             'actions' => ActionInput::set($inputs),
@@ -215,7 +214,10 @@ class DocumentInput
                     'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf'),
                     'name_product_xml' => Functions::valueKeyInArray($row, 'name_product_pdf') ? self::getNameProductXml($row, $inputs) : null,
                     'update_description' => Functions::valueKeyInArray($row, 'update_description', false),
+                    'additional_data' => Functions::valueKeyInArray($row, 'additional_data'),
+//                    'additional_data' => key_exists('additional_data', $row)?$row['additional_data']:null,
                 ];
+//                dd($arayItem);
                 Item::SaveExtraDataToRequest($arayItem,$row);
                 $items[] = $arayItem;
             }

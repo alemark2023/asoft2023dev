@@ -363,6 +363,7 @@
             'affect_all_documents'=>'bool',
             'restrict_series_selection_seller'=>'bool',
             
+
         ];
 
         protected $hidden = [
@@ -581,6 +582,7 @@
                 'affect_all_documents' => (bool)$this->affect_all_documents,
                 'restrict_series_selection_seller' => $this->restrict_series_selection_seller,
                 
+                'delete_relation_note_to_invoice' => (bool)config('tenant.delete_relation_note_to_invoice'),
             ];
         }
 
@@ -2243,7 +2245,7 @@
             return (bool) \Config('extra.suscription_facturalo');
         }
 
-        
+
         /**
          *
          * @param Builder $query
@@ -2254,7 +2256,7 @@
             return $query->select('separate_cash_transactions')->firstOrFail()->separate_cash_transactions;
         }
 
-        
+
         /**
          *
          * @param Builder $query
@@ -2265,9 +2267,9 @@
             return $query->select('order_cash_income')->firstOrFail()->order_cash_income;
         }
 
-         
+
         /**
-         * 
+         *
          * Obtener campo individual de la configuracion
          *
          * @param  Builder $query
@@ -2278,6 +2280,6 @@
         {
             return $query->select($column)->firstOrFail()->{$column};
         }
-        
+
 
     }

@@ -64,7 +64,7 @@
                             <el-input v-model="search.license_plate"  placeholder="Placa" clearable></el-input>
                         </div>
                     </div>
-                    
+
                 </div>
 
             </div>
@@ -135,7 +135,8 @@
                 records: [],
                 pagination: {},
                 series: [],
-                search_by_plate:false
+                search_by_plate:false,
+                recordItem: null
             }
         },
         computed: {

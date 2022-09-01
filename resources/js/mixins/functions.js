@@ -2,7 +2,8 @@ export const functions = {
     data() {
         return {
             loading_search_exchange_rate: false,
-            loading_search: false
+            loading_search: false,
+            percentage_igv: 0.18
         }
     },
     methods: {
@@ -67,7 +68,20 @@ export const functions = {
                         this.loading_search = false
                     })
             })
-        }
+        },
+        async getPercentageIgv() {
+            console.log('********');
+            console.log(this.form.establishment_id);
+            console.log(this.form.date_of_issue);
+            console.log('********');
+            await this.$http.post(`/store/get_igv`, {
+                'establishment_id': this.form.establishment_id,
+                'date': this.form.date_of_issue
+            })
+                .then(response => {
+                    this.percentage_igv = response.data;
+                });
+        },
     }
 };
 

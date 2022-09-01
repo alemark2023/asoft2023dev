@@ -69,7 +69,7 @@
                                     <small class="form-control-feedback" v-if="errors.delivery_date" v-text="errors.delivery_date[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label class="control-label">Dirección de envío
@@ -88,7 +88,7 @@
                                     <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                                 </div>
                             </div> -->
-                            
+
                             <div class="col-lg-6">
                                 <div class="form-group" :class="{'has-danger': errors.observation}">
                                     <label class="control-label">Observación
@@ -321,7 +321,7 @@
                 this.setAddressByCustomer()
             },
             setAddressByCustomer(){
-                
+
                 let customer = _.find(this.customers, {id : this.form.customer_id})
 
                 if(customer){
@@ -538,13 +538,13 @@
                 this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
                 let items = []
                 this.form.items.forEach((row) => {
-                    items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+                    items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv))
                 });
                 this.form.items = items
                 this.calculateTotal()
             },
             calculateTotal() {
-                
+
                 let total_discount = 0
                 let total_charge = 0
                 let total_exportation = 0
@@ -581,7 +581,7 @@
                         total += parseFloat(row.total)
                     }
                     // total_value += parseFloat(row.total_value)
-                    
+
                     if (!['21', '37'].includes(row.affectation_igv_type_id)) {
                         total_value += parseFloat(row.total_value)
                     }
@@ -597,7 +597,7 @@
                         total_igv_free += row.total_igv
 
                     }
-                    
+
                 });
 
                 this.form.total_igv_free = _.round(total_igv_free, 2)

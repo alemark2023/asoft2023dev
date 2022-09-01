@@ -529,7 +529,7 @@
                                                            }}</p>
                             <p v-if="form.total_igv > 0"
                                class="text-right">IGV: {{ currency_type.symbol }} {{ form.total_igv }}</p>
-                               
+
                             <p v-if="form.total_isc > 0"
                                class="text-right">ISC: {{ currency_type.symbol }} {{ form.total_isc }}</p>
 
@@ -1179,7 +1179,7 @@ export default {
             this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
             let items = []
             this.form.items.forEach((row) => {
-                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv))
             });
             this.form.items = items
             this.calculateTotal()
@@ -1221,7 +1221,7 @@ export default {
                 total_value += parseFloat(row.total_value)
                 total_igv += parseFloat(row.total_igv)
                 total += parseFloat(row.total)
-                
+
                 // isc
                 total_isc += parseFloat(row.total_isc)
                 total_base_isc += parseFloat(row.total_base_isc)
@@ -1240,7 +1240,7 @@ export default {
             this.form.total_igv = _.round(total_igv, 2)
             this.form.total_value = _.round(total_value, 2)
             // this.form.total_taxes = _.round(total_igv, 2)
-            
+
             //impuestos (isc + igv)
             this.form.total_taxes = _.round(total_igv + total_isc, 2)
 

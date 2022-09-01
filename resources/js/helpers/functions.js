@@ -1,4 +1,4 @@
-function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
+function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pigv) {
     // console.log(currency_type_id_new, exchange_rate_sale)
 
     let currency_type_id_old = row_old.item.currency_type_id
@@ -38,7 +38,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         affectation_igv_type_id: row_old.affectation_igv_type_id,
         affectation_igv_type: row_old.affectation_igv_type,
         total_base_igv: 0,
-        percentage_igv: 18,
+        percentage_igv: pigv * 100,
         total_igv: 0,
         system_isc_type_id: has_isc ? row_old.system_isc_type_id : null,
         // system_isc_type_id: null,
@@ -80,7 +80,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
     // console.log(row)
 
-    let percentage_igv = 18
+    let percentage_igv = pigv * 100
     let unit_value = row.unit_price
 
     if (row.affectation_igv_type_id === '10') {
