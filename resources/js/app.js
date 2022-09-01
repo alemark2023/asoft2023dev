@@ -362,6 +362,8 @@ Vue.component('system-server-status', require('./views/system/configuration/serv
 //Configuración global del login
 Vue.component('system-login-settings', require('./views/system/configuration/login.vue'))
 
+Vue.component('system-login-other-configuration', require('./views/system/configuration/other_configuration.vue'))
+
 // Configuración del login
 Vue.component('tenant-login-page', require('./views/tenant/login/index.vue'))
 
