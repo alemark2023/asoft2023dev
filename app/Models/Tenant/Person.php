@@ -104,6 +104,7 @@
         use UsesTenantConnection;
 
         protected $table = 'persons';
+
         protected $with = [
             'identity_document_type',
             'country',
@@ -111,6 +112,7 @@
             'province',
             'district'
         ];
+
         protected $casts = [
             'perception_agent' => 'bool',
             'person_type_id' => 'int',
@@ -121,7 +123,9 @@
             'seller_id' => 'int',
             'zone_id' => 'int',
             'parent_id' => 'int',
+            'accumulated_points' => 'float',
         ];
+        
         protected $fillable = [
             'type',
             'identity_document_type_id',
@@ -155,7 +159,9 @@
             'seller_id',
             'zone_id',
             'status',
-            'parent_id'
+            'parent_id',
+
+            'accumulated_points',
         ];
 
         // protected static function boot()
