@@ -242,7 +242,11 @@ class DocumentInput
 
             if($configuration->name_product_pdf_to_xml)
             {
-                return trim((new Html2Text($row['name_product_pdf']))->getText());
+                $text = trim((new Html2Text($row['name_product_pdf']))->getText());
+                
+                return preg_replace('~\R{1,2}~', ' ', $text);
+
+                // return trim((new Html2Text($row['name_product_pdf']))->getText());
             }
 
         }
