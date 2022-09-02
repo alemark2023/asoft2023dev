@@ -228,6 +228,16 @@
                                                :value="option.id"></el-option>
                                 </el-select>
                             </div>
+                            <div v-if="config.enabled_point_system && form.customer_id" class="form-group col-sm-6 mb-0 mt-3">
+                                <p style="font-size: 15px">
+                                    <label class="control-label font-weight-bold text-info">Puntos acumulados:</label> 
+                                    <b>{{customer_accumulated_points}}</b> 
+
+                                    <template v-if="total_exchange_points > 0">
+                                    - <b style="color:red">{{ total_exchange_points }}</b> = <b>{{ customer_accumulated_points - total_exchange_points }}</b>
+                                    </template>
+                                </p>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body border-top no-gutters p-0">
@@ -267,6 +277,10 @@
                                             <br/>Series: {{ showItemSeries(row.item.lots) }}
                                         </template>
 
+                                        <template v-if="config.enabled_point_system && customer_accumulated_points > 0 && row.item.exchange_points">
+                                            <el-checkbox class="mt-2 mb-2" v-model="row.item.change_free_affectation_igv" @change="changeRowExchangePoints(row, index)"><b>¿Desea canjear el producto por {{row.item.quantity_of_points}} puntos?</b></el-checkbox>
+                                        </template>
+
                                     </td>
                                     <td class="text-center">{{ row.item.unit_type_id }}</td>
 
@@ -282,6 +296,7 @@
 
                                     <td class="text-right">{{ currency_type.symbol }} {{ row.total_value }}</td>
                                     <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
+                                    
                                     <td class="text-right">
                                         <template v-if="config.change_free_affectation_igv">
                                             <el-tooltip class="item"
@@ -307,6 +322,7 @@
                                             <span style='font-size:10px;'>&#9998;</span></button>
 
                                     </td>
+
                                 </tr>
                                 <!-- @todo: Mejorar evitando duplicar codigo -->
                                 <!-- Ocultar en cel -->
@@ -1412,6 +1428,7 @@
             :currency-types="currency_types"
             :is-from-invoice="true"
             :percentage-igv="percentage_igv"
+            :customer-accumulated-points="customer_accumulated_points"
             @add="addRow"></document-form-item>
 
         <person-form :document_type_id=form.document_type_id
@@ -1607,7 +1624,9 @@ export default {
             payment_conditions: [],
             affectation_igv_types: [],
             total_discount_no_base: 0,
-            show_has_retention: true
+            show_has_retention: true,
+            customer_accumulated_points: 0,
+            total_exchange_points: 0
         }
     },
     computed: {
@@ -1902,6 +1921,12 @@ export default {
                 startConnection();
             }
 
+        },
+        changeRowExchangePoints(row, index)
+        {
+            console.log(row)
+            this.total_exchange_points += row.item.quantity_of_points
+            this.changeRowFreeAffectationIgv(row, index)
         },
         async changeRowFreeAffectationIgv(row, index) {
 
@@ -2939,9 +2964,20 @@ export default {
                     if (seller !== undefined) {
                         this.form.seller_id = seller.id
                     }
+
+                    this.setCustomerAccumulatedPoints(alt)
                 }
 
 
+            }
+        },
+        setCustomerAccumulatedPoints(customer)
+        {
+            if(this.config.enabled_point_system)
+            {
+                this.$http.get(`/persons/accumulated-points/${customer.id}`).then((response) => {
+                        this.customer_accumulated_points = response.data
+                    })
             }
         },
         changeDocumentType() {
@@ -3689,6 +3725,7 @@ export default {
                 })
             }
 
+            this.setCustomerAccumulatedPoints(customer)
 
             let seller = this.sellers.find(element => element.id == customer.seller_id)
             if (seller !== undefined) {

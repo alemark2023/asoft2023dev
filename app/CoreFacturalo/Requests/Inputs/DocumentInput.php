@@ -30,6 +30,7 @@ class DocumentInput
 
         $offline_configuration = OfflineConfiguration::firstOrFail();
         // $number = Functions::newNumber($soap_type_id, $document_type_id, $series, $number, Document::class);
+        $configuration = Configuration::getColumnsForDocuments();
 
         if ($number !== '#') {
             Functions::validateUniqueDocument($soap_type_id, $document_type_id, $series, $number, Document::class);
@@ -67,6 +68,8 @@ class DocumentInput
         $ticket_single_shipment = self::getTicketSingleShipment($inputs);
         $inputs['ticket_single_shipment'] = $ticket_single_shipment;
 
+        // se registran datos para identificar si el documento fue utilizado para sistema por puntos
+        $point_system_data = self::getPointSystemData($inputs, $configuration);
 
         return [
             'type' => $inputs['type'],
@@ -152,6 +155,8 @@ class DocumentInput
             // 'pending_amount_detraction' => Functions::valueKeyInArray($inputs, 'pending_amount_detraction', 0),
             'tip' => self::tip($inputs, $soap_type_id),
             'ticket_single_shipment' => $ticket_single_shipment,
+            'point_system' => $point_system_data['point_system'],
+            'point_system_data' => $point_system_data['point_system_data'],
         ];
     }
 
@@ -651,6 +656,48 @@ class DocumentInput
         }
 
         return false;
+    }
+
+    
+    /**
+     * 
+     * Configuración de sistema por puntos
+     *
+     * @param  array $inputs
+     * @param  Configuration $configuration
+     * @return array
+     */
+    public static function getPointSystemData($inputs, $configuration)
+    {
+        $data = [
+            'point_system' => false,
+            'point_system_data' => null
+        ];
+
+        if(self::isDocumentInvoice($inputs['document_type_id']) && $configuration->enabled_point_system)
+        {
+            $data = [
+                'point_system' => $configuration->enabled_point_system,
+                'point_system_data' => [
+                    'point_system_sale_amount' => $configuration->point_system_sale_amount,
+                    'quantity_of_points' => $configuration->quantity_of_points,
+                ]
+            ];
+        }
+
+        return $data;
+    }
+
+    
+    /**
+     * Determina si es factura o boleta
+     *
+     * @param  string $document_type_id
+     * @return bool
+     */
+    public static function isDocumentInvoice($document_type_id)
+    {
+        return in_array($document_type_id, ['01', '03'], true);
     }
 
 

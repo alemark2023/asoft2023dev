@@ -2292,4 +2292,39 @@
         }
 
 
+        /**
+         *
+         * Obtener campos de configuracion para sistema por puntos
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeGetDataPointSystem($query)
+        {
+            return $query->select([
+                        'enabled_point_system',
+                        'point_system_sale_amount',
+                        'quantity_of_points',
+                    ])
+                    ->firstOrFail();
+        }
+
+
+        /**
+         *
+         * Obtener campos de configuracion para registrar datos de configuracion en documents
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeGetColumnsForDocuments($query)
+        {
+            return $query->select([
+                        'enabled_point_system',
+                        'point_system_sale_amount',
+                        'quantity_of_points',
+                    ])
+                    ->firstOrFail();
+        }
+
     }

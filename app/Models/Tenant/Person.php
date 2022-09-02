@@ -605,7 +605,8 @@
                 'optional_email' => $optional_mail,
                 'optional_email_send' => implode(',', $optional_mail_send),
                 'childrens' => [],
-
+                'accumulated_points' => $this->accumulated_points,
+                
             ];
             if ($childrens == true) {
                 $child = $this->children_person->transform(function ($row) {
@@ -918,6 +919,20 @@
                 ['number', '99999999'],
                 ['type', 'customers'],
             ]);
+        }
+
+        
+        /**
+         * 
+         * Obtener puntos acumulados
+         *
+         * @param Builder $query
+         * @param int $id
+         * @return float
+         */  
+        public function scopeGetOnlyAccumulatedPoints($query, $id)
+        {
+            return $query->whereFilterWithOutRelations()->select('accumulated_points')->findOrFail($id)->accumulated_points;
         }
 
     }
