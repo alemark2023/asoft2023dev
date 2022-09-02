@@ -7,7 +7,6 @@
     use Illuminate\Queue\InteractsWithQueue;
     use Illuminate\Contracts\Queue\ShouldQueue;
     use Illuminate\Foundation\Bus\Dispatchable;
-    use Hyn\Tenancy\Models\Website;
     use Illuminate\Support\Facades\Log;
     use Exception;
     use App\Models\Tenant\DownloadTray;
@@ -22,9 +21,6 @@
     use Mpdf\Mpdf;
     use Mpdf\Config\ConfigVariables;
     use Mpdf\Config\FontVariables;
-    use Modules\Report\Http\Controllers\ReportDocumentController;
-    use App\Models\Tenant\Catalogs\DocumentType;
-    use Modules\Report\Traits\ReportTrait;
     use Modules\Report\Exports\DocumentExport;
 
     class ProcessDocumentReport implements ShouldQueue
@@ -34,7 +30,6 @@
         use Queueable;
         use SerializesModels;
         use StorageDocument;
-        use ReportTrait;
 
         public $tray_id;
         public $params;
@@ -82,7 +77,7 @@
             
             if (empty($tray)) {
 
-                \Log::debug("No hay datos
+                Log::debug("No hay datos
                     $ tray_id       =>" . var_export($tray_id, true) . "
                     ");
 
