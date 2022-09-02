@@ -617,6 +617,7 @@
                             :exchange-rate-sale="form.exchange_rate_sale"
                             :showDialog.sync="showDialogAddItem"
                             :localHasGlobalIgv="localHasGlobalIgv"
+                            :percentage-igv="percentage_igv"
                             @add="addRow"></purchase-form-item>
 
         <person-form :external="true"
@@ -706,9 +707,9 @@ export default {
             showDialogLots: false,
         }
     },
-    mounted() {
+    async mounted() {
         this.initForm()
-        this.$http.get(`/${this.resource}/tables`)
+        await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
                 let data = response.data
                 this.document_types = data.document_types_invoice
@@ -744,6 +745,7 @@ export default {
             this.initInputPerson()
         })
 
+        await this.getPercentageIgv();
         this.filterCustomers()
         this.isGeneratePurchaseOrder()
         this.changeHasPayment()

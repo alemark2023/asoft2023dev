@@ -576,7 +576,8 @@ export default {
         'showDialog',
         'currencyTypeIdActive',
         'exchangeRateSale',
-        'localHasGlobalIgv'
+        'localHasGlobalIgv',
+        'percentageIgv'
     ],
     components: {itemForm, LotsForm, Keypress},
     computed: {
@@ -958,7 +959,7 @@ export default {
             this.form.item.unit_price = unit_price
             this.form.item.presentation = this.item_unit_type;
             this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
-            this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
+            this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv)
             this.row.lot_code = await this.lot_code
             this.row.lots = await this.lots
             this.row.update_price = this.form.update_price
