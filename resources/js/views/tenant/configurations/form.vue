@@ -59,7 +59,7 @@
                                 </div>
                             </div>
 
-                            
+
                             <div v-if="typeUser != 'integrator'"
                                     class="col-md-6 mt-4">
                                 <label class="control-label">Enviar boletas de forma individual</label>
@@ -181,7 +181,7 @@
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">
                                     Productos de una ubicación (Stock)
-                                    
+
                                     <el-tooltip class="item"
                                                 effect="dark"
                                                 placement="top-start">
@@ -546,7 +546,7 @@
                             </div>
                             <div class="col-md-2 mt-4">
                             </div>
-                            
+
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">
                                     Filtrar clientes según vendedor asignado
@@ -591,7 +591,7 @@
                                 </div>
                             </div>
 
-                            
+
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">
                                     Habilitar búsqueda avanzada
@@ -618,7 +618,7 @@
                                 </div>
                             </div>
 
-                            
+
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">
                                     Separar y ordenar transacciones en caja
@@ -663,11 +663,11 @@
                                 </div>
                             </div>
 
-                            
+
                             <div class="col-md-6 mt-4">
-                                
+
                                 <label class="control-label">Permitir generar pedidos desde cotización a vendedores</label>
-                               
+
                                 <div :class="{'has-danger': errors.generate_order_note_from_quotation}"
                                         class="form-group">
                                     <el-switch v-model="form.generate_order_note_from_quotation"
@@ -681,7 +681,7 @@
                             </div>
 
                             <div class="col-md-6 mt-4">
-                                
+
                                 <label class="control-label">
                                     Listar productos por almacén
                                     <el-tooltip class="item"
@@ -691,7 +691,7 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
-                               
+
                                 <div :class="{'has-danger': errors.list_items_by_warehouse}"
                                         class="form-group">
                                     <el-switch v-model="form.list_items_by_warehouse"
@@ -703,9 +703,9 @@
                                             v-text="errors.list_items_by_warehouse[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6 mt-4">
-                                
+
                                 <label class="control-label">
                                     Restringir selección de serie para vendedor
                                     <el-tooltip class="item"
@@ -715,7 +715,7 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
-                               
+
                                 <div :class="{'has-danger': errors.restrict_series_selection_seller}"
                                         class="form-group">
                                     <el-switch v-model="form.restrict_series_selection_seller"
@@ -944,7 +944,7 @@
                                 </div>
                             </div>
 
-                            
+
                             <div class="col-md-6 mt-4">
                                 <div :class="{'has-danger': errors.global_discount_type_id}"
                                         class="form-group">
@@ -953,7 +953,7 @@
                                                     effect="dark"
                                                     placement="top-start">
                                             <i class="fa fa-info-circle"></i>
- 
+
                                             <div slot="content">
                                                 <strong>Tipo de descuento predeterminado en POS - Ventas/Comprobante electrónico</strong><br/><br/>
                                                 Sugerencias:<br/>
@@ -975,9 +975,9 @@
                                             v-text="errors.global_discount_type_id[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6 mt-4">
-                                <label class="control-label">Restringir venta de productos menores al precio de compra 
+                                <label class="control-label">Restringir venta de productos menores al precio de compra
                                     <el-tooltip
                                         class="item"
                                         content="Validar que el precio de compra del producto no sea superior al de venta - Disponible Ventas/Comprobante electrónico - Nota de venta"
@@ -1394,7 +1394,7 @@
                                 </div>
                             </div>
 
-                            
+
                             <div class="col-md-3 mt-4">
                                 <label class="control-label">Modificar cantidad de decimales
                                     <el-tooltip
@@ -1718,6 +1718,32 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="col-6 mt-4">
+                                <div class="form-group">
+                                    <label>
+                                        Mostrar nombre completo
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">
+                                                Mostrar nombre completo en listado de productos
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.show_complete_name_pos}"
+                                        class="form-group">
+                                        <el-switch v-model="form.show_complete_name_pos"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                        <small v-if="errors.show_complete_name_pos"
+                                            class="form-control-feedback"
+                                            v-text="errors.show_complete_name_pos[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3"  name="nine">
@@ -1767,7 +1793,7 @@
                                     <small class="form-control-feedback" v-if="errors.dashboard_sales" v-text="errors.dashboard_sales[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">Productos
                                     <el-tooltip class="item" effect="dark" placement="top-start">
@@ -1809,7 +1835,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </el-tab-pane>
                 </el-tabs>
@@ -2016,6 +2042,7 @@ export default {
 
                 affect_all_documents:false,
                 restrict_series_selection_seller: false,
+                show_complete_name_pos: false,
             };
         },
         UpdateFormPurchase(e) {

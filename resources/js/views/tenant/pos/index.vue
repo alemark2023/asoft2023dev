@@ -200,7 +200,13 @@
                                     class="card-body pointer px-2 pt-2"
                                     @click="clickAddItem(item, index)"
                                 >
-                                    <p
+                                    <p v-if="configuration.show_complete_name_pos" class="font-weight-semibold mb-0">
+                                        {{ item.description }}
+                                    </p>
+                                    <p v-else class="font-weight-semibold mb-0">
+                                        {{ item.description.substring(0, 50) }}
+                                    </p>
+                                    <!-- <p
                                         class="font-weight-semibold mb-0"
                                         v-if="DescriptionLength(item) > 50"
                                         data-toggle="tooltip"
@@ -214,7 +220,7 @@
                                         v-if="DescriptionLength(item) <= 50"
                                     >
                                         {{ item.description }}
-                                    </p>
+                                    </p> -->
                                     <img
                                         :src="item.image_url"
                                         class="img-thumbail img-custom"
