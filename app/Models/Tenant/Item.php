@@ -1001,6 +1001,8 @@ class Item extends ModelTenant
             'subject_to_detraction' => $this->subject_to_detraction,
             'exchange_points' => $this->exchange_points,
             'quantity_of_points' => $this->quantity_of_points,
+            'exchanged_for_points' => false, //para determinar si desea canjear el producto
+            'used_points_for_exchange' => null, //total de puntos
 
         ];
 

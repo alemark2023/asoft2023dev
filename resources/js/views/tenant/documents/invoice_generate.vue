@@ -228,16 +228,20 @@
                                                :value="option.id"></el-option>
                                 </el-select>
                             </div>
+
+                            <!-- sistema por puntos -->
                             <div v-if="config.enabled_point_system && form.customer_id" class="form-group col-sm-6 mb-0 mt-3">
                                 <p style="font-size: 15px">
                                     <label class="control-label font-weight-bold text-info">Puntos acumulados:</label> 
                                     <b>{{customer_accumulated_points}}</b> 
 
                                     <template v-if="total_exchange_points > 0">
-                                    - <b style="color:red">{{ total_exchange_points }}</b> = <b>{{ customer_accumulated_points - total_exchange_points }}</b>
+                                    - <b style="color:red">{{ total_exchange_points }}</b> = <b>{{ calculate_customer_accumulated_points }}</b>
                                     </template>
                                 </p>
                             </div>
+                        <!-- sistema por puntos -->
+
                         </div>
                     </div>
                     <div class="card-body border-top no-gutters p-0">
@@ -277,9 +281,11 @@
                                             <br/>Series: {{ showItemSeries(row.item.lots) }}
                                         </template>
 
+                                        <!-- sistema por puntos -->
                                         <template v-if="config.enabled_point_system && customer_accumulated_points > 0 && row.item.exchange_points">
-                                            <el-checkbox class="mt-2 mb-2" v-model="row.item.change_free_affectation_igv" @change="changeRowExchangePoints(row, index)"><b>¿Desea canjear el producto por {{row.item.quantity_of_points}} puntos?</b></el-checkbox>
+                                            <el-checkbox class="mt-2 mb-2" v-model="row.item.exchanged_for_points" @change="changeRowExchangePoints(row, index)"><b>{{ getExchangePointDescription(row) }}</b></el-checkbox>
                                         </template>
+                                        <!-- sistema por puntos -->
 
                                     </td>
                                     <td class="text-center">{{ row.item.unit_type_id }}</td>
@@ -1626,6 +1632,7 @@ export default {
             total_discount_no_base: 0,
             show_has_retention: true,
             customer_accumulated_points: 0,
+            calculate_customer_accumulated_points: 0,
             total_exchange_points: 0
         }
     },
@@ -1914,6 +1921,9 @@ export default {
             this.readonly_date_of_due = false
             this.total_discount_no_base = 0
 
+            this.calculate_customer_accumulated_points = 0
+            this.total_exchange_points = 0
+
         },
         startConnectionQzTray() {
 
@@ -1924,9 +1934,51 @@ export default {
         },
         changeRowExchangePoints(row, index)
         {
-            console.log(row)
-            this.total_exchange_points += row.item.quantity_of_points
+            row.item.change_free_affectation_igv = !row.item.change_free_affectation_igv
+            row.item.used_points_for_exchange = row.item.change_free_affectation_igv ? this.getUsedPoints(row) : null
+            this.setTotalExchangePoints()
             this.changeRowFreeAffectationIgv(row, index)
+        },
+        setTotalExchangePoints()
+        {
+            this.total_exchange_points = this.getTotalExchangePointsItems()
+            this.calculateNewPoints()
+        },
+        hasPointsAvailable()
+        {
+            return this.calculate_customer_accumulated_points >= 0
+        },
+        calculateNewPoints()
+        {
+            this.calculate_customer_accumulated_points = this.customer_accumulated_points - this.total_exchange_points
+        },
+        validateExchangePoints()
+        {
+            if(!this.hasPointsAvailable())
+            {
+                return {
+                    success: false,
+                    message: `El total de puntos a canjear excede los puntos acumulados: ${this.calculate_customer_accumulated_points} puntos`
+                }
+            }
+
+            return {
+                success: true
+            }
+        },
+        getExchangePointDescription(row)
+        {
+            return `¿Desea canjearlo por ${this.getUsedPoints(row)} puntos?`
+        },
+        getUsedPoints(row)
+        {
+            return _.round(row.item.quantity_of_points * row.quantity, 2)
+        },
+        getTotalExchangePointsItems()
+        {
+            return _.sumBy(this.form.items, (row)=>{
+                return (row.item.exchanged_for_points) ? this.getUsedPoints(row) : 0
+            })
         },
         async changeRowFreeAffectationIgv(row, index) {
 
@@ -2977,6 +3029,7 @@ export default {
             {
                 this.$http.get(`/persons/accumulated-points/${customer.id}`).then((response) => {
                         this.customer_accumulated_points = response.data
+                        this.calculate_customer_accumulated_points = response.data //para calculos
                     })
             }
         },
@@ -3104,6 +3157,8 @@ export default {
                 //this.form.items.$set(this.recordItem.indexi, row)
                 this.form.items[this.recordItem.indexi] = row
                 this.recordItem = null
+                if(this.config.enabled_point_system) this.setTotalExchangePoints()
+
             } else {
                 this.form.items.push(JSON.parse(JSON.stringify(row)));
             }
@@ -3569,6 +3624,14 @@ export default {
             if (!this.enabled_payments) {
                 this.form.payments = []
             }
+
+            // validacion sistema por puntos
+            if(this.config.enabled_point_system)
+            {
+                const validate_exchange_points = this.validateExchangePoints()
+                if(!validate_exchange_points.success) return this.$message.error(validate_exchange_points.message)
+            }
+            // validacion sistema por puntos
 
             this.loading_submit = true
             let path = `/${this.resource}`;
