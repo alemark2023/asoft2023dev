@@ -14,6 +14,19 @@
                     <div class="col-12 px-0">
                         <h4 class="font-weight-semibold m-0 text-secondary">{{ customer.description }}</h4>
                     </div>
+                    
+                    <!-- sistema por puntos -->
+                    <div v-if="enabledPointSystem" class="mt-3">
+                        <p style="font-size: 15px">
+                            <label class="font-weight-bold">Puntos acumulados:</label> 
+                            <b>{{customer_accumulated_points}}</b> 
+
+                            <template v-if="total_exchange_points > 0">
+                            - <b style="color:red">{{ total_exchange_points }}</b> = <b>{{ calculate_customer_accumulated_points }}</b>
+                            </template>
+                        </p>
+                    </div>
+                    <!-- sistema por puntos -->
                 </div>
 
                 <template v-for="(item,index) in form.items">
@@ -33,6 +46,12 @@
                             <h5 class="font-weight-semibold m-0 text-right text-secondary">
                                 {{ currencyTypeActive.symbol }} {{ item.total }}</h5>
                         </div>
+
+                        <!-- sistema por puntos -->
+                        <div class="col-12" v-if="enabledPointSystem && customer_accumulated_points > 0 && item.item.exchange_points">
+                            <el-checkbox class="mt-2 mb-2" v-model="item.item.exchanged_for_points" @change="changeRowExchangePoints(item, index)"><b>{{ getExchangePointDescription(item) }}</b></el-checkbox>
+                        </div>
+                        <!-- sistema por puntos -->
                     </div>
                 </template>
 
@@ -523,6 +542,7 @@ export default {
         'globalDiscountTypeId',
         'enabledTipsPos',
         'hidePdfViewDocuments',
+        'enabledPointSystem',
     ],
     data() {
         return {
@@ -559,7 +579,10 @@ export default {
             global_discount_type: {},
             error_global_discount: false,
             is_discount_amount: false,
-            payment_method_type_id: null
+            payment_method_type_id: null,
+            customer_accumulated_points: 0,
+            calculate_customer_accumulated_points: 0,
+            total_exchange_points: 0
 
         }
     },
@@ -587,6 +610,8 @@ export default {
         if (!qz.websocket.isActive() && this.isPrint) {
             startConnection();
         }
+
+        this.setCustomerAccumulatedPoints()
     },
     mounted() {
         // console.log(this.currencyTypeActive)
@@ -597,6 +622,31 @@ export default {
         },
     },
     methods: {
+        setCustomerAccumulatedPoints()
+        {
+            if(this.enabledPointSystem)
+            {
+                this.$http.get(`/persons/accumulated-points/${this.form.customer_id}`).then((response) => {
+                        this.customer_accumulated_points = response.data
+                        this.calculate_customer_accumulated_points = response.data //para calculos
+                    })
+            }
+        },
+        changeRowExchangePoints(row, index)
+        {
+            row.item.change_free_affectation_igv = !row.item.change_free_affectation_igv
+            row.item.used_points_for_exchange = row.item.change_free_affectation_igv ? this.getUsedPoints(row) : null
+            this.setTotalExchangePoints()
+            this.changeRowFreeAffectationIgv(row, index)
+        },
+        getExchangePointDescription(row)
+        {
+            return `¿Desea canjearlo por ${this.getUsedPoints(row)} puntos?`
+        },
+        getUsedPoints(row)
+        {
+            return _.round(row.item.quantity_of_points * row.quantity, 2)
+        },
         handleFn113() {
             const code = this.form.document_type_id
             if (code == '01') {

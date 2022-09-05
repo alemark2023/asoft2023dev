@@ -240,7 +240,7 @@
                                     </template>
                                 </p>
                             </div>
-                        <!-- sistema por puntos -->
+                            <!-- sistema por puntos -->
 
                         </div>
                     </div>
