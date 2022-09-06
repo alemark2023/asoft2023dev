@@ -133,7 +133,7 @@ class DocumentInput
             'hotel' => self::hotel($inputs),
             'transport' => self::transport($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'additional_information'),
-            //'additional_data' => Functions::valueKeyInArray($inputs, 'additional_data'),
+            'additional_data' => Functions::valueKeyInArray($inputs, 'additional_data'),
             'plate_number' => Functions::valueKeyInArray($inputs, 'plate_number'),
             'legends' => LegendInput::set($inputs),
             'actions' => ActionInput::set($inputs),
@@ -243,7 +243,7 @@ class DocumentInput
             if($configuration->name_product_pdf_to_xml)
             {
                 $text = trim((new Html2Text($row['name_product_pdf']))->getText());
-                
+
                 return preg_replace('~\R{1,2}~', ' ', $text);
 
                 // return trim((new Html2Text($row['name_product_pdf']))->getText());
