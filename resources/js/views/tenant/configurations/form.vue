@@ -1825,7 +1825,8 @@
                                     <el-tooltip class="item" effect="dark" placement="top-start">
                                         <i class="fa fa-info-circle"></i>
                                         <div slot="content">
-                                            <strong>El monto de venta equivale a X N° de puntos</strong><br/><br/>
+                                            <strong>Disponible para facturas y boletas en Nuevo cpe y POS</strong><br/><br/>
+                                            El monto de venta equivale a X N° de puntos<br/><br/>
                                             Ejemplo: Si tiene configurado como monto S/1, y este es equivalente a 1 punto, al realizar una venta por S/100 a cliente X, este acumularía 100 puntos.<br/>
                                         </div>
                                     </el-tooltip>
@@ -1873,6 +1874,21 @@
                                     </div>
                                 </div>
 
+                                <div class="col-md-4">
+                                    <label class="control-label">
+                                        Redondear al obtener puntos
+                                    </label>
+                                    <div :class="{'has-danger': errors.round_points_of_sale}"
+                                        class="form-group mt-1">
+                                        <el-switch v-model="form.round_points_of_sale"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                        <small v-if="errors.round_points_of_sale"
+                                            class="form-control-feedback"
+                                            v-text="errors.round_points_of_sale[0]"></small>
+                                    </div>
+                                </div>
                             </template>
 
                         </div>
@@ -2084,6 +2100,7 @@ export default {
                 restrict_series_selection_seller: false,
 
                 enabled_point_system: false,
+                round_points_of_sale: false,
                 point_system_sale_amount: 0,
                 quantity_of_points: 0,
 

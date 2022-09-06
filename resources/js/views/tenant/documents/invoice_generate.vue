@@ -231,13 +231,17 @@
 
                             <!-- sistema por puntos -->
                             <div v-if="config.enabled_point_system && form.customer_id" class="form-group col-sm-6 mb-0 mt-3">
-                                <p style="font-size: 15px">
-                                    <label class="control-label font-weight-bold text-info">Puntos acumulados:</label> 
+                                <p class="fs-point-system">
+                                    <label class="font-weight-bold text-info">Puntos acumulados:</label> 
                                     <b>{{customer_accumulated_points}}</b> 
 
                                     <template v-if="total_exchange_points > 0">
                                     - <b style="color:red">{{ total_exchange_points }}</b> = <b>{{ calculate_customer_accumulated_points }}</b>
                                     </template>
+                                </p>
+                                <p class="fs-point-system">
+                                    <label class="font-weight-bold text-danger">Puntos por la compra:</label> 
+                                    <b>{{total_points_by_sale}}</b> 
                                 </p>
                             </div>
                             <!-- sistema por puntos -->
@@ -1434,7 +1438,6 @@
             :currency-types="currency_types"
             :is-from-invoice="true"
             :percentage-igv="percentage_igv"
-            :customer-accumulated-points="customer_accumulated_points"
             @add="addRow"></document-form-item>
 
         <person-form :document_type_id=form.document_type_id
@@ -1512,7 +1515,7 @@
 import DocumentFormItem from './partials/item.vue'
 import PersonForm from '../persons/form.vue'
 import DocumentOptions from '../documents/partials/options.vue'
-import {exchangeRate, functions} from '../../../mixins/functions'
+import {exchangeRate, functions, pointSystemFunctions} from '../../../mixins/functions'
 import {calculateRowItem, showNamePdfOfDescription} from '../../../helpers/functions'
 import Logo from '../companies/logo.vue'
 import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
@@ -1545,7 +1548,7 @@ export default {
         DocumentDetraction,
         DocumentTransportForm
     },
-    mixins: [functions, exchangeRate],
+    mixins: [functions, exchangeRate, pointSystemFunctions],
     data() {
         return {
             datEmision: {
@@ -1631,9 +1634,6 @@ export default {
             affectation_igv_types: [],
             total_discount_no_base: 0,
             show_has_retention: true,
-            customer_accumulated_points: 0,
-            calculate_customer_accumulated_points: 0,
-            total_exchange_points: 0
         }
     },
     computed: {
@@ -1936,49 +1936,8 @@ export default {
         {
             row.item.change_free_affectation_igv = !row.item.change_free_affectation_igv
             row.item.used_points_for_exchange = row.item.change_free_affectation_igv ? this.getUsedPoints(row) : null
-            this.setTotalExchangePoints()
+            this.setTotalExchangePoints() //in mixins
             this.changeRowFreeAffectationIgv(row, index)
-        },
-        setTotalExchangePoints()
-        {
-            this.total_exchange_points = this.getTotalExchangePointsItems()
-            this.calculateNewPoints()
-        },
-        hasPointsAvailable()
-        {
-            return this.calculate_customer_accumulated_points >= 0
-        },
-        calculateNewPoints()
-        {
-            this.calculate_customer_accumulated_points = this.customer_accumulated_points - this.total_exchange_points
-        },
-        validateExchangePoints()
-        {
-            if(!this.hasPointsAvailable())
-            {
-                return {
-                    success: false,
-                    message: `El total de puntos a canjear excede los puntos acumulados: ${this.calculate_customer_accumulated_points} puntos`
-                }
-            }
-
-            return {
-                success: true
-            }
-        },
-        getExchangePointDescription(row)
-        {
-            return `¿Desea canjearlo por ${this.getUsedPoints(row)} puntos?`
-        },
-        getUsedPoints(row)
-        {
-            return _.round(row.item.quantity_of_points * row.quantity, 2)
-        },
-        getTotalExchangePointsItems()
-        {
-            return _.sumBy(this.form.items, (row)=>{
-                return (row.item.exchanged_for_points) ? this.getUsedPoints(row) : 0
-            })
         },
         async changeRowFreeAffectationIgv(row, index) {
 
@@ -3017,20 +2976,10 @@ export default {
                         this.form.seller_id = seller.id
                     }
 
-                    this.setCustomerAccumulatedPoints(alt)
+                    this.setCustomerAccumulatedPoints(alt.id, this.config.enabled_point_system)
                 }
 
 
-            }
-        },
-        setCustomerAccumulatedPoints(customer)
-        {
-            if(this.config.enabled_point_system)
-            {
-                this.$http.get(`/persons/accumulated-points/${customer.id}`).then((response) => {
-                        this.customer_accumulated_points = response.data
-                        this.calculate_customer_accumulated_points = response.data //para calculos
-                    })
             }
         },
         changeDocumentType() {
@@ -3157,7 +3106,12 @@ export default {
                 //this.form.items.$set(this.recordItem.indexi, row)
                 this.form.items[this.recordItem.indexi] = row
                 this.recordItem = null
-                if(this.config.enabled_point_system) this.setTotalExchangePoints()
+
+                if(this.config.enabled_point_system)
+                {
+                    this.setTotalExchangePoints()
+                    this.recalculateUsedPointsForExchange(row)
+                }
 
             } else {
                 this.form.items.push(JSON.parse(JSON.stringify(row)));
@@ -3168,6 +3122,8 @@ export default {
         clickRemoveItem(index) {
             this.form.items.splice(index, 1)
             this.calculateTotal()
+            
+            if(this.config.enabled_point_system) this.setTotalExchangePoints()
         },
         changeCurrencyType() {
             this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
@@ -3360,6 +3316,8 @@ export default {
             this.calculateFee();
 
             this.chargeGlobal()
+
+            this.setTotalPointsBySale(this.config)
 
         },
         sumDiscountsNoBaseByItem(row) {
@@ -3772,6 +3730,9 @@ export default {
             await this.$http.get(`/${this.resource}/search/customer/${customer_id}`).then((response) => {
                 this.customers = response.data.customers
                 this.form.customer_id = customer_id
+
+                this.setCustomerAccumulatedPoints(customer_id, this.config.enabled_point_system)
+
             })
         },
         changeCustomer() {
@@ -3788,7 +3749,7 @@ export default {
                 })
             }
 
-            this.setCustomerAccumulatedPoints(customer)
+            this.setCustomerAccumulatedPoints(customer.id, this.config.enabled_point_system)
 
             let seller = this.sellers.find(element => element.id == customer.seller_id)
             if (seller !== undefined) {

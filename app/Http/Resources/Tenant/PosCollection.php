@@ -73,6 +73,7 @@ class PosCollection extends ResourceCollection
                 'quantity_of_points' => $row->quantity_of_points,
                 'exchanged_for_points' => false, //para determinar si desea canjear el producto
                 'used_points_for_exchange' => null, //total de puntos
+                'original_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
             ];
         });
     }

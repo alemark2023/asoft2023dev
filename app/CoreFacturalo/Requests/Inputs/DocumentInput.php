@@ -685,6 +685,7 @@ class DocumentInput
                 'point_system_data' => [
                     'point_system_sale_amount' => $configuration->point_system_sale_amount,
                     'quantity_of_points' => $configuration->quantity_of_points,
+                    'round_points_of_sale' => $configuration->round_points_of_sale,
                 ]
             ];
         }

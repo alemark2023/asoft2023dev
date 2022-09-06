@@ -854,6 +854,9 @@
                 :enabledTipsPos="configuration.enabled_tips_pos"
                 :hidePdfViewDocuments="configuration.hide_pdf_view_documents"
                 :enabledPointSystem="configuration.enabled_point_system"
+                :affectation-igv-types="affectation_igv_types"
+                :percentage-igv="percentage_igv"
+                :configuration="configuration"
             ></payment-form>
         </template>
 

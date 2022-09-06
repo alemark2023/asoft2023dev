@@ -124,7 +124,9 @@ class PointSystemProvider extends ServiceProvider
         $point_system_data = $document->point_system_data;
 
         $total = $document->total;
-        $calculate_quantity_points = round(($total / $point_system_data->point_system_sale_amount) * $point_system_data->quantity_of_points, 2);
+
+        $value_quantity_points = ($total / $point_system_data->point_system_sale_amount) * $point_system_data->quantity_of_points;
+        $calculate_quantity_points = $point_system_data->round_points_of_sale ? intval($value_quantity_points) : round($value_quantity_points, 2);
 
         $this->calculateAccumulatedPoints($customer, $calculate_quantity_points, $factor);
     }
