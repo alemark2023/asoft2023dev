@@ -233,9 +233,7 @@ class SaleNoteController extends Controller
         ];
 
         $inputs->merge($values);
-
-        dd($inputs->all());
-
+dd
         return $inputs->all();
     }
 
