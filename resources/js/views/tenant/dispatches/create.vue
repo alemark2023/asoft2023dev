@@ -67,6 +67,33 @@
                             </div>
                         </div>
                         <div class="col-lg-4">
+                            <div :class="{'has-danger': errors.customer_id}"
+                                 class="form-group">
+                                <label class="control-label">
+                                    Cliente<span class="text-danger"> *</span>
+                                    <a href="#"
+                                       @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
+                                </label>
+                                <el-select v-model="form.customer_id"
+                                           :loading="loading_search"
+                                           :remote-method="searchRemoteCustomers"
+                                           filterable
+                                           placeholder="Escriba el nombre o número de documento del cliente"
+                                           popper-class="el-select-customers"
+                                           remote
+                                           @change="changeCustomer"
+                                           @keyup.enter.native="keyupCustomer">
+                                    <el-option v-for="option in customers"
+                                               :key="option.id"
+                                               :label="option.description"
+                                               :value="option.id"></el-option>
+                                </el-select>
+                                <small v-if="errors.customer_id"
+                                       class="form-control-feedback"
+                                       v-text="errors.customer_id[0]"></small>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
                             <div :class="{'has-danger': errors.transport_mode_type_id}"
                                  class="form-group">
                                 <label class="control-label">Modo de traslado<span class="text-danger"> *</span></label>
@@ -100,7 +127,7 @@
                         </div>
                         <!-- numero de DAM -->
                         <template v-if="form.transfer_reason_type_id === '09'">
-                            <div class="col-lg-4">
+                            <div class="col-lg-3">
                                 <div :class="{'has-danger': errors['related.number']}"
                                      class="form-group">
                                     <label class="control-label">Número de documento (DAM)
@@ -117,7 +144,7 @@
                                            v-text="errors['related.number'][0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-3">
                                 <div :class="{'has-danger': errors['related.document_type_id']}"
                                      class="form-group">
                                     <label class="control-label">Tipo documento relacionado<span
@@ -133,7 +160,7 @@
                                 </div>
                             </div>
                         </template>
-                        <div :class="form.transfer_reason_type_id === '09' ? 'col-lg-12' : 'col-lg-8'">
+                        <div :class="form.transfer_reason_type_id === '09' ? 'col-lg-12' : 'col-lg-6'">
                             <div :class="{'has-danger': errors.transfer_reason_description}"
                                  class="form-group">
                                 <label class="control-label">Descripción de motivo de traslado</label>
@@ -225,43 +252,15 @@
                                        v-text="errors.order_form_external[0]"></small>
                             </div>
                         </div>
-                        <div class="col-lg-4">
-                            <div :class="{'has-danger': errors.customer_id}"
-                                 class="form-group">
-                                <label class="control-label">
-                                    Cliente<span class="text-danger"> *</span>
-                                    <a href="#"
-                                       @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
-                                </label>
-                                <el-select v-model="form.customer_id"
-                                           :loading="loading_search"
-                                           :remote-method="searchRemoteCustomers"
-                                           dusk="customer_id"
-                                           filterable
-                                           placeholder="Escriba el nombre o número de documento del cliente"
-                                           popper-class="el-select-customers"
-                                           remote
-                                           @change="changeCustomer"
-                                           @keyup.enter.native="keyupCustomer">
-                                    <el-option v-for="option in customers"
-                                               :key="option.id"
-                                               :label="option.description"
-                                               :value="option.id"></el-option>
-                                </el-select>
-                                <small v-if="errors.customer_id"
-                                       class="form-control-feedback"
-                                       v-text="errors.customer_id[0]"></small>
-                            </div>
-                        </div>
-<!--                        <div class="col-lg-6">-->
-<!--                            <label class="control-label">Dirección</label>-->
-<!--                            <el-select v-model="form.customer_address_id">-->
-<!--&lt;!&ndash;                                <el-option v-for="option in customer_addresses"&ndash;&gt;-->
-<!--&lt;!&ndash;                                           :key="option.id"&ndash;&gt;-->
-<!--&lt;!&ndash;                                           :label="option.address"&ndash;&gt;-->
-<!--&lt;!&ndash;                                           :value="option.id"></el-option>&ndash;&gt;-->
-<!--                            </el-select>-->
-<!--                        </div>-->
+                        <!--                        <div class="col-lg-6">-->
+                        <!--                            <label class="control-label">Dirección</label>-->
+                        <!--                            <el-select v-model="form.customer_address_id">-->
+                        <!--&lt;!&ndash;                                <el-option v-for="option in customer_addresses"&ndash;&gt;-->
+                        <!--&lt;!&ndash;                                           :key="option.id"&ndash;&gt;-->
+                        <!--&lt;!&ndash;                                           :label="option.address"&ndash;&gt;-->
+                        <!--&lt;!&ndash;                                           :value="option.id"></el-option>&ndash;&gt;-->
+                        <!--                            </el-select>-->
+                        <!--                        </div>-->
                     </div>
                     <div class="row">
                     </div>
@@ -314,23 +313,23 @@
                     </div>
                     <h6>Dirección llegada</h6>
                     <div class="row">
-<!--                        <div class="col-lg-5" v-if="form.transfer_reason_type_id === '09'">-->
-<!--                            <div :class="{'has-danger': errors.delivery}"-->
-<!--                                 class="form-group">-->
-<!--                                <label class="control-label">País<span class="text-danger"> *</span></label>-->
-<!--                                <el-select v-model="form.delivery.country_id"-->
-<!--                                           filterable>-->
-<!--                                    <el-option v-for="option in countries"-->
-<!--                                               :key="option.id"-->
-<!--                                               :label="option.description"-->
-<!--                                               :value="option.id"></el-option>-->
-<!--                                </el-select>-->
-<!--                                <small v-if="errors.delivery"-->
-<!--                                       class="form-control-feedback"-->
-<!--                                       v-text="errors.delivery.country_id[0]"></small>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="col-lg-5" v-else>-->
+                        <!--                        <div class="col-lg-5" v-if="form.transfer_reason_type_id === '09'">-->
+                        <!--                            <div :class="{'has-danger': errors.delivery}"-->
+                        <!--                                 class="form-group">-->
+                        <!--                                <label class="control-label">País<span class="text-danger"> *</span></label>-->
+                        <!--                                <el-select v-model="form.delivery.country_id"-->
+                        <!--                                           filterable>-->
+                        <!--                                    <el-option v-for="option in countries"-->
+                        <!--                                               :key="option.id"-->
+                        <!--                                               :label="option.description"-->
+                        <!--                                               :value="option.id"></el-option>-->
+                        <!--                                </el-select>-->
+                        <!--                                <small v-if="errors.delivery"-->
+                        <!--                                       class="form-control-feedback"-->
+                        <!--                                       v-text="errors.delivery.country_id[0]"></small>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <!--                        <div class="col-lg-5" v-else>-->
                         <div class="col-lg-5">
                             <div :class="{'has-danger': errors.delivery}"
                                  class="form-group">
@@ -343,7 +342,7 @@
                                        v-text="errors.delivery.location_id[0]"></small>
                             </div>
                         </div>
-<!--                        </div>-->
+                        <!--                        </div>-->
                         <template v-if="form.transfer_reason_type_id === '09'">
                             <div class="col-lg-7">
                                 <div :class="{'has-danger': errors['delivery.address']}"
@@ -883,9 +882,8 @@ export default {
         }).then(() => {
             this.setDefaultCustomer();
         });
-
-        this.createFromOrderForm()
-
+        this.searchRemoteCustomers('');
+        this.createFromOrderForm();
         this.$eventHub.$on('reloadDataPersons', (customer_id) => {
             this.reloadDataCustomers(customer_id)
         })
@@ -910,10 +908,17 @@ export default {
                     number: null,
                     document_type_id: '01'
                 }
+                this.form.customer_id = null;
+                this.form.delivery = {
+                    country_id: 'PE',
+                    location_id: [],
+                    address: null,
+                }
             } else {
                 this.form.related = {};
                 this.form.delivery.country_id = 'PE';
             }
+            this.searchRemoteCustomers('');
         },
         getFormatQuantity(quantity) {
             return _.round(quantity, 4)
@@ -1071,29 +1076,53 @@ export default {
             localStorage.removeItem('items');
         },
         searchRemoteCustomers(input) {
-            if (input.length > 0) {
-                this.loading_search = true
-                let parameters = `input=${input}&document_type_id=${this.form.document_type_id}&searchBy=${this.resource}`;
-                if (this.form.operation_type_id !== undefined) {
-                    parameters = parameters + `&operation_type_id=${this.form.operation_type_id}`
-                }
-                this.$http.get(`/${this.resource}/search/customers?${parameters}`)
-                    .then(response => {
-                        if (this.form.transfer_reason_type_id === '09') {
-                            this.customers = response.data.customers
-                        } else {
-                            this.customers = _.filter(response.data.customers, (r) => {
-                                return r.identity_document_type_id !== '0';
-                            });
-                        }
-                        this.loading_search = false
-                        this.input_person.number = (this.customers.length == 0) ? input : null
-                    })
-            } else {
-                this.filterCustomers()
-                this.input_person.number = null
+            this.loading_search = true
+            let identity_document_type_id = ['6', '4', '1', '0'];
+            if (this.form.transfer_reason_type_id === '09') {
+                identity_document_type_id = ['0'];
             }
+            this.$http.post(`/store/get_customers`, {
+                'identity_document_type_id': identity_document_type_id,
+                'input': input,
+            })
+                .then(response => {
+                    // if (this.form.transfer_reason_type_id === '09') {
+                    this.customers = response.data.customers
+                    // } else {
+                    //     this.customers = _.filter(response.data.customers, (r) => {
+                    //         return r.identity_document_type_id !== '0';
+                    //     });
+                    // }
+                    this.loading_search = false
+                    this.input_person.number = (this.customers.length == 0) ? input : null
+                })
         },
+        // searchRemoteCustomers(input) {
+        //     // '6', '4', '1', '0']
+        //     // if (input.length > 0) {
+        //         this.loading_search = true
+        //         let parameters = `input=${input}&document_type_id=${this.form.document_type_id}&searchBy=${this.resource}`;
+        //         if (this.form.operation_type_id !== undefined) {
+        //             parameters = parameters + `&operation_type_id=${this.form.operation_type_id}`
+        //         }
+        //         this.$http.get(`/${this.resource}/search/customers?${parameters}`)
+        //             .then(response => {
+        //                 if (this.form.transfer_reason_type_id === '09') {
+        //                     this.customers = response.data.customers
+        //                 } else {
+        //                     this.customers = _.filter(response.data.customers, (r) => {
+        //                         return r.identity_document_type_id !== '0';
+        //                     });
+        //                 }
+        //                 this.loading_search = false
+        //                 this.input_person.number = (this.customers.length == 0) ? input : null
+        //             })
+        //     // }
+        //     // else {
+        //     //     this.filterCustomers()
+        //     //     this.input_person.number = null
+        //     // }
+        // },
         filterCustomers() {
             if (this.form.document_type_id === '01') {
                 this.customers = _.filter(this.all_customers, {'identity_document_type_id': '6'})
@@ -1206,7 +1235,7 @@ export default {
                 customer_id: customer_id,
                 observations: '',
                 transport_mode_type_id: null,
-                transfer_reason_type_id: null,
+                transfer_reason_type_id: '01',
                 transfer_reason_description: null,
                 transshipment_indicator: false,
                 port_code: null,
@@ -1379,9 +1408,9 @@ export default {
             // if (this.form.transfer_reason_type_id === '09') {
             //     this.form.delivery.location_id = [];
             // } else {
-                if (this.form.origin.location_id.length !== 3 || this.form.delivery.location_id.length !== 3) {
-                    return this.$message.error('El campo ubigeo es obligatorio')
-                }
+            if (this.form.origin.location_id.length !== 3 || this.form.delivery.location_id.length !== 3) {
+                return this.$message.error('El campo ubigeo es obligatorio')
+            }
             // }
 
             this.loading_submit = true;

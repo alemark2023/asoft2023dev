@@ -77,7 +77,6 @@ class DownloadController extends Controller
             throw new Exception("El código {$external_id} es inválido, no se encontro documento relacionado");
         }
 
-
         if ($document_type == 'quotation'){
             // Las cotizaciones tienen su propio controlador, si se generan por este medio, dará error
             $quotation = new QuotationController();

@@ -4,12 +4,14 @@ namespace Modules\Store\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Person;
 use App\Models\Tenant\Quotation;
 use App\Models\Tenant\Series;
+use Illuminate\Http\Request;
 
 class StoreController extends Controller
 {
-    public function tableToDocument($table ,$table_id)
+    public function tableToDocument($table, $table_id)
     {
         $configuration = Configuration::query()->first();
         $is_contingency = 0;
@@ -28,7 +30,7 @@ class StoreController extends Controller
         $person = $record->person;
 
         $rec = $record->toArray();
-        $document_type_id = $person->identity_document_type_id === '6'?'01':'03';
+        $document_type_id = $person->identity_document_type_id === '6' ? '01' : '03';
 
         $series = Series::query()
             ->select('number')
@@ -38,9 +40,9 @@ class StoreController extends Controller
 
         foreach ($rec['items'] as &$item) {
             $item['total_plastic_bag_taxes'] = 0;
-            $item['attributes'] = ($item['attributes'])?(array)$item['attributes']:[];
-            $item['charges'] = ($item['charges'])?(array)$item['charges']:[];
-            $item['discounts'] = ($item['discounts'])?(array)$item['discounts']:[];
+            $item['attributes'] = ($item['attributes']) ? (array)$item['attributes'] : [];
+            $item['charges'] = ($item['charges']) ? (array)$item['charges'] : [];
+            $item['discounts'] = ($item['discounts']) ? (array)$item['discounts'] : [];
         }
 
         $rec['document_type_id'] = $document_type_id;
@@ -71,5 +73,23 @@ class StoreController extends Controller
     public function getItems()
     {
 
+    }
+
+    public function getCustomers(Request $request)
+    {
+        $identity_document_type_id = $request->input('identity_document_type_id');
+        $input = $request->input('input');
+        $customers = Person::query()
+            ->where('number', 'like', "%{$input}%")
+            ->orWhere('name', 'like', "%{$input}%")
+            ->whereType('customers')
+            ->orderBy('name')
+            ->whereIn('identity_document_type_id', $identity_document_type_id)
+            ->whereIsEnabled()
+            ->get()->transform(function ($row) {
+                return $row->getCollectionData();
+            });
+
+        return compact('customers');
     }
 }
