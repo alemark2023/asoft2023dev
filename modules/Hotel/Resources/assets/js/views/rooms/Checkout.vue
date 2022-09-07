@@ -399,7 +399,7 @@ import moment from "moment";
 import DocumentOptions from "@views/documents/partials/options.vue";
 import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
 import {calculateRowItem} from "../../../../../../../resources/js/helpers/functions";
-import {exchangeRate} from "../../../../../../../resources/js/mixins/functions";
+import {exchangeRate, functions} from "../../../../../../../resources/js/mixins/functions";
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
@@ -408,7 +408,8 @@ export default {
         SaleNoteOptions,
     },
     mixins: [
-        exchangeRate
+        exchangeRate,
+        functions
     ],
     props: {
         rent: {
@@ -486,12 +487,19 @@ export default {
             documentNewId: null,
             form_cash_document: {},
             showDialogSaleNoteOptions: false,
+            form: {
+                establishment_id: null,
+                date_of_issue: null
+            },
         };
     },
     async mounted() {
-
+        // console.log(this.config);
+        this.form.establishment_id = this.config.establishment.id;
+        this.form.date_of_issue = moment().format("YYYY-MM-DD");
+        await this.getPercentageIgv();
         this.initForm();
-        this.initDocument();
+        await this.initDocument();
         this.all_document_types = this.documentTypesInvoice;
         this.title = `Checkout: Habitación ${this.currentRent.room.name}`;
         this.total = this.room.item.total;
@@ -507,6 +515,7 @@ export default {
     },
     watch: {
         arrears(value) {
+            console.log('arrears');
             if (isNaN(value)) {
                 return;
             }
@@ -589,6 +598,7 @@ export default {
             };
         },
         updateDataForSend() {
+            console.log('updateDataForSend');
 
             if (this.document.document_type_id === '80') {
                 this.document.prefix = 'NV'
@@ -600,6 +610,7 @@ export default {
 
         },
         successGoToInvoice() {
+            console.log('successGoToInvoice');
 
             //inicializa form_cash_document
             this.initForm()
@@ -616,6 +627,7 @@ export default {
 
         },
         async onGoToInvoice() {
+            console.log('onGoToInvoice');
             await this.onUpdateItemsWithExtras();
             this.onCalculateTotals();
             let validate_payment_destination = this.validatePaymentDestination();
@@ -669,6 +681,7 @@ export default {
                 });
         },
         onUpdateItemsWithExtras() {
+            console.log('onUpdateItemsWithExtras');
             this.document.items = this.document.items.map((it) => {
                 if (it.item_id === this.room.item_id) {
                     const name = `${this.room.item.item.description} x ${this.room.item.quantity} noche(s)`;
@@ -778,6 +791,8 @@ export default {
             this.document.payments.splice(index, 1);
         },
         onCalculateTotals() {
+            console.log('onCalculateTotals');
+            console.log(this.percentage_igv);
             let total_exportation = 0;
             let total_taxed = 0;
             let total_exonerated = 0;
@@ -817,7 +832,7 @@ export default {
 
                 if (["13", "14", "15"].includes(row.affectation_igv_type_id)) {
                     let unit_value =
-                        row.total_value / row.quantity / (1 + row.percentage_igv / 100);
+                        row.total_value / row.quantity / (1 + this.percentage_igv / 100);
                     let total_value_partial = unit_value * row.quantity;
                     row.total_taxes = row.total_value - total_value_partial;
                     row.total_igv = row.total_value - total_value_partial;

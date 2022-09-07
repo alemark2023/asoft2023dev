@@ -133,7 +133,7 @@ class DocumentInput
             'hotel' => self::hotel($inputs),
             'transport' => self::transport($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'additional_information'),
-            //'additional_data' => Functions::valueKeyInArray($inputs, 'additional_data'),
+            'additional_data' => Functions::valueKeyInArray($inputs, 'additional_data'),
             'plate_number' => Functions::valueKeyInArray($inputs, 'plate_number'),
             'legends' => LegendInput::set($inputs),
             'actions' => ActionInput::set($inputs),
@@ -163,6 +163,13 @@ class DocumentInput
             foreach ($inputs['items'] as $row) {
                 $item = Item::query()->find($row['item_id']);
                 /** @var Item $item */
+
+                if(key_exists('name_product_xml', $row)) {
+                    $name_product_xml = Functions::valueKeyInArray($row, 'name_product_xml');
+                } else {
+                    $name_product_xml = Functions::valueKeyInArray($row, 'name_product_pdf') ? self::getNameProductXml($row, $inputs) : null;
+                }
+
                 $arayItem = [
                     'item_id' => $item->id,
                     'item' => [
@@ -212,7 +219,7 @@ class DocumentInput
                     'warehouse_id' => Functions::valueKeyInArray($row, 'warehouse_id'),
                     'additional_information' => Functions::valueKeyInArray($row, 'additional_information'),
                     'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf'),
-                    'name_product_xml' => Functions::valueKeyInArray($row, 'name_product_pdf') ? self::getNameProductXml($row, $inputs) : null,
+                    'name_product_xml' => $name_product_xml,
                     'update_description' => Functions::valueKeyInArray($row, 'update_description', false),
                     'additional_data' => Functions::valueKeyInArray($row, 'additional_data'),
 //                    'additional_data' => key_exists('additional_data', $row)?$row['additional_data']:null,
@@ -243,7 +250,7 @@ class DocumentInput
             if($configuration->name_product_pdf_to_xml)
             {
                 $text = trim((new Html2Text($row['name_product_pdf']))->getText());
-                
+
                 return preg_replace('~\R{1,2}~', ' ', $text);
 
                 // return trim((new Html2Text($row['name_product_pdf']))->getText());
