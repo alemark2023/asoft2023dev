@@ -147,7 +147,18 @@ class SystemActivityLog extends ModelTenant
             'region_name' => $this->location->region_name,
             'city_name' => $this->location->city_name,
             'timezone' => $this->location->timezone,
+            'full_description' => $this->getLocationDescription(),
         ];
+    }
+    
+
+    /**
+     *
+     * @return string
+     */
+    public function getLocationDescription()
+    {
+        return "País: {$this->location->country_code} - {$this->location->country_name}, Región: {$this->location->region_code} - {$this->location->region_name}, Ciudad: {$this->location->city_name}, Zona horaria: {$this->location->timezone}";
     }
 
     

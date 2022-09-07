@@ -14,6 +14,7 @@ if($hostname) {
                     Route::get('records', 'SystemActivityLogGeneralController@records');
                     Route::get('columns', 'SystemActivityLogGeneralController@columns');
                     Route::post('check-last-password-update', 'SystemActivityLogGeneralController@checkLastPasswordUpdate');
+                    Route::get('report/{type}', 'SystemActivityLogGeneralController@exportReport');
                 });
 
                 Route::prefix('transactions')->group(function () {
@@ -21,6 +22,7 @@ if($hostname) {
                     Route::get('', 'SystemActivityLogTransactionController@index')->name('tenant.system_activity_logs.transactions.index');
                     Route::get('records', 'SystemActivityLogTransactionController@records');
                     Route::get('columns', 'SystemActivityLogTransactionController@columns');
+                    Route::get('report/{type}', 'SystemActivityLogTransactionController@exportReport');
                 });
             });
 

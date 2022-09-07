@@ -4,12 +4,13 @@ namespace Modules\LevelAccess\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
 use Modules\LevelAccess\Models\SystemActivityLog;
 use Modules\LevelAccess\Http\Resources\{
     SystemActivityLogCollection
 };
 use Carbon\Carbon;
+use Modules\LevelAccess\Exports\GeneralFormatExport;
+use App\Http\Controllers\Controller;
 
 
 class SystemActivityLogGeneralController extends Controller
@@ -43,9 +44,20 @@ class SystemActivityLogGeneralController extends Controller
      */
     public function records(Request $request)
     {
-        $records = SystemActivityLog::filterRecords($request);
+        $records = $this->getRecords($request);
 
         return new SystemActivityLogCollection($records->latest()->paginate(config('tenant.items_per_page')));
+    }
+    
+
+    /**
+     *
+     * @param  Request $request
+     * @return SystemActivityLogCollection
+     */
+    private function getRecords($request)
+    {
+        return SystemActivityLog::filterRecords($request);
     }
 
     
@@ -82,5 +94,34 @@ class SystemActivityLogGeneralController extends Controller
         return $change_success;
     }
 
+    
+    /**
+     *
+     * @param  string $type
+     * @param  Request $request
+     * @return mixed
+     */
+    public function exportReport($type, Request $request)
+    {
+        if($type === 'excel')
+        {
+            $records = $this->getRecords($request)->latest()->get();
+
+            $header_data = $this->generalDataForHeaderReport();
+
+            $data = [
+                'company' => $header_data['company'],
+                'records' => $records,
+            ];
+            
+            $general_format_export = new GeneralFormatExport();
+            $general_format_export->view_name("levelaccess::system_activity_logs.reports.general_{$type}")->data($data);
+
+            return $general_format_export->download($this->generalFilenameReport('Reporte_Actividades_Sistema_Generales', 'xlsx'));
+
+        }
+
+        return $this->generalResponse(false, 'Formato no permitido');
+    }
 
 }

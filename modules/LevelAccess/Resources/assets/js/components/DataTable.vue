@@ -22,7 +22,7 @@
                             </el-select>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-4 col-sm-12 pb-2">
+                    <div class="col-lg-4 col-md-4 col-sm-12 pb-2">
                         <template
                             v-if="
                                 search.column === 'date_of_issue' ||
@@ -53,6 +53,10 @@
                             </el-input>
                         </template>
                     </div>
+                    <div class="col-lg-4 col-md-4 col-sm-12 pb-2" v-if="records.length > 0">
+                        <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button>
+                    </div>
+
                 </div>
             </div>
 
@@ -131,6 +135,14 @@ export default {
         await this.getRecords();
     },
     methods: {
+        clickDownload(type) 
+        {
+            const query = queryString.stringify({
+                ...this.search
+            })
+
+            window.open(`/${this.resource}/report/${type}/?${query}`, '_blank');
+        },
         customIndex(index) {
             return (
                 this.pagination.per_page * (this.pagination.current_page - 1) +

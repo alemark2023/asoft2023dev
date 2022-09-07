@@ -159,7 +159,7 @@
                                     </div>
                                 </el-tooltip>
                             </label>
-                            <el-input v-model="form.password"></el-input>
+                            <el-input v-model="form.password" show-password></el-input>
                             <small
                                 v-if="errors.password"
                                 class="form-control-feedback"
@@ -173,7 +173,7 @@
                             class="form-group"
                         >
                             <label class="control-label">Confirmar Contraseña</label>
-                            <el-input v-model="form.password_confirmation"></el-input>
+                            <el-input v-model="form.password_confirmation" show-password></el-input>
                             <small
                                 v-if="errors.password_confirmation"
                                 class="form-control-feedback"
