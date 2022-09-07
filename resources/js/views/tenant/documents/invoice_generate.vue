@@ -2015,7 +2015,7 @@ export default {
             if(this.authUser.multiple_default_document_types)
             {
                 const default_document_type_serie = _.find(this.authUser.default_document_types, { document_type_id : this.form.document_type_id})
-    
+
                 if(default_document_type_serie)
                 {
                     const exist_serie = _.find(this.series, { id : default_document_type_serie.series_id})
@@ -2045,6 +2045,7 @@ export default {
             }
         },
         async onSetFormData(data) {
+            console.log('onSetFormData')
             this.currency_type = await _.find(this.currency_types, {'id': data.currency_type_id})
             this.form.establishment_id = data.establishment_id;
             this.form.document_type_id = data.document_type_id;
@@ -2077,7 +2078,10 @@ export default {
             this.form.seller_id = data.seller_id;
             this.form.items = this.onPrepareItems(data.items);
             // this.form.series = data.series; //form.series no llena el selector
-            this.$store.commit('setSeries', this.onSetSeries(data.document_type_id, data.series))
+             if(this.table !== 'quotations') {
+                 this.$store.commit('setSeries', this.onSetSeries(data.document_type_id, data.series))
+             }
+            //
             // this.series = this.onSetSeries(data.document_type_id, data.series);
             this.form.state_type_id = data.state_type_id;
             this.form.total_discount = parseFloat(data.total_discount);
@@ -2265,6 +2269,7 @@ export default {
             return null;
         },
         onSetSeries(documentType, serie) {
+            console.log('onSetSeries')
             const find = this.all_series.find(s => s.document_type_id == documentType && s.number == serie);
             if (find) {
                 return [find];
@@ -2999,6 +3004,7 @@ export default {
             })
         },
         filterSeries() {
+            console.log('filterSeries');
             this.form.series_id = null
             let series = _.filter(this.all_series, {
                 'establishment_id': this.form.establishment_id,
@@ -3016,6 +3022,7 @@ export default {
                 });
             }
 
+            //console.log(series);
 
             this.$store.commit('setSeries', series)
             this.form.series_id = (this.series.length > 0) ? this.series[0].id : null
