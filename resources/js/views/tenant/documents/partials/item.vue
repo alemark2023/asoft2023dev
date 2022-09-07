@@ -1125,6 +1125,9 @@ export default {
                     }
                 }
                 this.calculateQuantity()
+
+                if(this.recordItem.item.exchanged_for_points) this.form.item.exchanged_for_points = this.recordItem.item.exchanged_for_points
+                
             } else {
                 this.isUpdateWarehouseId = null
             }

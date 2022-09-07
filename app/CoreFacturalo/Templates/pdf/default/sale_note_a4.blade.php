@@ -193,6 +193,11 @@
                  @endforeach
                 @endif
 
+                @if($row->item->used_points_for_exchange ?? false)
+                    <br>
+                    <span style="font-size: 9px">*** Canjeado por {{$row->item->used_points_for_exchange}}  puntos ***</span>
+                @endif
+                
             </td>
             <td class="text-center align-top">
 

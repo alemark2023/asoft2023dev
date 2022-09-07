@@ -1838,6 +1838,88 @@
 
                         </div>
                     </el-tab-pane>
+
+                    
+                    <el-tab-pane class="mb-3" name="tab_point_system">
+                        <span slot="label">S. Puntos</span>
+                        <div class="row">
+                            
+                            <div class="col-md-4">
+                                <label class="control-label">
+                                    Habilitar sistema por puntos
+                                    
+                                    <el-tooltip class="item" effect="dark" placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                        <div slot="content">
+                                            <strong>Disponible en Nuevo cpe y POS</strong><br/><br/>
+                                            El monto de venta equivale a X N° de puntos<br/><br/>
+                                            Ejemplo: Si tiene configurado como monto S/1, y este es equivalente a 1 punto, al realizar una venta por S/100 a cliente X, este acumularía 100 puntos.<br/>
+                                        </div>
+                                    </el-tooltip>
+
+                                </label>
+                                <div :class="{'has-danger': errors.enabled_point_system}"
+                                     class="form-group mt-1">
+                                    <el-switch v-model="form.enabled_point_system"
+                                               active-text="Si"
+                                               inactive-text="No"
+                                               @change="submit"></el-switch>
+                                    <small v-if="errors.enabled_point_system"
+                                           class="form-control-feedback"
+                                           v-text="errors.enabled_point_system[0]"></small>
+                                </div>
+                            </div>
+
+                            <template v-if="form.enabled_point_system">
+                                
+                                <div class="col-md-4">
+                                    <label class="control-label">
+                                        Monto de venta
+                                    </label>
+                                    <div :class="{'has-danger': errors.point_system_sale_amount}" class="form-group mt-1">
+                                        <el-input-number v-model="form.point_system_sale_amount"
+                                                            :min="0.01"
+                                                            :precision="2"
+                                                            :step="1"
+                                                            @change="submit"></el-input-number>
+                                        <small v-if="errors.point_system_sale_amount" class="form-control-feedback" v-text="errors.point_system_sale_amount[0]"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="control-label">
+                                        N° de puntos
+                                    </label>
+                                    <div :class="{'has-danger': errors.quantity_of_points}" class="form-group mt-1">
+                                        <el-input-number v-model="form.quantity_of_points"
+                                                            :min="0.01"
+                                                            :precision="2"
+                                                            :step="1"
+                                                            @change="submit"></el-input-number>
+                                        <small v-if="errors.quantity_of_points" class="form-control-feedback" v-text="errors.quantity_of_points[0]"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="control-label">
+                                        Redondear al obtener puntos
+                                    </label>
+                                    <div :class="{'has-danger': errors.round_points_of_sale}"
+                                        class="form-group mt-1">
+                                        <el-switch v-model="form.round_points_of_sale"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                        <small v-if="errors.round_points_of_sale"
+                                            class="form-control-feedback"
+                                            v-text="errors.round_points_of_sale[0]"></small>
+                                    </div>
+                                </div>
+                            </template>
+
+                        </div>
+                    </el-tab-pane>
+
                 </el-tabs>
                 <terms-condition :form="form"
                                     :showClose="false"
@@ -2042,6 +2124,12 @@ export default {
 
                 affect_all_documents:false,
                 restrict_series_selection_seller: false,
+
+                enabled_point_system: false,
+                round_points_of_sale: false,
+                point_system_sale_amount: 0,
+                quantity_of_points: 0,
+
                 show_complete_name_pos: false,
             };
         },
