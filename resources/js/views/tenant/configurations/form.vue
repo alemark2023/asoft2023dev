@@ -1825,7 +1825,7 @@
                                     <el-tooltip class="item" effect="dark" placement="top-start">
                                         <i class="fa fa-info-circle"></i>
                                         <div slot="content">
-                                            <strong>Disponible para facturas y boletas en Nuevo cpe y POS</strong><br/><br/>
+                                            <strong>Disponible en Nuevo cpe y POS</strong><br/><br/>
                                             El monto de venta equivale a X N° de puntos<br/><br/>
                                             Ejemplo: Si tiene configurado como monto S/1, y este es equivalente a 1 punto, al realizar una venta por S/100 a cliente X, este acumularía 100 puntos.<br/>
                                         </div>
