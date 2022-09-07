@@ -16,7 +16,7 @@
                     </div>
                     
                     <!-- sistema por puntos -->
-                    <div v-if="enabledPointSystem && isInvoiceDocument" class="mt-3">
+                    <div v-if="enabledPointSystem" class="mt-3">
                         <p class="fs-point-system">
                             <label class="font-weight-bold">Puntos acumulados:</label> 
                             <b>{{customer_accumulated_points}}</b> 
@@ -654,7 +654,7 @@ export default {
         },
         isAvailablePointSystem(row)
         {
-            return (this.enabledPointSystem && this.customer_accumulated_points > 0 && row.item.exchange_points && this.isInvoiceDocument)
+            return (this.enabledPointSystem && this.customer_accumulated_points > 0 && row.item.exchange_points)
         },
         changeRowExchangePoints(row, index)
         {

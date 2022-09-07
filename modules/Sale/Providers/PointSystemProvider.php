@@ -5,6 +5,7 @@ namespace Modules\Sale\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Tenant\{
     Document,
+    SaleNote,
     Configuration,
     Person
 };
@@ -31,9 +32,52 @@ class PointSystemProvider extends ServiceProvider
     public function boot()
     {
         $this->setPointsToDocument(); 
+        $this->setPointsToSaleNote(); 
     }
     
     
+    /**
+     * 
+     * Validar si la nota de venta se usara para sistema por puntos y actualizar puntos del cliente
+     *
+     * @return void
+     */
+    private function setPointsToSaleNote()
+    {
+        // para registro
+        SaleNote::created(function ($sale_note) {
+
+            if($sale_note->isCreatedFromPos() && $sale_note->isPointSystem())
+            {
+                $customer = $sale_note->person;
+
+                // para items que son intercambiados por puntos
+                $this->exchangePointsFromItems($customer, -1);
+
+                // para incrementar puntos por venta
+                $this->setPointsToCustomer($sale_note, 1, $customer);
+            }
+        });
+
+
+        // para anulaciones
+        SaleNote::updated(function ($sale_note) {
+            
+            if($sale_note->isCreatedFromPos() && $sale_note->isVoidedOrRejected() && $sale_note->isPointSystem())
+            {
+                $customer = $sale_note->person;
+                
+                // para items que son intercambiados por puntos
+                $this->exchangePointsFromItems($customer, 1, $sale_note);
+
+                // para restar puntos por venta si es anulada
+                $this->setPointsToCustomer($sale_note, -1, $customer);
+            }
+        });
+        
+    }
+
+
     /**
      * 
      * Validar si el documento se usara para sistema por puntos y actualizar puntos del cliente
@@ -46,7 +90,7 @@ class PointSystemProvider extends ServiceProvider
         // para registro del cpe
         Document::created(function ($document) {
 
-            if($document->isDocumentTypeInvoice() && $document->isPointSystem())
+            if($document->isDocumentTypeInvoice() && $document->isPointSystem() && !$document->sale_note_id)
             {
                 $customer = $document->person;
 
@@ -63,7 +107,7 @@ class PointSystemProvider extends ServiceProvider
         // para anulaciones o rechazo del cpe
         Document::updated(function ($document) {
             
-            if($document->isDocumentTypeInvoice() && $document->isVoidedOrRejected() && $document->isPointSystem())
+            if($document->isDocumentTypeInvoice() && $document->isVoidedOrRejected() && $document->isPointSystem() && !$document->sale_note_id)
             {
                 $customer = $document->person;
                 
