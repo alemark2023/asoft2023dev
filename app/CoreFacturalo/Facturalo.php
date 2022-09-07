@@ -612,7 +612,6 @@ class Facturalo
                 }
 
                 $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
-
             }
 //            $html_footer = $template->pdfFooter();
 //            $pdf->SetHTMLFooter($html_footer);

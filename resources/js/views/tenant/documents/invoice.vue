@@ -2916,15 +2916,16 @@ export default {
             }
 
         },
-        changeDateOfIssue() {
+        async changeDateOfIssue() {
 
             this.validateDateOfIssue()
-
             this.form.date_of_due = this.form.date_of_issue
             // if (! this.isUpdate) {
-            this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+            await this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                 this.form.exchange_rate_sale = response
             });
+            await this.getPercentageIgv();
+            this.changeCurrencyType();
             // }
         },
         assignmentDateOfPayment() {

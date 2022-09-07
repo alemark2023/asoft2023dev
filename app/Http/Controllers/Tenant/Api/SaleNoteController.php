@@ -233,6 +233,7 @@ class SaleNoteController extends Controller
         ];
 
         $inputs->merge($values);
+
         return $inputs->all();
     }
 
@@ -443,9 +444,9 @@ class SaleNoteController extends Controller
 
         $stylesheet = file_get_contents($path_css);
 
-        
+
         // retornar html del pdf para impresion directa
-        if($output === 'html') 
+        if($output === 'html')
         {
             $path_html = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'ticket_html.css');
             $ticket_html = file_get_contents($path_html);
@@ -454,7 +455,7 @@ class SaleNoteController extends Controller
 
             return "<style>".$ticket_html.$stylesheet."</style>".$html;
         }
-        
+
 
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);

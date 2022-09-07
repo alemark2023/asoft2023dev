@@ -202,7 +202,7 @@ class Document extends ModelTenant
         'detraction',
         'legends',
         'additional_information',
-//        'additional_data',
+        'additional_data',
         'filename',
         'hash',
         'qr',

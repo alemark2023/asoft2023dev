@@ -155,7 +155,8 @@
                                     <thead class="">
                                     <tr>
                                         <th>#</th>
-                                        <th>Descripción</th>
+                                        <th>Nombre</th>
+                                        <th v-if="filters.description.visible">Descripción</th>
                                         <th v-if="filters.model.visible">Modelo</th>
                                         <th>Categoria</th>
                                         <th class="text-right">Stock mínimo</th>
@@ -192,6 +193,7 @@
                                         :key="index">
                                         <td>{{ index + 1 }}</td>
                                         <td>{{ row.name }}</td>
+                                        <td>{{ row.description }}</td>
                                         <td v-if="filters.model.visible">{{ row.model }}</td>
                                         <td>{{ row.item_category_name }}</td>
                                         <td class="text-right">{{ row.stock_min }}</td>
@@ -287,6 +289,10 @@ export default {
         this.initTables();
         this.initForm();
         this.filters = {
+            description: {
+                title: 'Descripción',
+                visible: false
+            },
             categories: {
                 title: 'Categorias',
                 visible: false
