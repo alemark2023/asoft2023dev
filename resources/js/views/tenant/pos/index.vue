@@ -859,6 +859,10 @@
                 :globalDiscountTypeId="configuration.global_discount_type_id"
                 :enabledTipsPos="configuration.enabled_tips_pos"
                 :hidePdfViewDocuments="configuration.hide_pdf_view_documents"
+                :enabledPointSystem="configuration.enabled_point_system"
+                :affectation-igv-types="affectation_igv_types"
+                :percentage-igv="percentage_igv"
+                :configuration="configuration"
             ></payment-form>
         </template>
 
@@ -1562,6 +1566,8 @@ export default {
                 is_print: true,
                 worker_full_name_tips: null, //propinas
                 total_tips: 0, //propinas
+                created_from_pos: true,
+
             };
             // console.log(this.configuration.show_terms_condition_pos);
             if (this.configuration.show_terms_condition_pos) {

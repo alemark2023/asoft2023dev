@@ -256,6 +256,8 @@ class Document extends ModelTenant
         'unique_filename', //registra nombre de archivo unico (campo validador para evitar duplicidad)
 
         'ticket_single_shipment',
+        'point_system',
+        'point_system_data',
         'folio'
     ];
 
@@ -267,6 +269,7 @@ class Document extends ModelTenant
         'apply_concurrency' => 'bool',
         'send_to_pse' => 'bool',
         'ticket_single_shipment' => 'bool',
+        'point_system' => 'bool',
     ];
 
     public static function boot()
@@ -442,6 +445,16 @@ class Document extends ModelTenant
     public function setRetentionAttribute($value)
     {
         $this->attributes['retention'] = (is_null($value)) ? null : json_encode($value);
+    }
+
+    public function getPointSystemDataAttribute($value)
+    {
+        return (is_null($value)) ? null : (object)json_decode($value);
+    }
+
+    public function setPointSystemDataAttribute($value)
+    {
+        $this->attributes['point_system_data'] = (is_null($value)) ? null : json_encode($value);
     }
 
     public function getAdditionalInformationAttribute($value)
@@ -1479,4 +1492,30 @@ class Document extends ModelTenant
                 'technical_service_id',
             ]);
     }
+
+    
+    /**
+     * 
+     * Determina si es factura o boleta
+     *
+     * @return bool
+     */
+    public function isDocumentTypeInvoice()
+    {
+        return in_array($this->document_type_id, ['01', '03'], true);
+    }
+ 
+
+    /**
+     * 
+     * Determina si fue usado para sistema por puntos
+     *
+     * @return bool
+     */
+    public function isPointSystem()
+    {
+        return $this->point_system;
+    }
+
+
 }

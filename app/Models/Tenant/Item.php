@@ -178,6 +178,10 @@ class Item extends ModelTenant
 
         'subject_to_detraction',
         'favorite',
+
+        'exchange_points',
+        'quantity_of_points',
+
         // 'warehouse_id'
     ];
 
@@ -191,6 +195,8 @@ class Item extends ModelTenant
         'sale_unit_price' => 'float',
         'purchase_unit_price' => 'float',
         'favorite' => 'boolean',
+        'exchange_points' => 'boolean',
+        'quantity_of_points' => 'float',
     ];
 
     /**
@@ -993,6 +999,10 @@ class Item extends ModelTenant
             'percentage_isc' => $this->percentage_isc,
             'is_for_production'=>$this->isIsForProduction(),
             'subject_to_detraction' => $this->subject_to_detraction,
+            'exchange_points' => $this->exchange_points,
+            'quantity_of_points' => $this->quantity_of_points,
+            'exchanged_for_points' => false, //para determinar si desea canjear el producto
+            'used_points_for_exchange' => null, //total de puntos
 
         ];
 

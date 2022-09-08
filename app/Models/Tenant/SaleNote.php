@@ -219,6 +219,11 @@
             'unique_filename', //registra nombre de archivo unico (campo para evitar duplicidad)
             
             'terms_condition',
+
+            'point_system',
+            'point_system_data',
+            'created_from_pos',
+
         ];
 
         protected $casts = [
@@ -261,6 +266,10 @@
             'date_of_issue' => 'date',
             'automatic_date_of_issue' => 'date',
             'due_date' => 'date',
+
+            'point_system' => 'bool',
+            'created_from_pos' => 'bool',
+
         ];
 
         public static function boot()
@@ -426,6 +435,16 @@
         public function setLegendsAttribute($value)
         {
             $this->attributes['legends'] = (is_null($value)) ? null : json_encode($value);
+        }
+
+        public function getPointSystemDataAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+    
+        public function setPointSystemDataAttribute($value)
+        {
+            $this->attributes['point_system_data'] = (is_null($value)) ? null : json_encode($value);
         }
 
         public function getIdentifierAttribute()
@@ -1481,6 +1500,30 @@
                             'subtotal',
                         ]);
 
+        }
+
+        
+        /**
+         * 
+         * Determina si fue creado desde pos
+         *
+         * @return bool
+         */
+        public function isCreatedFromPos()
+        {
+            return $this->created_from_pos;
+        }
+
+
+        /**
+         * 
+         * Determina si fue usado para sistema por puntos
+         *
+         * @return bool
+         */
+        public function isPointSystem()
+        {
+            return $this->point_system;
         }
 
     }
