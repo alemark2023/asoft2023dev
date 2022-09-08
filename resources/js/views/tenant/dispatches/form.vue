@@ -983,10 +983,8 @@ export default {
         async clickEditQuantity(id){
             await this.quantityNew.push(this.form.items[id].quantity)
             await this.indexAffect.push(id)
-            console.log('index '+this.indexAffect)
         },
         clickDecrease(index) {
-            console.log(this.form.items[index].quantity)
             this.form.items[index].quantity = parseInt(this.form.items[index].quantity - 1)
 
             if (this.form.items[index].quantity <= this.getMinQuantity()) {
@@ -996,7 +994,6 @@ export default {
 
         },
         clickIncrease(index) {
-            console.log(index)
             this.form.items[index].quantity = parseInt(this.form.items[index].quantity) + 1
             if (this.form.items[index].quantity >= this.getMaxQuantity(index)) {
                 this.setMaxQuantity(index)
@@ -1010,7 +1007,6 @@ export default {
             this.form.items[index].quantity = this.getMinQuantity()
         },
         getMaxQuantity(index) {
-            console.log(this.quantityNew[index])
             return parseInt(this.quantityNew[index])
         },
         setMaxQuantity(index) {
@@ -1042,11 +1038,9 @@ export default {
         async clickEditSuccess(index){
             
             await this.indexAffect.splice(this.indexAffect.indexOf(index), 1);
-            console.log(this.indexAffect)
         },
         filterIndex(index){
             let value_index=this.indexAffect.some(i=>i==index)
-            console.log(value_index)
             return value_index
         }
     },
