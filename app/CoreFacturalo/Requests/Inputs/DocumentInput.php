@@ -157,6 +157,7 @@ class DocumentInput
             'ticket_single_shipment' => $ticket_single_shipment,
             'point_system' => $point_system_data['point_system'],
             'point_system_data' => $point_system_data['point_system_data'],
+            'agent_id' => Functions::valueKeyInArray($inputs, 'agent_id'),
         ];
     }
 

@@ -16,6 +16,7 @@
     use Modules\Order\Models\OrderNote;
     use Modules\Sale\Models\TechnicalService;
     use Modules\Pos\Models\Tip;
+    use Modules\Sale\Models\Agent;
 
     /**
      * Class SaleNote
@@ -223,6 +224,7 @@
             'point_system',
             'point_system_data',
             'created_from_pos',
+            'agent_id',
 
         ];
 
@@ -450,6 +452,14 @@
         public function getIdentifierAttribute()
         {
             return $this->prefix . '-' . $this->id;
+        }
+
+        /**
+         * @return BelongsTo
+         */
+        public function agent()
+        {
+            return $this->belongsTo(Agent::class);
         }
 
         /**
@@ -811,6 +821,8 @@
                 'filename' => $this->filename,
                 'seller_name'                     => ((int)$this->seller_id !=0)?$this->seller->name:'',
 // 'number' => $this->number,
+                'agent_name' => optional($this->agent)->search_description,
+                'reference_data' => $this->reference_data,
             ];
         }
 

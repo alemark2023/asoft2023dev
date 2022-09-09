@@ -44,6 +44,12 @@
                             <th class="text-right">T.Gravado</th>
                             <th class="text-right">T.Igv</th>
                             <th class="text-right">Total</th>
+                            
+                            <template v-if="configuration.enabled_sales_agents">
+                                <th>Agente</th>
+                                <th>Datos de referencia</th>
+                            </template>
+
                         <tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>
@@ -80,6 +86,10 @@
                             <td>{{ (row.state_type_id == '11') ? "0.00" : row.total_igv}}</td>
                             <td>{{ (row.state_type_id == '11') ? "0.00" : row.total}}</td>
 
+                            <template v-if="configuration.enabled_sales_agents">
+                                <td>{{ row.agent_name }}</td>
+                                <td>{{ row.reference_data }}</td>
+                            </template>
                         </tr>
 
                     </data-table>
@@ -96,6 +106,7 @@
     import DataTable from '../../components/DataTableReports.vue'
 
     export default {
+        props: ['configuration'],
         components: {DataTable},
         data() {
             return {

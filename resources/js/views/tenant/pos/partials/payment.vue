@@ -463,8 +463,13 @@
                 </div>
                 <div class="col-lg-8">
                     <div class="card card-default">
-                        <div class="card-body text-center">
+                        <div class="card-body">
                             <div class="row col-lg-12">
+                                
+                                <div class="col-md-12 col-lg-12 mb-1" v-if="configuration.enabled_sales_agents">
+                                    <search-agent @changeAgent="changeAgent"></search-agent>
+                                </div>
+
                                 <div class="col-md-12 col-lg-12">
                                     <div class="form-group">
                                         <label class="control-label">Datos de referencia</label>
@@ -472,10 +477,12 @@
                                                   type="textarea"></el-input>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
+                
             </div>
         </div>
         <options-form
@@ -543,10 +550,11 @@ import MultiplePaymentForm from './multiple_payment.vue'
 import {pointSystemFunctions} from '@mixins/functions'
 import {calculateRowItem} from "@helpers/functions"
 import DiscountPermissionForm from './discount_permission.vue'
+import SearchAgent from '@components/SearchAgent.vue'
 
 
 export default {
-    components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress, DiscountPermissionForm},
+    components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress, DiscountPermissionForm, SearchAgent},
     mixins: [pointSystemFunctions],
 
     props: [
@@ -657,6 +665,10 @@ export default {
     },
     methods: 
     {
+        changeAgent(agent_id)
+        {
+            this.form.agent_id = agent_id
+        },
         checkUsedPointsByItem()
         {
             this.form.items.forEach(row => {

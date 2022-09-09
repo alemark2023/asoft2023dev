@@ -1586,6 +1586,7 @@ export default {
                 total_tips: 0, //propinas
                 created_from_pos: true,
                 token_validated_for_discount: false,
+                agent_id: null,
 
             };
             // console.log(this.configuration.show_terms_condition_pos);

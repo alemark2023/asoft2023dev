@@ -274,6 +274,7 @@
 
             'restrict_seller_discount',
             'sellers_discount_limit',
+            'enabled_sales_agents',
         ];
 
         protected $casts = [
@@ -382,6 +383,7 @@
             
             'restrict_seller_discount'=>'bool',
             'sellers_discount_limit'=>'float',
+            'enabled_sales_agents'=>'bool',
         ];
 
         protected $hidden = [
@@ -611,6 +613,7 @@
 
                 'restrict_seller_discount' => $this->restrict_seller_discount,
                 'sellers_discount_limit' => $this->sellers_discount_limit,
+                'enabled_sales_agents' => $this->enabled_sales_agents,
                 
             ];
         }

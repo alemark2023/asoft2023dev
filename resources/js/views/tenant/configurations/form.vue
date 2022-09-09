@@ -1815,6 +1815,34 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            <div class="col-6 mt-4">
+                                <div class="form-group">
+                                    <label>
+                                        Habilitar Agente de ventas
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">
+                                                - Permite el registro de agentes en POS<br>
+                                                - Se habilita la opción Agentes en el módulo Clientes, para gestionar los datos del mismo<br>
+                                                - No tiene accesos al sistema
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.enabled_sales_agents}"
+                                        class="form-group">
+                                        <el-switch v-model="form.enabled_sales_agents"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                        <small v-if="errors.enabled_sales_agents"
+                                            class="form-control-feedback"
+                                            v-text="errors.enabled_sales_agents[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
                     </el-tab-pane>
@@ -2207,6 +2235,7 @@ export default {
 
                 restrict_seller_discount: false,
                 sellers_discount_limit: 0,
+                enabled_sales_agents: false,
             };
         },
         UpdateFormPurchase(e) {

@@ -500,6 +500,7 @@
                         <li class="nav-parent
                         {{ ($firstLevel === 'persons' && $secondLevel === 'customers')?'nav-active nav-expanded':'' }}
                         {{ $firstLevel === 'person-types' ? 'nav-active nav-expanded' : '' }}
+                        {{ $firstLevel === 'agents' ? 'nav-active nav-expanded' : '' }}
                             ">
                             <a class="nav-link"
                                href="#">
@@ -534,6 +535,14 @@
                                            href="{{route('tenant.person_types.index')}}">Tipos de clientes</a>
                                     </li>
                                 @endif
+
+                                @if($configuration->enabled_sales_agents)
+                                    <li class="{{ ($firstLevel === 'agents')?'nav-active':'' }}">
+                                        <a class="nav-link"
+                                           href="{{route('tenant.agents.index')}}">Agentes</a>
+                                    </li>
+                                @endif
+                                
                             </ul>
                         </li>
                     @endif
