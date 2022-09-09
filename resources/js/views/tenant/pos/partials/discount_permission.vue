@@ -1,29 +1,31 @@
 <template>
     <el-dialog width="40%" :title="titleDialog" :visible="showDialog" @open="create" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
-        <div class="form-body">
-            <div class="row" >
-                <div class="col-md-12">
-                    <el-alert
-                        :title="getAlertTitle"
-                        type="error"
-                        :closable="false"
-                        show-icon>
-                    </el-alert>
-                </div>
-                <div class="col-md-12 mt-3">
-                    <div :class="{ 'has-danger': errors.token }" class="form-group">
-                        <label class="control-label">Token de autorización</label>
-                        <el-input v-model="form.token"></el-input>
-                        <small v-if="errors.token" class="form-control-feedback" v-text="errors.token[0]"></small>
+        <form autocomplete="off" @submit.prevent="submit">
+            <div class="form-body">
+                <div class="row" >
+                    <div class="col-md-12">
+                        <el-alert
+                            :title="getAlertTitle"
+                            type="error"
+                            :closable="false"
+                            show-icon>
+                        </el-alert>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <div :class="{ 'has-danger': errors.token }" class="form-group">
+                            <label class="control-label">Token de autorización</label>
+                            <el-input v-model="form.token"></el-input>
+                            <small v-if="errors.token" class="form-control-feedback" v-text="errors.token[0]"></small>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="form-actions text-right mt-3">
-            <el-button @click.prevent="close()">Cerrar</el-button>
-            <el-button type="primary"  :loading="loading_submit" @click.prevent="submit()">Validar token</el-button>
-        </div>
+            <div class="form-actions text-right mt-3">
+                <el-button @click.prevent="close()">Cerrar</el-button>
+                <el-button type="primary" native-type="submit" :loading="loading_submit">Validar token</el-button>
+            </div>
+        </form>
     </el-dialog>
 </template>
 

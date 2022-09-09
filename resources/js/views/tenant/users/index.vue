@@ -56,7 +56,7 @@
                         :typeUser="typeUser"
                         :recordId="recordId"></users-form>
 
-            <access-token-discount-form :showDialog.sync="showDialogAccessTokenForDiscount" ></access-token-discount-form>
+            <authorized-token-discount-form :showDialog.sync="showDialogAuthorizedTokenForDiscount" ></authorized-token-discount-form>
         </div>
     </div>
 </template>
@@ -64,17 +64,17 @@
 <script>
 
     import UsersForm from './form1.vue'
-    import AccessTokenDiscountForm from './partials/access_token_discount.vue'
+    import AuthorizedTokenDiscountForm from './partials/authorized_token_discount.vue'
     import {deletable} from '../../../mixins/deletable'
 
     export default {
         props: ['typeUser', 'configuration'],
         mixins: [deletable],
-        components: {UsersForm, AccessTokenDiscountForm},
+        components: {UsersForm, AuthorizedTokenDiscountForm},
         data() {
             return {
                 showDialog: false,
-                showDialogAccessTokenForDiscount: false,
+                showDialogAuthorizedTokenForDiscount: false,
                 resource: 'users',
                 recordId: null,
                 records: [],
@@ -96,7 +96,7 @@
         methods: {
             clickAccessTokenForDiscount()
             {
-                this.showDialogAccessTokenForDiscount = true
+                this.showDialogAuthorizedTokenForDiscount = true
             },
             getData() {
                 this.$http.get(`/${this.resource}/records`)

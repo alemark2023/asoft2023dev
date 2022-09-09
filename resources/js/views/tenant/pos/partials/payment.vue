@@ -1216,7 +1216,7 @@ export default {
 
                 if(all_percentages > parseFloat(this.configuration.sellers_discount_limit) && !this.form.token_validated_for_discount)
                 {
-                    this.totalDiscountPercentage = all_percentages
+                    this.totalDiscountPercentage = _.round(all_percentages, 2)
                     this.showDialogDiscountPermission = true
 
                     return {
