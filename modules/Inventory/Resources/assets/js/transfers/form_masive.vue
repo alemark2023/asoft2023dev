@@ -68,12 +68,14 @@
                             <div class="form-group">
                                 <label class="control-label">
                                     Producto
-                                    <el-tooltip class="item"
-                                                effect="dark"
-                                                content="Puede escribir para buscar un producto en especifico"
-                                                placement="top-start">
-                                        <i class="fa fa-info-circle"></i>
-                                    </el-tooltip>
+                                    <template v-if="!search_item_by_barcode">
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    content="Puede escribir para buscar un producto en especifico"
+                                                    placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </template>
                                 </label>
                                 <!-- <el-input v-model="form.item_description" :readonly="true"></el-input> -->
                                 <template v-if="search_item_by_barcode">
@@ -350,10 +352,14 @@ export default {
                 }
                 else
                 {
-                    this.form_add.input_search = null
-                    this.$message.error('No se encontró el producto.')
+                    this.itemBarcodeNotFound()
                 }
             }
+        },
+        itemBarcodeNotFound()
+        {
+            this.form_add.input_search = null
+            this.$message.error('No se encontró el producto.')
         },
         selectedItemSearch()
         {
@@ -540,11 +546,15 @@ export default {
                         .post(`/${this.resource}/search-items`, {params})
                         .then(response => {
                             let items = response.data.items;
-                            if (items.length > 0) {
+                            if (items.length > 0) 
+                            {
                                 this.items = items; //filterWords(input, items);
                                 this.enabledSearchItemByBarcode()
-                            } else {
+                            }
+                            else 
+                            {
                                 this.filterItems()
+                                if(this.search_item_by_barcode) this.itemBarcodeNotFound()
                             }
                         })
                     .finally(()=>{
