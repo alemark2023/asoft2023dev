@@ -2580,6 +2580,18 @@ class Item extends ModelTenant
         ];
     }
 
+    
+    /**
+     * Stock de variantes para revision inventario
+     *
+     * @param  int $establishment_id
+     * @return array
+     */
+    public function getStockByVariantsInventoryReview($establishment_id)
+    {
+        return ItemMovement::getStockByVariantSizeColor($this->id, $establishment_id);
+    }
+
 
 }
 

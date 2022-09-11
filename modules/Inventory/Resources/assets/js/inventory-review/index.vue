@@ -20,7 +20,7 @@
                             <label class="control-label font-weight-bold text-info">
                                 Sucursal
                             </label>
-                            <el-select v-model="form.warehouse_id" filterable>
+                            <el-select v-model="form.warehouse_id" filterable @change="changeWarehouse">
                                 <el-option v-for="option in warehouses" :key="option.id" :value="option.id" :label="option.establishment_description"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
@@ -263,6 +263,11 @@
             },
             async getRecords()
             {
+                // if(this.form.filter_by_variants)
+                // {
+                //     if(!this.form.item_color_id && !this.form.item_size_id) return this.$message.error('Debe seleccionar al menos un filtro de las variantes.')
+                // }
+
                 this.loading_submit = true
                 await this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`)
                     .then(response => {
@@ -272,10 +277,16 @@
                         this.loading_submit = false
                     })
             },
+            changeWarehouse()
+            {
+                const warehouse = _.find(this.warehouses, {id : this.form.warehouse_id})
+                this.form.establishment_id = warehouse.establishment_id
+            },
             initForm()
             {
                 this.form = {
                     warehouse_id: null,
+                    establishment_id: null,
                     category_id: null,
                     filter_by_variants: false,
                     item_color_id: null,
@@ -292,6 +303,7 @@
                         this.item_sizes = response.data.item_sizes
                         
                         this.form.warehouse_id = this.warehouses.length > 0 ? this.warehouses[0].id : null
+                        this.changeWarehouse()
                     })
             }
         }

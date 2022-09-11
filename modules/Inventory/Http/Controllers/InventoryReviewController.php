@@ -40,50 +40,156 @@ class InventoryReviewController extends Controller
         return compact('warehouses', 'categories', 'item_sizes', 'item_colors');
     }
 
-
+    
+    /**
+     *
+     * @param  Request $request
+     * @return array
+     */
     public function records(Request $request)
     {
+        $filter_by_variants = $request->has('filter_by_variants') && $request->filter_by_variants === 'true';
 
         $records = ItemWarehouse::with([
-                                    'item' => function($q){
-                                        $q->whereFilterWithOutRelations();
-                                    }
-                                ])
-                                ->whereHas('item', function ($query) use ($request) {
+                        'item' => function($q){
+                            $q->whereFilterWithOutRelations();
+                        }
+                    ])
+                    ->whereHas('item', function ($query) use ($request, $filter_by_variants) {
 
-                                    $query->whereIsNotService()
-                                            ->whereNotIsSet()
-                                            ->whereIsActive()
-                                            ;
+                        $query->whereIsNotService()->whereNotIsSet()->whereIsActive();
 
-                                    if($request->has('category_id') && $request->category_id)
-                                    {
-                                        $query->where('category_id', $request->category_id);
-                                    }
+                        $category_id = $request->has('category_id') && $request->category_id;
+                        if($category_id) $query->where('category_id', $request->category_id);
 
-                                    return $query;
-                                })
-                                ->where('warehouse_id', $request->warehouse_id)
-                                ->orderBy('item_id')
-                                ->get()
-                                ->transform(function($row, $index){
-                                    return [
-                                        'index' => $index + 1,
-                                        'id' => $row->id,
-                                        'item_id' => $row->item_id,
-                                        'item_description' => $row->item->description,
-                                        'item_barcode' => $row->item->barcode,
-                                        'stock' => $row->stock,
-                                        'input_stock' => 0,
-                                        'difference' => null,
-                                    ];
-                                });
+                        // para variantes
+                        if($filter_by_variants)
+                        {   
+                            $query->whereHas('item_movement_rel_extra', function($query_rel_extra) use ($request) {
+
+                                $item_color_id = $request->item_color_id ?? false;
+                                if($item_color_id) $query_rel_extra->where('item_color_id', $item_color_id);
+                                
+                                $item_size_id = $request->item_size_id ?? false;
+                                if($item_size_id) $query_rel_extra->where('item_size_id', $item_size_id);
+
+                                return $query_rel_extra;
+                            });
+                        }
+                        // para variantes
+
+                        return $query;
+                    })
+                    ->where('warehouse_id', $request->warehouse_id)
+                    ->orderBy('item_id')
+                    ->get()
+                    ->transform(function($row, $index) use($filter_by_variants, $request){
+                        return [
+                            'index' => $index + 1,
+                            'id' => $row->id,
+                            'item_id' => $row->item_id,
+                            'item_description' => $row->item->description,
+                            'item_barcode' => $row->item->barcode,
+                            'stock' => $row->stock,
+                            'input_stock' => 0,
+                            'difference' => null,
+                            'stock_by_variants' => $filter_by_variants ? $row->item->getStockByVariantsInventoryReview($request->establishment_id) : null,
+                        ];
+                    });
+
+        
+        if($filter_by_variants)
+        {
+            $records = $this->transformDataForVariants($records, $request);
+        }
 
         return [
             'data' => $records
         ];
-        // $records = CatColorsItem::where('id', '!=', 0);
-        // return $records->paginate(config('tenant.items_per_page'));
+    }
+    
+    
+    /**
+     * 
+     * Transformar datos de los items encontrados para las variantes
+     *
+     * @param  array $records
+     * @param  Request $request
+     * @return array
+     */
+    private function transformDataForVariants($records, $request)
+    {
+        $data = [];
+        $index = 0;
+
+        $records->each(function($row) use(&$data, $index, $request){
+
+            $colors = $row['stock_by_variants']['colors'] ?? null;
+            $sizes = $row['stock_by_variants']['CatItemSize'] ?? null;
+
+            if($colors)
+            {
+                if($this->isSetDataVariant($request) || ($request->item_color_id && !$request->item_size_id))
+                {
+                    $this->setDataToVariant($colors['detailed'], $row, $data, $index, 'Color');
+                }
+            }
+
+            if($sizes)
+            {
+                if($this->isSetDataVariant($request) || (!$request->item_color_id && $request->item_size_id))
+                {
+                    $this->setDataToVariant($sizes['detailed'], $row, $data, $index, 'Talla');
+                }
+            }
+
+        });
+
+        return $data;
+    }
+
+        
+    /**
+     *
+     * @param  Request $request
+     * @return bool
+     */
+    private function isSetDataVariant($request)
+    {
+        return ($request->item_color_id && $request->item_size_id) || (!$request->item_color_id && !$request->item_size_id);
+    }
+
+
+    /**
+     * 
+     * Asignar datos de las variante
+     *
+     * @param  array $data_detailed
+     * @param  array $row
+     * @param  array $data
+     * @param  int $index
+     * @return void
+     */
+    private function setDataToVariant($data_detailed, $row, &$data, &$index, $type)
+    {
+        if($data_detailed->count() > 0)
+        {
+            foreach ($data_detailed as $value)
+            {
+                $data [] = [
+                    'index' => $index + 1,
+                    'id' => $row['id'],
+                    'item_id' => $row['item_id'],
+                    'item_description' => $row['item_description']." - {$type}: ".$value->name,
+                    'item_barcode' => $row['item_barcode'],
+                    'stock' => (float) $value->total,
+                    'input_stock' => 0,
+                    'difference' => null,
+                    'stock_by_variants' => null,
+                ];
+                $index++;
+            }
+        }
     }
 
 
