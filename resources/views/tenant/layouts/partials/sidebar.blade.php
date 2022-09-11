@@ -1,11 +1,15 @@
 <?php
 
     use App\Models\Tenant\Configuration;
+    use Modules\Inventory\Models\InventoryConfiguration;
 
     $configuration = Configuration::first();
     $firstLevel = $path[0] ?? null;
     $secondLevel = $path[1] ?? null;
     $thridLevel = $path[2] ?? null;
+
+    $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
+
 ?>
 <aside id="sidebar-left"
        class="sidebar-left">
@@ -664,7 +668,7 @@
                         {{-- Inventario --}}
                         @if(in_array('inventory', $vc_modules))
                             <li class="nav-parent
-                            {{ (in_array($firstLevel, ['inventory', 'moves', 'transfers', 'devolutions', 'extra_info_items']) |($firstLevel === 'reports' && in_array($secondLevel, ['kardex', 'inventory', 'valued-kardex'])))?'nav-active nav-expanded':'' }}
+                            {{ (in_array($firstLevel, ['inventory', 'moves', 'transfers', 'devolutions', 'extra_info_items', 'inventory-review']) |($firstLevel === 'reports' && in_array($secondLevel, ['kardex', 'inventory', 'valued-kardex'])))?'nav-active nav-expanded':'' }}
                                 ">
                                 <a class="nav-link"
                                    href="#">
@@ -736,6 +740,15 @@
                                                href="{{route('extra_info_items.index')}}">Datos extra de items</a>
                                         </li>
                                     @endif
+
+                                    
+                                    @if($inventory_configuration->inventory_review)
+                                        <li class="{{ ($firstLevel === 'inventory-review')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                            href="{{route('tenant.inventory-review.index')}}">Revisión de inventario</a>
+                                        </li>
+                                    @endif
+                            
                                 </ul>
                             </li>
                         @endif

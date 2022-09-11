@@ -420,6 +420,16 @@ class Item extends ModelTenant
      *
      * @return Builder
      */
+    public function scopeWhereIsNotService($query)
+    {
+        return $query->where('unit_type_id', '!=', 'ZZ');
+    }
+
+    /**
+     * @param Builder $query
+     *
+     * @return Builder
+     */
     public function scopeWhereIsActive($query)
     {
         return $query->where('active', true);
@@ -2248,7 +2258,7 @@ class Item extends ModelTenant
      */
     public function scopeWhereFilterWithOutRelations($query)
     {
-        return $query->withOut(['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags']);
+        return $query->withOut(['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags', 'item_lots']);
     }
 
 
