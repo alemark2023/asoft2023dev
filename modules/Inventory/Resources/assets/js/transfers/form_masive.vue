@@ -144,7 +144,7 @@
                                     >[&#10004; Seleccionar series]</a>
                                 </template>
 
-                                <el-checkbox class="mt-2" v-model="search_item_by_barcode">Buscar por código de barras </el-checkbox>
+                                <el-checkbox class="mt-2" v-model="search_item_by_barcode" @change="changeSearchItemByBarcode">Buscar por código de barras </el-checkbox>
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -338,6 +338,13 @@ export default {
                 return this.$message.error('El stock es menor a la cantidad de traslado.')
             }
         },
+        changeSearchItemByBarcode()
+        {
+            if(this.search_item_by_barcode)
+            {
+                this.selectInputSearchByBarcode()
+            }
+        },
         async enabledSearchItemByBarcode()
         {
             if(this.search_item_by_barcode)
@@ -430,13 +437,19 @@ export default {
 
             this.initFormAdd()
 
-            this.$refs.inputSearchByBarcode.$el.getElementsByTagName('input')[0].focus()
+            this.selectInputSearchByBarcode()
 
             this.$notify({
                 title: '',
                 message: 'Producto añadido!',
                 type: 'success',
                 duration: 700
+            })
+        },
+        selectInputSearchByBarcode()
+        {
+            this.$nextTick(() => {
+                this.$refs.inputSearchByBarcode.$el.getElementsByTagName('input')[0].focus()
             })
         },
         clickAddItem() {
