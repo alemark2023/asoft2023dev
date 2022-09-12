@@ -145,6 +145,18 @@
             </td>
         </tr>
     @endif
+    
+    @if ($document->isPointSystem())
+        <tr>
+            <td><p class="desc">P. Acumulados:</p></td>
+            <td><p class="desc">{{ $document->person->accumulated_points }}</p></td>
+        </tr>
+        <tr>
+            <td><p class="desc">Puntos por la compra:</p></td>
+            <td><p class="desc">{{ $document->getPointsBySale() }}</p></td>
+        </tr>
+    @endif
+
 
     @if ($document->detraction)
     {{--<strong>Operación sujeta a detracción</strong>--}}
@@ -461,6 +473,11 @@
                      {{$item}}<br>
                  @endforeach
                  {{-- {{join( "-", $itemSet->getItemsSet($row->item_id) )}} --}}
+                @endif
+
+                @if($row->item->used_points_for_exchange ?? false)
+                    <br>
+                    <small>*** Canjeado por {{$row->item->used_points_for_exchange}}  puntos ***</small>
                 @endif
 
                 @if($document->has_prepayment)
