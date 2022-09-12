@@ -76,7 +76,7 @@ class SystemActivityLogGeneralController extends Controller
 
         $change_success = [
             'success' => true,
-            'message' => 'Ha pasado mucho tiempo desde la última vez que modificó su contraseña, debe actualizarla.',
+            'message' => 'Ha pasado mucho tiempo desde la última vez que modificó su contraseña, debe actualizarla en el módulo Usuarios.',
         ];
 
         if(!is_null($last_password_update))
