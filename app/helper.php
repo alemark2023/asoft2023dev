@@ -164,3 +164,10 @@ if (!function_exists('func_get_currency_types')) {
         return $currency_types;
     }
 }
+
+if (!function_exists('func_is_windows')) {
+    function func_is_windows()
+    {
+        return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+    }
+}

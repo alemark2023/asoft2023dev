@@ -78,9 +78,15 @@
             'detail',
             'inventories_transfer_id',
             'comments',
+            'guide_id',
             'date_of_issue',
             'created_at'
         ];
+
+        public function guide()
+        {
+            return $this->belongsTo(Guide::class);
+        }
 
         /**
          * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -133,7 +139,7 @@
         {
             return $this->morphMany(ItemLot::class, 'item_loteable');
         }
-    
+
     /**
      * Obtener datos para reporte movimientos
      *
