@@ -58,14 +58,14 @@
                                 <span>Fecha/Hora Entrada:</span>
                                 <strong
                                 >{{ currentRent.input_date | toDate }} -
-                                 {{ currentRent.input_time | toTime }}</strong
+                                    {{ currentRent.input_time | toTime }}</strong
                                 >
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Fecha/Hora Salida:</span>
                                 <strong
                                 >{{ currentRent.output_date | toDate }} -
-                                 {{ currentRent.output_time | toTime }}</strong
+                                    {{ currentRent.output_time | toTime }}</strong
                                 >
                             </li>
                         </ul>
@@ -449,12 +449,12 @@ export default {
         ...mapState([
             'config',
         ]),
-        canMakePayment:function(){
-            if(
+        canMakePayment: function () {
+            if (
                 this.currentRent !== undefined &&
                 this.currentRent.status !== undefined &&
-                this.currentRent.status !=='FINALIZADO'
-            ){
+                this.currentRent.status !== 'FINALIZADO'
+            ) {
                 return true;
             }
             return false;
@@ -495,16 +495,25 @@ export default {
     },
     async mounted() {
         // console.log(this.config);
+
+
         this.form.establishment_id = this.config.establishment.id;
         this.form.date_of_issue = moment().format("YYYY-MM-DD");
         await this.getPercentageIgv();
+
+        this.room.item = await calculateRowItem(this.room.item, "PEN", 3, this.percentage_igv);
+
         this.initForm();
         await this.initDocument();
         this.all_document_types = this.documentTypesInvoice;
         this.title = `Checkout: Habitación ${this.currentRent.room.name}`;
         this.total = this.room.item.total;
-        this.document.items = this.currentRent.items.map((i) => i.item);
-        this.onCalculateTotals();
+        this.document.items = await this.currentRent.items.map((i) => {
+            return calculateRowItem(i.item, "PEN", 3, this.percentage_igv)
+        });
+        // console.log(this.document.items);
+        await this.onCalculateTotals();
+        console.log(this.document);
         this.onCalculatePaidAndDebts();
         this.clickAddPayment();
         this.validateIdentityDocumentType();
@@ -629,7 +638,7 @@ export default {
         async onGoToInvoice() {
             console.log('onGoToInvoice');
             await this.onUpdateItemsWithExtras();
-            this.onCalculateTotals();
+            await this.onCalculateTotals();
             let validate_payment_destination = this.validatePaymentDestination();
 
             if (validate_payment_destination.error_by_item > 0) {
@@ -691,6 +700,7 @@ export default {
                     it.quantity = 1;
                     const newTotal =
                         parseFloat(this.room.item.total) + parseFloat(this.arrears);
+                    console.log(newTotal);
                     it.input_unit_price_value = parseFloat(newTotal);
                     it.item.unit_price = parseFloat(newTotal);
                     it.unit_value = parseFloat(newTotal);
