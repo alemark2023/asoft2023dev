@@ -1744,6 +1744,106 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            <div class="col-6 mt-4">
+                                <div class="form-group">
+                                    <label>
+                                        Habilitar restricción para descuento
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">
+                                                Se limitará el porcentaje de descuento que pueden registrar los vendedores por cada venta - Disponible en POS
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.restrict_seller_discount}"
+                                        class="form-group">
+                                        <el-switch v-model="form.restrict_seller_discount"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                        <small v-if="errors.restrict_seller_discount"
+                                            class="form-control-feedback"
+                                            v-text="errors.restrict_seller_discount[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <template v-if="form.restrict_seller_discount">
+                                <div class="col-md-4" >
+                                    <label class="control-label">
+                                        Porcentaje límite de descuento
+                                    </label>
+                                    <div :class="{'has-danger': errors.sellers_discount_limit}" class="form-group mt-1">
+                                        <el-input-number v-model="form.sellers_discount_limit"
+                                                            :min="0.01"
+                                                            :max="95"
+                                                            :precision="2"
+                                                            :step="1"
+                                                            @change="submit"></el-input-number>
+                                        <small v-if="errors.sellers_discount_limit" class="form-control-feedback" v-text="errors.sellers_discount_limit[0]"></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-2" >
+                                </div>
+                            </template>
+
+                            <div class="col-6 mt-4">
+                                <div class="form-group">
+                                    <label>
+                                        Habilitar vista categorias y productos
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">
+                                                Disponible en POS
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.enable_categories_products_view}"
+                                        class="form-group">
+                                        <el-switch v-model="form.enable_categories_products_view"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                        <small v-if="errors.enable_categories_products_view"
+                                            class="form-control-feedback"
+                                            v-text="errors.enable_categories_products_view[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-6 mt-4">
+                                <div class="form-group">
+                                    <label>
+                                        Habilitar Agente de ventas
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">
+                                                - Permite el registro de agentes en POS<br>
+                                                - Se habilita la opción Agentes en el módulo Clientes, para gestionar los datos del mismo<br>
+                                                - No tiene accesos al sistema
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.enabled_sales_agents}"
+                                        class="form-group">
+                                        <el-switch v-model="form.enabled_sales_agents"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                        <small v-if="errors.enabled_sales_agents"
+                                            class="form-control-feedback"
+                                            v-text="errors.enabled_sales_agents[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3"  name="nine">
@@ -2131,6 +2231,11 @@ export default {
                 quantity_of_points: 0,
 
                 show_complete_name_pos: false,
+                enable_categories_products_view: false,
+
+                restrict_seller_discount: false,
+                sellers_discount_limit: 0,
+                enabled_sales_agents: false,
             };
         },
         UpdateFormPurchase(e) {

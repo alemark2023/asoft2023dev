@@ -270,6 +270,11 @@
             'quantity_of_points',
             'round_points_of_sale',
             'show_complete_name_pos',
+            'enable_categories_products_view',
+
+            'restrict_seller_discount',
+            'sellers_discount_limit',
+            'enabled_sales_agents',
         ];
 
         protected $casts = [
@@ -374,6 +379,11 @@
             'point_system_sale_amount'=>'float',
             'quantity_of_points'=>'float',
             'round_points_of_sale'=>'bool',
+            'enable_categories_products_view'=>'bool',
+            
+            'restrict_seller_discount'=>'bool',
+            'sellers_discount_limit'=>'float',
+            'enabled_sales_agents'=>'bool',
         ];
 
         protected $hidden = [
@@ -599,6 +609,12 @@
 
                 'delete_relation_note_to_invoice' => (bool)config('tenant.delete_relation_note_to_invoice'),
                 'show_complete_name_pos' => (bool)$this->show_complete_name_pos,
+                'enable_categories_products_view' => $this->enable_categories_products_view,
+
+                'restrict_seller_discount' => $this->restrict_seller_discount,
+                'sellers_discount_limit' => $this->sellers_discount_limit,
+                'enabled_sales_agents' => $this->enabled_sales_agents,
+                
             ];
         }
 

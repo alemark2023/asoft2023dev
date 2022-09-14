@@ -863,6 +863,7 @@
                 :affectation-igv-types="affectation_igv_types"
                 :percentage-igv="percentage_igv"
                 :configuration="configuration"
+                :typeUser="typeUser"
             ></payment-form>
         </template>
 
@@ -1072,6 +1073,7 @@ export default {
 
         await this.selectDefaultCustomer();
         await this.enabledSearchItemByBarcode()
+        this.enabledCategoriesProductsView()
 
     },
 
@@ -1140,6 +1142,19 @@ export default {
                 this.search_item_by_barcode = true
             }
         },
+        enabledCategoriesProductsView()
+        {
+            if (this.configuration.enable_categories_products_view)
+            {
+                this.setView('cat2')
+            }
+        },
+        setFocusInInputSearch()
+        {
+            this.$nextTick(() => {
+                this.initFocus()
+            })
+        },
         keyupEnterQuantity() {
             this.initFocus();
         },
@@ -1203,6 +1218,9 @@ export default {
             } else {
                 this.place = "prod";
             }
+
+            this.setFocusInInputSearch()
+
         },
         getRecords() {
             this.loading = true;
@@ -1567,6 +1585,8 @@ export default {
                 worker_full_name_tips: null, //propinas
                 total_tips: 0, //propinas
                 created_from_pos: true,
+                token_validated_for_discount: false,
+                agent_id: null,
 
             };
             // console.log(this.configuration.show_terms_condition_pos);
@@ -2204,6 +2224,9 @@ export default {
                 await this.getRecords();
                 this.$refs.table_items.reset();
             }
+
+            this.setFocusInInputSearch()
+
         },
         nameSets(id) {
             let row = this.items.find(x => x.item_id == id);

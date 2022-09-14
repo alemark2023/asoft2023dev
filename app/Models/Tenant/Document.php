@@ -28,6 +28,7 @@ use Modules\Sale\Models\TechnicalService;
 use phpDocumentor\Reflection\Utils;
 use Modules\Pos\Models\Tip;
 use Illuminate\Support\Facades\DB;
+use Modules\Sale\Models\Agent;
 
 
 /**
@@ -258,7 +259,8 @@ class Document extends ModelTenant
         'ticket_single_shipment',
         'point_system',
         'point_system_data',
-        'folio'
+        'folio',
+        'agent_id',
     ];
 
     protected $casts = [
@@ -461,6 +463,14 @@ class Document extends ModelTenant
     {
         $arr = explode('|', $value);
         return $arr;
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function agent()
+    {
+        return $this->belongsTo(Agent::class);
     }
 
     /**

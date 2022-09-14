@@ -463,8 +463,13 @@
                 </div>
                 <div class="col-lg-8">
                     <div class="card card-default">
-                        <div class="card-body text-center">
+                        <div class="card-body">
                             <div class="row col-lg-12">
+                                
+                                <div class="col-md-12 col-lg-12 mb-1" v-if="configuration.enabled_sales_agents">
+                                    <search-agent @changeAgent="changeAgent"></search-agent>
+                                </div>
+
                                 <div class="col-md-12 col-lg-12">
                                     <div class="form-group">
                                         <label class="control-label">Datos de referencia</label>
@@ -472,10 +477,12 @@
                                                   type="textarea"></el-input>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
+                
             </div>
         </div>
         <options-form
@@ -501,6 +508,12 @@
         <card-brands-form :external="true"
                           :recordId="null"
                           :showDialog.sync="showDialogNewCardBrand"></card-brands-form>
+                          
+        <discount-permission-form 
+                    :showDialog.sync="showDialogDiscountPermission"
+                    :totalDiscountPercentage ="totalDiscountPercentage"
+                    :sellers-discount-limit="configuration.sellers_discount_limit"
+                    @tokenValidated="tokenValidated"></discount-permission-form>
     </div>
 </template>
 <style>
@@ -536,9 +549,12 @@ import OptionsForm from './options.vue'
 import MultiplePaymentForm from './multiple_payment.vue'
 import {pointSystemFunctions} from '@mixins/functions'
 import {calculateRowItem} from "@helpers/functions"
+import DiscountPermissionForm from './discount_permission.vue'
+import SearchAgent from '@components/SearchAgent.vue'
+
 
 export default {
-    components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress},
+    components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress, DiscountPermissionForm, SearchAgent},
     mixins: [pointSystemFunctions],
 
     props: [
@@ -557,6 +573,7 @@ export default {
         'affectationIgvTypes',
         'percentageIgv',
         'configuration',
+        'typeUser',
     ],
     
     data() {
@@ -595,6 +612,8 @@ export default {
             error_global_discount: false,
             is_discount_amount: false,
             payment_method_type_id: null,
+            showDialogDiscountPermission: false,
+            totalDiscountPercentage: 0,
         }
     },
     async created() {
@@ -646,6 +665,10 @@ export default {
     },
     methods: 
     {
+        changeAgent(agent_id)
+        {
+            this.form.agent_id = agent_id
+        },
         checkUsedPointsByItem()
         {
             this.form.items.forEach(row => {
@@ -1182,8 +1205,47 @@ export default {
                 });
             }
         },
-        async clickPayment() {
-            // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
+        getDiscountPercentages()
+        {
+            if(this.form.discounts)
+            {
+                return _.sumBy(this.form.discounts, (discount)=>{
+                    return discount.factor * 100
+                })
+            }
+
+            return 0
+        },
+        tokenValidated()
+        {
+            this.form.token_validated_for_discount = true
+        },
+        validateRestrictSellerDiscount()
+        {
+            if(this.configuration.restrict_seller_discount && this.typeUser !== 'admin')
+            {
+                const all_percentages = this.getDiscountPercentages()
+
+                if(all_percentages > parseFloat(this.configuration.sellers_discount_limit) && !this.form.token_validated_for_discount)
+                {
+                    this.totalDiscountPercentage = _.round(all_percentages, 2)
+                    this.showDialogDiscountPermission = true
+
+                    return {
+                        success: false,
+                    }
+                }
+            }
+
+            return {
+                success: true
+            }
+        },
+        async clickPayment() 
+        {
+            // validacion restriccion de descuento
+            const validate_restrict_seller_discount = this.validateRestrictSellerDiscount()
+            if(!validate_restrict_seller_discount.success) return
 
             // validacion sistema por puntos
             if(this.enabledPointSystem)
