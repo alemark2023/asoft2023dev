@@ -14,11 +14,14 @@ use Modules\Item\Models\{
 use App\Models\Tenant\{
     Establishment,
     CatItemSize,
+    Company,
 };
 use App\Models\Tenant\Catalogs\{
     CatColorsItem
 };
-    
+use App\Exports\GeneralFormatExport;
+use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade as PDF;
 
 
 class InventoryReviewController extends Controller
@@ -192,5 +195,48 @@ class InventoryReviewController extends Controller
         }
     }
 
+    
+    /**
+     * 
+     * Exportar formato pdf/excel
+     *
+     * @param  Request $request
+     * @return mixed
+     */
+    public function export(Request $request) 
+    {
+        $this->initConfigurations();
+        $format = $request->format;
+        $records = $request->records;
+        $company = Company::getDataForReportHeader();
+        $data = compact('records', 'company');
+        $view = 'inventory::inventory-review.exports.general_format';
+        $filename = 'Revision_stock_'.Carbon::now().".{$format}";
+
+        if($format === 'pdf')
+        {
+            $pdf = PDF::loadView($view, $data);
+            $export = $pdf->download($filename);
+        }
+        else
+        {
+            $general_format_export= new GeneralFormatExport();
+            $general_format_export->data($data)->view_name($view);
+            $export = $general_format_export->download($filename);
+        }
+            
+        return $export;
+    }
+
+    
+    /**
+     *
+     * @return void
+     */
+    private function initConfigurations()
+    {
+        ini_set('memory_limit', '4026M');
+        ini_set("pcre.backtrack_limit", "5000000");
+    }
 
 }

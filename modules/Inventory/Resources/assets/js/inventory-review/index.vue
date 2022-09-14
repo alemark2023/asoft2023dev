@@ -8,7 +8,7 @@
             <div class="right-wrapper pull-right">
             </div>
         </div>
-        <div class="card mb-0">
+        <div class="card mb-0" v-loading="loading">
             <div class="card-header bg-info">
                 <h3 class="my-0">{{ title }}</h3>
             </div>
@@ -111,6 +111,21 @@
                                     @click.prevent="reviewStock">Revisar stock
                             </el-button>
                         </template>
+                        
+                        <template v-if="records.length > 0 && init_review">
+                            <el-button
+                                    icon="el-icon-tickets"
+                                    class="ml-3"
+                                    type="danger"
+                                    @click.prevent="clickDownload('pdf')"> Exportar PDF
+                            </el-button>
+
+                            <el-button
+                                    class="ml-3"
+                                    type="success"
+                                    @click.prevent="clickDownload('xlsx')"><i class="fa fa-file-excel"></i> Exportar Excel
+                            </el-button>
+                        </template>
                     </div>
                 </div>
 
@@ -199,6 +214,8 @@
                 per_page: 20,
                 loading_review: false,
                 input_search_barcode: null,
+                init_review: false,
+                loading: false,
             }
         },
         created() {
@@ -207,6 +224,37 @@
             this.filters()
         },
         methods: {
+            async clickDownload(format)
+            {
+                this.loading = true
+
+                await this.$http({
+                        url: `/${this.resource}/export`,
+                        method: 'POST',
+                        data: {
+                            records: this.records,
+                            format: format,
+                        },
+                        responseType: 'blob'
+                    })
+                    .then(response => {
+
+                        const res = response.data
+                        const url = window.URL.createObjectURL(new Blob([res]))
+                        const link = document.createElement('a')
+                        link.href = url
+                        link.setAttribute('download', 'Revision_stock_' + moment().format('HHmmss') + '.' + format)
+                        document.body.appendChild(link)
+                        link.click()
+
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+                    .then(() => {
+                        this.loading = false
+                    })
+            },
             findItem(barcode)
             {
                 return _.find(this.records, {item_barcode: barcode})
@@ -238,9 +286,14 @@
                 this.input_search_barcode = null
                 this.$message.error('No se encontró el producto.')
             },
+            setFocusInInputSearch()
+            {
+                this.$refs.inputSearchByBarcode.$el.getElementsByTagName('input')[0].focus()
+            },
             async reviewStock()
             {
                 this.loading_review = true
+                this.init_review = true
 
                 await this.sleep(200)
 
@@ -253,7 +306,7 @@
             },
             sleep(ms) 
             {
-                return new Promise(resolve => setTimeout(resolve, ms));
+                return new Promise(resolve => setTimeout(resolve, ms))
             },
             getQueryParameters() 
             {
@@ -275,6 +328,7 @@
                     })
                     .then(()=>{
                         this.loading_submit = false
+                        this.setFocusInInputSearch()
                     })
             },
             changeWarehouse()
