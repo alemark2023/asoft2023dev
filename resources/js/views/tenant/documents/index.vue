@@ -96,6 +96,7 @@
                         <th>#</th>
                         <th v-if="columns.soap_type.visible">SOAP</th>
                         <th class="text-center" style="min-width: 95px;">Emisión</th>
+                        <th v-if="columns.date_payment.visible"  class="text-center" style="min-width: 95px;">Fecha de pago</th>
                         <th class="text-center"
                             v-if="columns.date_of_due.visible">Fecha Vencimiento
                         </th>
@@ -152,6 +153,9 @@
                         <td>{{ index }}</td>
                         <td v-if="columns.soap_type.visible"> {{ row.soap_type_description }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
+                        <td class="text-center"
+                            v-if="columns.date_payment.visible">{{ row.date_of_payment }}
+                        </td>
                         <td class="text-center"
                             v-if="columns.date_of_due.visible">{{ row.date_of_due }}
                         </td>
@@ -640,6 +644,10 @@ export default {
                 },
                 total_charge: {
                     title: 'T.Cargos',
+                    visible: false
+                },
+                date_payment:{
+                    title: 'Fecha de pago',
                     visible: false
                 },
 
