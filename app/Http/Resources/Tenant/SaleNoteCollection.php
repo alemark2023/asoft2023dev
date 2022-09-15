@@ -22,7 +22,7 @@
             $configuration = Configuration::first();
             return $this->collection->transform(function ($row, $key) use($configuration) {
                 /** @var \App\Models\Tenant\SaleNote $row */
-                /* return $row->getCollectionData($configuration); */
+                return $row->getCollectionData($configuration);
                 /** Movido al modelo */
                 $total_paid = number_format($row->payments->sum('payment'), 2, ".", "");
                 $total_pending_paid = number_format($row->total - $total_paid, 2, ".", "");

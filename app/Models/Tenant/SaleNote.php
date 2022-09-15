@@ -721,6 +721,17 @@
             $mails = $person->getCollectionData();
             $customer_email=  $mails['optional_email_send'];
 
+            $date_pay=$this->payments()->select('date_of_payment')->get();
+            
+            $date_of_pay='';
+            if (count($date_pay)>0) {
+                //dd(count(array($date_pay)));
+                foreach ($date_pay as $pay) {
+                    //dd($pay);
+                    $date_of_pay=$pay->date_of_payment->format('Y-m-d');
+                }
+            }
+
             return [
                 'id' => $this->id,
                 'soap_type_id' => $this->soap_type_id,
@@ -791,6 +802,8 @@
                 'seller' => $this->seller,
                 'filename' => $this->filename,
                 'seller_name'                     => ((int)$this->seller_id !=0)?$this->seller->name:'',
+                'date_of_payment'              => $date_of_pay,
+                'customer_region'              => $customer->department->description,
 // 'number' => $this->number,
             ];
         }
