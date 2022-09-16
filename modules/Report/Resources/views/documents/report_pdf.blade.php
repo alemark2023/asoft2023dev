@@ -1,10 +1,10 @@
-<?php
-
-use App\Models\Tenant\Document;
-use App\CoreFacturalo\Helpers\Template\TemplateHelper;
-use App\Models\Tenant\SaleNote;
-use App\Models\Tenant\Catalogs\DocumentType;
-use App\Models\Tenant\Series;
+@php
+   
+    use App\Models\Tenant\Document;
+    use App\CoreFacturalo\Helpers\Template\TemplateHelper;
+    use App\Models\Tenant\SaleNote;
+    use App\Models\Tenant\Catalogs\DocumentType;
+    use App\Models\Tenant\Series;
 
 $col_num=10;
     //dd($columns);
@@ -29,7 +29,7 @@ foreach ($columns as $value) {
 }
 
 $document_types=DocumentType::OnlyAvaibleDocuments()->get();
-?>
+@endphp
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -37,54 +37,7 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="application/pdf; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Document</title>
-        <style>
-            @page {
-              margin: 5;
-            }
-            html {
-                font-family: sans-serif;
-                font-size: 12px;
-            }
-
-            table {
-                width: 100%;
-                border-spacing: 0;
-                border: 1px solid black;
-            }
-
-            .celda {
-                text-align: center;
-                padding: 5px;
-                border: 0.1px solid black;
-            }
-
-            th {
-                padding: 5px;
-                text-align: center;
-                border-color: #0088cc;
-                border: 0.1px solid black;
-            }
-
-            .title {
-                font-weight: bold;
-                padding: 5px;
-                font-size: 20px !important;
-                text-decoration: underline;
-            }
-
-            p>strong {
-                margin-left: 5px;
-                font-size: 13px;
-            }
-
-            thead {
-                font-weight: bold;
-                background: #0088cc;
-                color: white;
-                text-align: center;
-            }
-        </style>
+        
     </head>
     <body>
         <div>
@@ -150,11 +103,11 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                     foreach ($records as $key => $value) {
                         $document_type = $value->getDocumentType();
                         $clear_type[] = $document_type->id;
-                        $clear_serie[] = $value->series;
+                        $clear_series[] = $value->series;
                         
                     }
                     $clear_type=array_unique($clear_type);
-                    $clear_serie=array_unique($clear_serie);
+                    $clear_series=array_unique($clear_series);
                     $clear_type=array_values($clear_type);
                     $clear_series=array_values($clear_series);
                     
@@ -175,22 +128,22 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                                 $title=$document_types[$c]->description;
                                 //dd($series_document);
                             @endphp
-                            @for ($cs = 0; $cs < count($clear_serie); $cs++)
-                            @for ($s = 0; $s < count($series_document); $s++)
-                                @php
-                                    $serie_type=$series_document[$s];
-                                    
-                                @endphp
-                                @if ($serie_type['number']==$clear_serie[$cs])
+                            @for ($cs = 0; $cs < count($clear_series); $cs++)
+                                @for ($s = 0; $s < count($series_document); $s++)
                                     @php
-    
-                                        $serie_number=$serie_type['number'];
+                                        $serie_type=$series_document[$s];
+                                        //dd($serie_type['number']==$clear_series[$cs]);
                                     @endphp
+                                    @if ($serie_type['number']==$clear_series[$cs])
+                                        @php
+                                            //dd($serie_type['number']);
+                                            $serie_number=$serie_type['number'];
+                                        @endphp
                     <h3>{{$title}} - {{$serie_number}}</h3>
                     <table class="">
                         <thead>
                         <tr>
-                            <th>#</th>
+                            <th style="border-color: #0088cc;">#</th>
                             <th class="">Usuario/Vendedor</th>
                             <th>Tipo Doc</th>
                             <th>Número</th>
