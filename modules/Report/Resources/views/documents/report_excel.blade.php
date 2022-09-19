@@ -103,20 +103,7 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
     <div class="">
         <div class=" ">
             @php
-                $acum_total_charges=0;
-                $acum_total_taxed=0;
-                $acum_total_igv=0;
-                $acum_total=0;
-
-                $serie_affec = '';
-                $acum_total_exonerado=0;
-                $acum_total_inafecto=0;
-
-                $acum_total_free=0;
-
-                $acum_total_taxed_usd = 0;
-                $acum_total_igv_usd = 0;
-                $acum_total_usd = 0;
+                
 
                 $acum_documents=[];
                 $acum_series=[];
@@ -157,6 +144,20 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                             @endphp
                             @if ($serie_type['number']==$clear_series[$cs])
                                 @php
+                                    $acum_total_charges=0;
+                                    $acum_total_taxed=0;
+                                    $acum_total_igv=0;
+                                    $acum_total=0;
+
+                                    $serie_affec = '';
+                                    $acum_total_exonerado=0;
+                                    $acum_total_inafecto=0;
+
+                                    $acum_total_free=0;
+
+                                    $acum_total_taxed_usd = 0;
+                                    $acum_total_igv_usd = 0;
+                                    $acum_total_usd = 0;
                                     //dd($serie_type['number']);
                                     $serie_number=$serie_type['number'];
                                 @endphp

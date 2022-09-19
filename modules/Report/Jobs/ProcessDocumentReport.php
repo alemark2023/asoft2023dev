@@ -101,6 +101,8 @@
 
                     $html = view('report::documents.report_pdf', compact("records", "company", "establishment", "filters","columns"))->render();
 
+                    $html = htmlspecialchars_decode($html);
+
                     ////////////////////////////////
 
                     $base_template = $establishment->template_pdf;
@@ -141,13 +143,13 @@
                     $stylesheet = file_get_contents($path_css);
                     
                     $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
-                    
+
                     $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         
                     $filename = 'DOCUMENT_ReporteDoc_' . date('YmdHis') . '-' . $tray->user_id;
                     Log::debug("Render pdf finish");
-
+                    Log::debug("Html".$html);
                     Log::debug("Upload pdf init");
 
                     
