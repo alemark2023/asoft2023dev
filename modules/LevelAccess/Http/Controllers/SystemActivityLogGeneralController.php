@@ -81,7 +81,10 @@ class SystemActivityLogGeneralController extends Controller
 
         if(!is_null($last_password_update))
         {
-            $limit_date = Carbon::parse($last_password_update)->addMonths($quantity_month);
+            $quantity_week = 1; // semanas para mostrar notificacion antes que cumpla la fecha
+
+            $limit_date = Carbon::parse($last_password_update)->addMonths($quantity_month)->subWeeks($quantity_week);
+            // $limit_date = Carbon::parse($last_password_update)->addMonths($quantity_month);
             $today = Carbon::now();
             
             if($limit_date->lte($today)) return $change_success;
