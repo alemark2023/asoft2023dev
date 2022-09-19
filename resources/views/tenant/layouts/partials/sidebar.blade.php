@@ -561,6 +561,7 @@
                                 $firstLevel === 'expenses' ||
                                 $firstLevel === 'bank_loan' ||
                                 $firstLevel === 'purchase-quotations' ||
+                                $firstLevel === 'purchase-orders' ||
                                 $firstLevel === 'fixed-asset'
                                 ) ?'nav-active nav-expanded':'' }}
                                 ">
