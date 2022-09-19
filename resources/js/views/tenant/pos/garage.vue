@@ -880,6 +880,8 @@ export default {
 
         this.form.establishment_id = this.establishment.id;
 
+        this.enabledSearchItemByBarcode()
+
     },
 
     computed: {
@@ -934,6 +936,13 @@ export default {
         }
     },
     methods: {
+        enabledSearchItemByBarcode()
+        {
+            if (this.configuration.search_item_by_barcode) 
+            {
+                this.search_item_by_barcode = true
+            }
+        },
         isExoneratedIgv(affectation_igv_type_id)
         {
             return this.affectations_exonerated_igv.includes(affectation_igv_type_id)
