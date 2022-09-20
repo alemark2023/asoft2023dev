@@ -29,6 +29,8 @@ class SystemActivityLog extends ModelTenant
         'browser_version',
         'location',
         'route',
+        'request_email',
+        
     ];
 
     

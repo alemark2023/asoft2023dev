@@ -373,4 +373,30 @@
 
             });
         });
-    }
+     }
+     else
+     {
+          $prefix = env('PREFIX_URL',null);
+          $prefix = !empty($prefix)?$prefix.".":'';
+          $app_url = $prefix. env('APP_URL_BASE');
+
+          Route::domain($app_url)->group(function () {
+               Route::middleware('auth:admin')->group(function () {
+                    Route::get('list-reports', 'System\ReportController@listReports')->name('system.list-reports');
+
+                    Route::prefix('system-activity-logs')->group(function () {
+
+                         Route::prefix('report-login-lockout')->group(function () {
+
+                              Route::get('report-login-lockout', 'System\ReportLoginLockoutController@index')->name('system.report_login_lockout.index');
+                              Route::get('records', 'System\ReportLoginLockoutController@records');
+                              Route::get('columns', 'System\ReportLoginLockoutController@columns');
+                              Route::get('report/{type}', 'System\ReportLoginLockoutController@exportReport');
+
+                         });
+                    });
+
+               });
+          });
+     }
+ 

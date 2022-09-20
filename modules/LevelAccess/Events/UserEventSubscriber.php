@@ -5,6 +5,10 @@ namespace Modules\LevelAccess\Events;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Modules\LevelAccess\Traits\SystemActivityTrait;
+use App\Models\Tenant\User as UserTenant;
+use App\Models\System\User as UserSystem;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 
 class UserEventSubscriber
@@ -50,13 +54,14 @@ class UserEventSubscriber
     }
 
  
+    /**
+     * Handle user lockout login event.
+     */
     public function onUserLockout($event) 
     {
-        \Log::info("onUserLockout");
-        // $this->saveSystemActivityUser($event, 'failed');
+        $this->saveSystemActivityUserLockout(request()->all());
     }
     
-
 
     /**
      * Register the listeners for the subscriber.

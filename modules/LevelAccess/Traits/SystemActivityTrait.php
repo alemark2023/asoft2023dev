@@ -62,6 +62,46 @@ trait SystemActivityTrait
         }
     }
 
+        
+    /**
+     * 
+     * Registrar datos en log de actividades para el usuario, bloqueo por exceder limite de intentos
+     * Para cada Tenant
+     *
+     * @return void
+     */
+    public function saveSystemActivityUserLockout($request)
+    {
+        $system_activity_log_type_id = 'login_lockout';
+        $email = $request['email'] ?? null;
+
+        try 
+        {
+            $connection_name = (new User)->getDbConnectionName();
+
+            if($this->isTenantConnection($connection_name))
+            {
+                $client_data = $this->getClientData();
+                $base_data = [
+                    'user_id' => null,
+                    'system_activity_log_type_id' => $system_activity_log_type_id,
+                    'date' => date('Y-m-d'),
+                    'time' => date('H:i:s'),
+                    'origin_id' => null,
+                    'origin_type' => null,
+                    'request_email' => $email,
+                ];
+
+                $this->onlyCreateSystemActivityLog($this->getParamsSystemActivity($client_data, $base_data));
+            }
+
+        } 
+        catch (Exception $e) 
+        {
+            $this->setErrorLog($e, " Se ha excedido el límite de intentos permitidos al iniciar sesión - admin/system - {$system_activity_log_type_id} ");
+        }
+    }
+
     
     /**
      * 
