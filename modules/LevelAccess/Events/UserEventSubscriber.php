@@ -50,6 +50,14 @@ class UserEventSubscriber
     }
 
  
+    public function onUserLockout($event) 
+    {
+        \Log::info("onUserLockout");
+        // $this->saveSystemActivityUser($event, 'failed');
+    }
+    
+
+
     /**
      * Register the listeners for the subscriber.
      *
@@ -70,6 +78,11 @@ class UserEventSubscriber
         $events->listen(
             'Illuminate\Auth\Events\Failed',
             'Modules\LevelAccess\Events\UserEventSubscriber@onUserFailed'
+        );
+        
+        $events->listen(
+            'Illuminate\Auth\Events\Lockout',
+            'Modules\LevelAccess\Events\UserEventSubscriber@onUserLockout'
         );
     }
 

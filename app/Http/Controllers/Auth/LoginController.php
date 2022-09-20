@@ -31,7 +31,7 @@ class LoginController extends Controller
     protected $redirectTo = '/dashboard';
 
     protected $maxAttempts = 3;
-    protected $decayMinutes = 5;
+    protected $decayMinutes = 1;
 
 
     /**
