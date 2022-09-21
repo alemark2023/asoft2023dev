@@ -5,6 +5,8 @@ namespace Modules\Finance\Helpers;
 use Illuminate\Support\Facades\Storage;
 use Validator;
 use Illuminate\Support\Str;
+use Exception;
+use Symfony\Component\HttpFoundation\File\File;
 
 
 class UploadFileHelper
@@ -116,5 +118,97 @@ class UploadFileHelper
         return $filename;
     }
 
+
+    /**
+     * 
+     * lanza excepcion si el archivo no es permitido
+     *
+     * @param  string $message
+     * @return void
+     */
+    public static function notAllowedFile($message)
+    {
+        throw new Exception($message);
+    }
+
+    
+    /**
+     * 
+     * Validar si es un archivo válido
+     *
+     * @param  string $temp_path
+     * @param  string $mimes
+     * @param  array $allowed_file_types
+     * @return void
+     */
+    public static function checkIfValidFile($filename, $temp_path, $mimes = null, $allowed_file_types = null)
+    {
+        $error_message = 'Tipo de archivo no permitido';
+        $mimes = $mimes ?? self::getGeneralMimes();
+        $allowed_file_types = $allowed_file_types ?? self::getGeneralAllowedFileTypes();
+
+        self::checkIfAllowedExtension($filename, $mimes);
+
+        if (!in_array(mime_content_type($temp_path), $allowed_file_types, true)) self::notAllowedFile($error_message);
+
+        $new_file = new File($temp_path);
+
+        $data = [
+            'file' => $new_file
+        ];
+
+        $validator = Validator::make($data, [
+            'file' => 'mimes:'.$mimes
+        ]);
+
+        if($validator->fails()) self::notAllowedFile($error_message);
+    }
+
+    
+    /**
+     *
+     * @param  string $filename
+     * @param  array $mimes
+     * @return void
+     */
+    public static function checkIfAllowedExtension($filename, $mimes)
+    {
+        $extension = self::getFileExtension($filename);
+        $allowed_extensions = explode(',', $mimes);
+
+        if (!in_array($extension, $allowed_extensions, true)) self::notAllowedFile('Extensión del archivo no permitida.');
+    }
+    
+    
+    /**
+     *
+     * @param  string $filename
+     * @return string
+     */
+    public static function getFileExtension($filename)
+    {
+        $data = explode('.', $filename);
+        return end($data);
+    }
+
+
+    /**
+     *
+     * @return string
+     */
+    public static function getGeneralMimes()
+    {
+        return 'jpg,jpeg,png,gif,svg';
+    }
+
+
+    /**
+     *
+     * @return array
+     */
+    public static function getGeneralAllowedFileTypes()
+    {
+        return ['image/jpg', 'image/jpeg', 'image/png', 'image/gif', 'image/svg'];
+    }
 
 }
