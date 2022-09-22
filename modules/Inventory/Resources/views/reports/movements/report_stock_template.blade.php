@@ -55,7 +55,7 @@
     </head>
     <body>
         <div>
-            <p align="center" class="title"><strong>Reporte movimientos</strong></p>
+            <p align="center" class="title"><strong>Reporte Ajuste de Stock</strong></p>
         </div>
         <div style="margin-top:20px; margin-bottom:20px;">
             <table>
@@ -86,7 +86,6 @@
                             <tr>
                                 <th >#</th>
                                 <th >Producto</th>
-                                <th class="text-center">Fecha y hora transacción</th>
                                 <th class="text-center">Stock Sistema</th>
                                 <th class="text-center">Stock Real</th>
                                 <th class="text-center">Ajuste</th>
@@ -94,21 +93,12 @@
                         </thead>
                         <tbody>
                             @foreach($records as $key => $value)
-                            @php
-                                $stock_data=0;
-                                if($value['input']==='-'){
-                                    $stock_data=$value['output'];
-                                }else{
-                                    $stock_data=$value['input'];
-                                }
-                            @endphp
                                 <tr>
                                     <td class="celda">{{$loop->iteration}}</td>
                                     <td class="celda"> {{ $value['item_description'] }} </td>
-                                    <td class="celda"> {{ $value['date_time'] }} </td>
-                                    <td class="celda"> {{ $value['description'] }} </td>
-                                    <td class="celda"> {{ $value['input'] }} </td>
-                                    <td class="celda"> {{ $stock_data }} </td>
+                                    <td class="celda"> {{ $value['stock_system'] }} </td>
+                                    <td class="celda"> {{ $value['stock_real'] }} </td>
+                                    <td class="celda"> {{ $value['ajust'] }} </td>
                                 </tr>
                             @endforeach
                         </tbody>

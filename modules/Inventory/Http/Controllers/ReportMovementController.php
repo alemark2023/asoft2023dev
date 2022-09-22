@@ -121,11 +121,20 @@ class ReportMovementController extends Controller
  
     }
 
-    public function excelStock(Request $request)
+    public function stockExcel(Request $request)
     {
         $exportData = new ReportStockExport();
-        $exportData->data($this->getDataForFormat($request));
+        $exportData->data($this->getDataForFormatStock($request));
 
         return $exportData->download('Reporte_Movimientos' . date('YmdHis') . '.xlsx');
+    }
+
+    private function getDataForFormatStock($request)
+    {
+        return [
+            'company' => Company::first(),
+            'warehouse' => Warehouse::select('description')->find($request->warehouse_id),
+            'records' => $this->getStockRecords($request->all())->get()->transform(function($row, $key) { return  $row->getRowResourceReportStock(); }),
+        ];
     }
 }

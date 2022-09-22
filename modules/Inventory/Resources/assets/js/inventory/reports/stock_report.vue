@@ -131,7 +131,7 @@ export default {
             let query = queryString.stringify({
                 ...this.form
             });
-            window.open(`/${this.resource}/stock/${type}/?${query}`, '_blank');
+            window.open(`/${this.resource}/stock/excel/${type}/?${query}`, '_blank');
         },
         changeMovementType(){
             this.form.inventory_transaction_id = null
