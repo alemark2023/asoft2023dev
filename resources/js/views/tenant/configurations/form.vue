@@ -1282,6 +1282,7 @@
                                         <el-upload slot="append"
                                                     :headers="headers"
                                                     :on-success="successUpload"
+                                                    :on-error="errorUpload"
                                                     :show-file-list="false"
                                                     action="/configurations/uploads">
                                             <el-button icon="el-icon-upload"
@@ -2331,6 +2332,10 @@ export default {
             }).then(() => {
                 this.loading_submit = false;
             });
+        },
+        errorUpload(error)
+        {
+            this.$message({message: 'Error al subir el archivo', type: 'error'})
         }
     }
 }

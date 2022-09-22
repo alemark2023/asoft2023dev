@@ -7,6 +7,8 @@ use Validator;
 use Illuminate\Support\Str;
 use Exception;
 use Symfony\Component\HttpFoundation\File\File;
+use Intervention\Image\ImageManagerStatic as Image;
+use Illuminate\Support\Facades\Log;
 
 
 class UploadFileHelper
@@ -136,12 +138,14 @@ class UploadFileHelper
      * 
      * Validar si es un archivo válido
      *
+     * @param  string $filename
      * @param  string $temp_path
+     * @param  bool $is_image
      * @param  string $mimes
      * @param  array $allowed_file_types
      * @return void
      */
-    public static function checkIfValidFile($filename, $temp_path, $mimes = null, $allowed_file_types = null)
+    public static function checkIfValidFile($filename, $temp_path, $is_image = true, $mimes = null, $allowed_file_types = null)
     {
         $error_message = 'Tipo de archivo no permitido';
         $mimes = $mimes ?? self::getGeneralMimes();
@@ -162,6 +166,66 @@ class UploadFileHelper
         ]);
 
         if($validator->fails()) self::notAllowedFile($error_message);
+
+        if($is_image) self::checkIfImageCanBeProcessed($temp_path);
+    }
+
+    
+    /**
+     * 
+     * Determina si es imagen
+     *
+     * @param  string $temp_path
+     * @param  array $allowed_file_types
+     * @return bool
+     */
+    public static function getIsImage($temp_path, $allowed_file_types)
+    {
+        return in_array(mime_content_type($temp_path), $allowed_file_types, true);
+    }
+
+        
+    /**
+     * Validar si la imagen pudo ser procesada
+     *
+     * @param  string $temp_path
+     * @return void
+     */
+    public static function checkIfImageCanBeProcessed($temp_path)
+    {
+        $processed = self::imageCanBeProcessed($temp_path);
+
+        if(!$processed['success']) self::notAllowedFile($processed['message']);
+    }
+
+    
+    /**
+     * 
+     * Procesar imagen
+     *
+     * @param  string $temp_path
+     * @return array
+     */
+    public static function imageCanBeProcessed($temp_path)
+    {
+        try 
+        {
+            Image::make($temp_path);
+            
+            return [
+                'success' => true,
+            ];
+        }
+        catch (Exception $e) 
+        {
+            $message = 'La imágen no puede ser procesada, verifique si es un archivo válido.';
+            self::writeErrorLog($e, $message);
+
+            return [
+                'success' => false,
+                'message' => $message,
+            ];
+        }
     }
 
     
@@ -211,4 +275,15 @@ class UploadFileHelper
         return ['image/jpg', 'image/jpeg', 'image/png', 'image/gif', 'image/svg'];
     }
 
+    
+    /**
+     *
+     * @param  Exception $exception
+     * @return void
+     */
+    public static function writeErrorLog($exception, $message = null)
+    {
+        Log::error(($message ?? '')."Line: {$exception->getLine()} - Message: {$exception->getMessage()} - File: {$exception->getFile()}");
+    }
+    
 }
