@@ -558,6 +558,7 @@ class ConfigurationController extends Controller
             $filename = $file->getClientOriginalName();
             $name = pathinfo($file->getClientOriginalName());
 
+            UploadFileHelper::checkIfValidCssFile($filename, $file->getPathName(), 'css', ['text/css', 'text/plain']);
 
             Storage::disk('public')->put('skins'.DIRECTORY_SEPARATOR.$filename, $file_content);
 
