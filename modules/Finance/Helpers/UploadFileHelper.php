@@ -173,6 +173,26 @@ class UploadFileHelper
     
     /**
      * 
+     * Validar si es un archivo css válido
+     *
+     * @param  string $filename
+     * @param  string $temp_path
+     * @param  string $mimes
+     * @param  array $allowed_file_types
+     * @return void
+     */
+    public static function checkIfValidCssFile($filename, $temp_path, $mimes, $allowed_file_types)
+    {
+        $error_message = 'Tipo de archivo no permitido';
+
+        self::checkIfAllowedExtension($filename, $mimes);
+
+        if (!in_array(mime_content_type($temp_path), $allowed_file_types, true)) self::notAllowedFile($error_message);
+    }
+    
+
+    /**
+     * 
      * Determina si es imagen
      *
      * @param  string $temp_path

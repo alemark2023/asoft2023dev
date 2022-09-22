@@ -15,6 +15,7 @@ use App\Models\Tenant\Item;
 use Illuminate\Support\Str;
 use Modules\Offline\Models\OfflineConfiguration;
 use Illuminate\Support\Facades\Storage;
+use Modules\Finance\Helpers\UploadFileHelper;
 
 
 class DocumentUpdateInput
@@ -458,6 +459,9 @@ class DocumentUpdateInput
                 $file_content = file_get_contents($image_pay_constancy['temp_path']);
                 $datenow = date('YmdHis');
                 $file_name = $detraction['detraction_type_id'] . '-' . $detraction['bank_account'] . '-' . $datenow . '.' . $file_name_old_array[1];
+
+                UploadFileHelper::checkIfValidFile($file_name, $image_pay_constancy['temp_path'], true);
+
                 Storage::put($directory . $file_name, $file_content);
                 $set_image_pay_constancy = $file_name;
 
