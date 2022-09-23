@@ -241,6 +241,9 @@ class DocumentController extends Controller
             $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'image_detractions'.DIRECTORY_SEPARATOR;
 
             $file_name_old = $image_pay_constancy['image'];
+
+            UploadFileHelper::checkIfValidFile($file_name_old, $image_pay_constancy['temp_path'], true);
+
             $file_name_old_array = explode('.', $file_name_old);
             $file_content = file_get_contents($image_pay_constancy['temp_path']);
             $datenow = date('YmdHis');

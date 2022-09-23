@@ -13,8 +13,18 @@ use Illuminate\Support\Facades\Log;
 
 class UploadFileHelper
 { 
-
-    public static function validateUploadFile($request, $column = 'file', $mimes = 'jpg,jpeg,png,gif,svg,pdf,xlsx')
+    
+    /**
+     * 
+     * Validar archivos
+     *
+     * @param  Request $request
+     * @param  string $column
+     * @param  string $mimes
+     * @param  bool $is_image
+     * @return array
+     */
+    public static function validateUploadFile($request, $column = 'file', $mimes = 'jpg,jpeg,png,gif,svg,pdf,xlsx', $is_image = true)
     {
         
         $validator = Validator::make($request->all(), [
@@ -27,6 +37,13 @@ class UploadFileHelper
                 'message' =>  'Tipo de archivo no permitido',
             ];
         }
+
+        if($is_image)
+        {
+            $processed = self::imageCanBeProcessed($request->file($column)->getPathName());
+            if(!$processed['success']) return $processed;
+        }
+        
 
         return [
             'success' => true,
@@ -69,6 +86,10 @@ class UploadFileHelper
      * 
      * Cargar archivo
      *
+     * Usado para imágenes en:
+     * PaymentConfigurationController
+     * PaymentLinkController
+     * 
      * @param  string $folder
      * @param  string $old_filename
      * @param  string $temp_path
@@ -76,7 +97,7 @@ class UploadFileHelper
      * @param  string $prefix
      * @return string
      */
-    public static function uploadFileFromTempFile($folder, $old_filename, $temp_path, $id, $prefix = null)
+    public static function uploadFileFromTempFile($folder, $old_filename, $temp_path, $id, $prefix = null, $mimes = 'jpg,jpeg,png,svg', $allowed_file_types = ['image/jpg', 'image/jpeg', 'image/png', 'image/svg'])
     {
 
         $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR;
@@ -84,6 +105,8 @@ class UploadFileHelper
         $now = date('YmdHis');
 
         $filename =  ($prefix ? "{$prefix}_" : "")."{$id}_{$now}".'.'.end($old_filename_array);
+
+        self::checkIfValidFile($filename, $temp_path, true, $mimes, $allowed_file_types);
 
         Storage::put($directory.$filename, file_get_contents($temp_path));
 
@@ -101,9 +124,11 @@ class UploadFileHelper
      * @param  string $name
      * @param  bool $file_get_contents
      * @param  string $suffix
+     * @param  string $mimes
+     * @param  array $allowed_file_types
      * @return string
      */
-    public static function uploadImageFromTempFile($folder, $old_filename, $temp_path, $name, $file_get_contents, $suffix = null)
+    public static function uploadImageFromTempFile($folder, $old_filename, $temp_path, $name, $file_get_contents, $suffix = null, $mimes = 'jpg,jpeg,png,svg', $allowed_file_types = ['image/jpg', 'image/jpeg', 'image/png', 'image/svg'])
     {
         
         $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR;
@@ -114,7 +139,16 @@ class UploadFileHelper
         $filename =  Str::slug($name)."-{$now}{$suffix}".'.'.end($old_filename_array);
 
         $file = $file_get_contents ? file_get_contents($temp_path) :  $temp_path;
-        
+
+        if($file_get_contents)  
+        {
+            self::checkIfValidFile($filename, $temp_path, true, $mimes, $allowed_file_types);
+        }
+        else
+        {
+            self::checkIfImageCanBeProcessed($temp_path);
+        }
+
         Storage::put($directory.$filename, $file);
 
         return $filename;
