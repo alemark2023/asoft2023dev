@@ -81,6 +81,11 @@ class SystemActivityLog extends ModelTenant
             $query->where($request->column, 'like', "%{$request->value}%");
         }
 
+        if($request->has('system_activity_log_type_id'))
+        {
+            $query->where('system_activity_log_type_id', $request->system_activity_log_type_id);
+        }
+
         return $query;
     }
 
@@ -202,6 +207,7 @@ class SystemActivityLog extends ModelTenant
             'browser_version' => $this->browser_version,
             'browser_description' => "{$this->browser_name} - {$this->browser_version}",
             'location' => $this->getDataLocation(),
+            'request_email' => $this->request_email,
         ];
     }
 

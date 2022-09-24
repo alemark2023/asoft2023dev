@@ -4,6 +4,9 @@ namespace Modules\Report\Http\Controllers\System;
 use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
+use App\Models\System\Client;
+use Hyn\Tenancy\Environment;
+use Modules\LevelAccess\Http\Controllers\SystemActivityLogGeneralController;
 
 
 class ReportLoginLockoutController extends Controller
@@ -14,43 +17,24 @@ class ReportLoginLockoutController extends Controller
         return view('report::system.system_activity_logs.login_lockout.index');
     }
    
+    
+    /**
+     *
+     * @return array
+     */
+    public function columns()
+    {
+        return app(SystemActivityLogGeneralController::class)->columns();
+    }
+
+
     public function records(Request $request)
     {
-        $records = $this->getRecordsCash($request->all());
-        return new CashCollection($records->paginate(config('tenant.items_per_page')));
-    }
+        $client = Client::findOrFail($request->record_id);
+        $tenancy = app(Environment::class);
+        $tenancy->tenant($client->hostname->website);
 
- 
-
-    public function pdf(Request $request) {
-
-        $company = Company::first();
-        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment; 
-        $records = $this->getRecords($request->all(), Document::class)->get();
-        
-        $pdf = PDF::loadView('report::documents.report_pdf', compact("records", "company", "establishment"));
-
-        $filename = 'Reporte_Ventas_'.date('YmdHis');
-        
-        return $pdf->download($filename.'.pdf');
-    }
-    
-  
-    
-
-    public function excel(Request $request) {
-    
-        $company = Company::first();
-        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment; 
-        
-        $records = $this->getRecords($request->all(), Document::class)->get();
-
-        return (new DocumentExport)
-                ->records($records)
-                ->company($company)
-                ->establishment($establishment)
-                ->download('Reporte_Ventas_'.Carbon::now().'.xlsx');
-
+        return app(SystemActivityLogGeneralController::class)->records($request);
     }
 
 }

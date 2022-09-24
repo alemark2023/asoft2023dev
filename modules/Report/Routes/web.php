@@ -382,16 +382,29 @@
 
           Route::domain($app_url)->group(function () {
                Route::middleware('auth:admin')->group(function () {
-                    Route::get('list-reports', 'System\ReportController@listReports')->name('system.list-reports');
-
-                    Route::prefix('system-activity-logs')->group(function () {
+                    
+                    Route::prefix('reports')->group(function () {
+                         
+                         Route::get('list', 'System\ReportController@listReports')->name('system.list-reports');
+                         
+                         Route::get('clients', 'System\ReportController@clients');
 
                          Route::prefix('report-login-lockout')->group(function () {
 
-                              Route::get('report-login-lockout', 'System\ReportLoginLockoutController@index')->name('system.report_login_lockout.index');
-                              Route::get('records', 'System\ReportLoginLockoutController@records');
+                              Route::get('', 'System\ReportLoginLockoutController@index')->name('system.report_login_lockout.index');
                               Route::get('columns', 'System\ReportLoginLockoutController@columns');
-                              Route::get('report/{type}', 'System\ReportLoginLockoutController@exportReport');
+                              Route::get('records', 'System\ReportLoginLockoutController@records');
+                              // Route::get('report/{type}', 'System\ReportLoginLockoutController@exportReport');
+
+                         });
+
+                         
+                         Route::prefix('user-not-change-password')->group(function () {
+
+                              Route::get('', 'System\ReportUserNotChangePasswordController@index')->name('system.user_not_change_password.index');
+                              Route::get('columns', 'System\ReportUserNotChangePasswordController@columns');
+                              Route::get('records', 'System\ReportUserNotChangePasswordController@records');
+                              // Route::get('report/{type}', 'System\ReportUserNotChangePasswordController@exportReport');
 
                          });
                     });

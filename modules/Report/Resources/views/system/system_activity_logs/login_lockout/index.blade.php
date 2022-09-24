@@ -1,5 +1,5 @@
 @extends('system.layouts.app')
 
 @section('content')
-	<system-backup></system-backup>
+	<system-report-login-lockout-index></system-report-login-lockout-index>
 @endsection

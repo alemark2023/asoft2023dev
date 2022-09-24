@@ -91,8 +91,8 @@
 
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
-                    <li class="{{ ($path[0] === 'list-reports')?'nav-active':'' }}">
-                        <a class="nav-link" href="{{url('list-reports')}}">
+                    <li class="{{ ($path[0] === 'reports')?'nav-active':'' }}">
+                        <a class="nav-link" href="{{ route('system.list-reports') }}">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 width="24"
                                 height="24"

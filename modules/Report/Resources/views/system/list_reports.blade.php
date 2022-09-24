@@ -25,6 +25,11 @@
                                 Cuentas bloquedas
                             </a>
                         </li>
+                        <li>
+                            <a href="{{route('system.user_not_change_password.index')}}">
+                                Usuarios con contraseña desactualizada
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>

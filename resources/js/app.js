@@ -436,6 +436,10 @@ Vue.component('tenant-system-activity-logs-generals-index', require('@viewsModul
 Vue.component('tenant-system-activity-logs-transactions-index', require('@viewsModuleLevelAccess/system_activity_logs/transactions/index.vue'));
 Vue.component('tenant-remember-change-password', require('./views/tenant/users/partials/remember_change_password.vue'));
 
+// Reportes en system
+Vue.component('system-report-login-lockout-index', require('@viewsModuleReport/system/report_login_lockout/index.vue'));
+Vue.component('system-user-not-change-password-index', require('@viewsModuleReport/system/user_not_change_password/index.vue'));
+
 
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)
