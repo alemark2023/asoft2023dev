@@ -482,7 +482,7 @@
                             </div>
                         </template>
 
-                        
+
                         <div class="col-md-3">
                             <div :class="{'has-danger': errors.subject_to_detraction}"
                                  class="form-group">
@@ -584,7 +584,7 @@
                              class="col-md-12">
                             <div class="table-responsive">
                                 <table class="table table-sm mb-0">
-                                    <thead>
+                                    <thead class="bg-light">
                                     <tr>
                                         <th class="text-center">Código de barra</th>
                                         <th class="text-center">Unidad</th>

@@ -338,7 +338,7 @@
                                     </el-tooltip>
                                 </h5>
                                 <table class="table">
-                                    <thead>
+                                    <thead class="bg-light">
                                     <tr>
                                         <th class="text-center">Unidad</th>
                                         <th class="text-center">Descripción</th>
@@ -1127,7 +1127,7 @@ export default {
                 this.calculateQuantity()
 
                 if(this.recordItem.item.exchanged_for_points) this.form.item.exchanged_for_points = this.recordItem.item.exchanged_for_points
-                
+
             } else {
                 this.isUpdateWarehouseId = null
             }
