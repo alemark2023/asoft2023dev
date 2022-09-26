@@ -21,7 +21,7 @@
         ></el-input>
       </div>
       <div class="form-group col-6 col-md-2">
-        <el-button type="success" @click="onApplyAll" class="btn-block"
+        <el-button type="success" @click="setAllItems" class="btn-block"
           >Aplicar a todos</el-button
         >
       </div>
@@ -89,13 +89,14 @@ export default {
     });
   },
   methods: {
-    onApplyAll() {
-      this.records = this.records.map((r) => {
-        r.warehouse_new_id = this.form.warehouse_id;
-        r.quantity_real = this.form.quantity || 1;
-        r.detail = this.form.reason || "";
-        return r;
+    setAllItems() {
+      this.records = this.records.map((i) => {
+        i.warehouse_new_id = this.form.warehouse_id;
+        i.quantity_real = this.form.quantity || 1;
+        i.detail = this.form.reason || "";
+        return i;
       });
+      console.log(this.records)
     },
     onSubmit() {
       this.loading = true;
@@ -118,6 +119,7 @@ export default {
       this.$emit("update:show", false);
     },
     create() {
+      
       const params = {
         ids: this.products.map((p) => p.id),
       };
@@ -127,6 +129,10 @@ export default {
           this.records = response.data.data;
         });
     },
+    setText(value)
+    {
+        console.log(value)
+    }
   },
 };
 </script>
