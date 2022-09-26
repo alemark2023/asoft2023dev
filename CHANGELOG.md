@@ -1,3 +1,39 @@
+## 5.3.0
+
+### fixed
+2022-08-23 : fixed | #870 | Ajuste para formato decimal en cargos<br>
+2022-08-18 : fixed|#977|error al incrementar cantidad de un producto con el boton<br>
+2022-08-15 : fixed | ajustes app<br>
+2022-08-11 : fixed | error creando tenant, campo quantity_sales_notes<br>
+2022-08-09 : fixed|#955|error 500 al generar guia de remision desde nota de venta<br>
+2022-07-26 : fixed | se deshabilita formato pdf en reporte pagos - error en cola<br>
+2022-07-25 : fixed | #913 | se optimizan querys en reporte de pagos, finanzas<br>
+2022-07-20 : fixed | #913 | se elimina log<br>
+
+
+### feature
+2022-08-25 : feature | #994<br>
+2022-08-24 : feature | #975 | nuevo distrito 080914:CUSCO - LA CONVENCION - MEGANTONI<br>
+2022-08-16 : feature | app 2.1 | visualizacion de pack premium mediante video en generador app<br>
+2022-08-15 : feature | desplegado tema premium - condicionando colores (no funcional en el demo)<br>
+2022-08-12 : feature|#966|problemas con visualizacion de reportes de productos<br>
+2022-08-11 : feature|#943|actualizar las listas de distritos del departamento de cusco<br>
+2022-08-10 : feature|#910|issues umbrella - mostrar terminos y condiciones en todos los comprobantes<br>
+2022-08-10 : feature|#910|issues umbrella - mostrar terminos y condiciones en todos los comprobantes<br>
+2022-08-10 : feature|#910|issues umbrella - mostrar terminos y condiciones en todos los comprobantes<br>
+2022-08-09 : feature|#939|añadir impresion en cuentas por cobrar<br>
+2022-08-09 : feature|#939|añadir impresion en cuentas por cobrar<br>
+2022-08-09 : feature|#939|añadir impresion en cuentas por cobrar<br>
+2022-08-09 : feature|#911|contabilizador de notas de ventas<br>
+2022-08-05 : feature | favoritos - ajustes items - nuevo compilado app<br>
+2022-08-05 : feature|#939|añadir impresion en cuentas por cobrar<br>
+2022-08-05 : feature|#939|añadir impresion en cuentas por cobrar<br>
+2022-08-04 : feature|#939|añadir impresion en cuentas por cobrar<br>
+2022-07-25 : feature|#911|contabilizador de notas de ventas<br>
+2022-07-20 : feature | #913 | se agrega reporte pagos finanzas a colas<br>
+2022-07-14 : feature|#910|issues umbrella - mostrar terminos y condiciones en todos los comprobantes<br>
+
+
 ## 5.2.0
 
 ### docs

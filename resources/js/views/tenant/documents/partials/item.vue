@@ -338,7 +338,7 @@
                                     </el-tooltip>
                                 </h5>
                                 <table class="table">
-                                    <thead>
+                                    <thead class="bg-light">
                                     <tr>
                                         <th class="text-center">Unidad</th>
                                         <th class="text-center">Descripción</th>
@@ -643,6 +643,7 @@ export default {
         'customerId',
         'currencyTypes',
         'isFromInvoice',
+        'percentageIgv'
     ],
     components: {
         ItemForm,
@@ -1124,6 +1125,9 @@ export default {
                     }
                 }
                 this.calculateQuantity()
+
+                if(this.recordItem.item.exchanged_for_points) this.form.item.exchanged_for_points = this.recordItem.item.exchanged_for_points
+
             } else {
                 this.isUpdateWarehouseId = null
             }
@@ -1341,7 +1345,7 @@ export default {
                     // do nothing
                     // exonerado de igv
                 } else {
-                    unit_price = this.form.unit_price_value * 1.18;
+                    unit_price = this.form.unit_price_value * (1 + this.percentageIgv);
 
                 }
             }
@@ -1370,7 +1374,7 @@ export default {
 
             let IdLoteSelected = this.form.IdLoteSelected
             let document_item_id = this.form.document_item_id
-            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
+            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv);
 
             this.row.item.name_product_pdf = this.row.name_product_pdf || '';
             if (this.recordItem) {
@@ -1671,7 +1675,8 @@ export default {
         },
         async getLastPriceItem() {
             this.itemLastPrice =null
-            if(this.configuration.show_last_price_sale) {
+            let show_last_price_sale = _.has(this.configuration, 'show_last_price_sale')?this.configuration.show_last_price_sale:false;
+            if(show_last_price_sale) {
                 if(this.customerId && this.form.item_id) {
                     const params = {
                         'type_document': 'CPE',

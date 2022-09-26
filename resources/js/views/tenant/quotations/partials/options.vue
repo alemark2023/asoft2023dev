@@ -523,6 +523,7 @@ import SaleNoteOptions from "../../sale_notes/partials/options.vue";
 import SeriesForm from "./series_form.vue";
 import moment from "moment";
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+import {functions} from '../../../../mixins/functions';
 
 export default {
     components: {DocumentOptions, SaleNoteOptions, SeriesForm},
@@ -535,6 +536,7 @@ export default {
         "type",
         "typeUser",
     ],
+    mixins: [functions],
     computed:{
         ...mapState([
             'config',
@@ -857,8 +859,9 @@ export default {
 
             };
         },
-        changeDateOfIssue() {
+        async changeDateOfIssue() {
             this.document.date_of_due = this.document.date_of_issue;
+            await this.getPercentageIgv();
         },
         resetDocument() {
             this.generate = this.showGenerate ? true : false;
@@ -1030,6 +1033,9 @@ export default {
                         .get(`/${this.resource}/record2/${this.recordId}`)
                         .then((response) => {
                             this.form = response.data.data;
+                            this.form.establishment_id = this.form.quotation.establishment_id
+                            this.form.date_of_issue = this.form.quotation.date_of_issue
+                            this.getPercentageIgv();
                             this.document.payments =
                                 response.data.data.quotation.payments;
                             this.document.total = this.form.quotation.total;

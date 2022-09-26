@@ -20,6 +20,7 @@
         Company,
         Establishment,
     };
+    use Modules\MobileApp\Http\Controllers\Api\ItemController as ItemControllerMobileApp;
 
 
     /**
@@ -297,6 +298,19 @@ $string = var_export($header,true);
                 'success' => $success,
                 'message' => $message,
             ];
+        }
+        
+        
+        /**
+         * 
+         * Obtener datos temporales de imagen cargada
+         *
+         * @param  Request $request
+         * @return array
+         */
+        public function generalUploadTempImage(Request $request)
+        {
+            return app(ItemControllerMobileApp::class)->uploadTempImage($request);
         }
 
         

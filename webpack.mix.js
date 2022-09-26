@@ -40,6 +40,7 @@ mix.webpackConfig({
             '@viewsModuleMobileApp': path.resolve(__dirname, 'modules/MobileApp/Resources/assets/js/views'),
             '@viewsModuleLevelAccess': path.resolve(__dirname, 'modules/LevelAccess/Resources/assets/js/views'),
             '@viewsModuleReport': path.resolve(__dirname, 'modules/Report/Resources/assets/js/views'),
+            '@viewsModuleInventory': path.resolve(__dirname, 'modules/Inventory/Resources/assets/js'),
         }
     }
 }).sourceMaps()

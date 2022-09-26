@@ -200,7 +200,13 @@
                                     class="card-body pointer px-2 pt-2"
                                     @click="clickAddItem(item, index)"
                                 >
-                                    <p
+                                    <p v-if="configuration.show_complete_name_pos" class="font-weight-semibold mb-0">
+                                        {{ item.description }}
+                                    </p>
+                                    <p v-else class="font-weight-semibold mb-0">
+                                        {{ item.description.substring(0, 50) }}
+                                    </p>
+                                    <!-- <p
                                         class="font-weight-semibold mb-0"
                                         v-if="DescriptionLength(item) > 50"
                                         data-toggle="tooltip"
@@ -214,7 +220,7 @@
                                         v-if="DescriptionLength(item) <= 50"
                                     >
                                         {{ item.description }}
-                                    </p>
+                                    </p> -->
                                     <img
                                         :src="item.image_url"
                                         class="img-thumbail img-custom"
@@ -853,6 +859,11 @@
                 :globalDiscountTypeId="configuration.global_discount_type_id"
                 :enabledTipsPos="configuration.enabled_tips_pos"
                 :hidePdfViewDocuments="configuration.hide_pdf_view_documents"
+                :enabledPointSystem="configuration.enabled_point_system"
+                :affectation-igv-types="affectation_igv_types"
+                :percentage-igv="percentage_igv"
+                :configuration="configuration"
+                :typeUser="typeUser"
             ></payment-form>
         </template>
 
@@ -1049,6 +1060,7 @@ export default {
         this.$store.commit('setConfiguration', this.configuration2)
         await this.initForm();
         await this.getTables();
+        await this.getPercentageIgv();
         this.events();
 
         await this.getFormPosLocalStorage();
@@ -1061,6 +1073,7 @@ export default {
 
         await this.selectDefaultCustomer();
         await this.enabledSearchItemByBarcode()
+        this.enabledCategoriesProductsView()
 
     },
 
@@ -1129,6 +1142,19 @@ export default {
                 this.search_item_by_barcode = true
             }
         },
+        enabledCategoriesProductsView()
+        {
+            if (this.configuration.enable_categories_products_view)
+            {
+                this.setView('cat2')
+            }
+        },
+        setFocusInInputSearch()
+        {
+            this.$nextTick(() => {
+                this.initFocus()
+            })
+        },
         keyupEnterQuantity() {
             this.initFocus();
         },
@@ -1192,6 +1218,9 @@ export default {
             } else {
                 this.place = "prod";
             }
+
+            this.setFocusInInputSearch()
+
         },
         getRecords() {
             this.loading = true;
@@ -1390,7 +1419,8 @@ export default {
             this.row = calculateRowItem(
                 this.form.items[index],
                 this.form.currency_type_id,
-                1
+                1,
+                this.percentage_igv
             );
 
             // console.log(this.form.items[index])
@@ -1405,7 +1435,8 @@ export default {
             this.row = calculateRowItem(
                 this.form.items[index],
                 this.form.currency_type_id,
-                1
+                1,
+                this.percentage_igv
             );
             this.form.items[index] = this.row;
             this.calculateTotal();
@@ -1553,6 +1584,10 @@ export default {
                 is_print: true,
                 worker_full_name_tips: null, //propinas
                 total_tips: 0, //propinas
+                created_from_pos: true,
+                token_validated_for_discount: false,
+                agent_id: null,
+
             };
             // console.log(this.configuration.show_terms_condition_pos);
             if (this.configuration.show_terms_condition_pos) {
@@ -1701,7 +1736,7 @@ export default {
 
                 let unit_price = exist_item.item.has_igv
                     ? exist_item.item.sale_unit_price
-                    : exist_item.item.sale_unit_price * 1.18;
+                    : exist_item.item.sale_unit_price * (1 + this.percentage_igv);
                 // exist_item.unit_price = unit_price
                 exist_item.item.unit_price = unit_price;
 
@@ -1716,7 +1751,8 @@ export default {
                 this.row = calculateRowItem(
                     exist_item,
                     this.form.currency_type_id,
-                    exchangeRateSale
+                    exchangeRateSale,
+                    this.percentage_igv
                 );
 
 
@@ -1748,7 +1784,7 @@ export default {
 
                 let unit_price = this.form_item.has_igv
                     ? this.form_item.unit_price_value
-                    : this.form_item.unit_price_value * 1.18;
+                    : this.form_item.unit_price_value * (1 + this.percentage_igv);
 
                 this.form_item.unit_price = unit_price;
                 this.form_item.item.unit_price = unit_price;
@@ -1773,7 +1809,8 @@ export default {
                 this.row = calculateRowItem(
                     this.form_item,
                     this.form.currency_type_id,
-                    exchangeRateSale
+                    exchangeRateSale,
+                    this.percentage_igv
                 );
                 // console.log(this.row)
 
@@ -1852,13 +1889,13 @@ export default {
                 total_discount += parseFloat(row.total_discount);
                 total_charge += parseFloat(row.total_charge);
 
-                if (row.affectation_igv_type_id === "10") 
+                if (row.affectation_igv_type_id === "10")
                 {
                     // total_taxed += parseFloat(row.total_value);
                     total_taxed += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
 
-                if (row.affectation_igv_type_id === "20") 
+                if (row.affectation_igv_type_id === "20")
                 {
                     // total_exonerated += parseFloat(row.total_value);
                     total_exonerated += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
@@ -1880,7 +1917,7 @@ export default {
                     total_free += parseFloat(row.total_value);
                 }
 
-                if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1) 
+                if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1)
                 {
                     // total_igv += parseFloat(row.total_igv);
                     // total += parseFloat(row.total);
@@ -1967,6 +2004,7 @@ export default {
                 this.establishment = response.data.establishment;
                 this.currency_types = response.data.currency_types;
                 this.user = response.data.user;
+                this.form.establishment_id = this.establishment.id;
                 this.form.currency_type_id =
                     this.currency_types.length > 0
                         ? this.currency_types[0].id
@@ -2074,14 +2112,14 @@ export default {
         },
         enabledSearchItemsBarcode() {
 
-            if (this.search_item_by_barcode) 
+            if (this.search_item_by_barcode)
             {
                 //busqueda por presentacion
                 if(this.search_item_by_barcode_presentation)
                 {
-                    if (this.items.length == 1) 
+                    if (this.items.length == 1)
                     {
-                        if(this.items[0].unit_type.length === 1 && this.items[0].search_item_by_barcode_presentation) 
+                        if(this.items[0].unit_type.length === 1 && this.items[0].search_item_by_barcode_presentation)
                         {
                             this.selectItemUnitType(this.items[0].unit_type[0])
                         }
@@ -2160,7 +2198,8 @@ export default {
                     calculateRowItem(
                         row,
                         this.form.currency_type_id,
-                        this.form.exchange_rate_sale
+                        this.form.exchange_rate_sale,
+                        this.percentage_igv
                     )
                 );
             });
@@ -2185,6 +2224,9 @@ export default {
                 await this.getRecords();
                 this.$refs.table_items.reset();
             }
+
+            this.setFocusInInputSearch()
+
         },
         nameSets(id) {
             let row = this.items.find(x => x.item_id == id);

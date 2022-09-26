@@ -178,6 +178,10 @@ class Item extends ModelTenant
 
         'subject_to_detraction',
         'favorite',
+
+        'exchange_points',
+        'quantity_of_points',
+
         // 'warehouse_id'
     ];
 
@@ -191,6 +195,8 @@ class Item extends ModelTenant
         'sale_unit_price' => 'float',
         'purchase_unit_price' => 'float',
         'favorite' => 'boolean',
+        'exchange_points' => 'boolean',
+        'quantity_of_points' => 'float',
     ];
 
     /**
@@ -407,6 +413,16 @@ class Item extends ModelTenant
     public function scopeWhereNotIsSet($query)
     {
         return $query->where('is_set', false);
+    }
+
+    /**
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopeWhereIsNotService($query)
+    {
+        return $query->where('unit_type_id', '!=', 'ZZ');
     }
 
     /**
@@ -993,6 +1009,10 @@ class Item extends ModelTenant
             'percentage_isc' => $this->percentage_isc,
             'is_for_production'=>$this->isIsForProduction(),
             'subject_to_detraction' => $this->subject_to_detraction,
+            'exchange_points' => $this->exchange_points,
+            'quantity_of_points' => $this->quantity_of_points,
+            'exchanged_for_points' => false, //para determinar si desea canjear el producto
+            'used_points_for_exchange' => null, //total de puntos
 
         ];
 
@@ -2238,7 +2258,7 @@ class Item extends ModelTenant
      */
     public function scopeWhereFilterWithOutRelations($query)
     {
-        return $query->withOut(['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags']);
+        return $query->withOut(['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags', 'item_lots']);
     }
 
 
@@ -2558,6 +2578,18 @@ class Item extends ModelTenant
             'category_id' => $this->category_id,
             'is_set' => $this->is_set,
         ];
+    }
+
+    
+    /**
+     * Stock de variantes para revision inventario
+     *
+     * @param  int $establishment_id
+     * @return array
+     */
+    public function getStockByVariantsInventoryReview($establishment_id)
+    {
+        return ItemMovement::getStockByVariantSizeColor($this->id, $establishment_id);
     }
 
 

@@ -226,6 +226,7 @@
                                     </p>
                                 </div>
                                 <div class="card-footer pointer text-center bg-primary">
+
                                     <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
                   <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button> -->
                                     <template v-if="!item.edit_unit_price">
@@ -273,6 +274,8 @@
                                             ></el-button>
                                         </el-input>
                                     </template>
+
+                                    
                                 </div>
                                 <div
                                     v-if="configuration.options_pos"
@@ -483,6 +486,30 @@
                                                 </el-popover>
                                             </el-tooltip>
                                         </el-col>
+
+                                        
+                                        <el-col :span="6" v-if="allowedChangeAffectationExoneratedIgv(item.sale_affectation_igv_type_id)">
+                                            <el-tooltip class="item" effect="dark" content="Modificar el tipo de afectación" placement="bottom-end">
+                                                
+                                                <el-popover
+                                                    placement="top"
+                                                    title="Seleccionar tipo de afectación"
+                                                    width="330"
+                                                    trigger="click"
+                                                >
+                                                    <div v-for="(row, index) in getAffectationExoneratedIgv" class="pt-1 mt-1 pb-1">
+                                                        <el-radio v-model="item.sale_affectation_igv_type_id" :label="row.id" @change="changeAffectationExoneratedIgv(row, item)">{{row.description}}</el-radio>
+                                                    </div>
+
+                                                    <button slot="reference" style="width:100%" type="button" class="btn btn-xs btn-primary-pos">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </button>
+                                                    
+                                                </el-popover>
+
+                                            </el-tooltip>
+                                        </el-col>
+
                                     </el-row>
                                 </div>
                             </section>
@@ -830,7 +857,8 @@ export default {
             category_selected: "",
             focusClienteSelect: false,
             show_fast_payment_garage: false,
-            itemUnitTypes: []
+            itemUnitTypes: [],
+            affectations_exonerated_igv: ['10', '20'],
         };
     },
     async created() {
@@ -839,6 +867,7 @@ export default {
         this.show_fast_payment_garage = false
         await this.initForm();
         await this.getTables();
+        await this.getPercentageIgv();
         this.events();
 
         await this.getFormPosLocalStorage();
@@ -851,12 +880,20 @@ export default {
 
         this.form.establishment_id = this.establishment.id;
 
+        this.enabledSearchItemByBarcode()
+
     },
 
     computed: {
-            ...mapState([
-                'config',
-            ]),
+        getAffectationExoneratedIgv()
+        {
+            return _.filter(this.affectation_igv_types, (row) =>{
+                return this.isExoneratedIgv(row.id)
+            })
+        },
+        ...mapState([
+            'config',
+        ]),
         classObjectCol() {
             let cols = this.configuration.colums_grid_item;
 
@@ -899,6 +936,35 @@ export default {
         }
     },
     methods: {
+        enabledSearchItemByBarcode()
+        {
+            if (this.configuration.search_item_by_barcode) 
+            {
+                this.search_item_by_barcode = true
+            }
+        },
+        isExoneratedIgv(affectation_igv_type_id)
+        {
+            return this.affectations_exonerated_igv.includes(affectation_igv_type_id)
+        },
+        allowedChangeAffectationExoneratedIgv(affectation_igv_type_id)
+        {
+            if(this.configuration)
+            {
+                return (this.configuration.change_affectation_exonerated_igv && this.isExoneratedIgv(affectation_igv_type_id))
+            }
+
+            return false
+        },
+        changeAffectationExoneratedIgv(affectation_igv_type, item)
+        {
+            const exist_item = _.find(this.form.items, { item_id : item.item_id })
+
+            if(exist_item)
+            {
+                if(exist_item.affectation_igv_type_id != affectation_igv_type.id) this.$message.warning('Ya agregó el producto con otro tipo de afectación, para aplicar el cambio debe eliminarlo y agregarlo nuevamente.')
+            }
+        },
         ...mapActions(['loadConfiguration']),
         keyupEnterQuantity() {
             this.initFocus();
@@ -1161,7 +1227,8 @@ export default {
             this.row = calculateRowItem(
                 this.form.items[index],
                 this.form.currency_type_id,
-                1
+                1,
+                this.percentage_igv
             );
 
             // console.log(this.form.items[index])
@@ -1176,7 +1243,8 @@ export default {
             this.row = calculateRowItem(
                 this.form.items[index],
                 this.form.currency_type_id,
-                1
+                1,
+                this.percentage_igv
             );
             this.form.items[index] = this.row;
             this.calculateTotal();
@@ -1454,7 +1522,7 @@ export default {
 
                 let unit_price = exist_item.item.has_igv
                     ? exist_item.item.sale_unit_price
-                    : exist_item.item.sale_unit_price * 1.18;
+                    : exist_item.item.sale_unit_price * (1 + this.percentage_igv);
                 // exist_item.unit_price = unit_price
                 exist_item.item.unit_price = unit_price;
 
@@ -1463,7 +1531,8 @@ export default {
                 this.row = calculateRowItem(
                     exist_item,
                     this.form.currency_type_id,
-                    exchangeRateSale
+                    exchangeRateSale,
+                    this.percentage_igv
                 );
 
 
@@ -1493,7 +1562,7 @@ export default {
 
                 let unit_price = this.form_item.has_igv
                     ? this.form_item.unit_price_value
-                    : this.form_item.unit_price_value * 1.18;
+                    : this.form_item.unit_price_value * (1 + this.percentage_igv);
 
                 this.form_item.unit_price = unit_price;
                 this.form_item.item.unit_price = unit_price;
@@ -1513,7 +1582,8 @@ export default {
                 this.row = calculateRowItem(
                     this.form_item,
                     this.form.currency_type_id,
-                    exchangeRateSale
+                    exchangeRateSale,
+                    this.percentage_igv
                 );
                 // console.log(this.row)
 
@@ -1663,6 +1733,7 @@ export default {
                 this.establishment = response.data.establishment;
                 this.currency_types = response.data.currency_types;
                 this.user = response.data.user;
+                this.form.establishment_id = this.establishment.id;
                 this.form.currency_type_id =
                     this.currency_types.length > 0
                         ? this.currency_types[0].id
@@ -1832,7 +1903,8 @@ export default {
                     calculateRowItem(
                         row,
                         this.form.currency_type_id,
-                        this.form.exchange_rate_sale
+                        this.form.exchange_rate_sale,
+                        this.percentage_igv
                     )
                 );
             });

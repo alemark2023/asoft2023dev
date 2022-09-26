@@ -403,7 +403,8 @@ export default {
     props: [
         'showDialog',
         'currencyTypeIdActive',
-        'exchangeRateSale'
+        'exchangeRateSale',
+        'percentageIgv'
     ],
     components: {itemForm, WarehousesDetail, 'vue-ckeditor': VueCkeditor.component},
 
@@ -729,7 +730,7 @@ export default {
             if (this.validateTotalItem().total_item) return;
 
             // this.form.item.unit_price = this.form.unit_price;
-            let unit_price = (this.form.has_igv) ? this.form.unit_price : this.form.unit_price * 1.18;
+            let unit_price = (this.form.has_igv) ? this.form.unit_price : this.form.unit_price * (1 + this.percentageIgv);
 
             // this.form.item.unit_price = this.form.unit_price
             this.form.unit_price = unit_price;
@@ -737,7 +738,7 @@ export default {
 
             this.form.item.presentation = this.item_unit_type;
             this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
-            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
+            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv);
 
             this.initForm();
 

@@ -26,6 +26,8 @@ use App\Models\Tenant\FormatTemplate;
 use Modules\LevelAccess\Models\ModuleLevel;
 use Validator;
 use App\Models\Tenant\Skin;
+use Modules\Finance\Helpers\UploadFileHelper;
+
 
 class ConfigurationController extends Controller
 {
@@ -453,6 +455,8 @@ class ConfigurationController extends Controller
             $name = date('Ymd') . '_' . $configuration->id . '.' . $ext;
 
             request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
+            
+            UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
 
             $file->storeAs('public/uploads/header_images', $name);
 
@@ -554,6 +558,7 @@ class ConfigurationController extends Controller
             $filename = $file->getClientOriginalName();
             $name = pathinfo($file->getClientOriginalName());
 
+            UploadFileHelper::checkIfValidCssFile($filename, $file->getPathName(), 'css', ['text/css', 'text/plain']);
 
             Storage::disk('public')->put('skins'.DIRECTORY_SEPARATOR.$filename, $file_content);
 

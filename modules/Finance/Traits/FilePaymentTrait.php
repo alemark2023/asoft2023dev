@@ -7,6 +7,8 @@ use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\SaleNotePayment;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Modules\Finance\Helpers\UploadFileHelper;
+
 
 trait FilePaymentTrait
 {
@@ -23,6 +25,14 @@ trait FilePaymentTrait
             $file_content = file_get_contents($temp_path);
             $extension = $file_name_old_array[1];
             $file_name = Str::slug($file_name_old_array[0])."-{$type}-".$record->id.'.'.$extension;
+
+            // validaciones archivos
+            $allowed_file_types_images = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif', 'image/svg'];
+            $is_image = UploadFileHelper::getIsImage($temp_path, $allowed_file_types_images);
+
+            $allowed_file_types = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif', 'image/svg', 'application/pdf'];
+            UploadFileHelper::checkIfValidFile($file_name, $temp_path, $is_image, 'jpg,jpeg,png,gif,svg,pdf', $allowed_file_types);
+            // validaciones archivos
 
             $record->payment_file()->create([
                 'filename' => $file_name

@@ -15,6 +15,7 @@ use App\Models\Tenant\Item;
 use Illuminate\Support\Str;
 use Modules\Offline\Models\OfflineConfiguration;
 use Illuminate\Support\Facades\Storage;
+use Modules\Finance\Helpers\UploadFileHelper;
 
 
 class DocumentUpdateInput
@@ -171,6 +172,9 @@ class DocumentUpdateInput
                         'cod_digemid' => $item->cod_digemid,
                         'unit_price' => $row['unit_price'] ?? 0,
                         'purchase_unit_price' => $row['item']['purchase_unit_price'] ?? 0,
+                        
+                        'exchanged_for_points' => $row['item']['exchanged_for_points'] ?? false,
+                        'used_points_for_exchange' => $row['item']['used_points_for_exchange'] ?? null,
 
                     ],
                     'quantity' => $row['quantity'],
@@ -455,6 +459,9 @@ class DocumentUpdateInput
                 $file_content = file_get_contents($image_pay_constancy['temp_path']);
                 $datenow = date('YmdHis');
                 $file_name = $detraction['detraction_type_id'] . '-' . $detraction['bank_account'] . '-' . $datenow . '.' . $file_name_old_array[1];
+
+                UploadFileHelper::checkIfValidFile($file_name, $image_pay_constancy['temp_path'], true);
+
                 Storage::put($directory . $file_name, $file_content);
                 $set_image_pay_constancy = $file_name;
 

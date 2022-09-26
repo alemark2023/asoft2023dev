@@ -257,6 +257,21 @@
 @endif
 
 
+@if ($document->isPointSystem())
+    <table class="full-width mt-3">
+        <tr>
+            <td width="120px">P. ACUMULADOS</td>
+            <td width="8px">:</td>
+            <td>{{ $document->person->accumulated_points }}</td>
+
+            <td width="140px">PUNTOS POR LA COMPRA</td>
+            <td width="8px">:</td>
+            <td>{{ $document->getPointsBySale() }}</td>
+        </tr>
+    </table>
+@endif
+
+
 @if ($document->guides)
 <br/>
 <table>
@@ -491,6 +506,11 @@
                     @foreach ($itemSet->getItemsSet($row->item_id) as $item)
                         {{$item}}<br>
                     @endforeach
+                @endif
+
+                @if($row->item->used_points_for_exchange ?? false)
+                    <br>
+                    <span style="font-size: 9px">*** Canjeado por {{$row->item->used_points_for_exchange}}  puntos ***</span>
                 @endif
 
                 @if($document->has_prepayment)

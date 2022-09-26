@@ -26,6 +26,15 @@ if($hostname) {
                 });
             });
 
+            
+            Route::prefix('authorized-discount-users')->group(function () {
+
+                Route::post('', 'AuthorizedDiscountUserController@store');
+                Route::post('validate-token', 'AuthorizedDiscountUserController@validateToken');
+
+            });
+
         });
+        
     });
 }

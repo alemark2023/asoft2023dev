@@ -2,7 +2,8 @@ export const functions = {
     data() {
         return {
             loading_search_exchange_rate: false,
-            loading_search: false
+            loading_search: false,
+            percentage_igv: 0.18
         }
     },
     methods: {
@@ -67,7 +68,20 @@ export const functions = {
                         this.loading_search = false
                     })
             })
-        }
+        },
+        async getPercentageIgv() {
+            console.log('********');
+            console.log(this.form.establishment_id);
+            console.log(this.form.date_of_issue);
+            console.log('********');
+            await this.$http.post(`/store/get_igv`, {
+                'establishment_id': this.form.establishment_id,
+                'date': this.form.date_of_issue
+            })
+                .then(response => {
+                    this.percentage_igv = response.data;
+                });
+        },
     }
 };
 
@@ -245,4 +259,125 @@ export const fnPaymentsFee = {
         },
     }
 };
+
+
+
+// Funciones para asignar series por usuario para multiples tipos de documentos
+// Usado en:
+// purchases
+export const setDefaultSeriesByMultipleDocumentTypes = {
+    data() {
+        return {
+        }
+    },
+    methods: {
+        generalDisabledSeries()
+        {
+            if(this.authUser === undefined) return false
+
+            return (this.configuration.restrict_series_selection_seller && this.authUser.type !== 'admin')
+        },
+        generalSetDefaultSerieByDocumentType(document_type_id)
+        {
+            if(this.authUser !== undefined)
+            {
+                if(this.authUser.multiple_default_document_types)
+                {
+                    const default_document_type_serie = _.find(this.authUser.default_document_types, { document_type_id : document_type_id})
+        
+                    if(default_document_type_serie)
+                    {
+                        const exist_serie = _.find(this.series, { id : default_document_type_serie.series_id})
+                        if(exist_serie) this.form.series_id = default_document_type_serie.series_id
+                    }
+                }
+            }
+        },
+    }
+}
+
+
+// funciones para sistema por puntos
+// Usado en:
+// invoice_generate.vue
+// pos/payment.vue
+
+export const pointSystemFunctions = {
+    data() {
+        return {
+            customer_accumulated_points: 0,
+            calculate_customer_accumulated_points: 0,
+            total_exchange_points: 0,
+            total_points_by_sale: 0,
+        }
+    },
+    methods: {
+        setTotalPointsBySale(configuration)
+        {
+            if(configuration && configuration.enabled_point_system)
+            {
+                const calculate_points = (this.form.total / configuration.point_system_sale_amount) * configuration.quantity_of_points
+                this.total_points_by_sale = configuration.round_points_of_sale ? parseInt(calculate_points) : _.round(calculate_points, 2)
+                // this.total_points_by_sale = _.round((this.form.total / configuration.point_system_sale_amount) * configuration.quantity_of_points, 2)
+            }
+        },
+        recalculateUsedPointsForExchange(row)
+        {
+            if(row.item.exchanged_for_points) row.item.used_points_for_exchange = this.getUsedPoints(row)
+        },
+        async setCustomerAccumulatedPoints(customer_id, enabled_point_system)
+        {
+            if(enabled_point_system)
+            {
+                await this.$http.get(`/persons/accumulated-points/${customer_id}`).then((response) => {
+                        this.customer_accumulated_points = response.data
+                        this.calculate_customer_accumulated_points = response.data //para calculos
+                        this.calculateNewPoints()
+                    })
+            }
+        },
+        setTotalExchangePoints()
+        {
+            this.total_exchange_points = this.getTotalExchangePointsItems()
+            this.calculateNewPoints()
+        },
+        hasPointsAvailable()
+        {
+            return this.calculate_customer_accumulated_points >= 0
+        },
+        calculateNewPoints()
+        {
+            this.calculate_customer_accumulated_points = this.customer_accumulated_points - this.total_exchange_points
+        },
+        validateExchangePoints()
+        {
+            if(!this.hasPointsAvailable())
+            {
+                return {
+                    success: false,
+                    message: `El total de puntos a canjear excede los puntos acumulados: ${this.calculate_customer_accumulated_points} puntos`
+                }
+            }
+
+            return {
+                success: true
+            }
+        },
+        getExchangePointDescription(row)
+        {
+            return `¿Desea canjearlo por ${this.getUsedPoints(row)} puntos?`
+        },
+        getUsedPoints(row)
+        {
+            return _.round(row.item.quantity_of_points * row.quantity, 2)
+        },
+        getTotalExchangePointsItems()
+        {
+            return _.sumBy(this.form.items, (row)=>{
+                return (row.item.exchanged_for_points) ? this.getUsedPoints(row) : 0
+            })
+        },
+    }
+}
+
 

@@ -234,6 +234,9 @@ if ($hostname) {
                 Route::get('/export/barcode/print', 'Tenant\PersonController@printBarCode')->name('tenant.persons.export.barcode.print');
                 Route::get('/barcode/{item}', 'Tenant\PersonController@generateBarcode');
                 Route::get('/search/{barcode}', 'Tenant\PersonController@getPersonByBarcode');
+
+                Route::get('accumulated-points/{id}', 'Tenant\PersonController@getAccumulatedPoints');
+
             });
             //Documents
             Route::post('documents/categories', 'Tenant\DocumentController@storeCategories');
@@ -568,6 +571,7 @@ if ($hostname) {
 
             Route::post('sale-notes/transform-data-order', 'Tenant\SaleNoteController@transformDataOrder');
             Route::post('sale-notes/items-by-ids', 'Tenant\SaleNoteController@getItemsByIds');
+            Route::post('sale-notes/delete-relation-invoice', 'Tenant\SaleNoteController@deleteRelationInvoice');
 
             //POS
             Route::get('pos', 'Tenant\PosController@index')->name('tenant.pos.index');
@@ -681,6 +685,9 @@ if ($hostname) {
 
             //Almacen de columnas por usuario
             Route::post('validate_columns','Tenant\SettingController@getColumnsToDatatable');
+
+            Route::post('general-upload-temp-image', 'Controller@generalUploadTempImage');
+
 
             // test theme
             // Route::get('testtheme', function () {
