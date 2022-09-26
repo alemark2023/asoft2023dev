@@ -262,7 +262,7 @@
 
                         <template v-if="records.length>0 && resource  !== 'reports/document-detractions'">
 
-                            <el-button class="submit"
+                            <el-button v-if="resource!='reports/state-account'" class="submit"
                                        icon="el-icon-tickets"
                                        type="danger"
                                        @click.prevent="clickDownload('pdf')">Exportar PDF

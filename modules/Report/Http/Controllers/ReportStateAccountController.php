@@ -12,7 +12,7 @@ use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Modules\Item\Models\Category;
-use Modules\Report\Exports\DocumentExport;
+use Modules\Report\Exports\StatusClientExport;
 use Modules\Report\Http\Resources\DocumentCollection;
 use Modules\Report\Http\Resources\SaleNoteCollection;
 use Modules\Report\Traits\ReportTrait;
@@ -80,13 +80,8 @@ class ReportStateAccountController extends Controller
                 return new DocumentCollection($records->paginate(config('tenant.items_per_page')));
             };
         }else{
-            $records_documents = $this->getRecords($request->all(), Document::class)->with(['person'=> function ($query) {
-                $query->select('name', 'number');
-            }])->with(['soap_type'=> function ($q) {
-                $q->select('description');
-            }])->with(['state_type'=> function ($y) {
-                $y->select('description');
-            }])->select(
+            $records_documents = $this->getRecords($request->all(), Document::class)
+            ->select(
                 'id',
                 'document_type_id',
                 'group_id',
@@ -107,16 +102,21 @@ class ReportStateAccountController extends Controller
                 'total',
                 'total_isc',
                 'total_charge',
-                'plate_number'
-            )->latest();
-
-            $records_sales = $this->getRecords($request->all(), SaleNote::class)->with(['customer'=> function ($query) {
-                $query->select('name', 'number');
+                'plate_number',
+                'customer_id'
+            )
+            ->with(['person'=> function ($query) {
+                $query->select('id','name', 'number');
             }])->with(['soap_type'=> function ($q) {
-                $q->select('description');
+                $q->select('id','description');
             }])->with(['state_type'=> function ($y) {
-                $y->select('description');
-            }])->select(
+                $y->select('id','description');
+            }])->with(['user'=> function ($y) {
+                $y->select('id','name');
+            }])->withSum('payments','payment')->latest();
+
+            $records_sales = $this->getRecords($request->all(), SaleNote::class)
+            ->select(
                 'id',
                 'state_type_id',
                 'soap_type_id',
@@ -137,94 +137,119 @@ class ReportStateAccountController extends Controller
                 'total_isc',
                 'plate_number',
                 'observation',
-                'document_id'
-            )->latest();
+                'document_id',
+                'customer_id'
+            )
+            ->with(['customer'=> function ($query) {
+                $query->select('id','name', 'number');
+            }])->with(['soap_type'=> function ($q) {
+                $q->select('id','description');
+            }])->with(['state_type'=> function ($y) {
+                $y->select('id','description');
+            }])->with(['user'=> function ($y) {
+                $y->select('id','name');
+            }])->withSum('payments','payment')->latest();
 
             $records_all = $records_documents->union($records_sales);
 
-            //dd($query);
+            //dd($records_all->get());
 
             return new StateAccountCollection($records_all->paginate(config('tenant.items_per_page')));
         }
-        
-        
-        
     }
-
-
-
-    public function pdf(Request $request) {
-        set_time_limit (1800); // Maximo 30 minutos
-        $company = Company::first();
-        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
-        $documentTypeId = "01";
-        if ($request->has('document_type_id')) {
-            $documentTypeId = str_replace('"', '', $request->document_type_id);
-        }
-        $documentType = DocumentType::find($documentTypeId);
-        if (null === $documentType) {
-            $documentType = new DocumentType();
-        }
-
-        $classType = $documentType->getCurrentRelatiomClass();
-        $records = $this->getRecords($request->all(), $classType);
-        $records= $records->get();
-
-        $filters = $request->all();
-
-        $pdf = PDF::loadView('report::documents.report_pdf', compact("records", "company", "establishment", "filters"))
-            ->setPaper('a4', 'landscape');
-
-        $filename = 'Reporte_Ventas_'.date('YmdHis');
-
-        return $pdf->download($filename.'.pdf');
-    }
-
-    public function pdfSimple(Request $request) {
-        set_time_limit (1800); // Maximo 30 minutos
-        $company = Company::first();
-        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
-        $documentTypeId = "01";
-        if ($request->has('document_type_id')) {
-            $documentTypeId = str_replace('"', '', $request->document_type_id);
-        }
-        $documentType = DocumentType::find($documentTypeId);
-        if (null === $documentType) {
-            $documentType = new DocumentType();
-        }
-
-        $classType = $documentType->getCurrentRelatiomClass();
-        $records = $this->getRecords($request->all(), $classType);
-        $records= $records->get();
-
-        $filters = $request->all();
-
-        $pdf = PDF::loadView('report::documents.report_pdf_simple', compact("records", "company", "establishment", "filters"))
-            ->setPaper('a4', 'landscape');
-
-        $filename = 'Reporte_Ventas_Simple'.date('YmdHis');
-
-        return $pdf->download($filename.'.pdf');
-    }
-
 
     public function excel(Request $request) {
         
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
 
-        $documentTypeId = "01";
+        $documentTypeId = null;
         if ($request->has('document_type_id')) {
             $documentTypeId = str_replace('"', '', $request->document_type_id);
+            
         }
         $documentType = DocumentType::find($documentTypeId);
-        if (null === $documentType) {
-            $documentType = new DocumentType();
-        }
+        if ($documentType!=null) {
+            $classType = $documentType->getCurrentRelatiomClass();
+            $records = $this->getRecords($request->all(), $classType);
+            $records= $records->get();
+        } else {
+            $records_documents = $this->getRecords($request->all(), Document::class)
+            ->select(
+                'id',
+                'document_type_id',
+                'group_id',
+                'soap_type_id',
+                'date_of_issue',
+                'currency_type_id',
+                'series',
+                'establishment_id',
+                'number',
+                'purchase_order',
+                'state_type_id',
+                'total_exportation',
+                'total_exonerated',
+                'total_unaffected',
+                'total_free',
+                'total_taxed',
+                'total_igv',
+                'total',
+                'total_isc',
+                'total_charge',
+                'plate_number',
+                'customer_id',
+                'user_id'
+            )
+            ->with(['person'=> function ($query) {
+                $query->select('id','name', 'number');
+            }])->with(['soap_type'=> function ($q) {
+                $q->select('id','description');
+            }])->with(['state_type'=> function ($y) {
+                $y->select('id','description');
+            }])->with(['user'=> function ($y) {
+                $y->select('id','name');
+            }])->withSum('payments','payment')->latest();
 
-        $classType = $documentType->getCurrentRelatiomClass();
-        $records = $this->getRecords($request->all(), $classType);
-        $records= $records->get();
+            $records_sales = $this->getRecords($request->all(), SaleNote::class)
+            ->select(
+                'id',
+                'state_type_id',
+                'soap_type_id',
+                'date_of_issue',
+                'due_date',
+                'currency_type_id',
+                'series',
+                'establishment_id',
+                'number',
+                'purchase_order',
+                'total_exportation',
+                'total_exonerated',
+                'total_unaffected',
+                'total_free',
+                'total_taxed',
+                'total_igv',
+                'total',
+                'total_isc',
+                'plate_number',
+                'observation',
+                'document_id',
+                'customer_id',
+                'user_id'
+            )
+            ->with(['customer'=> function ($query) {
+                $query->select('id','name', 'number');
+            }])->with(['soap_type'=> function ($q) {
+                $q->select('id','description');
+            }])->with(['state_type'=> function ($y) {
+                $y->select('id','description');
+            }])->with(['user'=> function ($y) {
+                $y->select('id','name');
+            }])->withSum('payments','payment')->latest();
+
+            $records = $records_documents->union($records_sales)->get();
+        }
+        
+        
         $filters = $request->all();
 
         //get categories
@@ -236,7 +261,7 @@ class ReportStateAccountController extends Controller
             $categories_services = $this->getCategories($records, true);
         }
 
-        $documentExport = new DocumentExport();
+        $documentExport = new StatusClientExport();
         $documentExport
             ->records($records)
             ->company($company)
@@ -245,7 +270,7 @@ class ReportStateAccountController extends Controller
             ->categories($categories)
             ->categories_services($categories_services);
          // return $documentExport->view();
-        return $documentExport->download('Reporte_Ventas_'.Carbon::now().'.xlsx');
+        return $documentExport->download('Reporte_reporte_cliente'.Carbon::now().'.xlsx');
 
     }
 

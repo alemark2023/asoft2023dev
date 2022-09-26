@@ -50,7 +50,7 @@ class StateAccountCollection extends ResourceCollection
                 'group_id' => $row->group_id,
                 'soap_type_id' => $row->soap_type_id,
                 'soap_type_description' => isset($row->soap_type)?$row->soap_type->description:null,
-                'date_of_issue' => $row->date_of_issue->format('Y-m-d'),
+                'date_of_issue' => $row->date_of_issue?$row->date_of_issue->format('Y-m-d'):null,
                 'date_of_due' => (in_array($row->document_type_id, ['01', '03'])&&$row->invoice) ? $row->invoice->date_of_due->format('Y-m-d') : (($row->due_date) ? $row->due_date->format('Y-m-d') : null),
                 'number' => $row->number_full,
                 'customer_name' => (in_array($row->document_type_id, ['01', '03'])&&$row->invoice && isset($row->person)) ? $row->person->name : (isset($row->customer) ? $row->customer->name : null),
