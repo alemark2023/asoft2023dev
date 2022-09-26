@@ -5,6 +5,7 @@
     use Closure;
     use Illuminate\Http\RedirectResponse;
     use Illuminate\Http\Request;
+    use Modules\LevelAccess\Traits\SystemActivityTrait;
 
     /**
      * Class RedirectModule
@@ -13,6 +14,11 @@
      */
     class RedirectModule
     {
+
+        use SystemActivityTrait;
+
+        private $route_path;
+
         /**
          * Handle an incoming request.
          *
@@ -27,6 +33,7 @@
             $module = $request->user()->getModule();
             $path = explode('/', $request->path());
             $modules = $request->user()->getModules();
+            $this->route_path = $request->path();
 
             if (!$request->ajax()) {
 
@@ -199,6 +206,8 @@
          */
         private function redirectRoute($module)
         {
+            // registrar log de actividades cuando el usuario no tiene permiso al modulo
+            $this->saveGeneralSystemActivity(auth()->user(), 'module_access_error', $this->route_path);
 
             switch ($module) {
 

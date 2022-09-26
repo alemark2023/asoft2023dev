@@ -125,6 +125,9 @@
                 @include('tenant.layouts.partials.header')
               @yield('content')
               @include('tenant.layouts.partials.sidebar_styles')
+
+              @include('tenant.layouts.partials.check_last_password_update')
+
             </section>
 
             @yield('package-contents')

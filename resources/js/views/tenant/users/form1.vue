@@ -116,8 +116,19 @@
 
                     <div class="col-md-4">
                         <div :class="{ 'has-danger': errors.password }" class="form-group">
-                            <label class="control-label">Contraseña</label>
-                            <el-input v-model="form.password"></el-input>
+                            <label class="control-label">Contraseña
+                                <el-tooltip class="item" effect="dark" placement="top-start" v-if="config_regex_password_user">
+                                    <i class="fa fa-info-circle"></i>
+                                    <div slot="content">
+                                        <strong>FORMATO DE CONTRASEÑA</strong><br/><br/>
+                                        La contraseña debe contener al menos una letra minúscula.<br/>
+                                        La contraseña debe contener al menos una letra mayúscula.<br/>
+                                        La contraseña debe contener al menos un dígito.<br/>
+                                        La contraseña debe contener al menos un carácter especial [@.$!%*#?&-].<br/>
+                                    </div>
+                                </el-tooltip>
+                            </label>
+                            <el-input v-model="form.password" show-password></el-input>
                             <small
                                 v-if="errors.password"
                                 class="form-control-feedback"
@@ -131,7 +142,7 @@
                             class="form-group"
                         >
                             <label class="control-label">Confirmar Contraseña</label>
-                            <el-input v-model="form.password_confirmation"></el-input>
+                            <el-input v-model="form.password_confirmation" show-password></el-input>
                             <small
                                 v-if="errors.password_confirmation"
                                 class="form-control-feedback"
@@ -604,6 +615,7 @@ export default {
             options: [],
             activeName: 'first',
             config_permission_to_edit_cpe : false,
+            config_regex_password_user: false,
             identity_document_types: [],
             document_types: [],
             loading: false,
@@ -623,6 +635,7 @@ export default {
             this.types = response.data.types;
             this.documents = response.data.documents;
             this.config_permission_to_edit_cpe = response.data.config_permission_to_edit_cpe
+            this.config_regex_password_user = response.data.config_regex_password_user
             this.identity_document_types = response.data.identity_document_types
             this.document_types = this.filterDocumentTypes(response.data.documents)
 
@@ -904,6 +917,9 @@ export default {
             if (modules.length < 1) {
                 return this.$message.error("Debe seleccionar al menos un módulo");
             }
+
+            this.form.config_regex_password_user = this.config_regex_password_user
+            
             
             if (this.form.multiple_default_document_types && this.form.default_document_types.length == 0) return this.$message.error('Debe agregar al menos un tipo de documento por defecto')
 

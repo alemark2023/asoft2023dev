@@ -15,6 +15,11 @@
     use Illuminate\Support\Facades\Route;
     use Modules\Report\Models\ReportConfiguration;
     use App\Models\Tenant\Configuration;
+    use Carbon\Carbon;
+    use App\Models\Tenant\{
+        Company,
+        Establishment,
+    };
     use Modules\MobileApp\Http\Controllers\Api\ItemController as ItemControllerMobileApp;
 
 
@@ -307,5 +312,35 @@ $string = var_export($header,true);
         {
             return app(ItemControllerMobileApp::class)->uploadTempImage($request);
         }
+
+        
+        /**
+         * 
+         * Nombre para reportes
+         *
+         * @param  string $base_name
+         * @param  string $format
+         * @return string
+         */
+        public function generalFilenameReport($base_name, $format)
+        {
+            return $base_name.'_'.Carbon::now().'.'.$format;
+        }
+
+                
+        /**
+         * 
+         * Datos para cabecera de reportes
+         *
+         * @return array
+         */
+        public function generalDataForHeaderReport()
+        {
+            $company = Company::withOut(['identity_document_type'])->select(['number', 'name'])->first();
+
+            return compact('company');
+        }
+        
+
 
     }
