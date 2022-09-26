@@ -837,9 +837,19 @@ export default {
                         this.form.supplier_id = purchase_order.supplier_id
                         this.form.currency_type_id = purchase_order.currency_type_id
                         this.form.purchase_order_id = purchase_order.id
-                        this.form.payments[0].payment_method_type_id = purchase_order.payment_method_type_id
-                        this.form.payments[0].payment = purchase_order.total
+                        // this.form.payments[0].payment_method_type_id = purchase_order.payment_method_type_id
+                        // this.form.payments[0].payment = purchase_order.total
+
+                        this.form.total_exportation = purchase_order.total_exportation
+                        this.form.total_taxed = purchase_order.total_taxed
+                        this.form.total_exonerated = purchase_order.total_exonerated
+                        this.form.total_unaffected = purchase_order.total_unaffected
+                        this.form.total_free = purchase_order.total_free
+                        this.form.total_igv = purchase_order.total_igv
+                        this.form.total_value = purchase_order.total_value
+                        this.form.total_taxes = purchase_order.total_taxes
                         this.form.total = purchase_order.total
+
                         this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
 
                         this.form.items.forEach((it) => {
