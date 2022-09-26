@@ -567,6 +567,7 @@ if ($hostname) {
             Route::get('sale-notes/dispatch/{id}', 'Tenant\SaleNoteController@recordsDispatch');
             Route::post('sale-notes/dispatch', 'Tenant\SaleNoteController@recordDispatch');
             Route::post('sale-notes/dispatch/statusUpdate', 'Tenant\SaleNoteController@statusUpdate');
+            Route::delete('sale-notes/dispatch/delete/{id}', 'Tenant\SaleNoteController@destroyStatus');
 
             //POS
             Route::get('pos', 'Tenant\PosController@index')->name('tenant.pos.index');

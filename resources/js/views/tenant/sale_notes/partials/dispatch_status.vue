@@ -78,7 +78,7 @@
                                 <el-radio v-model="status_display" @change="statusUpdate" :checked="checked_display" label="1">Entregado</el-radio>
                                 <el-radio v-model="status_display" @change="statusUpdate" :checked="checked_display" label="0">Parcial</el-radio>
                             </div>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-light" @click.prevent="statusUpdate('initial')">Borrar Check</button>
+                            <button v-if="typeUser != 'seller'" type="button" class="btn waves-effect waves-light btn-xs btn-light" @click.prevent="statusUpdate('initial')">Borrar Check</button>
                         </div>
                         <div class="w-100 text-center">
                             <!-- <button type="button" class="btn waves-effect waves-light btn btn-info" @click.prevent="clickSubmit(index)">Grabar</button> -->
@@ -111,7 +111,7 @@
     import moment from 'moment'
 
     export default {
-        props: ['showDialog', 'documentId'],
+        props: ['showDialog', 'documentId', 'typeUser'],
         mixins: [deletable],
         data() {
             return {
@@ -207,7 +207,7 @@
                 this.$emit('update:showDialog', false);
             },
             clickDelete(id) {
-                this.destroy(`/${this.resource}/${id}`).then(() =>{
+                this.destroy(`/${this.resource}/dispatch/delete/${id}`).then(() =>{
                         this.getData()
                         this.$eventHub.$emit('reloadData')
                     }
@@ -221,7 +221,7 @@
                 };
                 if (value==='initial') {
                     form.status_display=null
-                    this.status_display=3
+                    this.status_display=null
                 }
                 this.$http.post(`/${this.resource}/dispatch/statusUpdate`, form)
                     .then(response => {

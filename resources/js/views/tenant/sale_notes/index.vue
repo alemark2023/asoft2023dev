@@ -303,7 +303,8 @@
         ></UploadToOtherServer>
 
         <sale-note-dispatch-status :showDialog.sync="showDialogDispatch"
-                            :documentId="recordId"></sale-note-dispatch-status>
+                            :documentId="recordId"
+                            :typeUser="typeUser"></sale-note-dispatch-status>
 
     </div>
 </template>

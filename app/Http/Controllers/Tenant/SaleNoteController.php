@@ -1880,4 +1880,14 @@ class SaleNoteController extends Controller
         ];
 
     }
+
+    public function destroyStatus($id)
+    {
+        $records = DispatchSaleNote::find($id);
+        $records = $records->delete();
+        return [
+            'success' => true,
+            'message' => 'Despacho eliminado con exito'
+        ];
+    }
 }
