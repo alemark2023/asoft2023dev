@@ -279,6 +279,7 @@
             'sellers_discount_limit',
             'enabled_sales_agents',
             'change_affectation_exonerated_igv',
+            'search_factory_code_items',
         ];
 
         protected $casts = [
@@ -392,6 +393,7 @@
             'sellers_discount_limit'=>'float',
             'enabled_sales_agents'=>'bool',
             'change_affectation_exonerated_igv'=>'bool',
+            'search_factory_code_items'=>'bool',
             
         ];
 
@@ -627,6 +629,7 @@
                 'sellers_discount_limit' => $this->sellers_discount_limit,
                 'enabled_sales_agents' => $this->enabled_sales_agents,
                 'change_affectation_exonerated_igv' => $this->change_affectation_exonerated_igv,
+                'search_factory_code_items' => $this->search_factory_code_items,
                 
             ];
         }

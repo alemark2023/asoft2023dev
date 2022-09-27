@@ -728,6 +728,32 @@
                                             v-text="errors.restrict_series_selection_seller[0]"></small>
                                 </div>
                             </div>
+
+                            
+                            <div class="col-md-6 mt-4">
+
+                                <label class="control-label">
+                                    Buscar productos por código de fábrica
+                                    <el-tooltip class="item"
+                                                content="Disponible en Nuevo CPE y Nota de venta"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+
+                                <div :class="{'has-danger': errors.search_factory_code_items}"
+                                        class="form-group">
+                                    <el-switch v-model="form.search_factory_code_items"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.search_factory_code_items"
+                                            class="form-control-feedback"
+                                            v-text="errors.search_factory_code_items[0]"></small>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="third">
@@ -2345,6 +2371,7 @@ export default {
                 sellers_discount_limit: 0,
                 enabled_sales_agents: false,
                 change_affectation_exonerated_igv: false,
+                search_factory_code_items: false,
             };
         },
         UpdateFormPurchase(e) {
