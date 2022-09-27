@@ -53,7 +53,7 @@ use App\Models\Tenant\Catalogs\RelatedDocumentType;
  */
 class DispatchController extends Controller
 {
-//    use FinanceTrait;
+    use FinanceTrait;
     use SearchTrait;
     use StorageDocument;
 

@@ -131,7 +131,7 @@
         </cac:ShipmentStage>
         <cac:Delivery>
             <cac:DeliveryAddress>
-{{--                <cbc:ID>{{ $document->delivery->location_id }}</cbc:ID>--}}
+                <cbc:ID>{{ $document->delivery->location_id }}</cbc:ID>
                 <cbc:StreetName>{{ $document->delivery->address }}</cbc:StreetName>
             </cac:DeliveryAddress>
         </cac:Delivery>

@@ -9,10 +9,8 @@ use Illuminate\Http\Request;
 use App\Models\Tenant\Company;
 use Carbon\Carbon;
 use Modules\Inventory\Http\Resources\ReportMovementCollection;
-use Modules\Inventory\Models\{
-    Inventory,
-    Warehouse,
-};
+use Modules\Inventory\Models\Inventory;
+use Modules\Inventory\Models\Warehouse;
 use Modules\Inventory\Traits\InventoryTrait;
 use Modules\Inventory\Http\Requests\ReportMovementRequest;
 
@@ -21,7 +19,7 @@ class ReportMovementController extends Controller
 {
 
 	use InventoryTrait;
-     
+
     public function filter()
     {
 		return [
@@ -53,11 +51,12 @@ class ReportMovementController extends Controller
         $item_id = $request['item_id'];
         $order_inventory_transaction_id = $request['order_inventory_transaction_id'];
 
+//        dd('aca');
 
         return Inventory::whereFilterReportMovement($warehouse_id, $inventory_transaction_id, $date_start, $date_end, $item_id, $order_inventory_transaction_id);
- 
+
     }
-    
+
 
     /**
      * PDF
@@ -84,8 +83,8 @@ class ReportMovementController extends Controller
 
         return $exportData->download('Reporte_Movimientos' . date('YmdHis') . '.xlsx');
     }
- 
-    
+
+
     /**
      * Obtener datos para generar reporte pdf/excel
      *
@@ -94,9 +93,16 @@ class ReportMovementController extends Controller
      */
     private function getDataForFormat($request)
     {
+        $warehouse_id = $request->input('warehouse_id', '');
+        if($warehouse_id) {
+            $warehouse = Warehouse::query()->select('description')->find($warehouse_id);
+            $warehouse_name = $warehouse->description;
+        } else {
+            $warehouse_name = 'Todos';
+        }
         return [
             'company' => Company::first(),
-            'warehouse' => Warehouse::select('description')->find($request->warehouse_id),
+            'warehouse_name' => $warehouse_name,
             'records' => $this->getRecords($request->all())->get()->transform(function($row, $key) { return  $row->getRowResourceReport(); }),
         ];
     }

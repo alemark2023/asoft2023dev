@@ -239,7 +239,7 @@ class InventoryKardex extends ModelTenant
                 $guide = Guide::query()->where('id', $inventory_kardexable->guide_id)->first();
                 if($guide) {
                     $data['number'] = $guide->series.'-'.$guide->number;
-                    $data['date_of_issue'] = $guide->date_of_issue->format('d/m/Y');
+                    $data['date_of_issue'] = $guide->date_of_issue->format('Y-m-d');
                 }
 
                 if ($inventory_kardexable->warehouse_destination_id === $user->establishment_id) {

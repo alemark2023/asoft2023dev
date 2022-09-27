@@ -23,19 +23,18 @@
                         </div>
                     </div>
 
-
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
                             <label class="control-label">Almacén</label>
-                            <el-select v-model="form.warehouse_id" filterable>
+                            <el-select v-model="form.warehouse_id" filterable clearable>
                                 <el-option v-for="option in warehouses" :key="option.id" :value="option.id"
                                            :label="option.description"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.warehouse_id"
                                    v-text="errors.warehouse_id[0]"></small>
                         </div>
-                    </div> 
-  
+                    </div>
+
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.movement_type}">
                             <label class="control-label">Tipo</label>
@@ -71,7 +70,7 @@
                             <el-checkbox class="mt-4" v-model="form.order_inventory_transaction_id">Ordenar por motivo de traslado</el-checkbox>
                         </div>
                     </div>
-                    
+
                     <div class="col-md-3">
                         <label class="control-label">Fecha inicio</label>
                         <el-date-picker v-model="form.date_start" type="date"
@@ -104,22 +103,26 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th >#</th>
+                                        <th class="text-right">#</th>
                                         <th >Producto</th>
-                                        <th class="text-center">Fecha y hora transacción</th>
-                                        <th class="text-center">Motivo de traslado</th>
-                                        <th class="text-center">Entrada</th>
-                                        <th class="text-center">Salida</th>
+                                        <th class="text-left">Fecha y hora transacción</th>
+                                        <th class="text-left">Documento</th>
+                                        <th class="text-left">Almacén</th>
+                                        <th class="text-left">Motivo de traslado</th>
+                                        <th class="text-right">Entrada</th>
+                                        <th class="text-right">Salida</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="(row, index) in records" :key="index">
-                                        <td> {{ customIndex(index) }} </td>
-                                        <td> {{ row.item_description }} </td>
-                                        <td class="text-center"> {{ row.date_time }} </td>
-                                        <td class="text-center"> {{ row.description }} </td>
-                                        <td class="text-center"> {{ row.input }} </td>
-                                        <td class="text-center"> {{ row.output }} </td>
+                                        <td class="text-right"> {{ customIndex(index) }} </td>
+                                        <td class="text-left"> {{ row.item_description }} </td>
+                                        <td class="text-left"> {{ row.date_time }} </td>
+                                        <td class="text-left"> {{ row.guide_number }} </td>
+                                        <td class="text-left"> {{ row.warehouse_name }} </td>
+                                        <td class="text-left"> {{ row.description }} </td>
+                                        <td class="text-right"> {{ row.input }} </td>
+                                        <td class="text-right"> {{ row.output }} </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -141,12 +144,12 @@
                 <el-button @click.prevent="close()">Cerrar</el-button>
             </div>
         </form>
- 
+
     </el-dialog>
 
 </template>
 
-<script> 
+<script>
 
 import moment from 'moment'
 import queryString from 'query-string'
@@ -180,7 +183,7 @@ export default {
         this.initForm()
         this.initTables()
     },
-    methods: {  
+    methods: {
         clickDownload(type) {
             let query = queryString.stringify({
                 ...this.form
@@ -207,7 +210,7 @@ export default {
             }
 
             this.changeMovementType()
-        }, 
+        },
         changeDisabledDates() {
             if (this.form.date_end < this.form.date_start) {
                 this.form.date_end = this.form.date_start
@@ -222,7 +225,7 @@ export default {
                 })
 
             await this.searchRemoteItems('')
-            
+
         },
         async create() {
 
@@ -245,7 +248,7 @@ export default {
                 .then(()=>{
                     this.loading_search = false
                 })
-        }, 
+        },
         customIndex(index) {
             return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
         },
