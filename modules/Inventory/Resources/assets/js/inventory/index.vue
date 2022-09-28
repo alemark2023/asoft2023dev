@@ -39,7 +39,7 @@
                         <th>Almacén</th>
                         <th class="text-right">Stock</th>
                         <th class="text-right">Acciones</th>
-                    <tr>
+                    </tr>
                     <tr slot-scope="{ index, row }" :key="index">
                         <td>
                             <el-switch v-model="row.selected" @click="onChangeSelectedStatus(row)"></el-switch>
