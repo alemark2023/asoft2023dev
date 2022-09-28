@@ -597,6 +597,7 @@
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
 
+        
 
     </el-dialog>
 </template>
