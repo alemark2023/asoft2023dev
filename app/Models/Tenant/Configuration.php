@@ -279,6 +279,7 @@
             'sellers_discount_limit',
             'enabled_sales_agents',
             'change_affectation_exonerated_igv',
+            'show_load_voucher',
         ];
 
         protected $casts = [
@@ -392,6 +393,7 @@
             'sellers_discount_limit'=>'float',
             'enabled_sales_agents'=>'bool',
             'change_affectation_exonerated_igv'=>'bool',
+            'show_load_voucher'=>'bool',
             
         ];
 
@@ -627,6 +629,7 @@
                 'sellers_discount_limit' => $this->sellers_discount_limit,
                 'enabled_sales_agents' => $this->enabled_sales_agents,
                 'change_affectation_exonerated_igv' => $this->change_affectation_exonerated_igv,
+                'show_load_voucher' => $this->show_load_voucher,
                 
             ];
         }

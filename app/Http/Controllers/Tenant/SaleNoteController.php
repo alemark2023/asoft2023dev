@@ -57,6 +57,7 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
+use Modules\Finance\Traits\FilePaymentTrait;
 
 // use App\Models\Tenant\Warehouse;
 
@@ -68,6 +69,7 @@ class SaleNoteController extends Controller
     use SearchTrait;
     use StorageDocument;
     use OfflineTrait;
+    use FilePaymentTrait;
 
     protected $sale_note;
     protected $company;
@@ -1658,6 +1660,8 @@ class SaleNoteController extends Controller
                 ]);
             }
 
+            // para carga de voucher
+            $this->saveFilesFromPayments($row, $record_payment, 'sale_notes');
         }
     }
 

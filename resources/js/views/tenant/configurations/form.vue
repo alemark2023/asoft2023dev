@@ -728,6 +728,31 @@
                                             v-text="errors.restrict_series_selection_seller[0]"></small>
                                 </div>
                             </div>
+
+                                
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Cargar voucher - Pagos
+                                    <el-tooltip class="item"
+                                                content="Se visualizará un campo para cargar el voucher de pago al registrar el documento - Disponible en Nuevo CPE y Nota venta"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+
+                                <div :class="{'has-danger': errors.show_load_voucher}"
+                                        class="form-group">
+                                    <el-switch v-model="form.show_load_voucher"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.show_load_voucher"
+                                            class="form-control-feedback"
+                                            v-text="errors.show_load_voucher[0]"></small>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="third">
@@ -2345,6 +2370,7 @@ export default {
                 sellers_discount_limit: 0,
                 enabled_sales_agents: false,
                 change_affectation_exonerated_igv: false,
+                show_load_voucher: false,
             };
         },
         UpdateFormPurchase(e) {
