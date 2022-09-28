@@ -871,6 +871,7 @@
             :showDialog.sync="showDialogHistorySales"
             :item_id="history_item_id"
             :customer_id="form.customer_id"
+            :type="false"
         ></history-sales-form>
 
         <history-purchases-form
