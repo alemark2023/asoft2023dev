@@ -793,7 +793,7 @@ class Facturalo
             $this->updateRegularizeShipping($code, $message);
             return;
         }
-
+        //dd($message);
         // if($code === 'ERROR_CDR') {
         //     return;
         // }

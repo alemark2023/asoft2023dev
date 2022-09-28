@@ -181,6 +181,7 @@ class Item extends ModelTenant
 
         'exchange_points',
         'quantity_of_points',
+        'factory_code',
 
         // 'warehouse_id'
     ];
@@ -1013,7 +1014,8 @@ class Item extends ModelTenant
             'quantity_of_points' => $this->quantity_of_points,
             'exchanged_for_points' => false, //para determinar si desea canjear el producto
             'used_points_for_exchange' => null, //total de puntos
-
+            'factory_code' => $this->factory_code,
+            
         ];
 
         // El nombre de producto, por defecto, sera la misma descripcion.

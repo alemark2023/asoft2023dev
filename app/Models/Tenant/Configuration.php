@@ -280,6 +280,7 @@
             'enabled_sales_agents',
             'change_affectation_exonerated_igv',
             'show_load_voucher',
+            'search_factory_code_items',
         ];
 
         protected $casts = [
@@ -394,6 +395,7 @@
             'enabled_sales_agents'=>'bool',
             'change_affectation_exonerated_igv'=>'bool',
             'show_load_voucher'=>'bool',
+            'search_factory_code_items'=>'bool',
             
         ];
 
@@ -630,6 +632,7 @@
                 'enabled_sales_agents' => $this->enabled_sales_agents,
                 'change_affectation_exonerated_igv' => $this->change_affectation_exonerated_igv,
                 'show_load_voucher' => $this->show_load_voucher,
+                'search_factory_code_items' => $this->search_factory_code_items,
                 
             ];
         }
