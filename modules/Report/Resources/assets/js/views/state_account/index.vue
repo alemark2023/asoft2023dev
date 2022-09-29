@@ -27,15 +27,10 @@
                             <th class="">Fecha vencimiento</th>
                             <th v-if="columns.guides.visible" class="text-right">Guia</th>
                             <th v-if="columns.options.visible" class="text-right">Opciones</th>
-                            <th>Doc. Afectado</th>
-                            <th>Cotización</th>
-                            <th>Caso</th>
                             <th>Cliente</th>
                             <th>Productos</th>
                             <th>Estado</th>
                             <th>Moneda</th>
-                            <th class="text-center" v-if="columns.web_platforms.visible">Plataforma</th>
-                            <th>Orden de compra</th>
                             <th v-if="columns.total_charge.visible">Total Cargos</th>
                             <th>Total Exonerado</th>
                             <th>Total Inafecto</th>
@@ -64,9 +59,6 @@
                                         @click.prevent="clickOptions(row.id)">Opciones
                                 </button>
                             </td>
-                            <td>{{ row.affected_document }}</td>
-                            <td>{{ row.quotation_number_full }}</td>
-                            <td>{{ row.sale_opportunity_number_full }}</td>
                             <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                             <td class="text-center">
                                 <button
@@ -80,13 +72,6 @@
                             <td>{{ row.state_type_description }}</td>
 
                             <td>{{ row.currency_type_id }}</td>
-
-                            <td  v-if="columns.web_platforms.visible">
-                                <template v-for="(platform,i) in row.web_platforms" v-if="row.web_platforms !== undefined">
-                                    <label class="d-block"  :key="i">{{platform.name}}</label>
-                                </template>
-                            </td>
-                            <td>{{ row.purchase_order }}</td>
                             <td v-if="columns.total_charge.visible">
                                 {{
                                     (row.document_type_id == '07') ? ((row.total_charge == 0) ? '0.00' : '-' + row.total_charge) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_charge)
@@ -176,10 +161,6 @@
                     },
                     options: {
                         title: 'Opciones',
-                        visible: false
-                    },
-                    web_platforms: {
-                        title: 'Plataformas web',
                         visible: false
                     },
                     total_isc: {

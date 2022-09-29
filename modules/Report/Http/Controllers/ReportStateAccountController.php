@@ -103,7 +103,8 @@ class ReportStateAccountController extends Controller
                 'total_isc',
                 'total_charge',
                 'plate_number',
-                'customer_id'
+                'customer_id',
+                'seller_id',
             )
             ->with(['person'=> function ($query) {
                 $query->select('id','name', 'number');
@@ -113,7 +114,7 @@ class ReportStateAccountController extends Controller
                 $y->select('id','description');
             }])->with(['user'=> function ($y) {
                 $y->select('id','name');
-            }])->withSum('payments','payment')->latest();
+            }])->latest();
 
             $records_sales = $this->getRecords($request->all(), SaleNote::class)
             ->select(
@@ -138,7 +139,8 @@ class ReportStateAccountController extends Controller
                 'plate_number',
                 'observation',
                 'document_id',
-                'customer_id'
+                'customer_id',
+                'seller_id',
             )
             ->with(['customer'=> function ($query) {
                 $query->select('id','name', 'number');
@@ -148,7 +150,7 @@ class ReportStateAccountController extends Controller
                 $y->select('id','description');
             }])->with(['user'=> function ($y) {
                 $y->select('id','name');
-            }])->withSum('payments','payment')->latest();
+            }])->latest();
 
             $records_all = $records_documents->union($records_sales);
 
@@ -198,7 +200,8 @@ class ReportStateAccountController extends Controller
                 'total_charge',
                 'plate_number',
                 'customer_id',
-                'user_id'
+                'user_id',
+                'seller_id',
             )
             ->with(['person'=> function ($query) {
                 $query->select('id','name', 'number');
@@ -208,7 +211,7 @@ class ReportStateAccountController extends Controller
                 $y->select('id','description');
             }])->with(['user'=> function ($y) {
                 $y->select('id','name');
-            }])->withSum('payments','payment')->latest();
+            }])->latest();
 
             $records_sales = $this->getRecords($request->all(), SaleNote::class)
             ->select(
@@ -234,7 +237,8 @@ class ReportStateAccountController extends Controller
                 'observation',
                 'document_id',
                 'customer_id',
-                'user_id'
+                'user_id',
+                'seller_id',
             )
             ->with(['customer'=> function ($query) {
                 $query->select('id','name', 'number');
@@ -244,7 +248,7 @@ class ReportStateAccountController extends Controller
                 $y->select('id','description');
             }])->with(['user'=> function ($y) {
                 $y->select('id','name');
-            }])->withSum('payments','payment')->latest();
+            }])->latest();
 
             $records = $records_documents->union($records_sales)->get();
         }

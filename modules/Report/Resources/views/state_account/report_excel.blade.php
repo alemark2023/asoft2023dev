@@ -18,7 +18,7 @@
 <body>
 <div>
     <h3 align="center"
-        class="title"><strong>Reporte Documentos</strong></h3>
+        class="title"><strong>Reporte Estado de Cuenta </strong></h3>
 </div>
 <br>
 <div style="margin-top:20px; margin-bottom:15px;">
@@ -100,24 +100,10 @@
                     <th>Fecha Vencimiento</th>
                     <th>Doc. Afectado</th>
                     <th># Guía</th>
-                    <th>Cotización</th>
-                    <th>Caso</th>
-
-                    <th>DIST</th>
-                    <th>DPTO</th>
-                    <th>PROV</th>
-
-                    <th>Direccion de cliente</th>
                     <th>Cliente</th>
                     <th>RUC</th>
                     <th>Estado</th>
                     <th class="">Moneda</th>
-                    <th>Plataforma</th>
-                    <th>Orden de compra</th>
-
-                    <th>Nota de venta</th>
-                    <th>Fecha N. Venta</th>
-
                     <th class="">Forma de pago</th>
                     <th> MÉTODO DE PAGO </th>
                     <th>TC</th>
@@ -130,15 +116,9 @@
                     <th>Total IGV</th>
                     <th>Total ISC</th>
                     <th>Total</th>
+                    <th>Total por pagar</th>
                     <th>Total de productos</th>
-
-                    @foreach ($categories as $category)
-                        <th>{{$category->name}}</th>
-                    @endforeach
-
-                    @foreach ($categories_services as $category)
-                        <th>{{$category->name}}</th>
-                    @endforeach
+                    <th>Productos</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -194,9 +174,6 @@
                         <td class="celda">{{ isset($value->quotation->sale_opportunity) ? $value->quotation->sale_opportunity->number_full : '' }}</td>
 
                         <?php $stablihsment = \App\CoreFacturalo\Helpers\Template\ReportHelper::getLocationData($value); ?>
-                        <td class="celda">{{$stablihsment['district']}}</td>
-                        <td class="celda">{{$stablihsment['department']}}</td>
-                        <td class="celda">{{$stablihsment['province']}}</td>
 
                         <td class="celda">{{$value->customer->address}}</td>
                         <td class="celda">{{$value->customer->name}}</td>
@@ -209,20 +186,6 @@
                         @endphp
 
                         <td class="celda">{{$value->currency_type_id}}</td>
-                        <td class="celda">
-                            @foreach ($value->getPlatformThroughItems() as $platform)
-                                <label class="d-block">{{$platform->name}}</label>
-                            @endforeach
-                        </td>
-                        <td class="celda">{{$value->purchase_order}}</td>
-
-                        @if($value->sale_note)
-                            <td class="celda">{{ $value->sale_note->number_full }}</td>
-                            <td class="celda">{{ $value->sale_note->date_of_issue->format('Y-m-d') }}</td>
-                        @else
-                            <td class="celda"></td>
-                            <td class="celda"></td>
-                        @endif
 
                         <td class="celda">
                             {{ ($value->payments()->count() > 0) ? $value->payments()->first()->payment_method_type->description : ''}}
