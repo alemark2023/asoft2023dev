@@ -4,6 +4,7 @@ namespace App\CoreFacturalo\Helpers\Functions;
 
 use App\Models\Tenant\Catalogs\District;
 use Illuminate\Database\Query\Builder;
+use Modules\LevelAccess\Models\SystemActivityLogType;
 use DB;
 
 class SetDataHelper
@@ -96,6 +97,42 @@ class SetDataHelper
     public static function deleteDistrict($district_id)
     {
         District::where('id', $district_id)->delete();
+    }
+
+        
+    /**
+     * 
+     * Registrar tipo de actividad para el log
+     *
+     * @param  string $id
+     * @param  string $description
+     * @return void
+     */
+    public static function createSystemActivityLogType($id, $description)
+    {
+        $record = SystemActivityLogType::find($id);
+
+        if(!$record)
+        {
+            SystemActivityLogType::insert([
+                'id' => $id,
+                'description' => $description,
+            ]);
+        }
+    }
+    
+
+    /**
+     * 
+     * Eliminar registro
+     *
+     * @param  string $model
+     * @param  string $id
+     * @return void
+     */
+    public static function deleteGeneralRecord($model, $id)
+    {
+        $model::where('id', $id)->delete();
     }
 
 }

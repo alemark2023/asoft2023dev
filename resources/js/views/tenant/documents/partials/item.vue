@@ -338,7 +338,7 @@
                                     </el-tooltip>
                                 </h5>
                                 <table class="table">
-                                    <thead>
+                                    <thead class="bg-light">
                                     <tr>
                                         <th class="text-center">Unidad</th>
                                         <th class="text-center">Descripción</th>
@@ -597,6 +597,7 @@
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
 
+        
 
     </el-dialog>
 </template>
@@ -804,7 +805,12 @@ export default {
 
             return false
 
-        }
+        },
+        enabledSearchFactoryCodeItems()
+        {
+            if(this.configuration) return this.configuration.search_factory_code_items ? 1 : 0
+            return 0
+        },
     },
     methods: {
         ...mapActions([
@@ -921,6 +927,7 @@ export default {
                     'input': input,
                     'search_by_barcode': this.search_item_by_barcode ? 1 : 0,
                     'search_item_by_barcode_presentation': this.search_item_by_barcode_presentation ? 1 : 0,
+                    'search_factory_code_items' : this.enabledSearchFactoryCodeItems
                 }
                 await this.$http.get(`/${this.resource}/search-items/`, {params})
                     .then(response => {
@@ -1127,7 +1134,7 @@ export default {
                 this.calculateQuantity()
 
                 if(this.recordItem.item.exchanged_for_points) this.form.item.exchanged_for_points = this.recordItem.item.exchanged_for_points
-                
+
             } else {
                 this.isUpdateWarehouseId = null
             }

@@ -263,6 +263,9 @@
             'dashboard_products',
             'affect_all_documents',
             'quantity_sales_notes',
+            'regex_password_user',
+            'enabled_remember_change_password',
+            'quantity_month_remember_change_password',
             'restrict_series_selection_seller',
 
             'enabled_point_system',
@@ -276,6 +279,7 @@
             'sellers_discount_limit',
             'enabled_sales_agents',
             'change_affectation_exonerated_igv',
+            'search_factory_code_items',
         ];
 
         protected $casts = [
@@ -373,6 +377,9 @@
             'ticket_single_shipment' => 'bool',
             'hide_pdf_view_documents' => 'bool',
             'affect_all_documents'=>'bool',
+            'regex_password_user' => 'bool',
+            'enabled_remember_change_password' => 'bool',
+            'quantity_month_remember_change_password' => 'int',
             'restrict_series_selection_seller'=>'bool',
             'show_complete_name_pos'=>'bool',
 
@@ -386,6 +393,7 @@
             'sellers_discount_limit'=>'float',
             'enabled_sales_agents'=>'bool',
             'change_affectation_exonerated_igv'=>'bool',
+            'search_factory_code_items'=>'bool',
             
         ];
 
@@ -598,6 +606,9 @@
                 'list_items_by_warehouse' => $this->list_items_by_warehouse,
                 'ticket_single_shipment' => $this->ticket_single_shipment,
                 'hide_pdf_view_documents' => $this->hide_pdf_view_documents,
+                'regex_password_user' => $this->regex_password_user,
+                'enabled_remember_change_password' => $this->enabled_remember_change_password,
+                'quantity_month_remember_change_password' => $this->quantity_month_remember_change_password,
                 'dashboard_sales' => (bool)$this->dashboard_sales,
                 'dashboard_general' => (bool)$this->dashboard_general,
                 'dashboard_clients' => (bool)$this->dashboard_clients,
@@ -618,6 +629,7 @@
                 'sellers_discount_limit' => $this->sellers_discount_limit,
                 'enabled_sales_agents' => $this->enabled_sales_agents,
                 'change_affectation_exonerated_igv' => $this->change_affectation_exonerated_igv,
+                'search_factory_code_items' => $this->search_factory_code_items,
                 
             ];
         }

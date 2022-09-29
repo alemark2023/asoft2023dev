@@ -3,6 +3,8 @@
 namespace App\Models\Tenant;
 
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
+use Modules\LevelAccess\Models\SystemActivityLog;
+
 
 /**
  * Class Company
@@ -95,6 +97,12 @@ class Company extends ModelTenant
         return $this;
     }
 
+
+    public function system_activity_logs()
+    {
+        return $this->morphMany(SystemActivityLog::class, 'origin');
+    }
+
     
     /**
      * 
@@ -153,4 +161,63 @@ class Company extends ModelTenant
         return $app_logo;
     }
 
+    
+    /**
+     * 
+     * Descripción  del tipo de transaccion asociado al modelo
+     *
+     * @param  string $column
+     * @return string
+     */
+    // public function getDescriptionColumnForSystemActivity($column)
+    // {
+    //     $key = "validation.attributes.{$column}";
+    //     $trans = __($key);
+    //     $description = ($trans == $key) ? $column : $trans;
+
+    //     return 'Actualización del campo '.$description.' en configuración de empresa';
+    // }
+
+    
+    /**
+     * 
+     * Descripción de los tipos de transacción para cada actividad
+     *
+     * @return array
+     */
+    // public function getTransactionTypesForSystemActivity()
+    // {
+    //     $data = [];
+
+    //     foreach ($this->getCheckColumnsForSystemActivity() as $column) 
+    //     {
+    //         $data [$this->getTransactionTypeForSystemActivity($column)] = $this->getDescriptionColumnForSystemActivity($column);
+    //     }
+
+    //     return $data;
+    // }
+
+
+    /**
+     * 
+     * Columnas a verificar para registro de actividad
+     *
+     * @return array
+     */
+    public function getCheckColumnsForSystemActivity()
+    {
+        return ['number', 'name', 'soap_send_id', 'soap_type_id', 'soap_username', 'soap_password', 'soap_url', 'certificate'];
+    }
+
+        
+    /**
+     *
+     * @param  string $column
+     * @return string
+     */
+    public function getTransactionTypeForSystemActivity($column)
+    {
+        return "{$this->getTable()}_{$column}";
+    }
+    
 }

@@ -65,6 +65,8 @@
  */
     class Dispatch extends ModelTenant
     {
+
+
         protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'unit_type', 'transport_mode_type',
             'transfer_reason_type', 'items', 'reference_document'];
 
@@ -677,6 +679,19 @@
         public function isGeneratedFromExternalDocument($relation_external_document)
         {
             return !is_null($relation_external_document);
+        }
+
+        
+        /**
+         *
+         * Filtro para no incluir relaciones en consulta
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public function scopeWhereFilterWithOutRelations($query)
+        {
+            return $query->withOut(['user', 'soap_type', 'state_type', 'document_type', 'unit_type', 'transport_mode_type', 'transfer_reason_type', 'items', 'reference_document']);
         }
 
     }

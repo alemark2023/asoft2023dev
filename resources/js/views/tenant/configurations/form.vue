@@ -703,6 +703,7 @@
                                             v-text="errors.list_items_by_warehouse[0]"></small>
                                 </div>
                             </div>
+                            
 
                             <div class="col-md-6 mt-4">
 
@@ -727,6 +728,32 @@
                                             v-text="errors.restrict_series_selection_seller[0]"></small>
                                 </div>
                             </div>
+
+                            
+                            <div class="col-md-6 mt-4">
+
+                                <label class="control-label">
+                                    Buscar productos por código de fábrica
+                                    <el-tooltip class="item"
+                                                content="Disponible en Nuevo CPE y Nota de venta"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+
+                                <div :class="{'has-danger': errors.search_factory_code_items}"
+                                        class="form-group">
+                                    <el-switch v-model="form.search_factory_code_items"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.search_factory_code_items"
+                                            class="form-control-feedback"
+                                            v-text="errors.search_factory_code_items[0]"></small>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="third">
@@ -2047,6 +2074,81 @@
 
                         </div>
                     </el-tab-pane>
+                    
+                    <el-tab-pane class="mb-3" name="twelve">
+                        <span slot="label">Usuario</span>
+                        <div class="row">
+                            <div class="col-md-6">
+                                
+                                <label class="control-label">
+                                    Recordar cambio de contraseña
+                                    <el-tooltip class="item"
+                                                content="Se mostrará una notificación cuando se cumpla el plazo asignado en meses, desde la fecha de la última actualización de contraseña"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                               
+                                <div :class="{'has-danger': errors.enabled_remember_change_password}"
+                                        class="form-group">
+                                    <el-switch v-model="form.enabled_remember_change_password"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.enabled_remember_change_password"
+                                            class="form-control-feedback"
+                                            v-text="errors.enabled_remember_change_password[0]"></small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6" v-if="form.enabled_remember_change_password">
+                                
+                                <label class="control-label">
+                                    N° Meses
+                                </label>
+                               
+                                <div :class="{'has-danger': errors.quantity_month_remember_change_password}"
+                                        class="form-group">
+                                        
+                                        <el-input-number v-model="form.quantity_month_remember_change_password"
+                                                            :min="1"
+                                                            :precision="0"
+                                                            :step="1"
+                                                            @change="submit"></el-input-number>
+                                    <small v-if="errors.quantity_month_remember_change_password"
+                                            class="form-control-feedback"
+                                            v-text="errors.quantity_month_remember_change_password[0]"></small>
+                                </div>
+                            </div>
+
+                            
+
+                            <div class="col-md-6">
+                                
+                                <label class="control-label">
+                                    Habilitar contraseña segura
+                                    <el-tooltip class="item"
+                                                content="Se solicitará una contraseña segura (cumplir patrón) al registrar usuario"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                               
+                                <div :class="{'has-danger': errors.regex_password_user}"
+                                        class="form-group">
+                                    <el-switch v-model="form.regex_password_user"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.regex_password_user"
+                                            class="form-control-feedback"
+                                            v-text="errors.regex_password_user[0]"></small>
+                                </div>
+                            </div>
+                        </div>
+                    </el-tab-pane>
 
                 </el-tabs>
                 <terms-condition :form="form"
@@ -2242,6 +2344,10 @@ export default {
                 order_cash_income: false,
                 generate_order_note_from_quotation: false,
                 list_items_by_warehouse: false,
+                regex_password_user: false,
+                enabled_remember_change_password: false,
+                quantity_month_remember_change_password: 0,
+
                 ticket_single_shipment: false,
                 hide_pdf_view_documents: false,
 
@@ -2265,6 +2371,7 @@ export default {
                 sellers_discount_limit: 0,
                 enabled_sales_agents: false,
                 change_affectation_exonerated_igv: false,
+                search_factory_code_items: false,
             };
         },
         UpdateFormPurchase(e) {

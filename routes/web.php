@@ -683,6 +683,13 @@ if ($hostname) {
             Route::get('purchase-settlements/columns', 'Tenant\PurchaseSettlementController@columns');
             Route::get('purchase-settlements/records', 'Tenant\PurchaseSettlementController@records');
 
+            Route::get('purchase-settlements/create/{order_id?}', 'Tenant\PurchaseSettlementController@create')->name('tenant.purchase-settlements.create');
+
+Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store');
+            Route::get('purchase-settlements/tables', 'Tenant\PurchaseSettlementController@tables');
+            Route::get('purchase-settlements/table/{table}', 'Tenant\PurchaseSettlementController@table');
+            Route::get('purchase-settlements/record/{document}', 'Tenant\PurchaseSettlementController@record');
+
             //Almacen de columnas por usuario
             Route::post('validate_columns','Tenant\SettingController@getColumnsToDatatable');
 
@@ -774,6 +781,7 @@ if ($hostname) {
             Route::get('configurations', 'System\ConfigurationController@index')->name('system.configuration.index');
             Route::post('configurations/login', 'System\ConfigurationController@storeLoginSettings');
             Route::post('configurations/bg', 'System\ConfigurationController@storeBgLogin');
+            Route::post('configurations/other-configuration', 'System\ConfigurationController@storeOtherConfiguration');
 
             Route::get('companies/record', 'System\CompanyController@record');
             Route::post('companies', 'System\CompanyController@store');

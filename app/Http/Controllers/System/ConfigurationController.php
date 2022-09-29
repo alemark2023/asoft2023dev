@@ -239,5 +239,22 @@ class ConfigurationController extends Controller
         ];
     }
 
+    
+    /**
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function storeOtherConfiguration(Request $request)
+    {
+        $record = Configuration::first();
+        $record->regex_password_client = $request->regex_password_client;
+        $record->save();
+
+        return [
+            'success' => true,
+            'message' => 'Configuración actualizada',
+        ];
+    }
 
 }
