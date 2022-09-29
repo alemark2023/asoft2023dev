@@ -208,6 +208,7 @@ class User extends Authenticatable
         // informacion personal
 
         'multiple_default_document_types',
+        'permission_force_send_by_summary',
 
     ];
 
@@ -236,6 +237,7 @@ class User extends Authenticatable
         'annular_purchase'=>'bool',
         'delete_purchase'=>'bool',
         'multiple_default_document_types'=>'bool',
+        'permission_force_send_by_summary' => 'boolean',
     ];
 
     public function modules()
@@ -1184,6 +1186,7 @@ $withEstablishment = true){
             'photo_filename' => $this->photo_filename,
             'multiple_default_document_types' => $this->multiple_default_document_types,
             'default_document_types' => $this->default_document_types,
+            'permission_force_send_by_summary' => $this->permission_force_send_by_summary,
         ];
     }
 

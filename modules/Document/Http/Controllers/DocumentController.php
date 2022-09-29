@@ -402,4 +402,25 @@ class DocumentController extends Controller
 
     }
 
+        
+    /**
+     * 
+     * Forzar el envio por resumen a una boleta enviada de forma individual
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function forceSendBySummary(Request $request)
+    {
+        $document = Document::findOrFail($request->id);
+        $document->force_send_by_summary = true;
+        $document->ticket_single_shipment = false;
+        $document->update();
+
+        return [
+            'success' => true,
+            'message' => 'Se habilitó el comprobante para enviarlo por resumen'
+        ];
+    }
+
 }

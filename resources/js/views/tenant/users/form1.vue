@@ -237,6 +237,20 @@
                                     </el-checkbox>
                                 </div>
                             </div>
+                            
+                            <div class="col-md-4 mt-1" v-if="form.type === 'admin'">
+                                <div class="form-comtrol">
+                                    
+                                    <el-tooltip class="item"
+                                                content="Se habilita el permiso para modificar el tipo de envío de las boletas - envío individual a resumen de boletas (solo aplica si la boleta fue enviada de forma individual y se encuentra en estado registrado)"
+                                                effect="dark"
+                                                placement="top">
+                                        <el-checkbox v-model="form.permission_force_send_by_summary">
+                                            Modificar envio individual
+                                        </el-checkbox>
+                                    </el-tooltip>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="row" v-if="typeUser != 'integrator'">
@@ -601,6 +615,7 @@ export default {
                 levels: [],
                 permission_edit_cpe: false,
                 recreate_documents: false,
+                permission_force_send_by_summary: false,
             },
             modules: [],
             datai: [],
@@ -770,6 +785,7 @@ export default {
                 photo_temp_path: null,
                 multiple_default_document_types: false,
                 default_document_types: [],
+                permission_force_send_by_summary: false,
             };
         },
         async changeEstablishment()
