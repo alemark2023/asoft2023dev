@@ -1457,7 +1457,7 @@ class Document extends ModelTenant
      */
     public function isAvailableForceSendBySummary()
     {
-        return $this->isSingleDocumentShipment() && !$this->force_send_by_summary && $this->state_type_id === self::STATE_TYPE_REGISTERED;
+        return $this->isSingleDocumentShipment() && !$this->force_send_by_summary && $this->state_type_id === self::STATE_TYPE_REGISTERED && auth()->user()->permission_force_send_by_summary;
     }
 
     

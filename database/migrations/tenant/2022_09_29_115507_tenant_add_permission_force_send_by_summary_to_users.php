@@ -14,7 +14,7 @@ class TenantAddPermissionForceSendBySummaryToUsers extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('permission_force_send_by_summary')->default(false)->after('permission_override_cpe');
+            $table->boolean('permission_force_send_by_summary')->default(false)->after('type');
         });
     }
 
