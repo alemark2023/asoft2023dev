@@ -6,6 +6,8 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\SalenotePayment;
 use App\Models\Tenant\DocumentPayment;
+use App\Models\Tenant\Document;
+use App\Models\Tenant\SaleNote;
 
 class StateAccountCollection extends ResourceCollection
 {
@@ -21,7 +23,7 @@ class StateAccountCollection extends ResourceCollection
             $payment_state='';
             $description='';
             $type_description='';
-            if(get_class($row)=='App\Models\Tenant\Document'){
+            if(strpos($row->series, 'F001') !== false||strpos($row->series, 'B001') !== false){
 
                 if(in_array($row->document_type_id, ['07', '08']) && $row->note) {
 
@@ -35,10 +37,14 @@ class StateAccountCollection extends ResourceCollection
                 $payment_state = number_format($row->total - $total_paid, 2, '.', '');
 
                 $description=$row->state_type?$row->state_type->description:null;
-                $type_description='FACTURA ELECTRONICA';
+                
 
-            }
-            if(get_class($row)=='App\Models\Tenant\SaleNote'){
+                $document_type_id = Document::where('id', $row->id)->select('document_type_id')->get();
+                $document_type_id=$document_type_id[0]['document_type_id'];
+                //dd($document_type_id);
+                $type_description= DocumentType::where('id',$document_type_id)->select('description')->get();
+                $type_description=$type_description[0]['description'];
+            }else{
                 $document_type = DocumentType::find('80');
 
                 $document_type_id = $document_type->id;
@@ -59,24 +65,26 @@ class StateAccountCollection extends ResourceCollection
                 $total_paid = number_format($pays->sum('payment'), 2, '.', '');
                 $payment_state = number_format($row->total - $total_paid, 2, '.', '');
                 $description=$row->state_type?$row->state_type->description:null;
+                $date_of_due=SaleNote::where('id',$row->id)->select('due_date')->get();
+                $date_of_due=$date_of_due[0]['due_date'];
                 $type_description='NOTA DE VENTA';
+                //dd($row);
             }
 
-            $signal = $row->document_type_id;
             $state = $row->state_type_id;
 
             $seller = $row->getSellerData();
-            
+            //dd($seller->name);
             return [
                 'id' => $row->id,
                 'group_id' => $row->group_id,
                 'soap_type_id' => $row->soap_type_id,
                 'soap_type_description' => isset($row->soap_type)?$row->soap_type->description:null,
                 'date_of_issue' => $row->date_of_issue?$row->date_of_issue->format('Y-m-d'):null,
-                'date_of_due' => (in_array($row->document_type_id, ['01', '03'])&&$row->invoice) ? $row->invoice->date_of_due->format('Y-m-d') : (($row->due_date) ? $row->due_date->format('Y-m-d') : null),
+                'date_of_due' => (in_array($document_type_id, ['01', '03'])) ?$row->invoice->date_of_due->format('Y-m-d') : (($date_of_due) ? $date_of_due->format('Y-m-d') : null),
                 'number' => $row->number_full,
-                'customer_name' => (in_array($row->document_type_id, ['01', '03'])&&$row->invoice && isset($row->person)) ? $row->person->name : (isset($row->customer) ? $row->customer->name : null),
-                'customer_number' => (in_array($row->document_type_id, ['01', '03'])&&$row->invoice && isset($row->person)) ? $row->person->number : (isset($row->customer) ? $row->customer->number : null),
+                'customer_name' => (in_array($document_type_id, ['01', '03']) && isset($row->person)) ? $row->person->name : ($document_type_id=='80' ? $row->person->name : null),
+                'customer_number' => (in_array($document_type_id, ['01', '03'])&& isset($row->person)) ? $row->person->number : ($document_type_id=='80' ? $row->person->number : null),
                 'currency_type_id' => $row->currency_type_id,
                 'series' => $row->series,
                 'establishment_id' => $row->establishment_id,
@@ -84,28 +92,24 @@ class StateAccountCollection extends ResourceCollection
                 'purchase_order' => $row->purchase_order,
                 'guides' => !empty($row->guides)?(array)$row->guides:null,
 
-                'total_exportation' => (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_exportation,2, ".",""),
-                'total_exonerated' =>  (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_exonerated,2, ".",""),
-                'total_unaffected' =>  (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_unaffected,2, ".",""),
-                'total_free' =>  (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_free,2, ".",""),
-                'total_taxed' => (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_taxed,2, ".",""),
-                'total_igv' =>  (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_igv,2, ".",""),
-                'total' =>  (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total,2, ".",""),
-                // 'total' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total,2, ".",""),
-                'total_isc' =>  (in_array($row->document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_isc,2, ".",""),
+                'total_exportation' => (in_array($document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_exportation,2, ".",""),
+                'total_exonerated' =>  (in_array($document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_exonerated,2, ".",""),
+                'total_unaffected' =>  (in_array($document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_unaffected,2, ".",""),
+                'total_free' =>  (in_array($document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_free,2, ".",""),
+                'total_taxed' => (in_array($document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_taxed,2, ".",""),
+                'total_igv' =>  (in_array($document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_igv,2, ".",""),
+                'total' =>  (in_array($document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total,2, ".",""),
+                'total_isc' =>  (in_array($document_type_id,['01','03', '07']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_isc,2, ".",""),
                 'total_charge' => $row->total_charge,
-
-
-
                 'state_type_id' => $row->state_type_id,
                 'state_type_description' => $description,
                 'document_type_description' => $type_description,
-                'document_type_id' => $row->document_type->id,
+                'document_type_id' => $document_type_id,
                 'affected_document' => $affected_document,
-                'user_name' => ($seller) ? $seller->name : '',
-                'user_email' => ($seller) ? $seller->email : '',
+                'user_name' => $seller->name ,
+                'user_email' => $seller->email ,
 
-                'notes' => (in_array($row->document_type_id, ['01', '03'])) ? $row->affected_documents->transform(function($row) {
+                'notes' => (in_array($document_type_id, ['01', '03'])) ? $row->affected_documents->transform(function($row) {
                     return [
                         'id' => $row->id,
                         'document_id' => $row->document_id,

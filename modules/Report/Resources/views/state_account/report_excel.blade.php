@@ -2,6 +2,16 @@
     use App\Models\Tenant\Document;
     use App\CoreFacturalo\Helpers\Template\TemplateHelper;
     use App\Models\Tenant\SaleNote;
+    use App\Models\Tenant\SaleNotePayment;
+    use App\Models\Tenant\DocumentPayment;
+/* foreach ($records as $value) {
+    $items=$value->items;
+    foreach ($items as $value) {
+        dd($value->item->description);
+    }
+    
+} */
+    //
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -106,7 +116,6 @@
                     <th class="">Moneda</th>
                     <th class="">Forma de pago</th>
                     <th> MÉTODO DE PAGO </th>
-                    <th>TC</th>
                     <th>Total Cargos</th>
                     <th>Total Exonerado</th>
                     <th>Total Inafecto</th>
@@ -170,14 +179,10 @@
                                 @endforeach
                             @endif
                         </td>
-                        <td class="celda">{{ ($value->quotation) ? $value->quotation->number_full : '' }}</td>
-                        <td class="celda">{{ isset($value->quotation->sale_opportunity) ? $value->quotation->sale_opportunity->number_full : '' }}</td>
 
                         <?php $stablihsment = \App\CoreFacturalo\Helpers\Template\ReportHelper::getLocationData($value); ?>
-
-                        <td class="celda">{{$value->customer->address}}</td>
-                        <td class="celda">{{$value->customer->name}}</td>
-                        <td class="celda">{{$value->customer->number}}</td>
+                        <td class="celda">{{$value->customer?$value->customer->name:($value->person?$value->person->name:null)}}</td>
+                        <td class="celda">{{$value->customer?$value->customer->number:($value->person?$value->person->number:null)}}</td>
                         <td class="celda">{{$value->state_type->description}}</td>
 
                         @php
@@ -187,9 +192,6 @@
 
                         <td class="celda">{{$value->currency_type_id}}</td>
 
-                        <td class="celda">
-                            {{ ($value->payments()->count() > 0) ? $value->payments()->first()->payment_method_type->description : ''}}
-                        </td>
                         <td class="celda">
                             @php
                             $payments= [];
@@ -302,7 +304,20 @@
                             $value->total_igv = (in_array($document_type->id,['01','03', '07']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_igv;
                             $value->total = (in_array($document_type->id,['01','03', '07']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total;
                         @endphp
-
+                        <td class="celda">
+                            @php
+                            $payments= [];
+                            if(
+                                get_class($value) == Document::class 
+                            ){
+                                $payments = DocumentPayment::where('document_id',$value->id)->sum('payment');
+                            }else{
+                                $payments = SaleNotePayment::where('sale_note_id',$value->id)->sum('payment');
+                            }
+                            $total_pending=$value->total-$payments;
+                            @endphp
+                            {{$total_pending}}
+                        </td>
                         @php
 
                             $serie_affec =  '';
@@ -314,6 +329,17 @@
 
                         @endphp
                         <td>{{$quality_item}}</td>
+                        @php
+                        $items_total =  '';
+
+                            $description=[];
+                            foreach ($value->items as $itm) {
+                                $description[]=$itm->item->description;
+                            }
+                            $items_total=implode(', ', $description);
+                        @endphp
+                        
+                        <td>{{$items_total}}</td>
                     </tr>
                     @php
                         if($value->currency_type_id == 'PEN'){
@@ -393,7 +419,7 @@
                     @endphp
                 @endforeach
                 <tr>
-                    <td colspan="23"></td>
+                    <td colspan="13"></td>
                     <td colspan="2">Totales PEN</td>
                     <td>{{number_format($acum_total_charges, 2)}}</td>
                     <td>{{number_format($acum_total_exonerado, 2)}}</td>
@@ -406,7 +432,7 @@
                     <td>{{$acum_total}}</td>
                 </tr>
                 <tr>
-                    <td colspan="23"></td>
+                    <td colspan="13"></td>
                     <td colspan="2">Totales USD</td>
                     <td></td>
                     <td></td>

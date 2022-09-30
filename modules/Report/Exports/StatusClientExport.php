@@ -49,7 +49,7 @@ class StatusClientExport implements  FromView, ShouldAutoSize
     }
 
     public function view(): View {
-        return view('report::status_client.report_excel', [
+        return view('report::state_account.report_excel', [
             'records'=> $this->records,
             'company' => $this->company,
             'establishment'=>$this->establishment,

@@ -83,8 +83,7 @@ class ReportStateAccountController extends Controller
             $records_documents = $this->getRecords($request->all(), Document::class)
             ->select(
                 'id',
-                'document_type_id',
-                'group_id',
+                'state_type_id',
                 'soap_type_id',
                 'date_of_issue',
                 'currency_type_id',
@@ -92,7 +91,8 @@ class ReportStateAccountController extends Controller
                 'establishment_id',
                 'number',
                 'purchase_order',
-                'state_type_id',
+                'seller_id',
+                'customer_id',
                 'total_exportation',
                 'total_exonerated',
                 'total_unaffected',
@@ -101,10 +101,6 @@ class ReportStateAccountController extends Controller
                 'total_igv',
                 'total',
                 'total_isc',
-                'total_charge',
-                'plate_number',
-                'customer_id',
-                'seller_id',
             )
             ->with(['person'=> function ($query) {
                 $query->select('id','name', 'number');
@@ -114,7 +110,7 @@ class ReportStateAccountController extends Controller
                 $y->select('id','description');
             }])->with(['user'=> function ($y) {
                 $y->select('id','name');
-            }])->latest();
+            }])->with('items');
 
             $records_sales = $this->getRecords($request->all(), SaleNote::class)
             ->select(
@@ -122,12 +118,13 @@ class ReportStateAccountController extends Controller
                 'state_type_id',
                 'soap_type_id',
                 'date_of_issue',
-                'due_date',
                 'currency_type_id',
                 'series',
                 'establishment_id',
                 'number',
                 'purchase_order',
+                'seller_id',
+                'customer_id',
                 'total_exportation',
                 'total_exonerated',
                 'total_unaffected',
@@ -136,11 +133,6 @@ class ReportStateAccountController extends Controller
                 'total_igv',
                 'total',
                 'total_isc',
-                'plate_number',
-                'observation',
-                'document_id',
-                'customer_id',
-                'seller_id',
             )
             ->with(['customer'=> function ($query) {
                 $query->select('id','name', 'number');
@@ -150,9 +142,10 @@ class ReportStateAccountController extends Controller
                 $y->select('id','description');
             }])->with(['user'=> function ($y) {
                 $y->select('id','name');
-            }])->latest();
-
-            $records_all = $records_documents->union($records_sales);
+            }])->with('items');
+            //$records_documents = $records_documents->put('class', 'Document');
+            //$records_documents = $records_documents->put('class', 'SaleNote');
+            $records_all = $records_documents->unionAll($records_sales);
 
             //dd($records_all->get());
 
@@ -211,7 +204,7 @@ class ReportStateAccountController extends Controller
                 $y->select('id','description');
             }])->with(['user'=> function ($y) {
                 $y->select('id','name');
-            }])->latest();
+            }])->get();
 
             $records_sales = $this->getRecords($request->all(), SaleNote::class)
             ->select(
@@ -248,9 +241,11 @@ class ReportStateAccountController extends Controller
                 $y->select('id','description');
             }])->with(['user'=> function ($y) {
                 $y->select('id','name');
-            }])->latest();
+            }])->get();
 
-            $records = $records_documents->union($records_sales)->get();
+            //$records_documents = $records_documents->put('class', 'Document');
+            //$records_documents = $records_documents->put('class', 'SaleNote');
+            $records = $records_documents->concat($records_sales);
         }
         
         
@@ -274,7 +269,7 @@ class ReportStateAccountController extends Controller
             ->categories($categories)
             ->categories_services($categories_services);
          // return $documentExport->view();
-        return $documentExport->download('Reporte_reporte_cliente'.Carbon::now().'.xlsx');
+        return $documentExport->download('Reporte_estado_de_cuenta'.Carbon::now().'.xlsx');
 
     }
 
