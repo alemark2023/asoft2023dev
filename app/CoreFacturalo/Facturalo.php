@@ -39,6 +39,7 @@ use Modules\Inventory\Models\Warehouse;
 use App\CoreFacturalo\Requests\Inputs\Functions;
 use App\Models\Tenant\PurchaseSettlement;
 use App\CoreFacturalo\Services\Helpers\SendDocumentPse;
+use Modules\Finance\Traits\FilePaymentTrait;
 
 
 /**
@@ -48,7 +49,7 @@ use App\CoreFacturalo\Services\Helpers\SendDocumentPse;
  */
 class Facturalo
 {
-    use StorageDocument, FinanceTrait, KardexTrait;
+    use StorageDocument, FinanceTrait, KardexTrait, FilePaymentTrait;
 
     const REGISTERED = '01';
     const SENT = '03';
@@ -1157,6 +1158,9 @@ class Facturalo
             }
 
             $record = $document->payments()->create($row);
+
+            // para carga de voucher
+            $this->saveFilesFromPayments($row, $record, 'documents');
 
             //considerar la creacion de una caja chica cuando recien se crea el cliente
             if(isset($row['payment_destination_id'])){
