@@ -73,12 +73,13 @@
                 </div>
                 <div class="col-md-12 pt-2">
                     <div class="d-flex">
-                        <div class="d-flex">
+                        <div v-if="records.length>0" class="d-flex">
                             <div class="d-flex flex-column">
                                 <el-radio v-model="status_display" @change="statusUpdate" :checked="checked_display" label="1">Entregado</el-radio>
                                 <el-radio v-model="status_display" @change="statusUpdate" :checked="checked_display" label="0">Parcial</el-radio>
                             </div>
                             <button v-if="typeUser != 'seller'" type="button" class="btn waves-effect waves-light btn-xs btn-light" @click.prevent="statusUpdate('initial')">Borrar Check</button>
+                            <!-- <button v-if="typeUser != 'seller'" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="statusUpdate('check')">Guardar Check</button> -->
                         </div>
                         <div class="w-100 text-center">
                             <!-- <button type="button" class="btn waves-effect waves-light btn btn-info" @click.prevent="clickSubmit(index)">Grabar</button> -->
@@ -187,7 +188,7 @@
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message);
-                            this.getData();
+                            //this.getData();
                             // this.initDocumentTypes()
                             this.$eventHub.$emit('reloadData')
                             this.showAddButton = true;
@@ -227,9 +228,10 @@
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message);
-                            this.getData();
+                            //this.getData();
                             // this.initDocumentTypes()
-                            this.$eventHub.$emit('reloadData')
+                                this.$eventHub.$emit('reloadData')
+                            
                             this.showAddButton = true;
                         } else {
                             this.$message.error(response.data.message);
