@@ -14,10 +14,11 @@ class DocumentEmail extends Mailable
     public $company;
     public $pdf;
 
-    public function __construct($company, $pdf)
+    public function __construct($company, $pdf, $excel)
     {
         $this->company = $company;
         $this->pdf = $pdf;
+        $this->excel = $excel;
     }
 
     /**
@@ -32,6 +33,7 @@ class DocumentEmail extends Mailable
         return $this->subject('Envio de Reporte de documentos')
                     ->from(config('mail.username'), 'Reporte de documentos')
                     ->view('report::documents.email')
-                    ->attachData($this->pdf, 'reporte_documentos'.'.pdf');
+                    ->attachData($this->pdf, 'reporte_documentos'.'.pdf')
+                    ->attachData($this->excel, 'reporte_documentos'.'.xlsx');
     }
 }

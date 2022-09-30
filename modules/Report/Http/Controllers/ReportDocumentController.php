@@ -24,6 +24,9 @@ use App\Models\Tenant\DownloadTray;
 use Hyn\Tenancy\Models\Hostname;
 use App\Models\System\Client;
 
+use Maatwebsite\Excel\Excel as BaseExcel;
+use Maatwebsite\Excel\Facades\Excel;
+
 class ReportDocumentController extends Controller
 {
     use ReportTrait;
@@ -260,7 +263,7 @@ class ReportDocumentController extends Controller
         $company = Company::active();
         $email = $request->input('email');
 
-        $mailable = new DocumentEmail($company, $this->getPdf($data,$columns));
+        $mailable = new DocumentEmail($company, $this->getPdf($data,$columns), $this->getExcel($data,$columns));
         $sendIt = EmailController::SendMail($email, $mailable);
         
         return [
@@ -302,11 +305,58 @@ class ReportDocumentController extends Controller
         $html = $view->render();
         $pdf = new Mpdf([
                             'mode' => 'utf-8',
+                            'format' => 'A4-L',
                         ]);
-
         $pdf->WriteHTML($html);
 
         return $pdf->output('', 'S');
+    }
+
+
+    private function getExcel($request,$columns) 
+    {
+        $reques=json_decode(json_encode($request, JSON_FORCE_OBJECT));
+        set_time_limit (1800); // Maximo 30 minutos
+        $columns=json_decode(json_encode($columns));
+        $company = Company::first();
+        $establishment = ($reques->establishment_id) ? Establishment::findOrFail($reques->establishment_id) : auth()->user()->establishment;
+        $documentTypeId = "01";
+        if ($reques->document_type_id) {
+            $documentTypeId = str_replace('"', '', $reques->document_type_id);
+        }
+        $documentType = DocumentType::find($documentTypeId);
+        if (null === $documentType) {
+            $documentType = new DocumentType();
+        }
+
+        $classType = $documentType->getCurrentRelatiomClass();
+        $records = $this->getRecords($request, $classType);
+        $records= $records->get();
+
+        $filters = $request;
+
+        $categories = [];
+        $categories_services = [];
+
+        if($reques->include_categories == "true"){
+            $categories = $this->getCategories($records, false);
+            $categories_services = $this->getCategories($records, true);
+        }
+        // dd($data);
+        $documentExport = new DocumentExport();
+        $documentExport
+            ->records($records)
+            ->company($company)
+            ->establishment($establishment)
+            ->filters($filters)
+            ->categories($categories)
+            ->categories_services($categories_services)
+            ->columns($columns);
+        $attachment = Excel::raw($documentExport, 
+            BaseExcel::XLSX
+        );
+
+        return $attachment;
     }
 
 
