@@ -1590,7 +1590,7 @@
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">Seleccionar nota de venta por defecto
                                     <el-tooltip class="item"
-                                                content="Disponible POS"
+                                                content="Disponible POS y Venta rápida"
                                                 effect="dark"
                                                 placement="top-start">
                                         <i class="fa fa-info-circle"></i>
