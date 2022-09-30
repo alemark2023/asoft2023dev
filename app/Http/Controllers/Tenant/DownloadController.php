@@ -96,13 +96,9 @@ class DownloadController extends Controller
             $type = 'debit';
         }
 
-//        dd('¿a');
-
         $this->reloadPDF($document, $type, $format);
 
         $temp = tempnam(sys_get_temp_dir(), 'pdf');
-
-//        dd($temp);
 
         file_put_contents($temp, $this->getStorage($document->filename, 'pdf'));
 

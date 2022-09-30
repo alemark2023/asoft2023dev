@@ -434,7 +434,7 @@ class SaleNoteController extends Controller
     {
 
         $records = $this->getRecords($request);
-        
+
         /* $records = new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
         dd($records); */
         return new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
@@ -880,7 +880,7 @@ class SaleNoteController extends Controller
         return $inputs;
     }
 
-    
+
     /**
      * Configuración de sistema por puntos
      *
@@ -933,7 +933,12 @@ class SaleNoteController extends Controller
 
         file_put_contents($temp, $this->getStorage($sale_note->filename, 'sale_note'));
 
-        return response()->file($temp);
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$sale_note->filename.'"'
+        ];
+
+        return response()->file($temp, $headers);
     }
 
     private function reloadPDF($sale_note, $format, $filename) {
