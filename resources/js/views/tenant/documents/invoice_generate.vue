@@ -628,6 +628,10 @@
                                                             <table class="text-left table">
                                                                 <thead>
                                                                 <tr>
+                                                                    <template v-if="showLoadVoucher && form.payments.length>0">
+                                                                        <th style="width:50px">Voucher</th>
+                                                                    </template>
+
                                                                     <th v-if="form.payments.length>0"
                                                                         style="width: 120px">Método de pago
                                                                     </th>
@@ -654,6 +658,29 @@
                                                                 <tbody>
                                                                 <tr v-for="(row, index) in form.payments"
                                                                     :key="index">
+                                                                    
+                                                                    <template v-if="showLoadVoucher">
+                                                                        <td class="" style="width: 50px">
+                                                                            <!-- <el-tooltip class="item" content="Cargar voucher" effect="dark" placement="top-start"> -->
+                                                                                <el-upload
+                                                                                    :data="{'index': index}"
+                                                                                    :headers="headers_token"
+                                                                                    :multiple="false"
+                                                                                    :on-remove="(file, fileList) => handleRemoveUploadVoucher(file, fileList, index)"
+                                                                                    :action="`/finances/payment-file/upload`"
+                                                                                    :show-file-list="true"
+                                                                                    :file-list="row.file_list"
+                                                                                    :on-success="(response, file, fileList) => onSuccessUploadVoucher(response, file, fileList, index)"
+                                                                                    :limit="1"
+                                                                                    >
+                                                                                        <button  type="button" class="btn btn-sm btn-primary"  slot="trigger">
+                                                                                            <i class="fas fa-fw fa-upload"></i>
+                                                                                        </button>
+                                                                                </el-upload>
+                                                                            <!-- </el-tooltip> -->
+                                                                        </td>
+                                                                    </template>
+
                                                                     <td>
                                                                         <el-select
                                                                             v-model="row.payment_method_type_id"
@@ -684,6 +711,8 @@
                                                                         <td>
                                                                             <el-input v-model="row.payment"></el-input>
                                                                         </td>
+
+
                                                                         <td class="text-center">
                                                                             <button
                                                                                 class="btn waves-effect waves-light btn-xs btn-danger"
@@ -990,6 +1019,11 @@
                                                 <table class="text-left">
                                                     <thead>
                                                     <tr>
+                                                        
+                                                        <template v-if="showLoadVoucher && form.payments.length>0">
+                                                            <th style="width:50px">Voucher</th>
+                                                        </template>
+
                                                         <th v-if="form.payments.length>0"
                                                             style="width: 120px">Método de pago
                                                         </th>
@@ -1016,6 +1050,29 @@
                                                     <tbody>
                                                     <tr v-for="(row, index) in form.payments"
                                                         :key="index">
+                                                        
+                                                        <template v-if="showLoadVoucher">
+                                                            <td class="" style="width: 50px">
+                                                                <!-- <el-tooltip class="item" content="Cargar voucher" effect="dark" placement="top-start"> -->
+                                                                    <el-upload
+                                                                        :data="{'index': index}"
+                                                                        :headers="headers_token"
+                                                                        :multiple="false"
+                                                                        :on-remove="(file, fileList) => handleRemoveUploadVoucher(file, fileList, index)"
+                                                                        :action="`/finances/payment-file/upload`"
+                                                                        :show-file-list="true"
+                                                                        :file-list="row.file_list"
+                                                                        :on-success="(response, file, fileList) => onSuccessUploadVoucher(response, file, fileList, index)"
+                                                                        :limit="1"
+                                                                        >
+                                                                            <button  type="button" class="btn btn-sm btn-primary"  slot="trigger">
+                                                                                <i class="fas fa-fw fa-upload"></i>
+                                                                            </button>
+                                                                    </el-upload>
+                                                                <!-- </el-tooltip> -->
+                                                            </td>
+                                                        </template>
+
                                                         <td>
                                                             <el-select
                                                                 v-model="row.payment_method_type_id"
@@ -1524,6 +1581,10 @@
 .content-body {
     padding: 20px;
 }
+
+.el-upload-list__item{
+    max-width: 100px;
+}
 </style>
 <script>
 import DocumentFormItem from './partials/item.vue'
@@ -1651,10 +1712,14 @@ export default {
             global_discount_types: [],
             global_discount_type: {},
             error_global_discount: false,
-
+            headers_token: headers_token,
         }
     },
     computed: {
+        showLoadVoucher()
+        {
+            return this.configuration.show_load_voucher && !this.isUpdateDocument
+        },
         isGlobalDiscountBase: function () {
             return (this.configuration.global_discount_type_id === '02')
         },
@@ -1850,6 +1915,31 @@ export default {
 
     },
     methods: {
+        onSuccessUploadVoucher(response, file, fileList, index) 
+        {
+            if (response.success)
+            {
+                this.form.payments[index].filename = response.data.filename
+                this.form.payments[index].temp_path = response.data.temp_path
+                this.form.payments[index].file_list = fileList
+            } 
+            else 
+            {
+                this.cleanFileListUploadVoucher(index)
+                this.$message.error(response.message)
+            }
+
+        },
+        cleanFileListUploadVoucher(index)
+        {
+            this.form.payments[index].file_list = []
+        },
+        handleRemoveUploadVoucher(file, fileList, index) 
+        {
+            this.form.payments[index].filename = null
+            this.form.payments[index].temp_path = null
+            this.cleanFileListUploadVoucher(index)
+        },
         ...mapActions([
             'loadConfiguration',
         ]),
@@ -2749,6 +2839,7 @@ export default {
                 total = this.form.total
             }
             this.form.date_of_due = moment().format('YYYY-MM-DD');
+
             this.form.payments.push({
                 id: null,
                 document_id: null,
@@ -2757,7 +2848,13 @@ export default {
                 reference: null,
                 payment_destination_id: this.getPaymentDestinationId(),
                 payment: total,
+                
+                payment_received: true,
+                filename: null,
+                temp_path: null,
+                file_list: [],
             });
+
             this.calculatePayments()
 
         },
