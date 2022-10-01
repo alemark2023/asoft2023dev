@@ -124,7 +124,7 @@
                 showAddButton: true,
                 document: {},
                 status_display:null,
-                checked_display:null,
+                checked_display:false,
             }
         },
         async created() {
@@ -134,6 +134,8 @@
             initForm() {
                 this.records = [];
                 this.showAddButton = true;
+                this.status_display=null;
+                this.checked_display=false;
             },
             async getData() {
                 this.initForm();
@@ -147,7 +149,8 @@
                 await this.$http.get(`/${this.resource}/dispatch/${this.documentId}`) 
                     .then(response => {
                         this.records = response.data.data
-                        if(this.checked_display!=false){
+                        this.checked_display = response.data.data[0]['status']
+                        if(this.checked_display!=null){
                             this.status_display = response.data.data[0]['status']? '1':'0'
                         }
                         
@@ -182,13 +185,13 @@
                     person_pick:this.records[index].person_pick,
                     person_dispatch: this.records[index].person_dispatch,
                     reference: this.records[index].reference,
-                    //status_display:this.status_display,
+                    status_display:this.status_display,
                 };
                 this.$http.post(`/${this.resource}/dispatch`, form)
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message);
-                            //this.getData();
+                            this.getData();
                             // this.initDocumentTypes()
                             this.$eventHub.$emit('reloadData')
                             this.showAddButton = true;
