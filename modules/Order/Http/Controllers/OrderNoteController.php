@@ -411,7 +411,7 @@
             DB::connection('tenant')->transaction(function () use ($data) {
                 $this->order_note = OrderNote::create($data);
 
-                foreach ($data['items'] as $row) 
+                foreach ($data['items'] as $row)
                 {
                     $this->generalSetIdLoteSelectedToItem($row);
                     $this->order_note->items()->create($row);
@@ -421,7 +421,7 @@
                 $this->createPdf($this->order_note, "a4", $this->order_note->filename);
 
             });
-            
+
             return [
                 'success' => true,
                 'data' => [
@@ -825,7 +825,12 @@
 
             file_put_contents($temp, $this->getStorage($order_note->filename, 'order_note'));
 
-            return response()->file($temp);
+            $headers = [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="'.$order_note->filename.'"'
+            ];
+
+            return response()->file($temp, $headers);
         }
 
         public function email(Request $request)
