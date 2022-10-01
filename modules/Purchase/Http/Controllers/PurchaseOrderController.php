@@ -358,7 +358,6 @@ class PurchaseOrderController extends Controller
         ];
 
         return response()->file($temp, $headers);
-
     }
 
 
