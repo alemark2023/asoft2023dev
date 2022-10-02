@@ -307,35 +307,35 @@
 
                             <template v-if="resource == 'reports/sales'">
                                 <tr>
-                                    <td :colspan="13"></td>
+                                    <td :colspan="colspanFootSales"></td>
                                     <td v-if="visibleColumns.guides.visible"></td>
                                     <td v-if="visibleColumns.options.visible"></td>
                                     <td v-if="visibleColumns.web_platforms.visible"></td>
                                     <td v-if="visibleColumns.total_charge.visible"></td>
                                     <td><strong>Totales PEN</strong></td>
-                                    <td>{{ totals.acum_total_exonerated }}</td>
-                                    <td>{{ totals.acum_total_unaffected }}</td>
-                                    <td>{{ totals.acum_total_free }}</td>
+                                    <td v-if="visibleColumns.total_exonerated.visible">{{ totals.acum_total_exonerated }}</td>
+                                    <td v-if="visibleColumns.total_unaffected.visible">{{ totals.acum_total_unaffected }}</td>
+                                    <td v-if="visibleColumns.total_free.visible">{{ totals.acum_total_free }}</td>
 
-                                    <td>{{ totals.acum_total_taxed }}</td>
-                                    <td>{{ totals.acum_total_igv }}</td>
+                                    <td v-if="visibleColumns.total_taxed.visible">{{ totals.acum_total_taxed }}</td>
+                                    <td v-if="visibleColumns.total_igv.visible">{{ totals.acum_total_igv }}</td>
                                     <td v-if="visibleColumns.total_isc.visible"></td>
-                                    <td>{{ totals.acum_total }}</td>
+                                    <td v-if="visibleColumns.total.visible">{{ totals.acum_total }}</td>
                                 </tr>
                                 <tr>
-                                    <td :colspan="13"></td>
+                                    <td :colspan="colspanFootSales"></td>
                                     <td v-if="visibleColumns.guides.visible"></td>
                                     <td v-if="visibleColumns.options.visible"></td>
                                     <td v-if="visibleColumns.web_platforms.visible"></td>
                                     <td v-if="visibleColumns.total_charge.visible"></td>
                                     <td><strong>Totales USD</strong></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>{{ totals.acum_total_taxed_usd }}</td>
-                                    <td>{{ totals.acum_total_igv_usd }}</td>
+                                    <td v-if="visibleColumns.total_exonerated.visible"></td>
+                                    <td v-if="visibleColumns.total_unaffected.visible"></td>
+                                    <td v-if="visibleColumns.total_free.visible"></td>
+                                    <td v-if="visibleColumns.total_taxed.visible">{{ totals.acum_total_taxed_usd }}</td>
+                                    <td v-if="visibleColumns.total_igv.visible">{{ totals.acum_total_igv_usd }}</td>
                                     <td v-if="visibleColumns.total_isc.visible"></td>
-                                    <td>{{ totals.acum_total_usd }}</td>
+                                    <td v-if="visibleColumns.total.visible">{{ totals.acum_total_usd }}</td>
                                 </tr>
 
                             </template>
@@ -415,6 +415,11 @@ export default {
             type: Boolean,
             required: false,
             default: false
+        },
+        colspanFootSales: {
+            type: Number,
+            required: false,
+            default: 7
         },
     },
     data() {

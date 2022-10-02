@@ -17,7 +17,7 @@
         </div>
         <div class="card mb-0">
                 <div class="card-body">
-                    <data-table :applyCustomer="true" :resource="resource" :visibleColumns="columns">
+                    <data-table :applyCustomer="true" :resource="resource" :visibleColumns="columns" :colspanFootSales="numberColums">
                         <tr slot="heading">
                             <th  class="">#</th>
                             <th v-if="columns.user_seller.visible" class="">Usuario/Vendedor</th>
@@ -326,7 +326,8 @@
 
                 },
                 showDialogProducts: false,
-                recordsItems:[]
+                recordsItems:[],
+                numberColums:7,
 
             }
         },
@@ -354,6 +355,7 @@
                         let currentCols = response.data.columns;
                         if(currentCols !== undefined) {
                             this.columns = currentCols
+                            this.getNumberColumns()
                         }
                     }
                 })
@@ -361,6 +363,31 @@
                     console.error(error)
                 })
             },
+            getNumberColumns(){
+                let numColumns=0;
+                let arrayColumns = Object.values(this.columns)
+                //console.log(Array.isArray(this.columns))
+                arrayColumns.filter(function(num){
+                     switch (num.title) {
+                        case 'Total':
+                        case 'Total IGV':
+                        case 'Total Gratuito':
+                        case 'Total Gravado':
+                        case 'Total Exonerado':
+                        case 'Total Inafecto':
+                            return numColumns=this.numberColums;
+                            break;
+                        default:
+                            if (num) {
+                                if(num.visible){
+                                    numColumns=numColumns+1;
+                                    return this.numberColums+numColumns
+                                }
+                            }
+                            break;
+                     }
+                })
+            }
 
         }
     }
