@@ -9,7 +9,7 @@
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item v-for="(column, index) in columns" :key="index">
-                            <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                            <el-checkbox @change="getColumnsToShow(1)" v-model="column.visible">{{ column.title }}</el-checkbox>
                         </el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -19,46 +19,49 @@
                 <div class="card-body">
                     <data-table :applyCustomer="true" :resource="resource" :visibleColumns="columns">
                         <tr slot="heading">
-                            <th class="">#</th>
-                            <th class="">Usuario/Vendedor</th>
+                            <th  class="">#</th>
+                            <th v-if="columns.user_seller.visible" class="">Usuario/Vendedor</th>
                             <th class="">Tipo Documento</th>
-                            <th class="">Comprobante</th>
+                            <th class="">Serie</th>
+                            <th class="">Numero</th>
+                            <!-- <th class="">Comprobante</th> -->
                             <th class="">Fecha emisión</th>
                             <th class="">Fecha vencimiento</th>
                             <th v-if="columns.guides.visible" class="text-right">Guia</th>
                             <th v-if="columns.options.visible" class="text-right">Opciones</th>
-                            <th>Doc. Afectado</th>
-                            <th>Cotización</th>
-                            <th>Caso</th>
+                            <th v-if="columns.doc_affect.visible">Doc. Afectado</th>
+                            <th v-if="columns.quote.visible">Cotización</th>
+                            <th v-if="columns.case.visible">Caso</th>
                             <th v-if="columns.district.visible" class="text-right">Distrito</th>
                             <th v-if="columns.department.visible" class="text-right">Departamento</th>
                             <th v-if="columns.province.visible" class="text-right">Provincia</th>
                             <th v-if="columns.client_direction.visible" class="text-right">Direc. del cliente</th>
                             <th>Cliente</th>
                             <th v-if="columns.ruc.visible" class="text-right">Ruc</th>
-                            <th>Productos</th>
+                            <th v-if="columns.items.visible">Productos</th>
                             <th>Estado</th>
-                            <th>Moneda</th>
+                            <th v-if="columns.currency_type_id.visible">Moneda</th>
                             <th class="text-center" v-if="columns.web_platforms.visible">Plataforma</th>
-                            <th>Orden de compra</th>
+                            <th v-if="columns.purchase_order.visible">Orden de compra</th>
                             <th v-if="columns.note_sale.visible" class="text-right">Nota de venta</th>
                             <th v-if="columns.date_note.visible" class="text-right">Fecha N.Venta</th>
                             <th v-if="columns.payment_form.visible" class="text-right">Forma de pago</th>
                             <th v-if="columns.payment_method.visible" class="text-right">Metodo de pago</th>
                             <th v-if="columns.total_charge.visible">Total Cargos</th>
-                            <th>Total Exonerado</th>
-                            <th>Total Inafecto</th>
-                            <th>Total Gratuito</th>
-                            <th>Total Gravado</th>
+                            <th v-if="columns.total_exonerated.visible">Total Exonerado</th>
+                            <th v-if="columns.total_unaffected.visible">Total Inafecto</th>
+                            <th v-if="columns.total_free.visible">Total Gratuito</th>
+                            <th v-if="columns.total_taxed.visible">Total Gravado</th>
 
-                            <th class="">Total IGV</th>
+                            <th v-if="columns.total_igv.visible" class="">Total IGV</th>
                             <th class="" v-if="columns.total_isc.visible">Total ISC</th>
-                            <th class="">Total</th>
+                            <th v-if="columns.total.visible" class="">Total</th>
                         </tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>
-                            <td>{{ row.user_name }}</td>
+                            <td v-if="columns.user_seller.visible" >{{ row.user_name }}</td>
                             <td>{{ row.document_type_description }}</td>
+                            <td>{{ row.serie }}</td>
                             <td>{{ row.number }}</td>
                             <td>{{ row.date_of_issue }}</td>
                             <td>{{ row.date_of_due }}</td>
@@ -72,9 +75,9 @@
                                         @click.prevent="clickOptions(row.id)">Opciones
                                 </button>
                             </td>
-                            <td>{{ row.affected_document }}</td>
-                            <td>{{ row.quotation_number_full }}</td>
-                            <td>{{ row.sale_opportunity_number_full }}</td>
+                            <td v-if="columns.doc_affect.visible" >{{ row.affected_document }}</td>
+                            <td v-if="columns.quote.visible" >{{ row.quotation_number_full }}</td>
+                            <td v-if="columns.case.visible" >{{ row.sale_opportunity_number_full }}</td>
 
                             <td  v-if="columns.district.visible">
                                 {{row.district}}
@@ -95,7 +98,7 @@
                                 {{row.ruc}}
                             </td>
 
-                            <td class="text-center">
+                            <td v-if="columns.items.visible"  class="text-center">
                                 <button
                                     class="btn waves-effect waves-light btn-xs btn-primary"
                                     type="button"
@@ -106,14 +109,15 @@
                             </td>
                             <td>{{ row.state_type_description }}</td>
 
-                            <td>{{ row.currency_type_id }}</td>
+                            <td v-if="columns.currency_type_id.visible" >{{ row.currency_type_id }}</td>
 
                             <td  v-if="columns.web_platforms.visible">
                                 <template v-for="(platform,i) in row.web_platforms" v-if="row.web_platforms !== undefined">
                                     <label class="d-block"  :key="i">{{platform.name}}</label>
                                 </template>
                             </td>
-                            <td>{{ row.purchase_order }}</td>
+                    
+                            <td v-if="columns.purchase_order.visible">{{ row.purchase_order }}</td>
 
                             <td  v-if="columns.note_sale.visible">
                                 {{row.note_sale}}
@@ -134,25 +138,24 @@
                                 }}
                             </td>
 
-
-                            <td>{{
+                            <td v-if="columns.total_exonerated.visible">{{
                                     (row.document_type_id == '07') ? ((row.total_exonerated == 0) ? '0.00' : '-' + row.total_exonerated) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_exonerated)
                                 }}
                             </td>
 
-                            <td>{{
+                            <td v-if="columns.total_unaffected.visible">{{
                                     (row.document_type_id == '07') ? ((row.total_unaffected == 0) ? '0.00' : '-' + row.total_unaffected) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_unaffected)
                                 }}
                             </td>
-                            <td>{{
+                            <td v-if="columns.total_free.visible">{{
                                     (row.document_type_id == '07') ? ((row.total_free == 0) ? '0.00' : '-' + row.total_free) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_free)
                                 }}
                             </td>
-                            <td>{{
+                            <td v-if="columns.total_taxed.visible">{{
                                     (row.document_type_id == '07') ? ((row.total_taxed == 0) ? '0.00' : '-' + row.total_taxed) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_taxed)
                                 }}
                             </td>
-                            <td>{{
+                            <td v-if="columns.total_igv.visible">{{
                                     (row.document_type_id == '07') ? ((row.total_igv == 0) ? '0.00' : '-' + row.total_igv) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_igv)
                                 }}
                             </td>
@@ -161,7 +164,7 @@
                                     (row.document_type_id == '07') ? ((row.total_isc == 0) ? '0.00' : '-' + row.total_isc) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_isc)
                                 }}
                             </td>
-                            <td>{{
+                            <td v-if="columns.total.visible">{{
                                     (row.document_type_id == '07') ? ((row.total == 0) ? '0.00' : '-' + row.total) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total)
                                 }}
                             </td>
@@ -264,13 +267,71 @@
                         title: 'Metodo de pago',
                         visible: false
                     },
+                    purchase_order: {
+                        title: 'Orden de compra',
+                        visible: true
+                    },
+                    total_exonerated: {
+                        title: 'Total Exonerado',
+                        visible: true
+                    },
+                    total_unaffected: {
+                        title: 'Total Inafecto',
+                        visible: true
+                    },
+                    total_free: {
+                        title: 'Total Gratuito',
+                        visible: true
+                    },
+                    total_taxed: {
+                        title: 'Total Gravado',
+                        visible: true
+                    },
+                    total_igv: {
+                        title: 'Total IGV',
+                        visible: true
+                    },
+                    total_isc: {
+                        title: 'Total ISC',
+                        visible: true
+                    },
+                    total: {
+                        title: 'Total',
+                        visible: true
+                    },
+                    user_seller: {
+                        title: 'Usuario/Vendedor',
+                        visible: true
+                    },
+                    doc_affect: {
+                        title: 'Doc. Afectado',
+                        visible: true
+                    },
+                    quote: {
+                        title: 'Cotizacion',
+                        visible: true
+                    },
+                    case: {
+                        title: 'Caso',
+                        visible: true
+                    },
+                    items: {
+                        title: 'Productos',
+                        visible: true
+                    },
+                    currency_type_id: {
+                        title: 'Moneda',
+                        visible: true
+                    }
+
                 },
                 showDialogProducts: false,
                 recordsItems:[]
 
             }
         },
-        async created() {
+        created() {
+            this.getColumnsToShow();
         },
         methods: {
             clickOptions(recordId = null) {
@@ -280,7 +341,26 @@
             clickViewProducts(items = []) {
                 this.recordsItems = items;
                 this.showDialogProducts = true;
-            }
+            },
+            getColumnsToShow(updated){
+
+            this.$http.post('/validate_columns',{
+                columns : this.columns,
+                report : 'documents_report_index', // Nombre del reporte.
+                updated : (updated !== undefined),
+            })
+                .then((response)=>{
+                    if(updated === undefined){
+                        let currentCols = response.data.columns;
+                        if(currentCols !== undefined) {
+                            this.columns = currentCols
+                        }
+                    }
+                })
+                .catch((error)=>{
+                    console.error(error)
+                })
+            },
 
         }
     }

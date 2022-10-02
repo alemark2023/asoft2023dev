@@ -4,11 +4,19 @@
     use App\Models\Tenant\SaleNote;
     use App\Models\Tenant\Catalogs\DocumentType;
     use App\Models\Tenant\Series;
-$col_num=10;
+$col_num=6;
     //dd($columns);
 foreach ($columns as $value) {
     switch ($value->title) {
         case 'Opciones':
+        case 'Total':
+        case 'Total IGV':
+        case 'Total Gratuito':
+        case 'Total Gravado':
+        case 'Total Exonerado':
+        case 'Total Inafecto':
+        case 'Productos':
+        case 'Total Cargos':
             $col_num=$col_num;
             break;
         case 'Total ISC':
@@ -166,18 +174,29 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                     <thead>
                     <tr>
                         <th>#</th>
-                        <th class="">Usuario/Vendedor</th>
+                        @if ($columns->user_seller->visible)
+                            <th class="">Usuario/Vendedor</th>
+                        @endif
+                        
                         <th>Tipo Doc</th>
+                        <th>Serie</th>
                         <th>Número</th>
                         <th>Fecha emisión</th>
                         <th>Fecha Vencimiento</th>
-                        <th>Doc. Afectado</th>
+                        @if ($columns->doc_affect->visible)
+                            <th>Doc. Afectado</th>
+                        @endif
+                        
                         @if ($columns->guides->visible)
                             <th># Guía</th>
                         @endif
+                        @if ($columns->quote->visible)
+                            <th>Cotización</th>
+                        @endif
+                        @if ($columns->case->visible)
+                            <th>Caso</th>
+                        @endif
                         
-                        <th>Cotización</th>
-                        <th>Caso</th>
                         @if ($columns->district->visible)
                         <th>DIST</th>
                         @endif
@@ -196,12 +215,17 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                         @endif
                         
                         <th>Estado</th>
-                        <th class="">Moneda</th>
+                        @if ($columns->currency_type_id->visible)
+                            <th class="">Moneda</th>
+                        @endif
+                        
                         @if ($columns->web_platforms->visible)
                         <th>Plataforma</th>
                         @endif
+                        @if ($columns->purchase_order->visible)
+                            <th>Orden de compra</th>
+                        @endif
                         
-                        <th>Orden de compra</th>
                         @if ($columns->note_sale->visible)
                         <th>Nota de venta</th>
                         @endif
@@ -217,17 +241,35 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                         @if ($columns->total_charge->visible)
                         <th>Total Cargos</th>
                         @endif
-                        <th>Total Exonerado</th>
-                        <th>Total Inafecto</th>
-                        <th>Total Gratuito</th>
-                        <th>Total Gravado</th>
+                        @if ($columns->total_exonerated->visible)
+                            <th>Total Exonerado</th>
+                        @endif
+                        @if ($columns->total_unaffected->visible)
+                            <th>Total Inafecto</th>
+                        @endif
+                        @if ($columns->total_free->visible)
+                            <th>Total Gratuito</th>
+                        @endif
+                        @if ($columns->total_taxed->visible)
+                            <th>Total Gravado</th>
+                        @endif
+                        
                         <th>Descuento total</th>
-                        <th>Total IGV</th>
+                        @if ($columns->total_igv->visible)
+                            <th>Total IGV</th>
+                        @endif
+                        
                         @if ($columns->total_isc->visible)
                         <th>Total ISC</th>
                         @endif
-                        <th>Total</th>
-                        <th>Total de productos</th>
+                        @if ($columns->total->visible)
+                            <th>Total</th>
+                        @endif
+                        
+                        @if ($columns->items->visible)
+                            <th>Total de productos</th>
+                        @endif
+                        
     
                         @foreach ($categories as $category)
                             <th>{{$category->name}}</th>
@@ -262,6 +304,7 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                         @if ($serie_type['number']==$value->series)
                         <tr>
                             <td class="celda">{{$t+1}}</td>
+                            @if ($columns->user_seller->visible)
                             <td class="celda">
                                 @if($filters['user_type']==='CREADOR')
                                     {{$userCreator}}
@@ -269,8 +312,10 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                                     {{$user}}
                                 @endif
                             </td>
+                            @endif
                             <td class="celda">{{$document_type->id}}</td>
-                            <td class="celda">{{$value->series}}-{{$value->number}}</td>
+                            <td class="celda">{{$value->series}}</td>
+                            <td class="celda">{{$value->number}}</td>
                             <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td>
                             <td class="celda">{{isset($value->invoice) ? $value->invoice->date_of_due->format('Y-m-d'):''}}</td>
                             @if(in_array($document_type->id,["07","08"]) && $value->note)
@@ -284,7 +329,10 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
     
     
                             @endif
-                            <td class="celda">{{$serie_affec }} </td>
+                            @if ($columns->doc_affect->visible)
+                                <td class="celda">{{$serie_affec }} </td>
+                            @endif
+                            
                             @if ($columns->guides->visible)
                             <td class="celda">
                                 @if(!empty($value->guides))
@@ -294,9 +342,13 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                                 @endif
                             </td>
                             @endif
+                            @if ($columns->quote->visible)
+                                <td class="celda">{{ ($value->quotation) ? $value->quotation->number_full : '' }}</td>
+                            @endif
+                            @if ($columns->case->visible)
+                                <td class="celda">{{ isset($value->quotation->sale_opportunity) ? $value->quotation->sale_opportunity->number_full : '' }}</td>
+                            @endif
                             
-                            <td class="celda">{{ ($value->quotation) ? $value->quotation->number_full : '' }}</td>
-                            <td class="celda">{{ isset($value->quotation->sale_opportunity) ? $value->quotation->sale_opportunity->number_full : '' }}</td>
     
                             <?php $stablihsment = \App\CoreFacturalo\Helpers\Template\ReportHelper::getLocationData($value); ?>
                             @if ($columns->district->visible)
@@ -321,8 +373,10 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                                 $signal = $document_type->id;
                                 $state = $value->state_type_id;
                             @endphp
-    
-                            <td class="celda">{{$value->currency_type_id}}</td>
+                            @if ($columns->currency_type_id->visible)
+                                <td class="celda">{{$value->currency_type_id}}</td>
+                            @endif
+                            
                             @if ($columns->web_platforms->visible)
                             <td class="celda">
                                 @foreach ($value->getPlatformThroughItems() as $platform)
@@ -330,8 +384,10 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                                 @endforeach
                             </td>
                             @endif
+                            @if ($columns->purchase_order->visible)
+                                <td class="celda">{{$value->purchase_order}}</td>
+                            @endif
                             
-                            <td class="celda">{{$value->purchase_order}}</td>
     
                             @if($value->sale_note)
                                 @if ($columns->note_sale->visible)
@@ -407,33 +463,65 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                                     @if ($columns->total_charge->visible)
                                     <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_charge}}</td>
                                     @endif
-                                    <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_exonerated}}</td>
-                                    <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_unaffected}}</td>
-                                    <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_free}}</td>
-                                    <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_taxed}}</td>
-                                    <td class="celda">{{$value->total_discount}}</td>
-                                    <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_igv}}</td>
-                                    @if ($columns->total_isc->visible)
-                                    <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_isc}}</td>
+                                    @if ($columns->total_exonerated->visible)
+                                        <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_exonerated}}</td>
                                     @endif
-                                    <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
+                                    @if ($columns->total_unaffected->visible)
+                                        <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_unaffected}}</td>
+                                    @endif
+                                    @if ($columns->total_free->visible)
+                                        <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_free}}</td>
+                                    @endif
+                                    @if ($columns->total_taxed->visible)
+                                        <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_taxed}}</td>
+                                    @endif
+                                    
+                                    <td class="celda">{{$value->total_discount}}</td>
+                                    @if ($columns->total_igv->visible)
+                                        <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_igv}}</td>
+                                    @endif
+                                    
+                                    @if ($columns->total_isc->visible)
+                                        <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_isc}}</td>
+                                    @endif
+                                    @if ($columns->total->visible)
+                                        <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
+                                    @endif
+                                    
                                 @endif
     
                             @else
                                 @if ($columns->total_charge->visible)
                                     <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_charge}}</td>
                                 @endif
-                                <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_exonerated}}</td>
-                                <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_unaffected}}</td>
-                                <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_free}}</td>
-    
-                                <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_taxed}}</td>
+                                @if ($columns->total_exonerated->visible)
+                                    <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_exonerated}}</td>
+                                @endif
+                                
+                                @if ($columns->total_unaffected->visible)
+                                    <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_unaffected}}</td>
+                                @endif
+                                
+                                @if ($columns->total_free->visible)
+                                    <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_free}}</td>
+                                @endif
+                                
+                                @if ($columns->total_taxed->visible)
+                                    <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_taxed}}</td>
+                                @endif
+                                
                                 <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_discount}}</td>
-                                <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_igv}}</td>
+                                @if ($columns->total_igv->visible)
+                                    <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_igv}}</td>
+                                @endif
+                                
                                 @if ($columns->total_isc->visible)
                                 <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_isc}}</td>
                                 @endif
-                                <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total}}</td>
+                                @if ($columns->total->visible)
+                                    <td class="celda">{{ (in_array($document_type->id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total}}</td>
+                                @endif
+                                
     
                             @endif
     
@@ -490,7 +578,10 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                                 }
     
                             @endphp
-                            <td>{{$quality_item}}</td>
+                            @if ($columns->items->visible)
+                                <td>{{$quality_item}}</td>
+                            @endif
+                            
                         </tr>
                         @php
                             if($value->currency_type_id == 'PEN'){
@@ -587,17 +678,33 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                         @if ($columns->total_charge->visible)
                         <td>{{number_format($acum_total_charges, 2)}}</td>
                         @endif
+                        @if ($columns->total_exonerated->visible)
                         <td>{{number_format($acum_total_exonerado, 2)}}</td>
+                        @endif
+                        
+                        @if ($columns->total_unaffected->visible)
                         <td>{{number_format ($acum_total_inafecto, 2 )}}</td>
+                        @endif
+                        
+                        @if ($columns->total_free->visible)
                         <td>{{number_format($acum_total_free, 2)}}</td>
-    
+                        @endif
+                        
+                        @if ($columns->total_taxed->visible)
                         <td>{{$acum_total_taxed}}</td>
+                        @endif
+                        
                         <td></td>
+                        @if ($columns->total_igv->visible)
                         <td>{{$acum_total_igv}}</td>
+                        @endif
+                        
                         @if ($columns->total_isc->visible)
                         <td></td>
                         @endif
+                        @if ($columns->total->visible)
                         <td>{{$acum_total}}</td>
+                        @endif
                     </tr>
                     <tr>
                         <td colspan="{{$col_num}}"></td>
@@ -605,16 +712,32 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                         @if ($columns->total_charge->visible)
                         <td></td>
                         @endif
+                        
+                        @if ($columns->total_exonerated->visible)
                         <td></td>
+                        @endif
+                        @if ($columns->total_unaffected->visible)
                         <td></td>
+                        @endif
+                        @if ($columns->total_free->visible)
                         <td></td>
+                        @endif
+                        @if ($columns->total_taxed->visible)
                         <td>{{$acum_total_taxed_usd}}</td>
+                        @endif
+                        
                         <td></td>
+                        @if ($columns->total_igv->visible)
                         <td>{{$acum_total_igv_usd}}</td>
+                        @endif
+                        
                         @if ($columns->total_isc->visible)
                         <td></td>
                         @endif
+                        @if ($columns->total->visible)
                         <td>{{$acum_total_usd}}</td>
+                        @endif
+                        
                     </tr>
     
                     </tbody>
@@ -646,10 +769,11 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($acum_documents as $document)
                     @php
-                        //dd($document['id']);
+                       $total_general=0;
                     @endphp
+                    @foreach ($acum_documents as $document)
+                    
                         @foreach ($acum_series as $serie)
                             @if ($document['id']==$serie['document_id'])
                                 <tr>
@@ -657,9 +781,16 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                                     <td>{{$serie['number']}}</td>
                                     <td>{{$serie['total']}}</td>
                                 </tr>
+                                @php
+                                    $total_general=$total_general+$serie['total'];
+                                @endphp
                             @endif
                         @endforeach
                     @endforeach
+                    <tr >
+                        <td colspan="2">TOTAL GENERAL</td>
+                        <td>{{$total_general}}</td>
+                    </tr>
                     
                 </tbody>
             </table>
