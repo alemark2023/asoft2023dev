@@ -172,6 +172,9 @@
                                                     <template v-if="row.id">
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteONItem(row.id, index)">x</button>
                                                     </template>
+                                                    <template v-else-if="row.record_id">
+                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteONItem(row.record_id, index)">x</button>
+                                                    </template>
                                                     <template v-else>
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
                                                     </template>
