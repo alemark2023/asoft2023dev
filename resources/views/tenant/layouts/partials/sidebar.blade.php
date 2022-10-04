@@ -726,7 +726,7 @@
                                                href="{{route('reports.inventory.index')}}">Reporte Inventario</a>
                                         </li>
                                     @endif
-                                    @if(in_array('inventory_report_kardex', $vc_module_levels))
+                                    @if(in_array('inventory_report_valued_kardex', $vc_module_levels))
                                         {{-- <li class="{{ ($firstLevel === 'warehouses')?'nav-active':'' }}">
                                             <a class="nav-link" href="{{route('warehouses.index')}}">Almacenes</a>
                                         </li> --}}
