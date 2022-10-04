@@ -82,6 +82,16 @@ export const functions = {
                     this.percentage_igv = response.data;
                 });
         },
+        async getPercentageIgvWithParams(establishment_id, date_of_issue) 
+        {
+            await this.$http.post(`/store/get_igv`, {
+                        establishment_id: establishment_id,
+                        date: date_of_issue
+                    })
+                    .then(response => {
+                        this.percentage_igv = response.data
+                    })
+        },
     }
 };
 
