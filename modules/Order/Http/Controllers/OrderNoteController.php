@@ -668,7 +668,7 @@
 
         public function update(OrderNoteRequest $request)
         {
-
+            
             DB::connection('tenant')->transaction(function () use ($request) {
 
 
@@ -684,7 +684,8 @@
                 foreach ($request['items'] as $row) {
 
                     // $this->order_note->items()->create($row);
-                    $item_id = isset($row['id']) ? $row['id'] : null;
+                    // $item_id = isset($row['id']) ? $row['id'] : null;
+                    $item_id = $this->getRowIdItem($row);
                     $order_note_item = OrderNoteItem::firstOrNew(['id' => $item_id]);
                     $this->generalSetIdLoteSelectedToItem($row);
                     $order_note_item->fill($row);
@@ -704,6 +705,31 @@
             ];
 
         }
+        
+
+        /**
+         * 
+         * Obtener id de la fila al editar pedido
+         *
+         * @param  array $row
+         * @return int|null
+         */
+        private function getRowIdItem($row)
+        {
+            $row_id = null;
+
+            if(isset($row['id']))
+            {
+                $row_id = $row['id'];
+            }
+            else
+            {
+                if(isset($row['record_id'])) $row_id = $row['record_id'];
+            }
+
+            return $row_id;
+        }
+
 
         public function destroy_order_note_item($id)
         {
