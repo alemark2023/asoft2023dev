@@ -146,15 +146,21 @@ class UnpaidController extends Controller
         } else {
             $sale_note = Document::where('external_id', $external_id)->first();
         }
-        
+
 
         if (!$sale_note) throw new Exception("El código {$external_id} es inválido, no se encontro la nota de venta relacionada");
         $this->reloadPDF($sale_note, $format, $sale_note->filename);
         $temp = tempnam(sys_get_temp_dir(), 'unpaid');
 
+
         file_put_contents($temp, $this->getStorage($sale_note->filename, 'unpaid'));
 
-        return response()->file($temp);
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$sale_note->filename.'"'
+        ];
+
+        return response()->file($temp, $headers);
     }
 
     private function reloadPDF($sale_note, $format, $filename) {
@@ -279,7 +285,7 @@ class UnpaidController extends Controller
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
-        
+
         $this->uploadFile($this->document->filename, $pdf->output('', 'S'), 'unpaid');
     }
 

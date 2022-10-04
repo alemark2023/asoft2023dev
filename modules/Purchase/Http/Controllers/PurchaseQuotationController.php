@@ -234,8 +234,12 @@ class PurchaseQuotationController extends Controller
 
         file_put_contents($temp, $this->getStorage($purchase_quotation->filename, 'purchase_quotation'));
 
-        return response()->file($temp);
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$purchase_quotation->filename.'"'
+        ];
 
+        return response()->file($temp, $headers);
     }
 
     private function reloadPDF($purchase_quotation, $format, $filename) {

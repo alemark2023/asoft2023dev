@@ -575,7 +575,12 @@ class QuotationController extends Controller
 
         file_put_contents($temp, $this->getStorage($quotation->filename, 'quotation'));
 
-        return response()->file($temp);
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$quotation->filename.'"'
+        ];
+
+        return response()->file($temp, $headers);
     }
 
     private function reloadPDF($quotation, $format, $filename)
