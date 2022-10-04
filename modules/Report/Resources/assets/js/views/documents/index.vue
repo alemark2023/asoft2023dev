@@ -194,6 +194,15 @@
     </div>
 </template>
 
+<style>
+
+.el-dropdown-menu {
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+</style>
+
 <script>
 
     import DataTable from '../../components/DataTableReports.vue'
