@@ -119,7 +119,7 @@
 
                         </div>
                     </div>
-                    <template v-if="resourse!=='reports/state-account'">
+                    <template>
                         <template v-if="users.length  < 1">
                             <div v-if="applyCustomer"
                                 :class="(
@@ -180,13 +180,13 @@
                     
 
 
-                    <div v-if="resource == 'reports/sales' || resource === 'reports/sale-notes' || resourse !='reports/state-account'"
+                    <div v-if="resource == 'reports/sales' || resource === 'reports/sale-notes' || resource !='reports/state-account'|| resource!=='reports/state-account'"
                          class="col-lg-3 col-md-3">
-                        <label>Orden de compra</label>
-                        <el-input v-model="form.purchase_order"
+                        <label v-if="resource!=='reports/state-account'">Orden de compra</label>
+                        <el-input v-if="resource!=='reports/state-account'" v-model="form.purchase_order"
                                   clearable></el-input>
                     </div>
-                    <div class="col-lg-3 col-md-3" v-if="resource !='reports/state-account'">
+                    <div class="col-lg-3 col-md-3" v-if="resource !=='reports/state-account'">
                         <div class="form-group">
                             <label class="control-label">Numero de Guía</label>
                             <el-input v-model="form.guides"
@@ -206,7 +206,7 @@
                         </div>
                     </div>
 
-                    <div v-if="resource == 'reports/sales' || resourse !='reports/state-account'"
+                    <div v-if="resource == 'reports/sales' || resource !=='reports/state-account'"
                          class="col-lg-3 col-md-3 mt-4">
                         <div class="form-group">
                             <el-checkbox v-model="form.include_categories">¿Incluir categorías?</el-checkbox>
@@ -214,7 +214,7 @@
                         </div>
                     </div>
 
-                    <div v-if="resource == 'reports/quotations' || resourse !='reports/state-account'"
+                    <div v-if="resource == 'reports/quotations' || resource !=='reports/state-account'"
                          class="col-lg-3 col-md-3">
                         <div class="form-group">
                             <label class="control-label">
@@ -235,7 +235,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-4 col-md-6" v-if="resource == 'reports/commissions-detail' || resourse !='reports/state-account'">
+                    <div class="col-lg-4 col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Productos
                                 </label>
@@ -304,7 +304,7 @@
                         </tbody>
                         <tfoot v-if="resource == 'reports/sales' || resource == 'reports/purchases' || resource == 'reports/fixed-asset-purchases'">
 
-                            <template v-if="resource == 'reports/sales'">
+                            <template v-if="resource == 'reports/sales'|| this.resource === 'reports/state-account'">
                                 <tr>
                                     <td :colspan="13"></td>
                                     <td v-if="visibleColumns.guides.visible"></td>
@@ -487,7 +487,7 @@ export default {
         await this.getRecords()
         await this.filterPersons()
         // await this.getTotals()
-        this.form.type_person = this.resource === 'reports/sales' ? 'customers' : 'suppliers'
+        this.form.type_person = this.resource === 'reports/sales' || this.resource === 'reports/state-account'? 'customers' : 'suppliers'
 
     },
     methods: {
@@ -512,7 +512,7 @@ export default {
                 this.loading_search = true
                 let parameters = `input=${input}`
 
-                this.form.type_person = this.resource === 'reports/sales' ? 'customers' : 'suppliers'
+                this.form.type_person = this.resource === 'reports/sales'||this.resource === 'reports/state-account' ? 'customers' : 'suppliers'
 
 
                 this.$http.get(`/reports/data-table/persons/${this.form.type_person}?${parameters}`)
@@ -681,7 +681,7 @@ export default {
                 this.pagination.per_page = parseInt(response.data.meta.per_page)
                 this.loading_submit = false
                 // this.initTotals()
-                if (this.resource == 'reports/sales' || this.resource == 'reports/purchases' || this.resource == 'reports/fixed-asset-purchases') this.getTotals(response.data.data)
+                if (this.resource == 'reports/sales' || this.resource == 'reports/purchases' || this.resource == 'reports/fixed-asset-purchases' || this.resource === 'reports/state-account') this.getTotals(response.data.data)
             });
 
 

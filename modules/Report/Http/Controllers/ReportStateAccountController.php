@@ -59,6 +59,7 @@ class ReportStateAccountController extends Controller
 
     public function records(Request $request)
     {
+        //dd($request->all());
         $documentTypeId = null;
         if ($request->has('document_type_id')) {
             $documentTypeId = str_replace('"', '', $request->document_type_id);
