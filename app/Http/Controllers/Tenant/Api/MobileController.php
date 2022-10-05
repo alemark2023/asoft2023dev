@@ -63,7 +63,7 @@ class MobileController extends Controller
             'restaurant_role_id' => $user->restaurant_role_id,
             'ruc' => $company->number,
             'app_logo' => $company->app_logo,
-            'app_logo_base64' => base64_encode(file_get_contents(config('app.url').'/storage/uploads/logos/'.$company->app_logo)),
+            'app_logo_base64' => '',//base64_encode(file_get_contents(config('app.url').'/storage/uploads/logos/'.$company->app_logo)),
             'company' => [
                 'name' => $company->name,
                 'address' => auth()->user()->establishment->department->description.', '.auth()->user()->establishment->province->description.', '.auth()->user()->establishment->district->description.', '.auth()->user()->establishment->address,

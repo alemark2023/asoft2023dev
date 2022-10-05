@@ -328,7 +328,12 @@ class OrderFormController extends Controller
 
         file_put_contents($temp, $this->getStorage($order_form->filename, 'order_form'));
 
-        return response()->file($temp);
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$order_form->filename.'"'
+        ];
+
+        return response()->file($temp, $headers);
     }
 
 

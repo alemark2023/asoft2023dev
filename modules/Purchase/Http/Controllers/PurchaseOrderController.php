@@ -352,8 +352,12 @@ class PurchaseOrderController extends Controller
 
         file_put_contents($temp, $this->getStorage($purchase_order->filename, 'purchase_order'));
 
-        return response()->file($temp);
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$purchase_order->filename.'"'
+        ];
 
+        return response()->file($temp, $headers);
     }
 
 
