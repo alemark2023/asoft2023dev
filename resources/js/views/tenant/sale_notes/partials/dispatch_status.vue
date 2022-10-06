@@ -1,7 +1,7 @@
 <template>
     <el-dialog :visible="showDialog" @close="close" @open="getData" width="65%" :close-on-click-modal="false" :close-on-press-escape="false">
         <span slot="title" class="d-flex justify-content-between h5 p-3"> {{title}}
-            <el-button type="primary" icon="el-icon-plus" @click="clickAddRow">Agregar Despacho</el-button>
+            <el-button v-if="statusDispatch" type="primary" icon="el-icon-plus" @click="clickAddRow">Agregar Despacho</el-button>
         </span>
         <!-- <div class="col-md-12 text-center pt-2" v-if="showAddButton && (document.total_difference > 0)">
             
@@ -13,7 +13,9 @@
                         <table class="table">
                             <thead>
                             <tr>
+                                <th></th>
                                 <th>#</th>
+                                <th>Tipo</th>
                                 <th>Fecha de despacho</th>
                                 <th>Hora de despacho</th>
                                 <th>Persona quien recogio</th>
@@ -25,7 +27,14 @@
                             <tbody>
                             <tr v-for="(row, index) in records" :key="index">
                                 <template v-if="row.id">
+                                    <td>
+                                        <el-switch
+                                            v-model="row.selected"
+                                            @change="onFillSelectedDispatch"
+                                        ></el-switch>
+                                    </td>
                                     <td>DESPACHO-{{ row.id }}</td>
+                                    <td>{{ row.type==null?'-':(row.type?'Entregado':'Parcial') }}</td>
                                     <td>{{ row.date_dispatch }}</td>
                                     <td>{{ row.time_dispatch }}</td>
                                     <td>{{ row.person_pick }}</td>
@@ -37,6 +46,8 @@
                                     </td>
                                 </template>
                                 <template v-else>
+                                    <td></td>
+                                    <td></td>
                                     <td></td>
                                     <td>{{ row.date_dispatch }}</td>
                                     <td>{{ row.time_dispatch }}</td>
@@ -73,7 +84,7 @@
                 </div>
                 <div class="col-md-12 pt-2">
                     <div class="d-flex">
-                        <div v-if="records.length>0" class="d-flex">
+                        <div class="d-flex">
                             <div class="d-flex flex-column">
                                 <el-radio v-model="status_display" @change="statusUpdate" :checked="checked_display" label="1">Entregado</el-radio>
                                 <el-radio v-model="status_display" @change="statusUpdate" :checked="checked_display" label="0">Parcial</el-radio>
@@ -112,7 +123,7 @@
     import moment from 'moment'
 
     export default {
-        props: ['showDialog', 'documentId', 'typeUser'],
+        props: ['showDialog', 'documentId', 'typeUser', 'statusDispatch'],
         mixins: [deletable],
         data() {
             return {
@@ -125,6 +136,8 @@
                 document: {},
                 status_display:null,
                 checked_display:false,
+                selecteds:[],
+                dispatch_active:false
             }
         },
         async created() {
@@ -149,9 +162,20 @@
                 await this.$http.get(`/${this.resource}/dispatch/${this.documentId}`) 
                     .then(response => {
                         this.records = response.data.data
+                    });
+                this.$eventHub.$emit('reloadDataUnpaid')
+
+            },
+            async getDataNote(id) {
+                //this.initForm();
+                // dispatch sale notes
+                await this.$http.get(`/${this.resource}/dispatch_note/${id}`) 
+                    .then(response => {
                         this.checked_display = response.data.data[0]['status']
                         if(this.checked_display!=null){
                             this.status_display = response.data.data[0]['status']? '1':'0'
+                        }else{
+                            this.status_display = null
                         }
                         
                     });
@@ -191,6 +215,7 @@
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message);
+                            this.dispatch_active=true
                             this.getData();
                             // this.initDocumentTypes()
                             this.$eventHub.$emit('reloadData')
@@ -218,11 +243,21 @@
                 )
             },
             statusUpdate(value=null){
+                if( this.selecteds.length==0){
+                    this.status_display=null
+                    if(!this.dispatch_active){
+                        this.status_display=null
+                        return this.$message.error('Debe crear un pedido');
+                    }
+                    return this.$message.error('Debe seleccionar un pedido');
+                }
                 
                 let form = {
                     sale_note_id: this.documentId,
                     status_display:this.status_display==0?false:true,
+                    dispatch_id:this.selecteds[0],
                 };
+                console.log(this.selecteds[0])
                 if (value==='initial') {
                     form.status_display=null
                     this.status_display=null
@@ -247,7 +282,25 @@
                             console.log(error);
                         }
                     })
-            }
-        }
+            },
+            onFillSelectedDispatch() {
+                this.selecteds = [];
+                
+                console.log(this.records)
+                
+                this.records.map((d) => {
+                    if (d.selected) {
+                            this.selecteds.push(d.id);
+                            this.getDataNote(d.id)
+                        
+                    }
+                    if(this.selecteds.length==2){
+                            d.selected=false
+                            return this.$message.error('Solo se puede seleccionar un pedido');
+                    }
+                });
+                console.log(this.selecteds.length)
+            },
+        },
     }
 </script>

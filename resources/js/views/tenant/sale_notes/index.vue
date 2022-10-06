@@ -145,17 +145,17 @@
                         <td class="text-right" v-if="columns.dispatch_status.visible">
                             <template v-if="row.status_dispatch==='ENTREGADO'">
                                 <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-success"
-                                    @click.prevent="clickDispatchStatus(row.id)" >{{row.status_dispatch}}</button>
+                                    @click.prevent="clickDispatchStatus(row.id,false)" >{{row.status_dispatch}}</button>
                             </template>
                             
                             <template v-if="row.status_dispatch==='PENDIENTE'">
                                 <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-danger"
-                                    @click.prevent="clickDispatchStatus(row.id)" >{{row.status_dispatch}}</button>
+                                    @click.prevent="clickDispatchStatus(row.id,true)" >{{row.status_dispatch}}</button>
                             </template>
 
                             <template v-if="row.status_dispatch==='PARCIAL'">
                                 <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-warning"
-                                    @click.prevent="clickDispatchStatus(row.id)" >{{row.status_dispatch}}</button>
+                                    @click.prevent="clickDispatchStatus(row.id,true)" >{{row.status_dispatch}}</button>
                             </template>
                             
                         </td>
@@ -304,6 +304,7 @@
 
         <sale-note-dispatch-status :showDialog.sync="showDialogDispatch"
                             :documentId="recordId"
+                            :statusDispatch="statusDispatch"
                             :typeUser="typeUser"></sale-note-dispatch-status>
 
     </div>
@@ -352,6 +353,7 @@
                 showDialogDispatch: false,
                 saleNotesNewId: null,
                 recordId: null,
+                statusDispatch:null,
                 columns: {
                     due_date: {
                         title: 'Fecha de Vencimiento',
@@ -563,9 +565,10 @@
                     this.$eventHub.$emit('reloadData')
                 )
             },
-            clickDispatchStatus(recordId) {
+            clickDispatchStatus(recordId,status) {
                 this.recordId = recordId;
                 this.showDialogDispatch = true;
+                this.statusDispatch = status;
             },
 
         }

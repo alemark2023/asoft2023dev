@@ -1861,18 +1861,22 @@ class SaleNoteController extends Controller
         ];
     }
 
+    public function recordsDispatchNote($dispatch_id)
+    {
+        $records = DispatchSaleNote::where('id',$dispatch_id)->get();
+
+        return new DispatchSaleNoteCollection($records);
+    }
+
     public function statusUpdate(Request $request){
-        $id = $request->input('sale_note_id');
+        //dd($request->all());
+        $id = $request->input('dispatch_id');
 
-        $records = DispatchSaleNote::where('sale_note_id' , $id)->get();
+        $records = DispatchSaleNote::find($id);
 
-        
-        foreach ($records as $value) {
-            //dd($value->status_dispatch);
-            $dispatch=DispatchSaleNote::where('id' , $value->id)->update([
-                'status' => $request->input('status_display'),
-            ]);
-        }
+        $records = $records->update([
+            'status' => $request->input('status_display'),
+        ]);
 
         return [
             'success' => true,

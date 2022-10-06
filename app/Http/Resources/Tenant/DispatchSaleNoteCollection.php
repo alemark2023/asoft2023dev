@@ -18,6 +18,7 @@ class DispatchSaleNoteCollection extends ResourceCollection
         return $this->collection->transform(function($row, $key) {
             return [
                 'id' => $row->id,
+                'type' => $row->status,
                 'date_dispatch' => Carbon::parse($row->date_dispatch)->format('Y/m/d'),
                 'time_dispatch' => Carbon::parse($row->time_dispatch)->format('H:i'),
                 'person_pick' => $row->person_pick,

@@ -731,13 +731,14 @@
             
             if (count($status_dispatch)>0) {
                 //dd($status_dispatch[0]->status);
-                if (is_null($status_dispatch[0]->status)) {
-                    $status_dispatch='PENDIENTE';
-                }else if($status_dispatch[0]->status){
-                    $status_dispatch='ENTREGADO';
-                }else{
-                    //dd('parcial');
-                    $status_dispatch='PARCIAL';
+                foreach ($status_dispatch as $value) {
+                    if($value->status){
+                        $status_dispatch='ENTREGADO';
+                        break;
+                    }else{
+                        //dd('parcial');
+                        $status_dispatch='PARCIAL';
+                    }
                 }
             }else {
                 $status_dispatch='PENDIENTE';
