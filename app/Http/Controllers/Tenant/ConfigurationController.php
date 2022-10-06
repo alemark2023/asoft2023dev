@@ -105,7 +105,12 @@ class ConfigurationController extends Controller
 
     public function show($template)
     {
-        return response()->file(storage_path('app' . DIRECTORY_SEPARATOR . 'preprintedpdf' . DIRECTORY_SEPARATOR . $template . '.pdf'));
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="file.pdf"'
+        ];
+
+        return response()->file(storage_path('app' . DIRECTORY_SEPARATOR . 'preprintedpdf' . DIRECTORY_SEPARATOR . $template . '.pdf'), $headers);
     }
 
     // public function dispatch(Request $request) {
@@ -455,7 +460,7 @@ class ConfigurationController extends Controller
             $name = date('Ymd') . '_' . $configuration->id . '.' . $ext;
 
             request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
-            
+
             UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
 
             $file->storeAs('public/uploads/header_images', $name);

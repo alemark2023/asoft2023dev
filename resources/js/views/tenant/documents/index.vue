@@ -109,6 +109,7 @@
                         <th v-if="columns.send_it.visible">Email Enviado</th>
                         <th>Estado</th>
                         <th v-if="columns.user_name.visible">Usuario</th>
+                        <th v-if="columns.exchange_rate_sale.visible">T.C.</th>
                         <th class="text-center" v-if="columns.currency_type_id.visible"  >Moneda</th>
                         <th class="text-right"
                             v-if="columns.guides.visible">Guia
@@ -249,6 +250,9 @@
                         <td v-if="columns.user_name.visible">
                             {{ row.user_name }}
                             <br/><small v-text="row.user_email"></small>
+                        </td>
+                        <td v-if="columns.exchange_rate_sale.visible">
+                            {{ row.exchange_rate_sale }}
                         </td>
                         <td class="text-center" v-if="columns.currency_type_id.visible">{{ row.currency_type_id }}</td>
                         <td class="text-center"
@@ -584,6 +588,10 @@ export default {
                 },
                 user_name: {
                     title: 'Usuario',
+                    visible: false
+                },
+                exchange_rate_sale: {
+                    title: 'Tipo de cambio',
                     visible: false
                 },
                 total_exportation: {
