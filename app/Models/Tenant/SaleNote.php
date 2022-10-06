@@ -836,6 +836,7 @@
 // 'number' => $this->number,
                 'agent_name' => optional($this->agent)->search_description,
                 'reference_data' => $this->reference_data,
+                'payments' => $this->payments,
             ];
         }
 
@@ -844,7 +845,6 @@
          */
         public function getTransformPayments()
         {
-
             $payments = $this->payments()->get();
             return $payments->transform(function ($row, $key) {
                 /** @var SaleNotePayment $row */

@@ -573,6 +573,8 @@ if ($hostname) {
             Route::post('sale-notes/items-by-ids', 'Tenant\SaleNoteController@getItemsByIds');
             Route::post('sale-notes/delete-relation-invoice', 'Tenant\SaleNoteController@deleteRelationInvoice');
 
+            // Route::get('sale-notes/record-generate-document/{salenote}', 'Tenant\SaleNoteController@recordGenerateDocument');
+
             //POS
             Route::get('pos', 'Tenant\PosController@index')->name('tenant.pos.index');
             Route::get('pos_full', 'Tenant\PosController@index_full')->name('tenant.pos_full.index');
