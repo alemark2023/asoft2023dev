@@ -117,6 +117,9 @@ class DocumentCollection extends ResourceCollection
                 }
             }
 
+            $btn_retention = !is_null($row->retention);
+
+
             return [
 
                 'id' => $row->id,
@@ -197,8 +200,8 @@ class DocumentCollection extends ResourceCollection
                 'plate_numbers' => $row->getPlateNumbers(),
                 'total_charge' => $row->total_charge,
                 'filename' => $row->filename,
+                'btn_retention' => $btn_retention
             ];
-
         });
     }
 

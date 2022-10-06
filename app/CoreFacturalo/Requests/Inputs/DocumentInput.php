@@ -175,7 +175,7 @@ class DocumentInput
                         'date_of_due' => (!empty($item->date_of_due)) ? $item->date_of_due->format('Y-m-d') : null,
                         'has_igv' => $row['item']['has_igv'] ?? true,
                         'unit_price' => $row['unit_price'] ?? 0,
-                        'purchase_unit_price' => $row['item']['purchase_unit_price'] ?? 0,  
+                        'purchase_unit_price' => $row['item']['purchase_unit_price'] ?? 0,
                     ],
                     'quantity' => $row['quantity'],
                     'unit_value' => $row['unit_value'],
@@ -214,7 +214,7 @@ class DocumentInput
         }
         return null;
     }
-    
+
     /**
      * Devuelve el nombre producto pdf en texto plano para ser usado en el xml
      *
@@ -228,7 +228,7 @@ class DocumentInput
 
             // validar configuracion
             $configuration = Configuration::select('name_product_pdf_to_xml')->firstOrFail();
-    
+
             if($configuration->name_product_pdf_to_xml)
             {
                 return trim((new Html2Text($row['name_product_pdf']))->getText());
@@ -416,7 +416,7 @@ class DocumentInput
         }
         return null;
     }
-    
+
     private static function retention($inputs)
     {
 
@@ -429,12 +429,20 @@ class DocumentInput
                 $percentage = $retention['percentage'];
                 $amount = $retention['amount'];
                 $base = $retention['base'];
+                $currency_type_id = $inputs['currency_type_id'];
+                $exchange_rate = $inputs['exchange_rate_sale'];
 
                 return [
                     'code' => $code,
                     'percentage' => $percentage,
                     'amount' => $amount,
                     'base' => $base,
+                    'currency_type_id' => $currency_type_id,
+                    'exchange_rate' => $exchange_rate,
+                    'voucher_date_of_issue' => null,
+                    'voucher_number' => null,
+                    'voucher_amount' => null,
+                    'voucher_filename' => null,
                 ];
             }
         }
@@ -592,15 +600,15 @@ class DocumentInput
         ];
     }
 
-        
+
     /**
-     * 
+     *
      * Retorna datos para registro de propina
      *
      * Usado en:
      * DocumentInput
      * TipTrait
-     * 
+     *
      * @param  array $inputs
      * @param  string $soap_type_id
      * @return array
@@ -623,5 +631,5 @@ class DocumentInput
 
         return null;
     }
-    
+
 }

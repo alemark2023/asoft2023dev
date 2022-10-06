@@ -2698,7 +2698,9 @@ export default {
                     base: base,
                     code: '62', //Código de Retención del IGV
                     amount: amount,
-                    percentage: percentage
+                    percentage: percentage,
+                    // currency_type_id: this.form.currency_type_id,
+                    // exchange_rate: this.form.exchange_rate_sale,
                 }
 
                 this.setTotalPendingAmountRetention(amount)
