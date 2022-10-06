@@ -354,7 +354,7 @@ $establishment = $document->establishment;
         --}}
 
         <th class="border-top-bottom text-center py-2" width="8%">LOTE</th>
-        <th class="border-top-bottom text-center py-2" width="8%">FECHA VCTO.</th>
+        <th class="border-top-bottom text-center py-2" width="10%">FECHA VCTO.</th>
         <th class="border-top-bottom text-right py-2" width="12%">P.UNIT</th>
         <th class="border-top-bottom text-right py-2" width="8%">DTO.</th>
         <th class="border-top-bottom text-right py-2" width="12%">TOTAL</th>
@@ -430,9 +430,11 @@ $establishment = $document->establishment;
 
             </td>
             <td class="text-center align-top">
-                @if(isset($row->item) && isset($row->item->date_of_due))
+                {{-- @if(isset($row->item) && isset($row->item->date_of_due))
                     <span style="font-size: 9px"> {{ $row->item->date_of_due }}</span><br>
-                @endif
+                @endif --}}
+                
+                {!! $itemLotGroup->getItemLotGroupDateOfDue($row->item->IdLoteSelected) !!}
 
             </td>
             <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
