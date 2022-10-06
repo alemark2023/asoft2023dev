@@ -884,7 +884,12 @@ class CashController extends Controller
         $temp = tempnam(sys_get_temp_dir(), 'cash_report_income_egress_pdf');
         file_put_contents($temp, $pdf->output('', 'S'));
 
-        return response()->file($temp);
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="file.pdf"'
+        ];
+
+        return response()->file($temp, $headers);
     }
 
 
