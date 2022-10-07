@@ -266,6 +266,29 @@
                        // /reports/extra-general-items/records
                    });
 
+                   /**
+                    * /reports/state-account
+                    * /reports/state-account/pdf
+                    * /reports/state-account/filter
+                    * /reports/state-account/excel
+                    * /reports/state-account/records
+                    */
+                    Route::prefix('state-account')->group(function () {
+                         Route::get('', 'ReportStateAccountController@index')
+                             ->name('tenant.reports.state_account.index')
+                              ->middleware('tenant.internal.mode');
+                         Route::get('/pdf', 'ReportStateAccountController@pdf')
+                             ->name('tenant.reports.state_account.pdf');
+                         Route::get('/excel', 'ReportStateAccountController@excel')
+                             ->name('tenant.reports.state_account.excel');
+                         Route::get('/filter', 'ReportStateAccountController@filter')
+                              ->name('tenant.reports.state_account.filter');
+                         Route::get('/records', 'ReportStateAccountController@records')
+                              ->name('tenant.reports.state_account.records');
+                         Route::get('/pdf-simple', 'ReportStateAccountController@pdfSimple')
+                              ->name('tenant.reports.state_account.pdfSimple');
+                     });
+
                    Route::get('order-notes-general', 'ReportOrderNoteGeneralController@index')
                          ->name('tenant.reports.order_notes_general.index');
                     Route::get('order-notes-general/excel', 'ReportOrderNoteGeneralController@excel');
