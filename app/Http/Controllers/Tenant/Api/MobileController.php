@@ -433,6 +433,9 @@ class MobileController extends Controller
                                     'price_default' => $row->price_default,
                                 ];
                             }),
+                            'has_isc' => (bool)$row->has_isc,
+                            'system_isc_type_id' => $row->system_isc_type_id,
+                            'percentage_isc' => $row->percentage_isc,
                         ];
                     });
 
