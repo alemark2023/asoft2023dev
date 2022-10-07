@@ -206,6 +206,10 @@ export default {
         visibleTagsCustomer: {
             type: Boolean,
             default: false
+        },
+        searchFromBarcode: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -303,6 +307,8 @@ export default {
 
         },
         handle13() {
+            if(this.searchFromBarcode) return
+
             if (this.visibleTagsCustomer) {
                 return false;
             }
@@ -316,6 +322,8 @@ export default {
             }
         },
         handle40() {
+            if(this.searchFromBarcode) return
+
             if (this.visibleTagsCustomer) {
                 return;
             }

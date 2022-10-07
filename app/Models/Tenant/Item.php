@@ -2402,7 +2402,9 @@ class Item extends ModelTenant
             'active' => (bool) $this->active,
             'stock' => $this->getWarehouseCurrentStock(),
             'favorite' => $this->favorite,
-
+            'has_isc' => (bool)$this->has_isc,
+            'system_isc_type_id' => $this->system_isc_type_id,
+            'percentage_isc' => $this->percentage_isc,
         ];
     }
 
