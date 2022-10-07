@@ -217,4 +217,50 @@
             return $this->belongsTo(InventoryTransaction::class, 'inventory_transaction_id', 'id');
         }
 
+        public function scopeWhereFilterReportStock($query, $warehouse_id, $date_start, $date_end)
+        {
+
+            $query->with(['inventory_kardex'])
+                        ->whereHas('transaction')
+                        ->where('warehouse_id', $warehouse_id)
+                        ->where('description', 'like', 'STock Real')
+                        ->whereHas('inventory_kardex', function($query) use($date_start, $date_end){
+
+                            if ($date_start) $query->where('date_of_issue', '>=', $date_start);
+                            if ($date_end) $query->where('date_of_issue', '<=', $date_end);
+
+                        });
+
+            return $query;
+        }
+
+        public function getRowResourceReportStock()
+        {
+
+            $ajust = '-';
+
+            if($this->transaction->type === 'input'){
+                $ajust = $this->quantity;
+            }else{
+                $ajust = -$this->quantity;
+            }
+
+            $stock_system=$this->getStockFull($this->created_at->format('Y-m-d'));
+            return [
+                'item_description' => $this->item->getInternalIdDescription(),
+                'stock_system' => $stock_system,
+                'stock_real' => $stock_system+$ajust,
+                'ajust' => $ajust,
+            ];
+
+        }
+
+        public function getStockFull($date)
+        {
+            $stock_system=InventoryKardex::where('inventory_kardexable_type', 'Modules\Inventory\Models\Inventory')->where('item_id',$this->item_id)->where('warehouse_id',$this->warehouse_id)->where('date_of_issue','<',$date)->sum('quantity');
+
+            return $stock_system;
+
+        }
+
     }

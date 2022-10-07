@@ -15,6 +15,7 @@ use Modules\Inventory\Models\{
 };
 use Modules\Inventory\Traits\InventoryTrait;
 use Modules\Inventory\Http\Requests\ReportMovementRequest;
+use Modules\Inventory\Exports\ReportStockExport;
 
 
 class ReportMovementController extends Controller
@@ -101,4 +102,39 @@ class ReportMovementController extends Controller
         ];
     }
 
+    public function stockRecords(Request $request)
+    {
+        $records = $this->getStockRecords($request->all());
+
+        return new ReportMovementCollection($records->paginate(config('tenant.items_per_page')));
+    }
+
+
+    private function getStockRecords($request)
+    {
+
+        $warehouse_id = $request['warehouse_id'];
+        $date_start = $request['date_start'];
+        $date_end = $request['date_end'];
+
+        return Inventory::whereFilterReportStock($warehouse_id, $date_start, $date_end);
+ 
+    }
+
+    public function stockExcel(Request $request)
+    {
+        $exportData = new ReportStockExport();
+        $exportData->data($this->getDataForFormatStock($request));
+
+        return $exportData->download('Reporte_Movimientos' . date('YmdHis') . '.xlsx');
+    }
+
+    private function getDataForFormatStock($request)
+    {
+        return [
+            'company' => Company::first(),
+            'warehouse' => Warehouse::select('description')->find($request->warehouse_id),
+            'records' => $this->getStockRecords($request->all())->get()->transform(function($row, $key) { return  $row->getRowResourceReportStock(); }),
+        ];
+    }
 }
