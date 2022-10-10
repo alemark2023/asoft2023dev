@@ -152,6 +152,8 @@ class UserController extends Controller
             $user->annular_purchase = $request->input('annular_purchase');
             $user->delete_purchase = $request->input('delete_purchase');
 
+            $user->permission_force_send_by_summary = $request->input('permission_force_send_by_summary');
+
             if($user->isDirty('password')) $user->last_password_update = date('Y-m-d H:i:s');
 
             $this->setAdditionalData($user, $request);

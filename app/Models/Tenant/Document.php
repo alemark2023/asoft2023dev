@@ -143,6 +143,11 @@ class Document extends ModelTenant
 
     public const DOCUMENT_TYPE_TICKET = '03';
 
+    public const GROUP_INVOICE = '01';
+
+    public const GROUP_TICKET = '02';
+
+
     protected $with = [
         'user',
         'soap_type',
@@ -261,6 +266,7 @@ class Document extends ModelTenant
         'point_system_data',
         'folio',
         'agent_id',
+        'force_send_by_summary',
     ];
 
     protected $casts = [
@@ -272,6 +278,7 @@ class Document extends ModelTenant
         'send_to_pse' => 'bool',
         'ticket_single_shipment' => 'bool',
         'point_system' => 'bool',
+        'force_send_by_summary' => 'bool',
     ];
 
     public static function boot()
@@ -1427,6 +1434,94 @@ class Document extends ModelTenant
     public function isSingleDocumentShipment()
     {
         return $this->document_type_id === self::DOCUMENT_TYPE_TICKET && $this->ticket_single_shipment;
+    }
+
+
+    /**
+     *
+     * Validar si se modifico la boleta enviada de forma individual, a resumen
+     *
+     * @return bool
+     */
+    public function isForceSendBySummary()
+    {
+        return $this->isDocumentTypeTicket() && $this->force_send_by_summary;
+    }
+
+
+    /**
+     *
+     * Validar si se puede modificar el tipo de envio de la boleta, individual a resumen
+     *
+     * @return bool
+     */
+    public function isAvailableForceSendBySummary()
+    {
+        return $this->isSingleDocumentShipment() && !$this->force_send_by_summary && $this->state_type_id === self::STATE_TYPE_REGISTERED && auth()->user()->permission_force_send_by_summary;
+    }
+
+    
+    /**
+     * 
+     * Verificar si es boleta
+     *
+     * @return bool
+     */
+    public function isDocumentTypeTicket()
+    {
+        return $this->document_type_id === self::DOCUMENT_TYPE_TICKET;
+    }
+
+    
+    /**
+     * 
+     * Determina si se muestra el boton consultar cdr
+     *
+     * @return bool
+     */
+    public function isAvailableConsultCdr()
+    {
+        $action = false;
+
+        if ($this->state_type_id === self::STATE_TYPE_REGISTERED && $this->soap_type_id === self::SOAP_TYPE_PRODUCTION) 
+        {
+            if($this->group_id === self::GROUP_INVOICE) 
+            {
+                $action = true;
+            }
+            else
+            {
+                if($this->isSingleDocumentShipment()) $action = true;
+            }
+        }
+
+        return $action;
+    }
+
+    
+    /**
+     * 
+     * Determina si se muestra el boton para reenvio
+     *
+     * @return bool
+     */
+    public function isAvailableResend()
+    {
+        $action = false;
+
+        if ($this->state_type_id === self::STATE_TYPE_REGISTERED) 
+        {
+            if($this->group_id === self::GROUP_INVOICE) 
+            {
+                $action = true;
+            }
+            else
+            {
+                if($this->isSingleDocumentShipment()) $action = true;
+            }
+        }
+
+        return $action;
     }
 
 

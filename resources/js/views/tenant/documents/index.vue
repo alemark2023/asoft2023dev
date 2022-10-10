@@ -386,6 +386,14 @@
                                             @click.prevent="clickOptions(row.id)">
                                         Opciones
                                     </button>
+                                    
+                                    <template v-if="row.btn_force_send_by_summary && typeUser === 'admin'">
+                                        <button class="dropdown-item"
+                                                @click.prevent="clickForceSendBySummary(row.id)">
+                                            Enviar por resumen
+                                        </button>
+                                    </template>
+
                                     <div class="dropdown-divider"></div>
                                     <button class="dropdown-item"
                                             @click.prevent="clickPayment(row.id)">
@@ -811,7 +819,13 @@ export default {
         },
         clickReportPayments() {
             this.showDialogReportPayment = true
-        }
+        },
+        clickForceSendBySummary(id)
+        {
+            this.forceSendBySummary(`/${this.resource}/force-send-by-summary`, { id : id}).then(() =>
+                this.$eventHub.$emit('reloadData')
+            )
+        },
     }
 }
 </script>

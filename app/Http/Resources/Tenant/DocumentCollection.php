@@ -216,6 +216,7 @@ class DocumentCollection extends ResourceCollection
                 'total_charge' => $row->total_charge,
                 'filename' => $row->filename,
                 'date_of_payment' => $payment,
+                'btn_force_send_by_summary' => $row->isAvailableForceSendBySummary(),
             ];
 
         });
