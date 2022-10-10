@@ -175,6 +175,10 @@
                         <li>
                             <a href="{{route('tenant.reports.tips.index')}}">Propinas</a>
                         </li>
+
+                        <li>
+                            <a href="{{route('tenant.reports.state_account.index')}}">Estado de cuenta</a>
+                        </li>
                         
                     </ul>
                 </div>
