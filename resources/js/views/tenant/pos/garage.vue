@@ -138,6 +138,9 @@
                         @keyup.native="keyupTabCustomer"
                         ref="ref_search_items"
                         class="m-bottom mt-3"
+                        
+                        @focus="searchFromBarcode = true"
+                        @blur="searchFromBarcode = false"
                     >
                         <el-button
                             slot="append"
@@ -527,6 +530,7 @@
                     :records="items"
                     :typeUser="typeUser"
                     :visibleTagsCustomer="focusClienteSelect"
+                    :searchFromBarcode="searchFromBarcode"
                 ></table-items>
 
                 <div v-if="place == 'prod' || place == 'cat2'" class="row">
@@ -859,6 +863,7 @@ export default {
             show_fast_payment_garage: false,
             itemUnitTypes: [],
             affectations_exonerated_igv: ['10', '20'],
+            searchFromBarcode: false,
         };
     },
     async created() {
@@ -1256,8 +1261,13 @@ export default {
                 id: this.form.customer_id
             });
             this.customer = customer;
-
-            if (this.configuration.default_document_type_03) {
+            
+            if (this.configuration.default_document_type_80) 
+            {
+                this.form.document_type_id = "80"
+            }
+            else if (this.configuration.default_document_type_03) 
+            {
                 this.form.document_type_id = "03";
             } else {
                 this.form.document_type_id =

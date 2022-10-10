@@ -46,7 +46,7 @@ class DocumentCollection extends ResourceCollection
                 }
             }
 
-            if ($row->group_id === '02') 
+            if ($row->group_id === '02')
             {
                 if ($row->state_type_id === '05') {
                     $btn_note = true;
@@ -55,11 +55,11 @@ class DocumentCollection extends ResourceCollection
                     // envio individual
                     if($row->isSingleDocumentShipment()) $has_cdr = true;
                     // envio individual
-                    
+
                 }
-                
+
                 // envio individual reenviar
-                if ($row->state_type_id === '01' && $row->isSingleDocumentShipment()) 
+                if ($row->state_type_id === '01' && $row->isSingleDocumentShipment())
                 {
                     $btn_resend = true;
                 }
@@ -147,6 +147,7 @@ class DocumentCollection extends ResourceCollection
                 'customer_telephone' => $row->customer->telephone,
                 'customer_email' => optional($row->customer)->email,
                 'currency_type_id' => $row->currency_type_id,
+                'exchange_rate_sale' => $row->exchange_rate_sale,
                 'total_exportation' => $row->total_exportation,
                 'total_free' => $row->total_free,
                 'total_unaffected' => $row->total_unaffected,

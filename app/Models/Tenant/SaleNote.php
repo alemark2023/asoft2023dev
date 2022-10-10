@@ -131,7 +131,6 @@
      * @property-read int|null                                  $guide_files_count
      * @property-read int|null                                  $kardexes_count
      * @property-read int|null                                  $sale_note_payments_count
-     * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereEstablishmentId($establishment_id = 0)
      */
     class SaleNote extends ModelTenant
     {
@@ -218,7 +217,7 @@
             'subtotal',
             'total_igv_free',
             'unique_filename', //registra nombre de archivo unico (campo para evitar duplicidad)
-            
+
             'terms_condition',
 
             'point_system',
@@ -443,7 +442,7 @@
         {
             return (is_null($value)) ? null : (object)json_decode($value);
         }
-    
+
         public function setPointSystemDataAttribute($value)
         {
             $this->attributes['point_system_data'] = (is_null($value)) ? null : json_encode($value);
@@ -570,7 +569,7 @@
         {
             return $this->belongsTo(TechnicalService::class);
         }
-        
+
         /**
          * @return BelongsTo
          */
@@ -614,7 +613,7 @@
                     $user = new User();
                 }
             }
-            else { 
+            else {
                 $user = auth()->user();
             }
             return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
@@ -657,14 +656,14 @@
             return $this->belongsTo(PaymentMethodType::class);
         }
 
-        
+
         /**
-         * 
+         *
          * Validar condicion para el boton edicion
          *
          * @param  int $total_documents
          * @return bool
-         * 
+         *
          */
         public function getBtnGenerate($total_documents)
         {
@@ -751,7 +750,7 @@
             $customer_email=  $mails['optional_email_send'];
 
             $date_pay=$this->payments()->select('date_of_payment')->get();
-            
+
             $date_of_pay='';
             if (count($date_pay)>0) {
                 //dd(count(array($date_pay)));
@@ -773,6 +772,7 @@
                 'customer_number' => $customer->number,
                 'children_name' => $child_name,
                 'children_number' => $child_number,
+                'exchange_rate_sale' => $this->exchange_rate_sale,
                 'currency_type_id' => $this->currency_type_id,
                 'total_exportation' => self::FormatNumber($this->total_exportation),
                 'total_free' => self::FormatNumber($this->total_free),
@@ -836,6 +836,7 @@
 // 'number' => $this->number,
                 'agent_name' => optional($this->agent)->search_description,
                 'reference_data' => $this->reference_data,
+                'payments' => $this->payments,
             ];
         }
 
@@ -844,7 +845,6 @@
          */
         public function getTransformPayments()
         {
-
             $payments = $this->payments()->get();
             return $payments->transform(function ($row, $key) {
                 /** @var SaleNotePayment $row */
@@ -1273,11 +1273,11 @@
             return $query;
         }
 
-        
+
         /**
          *
          * Obtener notas de venta filtradas por el id de los items (SaleNoteItem)
-         * 
+         *
          * Usado en:
          * DashboardUtility - Obtener totales
          *
@@ -1293,9 +1293,9 @@
 
         }
 
-        
+
         /**
-         * 
+         *
          * Obtener total y realizar conversión al tipo de cambio si se requiere
          *
          * @return float
@@ -1305,14 +1305,14 @@
             return ($this->currency_type_id === 'PEN') ? $this->total : ($this->total * $this->exchange_rate_sale);
         }
 
-        
+
         /**
-         * 
+         *
          * Filtro para no incluir relaciones en consulta
          *
          * @param \Illuminate\Database\Eloquent\Builder $query
          * @return \Illuminate\Database\Eloquent\Builder
-         */  
+         */
         public function scopeWhereFilterWithOutRelations($query)
         {
             return $query->withOut([
@@ -1327,7 +1327,7 @@
 
 
         /**
-         * 
+         *
          * Obtener vuelto para mostrar en pdf
          *
          * @return float
@@ -1338,7 +1338,7 @@
         }
 
         /**
-         * 
+         *
          * Obtener porcentaje de cargos para mostrar en pdf
          *
          * @return float
@@ -1355,23 +1355,23 @@
             return $total_factor;
         }
 
-        
+
         /**
-         * 
+         *
          * Filtrar por rango de fechas
-         * 
+         *
          * @param \Illuminate\Database\Eloquent\Builder $query
          * @return \Illuminate\Database\Eloquent\Builder
-         * 
+         *
          */
         public function scopeFilterRangeDateOfIssue($query, $date_start, $date_end)
         {
             return $query->whereBetween('date_of_issue', [$date_start, $date_end]);
         }
 
-        
+
         /**
-         * 
+         *
          * Obtener la fecha de vencimiento y aplicar formato
          *
          * @return string
@@ -1383,7 +1383,7 @@
 
 
         /**
-         * 
+         *
          * Obtener descripción del tipo de documento
          *
          * @return string
@@ -1395,7 +1395,7 @@
 
 
         /**
-         * 
+         *
          * Obtener pagos en efectivo
          *
          * @return Collection
@@ -1406,22 +1406,22 @@
                 return $row->getRowResourceCashPayment();
             }});
         }
-        
+
 
         /**
-         * 
+         *
          * Validar si el registro esta rechazado o anulado
-         * 
+         *
          * @return bool
          */
         public function isVoidedOrRejected()
         {
             return in_array($this->state_type_id, self::VOIDED_REJECTED_IDS);
         }
-        
+
 
         /**
-         * 
+         *
          * Retornar el total de pagos
          *
          * @return float
@@ -1434,7 +1434,7 @@
             if(!$this->isVoidedOrRejected())
             {
                 $total_payments = $this->payments->sum('payment');
-    
+
                 if($this->currency_type_id === 'USD')
                 {
                     $total_payments = $this->generalConvertValueToPen($total_payments, $this->exchange_rate_sale);
@@ -1444,14 +1444,14 @@
             return $total_payments;
         }
 
-        
+
         /**
-         * 
+         *
          * Validar si la nota de venta fue generada a partir de un registro externo
          *
          * Usado en:
          * SaleNoteController
-         * 
+         *
          * @return bool
          */
         public function isGeneratedFromExternalRecord()
@@ -1462,15 +1462,15 @@
             {
                 $generated = true;
             }
-            
+
             // @todo agregar mas registros relacionados
 
             return $generated;
         }
 
-        
+
         /**
-         * 
+         *
          * Obtener url para impresión
          *
          * @param  string $format
@@ -1481,9 +1481,9 @@
             return url("sale-notes/print/{$this->external_id}/{$format}");
         }
 
-        
+
         /**
-         * 
+         *
          * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
          *
          * @param  Builder $query
@@ -1527,9 +1527,9 @@
 
         }
 
-        
+
         /**
-         * 
+         *
          * Determina si fue creado desde pos
          *
          * @return bool
@@ -1541,7 +1541,7 @@
 
 
         /**
-         * 
+         *
          * Determina si fue usado para sistema por puntos
          *
          * @return bool
@@ -1551,13 +1551,13 @@
             return $this->point_system;
         }
 
-        
+
         /**
-         * 
+         *
          * Obtener puntos por la venta
          *
          * @return float
-         * 
+         *
          */
         public function getPointsBySale()
         {
@@ -1567,7 +1567,7 @@
             {
                 $point_system_data = $this->point_system_data;
                 $total = $this->total;
-        
+
                 $value_quantity_points = ($total / $point_system_data->point_system_sale_amount) * $point_system_data->quantity_of_points;
                 $calculate_quantity_points = $point_system_data->round_points_of_sale ? intval($value_quantity_points) : round($value_quantity_points, 2);
             }

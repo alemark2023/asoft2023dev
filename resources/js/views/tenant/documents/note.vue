@@ -347,6 +347,7 @@
                             :configuration="configuration"
                             :editNameProduct="configuration.edit_name_product"
                             :percentage-igv="percentage_igv"
+                            :isCreditNoteAndType03="isCreditNoteAndType03"
                             @add="addRow"></document-form-item>
 
         <document-options :showDialog.sync="showDialogOptions"

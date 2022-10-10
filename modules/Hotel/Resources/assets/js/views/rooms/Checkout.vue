@@ -444,6 +444,10 @@ export default {
             type: Object,
             required: false,
         },
+        affectationIgvTypes: {
+            type: Array,
+            required: true,
+        },
     },
     computed: {
         ...mapState([
@@ -508,9 +512,17 @@ export default {
         this.all_document_types = this.documentTypesInvoice;
         this.title = `Checkout: Habitación ${this.currentRent.room.name}`;
         this.total = this.room.item.total;
+
         this.document.items = await this.currentRent.items.map((i) => {
+
+            if(i.item.affectation_igv_type == undefined || _.isEmpty(i.item.affectation_igv_type))
+            {
+                i.item.affectation_igv_type = _.find(this.affectationIgvTypes, { id : i.item.affectation_igv_type_id })
+            }
+
             return calculateRowItem(i.item, "PEN", 3, this.percentage_igv)
         });
+        
         // console.log(this.document.items);
         await this.onCalculateTotals();
         console.log(this.document);

@@ -163,6 +163,7 @@ Vue.component('tenant-inventory-devolutions-form', require('../../modules/Invent
 Vue.component('tenant-documents-not-sent', require('../../modules/Document/Resources/assets/js/views/documents/not_sent.vue'));
 Vue.component('tenant-report-purchases-index', require('../../modules/Report/Resources/assets/js/views/purchases/index.vue'));
 Vue.component('tenant-report-documents-index', require('../../modules/Report/Resources/assets/js/views/documents/index.vue'));
+Vue.component('tenant-state-account-index', require('../../modules/Report/Resources/assets/js/views/state_account/index.vue'));
 Vue.component('tenant-report-customers-index', require('../../modules/Report/Resources/assets/js/views/customers/index.vue'));
 Vue.component('tenant-report-items-index', require('../../modules/Report/Resources/assets/js/views/items/index.vue'));
 Vue.component('tenant-report-items-extra-index', require('../../modules/Report/Resources/assets/js/views/items/index_extra.vue'));

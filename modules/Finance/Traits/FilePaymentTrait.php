@@ -44,6 +44,34 @@ trait FilePaymentTrait
         }
 
     }
+    
 
+    /**
+     * 
+     * Guardar archivos de los pagos relacionados a cada documento
+     * 
+     * Usado en:
+     * Facturalo
+     * SaleNoteController
+     *
+     * @param  array $row
+     * @param  DocumentPayment|SaleNotePayment $record
+     * @param  string $append_folder
+     * @return void
+     */
+    private function saveFilesFromPayments($row, $record, $append_folder)
+    {
+        $temp_path = $row['temp_path'] ?? false;
+
+        if($temp_path)
+        {
+            $params_payment_file = [
+                'temp_path' => $temp_path,
+                'filename' => $row['filename'],
+            ];
+
+            $this->saveFiles($record, (object) $params_payment_file, $append_folder);
+        }
+    }
 
 }

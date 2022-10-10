@@ -135,4 +135,40 @@ class SetDataHelper
         $model::where('id', $id)->delete();
     }
 
+    
+    /**
+     * 
+     * Asignar nuevo valor a opcion kardex valorizado
+     *
+     * @param  string $old_value
+     * @param  string $new_value
+     * @return void
+     */
+    public static function fixedModuleLevelValuedKardex($old_value, $new_value, $model)
+    {
+        $module_level_kardex = self::getModuleLevel($old_value, 'Kardex valorizado', $model);
+
+        if($module_level_kardex)
+        {
+            $module_level_kardex->update([
+                'value' => $new_value
+            ]);
+        }
+    }
+    
+
+    /**
+     * 
+     * Usar desde tenant/system enviando en path del modelo
+     *
+     * @param  string $value
+     * @return ModuleLevel
+     */
+    public static function getModuleLevel($value, $description, $model)
+    {
+        return $model::where('value', $value)
+                    ->where('description', $description)
+                    ->first();
+    }
+
 }

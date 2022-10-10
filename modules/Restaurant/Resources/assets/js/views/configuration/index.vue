@@ -123,6 +123,55 @@
                             v-text="errors.tables_quantity[0]"></small>
                   </div>
                 </div>
+                <div class="col-md-12">
+                  <div class="row mt-4">
+                    <div class="col-md-4">
+                    <label class="control-label">
+                      Habilitar Ambiente 1
+                    </label>
+                    <div :class="{'has-danger': errors.enabled_environment_1}"
+                          class="form-group">
+                      <el-switch v-model="form.enabled_environment_1"
+                                  active-text="Si"
+                                  inactive-text="No"
+                                  @change="submit"></el-switch>
+                      <small v-if="errors.enabled_environment_1"
+                              class="form-control-feedback"
+                              v-text="errors.enabled_environment_1[0]"></small>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="control-label">
+                      Habilitar Ambiente 2
+                    </label>
+                    <div :class="{'has-danger': errors.enabled_environment_2}"
+                          class="form-group">
+                      <el-switch v-model="form.enabled_environment_2"
+                                  active-text="Si"
+                                  inactive-text="No"
+                                  @change="submit"></el-switch>
+                      <small v-if="errors.enabled_environment_2"
+                              class="form-control-feedback"
+                              v-text="errors.enabled_environment_2[0]"></small>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="control-label">
+                      Habilitar Ambiente 3
+                    </label>
+                    <div :class="{'has-danger': errors.enabled_environment_3}"
+                          class="form-group">
+                      <el-switch v-model="form.enabled_environment_3"
+                                  active-text="Si"
+                                  inactive-text="No"
+                                  @change="submit"></el-switch>
+                      <small v-if="errors.enabled_environment_3"
+                              class="form-control-feedback"
+                              v-text="errors.enabled_environment_3[0]"></small>
+                    </div>
+                  </div>
+                  </div>
+                </div>
               </div>
             </el-tab-pane>
             <el-tab-pane class="mb-3"  name="second">

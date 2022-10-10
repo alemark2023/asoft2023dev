@@ -229,10 +229,15 @@
                                             </th>
                                             <th v-if="form.payments.length>0">Referencia</th>
                                             <th v-if="form.payments.length>0">Monto</th>
+                                            
+                                            <template v-if="showLoadVoucher && form.payments.length>0">
+                                                <th style="width:50px">Voucher</th>
+                                            </template>
+
                                             <th width="15%">
                                                 <a href="#"
                                                    @click.prevent="clickAddPayment"
-                                                   class="text-center font-weight-bold text-info">[+ Agregar]</a>
+                                                   class="text-center font-weight-bold text-info ml-3 pl-3">[+ Agregar]</a>
                                             </th>
                                         </template>
                                     </tr>
@@ -279,6 +284,29 @@
                                                     <el-input v-model="row.payment"></el-input>
                                                 </div>
                                             </td>
+                                            
+                                            <template v-if="showLoadVoucher">
+                                                <td class="" style="width: 50px">
+                                                    <!-- <el-tooltip class="item" content="Cargar voucher" effect="dark" placement="top-start"> -->
+                                                        <el-upload
+                                                            :data="{'index': index}"
+                                                            :headers="headers_token"
+                                                            :multiple="false"
+                                                            :on-remove="(file, fileList) => handleRemoveUploadVoucher(file, fileList, index)"
+                                                            :action="`/finances/payment-file/upload`"
+                                                            :show-file-list="true"
+                                                            :file-list="row.file_list"
+                                                            :on-success="(response, file, fileList) => onSuccessUploadVoucher(response, file, fileList, index)"
+                                                            :limit="1"
+                                                            >
+                                                                <button  type="button" class="btn btn-sm btn-primary"  slot="trigger">
+                                                                    <i class="fas fa-fw fa-upload"></i>
+                                                                </button>
+                                                        </el-upload>
+                                                    <!-- </el-tooltip> -->
+                                                </td>
+                                            </template>
+
                                             <td class="series-table-actions text-center">
                                                 <button type="button"
                                                         class="btn waves-effect waves-light btn-xs btn-danger"
@@ -493,6 +521,14 @@
     </div>
 </template>
 
+<style>
+
+.el-upload-list__item{
+    max-width: 150px;
+}
+
+</style>
+
 <script>
     import SaleNotesFormItem from './partials/item.vue'
     import PersonForm from '../persons/form.vue'
@@ -538,7 +574,15 @@
                     return text;
                 }
                 return text;
-            }
+            },
+            showLoadVoucher()
+            {
+                return this.configuration.show_load_voucher && !this.isUpdateDocument
+            },
+            isUpdateDocument()
+            {
+                return !_.isEmpty(this.id)
+            },
         },
     data() {
         return {
@@ -594,7 +638,8 @@
             total_discount_no_base: 0,
             total_global_charge: 0,
             global_charge_types: [],
-            recordItem: null
+            recordItem: null,
+            headers_token: headers_token,
         }
     },
     async created() {
@@ -640,6 +685,31 @@
         this.changeCurrencyType()
     },
     methods: {
+        onSuccessUploadVoucher(response, file, fileList, index) 
+        {
+            if (response.success)
+            {
+                this.form.payments[index].filename = response.data.filename
+                this.form.payments[index].temp_path = response.data.temp_path
+                this.form.payments[index].file_list = fileList
+            } 
+            else 
+            {
+                this.cleanFileListUploadVoucher(index)
+                this.$message.error(response.message)
+            }
+
+        },
+        cleanFileListUploadVoucher(index)
+        {
+            this.form.payments[index].file_list = []
+        },
+        handleRemoveUploadVoucher(file, fileList, index) 
+        {
+            this.form.payments[index].filename = null
+            this.form.payments[index].temp_path = null
+            this.cleanFileListUploadVoucher(index)
+        },
         disabledSeries()
         {
             return (this.configuration.restrict_series_selection_seller && this.typeUser !== 'admin')
@@ -807,7 +877,11 @@
                 reference: null,
                 payment_destination_id: this.getPaymentDestinationId(),
                 payment: 0,
-            });
+                
+                filename: null,
+                temp_path: null,
+                file_list: [],
+            })
 
             this.setTotalDefaultPayment()
 
