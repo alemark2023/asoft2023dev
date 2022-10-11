@@ -190,6 +190,13 @@
                 </p>
             </td>
             <td class="td-custom">
+                <p>
+                    <strong>
+                        Egreso caja:
+                    </strong>
+                    S/. {{$data['total_cash_egress_pmt_01']}} 
+                    {{-- (Saldo inicial + Efectivo) --}}
+                </p>
             </td>
         </tr>
 

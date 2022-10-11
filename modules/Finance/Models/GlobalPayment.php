@@ -352,6 +352,19 @@
         {
             return $this->destination_type === Cash::class ? 'cash' : 'bank_account';
         }
+        
+
+        /**
+         * 
+         * Determina si tiene como destino caja general
+         *
+         * @return bool
+         */
+        public function isCashDestination()
+        {
+            return $this->destination_type === Cash::class;
+        }
+
 
         /**
          * @return string
