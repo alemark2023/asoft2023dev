@@ -71,9 +71,9 @@ class ItemsImport implements ToCollection
                 $image_url = $row[20] ?? null;
 
                 // image names
-                $file_name = '';
-                $file_name_medium = '';
-                $file_name_small = '';
+                $file_name = 'imagen-no-disponible.jpg';
+                $file_name_medium = 'imagen-no-disponible.jpg';
+                $file_name_small = 'imagen-no-disponible.jpg';
 
 
 
