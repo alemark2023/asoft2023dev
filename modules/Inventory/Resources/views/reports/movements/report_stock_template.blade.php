@@ -72,7 +72,7 @@
                         <p><strong>Ruc: </strong>{{$company->number}}</p>
                     </td>
                     <td>
-                        <p>{{$warehouse->description}}</p>
+                        <p>{{$warehouse->description ?? ''}}</p>
                     </td>
                 </tr>
             </table>
@@ -96,8 +96,10 @@
                                 <tr>
                                     <td class="celda">{{$loop->iteration}}</td>
                                     <td class="celda"> {{ $value['item_description'] }} </td>
-                                    <td class="celda"> {{ $value['stock_system'] }} </td>
-                                    <td class="celda"> {{ $value['stock_real'] }} </td>
+                                    {{-- <td class="celda"> {{ $value['stock_system'] }} </td>
+                                    <td class="celda"> {{ $value['stock_real'] }} </td> --}}
+                                    <td class="celda"> {{ $value['system_stock'] }} </td>
+                                    <td class="celda"> {{ $value['real_stock'] }} </td>
                                     <td class="celda"> {{ $value['ajust'] }} </td>
                                 </tr>
                             @endforeach
