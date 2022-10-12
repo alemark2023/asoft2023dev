@@ -167,6 +167,7 @@ class CashController extends Controller
             /** Documentos de Tipo Nota de venta */
             if ($cash_document->sale_note) {
                 $sale_note = $cash_document->sale_note;
+                $pays = [];
                 if (in_array($sale_note->state_type_id, $status_type_id)) {
                     $record_total = 0;
                     $total = self::CalculeTotalOfCurency(
