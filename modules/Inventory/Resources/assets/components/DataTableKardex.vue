@@ -144,8 +144,19 @@ export default {
                 await this.changeWarehouse();
             }
         }
+        else
+        {
+            this.getCurrentWarehouse()
+        }
     },
     methods: {
+        async getCurrentWarehouse()
+        {
+            await this.$http.get(`/general-get-current-warehouse`)
+                .then(response => {
+                    this.form.warehouse_id = response.data.id
+                })
+        },
         initForm() {
             this.form = {
                 warehouse_id: 'all',
