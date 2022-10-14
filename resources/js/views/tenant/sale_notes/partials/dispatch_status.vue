@@ -15,7 +15,7 @@
                             <tr>
                                 <th></th>
                                 <th>#</th>
-                                <th>Tipo</th>
+                                <th>Tipo de entrega</th>
                                 <th>Fecha de despacho</th>
                                 <th>Hora de despacho</th>
                                 <th>Persona quien recogio</th>
@@ -48,7 +48,16 @@
                                 <template v-else>
                                     <td></td>
                                     <td></td>
-                                    <td></td>
+                                    <td>
+                                        <el-select v-model="status_display" placeholder="Select">
+                                            <el-option
+                                            v-for="status_option in options_status"
+                                                :key="status_option.value"
+                                                :label="status_option.label"
+                                                :value="status_option.value">
+                                            </el-option>
+                                        </el-select>
+                                    </td>
                                     <td>{{ row.date_dispatch }}</td>
                                     <td>{{ row.time_dispatch }}</td>
                                     <td>
@@ -137,7 +146,16 @@
                 status_display:null,
                 checked_display:false,
                 selecteds:[],
-                dispatch_active:false
+                dispatch_active:false,
+                options_status:[
+                    {
+                        value: 'Option1',
+                        label: 'Option1'
+                    }, {
+                        value: 'Option2',
+                        label: 'Option2'
+                    }
+                ]
             }
         },
         async created() {
