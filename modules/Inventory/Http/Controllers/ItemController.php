@@ -33,6 +33,9 @@ class ItemController extends Controller
             $items->take(10);
         }
 
+        // filtrar por almacen
+        if($request->has('warehouse_id')) $items->filterByWarehouseId($request->warehouse_id);
+
         return [
             'items' => $items->get()->transform(function ($row) {
                 return $row->getRowResourceAdvancedSearch();
