@@ -4,6 +4,7 @@ namespace Modules\Inventory\Models;
 
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\ModelTenant;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Modules\Inventory\Models\Warehouse
@@ -115,6 +116,20 @@ class Warehouse extends ModelTenant
             'warehouse_description' => $this->description,
             'establishment_description' => $this->establishment->description,
         ];
+    }
+
+    
+    /**
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeSelectBasicColumns($query)
+    {
+        return $query->select([
+            'id',
+            'description',
+        ]);
     }
 
 }

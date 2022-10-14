@@ -697,6 +697,7 @@ Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store')
 
             Route::post('general-upload-temp-image', 'Controller@generalUploadTempImage');
 
+            Route::get('general-get-current-warehouse', 'Controller@generalGetCurrentWarehouse');
 
             // test theme
             // Route::get('testtheme', function () {
