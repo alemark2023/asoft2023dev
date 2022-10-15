@@ -296,6 +296,9 @@ if ($hostname) {
             Route::delete('documents/delete_document/{document_id}', 'Tenant\DocumentController@destroyDocument');
 
             Route::get('documents/data-table/items', 'Tenant\DocumentController@getDataTableItem');
+            Route::get('documents/retention/{document}', 'Tenant\DocumentController@retention');
+            Route::post('documents/retention', 'Tenant\DocumentController@retentionStore');
+            Route::post('documents/retention/upload', 'Tenant\DocumentController@retentionUpload');
 
             //Contingencies
             Route::get('contingencies', 'Tenant\ContingencyController@index')->name('tenant.contingencies.index')->middleware('redirect.level', 'tenant.internal.mode');

@@ -99,7 +99,13 @@ class DocumentCollection extends ResourceCollection
             }
 
             $total_payment = $row->payments->sum('payment');
-            $balance = number_format($row->total - $total_payment,2, ".", "");
+
+            if($row->retention) {
+                $balance = number_format($row->total - $row->retention->amount - $total_payment,2, ".", "");
+            } else {
+                $balance = number_format($row->total - $total_payment,2, ".", "");
+            }
+
 
             $message_regularize_shipping = null;
 
@@ -133,8 +139,10 @@ class DocumentCollection extends ResourceCollection
                     $payment=$pay->date_of_payment->format('Y-m-d');
                 }
             }
-            return [
 
+            $btn_retention = !is_null($row->retention);
+
+            return [
                 'id' => $row->id,
                 'group_id' => $row->group_id,
                 'soap_type_id' => $row->soap_type_id,
@@ -217,8 +225,8 @@ class DocumentCollection extends ResourceCollection
                 'filename' => $row->filename,
                 'date_of_payment' => $payment,
                 'btn_force_send_by_summary' => $row->isAvailableForceSendBySummary(),
+                'btn_retention' => $btn_retention
             ];
-
         });
     }
 
