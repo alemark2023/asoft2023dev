@@ -2694,13 +2694,22 @@ export default {
                 let percentage = _.round(parseFloat(this.config.igv_retention_percentage) / 100, 5)
                 let amount = _.round(base * percentage, 2)
 
+                let amount_pen = amount;
+                let amount_usd = _.round(amount / this.form.exchange_rate_sale, 2);
+                if(this.form.currency_type_id === 'USD') {
+                    amount_usd = amount;
+                    amount_pen = _.round(amount * this.form.exchange_rate_sale, 2);
+                }
+
                 this.form.retention = {
                     base: base,
                     code: '62', //Código de Retención del IGV
                     amount: amount,
                     percentage: percentage,
-                    // currency_type_id: this.form.currency_type_id,
-                    // exchange_rate: this.form.exchange_rate_sale,
+                    currency_type_id: this.form.currency_type_id,
+                    exchange_rate: this.form.exchange_rate_sale,
+                    amount_pen: amount_pen,
+                    amount_usd: amount_usd,
                 }
 
                 this.setTotalPendingAmountRetention(amount)
