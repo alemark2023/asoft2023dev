@@ -160,12 +160,12 @@
                             </div>
                             <div class="col-md-3">
                                 <div :class="{'has-danger': errors.barcode}"
-                                    class="form-group">
+                                     class="form-group">
                                     <label class="control-label">Código de barra</label>
                                     <el-input v-model="form.barcode"></el-input>
                                     <small v-if="errors.barcode"
-                                        class="form-control-feedback"
-                                        v-text="errors.barcode[0]"></small>
+                                           class="form-control-feedback"
+                                           v-text="errors.barcode[0]"></small>
                                 </div>
                             </div>
                             <div v-if="form.state"
@@ -226,6 +226,47 @@
                                     <label class="control-label">Porcentaje de percepción</label>
 
                                     <el-input v-model="form.percentage_perception"></el-input>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2" v-if="config.enable_discount_by_customer">
+                            <div class="col-lg-4 col-md-4">
+                                <label class="control-label">
+                                    ¿Tiene descuento?
+                                </label>
+                                <div :class="{'has-danger': errors.has_discount}"
+                                     class="form-group mt-1">
+                                    <el-switch v-model="form.has_discount"
+                                               active-text="Si"
+                                               inactive-text="No"></el-switch>
+                                    <small v-if="errors.has_discount"
+                                           class="form-control-feedback"
+                                           v-text="errors.has_discount[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4">
+                                <div :class="{'has-danger': errors.discount_type}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Tipo de descuento
+                                    </label>
+                                    <el-select v-model="form.discount_type">
+                                        <el-option v-for="option in discount_types"
+                                                   :key="option.id"
+                                                   :label="option.name"
+                                                   :value="option.id">{{ option.name }}
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4">
+                                <div :class="{'has-danger': errors.discount_amount }"
+                                     class="form-group">
+                                    <label class="control-label">Descuento ({{ (form.discount_type === '01')?'Monto':'Porcentaje' }})</label>
+                                    <el-input v-model="form.discount_amount"></el-input>
+                                    <small v-if="errors.discount_amount"
+                                           class="form-control-feedback"
+                                           v-text="errors.discount_amount[0]"></small>
                                 </div>
                             </div>
                         </div>
@@ -692,6 +733,7 @@ export default {
             locations: [],
             person_types: [],
             identity_document_types: [],
+            discount_types: [],
             activeName: 'first'
         }
     },
@@ -713,14 +755,15 @@ export default {
                 this.identity_document_types = response.data.identity_document_types;
                 this.locations = response.data.locations;
                 this.person_types = response.data.person_types;
+                this.discount_types = response.data.discount_types;
             })
-        .finally(()=>{
-            if(this.api_service_token === false){
-                if(this.config.api_service_token !== undefined){
-                    this.api_service_token = this.config.api_service_token
+            .finally(() => {
+                if (this.api_service_token === false) {
+                    if (this.config.api_service_token !== undefined) {
+                        this.api_service_token = this.config.api_service_token
+                    }
                 }
-            }
-        })
+            })
 
     },
     computed: {
@@ -771,7 +814,11 @@ export default {
                     full_name: null,
                     phone: null,
                 },
-                optional_email: []
+                optional_email: [],
+                has_discount: false,
+                discount_type: '01',
+                discount_amount: 0,
+
             }
             this.updateEmail()
 
@@ -792,7 +839,7 @@ export default {
         create() {
             // console.log(this.input_person)
             this.parent = 0;
-            if(this.parentId !== undefined){
+            if (this.parentId !== undefined) {
                 this.parent = this.parentId;
             }
             /*
@@ -976,6 +1023,15 @@ export default {
             let val_digits = await this.validateDigits()
             if (!val_digits.success) {
                 return this.$message.error(val_digits.message)
+            }
+
+            if (!this.config.enable_discount_by_customer) {
+                this.form.has_discount = false;
+            }
+
+            if (!this.form.has_discount) {
+                this.form.discount_type = '01';
+                this.form.discount_amount = 0;
             }
 
             this.loading_submit = true

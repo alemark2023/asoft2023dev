@@ -703,7 +703,7 @@
                                             v-text="errors.list_items_by_warehouse[0]"></small>
                                 </div>
                             </div>
-                            
+
 
                             <div class="col-md-6 mt-4">
 
@@ -729,7 +729,7 @@
                                 </div>
                             </div>
 
-                                
+
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">
                                     Cargar voucher - Pagos
@@ -740,7 +740,7 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
-                            
+
                                 <div :class="{'has-danger': errors.show_load_voucher}"
                                         class="form-group">
                                     <el-switch v-model="form.show_load_voucher"
@@ -752,7 +752,7 @@
                                             v-text="errors.show_load_voucher[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6 mt-4">
 
                                 <label class="control-label">
@@ -1795,7 +1795,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="col-6 mt-4">
                                 <div class="form-group">
                                     <label>
@@ -1866,7 +1866,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="col-6 mt-4">
                                 <div class="form-group">
                                     <label>
@@ -1895,7 +1895,7 @@
                                 </div>
                             </div>
 
-                            
+
                             <div class="col-6 mt-4">
                                 <div class="form-group">
                                     <label>
@@ -1922,6 +1922,23 @@
                                 </div>
                             </div>
 
+                            <div class="col-6 mt-4">
+                                <div class="form-group">
+                                    <label>
+                                        Activar descuento por cliente
+                                    </label>
+                                    <div :class="{'has-danger': errors.enable_discount_by_customer}"
+                                         class="form-group">
+                                        <el-switch v-model="form.enable_discount_by_customer"
+                                                   active-text="Si"
+                                                   inactive-text="No"
+                                                   @change="submit"></el-switch>
+                                        <small v-if="errors.enable_discount_by_customer"
+                                               class="form-control-feedback"
+                                               v-text="errors.enable_discount_by_customer[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3"  name="nine">
@@ -2017,15 +2034,15 @@
                         </div>
                     </el-tab-pane>
 
-                    
+
                     <el-tab-pane class="mb-3" name="tab_point_system">
                         <span slot="label">S. Puntos</span>
                         <div class="row">
-                            
+
                             <div class="col-md-4">
                                 <label class="control-label">
                                     Habilitar sistema por puntos
-                                    
+
                                     <el-tooltip class="item" effect="dark" placement="top-start">
                                         <i class="fa fa-info-circle"></i>
                                         <div slot="content">
@@ -2049,7 +2066,7 @@
                             </div>
 
                             <template v-if="form.enabled_point_system">
-                                
+
                                 <div class="col-md-4">
                                     <label class="control-label">
                                         Monto de venta
@@ -2097,12 +2114,12 @@
 
                         </div>
                     </el-tab-pane>
-                    
+
                     <el-tab-pane class="mb-3" name="twelve">
                         <span slot="label">Usuario</span>
                         <div class="row">
                             <div class="col-md-6">
-                                
+
                                 <label class="control-label">
                                     Recordar cambio de contraseña
                                     <el-tooltip class="item"
@@ -2112,7 +2129,7 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
-                               
+
                                 <div :class="{'has-danger': errors.enabled_remember_change_password}"
                                         class="form-group">
                                     <el-switch v-model="form.enabled_remember_change_password"
@@ -2124,16 +2141,16 @@
                                             v-text="errors.enabled_remember_change_password[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6" v-if="form.enabled_remember_change_password">
-                                
+
                                 <label class="control-label">
                                     N° Meses
                                 </label>
-                               
+
                                 <div :class="{'has-danger': errors.quantity_month_remember_change_password}"
                                         class="form-group">
-                                        
+
                                         <el-input-number v-model="form.quantity_month_remember_change_password"
                                                             :min="1"
                                                             :precision="0"
@@ -2145,10 +2162,10 @@
                                 </div>
                             </div>
 
-                            
+
 
                             <div class="col-md-6">
-                                
+
                                 <label class="control-label">
                                     Habilitar contraseña segura
                                     <el-tooltip class="item"
@@ -2158,7 +2175,7 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
-                               
+
                                 <div :class="{'has-danger': errors.regex_password_user}"
                                         class="form-group">
                                     <el-switch v-model="form.regex_password_user"
@@ -2396,6 +2413,7 @@ export default {
                 change_affectation_exonerated_igv: false,
                 show_load_voucher: false,
                 search_factory_code_items: false,
+                enable_discount_by_customer: false,
             };
         },
         UpdateFormPurchase(e) {

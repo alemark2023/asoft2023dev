@@ -281,6 +281,7 @@
             'change_affectation_exonerated_igv',
             'show_load_voucher',
             'search_factory_code_items',
+            'enable_discount_by_customer'
         ];
 
         protected $casts = [
@@ -389,14 +390,15 @@
             'quantity_of_points'=>'float',
             'round_points_of_sale'=>'bool',
             'enable_categories_products_view'=>'bool',
-            
+
             'restrict_seller_discount'=>'bool',
             'sellers_discount_limit'=>'float',
             'enabled_sales_agents'=>'bool',
             'change_affectation_exonerated_igv'=>'bool',
             'show_load_voucher'=>'bool',
             'search_factory_code_items'=>'bool',
-            
+            'enable_discount_by_customer' => 'boolean'
+
         ];
 
         protected $hidden = [
@@ -617,7 +619,7 @@
                 'dashboard_products' => (bool)$this->dashboard_products,
                 'affect_all_documents' => (bool)$this->affect_all_documents,
                 'restrict_series_selection_seller' => $this->restrict_series_selection_seller,
-                
+
                 'enabled_point_system' => $this->enabled_point_system,
                 'point_system_sale_amount' => $this->point_system_sale_amount,
                 'quantity_of_points' => $this->quantity_of_points,
@@ -633,7 +635,8 @@
                 'change_affectation_exonerated_igv' => $this->change_affectation_exonerated_igv,
                 'show_load_voucher' => $this->show_load_voucher,
                 'search_factory_code_items' => $this->search_factory_code_items,
-                
+                'enable_discount_by_customer' => $this->enable_discount_by_customer,
+
             ];
         }
 
