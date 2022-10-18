@@ -281,6 +281,7 @@
             'change_affectation_exonerated_igv',
             'show_load_voucher',
             'search_factory_code_items',
+            'register_series_invoice_xml',
         ];
 
         protected $casts = [
@@ -396,6 +397,7 @@
             'change_affectation_exonerated_igv'=>'bool',
             'show_load_voucher'=>'bool',
             'search_factory_code_items'=>'bool',
+            'register_series_invoice_xml'=>'bool',
             
         ];
 
@@ -633,6 +635,7 @@
                 'change_affectation_exonerated_igv' => $this->change_affectation_exonerated_igv,
                 'show_load_voucher' => $this->show_load_voucher,
                 'search_factory_code_items' => $this->search_factory_code_items,
+                'register_series_invoice_xml' => $this->register_series_invoice_xml,
                 
             ];
         }
@@ -2366,6 +2369,7 @@
                         'point_system_sale_amount',
                         'quantity_of_points',
                         'round_points_of_sale',
+                        'register_series_invoice_xml',
                     ])
                     ->firstOrFail();
         }
