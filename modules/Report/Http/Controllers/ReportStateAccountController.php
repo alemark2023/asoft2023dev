@@ -81,8 +81,7 @@ class ReportStateAccountController extends Controller
                 return new DocumentCollection($records->paginate(config('tenant.items_per_page')));
             };
         }else{
-            $records_documents = $this->getRecords($request->all(), Document::class)
-            ->select(
+            $records_documents = $this->getRecords($request->all(), Document::class)->select(
                 'id',
                 'state_type_id',
                 'soap_type_id',
@@ -102,8 +101,7 @@ class ReportStateAccountController extends Controller
                 'total_igv',
                 'total',
                 'total_isc',
-            )
-            ->with(['person'=> function ($query) {
+            )->with(['person'=> function ($query) {
                 $query->select('id','name', 'number');
             }])->with(['soap_type'=> function ($q) {
                 $q->select('id','description');
@@ -113,8 +111,7 @@ class ReportStateAccountController extends Controller
                 $y->select('id','name');
             }])->with('items');
 
-            $records_sales = $this->getRecords($request->all(), SaleNote::class)
-            ->select(
+            $records_sales = $this->getRecords($request->all(), SaleNote::class)->select(
                 'id',
                 'state_type_id',
                 'soap_type_id',
@@ -134,8 +131,7 @@ class ReportStateAccountController extends Controller
                 'total_igv',
                 'total',
                 'total_isc',
-            )
-            ->with(['customer'=> function ($query) {
+            )->with(['customer'=> function ($query) {
                 $query->select('id','name', 'number');
             }])->with(['soap_type'=> function ($q) {
                 $q->select('id','description');
@@ -170,8 +166,7 @@ class ReportStateAccountController extends Controller
             $records = $this->getRecords($request->all(), $classType);
             $records= $records->get();
         } else {
-            $records_documents = $this->getRecords($request->all(), Document::class)
-            ->select(
+            $records_documents = $this->getRecords($request->all(), Document::class)->select(
                 'id',
                 'document_type_id',
                 'group_id',
@@ -196,8 +191,7 @@ class ReportStateAccountController extends Controller
                 'customer_id',
                 'user_id',
                 'seller_id',
-            )
-            ->with(['person'=> function ($query) {
+            )->with(['person'=> function ($query) {
                 $query->select('id','name', 'number');
             }])->with(['soap_type'=> function ($q) {
                 $q->select('id','description');
@@ -207,8 +201,7 @@ class ReportStateAccountController extends Controller
                 $y->select('id','name');
             }])->get();
 
-            $records_sales = $this->getRecords($request->all(), SaleNote::class)
-            ->select(
+            $records_sales = $this->getRecords($request->all(), SaleNote::class)->select(
                 'id',
                 'state_type_id',
                 'soap_type_id',
@@ -233,8 +226,7 @@ class ReportStateAccountController extends Controller
                 'customer_id',
                 'user_id',
                 'seller_id',
-            )
-            ->with(['customer'=> function ($query) {
+            )->with(['customer'=> function ($query) {
                 $query->select('id','name', 'number');
             }])->with(['soap_type'=> function ($q) {
                 $q->select('id','description');
