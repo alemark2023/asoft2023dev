@@ -276,6 +276,7 @@ class Document extends ModelTenant
         'enabled_concurrency' => 'bool',
         'apply_concurrency' => 'bool',
         'send_to_pse' => 'bool',
+        'total' => 'float',
         'ticket_single_shipment' => 'bool',
         'point_system' => 'bool',
         'force_send_by_summary' => 'bool',
@@ -1460,9 +1461,9 @@ class Document extends ModelTenant
         return $this->isSingleDocumentShipment() && !$this->force_send_by_summary && $this->state_type_id === self::STATE_TYPE_REGISTERED && auth()->user()->permission_force_send_by_summary;
     }
 
-    
+
     /**
-     * 
+     *
      * Verificar si es boleta
      *
      * @return bool
@@ -1472,9 +1473,9 @@ class Document extends ModelTenant
         return $this->document_type_id === self::DOCUMENT_TYPE_TICKET;
     }
 
-    
+
     /**
-     * 
+     *
      * Determina si se muestra el boton consultar cdr
      *
      * @return bool
@@ -1483,9 +1484,9 @@ class Document extends ModelTenant
     {
         $action = false;
 
-        if ($this->state_type_id === self::STATE_TYPE_REGISTERED && $this->soap_type_id === self::SOAP_TYPE_PRODUCTION) 
+        if ($this->state_type_id === self::STATE_TYPE_REGISTERED && $this->soap_type_id === self::SOAP_TYPE_PRODUCTION)
         {
-            if($this->group_id === self::GROUP_INVOICE) 
+            if($this->group_id === self::GROUP_INVOICE)
             {
                 $action = true;
             }
@@ -1498,9 +1499,9 @@ class Document extends ModelTenant
         return $action;
     }
 
-    
+
     /**
-     * 
+     *
      * Determina si se muestra el boton para reenvio
      *
      * @return bool
@@ -1509,9 +1510,9 @@ class Document extends ModelTenant
     {
         $action = false;
 
-        if ($this->state_type_id === self::STATE_TYPE_REGISTERED) 
+        if ($this->state_type_id === self::STATE_TYPE_REGISTERED)
         {
-            if($this->group_id === self::GROUP_INVOICE) 
+            if($this->group_id === self::GROUP_INVOICE)
             {
                 $action = true;
             }
@@ -1598,9 +1599,9 @@ class Document extends ModelTenant
             ]);
     }
 
-    
+
     /**
-     * 
+     *
      * Determina si es factura o boleta
      *
      * @return bool
@@ -1609,10 +1610,10 @@ class Document extends ModelTenant
     {
         return in_array($this->document_type_id, ['01', '03'], true);
     }
- 
+
 
     /**
-     * 
+     *
      * Determina si fue usado para sistema por puntos
      *
      * @return bool
@@ -1621,14 +1622,14 @@ class Document extends ModelTenant
     {
         return $this->point_system;
     }
-    
-    
+
+
     /**
-     * 
+     *
      * Obtener puntos por la venta
      *
      * @return float
-     * 
+     *
      */
     public function getPointsBySale()
     {
@@ -1638,7 +1639,7 @@ class Document extends ModelTenant
         {
             $point_system_data = $this->point_system_data;
             $total = $this->total;
-    
+
             $value_quantity_points = ($total / $point_system_data->point_system_sale_amount) * $point_system_data->quantity_of_points;
             $calculate_quantity_points = $point_system_data->round_points_of_sale ? intval($value_quantity_points) : round($value_quantity_points, 2);
         }

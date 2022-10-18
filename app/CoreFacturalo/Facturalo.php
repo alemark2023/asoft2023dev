@@ -1112,8 +1112,8 @@ class Facturalo
 
     }
 
-    private function savePayments($document, $payments){
-
+    private function savePayments($document, $payments)
+    {
         $total = $document->total;
         $balance = $total - collect($payments)->sum('payment');
 

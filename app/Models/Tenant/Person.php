@@ -113,19 +113,6 @@
             'district'
         ];
 
-        protected $casts = [
-            'perception_agent' => 'bool',
-            'person_type_id' => 'int',
-            'percentage_perception' => 'float',
-            'enabled' => 'bool',
-            'status' => 'int',
-            'credit_days' => 'int',
-            'seller_id' => 'int',
-            'zone_id' => 'int',
-            'parent_id' => 'int',
-            'accumulated_points' => 'float',
-        ];
-        
         protected $fillable = [
             'type',
             'identity_document_type_id',
@@ -160,8 +147,25 @@
             'zone_id',
             'status',
             'parent_id',
-
             'accumulated_points',
+            'has_discount',
+            'discount_type',
+            'discount_amount',
+        ];
+
+        protected $casts = [
+            'perception_agent' => 'bool',
+            'person_type_id' => 'int',
+            'percentage_perception' => 'float',
+            'enabled' => 'bool',
+            'status' => 'int',
+            'credit_days' => 'int',
+            'seller_id' => 'int',
+            'zone_id' => 'int',
+            'parent_id' => 'int',
+            'accumulated_points' => 'float',
+            'has_discount' => 'bool',
+            'discount_amount' => 'float',
         ];
 
         // protected static function boot()
@@ -606,7 +610,10 @@
                 'optional_email_send' => implode(',', $optional_mail_send),
                 'childrens' => [],
                 'accumulated_points' => $this->accumulated_points,
-                
+                'has_discount' => $this->has_discount,
+                'discount_type' => $this->discount_type,
+                'discount_amount' => $this->discount_amount,
+
             ];
             if ($childrens == true) {
                 $child = $this->children_person->transform(function ($row) {
@@ -772,14 +779,14 @@
 
         }
 
-        
+
         /**
-         * 
+         *
          * Aplicar filtro por vendedor asignado al cliente
          *
          * Usado en:
          * PersonController - records
-         * 
+         *
          * @param \Illuminate\Database\Eloquent\Builder $query
          * @param string $type
          * @return \Illuminate\Database\Eloquent\Builder
@@ -789,7 +796,7 @@
             if($type === 'customers')
             {
                 $user = auth()->user();
-                
+
                 if($user->applyCustomerFilterBySeller())
                 {
                     return $query->where('seller_id', $user->id);
@@ -799,9 +806,9 @@
             return $query;
         }
 
-        
+
         /**
-         * 
+         *
          * Obtener datos para api (app)
          *
          * @return array
@@ -825,10 +832,10 @@
                 'identity_document_type_description' => $this->identity_document_type->description,
             ];
         }
-        
+
 
         /**
-         * 
+         *
          * Descripción para mostrar en campos de búsqueda, etc
          *
          * @return string
@@ -840,9 +847,9 @@
 
 
         /**
-         * 
+         *
          * Filtro para búsqueda de clientes/proveedores
-         * 
+         *
          * Usado en:
          * clientes - app
          *
@@ -858,25 +865,25 @@
                         ->whereType($type)
                         ->orderBy('name');
         }
-    
+
 
         /**
-         * 
+         *
          * @return string
          */
         public function getTitlePersonDescription()
         {
             return $this->type === 'customers' ? 'Cliente' : 'Proveedor';
         }
-        
-        
+
+
         /**
-         * 
+         *
          * Filtro para no incluir relaciones en consulta
          *
          * @param \Illuminate\Database\Eloquent\Builder $query
          * @return \Illuminate\Database\Eloquent\Builder
-         */  
+         */
         public function scopeWhereFilterWithOutRelations($query)
         {
             return $query->withOut([
@@ -888,7 +895,7 @@
             ]);
         }
 
-        
+
         /**
          * Obtener datos iniciales para mostrar lista de clientes - App
          *
@@ -904,14 +911,14 @@
                         ->take($take);
         }
 
-        
+
         /**
-         * 
+         *
          * Filtro para cliente varios por defecto
          *
          * @param Builder $query
          * @return Builder
-         */  
+         */
         public function scopeWhereFilterVariousClients($query)
         {
             return $query->where([
@@ -921,15 +928,15 @@
             ]);
         }
 
-        
+
         /**
-         * 
+         *
          * Obtener puntos acumulados
          *
          * @param Builder $query
          * @param int $id
          * @return float
-         */  
+         */
         public function scopeGetOnlyAccumulatedPoints($query, $id)
         {
             return $query->whereFilterWithOutRelations()->select('accumulated_points')->findOrFail($id)->accumulated_points;
