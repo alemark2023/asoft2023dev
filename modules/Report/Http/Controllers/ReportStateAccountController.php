@@ -100,8 +100,7 @@ class ReportStateAccountController extends Controller
                 'total_taxed',
                 'total_igv',
                 'total',
-                'total_isc',
-            )->with(['person'=> function ($query) {
+                'total_isc')->with(['person'=> function ($query) {
                 $query->select('id','name', 'number');
             }])->with(['soap_type'=> function ($q) {
                 $q->select('id','description');
@@ -130,8 +129,7 @@ class ReportStateAccountController extends Controller
                 'total_taxed',
                 'total_igv',
                 'total',
-                'total_isc',
-            )->with(['customer'=> function ($query) {
+                'total_isc')->with(['customer'=> function ($query) {
                 $query->select('id','name', 'number');
             }])->with(['soap_type'=> function ($q) {
                 $q->select('id','description');
@@ -190,8 +188,7 @@ class ReportStateAccountController extends Controller
                 'plate_number',
                 'customer_id',
                 'user_id',
-                'seller_id',
-            )->with(['person'=> function ($query) {
+                'seller_id')->with(['person'=> function ($query) {
                 $query->select('id','name', 'number');
             }])->with(['soap_type'=> function ($q) {
                 $q->select('id','description');
@@ -225,8 +222,7 @@ class ReportStateAccountController extends Controller
                 'document_id',
                 'customer_id',
                 'user_id',
-                'seller_id',
-            )->with(['customer'=> function ($query) {
+                'seller_id')->with(['customer'=> function ($query) {
                 $query->select('id','name', 'number');
             }])->with(['soap_type'=> function ($q) {
                 $q->select('id','description');
