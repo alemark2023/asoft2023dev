@@ -232,16 +232,16 @@
                             <!-- sistema por puntos -->
                             <div v-if="config.enabled_point_system && form.customer_id" class="form-group col-sm-6 mb-0 mt-3">
                                 <p class="fs-point-system">
-                                    <label class="font-weight-bold text-info">Puntos acumulados:</label> 
-                                    <b>{{customer_accumulated_points}}</b> 
+                                    <label class="font-weight-bold text-info">Puntos acumulados:</label>
+                                    <b>{{customer_accumulated_points}}</b>
 
                                     <template v-if="total_exchange_points > 0">
                                     - <b style="color:red">{{ total_exchange_points }}</b> = <b>{{ calculate_customer_accumulated_points }}</b>
                                     </template>
                                 </p>
                                 <p class="fs-point-system">
-                                    <label class="font-weight-bold text-danger">Puntos por la compra:</label> 
-                                    <b>{{total_points_by_sale}}</b> 
+                                    <label class="font-weight-bold text-danger">Puntos por la compra:</label>
+                                    <b>{{total_points_by_sale}}</b>
                                 </p>
                             </div>
                             <!-- sistema por puntos -->
@@ -306,7 +306,7 @@
 
                                     <td class="text-right">{{ currency_type.symbol }} {{ row.total_value }}</td>
                                     <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
-                                    
+
                                     <td class="text-right">
                                         <template v-if="config.change_free_affectation_igv">
                                             <el-tooltip class="item"
@@ -658,7 +658,7 @@
                                                                 <tbody>
                                                                 <tr v-for="(row, index) in form.payments"
                                                                     :key="index">
-                                                                    
+
                                                                     <template v-if="showLoadVoucher">
                                                                         <td class="" style="width: 50px">
                                                                             <!-- <el-tooltip class="item" content="Cargar voucher" effect="dark" placement="top-start"> -->
@@ -1019,7 +1019,7 @@
                                                 <table class="text-left">
                                                     <thead>
                                                     <tr>
-                                                        
+
                                                         <template v-if="showLoadVoucher && form.payments.length>0">
                                                             <th style="width:50px">Voucher</th>
                                                         </template>
@@ -1050,7 +1050,7 @@
                                                     <tbody>
                                                     <tr v-for="(row, index) in form.payments"
                                                         :key="index">
-                                                        
+
                                                         <template v-if="showLoadVoucher">
                                                             <td class="" style="width: 50px">
                                                                 <!-- <el-tooltip class="item" content="Cargar voucher" effect="dark" placement="top-start"> -->
@@ -1489,11 +1489,20 @@
                                     </button>
                                 </el-tooltip>
                             </div>
+                            <button class="btn btn-primary btn-block mt-2"
+                                :disabled="form.customer_id == null"
+                                @click.prevent="visibleDialogReportCustomer">Consulta de documentos
+                            </button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
+
+        <document-report-customer
+            :showDialog.sync="showDialogReportCustomer"
+            :customerId="report_to_customer_id"></document-report-customer>
+
         <document-form-item
             :configuration="config"
             :currency-type-id-active="form.currency_type_id"
@@ -1600,6 +1609,7 @@ import moment from 'moment'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import Keypress from "vue-keypress";
 import StoreItemSeriesIndex from "../Store/ItemSeriesIndex";
+import DocumentReportCustomer from './partials/report_customer.vue'
 
 export default {
     props: [
@@ -1621,7 +1631,8 @@ export default {
         DocumentHotelForm,
         Keypress,
         DocumentDetraction,
-        DocumentTransportForm
+        DocumentTransportForm,
+        DocumentReportCustomer,
     },
     mixins: [functions, exchangeRate, pointSystemFunctions],
     data() {
@@ -1708,11 +1719,13 @@ export default {
             payment_conditions: [],
             affectation_igv_types: [],
             total_discount_no_base: 0,
-            show_has_retention: true,            
+            show_has_retention: true,
             global_discount_types: [],
             global_discount_type: {},
             error_global_discount: false,
             headers_token: headers_token,
+            showDialogReportCustomer: false,
+            report_to_customer_id: null
         }
     },
     computed: {
@@ -1915,15 +1928,15 @@ export default {
 
     },
     methods: {
-        onSuccessUploadVoucher(response, file, fileList, index) 
+        onSuccessUploadVoucher(response, file, fileList, index)
         {
             if (response.success)
             {
                 this.form.payments[index].filename = response.data.filename
                 this.form.payments[index].temp_path = response.data.temp_path
                 this.form.payments[index].file_list = fileList
-            } 
-            else 
+            }
+            else
             {
                 this.cleanFileListUploadVoucher(index)
                 this.$message.error(response.message)
@@ -1934,7 +1947,7 @@ export default {
         {
             this.form.payments[index].file_list = []
         },
-        handleRemoveUploadVoucher(file, fileList, index) 
+        handleRemoveUploadVoucher(file, fileList, index)
         {
             this.form.payments[index].filename = null
             this.form.payments[index].temp_path = null
@@ -2812,6 +2825,10 @@ export default {
         isActiveBussinessTurn(value) {
             return (_.find(this.business_turns, {'value': value})) ? true : false
         },
+        visibleDialogReportCustomer() {
+            this.report_to_customer_id = this.form.customer_id
+            this.showDialogReportCustomer = true
+        },
         clickAddDocumentHotel() {
             this.showDialogFormHotel = true
         },
@@ -2848,7 +2865,7 @@ export default {
                 reference: null,
                 payment_destination_id: this.getPaymentDestinationId(),
                 payment: total,
-                
+
                 payment_received: true,
                 filename: null,
                 temp_path: null,
@@ -3249,7 +3266,7 @@ export default {
         clickRemoveItem(index) {
             this.form.items.splice(index, 1)
             this.calculateTotal()
-            
+
             if(this.config.enabled_point_system) this.setTotalExchangePoints()
         },
         changeCurrencyType() {
@@ -3573,19 +3590,19 @@ export default {
             //input donde se ingresa monto o porcentaje
             let input_global_discount = parseFloat(this.total_global_discount)
 
-            if (input_global_discount > 0) 
+            if (input_global_discount > 0)
             {
                 const percentage_igv = 18
                 let base = (this.isGlobalDiscountBase) ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
                 let amount = 0
                 let factor = 0
 
-                if (this.is_amount) 
+                if (this.is_amount)
                 {
                     amount = input_global_discount
                     factor = _.round(amount / base, 5)
                 }
-                else 
+                else
                 {
                     factor = _.round(input_global_discount / 100, 5)
                     amount = factor * base
@@ -3599,7 +3616,7 @@ export default {
                     this.form.total_taxed = _.round(base - this.form.total_discount, 2)
                     this.form.total_value = this.form.total_taxed
                     this.form.total_igv = _.round(this.form.total_taxed * (percentage_igv / 100), 2)
-    
+
                     //impuestos (isc + igv + icbper)
                     this.form.total_taxes = _.round(this.form.total_igv + this.form.total_isc + this.form.total_plastic_bag_taxes, 2);
                     this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
