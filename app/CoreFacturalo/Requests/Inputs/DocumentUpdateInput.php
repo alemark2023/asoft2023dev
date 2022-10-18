@@ -546,10 +546,8 @@ class DocumentUpdateInput
         ];
     }
 
-
     private static function retention($inputs)
     {
-
         if (array_key_exists('retention', $inputs)) {
 
             if ($inputs['retention']) {
@@ -559,12 +557,28 @@ class DocumentUpdateInput
                 $percentage = $retention['percentage'];
                 $amount = $retention['amount'];
                 $base = $retention['base'];
+                $currency_type_id = $retention['currency_type_id'];
+                $exchange_rate = $retention['exchange_rate'];
+                $amount_pen = $retention['amount_pen'];
+                $amount_usd = $retention['amount_usd'];
+                $voucher_date_of_issue = $inputs['voucher_date_of_issue'];
+                $voucher_number = $inputs['voucher_number'];
+                $voucher_amount = $inputs['voucher_amount'];
+                $voucher_filename = $inputs['voucher_filename'];
 
                 return [
                     'code' => $code,
                     'percentage' => $percentage,
                     'amount' => $amount,
                     'base' => $base,
+                    'currency_type_id' => $currency_type_id,
+                    'exchange_rate' => $exchange_rate,
+                    'amount_pen' => $amount_pen,
+                    'amount_usd' => $amount_usd,
+                    'voucher_date_of_issue' => $voucher_date_of_issue,
+                    'voucher_number' => $voucher_number,
+                    'voucher_amount' => $voucher_amount,
+                    'voucher_filename' => $voucher_filename,
                 ];
             }
         }

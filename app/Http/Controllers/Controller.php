@@ -21,6 +21,7 @@
         Establishment,
     };
     use Modules\MobileApp\Http\Controllers\Api\ItemController as ItemControllerMobileApp;
+    use Modules\Inventory\Models\Warehouse;
 
 
     /**
@@ -341,6 +342,17 @@ $string = var_export($header,true);
             return compact('company');
         }
         
-
+  
+        /**
+         * 
+         * Obtener almacen asociado al usuario en sesion
+         *
+         * @return array
+         */
+        public function generalGetCurrentWarehouse()
+        {
+            return Warehouse::where('establishment_id', auth()->user()->establishment_id)->selectBasicColumns()->firstOrFail();
+        }
+        
 
     }

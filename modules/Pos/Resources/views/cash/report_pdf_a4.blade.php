@@ -179,14 +179,20 @@
                 </p>
             </td>
         </tr>
+        
+        <tr>
+            <td><hr></td>
+            <td><hr></td>
+        </tr>
+        
         <tr>
             <td class="td-custom">
                 <p>
                     <strong>
-                        Total caja:
+                        Ingreso caja:
                     </strong>
-                    S/. {{$data['total_cash_payment_method_type_01']}} 
-                    {{-- (Saldo inicial + Efectivo) --}}
+                    S/. {{$data['total_cash_income_pmt_01']}} 
+                    {{-- total de ingresos en efectivo y destino caja --}}
                 </p>
             </td>
             <td class="td-custom">
@@ -195,8 +201,21 @@
                         Egreso caja:
                     </strong>
                     S/. {{$data['total_cash_egress_pmt_01']}} 
-                    {{-- (Saldo inicial + Efectivo) --}}
+                    {{-- total de egresos (compras + gastos) en efectivo y destino caja --}}
                 </p>
+            </td>
+        </tr>
+        <tr>
+            <td class="td-custom">
+                <p>
+                    <strong>
+                        Total caja:
+                    </strong>
+                    S/. {{$data['total_cash_payment_method_type_01']}} 
+                    {{-- (Saldo inicial + ingreso caja - egreso caja) --}}
+                </p>
+            </td>
+            <td class="td-custom">
             </td>
         </tr>
 

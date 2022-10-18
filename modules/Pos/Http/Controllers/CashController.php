@@ -150,8 +150,9 @@ class CashController extends Controller
         $data['total_cash_payment_method_type_01'] = 0;
         $data['separate_cash_transactions'] = Configuration::getSeparateCashTransactions();
 
+        $data['total_cash_income_pmt_01'] = 0; // total de ingresos en efectivo y destino caja
         $data['total_cash_egress_pmt_01'] = 0; // total de egresos (compras + gastos) en efectivo y destino caja
-        $total_purchase_payment_method_cash = 0; // total de pagos en efectivo para compras sin considerar destino
+        // $total_purchase_payment_method_cash = 0; // total de pagos en efectivo para compras sin considerar destino
 
 
         $nota_credito = 0;
@@ -175,6 +176,7 @@ class CashController extends Controller
             /** Documentos de Tipo Nota de venta */
             if ($cash_document->sale_note) {
                 $sale_note = $cash_document->sale_note;
+                $pays = [];
                 if (in_array($sale_note->state_type_id, $status_type_id)) {
                     $record_total = 0;
                     $total = self::CalculeTotalOfCurency(
@@ -192,6 +194,9 @@ class CashController extends Controller
                             $record->sum = ($record->sum + $record_total);
                             if($record->id === '01') $data['total_payment_cash_01_sale_note'] += $record_total;
                         }
+
+                        $data['total_cash_income_pmt_01'] += $this->getIncomeEgressCashDestination($sale_note->payments);
+
                     }
 
                     $data['total_tips'] += $sale_note->tip ? $sale_note->tip->total : 0;
@@ -300,6 +305,7 @@ class CashController extends Controller
                     }
 
                     $data['total_tips'] += $document->tip ? $document->tip->total : 0;
+                    $data['total_cash_income_pmt_01'] += $this->getIncomeEgressCashDestination($document->payments);
 
                 }
                 if ($record_total != $document->total) {
@@ -349,6 +355,9 @@ class CashController extends Controller
                             $usado .= self::getStringPaymentMethod($record->id).'<br>Se usan los pagos Tipo '.$record->id.'<br>';
                         }
                     }
+
+                    $data['total_cash_income_pmt_01'] += $this->getIncomeEgressCashDestination($technical_service->payments);
+
                 }
 
                 $order_number = 4;
@@ -442,8 +451,8 @@ class CashController extends Controller
                             $final_balance -= $record_total;
                         }
 
-                        $data['total_cash_egress_pmt_01'] += $this->getEgressCashDestination($payments);
-                        $total_purchase_payment_method_cash += $this->getPaymentsByCashFilter($payments)->sum('payment');
+                        $data['total_cash_egress_pmt_01'] += $this->getIncomeEgressCashDestination($payments);
+                        // $total_purchase_payment_method_cash += $this->getPaymentsByCashFilter($payments)->sum('payment');
                     }
 
                 }
@@ -496,6 +505,8 @@ class CashController extends Controller
                                 $record_total = $pays->where('payment_method_type_id', $record->id)->sum('payment');
                                 $record->sum = ($record->sum + $record_total);
                             }
+
+                            $data['total_cash_income_pmt_01'] += $this->getIncomeEgressCashDestination($quotation->payments);
                         }
                     }
 
@@ -609,7 +620,7 @@ class CashController extends Controller
 
         $data['cash_income'] = self::FormatNumber($cash_income);
 
-        $data['total_cash_payment_method_type_01'] = self::FormatNumber($this->getTotalCashPaymentMethodType01($data, $total_purchase_payment_method_cash));
+        $data['total_cash_payment_method_type_01'] = self::FormatNumber($this->getTotalCashPaymentMethodType01($data));
 
         $data['total_cash_egress_pmt_01'] = self::FormatNumber($data['total_cash_egress_pmt_01']);
 
@@ -625,7 +636,7 @@ class CashController extends Controller
      * @param  $payments
      * @return float
      */
-    public function getEgressCashDestination($payments)
+    public function getIncomeEgressCashDestination($payments)
     {
         return $this->getPaymentsByCashFilter($payments)
                     ->sum(function($row){
@@ -657,28 +668,30 @@ class CashController extends Controller
 
     /**
      *
-     * Obtener total caja, suma del total de pagos en efectivo mas saldo inicial
+     * Obtener total caja
+     * total caja inicial + total ingresos en efectivo con destino caja - total egresos en efectivo con destino caja
      *
      * @param  array $data
      * @return float
      */
-    private function getTotalCashPaymentMethodType01($data, $total_purchase_payment_method_cash)
+    private function getTotalCashPaymentMethodType01($data)
     {
-        $total_cash_payment_method_type_01 = 0;
+        //total caja inicial + total ingresos en efectivo con destino caja - total egresos en efectivo con destino caja
+        return $data['cash_beginning_balance'] + $data['total_cash_income_pmt_01'] - $data['total_cash_egress_pmt_01'];
 
-        //total de todos los pagos en efectivo de diferentes documentos
-        $payment_method_01 = collect($data['methods_payment'])->where('payment_method_type_id', '01')->first();
+        // $total_cash_payment_method_type_01 = 0;
 
-        if($payment_method_01)
-        {
-            // al total de pagos en efectivo se le incrementa los pagos de la compra (porque estos no se filtran por destino, con total_cash_egress_pmt_01 se restaran todos los egresos)
-            $total_income = $payment_method_01['sum'] + $total_purchase_payment_method_cash;
+        // //total de todos los pagos en efectivo de diferentes documentos
+        // $payment_method_01 = collect($data['methods_payment'])->where('payment_method_type_id', '01')->first();
 
-            // total ingresos + total caja inicial - total egresos en efectivo con destino caja
-            $total_cash_payment_method_type_01 = $total_income + $data['cash_beginning_balance'] - $data['total_cash_egress_pmt_01'];
-        }
+        // if($payment_method_01)
+        // {
+        //     // al total de pagos en efectivo se le incrementa los pagos de la compra (porque estos no se filtran por destino, con total_cash_egress_pmt_01 se restaran todos los egresos)
+        //     $total_income = $payment_method_01['sum'] + $total_purchase_payment_method_cash;
 
-        return $total_cash_payment_method_type_01;
+        //     // total ingresos + total caja inicial - total egresos en efectivo con destino caja
+        //     $total_cash_payment_method_type_01 = $total_income + $data['cash_beginning_balance'] - $data['total_cash_egress_pmt_01'];
+        // }
     }
 
 
