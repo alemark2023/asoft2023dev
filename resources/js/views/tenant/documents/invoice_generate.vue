@@ -1510,11 +1510,20 @@
                                     </button>
                                 </el-tooltip>
                             </div>
+                            <button class="btn btn-primary btn-block mt-2"
+                                :disabled="form.customer_id == null"
+                                @click.prevent="visibleDialogReportCustomer">Consulta de documentos
+                            </button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
+
+        <document-report-customer
+            :showDialog.sync="showDialogReportCustomer"
+            :customerId="report_to_customer_id"></document-report-customer>
+
         <document-form-item
             :configuration="config"
             :currency-type-id-active="form.currency_type_id"
@@ -1621,6 +1630,7 @@ import moment from 'moment'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import Keypress from "vue-keypress";
 import StoreItemSeriesIndex from "../Store/ItemSeriesIndex";
+import DocumentReportCustomer from './partials/report_customer.vue'
 
 export default {
     props: [
@@ -1642,7 +1652,8 @@ export default {
         DocumentHotelForm,
         Keypress,
         DocumentDetraction,
-        DocumentTransportForm
+        DocumentTransportForm,
+        DocumentReportCustomer,
     },
     mixins: [functions, exchangeRate, pointSystemFunctions],
     data() {
@@ -1734,6 +1745,8 @@ export default {
             global_discount_type: {},
             error_global_discount: false,
             headers_token: headers_token,
+            showDialogReportCustomer: false,
+            report_to_customer_id: null
         }
     },
     computed: {
@@ -2832,6 +2845,10 @@ export default {
         },
         isActiveBussinessTurn(value) {
             return (_.find(this.business_turns, {'value': value})) ? true : false
+        },
+        visibleDialogReportCustomer() {
+            this.report_to_customer_id = this.form.customer_id
+            this.showDialogReportCustomer = true
         },
         clickAddDocumentHotel() {
             this.showDialogFormHotel = true
