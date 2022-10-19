@@ -240,6 +240,7 @@
                         // Route::get('stock/excel/excel', 'ReportMovementController@stockExcel');
 
                         Route::get('stock/format-stock-fit/{type}', 'ReportMovementController@formatStockFit');
+                        Route::get('filter-stock-fit', 'ReportMovementController@filterStockFit');
                     });
 
                 });

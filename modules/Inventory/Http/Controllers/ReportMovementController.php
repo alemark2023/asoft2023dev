@@ -126,8 +126,13 @@ class ReportMovementController extends Controller
         $date_end = $request['date_end'];
         $order_by_item = ReportHelper::getBoolValue($request['order_by_item']);
         $order_by_timestamps = ReportHelper::getBoolValue($request['order_by_timestamps']);
+        
+        $additional_filters = [
+            'search_column' => $request['search_column'], 
+            'search_input' => $request['search_input'], 
+        ];
 
-        return Inventory::whereFilterReportStock($warehouse_id, $date_start, $date_end, $order_by_item, $order_by_timestamps);
+        return Inventory::whereFilterReportStock($warehouse_id, $date_start, $date_end, $order_by_item, $order_by_timestamps, $additional_filters);
     }
 
     
@@ -172,6 +177,27 @@ class ReportMovementController extends Controller
             'warehouse' => Warehouse::select('description')->find($request->warehouse_id),
             'records' => $this->getStockRecords($request->all())->get()->transform(function($row, $key) { return  $row->getRowResourceReportStock(); }),
         ];
+    }
+
+    
+    /**
+     * 
+     * Filtros para reporte de ajuste de stock
+     *
+     * @return array
+     */
+    public function filterStockFit()
+    {
+		return [
+			'warehouses' => $this->optionsWarehouse(),
+			'columns' => [
+                'description' => 'Producto',
+                'internal_id' => 'Código interno',
+                'model' => 'Modelo',
+                'brand' => 'Marca',
+                'category' => 'Categoria'
+            ],
+		];
     }
 
 }

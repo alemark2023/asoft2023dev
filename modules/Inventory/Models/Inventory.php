@@ -223,7 +223,7 @@
             return $this->belongsTo(InventoryTransaction::class, 'inventory_transaction_id', 'id');
         }
 
-        public function scopeWhereFilterReportStock($query, $warehouse_id, $date_start, $date_end, $order_by_item, $order_by_timestamps)
+        public function scopeWhereFilterReportStock($query, $warehouse_id, $date_start, $date_end, $order_by_item, $order_by_timestamps, $additional_filters)
         {
 
             $query->with(['inventory_kardex'])
@@ -237,11 +237,36 @@
                             if ($date_start) $query->where('date_of_issue', '>=', $date_start);
                             if ($date_end) $query->where('date_of_issue', '<=', $date_end);
 
-                        });
+                        })
+                        ->additionalFiltersStockReport($additional_filters);
 
             if($order_by_timestamps) $query->applyOrderByCreatedAt();
 
             if($order_by_item) $query->applyOrderByItemDescription();
+
+            return $query;
+        }
+
+
+        /**
+         *
+         * Filtros adicionales por campos del producto
+         * 
+         * @param  Builder $query
+         * @param  array $additional_filters
+         * @return Builder
+         */
+        public function scopeAdditionalFiltersStockReport($query, $additional_filters)
+        {
+            $search_column = $additional_filters['search_column'];
+            $search_input = $additional_filters['search_input'];
+
+            if($search_input && $search_input != '')
+            {
+                $query->whereHas('item', function($query_item) use($search_column, $search_input){
+                    return $query_item->filterRecordsStockReport($search_column, $search_input);
+                });
+            }
 
             return $query;
         }
