@@ -4,6 +4,36 @@
             <div class="form-body">
                 <div class="row">
 
+                    <div class="col-md-4">
+                        
+                        <div class="form-group">
+                            <label class="control-label">Filtrar por</label>
+                            <el-select
+                                v-model="form.search_column"
+                                @change="changeClearInput"
+                            >
+                                <el-option
+                                    v-for="(label, key) in columns"
+                                    :key="key"
+                                    :value="key"
+                                    :label="label"
+                                ></el-option>
+                            </el-select>
+                        </div>
+
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Valor de búsqueda</label>
+                            <el-input
+                                placeholder="Buscar"
+                                v-model="form.search_input"
+                                style="width: 100%;"
+                                prefix-icon="el-icon-search"
+                            >
+                            </el-input>
+                        </div>
+                    </div>
 
                     <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
@@ -18,13 +48,13 @@
                     </div> 
   
                     
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="control-label">Fecha inicio</label>
                         <el-date-picker v-model="form.date_start" type="date"
                                         @change="changeDisabledDates"
                                         value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="true"></el-date-picker>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="control-label">Fecha término</label>
                         <el-date-picker v-model="form.date_end" type="date"
                                         :picker-options="pickerOptionsDates"
@@ -128,7 +158,6 @@ export default {
             items: [],
             warehouses: [],
             records: [],
-            all_inventory_transactions: [],
             inventory_transactions: [],
             pickerOptionsDates: {
                 disabledDate: (time) => {
@@ -136,6 +165,7 @@ export default {
                     return this.form.date_start > time
                 }
             },
+            columns: [],
         }
     },
     created() {
@@ -143,15 +173,15 @@ export default {
         this.initTables()
     },
     methods: {  
+        changeClearInput() 
+        {
+            this.form.search_input = null
+        },
         clickDownload(type) {
             let query = queryString.stringify({
                 ...this.form
             });
             window.open(`/${this.resource}/stock/format-stock-fit/${type}/?${query}`, '_blank');
-        },
-        changeMovementType(){
-            this.form.inventory_transaction_id = null
-            this.inventory_transactions = _.filter(this.all_inventory_transactions, { type : this.form.movement_type })
         },
         initForm() {
 
@@ -164,9 +194,10 @@ export default {
                 date_end:null,
                 order_by_timestamps: false,
                 order_by_item: false,
+                search_column: 'description',
+                search_input: null,
             }
 
-            this.changeMovementType()
         }, 
         changeDisabledDates() {
             if (this.form.date_end < this.form.date_start) {
@@ -175,10 +206,10 @@ export default {
         },
         async initTables() {
 
-            await this.$http.get(`/${this.resource}/filter`)
+            await this.$http.get(`/${this.resource}/filter-stock-fit`)
                 .then(response => {
                     this.warehouses = response.data.warehouses
-                    this.all_inventory_transactions = response.data.inventory_transactions
+                    this.columns = response.data.columns
                 })
 
             await this.searchRemoteItems('')
