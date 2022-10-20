@@ -345,11 +345,19 @@
 </table>
 @endif
 
+@if ($document->dispatch)
+    <br/>
+    <strong>Guías de remisión</strong>
+    <table>
+        <tr>
+            <td>{{ $document->dispatch->number_full }}</td>
+        </tr>
+    </table>
 
-@if ($document->reference_guides)
+@elseif ($document->reference_guides)
     @if (count($document->reference_guides) > 0)
     <br/>
-    <strong>Guias de remisión</strong>
+    <strong>Guías de remisión</strong>
     <table>
         @foreach($document->reference_guides as $guide)
             <tr>

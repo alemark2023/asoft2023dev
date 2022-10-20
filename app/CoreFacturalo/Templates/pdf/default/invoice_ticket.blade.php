@@ -373,7 +373,16 @@
 @endif
 
 
-@if (count($document->reference_guides) > 0)
+@if ($document->dispatch)
+    <br/>
+    <strong>Guías de remisión</strong>
+    <table>
+        <tr>
+            <td>{{ $document->dispatch->number_full }}</td>
+        </tr>
+    </table>
+
+@elseif (count($document->reference_guides) > 0)
 <br/>
 <strong>Guias de remisión</strong>
 <table>
