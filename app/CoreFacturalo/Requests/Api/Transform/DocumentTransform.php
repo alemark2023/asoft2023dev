@@ -264,36 +264,56 @@ class DocumentTransform
         if(key_exists('retencion', $inputs)) {
 
             $retention = $inputs['retencion'];
-
-            $currency_type_id = $inputs['codigo_tipo_moneda'];
-            $exchange_rate = Functions::valueKeyInArray($inputs, 'factor_tipo_de_cambio', 1);
-            $retention_amount = $retention['monto'];
-
-            if($currency_type_id === 'USD')
-            {
-                $amount_usd = $retention_amount;
-                $amount_pen = round($retention_amount * $exchange_rate, 2);
-            }
-            else
-            {
-                $amount_pen = $retention_amount;
-                $amount_usd = round($retention_amount / $exchange_rate, 2);
-            }
+            $additional_data_retention = self::additionalDataRetention($inputs, $retention);
 
             return [
                 'code' => $retention['codigo'],
                 'percentage' => $retention['porcentaje'],
                 'amount' => $retention['monto'],
                 'base' => $retention['base'],
-                'currency_type_id' => $currency_type_id,
-                'exchange_rate' => $exchange_rate,
-                'amount_pen' => $amount_pen,
-                'amount_usd' => $amount_usd,
+                'currency_type_id' => $additional_data_retention['currency_type_id'],
+                'exchange_rate' => $additional_data_retention['exchange_rate'],
+                'amount_pen' => $additional_data_retention['amount_pen'],
+                'amount_usd' => $additional_data_retention['amount_usd']
             ];
 
         }
 
         return null;
+    }
+
+    
+    /**
+     * 
+     * Datos adicionales del pago de retencion
+     *
+     * @param  array $inputs
+     * @param  array $retention
+     * @return array
+     */
+    private static function additionalDataRetention($inputs, $retention)
+    {
+        $currency_type_id = $inputs['codigo_tipo_moneda'];
+        $exchange_rate = Functions::valueKeyInArray($inputs, 'factor_tipo_de_cambio', 1);
+        $retention_amount = $retention['monto'];
+
+        if($currency_type_id === 'USD')
+        {
+            $amount_usd = $retention_amount;
+            $amount_pen = $retention_amount * $exchange_rate;
+        }
+        else
+        {
+            $amount_pen = $retention_amount;
+            $amount_usd = $retention_amount / $exchange_rate;
+        }
+
+        return [
+            'currency_type_id' => $currency_type_id,
+            'exchange_rate' => $exchange_rate,
+            'amount_pen' => round($amount_pen, 2),
+            'amount_usd' => round($amount_usd, 2)
+        ];
     }
 
 
