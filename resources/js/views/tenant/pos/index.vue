@@ -1718,6 +1718,23 @@ export default {
             this.form.customer_id = null;
             this.setFormPosLocalStorage();
         },
+        getQuantityFromElectronicScale()
+        {
+            return _.round(this.electronic_scale_data.weight, 4)
+        },
+        getUnitPriceFromElectronicScale()
+        {
+            return _.round(this.electronic_scale_data.total / this.electronic_scale_data.weight, 6)
+        },
+        setScaleQuantityIfNotExistItem()
+        {
+            if(this.changeValuesElectronicScale)
+            {
+                this.form_item.item.aux_quantity = this.getQuantityFromElectronicScale()
+                this.form_item.quantity = this.getQuantityFromElectronicScale()
+                this.form_item.aux_quantity = this.getQuantityFromElectronicScale()
+            }
+        },
         async clickAddItem(item, index, input = false) {
             this.loading = true;
             let exchangeRateSale = this.form.exchange_rate_sale;
@@ -1780,14 +1797,14 @@ export default {
                     // balanza
                     if(this.changeValuesElectronicScale)
                     {
-                        exist_item.quantity += _.round(this.electronic_scale_data.weight, 4)
-                        exist_item.item.aux_quantity += _.round(this.electronic_scale_data.weight, 4)
+                        exist_item.quantity += this.getQuantityFromElectronicScale()
+                        exist_item.item.aux_quantity += this.getQuantityFromElectronicScale()
                     }
                     // balanza
                     else
                     {
-                    exist_item.quantity++;
-                    exist_item.item.aux_quantity++;
+                        exist_item.quantity++;
+                        exist_item.item.aux_quantity++;
                     }
 
                 }
@@ -1811,7 +1828,7 @@ export default {
                 // balanza
                 if(this.changeValuesElectronicScale)
                 {
-                    unit_price = this.electronic_scale_data.total / this.electronic_scale_data.weight
+                    unit_price = this.getUnitPriceFromElectronicScale()
                 }
                 // balanza
 
@@ -1836,10 +1853,9 @@ export default {
                 this.row["unit_type_id"] = item.unit_type_id;
 
                 this.form.items[pos] = this.row;
-            } else {
-                
-                console.log("pass_validations", this.electronic_scale_data)
-                
+            } 
+            else 
+            {
                 response = await this.getStatusStock(
                     item.item_id,
                     presentation
@@ -1866,12 +1882,11 @@ export default {
                     : this.form_item.unit_price_value * (1 + this.percentage_igv);
 
                 // balanza
+                this.setScaleQuantityIfNotExistItem()
+                
                 if(this.changeValuesElectronicScale)
                 {
-                    this.form_item.item.aux_quantity = this.electronic_scale_data.weight
-                    this.form_item.quantity = this.electronic_scale_data.weight
-                    this.form_item.aux_quantity = this.electronic_scale_data.weight
-                    unit_price = this.electronic_scale_data.total / this.electronic_scale_data.weight
+                    unit_price = this.getUnitPriceFromElectronicScale()
                 }
                 // balanza
 
@@ -1937,6 +1952,7 @@ export default {
 
             await this.setFormPosLocalStorage();
 
+            // balanza
             this.initElectronicScaleData()
         },
         async getStatusStock(item_id, quantity) {
@@ -2207,9 +2223,9 @@ export default {
             this.electronic_scale_data.pass_validations = true
 
             // console.log("*******************************")
-            console.log("barcode", this.electronic_scale_data.barcode)
-            console.log("weight", this.electronic_scale_data.weight)
-            console.log("total", this.electronic_scale_data.total)
+            // console.log("barcode", this.electronic_scale_data.barcode)
+            // console.log("weight", this.electronic_scale_data.weight)
+            // console.log("total", this.electronic_scale_data.total)
             
             // console.log("parse_weight", this.electronic_scale_data.parse_weight)
             // console.log("parse_total", this.electronic_scale_data.parse_total)
