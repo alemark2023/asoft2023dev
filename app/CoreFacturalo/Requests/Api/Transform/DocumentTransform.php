@@ -265,11 +265,30 @@ class DocumentTransform
 
             $retention = $inputs['retencion'];
 
+            $currency_type_id = $inputs['codigo_tipo_moneda'];
+            $exchange_rate = Functions::valueKeyInArray($inputs, 'factor_tipo_de_cambio', 1);
+            $retention_amount = $retention['monto'];
+
+            if($currency_type_id === 'USD')
+            {
+                $amount_usd = $retention_amount;
+                $amount_pen = round($retention_amount * $exchange_rate, 2);
+            }
+            else
+            {
+                $amount_pen = $retention_amount;
+                $amount_usd = round($retention_amount / $exchange_rate, 2);
+            }
+
             return [
                 'code' => $retention['codigo'],
                 'percentage' => $retention['porcentaje'],
                 'amount' => $retention['monto'],
                 'base' => $retention['base'],
+                'currency_type_id' => $currency_type_id,
+                'exchange_rate' => $exchange_rate,
+                'amount_pen' => $amount_pen,
+                'amount_usd' => $amount_usd,
             ];
 
         }
