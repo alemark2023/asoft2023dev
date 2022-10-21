@@ -2416,11 +2416,31 @@ export default {
         onPrepareItems(items) {
             return items.map(i => {
 
+                if(this.table)
+                {
+                    console.log("tabl")
+                    i.unit_price_value = i.unit_value;
+                    i.input_unit_price_value = (i.item.has_igv) ? i.item.unit_price : i.unit_value;
+                    console.log("i.unit_price_value", i.unit_price_value)
+                    console.log("i.input_unit_price_value", i.input_unit_price_value)
+                }
+                else
+                {
+                console.log("no tabl")
                 i.unit_price_value = i.unit_value;
                 i.input_unit_price_value = (i.item.has_igv) ? i.unit_price : i.unit_value;
+                }
 
                 // i.input_unit_price_value = i.unit_price;
+
+                if(this.table)
+                {
+                    i.discounts = (i.discounts) ? this.getPrepareDiscountsItems(i.discounts) : []
+                }
+                else
+                {
                 i.discounts = (i.discounts) ? Object.values(i.discounts) : []
+                }
                 // i.discounts = i.discounts || [];
                 i.charges = i.charges || [];
                 i.attributes = i.attributes || [];
@@ -2429,6 +2449,19 @@ export default {
                 i.item = this.onPrepareIndividualItem(i);
                 return i;
             });
+        },
+        getPrepareDiscountsItems(discounts)
+        {
+            return Object.values(discounts).map((discount)=>{
+
+                const new_dscto = discount
+
+                if(discount.is_amount)
+                {
+                    discount.percentage = discount.amount
+                }
+                return discount
+            })
         },
         onPrepareIndividualItem(data) {
 
@@ -2439,8 +2472,22 @@ export default {
             new_item.currency_type_symbol = currency_type.symbol
 
             new_item.sale_affectation_igv_type_id = data.affectation_igv_type_id
+
+            if(this.table)
+            {
+                console.log("tabl")
+                new_item.sale_unit_price = new_item.unit_price
+                new_item.unit_price = new_item.unit_price
+
+                console.log("new_item.sale_unit_price", new_item.sale_unit_price)
+                console.log("new_item.unit_price", new_item.unit_price)
+            }
+            else
+            {
+            console.log("no tabl")
             new_item.sale_unit_price = data.unit_price
             new_item.unit_price = data.unit_price
+            }
 
             return new_item
         },
@@ -2452,7 +2499,7 @@ export default {
             return null;
         },
         onSetSeries(documentType, serie) {
-            console.log('onSetSeries')
+            // console.log('onSetSeries')
             const find = this.all_series.find(s => s.document_type_id == documentType && s.number == serie);
             if (find) {
                 return [find];
@@ -3211,7 +3258,7 @@ export default {
             })
         },
         filterSeries() {
-            console.log('filterSeries');
+            // console.log('filterSeries');
             this.form.series_id = null
             let series = _.filter(this.all_series, {
                 'establishment_id': this.form.establishment_id,
@@ -4097,20 +4144,20 @@ export default {
             if(this.form.has_retention) {
                 total_pay -= this.form.retention.amount;
             }
-            console.log(this.form.retention)
-            console.log(this.form.total_pending_payment)
-            console.log(this.form.total)
+            // console.log(this.form.retention)
+            // console.log(this.form.total_pending_payment)
+            // console.log(this.form.total)
 
             if (!_.isEmpty(this.form.detraction) && this.form.total_pending_payment > 0) {
                 return this.form.total_pending_payment
             }
 
             if (!_.isEmpty(this.form.retention) && this.form.total_pending_payment > 0) {
-                console.log('1');
+                // console.log('1');
                 return this.form.total_pending_payment
             }
 
-            console.log('2');
+            // console.log('2');
             return total_pay
         },
         setDescriptionOfItem(item) {
