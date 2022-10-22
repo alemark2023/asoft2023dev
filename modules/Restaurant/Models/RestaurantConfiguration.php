@@ -17,8 +17,7 @@ class RestaurantConfiguration extends ModelTenant
         'enabled_environment_1',
         'enabled_environment_2',
         'enabled_environment_3',
-
-
+        'items_maintenance'
     ];
 
     public $timestamps = false;
@@ -35,6 +34,7 @@ class RestaurantConfiguration extends ModelTenant
             'enabled_environment_1' => (bool)$this->enabled_environment_1,
             'enabled_environment_2' => (bool)$this->enabled_environment_2,
             'enabled_environment_3' => (bool)$this->enabled_environment_3,
+            'items_maintenance' => (bool)$this->items_maintenance
         ];
     }
 }

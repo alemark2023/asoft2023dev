@@ -88,6 +88,21 @@
                             v-text="errors.menu_kitchen[0]"></small>
                   </div>
                 </div>
+                <div class="col-sm-6 col-md-4 mt-4">
+                  <label class="control-label">
+                    Habilitar Editar Precios
+                  </label>
+                  <div :class="{'has-danger': errors.items_maintenance}"
+                        class="form-group">
+                    <el-switch v-model="form.items_maintenance"
+                                active-text="Si"
+                                inactive-text="No"
+                                @change="submit"></el-switch>
+                    <small v-if="errors.items_maintenance"
+                            class="form-control-feedback"
+                            v-text="errors.items_maintenance[0]"></small>
+                  </div>
+                </div>
                 <div class="col-sm-6 col-md-6 mt-4">
                   <div :class="{'has-danger': errors.first_menu}"
                         class="form-group">
