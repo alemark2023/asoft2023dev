@@ -40,6 +40,10 @@
                             <label class="control-label">Tipo</label>
                             <el-select v-model="form.movement_type" @change="changeMovementType">
                                 <el-option
+                                    key="all"
+                                    label="Todos"
+                                    value="all"></el-option>
+                                <el-option
                                     key="input"
                                     label="Ingreso"
                                     value="input"></el-option>
@@ -70,7 +74,6 @@
                             <el-checkbox class="mt-4" v-model="form.order_inventory_transaction_id">Ordenar por motivo de traslado</el-checkbox>
                         </div>
                     </div>
-
                     <div class="col-md-3">
                         <label class="control-label">Fecha inicio</label>
                         <el-date-picker v-model="form.date_start" type="date"
@@ -83,8 +86,6 @@
                                         :picker-options="pickerOptionsDates"
                                         value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="true"></el-date-picker>
                     </div>
-
-
                     <div class="col-md-9" style="margin-top:29px">
                         <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
                         <template v-if="records.length>0">
@@ -202,7 +203,7 @@ export default {
                 id: null,
                 item_id: null,
                 warehouse_id: null,
-                movement_type: 'input',
+                movement_type: 'all',
                 inventory_transaction_id: null,
                 date_start:null,
                 date_end:null,

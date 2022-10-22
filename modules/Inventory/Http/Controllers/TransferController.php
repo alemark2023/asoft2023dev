@@ -4,6 +4,8 @@
 
     use App\Http\Controllers\Controller;
     use App\Http\Controllers\SearchItemController;
+    use App\Models\Tenant\Company;
+    use App\Models\Tenant\Series;
     use Barryvdh\DomPDF\Facade as PDF;
     use Carbon\Carbon;
     use Illuminate\Http\Request;
@@ -213,13 +215,30 @@
 
         public function store(TransferRequest $request)
         {
-            $result = DB::connection('tenant')->transaction(function () use ($request) {
+            DB::connection('tenant')->beginTransaction();
+            try {
+                $document_type_id = 'U4';
+                $warehouse_id = $request->input('warehouse_id');
+
+                $warehouse = Warehouse::query()
+                    ->select('id', 'establishment_id')
+                    ->where('id', $warehouse_id)
+                    ->first();
+
+                $series = Series::query()
+                    ->select('number')
+                    ->where('establishment_id', $warehouse->establishment_id)
+                    ->where('document_type_id', 'U4')
+                    ->first();
 
                 $row = InventoryTransfer::create([
                     'description' => $request->description,
                     'warehouse_id' => $request->warehouse_id,
                     'warehouse_destination_id' => $request->warehouse_destination_id,
                     'quantity' => count($request->items),
+                    'document_type_id' => $document_type_id,
+                    'series' => $series->number,
+                    'number' => '#',
                 ]);
 
                 foreach ($request->items as $it) {
@@ -231,7 +250,6 @@
                     $inventory->warehouse_destination_id = $request->warehouse_destination_id;
                     $inventory->quantity = $it['quantity'];
                     $inventory->inventories_transfer_id = $row->id;
-
                     $inventory->save();
 
                     foreach ($it['lots'] as $lot) {
@@ -245,15 +263,20 @@
                     }
                 }
 
+                DB::connection('tenant')->commit();
+
                 return [
                     'success' => true,
                     'message' => 'Traslado creado con éxito'
                 ];
-            });
+            }catch (\Exception $e) {
+                DB::connection('tenant')->rollBack();
 
-            return $result;
-
-
+                return [
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ];
+            }
         }
 
 

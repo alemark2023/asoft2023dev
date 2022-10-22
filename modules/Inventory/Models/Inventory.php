@@ -202,16 +202,23 @@ class Inventory extends ModelTenant
      * @param  $date_end
      * @param  $order_inventory_transaction_id
      */
-    public function scopeWhereFilterReportMovement($query, $warehouse_id, $inventory_transaction_id, $date_start, $date_end, $item_id, $order_inventory_transaction_id)
+    public function scopeWhereFilterReportMovement($query, $warehouse_id, $inventory_transaction_id, $date_start,
+                                                   $date_end, $item_id, $order_inventory_transaction_id, $movement_type)
     {
-
         $_order_inventory_transaction_id = $order_inventory_transaction_id == 'true';
 
-        $query->with(['inventory_kardex'])
-            ->whereHas('transaction');
+        $query->with(['inventory_kardex']);
 
         if($warehouse_id) {
             $query->where('warehouse_id', $warehouse_id);
+        }
+
+        if ($movement_type !== 'all') {
+            $query->whereHas('transaction', function ($q) use($movement_type) {
+                $q->where('type', $movement_type);
+            });
+        } else {
+            $query->whereHas('transaction');
         }
 
         $query->whereHas('inventory_kardex', function ($query) use ($date_start, $date_end, $item_id) {

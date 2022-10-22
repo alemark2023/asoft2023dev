@@ -46,12 +46,17 @@
         use UsesTenantConnection;
 
         protected $fillable = [
+            'external_id',
+            'user_id',
+            'soap_type_id',
+            'document_type_id',
+            'series',
+            'number',
             'description',
             'warehouse_id',
             'warehouse_destination_id',
-            'user_id',
             'quantity',
-
+            'filename'
         ];
         protected $casts = [
             'warehouse_id' => 'int',
@@ -60,22 +65,22 @@
             'quantity' => 'float'
         ];
 
-        /**
-         * The "booting" method of the model.
-         *
-         * @return void
-         */
-        protected static function boot()
-        {
-            parent::boot();
-            static::creating(function (self $model) {
-                $model->user_id = 0;
-                if (auth() and auth()->user() and auth()->user()->id) {
-                    $model->user_id = auth()->user()->id;
-                }
-
-            });
-        }
+//        /**
+//         * The "booting" method of the model.
+//         *
+//         * @return void
+//         */
+//        protected static function boot()
+//        {
+//            parent::boot();
+//            static::creating(function (self $model) {
+//                $model->user_id = 0;
+//                if (auth() and auth()->user() and auth()->user()->id) {
+//                    $model->user_id = auth()->user()->id;
+//                }
+//
+//            });
+//        }
 
         /**
          * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -122,8 +127,8 @@
         public function getPdfData(){
 
             $data = [];
-            $data['serie'] = "NT";
-            $data['number'] = $this->id;
+            $data['serie'] = $this->series;
+            $data['number'] = $this->number;
             $data['document_type'] = "NOTA DE TRASLADO";
             $data['motivo'] = $this->description;
             $data['created_at'] = $this->created_at;
