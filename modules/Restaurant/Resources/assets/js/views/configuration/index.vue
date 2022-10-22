@@ -254,6 +254,63 @@
                 </div>
               </div>
             </el-tab-pane>
+            <el-tab-pane class="mb-3"  name="third">
+              <span slot="label">Mozos</span>
+              <div class="row d-flex align-items-end">
+                <div class="col-sm-4 col-md-4 mt-4">
+                  <div :class="{'has-danger': errors.name}"
+                        class="form-group">
+                    <label class="control-label">Nombre
+                    </label>
+                    <el-input v-model="form_waiter.name" dusk="name"></el-input>
+                    <small v-if="errors.name"
+                            class="form-control-feedback"
+                            v-text="errors.name[0]"></small>
+                  </div>
+                </div>
+                <div class="col-sm-4 col-md-4 mt-4">
+                  <div :class="{'has-danger': errors.last_name}"
+                        class="form-group">
+                    <label class="control-label">Apellido
+                    </label>
+                    <el-input v-model="form_waiter.last_name" dusk="last_name"></el-input>
+                    <small v-if="errors.last_name"
+                            class="form-control-feedback"
+                            v-text="errors.last_name[0]"></small>
+                  </div>
+                </div>
+                <div class="col-sm-4 col-md-4 mt-4">
+                  <el-button class="submit" type="primary" @click="sendFormWaiter">Agregar
+                  </el-button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Nombre</th>
+                          <th>Apellidos</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="waiter in waiters" :key="waiter.id + 'W'">
+                          <td>{{waiter.name}}</td>
+                          <td>{{waiter.last_name}}</td>
+                          <td>
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteWaiter(waiter.id)">
+                              <i class="fa fa-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </el-tab-pane>
           </el-tabs>
         </form>
       </template>
@@ -270,7 +327,10 @@
 
 <script>
 
+import {deletable} from '@mixins/deletable'
+
 export default {
+    mixins: [deletable],
     data() {
       return {
         resource: 'restaurant',
@@ -295,7 +355,13 @@ export default {
         form_role: {
           user_id: '',
           role_id: ''
-        }
+        },
+        form_waiter: {
+          name: null,
+          last_name: null,
+          id: null
+        },
+        waiters: []
       }
     },
     computed: {
@@ -306,6 +372,8 @@ export default {
     created() {
       this.getRecords();
       this.getUsers();
+      this.getWaiters();
+
     },
     methods: {
       getRecords() {
@@ -325,6 +393,11 @@ export default {
           if (response.data !== '') {
             this.users = response.data.data;
           }
+        });
+      },
+      getWaiters() {
+        this.$http.get(`/${this.resource}/waiter`).then(response => {
+          this.waiters = response.data
         });
       },
       submit() {
@@ -368,6 +441,39 @@ export default {
           this.form_role.role_id = '';
           // this.loading_submit = false;
         });
+      },
+      initFormWaiter() {
+        this.form_waiter = {
+          name: null,
+          last_name: null,
+          id: null
+        }
+      },
+      sendFormWaiter() {
+        this.$http.post(`/${this.resource}/waiter`, this.form_waiter).then(response => {
+          let data = response.data;
+          if (data.success) {
+            this.$message.success(data.message);
+          } else {
+            this.$message.error(data.message);
+          }
+          this.getWaiters()
+          this.initFormWaiter()
+          
+        }).catch(error => {
+          if (error.response.status === 422) {
+            this.errors = error.response.data.errors;
+          } else {
+            console.log(error);
+          }
+        }).then(() => {
+          
+        });
+      },
+      clickDeleteWaiter(id) {
+        this.destroy(`/${this.resource}/waiter/${id}`).then(() =>
+          this.getWaiters()
+        )
       }
     }
 }

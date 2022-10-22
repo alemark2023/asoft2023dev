@@ -24,6 +24,8 @@ if ($hostname) {
 
                 Route::get('/categories', 'RestaurantController@categories');
                 Route::get('/configurations', 'RestaurantConfigurationController@record');
+                Route::get('/waiters', 'WaiterController@records');
+
             });
 
         });
