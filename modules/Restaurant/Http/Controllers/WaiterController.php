@@ -12,7 +12,9 @@ class WaiterController extends Controller
     {
         $records = Waiter::all();
 
-        return $records;
+        return [
+            'data' => $records
+        ];
     }
 
     public function record($id)

@@ -103,7 +103,7 @@
                             v-text="errors.items_maintenance[0]"></small>
                   </div>
                 </div>
-                <div class="col-sm-6 col-md-6 mt-4">
+                <div class="col-sm-5 col-md-5 mt-4">
                   <div :class="{'has-danger': errors.first_menu}"
                         class="form-group">
                     <label class="control-label">Menu inicial
@@ -121,7 +121,7 @@
                             v-text="errors.first_menu[0]"></small>
                   </div>
                 </div>
-                <div class="col-sm-6 col-md-6 mt-4">
+                <!--<div class="col-sm-6 col-md-6 mt-4">
                   <div :class="{'has-danger': errors.tables_quantity}"
                         class="form-group">
                     <label class="control-label">Cantidad de mesas
@@ -129,7 +129,8 @@
                     <el-slider
                       v-model="form.tables_quantity"
                       :step="1"
-                      :max="20"
+                      :min="5"
+                      :max="50"
                       show-stops
                       @change="submit">
                     </el-slider>
@@ -137,7 +138,7 @@
                             class="form-control-feedback"
                             v-text="errors.tables_quantity[0]"></small>
                   </div>
-                </div>
+                </div>-->
                 <div class="col-md-12">
                   <div class="row mt-4">
                     <div class="col-md-4">
@@ -152,7 +153,18 @@
                                   @change="submit"></el-switch>
                       <small v-if="errors.enabled_environment_1"
                               class="form-control-feedback"
-                              v-text="errors.enabled_environment_1[0]"></small>
+                              v-text="errors.enabled_environment_1[0]"></small> 
+                      <br>
+                      <label class="control-label">Cantidad de mesas</label>
+                      <el-slider
+                        :disabled="!form.enabled_environment_1"
+                        v-model="form.tables_quantity"
+                        :step="1"
+                        :min="5"
+                        :max="50"
+                        show-stops
+                        @change="submit">
+                      </el-slider>
                     </div>
                   </div>
                   <div class="col-md-4">
@@ -168,23 +180,71 @@
                       <small v-if="errors.enabled_environment_2"
                               class="form-control-feedback"
                               v-text="errors.enabled_environment_2[0]"></small>
+                      <br>
+                      <label class="control-label">Cantidad de mesas</label>
+                      <el-slider
+                        :disabled="!form.enabled_environment_2"
+                        v-model="form.tables_quantity_environment_2"
+                        :step="1"
+                        :min="5"
+                        :max="50"
+                        show-stops
+                        @change="submit">
+                      </el-slider>
                     </div>
                   </div>
-                  <div class="col-md-4">
-                    <label class="control-label">
-                      Habilitar Ambiente 3
-                    </label>
-                    <div :class="{'has-danger': errors.enabled_environment_3}"
-                          class="form-group">
-                      <el-switch v-model="form.enabled_environment_3"
-                                  active-text="Si"
-                                  inactive-text="No"
-                                  @change="submit"></el-switch>
-                      <small v-if="errors.enabled_environment_3"
-                              class="form-control-feedback"
-                              v-text="errors.enabled_environment_3[0]"></small>
+                    <div class="col-md-4">
+                      <label class="control-label">
+                        Habilitar Ambiente 3
+                      </label>
+                      <div :class="{'has-danger': errors.enabled_environment_3}"
+                            class="form-group">
+                        <el-switch v-model="form.enabled_environment_3"
+                                    active-text="Si"
+                                    inactive-text="No"
+                                    @change="submit"></el-switch>
+                        <small v-if="errors.enabled_environment_3"
+                                class="form-control-feedback"
+                                v-text="errors.enabled_environment_3[0]"></small>
+                        <br>
+                        <label class="control-label">Cantidad de mesas</label>
+                        <el-slider
+                          :disabled="!form.enabled_environment_3"
+                          v-model="form.tables_quantity_environment_3"
+                          :step="1"
+                          :min="5"
+                          :max="50"
+                          show-stops
+                          @change="submit">
+                        </el-slider>
+                      </div>
                     </div>
-                  </div>
+                    <div class="col-md-4">
+                      <label class="control-label">
+                        Habilitar Ambiente 4
+                      </label>
+                      <div :class="{'has-danger': errors.enabled_environment_4}"
+                            class="form-group">
+                        <el-switch v-model="form.enabled_environment_4"
+                                    active-text="Si"
+                                    inactive-text="No"
+                                    @change="submit"></el-switch>
+                        <small v-if="errors.enabled_environment_4"
+                                class="form-control-feedback"
+                                v-text="errors.enabled_environment_4[0]"></small>
+                        <br>
+                        <label class="control-label">Cantidad de mesas</label>
+                        <el-slider
+                          :disabled="!form.enabled_environment_4"
+                          v-model="form.tables_quantity_environment_4"
+                          :step="1"
+                          :min="5"
+                          :max="50"
+                          show-stops
+                          @change="submit">
+                        </el-slider>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -397,7 +457,7 @@ export default {
       },
       getWaiters() {
         this.$http.get(`/${this.resource}/waiter`).then(response => {
-          this.waiters = response.data
+          this.waiters = response.data.data
         });
       },
       submit() {
