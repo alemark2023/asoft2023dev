@@ -202,7 +202,6 @@ class DispatchInput
                 }
                 $items[] = $temp;
             }
-
             return $items;
         }
         return null;
