@@ -73,7 +73,6 @@ class DocumentTransform
             'fee' => self::fee($inputs),
             'payment_condition_id' => Functions::valueKeyInArray($inputs, 'codigo_condicion_de_pago', '01'),
             'sale_note_id' => Functions::valueKeyInArray($inputs, 'codigo_nota_venta'),
-            'payments' => Functions::valueKeyInArray($inputs, 'payments'),
         ];
 
         $inputs_transform = self::invoice($inputs_transform, $inputs);
@@ -282,9 +281,9 @@ class DocumentTransform
         return null;
     }
 
-    
+
     /**
-     * 
+     *
      * Datos adicionales del pago de retencion
      *
      * @param  array $inputs

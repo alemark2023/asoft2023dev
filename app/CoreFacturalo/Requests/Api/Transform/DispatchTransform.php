@@ -38,6 +38,7 @@ class DispatchTransform
             'items' => self::items($inputs),
             'legends' => LegendTransform::transform($inputs),
             'actions' => ActionTransform::transform($inputs),
+            'additional_data' => Functions::valueKeyInArray($inputs, 'dato_adicional'),
         ];
          self::AffectedDocument($data, $inputs);
         return  $data;
@@ -157,7 +158,7 @@ class DispatchTransform
                     'total' => Functions::valueKeyInArray($row, 'total_item'),
 
                     'additional_information' => Functions::valueKeyInArray($row, 'informacion_adicional'),
-
+                    'additional_data' => Functions::valueKeyInArray($row, 'dato_adicional'),
                 ];
             }
 
