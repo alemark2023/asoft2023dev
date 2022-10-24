@@ -262,9 +262,11 @@ class Facturalo
 
     public function updateQr()
     {
-        $this->document->update([
-            'qr' => $this->getQr(),
-        ]);
+        if(config('tenant.save_qrcode')) {
+            $this->document->update([
+                'qr' => $this->getQr(),
+            ]);
+        }
     }
 
     public function updateState($state_type_id)
@@ -364,10 +366,10 @@ class Facturalo
             $pdf_margin_left = 14;
         }
         if (substr($base_pdf_template, 0, 7) === 'facnova') {
-            $pdf_margin_top = 5;
-            $pdf_margin_right = 2;
+            $pdf_margin_top = 10;
+            $pdf_margin_right = 4;
             $pdf_margin_bottom = 5;
-            $pdf_margin_left = 5;
+            $pdf_margin_left = 15;
         }
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $this->document, $format_pdf);
