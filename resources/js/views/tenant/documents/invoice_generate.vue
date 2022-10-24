@@ -2418,29 +2418,16 @@ export default {
 
                 if(this.table)
                 {
-                    console.log("tabl")
                     i.unit_price_value = i.unit_value;
                     i.input_unit_price_value = (i.item.has_igv) ? i.item.unit_price : i.unit_value;
-                    console.log("i.unit_price_value", i.unit_price_value)
-                    console.log("i.input_unit_price_value", i.input_unit_price_value)
                 }
                 else
                 {
-                console.log("no tabl")
-                i.unit_price_value = i.unit_value;
-                i.input_unit_price_value = (i.item.has_igv) ? i.unit_price : i.unit_value;
+                    i.unit_price_value = i.unit_value;
+                    i.input_unit_price_value = (i.item.has_igv) ? i.unit_price : i.unit_value;
                 }
 
-                // i.input_unit_price_value = i.unit_price;
-
-                if(this.table)
-                {
-                    i.discounts = (i.discounts) ? this.getPrepareDiscountsItems(i.discounts) : []
-                }
-                else
-                {
                 i.discounts = (i.discounts) ? Object.values(i.discounts) : []
-                }
                 // i.discounts = i.discounts || [];
                 i.charges = i.charges || [];
                 i.attributes = i.attributes || [];
@@ -2449,19 +2436,6 @@ export default {
                 i.item = this.onPrepareIndividualItem(i);
                 return i;
             });
-        },
-        getPrepareDiscountsItems(discounts)
-        {
-            return Object.values(discounts).map((discount)=>{
-
-                const new_dscto = discount
-
-                if(discount.is_amount)
-                {
-                    discount.percentage = discount.amount
-                }
-                return discount
-            })
         },
         onPrepareIndividualItem(data) {
 
@@ -2475,18 +2449,13 @@ export default {
 
             if(this.table)
             {
-                console.log("tabl")
                 new_item.sale_unit_price = new_item.unit_price
                 new_item.unit_price = new_item.unit_price
-
-                console.log("new_item.sale_unit_price", new_item.sale_unit_price)
-                console.log("new_item.unit_price", new_item.unit_price)
             }
             else
             {
-            console.log("no tabl")
-            new_item.sale_unit_price = data.unit_price
-            new_item.unit_price = data.unit_price
+                new_item.sale_unit_price = data.unit_price
+                new_item.unit_price = data.unit_price
             }
 
             return new_item
@@ -3358,6 +3327,7 @@ export default {
             this.calculateTotal()
         },
         calculateTotal() {
+
             let total_discount = 0
             let total_charge = 0
             let total_exportation = 0
