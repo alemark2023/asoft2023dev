@@ -2257,7 +2257,10 @@ export default {
             this.form.pending_amount_prepayment = data.pending_amount_prepayment || 0;
             this.form.payment_method_type_id = data.payment_method_type_id;
             this.form.charges = data.charges || [];
-            this.form.discounts = data.discounts || [];
+
+            this.form.discounts = this.prepareDataGlobalDiscount(data)
+            // this.form.discounts = data.discounts || [];
+
             this.form.seller_id = data.seller_id;
             this.form.items = this.onPrepareItems(data.items);
             // this.form.series = data.series; //form.series no llena el selector
@@ -2337,6 +2340,22 @@ export default {
 
             this.calculateTotal();
             // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+        },
+        prepareDataGlobalDiscount(data)
+        {
+            const discounts = data.discounts ? Object.values(data.discounts) : []
+
+            if(discounts.length === 1)
+            {
+                if(discounts[0].is_amount !== undefined && discounts[0].is_amount !== null)
+                {
+                    this.is_amount = discounts[0].is_amount
+                }
+
+                this.total_global_discount = this.is_amount ?  discounts[0].amount : (discounts[0].factor * 100)
+            }
+
+            return discounts
         },
         async prepareDataCustomer() {
 
@@ -3612,7 +3631,8 @@ export default {
                 description: this.global_discount_type.description,
                 factor: factor,
                 amount: amount,
-                base: base
+                base: base,
+                is_amount: this.is_amount
             })
         },
         discountGlobal() {
