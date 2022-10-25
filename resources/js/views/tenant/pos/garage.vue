@@ -966,6 +966,22 @@ export default {
             {
                 if(exist_item.affectation_igv_type_id != affectation_igv_type.id) this.$message.warning('Ya agregó el producto con otro tipo de afectación, para aplicar el cambio debe eliminarlo y agregarlo nuevamente.')
             }
+
+            item.change_affectation_exonerated_igv = true
+        },
+        setOriginalAffectationToItems()
+        {
+            if(this.configuration !== undefined && this.configuration.change_affectation_exonerated_igv)
+            {
+                this.items.forEach(row => {
+                    
+                    if(row.change_affectation_exonerated_igv !== undefined && row.change_affectation_exonerated_igv && row.sale_affectation_igv_type_id != row.original_affectation_igv_type_id)
+                    {
+                        row.sale_affectation_igv_type_id = row.original_affectation_igv_type_id
+                    }
+
+                })
+            }
         },
         ...mapActions(['loadConfiguration']),
         keyupEnterQuantity() {
@@ -1339,6 +1355,7 @@ export default {
                 this.initForm();
                 this.getTables();
                 this.setFormPosLocalStorage();
+                this.setOriginalAffectationToItems()
 
             });
 
