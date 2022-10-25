@@ -262,9 +262,11 @@ class Facturalo
 
     public function updateQr()
     {
-        $this->document->update([
-            'qr' => $this->getQr(),
-        ]);
+        if(config('tenant.save_qrcode')) {
+            $this->document->update([
+                'qr' => $this->getQr(),
+            ]);
+        }
     }
 
     public function updateState($state_type_id)
@@ -364,10 +366,10 @@ class Facturalo
             $pdf_margin_left = 14;
         }
         if (substr($base_pdf_template, 0, 7) === 'facnova') {
-            $pdf_margin_top = 5;
-            $pdf_margin_right = 2;
+            $pdf_margin_top = 10;
+            $pdf_margin_right = 4;
             $pdf_margin_bottom = 5;
-            $pdf_margin_left = 5;
+            $pdf_margin_left = 15;
         }
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $this->document, $format_pdf);
@@ -440,6 +442,13 @@ class Facturalo
                 $height_legend = 10;
             }
 
+            $append_height = 0;
+
+            if($this->type === 'dispatch')
+            {
+                $this->appendHeightFromDispatch($append_height, $format, $this->document);
+            }
+
             $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
@@ -471,6 +480,7 @@ class Facturalo
                     $extra_by_item_additional_information+
                     $height_legend+
                     $document_transport+
+                    $append_height+
                     $document_retention
                 ],
                 'margin_top' => 0,
@@ -676,6 +686,55 @@ class Facturalo
         $this->uploadFile($pdf->output('', 'S'), 'pdf');
         return $this;
     }
+
+    
+    /**
+     * 
+     * Agregar altura para ticket de guia
+     *
+     * @param  float $append_height
+     * @param  $document
+     * @return void
+     */
+    private function appendHeightFromDispatch(&$append_height, $format, $document)
+    {
+        $base_height = 0;
+        $observations = 0;
+        $data_affected_document = 0;
+        $transfer_reason_type = 0;
+        $transport_mode_type = 0;
+        $driver = 0;
+        $license_plate = 0;
+        $secondary_license_plates = 0;
+
+        if($format == 'ticket_58')
+        {
+            $base_height = 80;
+            if($document->data_affected_document) $data_affected_document = 25;
+        }
+        else
+        {
+            $base_height = 50;
+            if($document->data_affected_document) $data_affected_document = 20;
+        }
+
+        if($document->observations) $observations = 30;
+        if($document->transfer_reason_type) $transfer_reason_type = 6;
+        if($document->transport_mode_type) $transport_mode_type = 6;
+        if($document->license_plate) $license_plate = 5;
+        if($document->secondary_license_plates) $secondary_license_plates = 5;
+
+        if($document->driver)
+        {
+            if($document->driver->number)  $driver += 5;
+            if($document->driver->license)  $driver += 5;
+        }
+        
+        $append_height += $base_height + $observations + $data_affected_document + $transfer_reason_type + $transport_mode_type + $driver
+                            + $license_plate + $secondary_license_plates;
+
+    }
+
 
     public function loadXmlSigned()
     {
