@@ -6,6 +6,13 @@
                 :key-code="112"
                 @success="handleFn112"
             />
+            
+            <!-- F4 -->
+            <Keypress :key-code="115"
+                key-event="keyup"
+                @success="handleFn115"/>
+            <!-- F4 -->
+
             <div class="col-md-4">
                 <h2>
                     <el-switch
@@ -993,6 +1000,10 @@ export default {
         handleFn113() {
             this.setView("cat3");
         },
+        handleFn115()
+        {
+            this.openDialogNewPerson()
+        },
         initFocus() {
             this.$refs.ref_search_items.$el
                 .getElementsByTagName("input")[0]
@@ -1179,9 +1190,36 @@ export default {
                 return;
             }
 
-            if (this.input_person.number) {
-                if (!isNaN(parseInt(this.input_person.number))) {
-                    switch (this.input_person.number.length) {
+            this.openDialogNewPerson()
+
+            // if (this.input_person.number) {
+            //     if (!isNaN(parseInt(this.input_person.number))) {
+            //         switch (this.input_person.number.length) {
+            //             case 8:
+            //                 this.input_person.identity_document_type_id = "1";
+            //                 this.showDialogNewPerson = true;
+            //                 break;
+
+            //             case 11:
+            //                 this.input_person.identity_document_type_id = "6";
+            //                 this.showDialogNewPerson = true;
+            //                 break;
+            //             default:
+            //                 this.input_person.identity_document_type_id = "6";
+            //                 this.showDialogNewPerson = true;
+            //                 break;
+            //         }
+            //     }
+            // }
+        },
+        openDialogNewPerson()
+        {
+            if (this.input_person.number) 
+            {
+                if (!isNaN(parseInt(this.input_person.number))) 
+                {
+                    switch (this.input_person.number.length) 
+                    {
                         case 8:
                             this.input_person.identity_document_type_id = "1";
                             this.showDialogNewPerson = true;
