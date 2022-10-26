@@ -35,7 +35,9 @@ class TenantAddSeriesAndNumberToInventoriesTransfer extends Migration
     public function down()
     {
         Schema::table('inventories_transfer', function (Blueprint $table) {
+            $table->dropColumn('external_id');
             $table->dropColumn('soap_type_id');
+            $table->dropColumn('document_type_id');
             $table->dropColumn('series');
             $table->dropColumn('number');
             $table->dropColumn('filename');

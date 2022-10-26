@@ -26,7 +26,7 @@ class InventoryTransferObserver
     private function getNumberDocument($inventory_transfer)
     {
         if ($inventory_transfer->number === '#') {
-            $record = Guide::query()
+            $record = InventoryTransfer::query()
                 ->select('number')
                 ->where('soap_type_id', $inventory_transfer->soap_type_id)
                 ->where('document_type_id', $inventory_transfer->document_type_id)

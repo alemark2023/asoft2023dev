@@ -231,6 +231,7 @@ class InventoryKardex extends ModelTenant
                 } else {
                     $output = ($transaction->type == 'output') ? $qty : "-";
                 }
+
                 $user = auth()->user();
                 $data['balance'] = $balance += $qty;
                 $data['type_transaction'] = $inventory_kardexable->description;
@@ -240,6 +241,12 @@ class InventoryKardex extends ModelTenant
                 if($guide) {
                     $data['number'] = $guide->series.'-'.$guide->number;
                     $data['date_of_issue'] = $guide->date_of_issue->format('Y-m-d');
+                }
+
+                $inventory_transfer = InventoryTransfer::query()->where('id', $inventory_kardexable->inventories_transfer_id)->first();
+                if($inventory_transfer) {
+                    $data['number'] = $inventory_transfer->series.'-'.$inventory_transfer->number;
+                    $data['date_of_issue'] = $inventory_transfer->created_at->format('Y-m-d');
                 }
 
                 if ($inventory_kardexable->warehouse_destination_id === $user->establishment_id) {
