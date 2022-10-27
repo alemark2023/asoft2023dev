@@ -543,10 +543,10 @@ class SaleNoteController extends Controller
         $configuration = Configuration::select('destination_sale','ticket_58')->first();
         // $sellers = User::GetSellers(false)->get();
         $sellers = User::getSellersToNvCpe($establishment_id,$userId);
-
+        $global_discount_types = ChargeDiscountType::getGlobalDiscounts();
 
         return compact('customers', 'establishments','currency_types', 'discount_types', 'configuration',
-                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers', 'global_charge_types');
+                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers', 'global_charge_types', 'global_discount_types');
     }
 
     public function changed($id)
