@@ -661,6 +661,7 @@ class DispatchController extends Controller
             ->select('series', 'number', 'id', 'date_of_issue','soap_shipping_response')
             ->where('customer_id', $clientId)
             ->whereNull('reference_document_id')
+            ->whereStateTypeAccepted()
             ->orderBy('series')
             ->orderBy('number', 'desc')
             ->take(20)

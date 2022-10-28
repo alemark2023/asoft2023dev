@@ -1889,7 +1889,7 @@ export default {
             localStorage.removeItem('items');
             await this.$http.get('/documents/search-items', {params}).then(response => {
                 const itemsResponse = response.data.items.map(i => {
-                    return this.setItemFromResponse(i, itemsParsed);
+                    return this.setItemFromResponse(i, itemsParsed, true);
                 });
                 this.form.items = itemsResponse.map(i => {
                     return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv)
@@ -2122,7 +2122,8 @@ export default {
             }
 
         },
-        setItemFromResponse(item, itemsParsed) {
+        setItemFromResponse(item, itemsParsed, sum_quantity = false)
+        {
             /* Obtiene el igv del item, si no existe, coloca el gravado*/
             if (item.sale_affectation_igv_type !== undefined) {
                 item.affectation_igv_type = item.sale_affectation_igv_type
@@ -2180,14 +2181,31 @@ export default {
 
             item.quantity = 1;
 
-            let tempItem = itemsParsed.find(ip => (ip.item_id == item.id) || (ip.id == item.id));
-            if (tempItem !== undefined) {
-                item.quantity = tempItem.quantity
+            if(sum_quantity)
+            {
+                const quantity_from_item_response = this.getQuantityFromItemResponse(item, itemsParsed)
+                if(quantity_from_item_response > 0) item.quantity = quantity_from_item_response
             }
+            else
+            {
+                let tempItem = itemsParsed.find(ip => (ip.item_id == item.id) || (ip.id == item.id));
+                if (tempItem !== undefined) {
+                    item.quantity = tempItem.quantity
+                }
+            }
+
             // item.quantity = itemsParsed.find(ip => ip.item_id == item.id).quantity;
             item.warehouse_id = null;
 
             return item
+        },
+        getQuantityFromItemResponse(item, itemsParsed)
+        {
+            const group_items = itemsParsed.filter(ip => (ip.item_id == item.id) || (ip.id == item.id))
+
+            return _.sumBy(group_items, function(row){
+                return parseFloat(row.quantity)
+            })
         },
         disabledSeries()
         {
@@ -2257,7 +2275,10 @@ export default {
             this.form.pending_amount_prepayment = data.pending_amount_prepayment || 0;
             this.form.payment_method_type_id = data.payment_method_type_id;
             this.form.charges = data.charges || [];
-            this.form.discounts = data.discounts || [];
+
+            this.form.discounts = this.prepareDataGlobalDiscount(data)
+            // this.form.discounts = data.discounts || [];
+
             this.form.seller_id = data.seller_id;
             this.form.items = this.onPrepareItems(data.items);
             // this.form.series = data.series; //form.series no llena el selector
@@ -2337,6 +2358,22 @@ export default {
 
             this.calculateTotal();
             // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+        },
+        prepareDataGlobalDiscount(data)
+        {
+            const discounts = data.discounts ? Object.values(data.discounts) : []
+
+            if(discounts.length === 1)
+            {
+                if(discounts[0].is_amount !== undefined && discounts[0].is_amount !== null)
+                {
+                    this.is_amount = discounts[0].is_amount
+                }
+
+                this.total_global_discount = this.is_amount ?  discounts[0].amount : (discounts[0].factor * 100)
+            }
+
+            return discounts
         },
         async prepareDataCustomer() {
 
@@ -3629,7 +3666,8 @@ export default {
                 description: this.global_discount_type.description,
                 factor: factor,
                 amount: amount,
-                base: base
+                base: base,
+                is_amount: this.is_amount
             })
         },
         discountGlobal() {
