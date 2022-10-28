@@ -412,10 +412,15 @@
                                                     <el-input v-model="row.description"></el-input>
                                                 </td>
                                                 <td>
-                                                    <el-checkbox v-model="row.is_amount">Ingresar monto fijo
+                                                    <el-checkbox v-model="row.is_amount" @change="changeIsDiscountAmount(index)">Ingresar monto fijo
                                                     </el-checkbox>
                                                     <br>
-                                                    <el-input v-model="row.percentage"></el-input>
+                                                    <template v-if="row.is_amount">
+                                                        <el-input v-model="row.amount"></el-input>
+                                                    </template>
+                                                    <template v-else>
+                                                        <el-input v-model="row.percentage"></el-input>
+                                                    </template>
                                                 </td>
                                                 <td>
                                                     <button class="btn btn-danger"
@@ -1194,7 +1199,8 @@ export default {
                 factor: 0,
                 amount: 0,
                 base: 0,
-                is_amount: false
+                is_amount: false,
+                use_input_amount: true,
             })
         },
         clickRemoveDiscount(index) {
@@ -1203,6 +1209,11 @@ export default {
         changeDiscountType(index) {
             let discount_type_id = this.form.discounts[index].discount_type_id
             this.form.discounts[index].discount_type = _.find(this.discount_types, {id: discount_type_id})
+        },
+        changeIsDiscountAmount(index)
+        {
+            this.form.discounts[index].amount = 0
+            this.form.discounts[index].percentage = 0
         },
         clickAddCharge() {
             this.form.charges.push({
