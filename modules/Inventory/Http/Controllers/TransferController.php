@@ -231,15 +231,16 @@ class TransferController extends Controller
                 ->where('document_type_id', 'U4')
                 ->first();
 
-            $row = InventoryTransfer::create([
-                'description' => $request->description,
-                'warehouse_id' => $request->warehouse_id,
-                'warehouse_destination_id' => $request->warehouse_destination_id,
-                'quantity' => count($request->items),
-                'document_type_id' => $document_type_id,
-                'series' => $series->number,
-                'number' => '#',
-            ]);
+            $row = InventoryTransfer::query()
+                ->create([
+                    'description' => $request->description,
+                    'warehouse_id' => $request->warehouse_id,
+                    'warehouse_destination_id' => $request->warehouse_destination_id,
+                    'quantity' => count($request->items),
+                    'document_type_id' => $document_type_id,
+                    'series' => $series->number,
+                    'number' => '#',
+                ]);
 
             foreach ($request->items as $it) {
                 $inventory = new Inventory();

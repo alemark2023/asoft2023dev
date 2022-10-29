@@ -3,10 +3,12 @@
 namespace Modules\Inventory\Http\Controllers;
 
 use App\Models\Tenant\Item;
+use App\Models\Tenant\Series;
 use Exception;
 
 //use App\Models\Tenant\Item;
 use Illuminate\Http\Request;
+use Modules\Inventory\Models\InventoryTransfer;
 use Modules\Item\Models\ItemLot;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -395,6 +397,29 @@ class InventoryController extends Controller
                 ];
             }
 
+            $document_type_id = 'U4';
+            $warehouse = Warehouse::query()
+                ->select('id', 'establishment_id')
+                ->where('id', $warehouse_id)
+                ->first();
+
+            $series = Series::query()
+                ->select('number')
+                ->where('establishment_id', $warehouse->establishment_id)
+                ->where('document_type_id', 'U4')
+                ->first();
+
+            $row = InventoryTransfer::query()
+                ->create([
+                    'description' => $detail,
+                    'warehouse_id' => $warehouse_id,
+                    'warehouse_destination_id' => $warehouse_new_id,
+                    'quantity' => 1,
+                    'document_type_id' => $document_type_id,
+                    'series' => $series->number,
+                    'number' => '#',
+                ]);
+
             $inventory = new Inventory();
             $inventory->type = 2;
             $inventory->description = 'Traslado';
@@ -402,8 +427,8 @@ class InventoryController extends Controller
             $inventory->warehouse_id = $warehouse_id;
             $inventory->warehouse_destination_id = $warehouse_new_id;
             $inventory->quantity = $quantity_move;
+            $inventory->inventories_transfer_id = $row->id;
             $inventory->detail = $detail;
-
             $inventory->save();
 
             foreach ($lots as $lot) {
@@ -456,11 +481,42 @@ class InventoryController extends Controller
 
             $inventory = new Inventory();
             $inventory->type = 3;
-            $inventory->description = 'Retirar';
+            $inventory->description = 'Retiro';
             $inventory->item_id = $item_id;
             $inventory->warehouse_id = $warehouse_id;
             $inventory->quantity = $quantity_remove;
             $inventory->save();
+
+            $warehouse = Warehouse::query()->find($warehouse_id);
+
+            $itm = Item::query()
+                ->select('id', 'description')
+                ->where('id', $item_id)
+                ->first();
+
+            $guide_items[] = [
+                'id' => $item_id,
+                'name' => $itm->description,
+                'stock_add' => $quantity_remove
+            ];
+
+            $res = (new GuideController())->storeWithData([
+                'establishment_id' => $warehouse->establishment_id,
+                'warehouse_id' => $warehouse_id,
+                'date_of_issue' => now()->format('Y-m-d'),
+                'time_of_issue' => now()->format('H:i:s'),
+                'inventory_transaction_id' => '12',
+                'observations' => 'Retiro',
+                'items' => $guide_items
+            ]);
+
+            if (!$res['success']) {
+                throw new Exception($res['message']);
+            }
+
+            $inventory->update([
+                'guide_id' => $res['data']['id']
+            ]);
 
             foreach ($lots as $lot) {
                 if ($lot['has_sale']) {
