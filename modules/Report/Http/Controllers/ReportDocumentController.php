@@ -26,10 +26,12 @@ use App\Models\System\Client;
 
 use Maatwebsite\Excel\Excel as BaseExcel;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Traits\JobReportTrait;
+
 
 class ReportDocumentController extends Controller
 {
-    use ReportTrait;
+    use ReportTrait, JobReportTrait;
 
 
 
@@ -190,6 +192,12 @@ class ReportDocumentController extends Controller
     {
         $host = $request->getHost();
         $columns=json_decode($request->columns);
+
+        $website = $this->getTenantWebsite();
+        $user = $this->getCurrentUser();
+        $tray = $this->createDownloadTray($user->id, 'DOCUMENTS', $request->input('format'), 'Reporte Ventas Documentos');
+
+        /*
         $tray = DownloadTray::create([
             'user_id' => auth()->user()->id,
             'module' => 'DOCUMENTS',
@@ -199,6 +207,7 @@ class ReportDocumentController extends Controller
         ]);
 
         $trayId = $tray->id;
+        */
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
@@ -225,8 +234,19 @@ class ReportDocumentController extends Controller
             $categories = $this->getCategories($records, false);
             $categories_services = $this->getCategories($records, true);
         }
+        \Log::info("tray:".$tray->id."website:". $website->id);
 
-        ProcessDocumentReport::dispatch($trayId, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
+        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
+        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
+        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
+        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
+        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
+        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
+        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
+        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
+        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
+
+        ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
 
         return  [
             'success' => true,

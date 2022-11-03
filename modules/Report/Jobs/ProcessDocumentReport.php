@@ -23,8 +23,9 @@
     use Mpdf\Mpdf;
     use Mpdf\Config\ConfigVariables;
     use Mpdf\Config\FontVariables;
-
     use Modules\Report\Exports\DocumentExport;
+    use App\Traits\JobReportTrait;
+    
 
     class ProcessDocumentReport implements ShouldQueue
     {
@@ -32,6 +33,7 @@
         use InteractsWithQueue;
         use Queueable;
         use SerializesModels;
+        use JobReportTrait;
         use StorageDocument;
 
         public $tray_id;
@@ -43,6 +45,7 @@
         public $filters;
         public $categories;
         public $categories_services;
+        public $website_id;
 
 
         /**
@@ -50,19 +53,26 @@
          *
          * @return void
          */
-        public function __construct( int $tray_id,   $params, $company, $establishment, $filters, $categories=null, $categories_services=null,$columns)
+        public function __construct(int $tray_id, int $website_id, $records, $company, $establishment, $filters, $categories=null, $categories_services=null,$columns)
         {
-            //$this->website_id = $website_id;
+            $this->website_id = $website_id;
+            $this->showLogInfo("construuct Start WebsiteId => {$this->website_id}");
+
             $this->tray_id = $tray_id;
             //$this->warehouse_id = $warehouse_id;
             //$this->filter = $filter;
+            /*
             $this->params = $params;
+            */
             $this->establishment = $establishment;
             $this->filters = $filters;
             $this->categories = $categories;
             $this->categories_services = $categories_services;
             $this->company = $company;
             $this->columns = $columns;
+            $this->records = $records;
+
+            $this->showLogInfo("construuct tray_id tray_id => {$this->tray_id}");
         }
 
         /**
@@ -72,7 +82,17 @@
          */
         public function handle()
         {
+            /*
             Log::debug("ProcessDocumentReport Start");
+            */
+            $this->showLogInfo("ProcessDocumentReport Start WebsiteId => {$this->website_id}");
+
+            $website = $this->findWebsite($this->website_id);
+            $tenancy = app(Environment::class);
+            $tenancy->tenant($website);
+
+            $this->showLogInfo("website => ".json_encode($website));
+
 
             //$tray = DownloadTray::find($this->tray_id);
             $path = null;
@@ -93,7 +113,7 @@
 
                     Log::debug("Render pdf init");
 
-                    $records=$this->params;
+                    $records=$this->records;
                     $company=$this->company;
                     $establishment=$this->establishment;
                     $filters=$this->filters;
@@ -162,12 +182,12 @@
 
                 } else {
 
-                    Log::debug($this->params);
+                    Log::debug($this->records);
                     $filename = 'DOCUMENT_ReporteDoc_' . date('YmdHis') . '-' . $tray->user_id;
                     Log::debug("Render excel init");
                     $inventoryExport = new DocumentExport();
                     $inventoryExport
-                        ->records($this->params)
+                        ->records($this->records)
                         ->company($this->company)
                         ->establishment($this->establishment)
                         ->filters($this->filters)
