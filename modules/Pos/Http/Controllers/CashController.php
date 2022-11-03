@@ -15,6 +15,7 @@ use Modules\Pos\Exports\ReportCashExport;
 use Modules\Pos\Mail\CashEmail;
 use Mpdf\Mpdf;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class CashController extends Controller
 {
@@ -158,7 +159,12 @@ class CashController extends Controller
         $nota_credito = 0;
         $nota_debito = 0;
 
-        
+
+        $items = 0; // declaro items
+        $all_items = []; // declaro items
+        $collection_items = new Collection();
+
+
         /************************/
 
         foreach ($cash_documents as $cash_document) {
@@ -226,6 +232,16 @@ class CashController extends Controller
                     'type_transaction_prefix'   => 'income',
                     'order_number_key'          => $order_number.'_'.$sale_note->created_at->format('YmdHis'),
                 ];
+
+                // items
+                // dd($document->items);
+                foreach($sale_note->items as $item) {
+                    $items++;
+                    array_push($all_items, $item);
+                    $collection_items->push($item);
+                }
+                // dd($items);
+                // fin items
 
             }
             /** Documentos de Tipo Document */
@@ -339,6 +355,16 @@ class CashController extends Controller
                 ];
                 /* Notas de credito o debito*/
                 $notes = $document->getNotes();
+
+                // items
+                // dd($document->items);
+                foreach($document->items as $item) {
+                    $items++;
+                    array_push($all_items, $item);
+                    $collection_items->push($item);
+                }
+                // dd($items);
+                // fin items
             }
             /** Documentos de Tipo Servicio tecnico */
             elseif ($cash_document->technical_service) {
@@ -624,13 +650,84 @@ class CashController extends Controller
 
         $data['total_cash_egress_pmt_01'] = self::FormatNumber($data['total_cash_egress_pmt_01']);
 
+        $items_to_report = $this->getFormatItemToReport($collection_items);
+
+        $data['items'] = $items;
+        $data['all_items'] = $all_items;
+        $data['items_to_report'] = $items_to_report;
+
         //$cash_income = ($final_balance > 0) ? ($cash_final_balance - $cash->beginning_balance) : 0;
         return $data;
     }
 
-    
     /**
-     * 
+     * organizar items totales para mostrar cantidades y montos por item
+     * obtener categorias y cantidad de productos por cada una
+     *
+     * @param  $items
+     * @return array
+     */
+    public function getFormatItemToReport($items) {
+        $items_all = [];
+        $categories_all = [];
+        $grouped = $items->groupBy('item_id');
+        $group_cat = [];
+        foreach($grouped as $group){
+            $id = $group[0]->item_id;
+            $name = $group[0]->item->description;
+            $unit_price = $group[0]->unit_price;
+            $quantity = 0;
+            $total = 0;
+            foreach($group as $item){
+                $quantity = $quantity + $item->quantity;
+                $total = $total + $item->total;
+                $cat = [
+                    'name' => $item->relation_item->category_id != null ?$item->relation_item->category->name:'N/A',
+                    'quantity' => $item->quantity,
+                    'total' => $item->total
+                ];
+                array_push($group_cat, $cat);
+            }
+
+            $item = [
+                'id' => $id,
+                'name' => $name,
+                'unit_price' => $unit_price,
+                'quantity' => $quantity,
+                'total' => $total
+            ];
+
+
+            array_push($items_all, $item);
+        }
+
+        $collect_cat = collect($group_cat)->groupBy('name');
+        // dd($collect_cat);
+        foreach($collect_cat as $groups) {
+            $cat_quantity = 0;
+            $cat_total = 0;
+            foreach($groups as $cat) {
+                $cat_quantity = $cat_quantity + $cat['quantity'];
+                $cat_total = $cat_total + $cat['total'];
+            }
+            $cat_res = [
+                'name' => $groups[0]['name'],
+                'quantity' => $cat_quantity,
+                'total' => $cat_total
+            ];
+            array_push($categories_all, $cat_res);
+        }
+        // dd($categories_all);
+
+        return [
+            'items' => $items_all,
+            'categories' => $categories_all
+        ];
+    }
+
+
+    /**
+     *
      * Obtener total de pagos en efectivo con destino caja
      *
      * @param  $payments
@@ -652,9 +749,9 @@ class CashController extends Controller
                     });
     }
 
-    
+
     /**
-     * 
+     *
      * Filtrar pagos en efectivo
      *
      * @param  array $payments
@@ -754,28 +851,27 @@ class CashController extends Controller
         }
 
         $view = view('pos::cash.report_pdf_'.$format, compact('data'));
+        if($format === 'simple_a4') {
+            $view = view('pos::cash.report_pdf_'.$format, compact('data'));
+        }
         $html = $view->render();
-        /*
-        $html = view('pos::cash.report_pdf_' . $format,
-            compact('cash', 'company', 'methods_payment','status_type_id'))->render();
-        */
+
+        $pdf = new Mpdf([
+            'mode' => 'utf-8',
+        ]);
         if ($format === 'ticket') {
             $pdf = new Mpdf([
-                                'mode'          => 'utf-8',
-                                'format'        => [
-                                    $width,
-                                    190 +
-                                    ($quantity_rows * 8),
-                                ],
-                                'margin_top'    => 3,
-                                'margin_right'  => 3,
-                                'margin_bottom' => 3,
-                                'margin_left'   => 3,
-                            ]);
-        } else {
-            $pdf = new Mpdf([
-                                'mode' => 'utf-8',
-                            ]);
+                'mode'          => 'utf-8',
+                'format'        => [
+                    $width,
+                    190 +
+                    ($quantity_rows * 8),
+                ],
+                'margin_top'    => 3,
+                'margin_right'  => 3,
+                'margin_bottom' => 3,
+                'margin_left'   => 3,
+            ]);
         }
 
         $pdf->WriteHTML($html);
@@ -824,6 +920,30 @@ class CashController extends Controller
     public function reportA4($cash) {
         $temp = tempnam(sys_get_temp_dir(), 'cash_pdf_a4');
         file_put_contents($temp, $this->getPdf($cash, 'a4'));
+
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="Reporte"'
+        ];
+
+        return response()->file($temp, $headers);
+    }
+
+    /**
+     * Reporte en A4 formato cash_pdf_a4
+     *
+     * Usado en:
+     * CashController - App
+     *
+     * @param $cash
+     *
+     * @return mixed
+     * @throws \Mpdf\MpdfException
+     * @throws \Throwable
+     */
+    public function reportSimpleA4($cash) {
+        $temp = tempnam(sys_get_temp_dir(), 'cash_pdf_a4');
+        file_put_contents($temp, $this->getPdf($cash, 'simple_a4'));
 
         $headers = [
             'Content-Type' => 'application/pdf',
