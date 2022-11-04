@@ -281,6 +281,7 @@
             'change_affectation_exonerated_igv',
             'show_load_voucher',
             'search_factory_code_items',
+            'enabled_dispatch_ticket_pdf',
             'enable_discount_by_customer'
         ];
 
@@ -397,8 +398,9 @@
             'change_affectation_exonerated_igv'=>'bool',
             'show_load_voucher'=>'bool',
             'search_factory_code_items'=>'bool',
+            'enabled_dispatch_ticket_pdf'=>'bool',
             'enable_discount_by_customer' => 'boolean'
-
+            
         ];
 
         protected $hidden = [
@@ -635,6 +637,7 @@
                 'change_affectation_exonerated_igv' => $this->change_affectation_exonerated_igv,
                 'show_load_voucher' => $this->show_load_voucher,
                 'search_factory_code_items' => $this->search_factory_code_items,
+                'enabled_dispatch_ticket_pdf' => $this->enabled_dispatch_ticket_pdf,
                 'enable_discount_by_customer' => $this->enable_discount_by_customer,
 
             ];

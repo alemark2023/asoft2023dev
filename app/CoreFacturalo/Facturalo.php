@@ -680,12 +680,21 @@ class Facturalo
         else {
             $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
             $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+            $helper_facturalo = new HelperFacturalo();
+
+            if($helper_facturalo->isAllowedAddDispatchTicket($format_pdf, $this->type, $this->document))
+            {
+                $helper_facturalo->setDataToDocumentDispatchTicket($format_pdf, $pdf, $template, $base_pdf_template, $width, $quantity_rows, $extra_by_item_description, $this->company, $this->document);
+            }
+
         }
 
         // echo $html_header.$html.$html_footer; exit();
         $this->uploadFile($pdf->output('', 'S'), 'pdf');
         return $this;
     }
+
 
     
     /**

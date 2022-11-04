@@ -4,6 +4,8 @@ namespace App\CoreFacturalo;
 
 use App\Models\Tenant\Bank;
 use App\Models\Tenant\BankAccount;
+use Mpdf\HTMLParserMode;
+
 
 class HelperFacturalo
 {
@@ -70,5 +72,65 @@ class HelperFacturalo
                        '09' => 'SETIEMBRE', '10' => 'OCTUBRE', '11' => 'NOVIEMBRE', '12' => 'DICIEMBRE'];
 
         return $date_format[2].'-'.$month_name[$date_format[1]].'-'.$date_format[0];
+    }
+
+    
+
+
+
+
+    public function isAllowedAddDispatchTicket($format_pdf, $type, $document)
+    {
+        return in_array($format_pdf, ['ticket', 'ticket_58', 'ticket_50']) && in_array($type, ['invoice', 'sale-note']) && $document->dispatch_ticket_pdf;
+    }
+    
+
+    public function setDataToDocumentDispatchTicket(
+        $format_pdf, 
+        $pdf, 
+        $template, 
+        $base_pdf_template, 
+        $width, 
+        $quantity_rows, 
+        $extra_by_item_description,
+        $company,
+        $document
+    )
+    {
+        $dispatch_pdf_data = [
+            'base_pdf_template' => $base_pdf_template,
+            'name_template' => 'document_dispatch_ticket',
+            'base_width' => $width,
+            'base_height' => 40 + (($quantity_rows * 8) + $extra_by_item_description),
+            'mgt' => 0,
+            'mgr' => 1,
+            'mgb' => 0,
+            'mgl' => 1
+        ];
+
+        $this->addDocumentDispatchTicket($pdf, $template, $dispatch_pdf_data, $company, $document);
+    }
+
+
+    public function addDocumentDispatchTicket(&$pdf, $template, $pdf_data, $company, $document)
+    {
+        $html_dispatch_ticket = $template->pdfWithoutFormat($pdf_data['base_pdf_template'], $pdf_data['name_template'], $company, $document);
+        $additional = 0;
+
+        if($document->reference_data) $additional += 10;
+
+        $pdf->AddPageByArray([
+            'orientation' => 'P',
+            'newformat' => [
+                $pdf_data['base_width'],
+                $pdf_data['base_height'] + $additional,
+            ],
+            'mgt' => $pdf_data['mgt'],
+            'mgr' => $pdf_data['mgr'],
+            'mgb' => $pdf_data['mgb'],
+            'mgl' => $pdf_data['mgl']
+        ]);
+        
+        $pdf->writeHTML($html_dispatch_ticket, HTMLParserMode::HTML_BODY);
     }
 }
