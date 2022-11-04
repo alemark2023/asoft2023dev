@@ -1577,11 +1577,6 @@ class SaleNoteController extends Controller
      */
     public function totals(Request $request)
     {
-        $flag_test = 1;
-
-        if($flag_test)
-        {
-
         $query = $this->getRecords($request)->whereStateTypeAccepted()->whereFilterWithOutRelations();
 
         $total_pen = $query->sum('total');
@@ -1591,27 +1586,6 @@ class SaleNoteController extends Controller
         $total_paid_pen = SaleNotePayment::sumPaymentsBySaleNote($sale_notes_id);
 
         $total_pending_paid_pen = $total_pen - $total_paid_pen;
-
-        }
-
-        else
-        {
-
-        $records =  $this->getRecords($request)->whereStateTypeAccepted()->get(); //SaleNote::where([['state_type_id', '01'],['currency_type_id', 'PEN']])->get();
-        $total_pen = 0;
-        $total_paid_pen = 0;
-        $total_pending_paid_pen = 0;
-
-        $total_pen = $records->sum('total');
-
-        foreach ($records as $sale_note) {
-
-            $total_paid_pen += $sale_note->payments->sum('payment');
-
-        }
-
-        $total_pending_paid_pen = $total_pen - $total_paid_pen;
-        }
 
         return [
             'total_pen' => number_format($total_pen, 2, ".", ""),
