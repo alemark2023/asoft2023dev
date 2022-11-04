@@ -944,9 +944,62 @@ class SaleNoteController extends Controller
     private function reloadPDF($sale_note, $format, $filename) {
         $this->createPdf($sale_note, $format, $filename);
     }
+    
 
-    public function createPdf($sale_note = null, $format_pdf = null, $filename = null) {
+    /**
+     * 
+     * Obtener el ancho del ticket dependiendo del formato
+     *
+     * @param  string $format_pdf
+     * @return int
+     */
+    public function getWidthTicket($format_pdf)
+    {
+        $width = 0;
 
+        if(config('tenant.enabled_template_ticket_80'))
+        {
+            $width = 76;
+        } 
+        else
+        {
+            switch ($format_pdf)
+            {
+                case 'ticket_58':
+                    $width = 56;
+                    break;
+                case 'ticket_50':
+                    $width = 45;
+                    break;
+                default:
+                    $width = 78;
+                    break;
+            }
+        }
+
+        return $width;
+    }
+
+    
+    /**
+     * 
+     * Modificar valores del pdf para el formato ticket_50 (ancho, altura, margenes)
+     *
+     * @param  float $pdf_margin_right
+     * @param  float $pdf_margin_left
+     * @param  float $base_height
+     * @return void
+     */
+    public function changeValuesPdfTicket50(&$pdf_margin_right, &$pdf_margin_left, &$base_height)
+    {
+        $pdf_margin_right = 2;
+        $pdf_margin_left = 2;
+        $base_height = 90;
+    }
+    
+
+    public function createPdf($sale_note = null, $format_pdf = null, $filename = null)
+    {
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
         $pdf = new Mpdf();
@@ -960,10 +1013,17 @@ class SaleNoteController extends Controller
 
         $html = $template->pdf($base_template, "sale_note", $this->company, $this->document, $format_pdf);
 
-        if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58')) {
+        $pdf_margin_top = 2;
+        $pdf_margin_right = 5;
+        $pdf_margin_bottom = 0;
+        $pdf_margin_left = 5;
 
-            $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
-            if(config('tenant.enabled_template_ticket_80')) $width = 76;
+        // if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58'))
+        if(in_array($format_pdf, ['ticket', 'ticket_58', 'ticket_50']))
+        {
+            // $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
+            // if(config('tenant.enabled_template_ticket_80')) $width = 76;
+            $width = $this->getWidthTicket($format_pdf);
 
             $company_logo      = ($this->company->logo) ? 40 : 0;
             $company_name      = (strlen($this->company->name) / 20) * 10;
@@ -992,12 +1052,15 @@ class SaleNoteController extends Controller
             }
             $legends = $this->document->legends != '' ? '10' : '0';
             $bank_accounts = BankAccount::count() * 6;
+            $base_height = 120;
+
+            if($format_pdf === 'ticket_50') $this->changeValuesPdfTicket50($pdf_margin_right, $pdf_margin_left, $base_height);
 
             $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
-                    120 +
+                    $base_height +
                     ($quantity_rows * 8)+
                     ($discount_global * 3) +
                     $company_logo +
@@ -1016,10 +1079,10 @@ class SaleNoteController extends Controller
                     $total_exonerated +
                     $extra_by_item_description +
                     $total_taxed],
-                'margin_top' => 2,
-                'margin_right' => 5,
-                'margin_bottom' => 0,
-                'margin_left' => 5
+                'margin_top' => $pdf_margin_top,
+                'margin_right' => $pdf_margin_right,
+                'margin_bottom' => $pdf_margin_bottom,
+                'margin_left' => $pdf_margin_left
             ]);
         } else if($format_pdf === 'a5'){
 
