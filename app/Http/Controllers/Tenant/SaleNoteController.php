@@ -33,6 +33,7 @@ use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\SaleNoteItem;
+use App\Models\Tenant\SaleNotePayment;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\SaleNoteMigration;
 use App\Models\Tenant\Series;
@@ -1566,15 +1567,40 @@ class SaleNoteController extends Controller
 
     }
 
-
+    
+    /**
+     * 
+     * Totales de nota venta, se visualiza en el listado
+     *
+     * @param  Request $request
+     * @return array
+     */
     public function totals(Request $request)
     {
+        $flag_test = 1;
 
-        $records =  $this->getRecords($request)->get(); //SaleNote::where([['state_type_id', '01'],['currency_type_id', 'PEN']])->get();
+        if($flag_test)
+        {
+
+        $query = $this->getRecords($request)->whereStateTypeAccepted()->whereFilterWithOutRelations();
+
+        $total_pen = $query->sum('total');
+
+        $sale_notes_id = $query->select('id')->get()->pluck('id')->toArray();
+
+        $total_paid_pen = SaleNotePayment::sumPaymentsBySaleNote($sale_notes_id);
+
+        $total_pending_paid_pen = $total_pen - $total_paid_pen;
+
+        }
+
+        else
+        {
+
+        $records =  $this->getRecords($request)->whereStateTypeAccepted()->get(); //SaleNote::where([['state_type_id', '01'],['currency_type_id', 'PEN']])->get();
         $total_pen = 0;
         $total_paid_pen = 0;
         $total_pending_paid_pen = 0;
-
 
         $total_pen = $records->sum('total');
 
@@ -1585,14 +1611,15 @@ class SaleNoteController extends Controller
         }
 
         $total_pending_paid_pen = $total_pen - $total_paid_pen;
+        }
 
         return [
             'total_pen' => number_format($total_pen, 2, ".", ""),
             'total_paid_pen' => number_format($total_paid_pen, 2, ".", ""),
             'total_pending_paid_pen' => number_format($total_pending_paid_pen, 2, ".", "")
         ];
-
     }
+
 
     public function downloadExternal($external_id, $format = 'a4')
     {
