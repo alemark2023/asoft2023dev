@@ -1575,4 +1575,17 @@
             return $calculate_quantity_points;
         }
 
+        
+        /**
+         *
+         * Filtrar por moneda nacional
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeFilterCurrencyPen($query)
+        {
+            return $query->where('currency_type_id', self::NATIONAL_CURRENCY_ID);
+        }
+
     }

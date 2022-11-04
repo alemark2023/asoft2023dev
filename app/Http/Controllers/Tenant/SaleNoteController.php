@@ -1577,7 +1577,7 @@ class SaleNoteController extends Controller
      */
     public function totals(Request $request)
     {
-        $query = $this->getRecords($request)->whereStateTypeAccepted()->whereFilterWithOutRelations();
+        $query = $this->getRecords($request)->whereStateTypeAccepted()->whereFilterWithOutRelations()->filterCurrencyPen();
 
         $total_pen = $query->sum('total');
 
