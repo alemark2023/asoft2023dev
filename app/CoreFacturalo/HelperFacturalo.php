@@ -75,62 +75,54 @@ class HelperFacturalo
     }
 
     
-
-
-
-
+    /**
+     * 
+     * Validar si se agrega ticket de despacho al pdf
+     *
+     * @param  string $format_pdf
+     * @param  string $type
+     * @param  Document|SaleNote $document
+     * @return bool
+     */
     public function isAllowedAddDispatchTicket($format_pdf, $type, $document)
     {
-        return in_array($format_pdf, ['ticket', 'ticket_58', 'ticket_50']) && in_array($type, ['invoice', 'sale-note']) && $document->dispatch_ticket_pdf;
-    }
-    
-
-    public function setDataToDocumentDispatchTicket(
-        $format_pdf, 
-        $pdf, 
-        $template, 
-        $base_pdf_template, 
-        $width, 
-        $quantity_rows, 
-        $extra_by_item_description,
-        $company,
-        $document
-    )
-    {
-        $dispatch_pdf_data = [
-            'base_pdf_template' => $base_pdf_template,
-            'name_template' => 'document_dispatch_ticket',
-            'base_width' => $width,
-            'base_height' => 40 + (($quantity_rows * 8) + $extra_by_item_description),
-            'mgt' => 0,
-            'mgr' => 1,
-            'mgb' => 0,
-            'mgl' => 1
-        ];
-
-        $this->addDocumentDispatchTicket($pdf, $template, $dispatch_pdf_data, $company, $document);
+        return in_array($format_pdf, ['ticket', 'ticket_58', 'ticket_50']) && in_array($type, ['invoice', 'sale-note']) && (bool) $document->dispatch_ticket_pdf;
     }
 
-
-    public function addDocumentDispatchTicket(&$pdf, $template, $pdf_data, $company, $document)
+        
+    /**
+     * 
+     * Agregar ticket de despacho al pdf
+     *
+     * @param  Mpdf $pdf
+     * @param  Company $company
+     * @param  Document|SaleNote $document
+     * @param  array $additional_data
+     * @return void
+     */
+    public function addDocumentDispatchTicket(&$pdf, $company, $document, $additional_data)
     {
-        $html_dispatch_ticket = $template->pdfWithoutFormat($pdf_data['base_pdf_template'], $pdf_data['name_template'], $company, $document);
+        list($template, $base_pdf_template, $width, $calculated_height) = $additional_data;
+
+        $html_dispatch_ticket = $template->pdfWithoutFormat($base_pdf_template, 'document_dispatch_ticket', $company, $document);
         $additional = 0;
+        $base_height = 40;
 
         if($document->reference_data) $additional += 10;
 
         $pdf->AddPageByArray([
             'orientation' => 'P',
             'newformat' => [
-                $pdf_data['base_width'],
-                $pdf_data['base_height'] + $additional,
+                $width,
+                $base_height + $calculated_height + $additional,
             ],
-            'mgt' => $pdf_data['mgt'],
-            'mgr' => $pdf_data['mgr'],
-            'mgb' => $pdf_data['mgb'],
-            'mgl' => $pdf_data['mgl']
+            'mgt' => 0,
+            'mgr' => 1,
+            'mgb' => 0,
+            'mgl' => 1
         ]);
         
         $pdf->writeHTML($html_dispatch_ticket, HTMLParserMode::HTML_BODY);
     }
+
 }

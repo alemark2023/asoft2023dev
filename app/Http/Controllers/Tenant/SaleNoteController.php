@@ -1210,12 +1210,16 @@ class SaleNoteController extends Controller
             }
         }
 
-        
         $helper_facturalo = new HelperFacturalo();
 
         if($helper_facturalo->isAllowedAddDispatchTicket($format_pdf, 'sale-note', $this->document))
         {
-            $helper_facturalo->setDataToDocumentDispatchTicket($format_pdf, $pdf, $template, $base_template, $width, $quantity_rows, $extra_by_item_description, $this->company, $this->document);
+            $helper_facturalo->addDocumentDispatchTicket($pdf, $this->company, $this->document, [
+                $template, 
+                $base_template, 
+                $width, 
+                ($quantity_rows * 8) + $extra_by_item_description
+            ]);
         }
 
 
