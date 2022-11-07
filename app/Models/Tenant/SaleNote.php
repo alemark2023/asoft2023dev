@@ -814,6 +814,7 @@
                 'print_ticket' => url('') . "/sale-notes/print/{$this->external_id}/ticket",
                 'print_a5' => url('') . "/sale-notes/print/{$this->external_id}/a5",
                 'print_ticket_58' => url('') . "/sale-notes/print/{$this->external_id}/ticket_58",
+                'print_ticket_50' => $this->getUrlPrintByFormat('ticket_50'),
                 'purchase_order' => $this->purchase_order,
                 'due_date' => $due_date,
                 'sale_note' => $this,
@@ -839,6 +840,18 @@
                 'payments' => $this->payments,
             ];
         }
+
+        
+        /**
+         *
+         * @param  string $format
+         * @return string
+         */
+        public function getUrlPrintByFormat($format)
+        {
+            return url("sale-notes/print/{$this->external_id}/{$format}");
+        }
+        
 
         /**
          * @return Collection
@@ -1573,6 +1586,19 @@
             }
 
             return $calculate_quantity_points;
+        }
+
+        
+        /**
+         *
+         * Filtrar por moneda nacional
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeFilterCurrencyPen($query)
+        {
+            return $query->where('currency_type_id', self::NATIONAL_CURRENCY_ID);
         }
 
     }

@@ -92,6 +92,12 @@
         <td>Modalidad de Transporte: {{ $document->transport_mode_type->description }}</td>
     </tr>
 
+    @if($document->transfer_reason_description)
+    <tr>
+        <td colspan="2">Descripción de motivo de traslado: {{ $document->transfer_reason_description }}</td>
+    </tr>
+    @endif
+
     @if($document->related)
     <tr>
         <td>Número de documento (DAM): {{ $document->related->number }}</td>

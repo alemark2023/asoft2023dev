@@ -224,4 +224,15 @@ class RestaurantController extends Controller
         }
     }
 
+    public function savePrice(Request $request) {
+        $item = Item::find($request->id);
+        $item->sale_unit_price = $request->sale_unit_price;
+        $item->save();
+
+        return [
+            'success' => true,
+            'message' => 'Precio editado correctamente.'
+        ];
+    }
+
 }

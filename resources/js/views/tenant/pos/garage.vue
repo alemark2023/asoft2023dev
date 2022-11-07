@@ -6,6 +6,13 @@
                 :key-code="112"
                 @success="handleFn112"
             />
+            
+            <!-- F4 -->
+            <Keypress :key-code="115"
+                key-event="keyup"
+                @success="handleFn115"/>
+            <!-- F4 -->
+
             <div class="col-md-4">
                 <h2>
                     <el-switch
@@ -966,6 +973,22 @@ export default {
             {
                 if(exist_item.affectation_igv_type_id != affectation_igv_type.id) this.$message.warning('Ya agregó el producto con otro tipo de afectación, para aplicar el cambio debe eliminarlo y agregarlo nuevamente.')
             }
+
+            item.change_affectation_exonerated_igv = true
+        },
+        setOriginalAffectationToItems()
+        {
+            if(this.configuration !== undefined && this.configuration.change_affectation_exonerated_igv)
+            {
+                this.items.forEach(row => {
+                    
+                    if(row.change_affectation_exonerated_igv !== undefined && row.change_affectation_exonerated_igv && row.sale_affectation_igv_type_id != row.original_affectation_igv_type_id)
+                    {
+                        row.sale_affectation_igv_type_id = row.original_affectation_igv_type_id
+                    }
+
+                })
+            }
         },
         ...mapActions(['loadConfiguration']),
         keyupEnterQuantity() {
@@ -976,6 +999,10 @@ export default {
         },
         handleFn113() {
             this.setView("cat3");
+        },
+        handleFn115()
+        {
+            this.openDialogNewPerson()
         },
         initFocus() {
             this.$refs.ref_search_items.$el
@@ -1163,9 +1190,36 @@ export default {
                 return;
             }
 
-            if (this.input_person.number) {
-                if (!isNaN(parseInt(this.input_person.number))) {
-                    switch (this.input_person.number.length) {
+            this.openDialogNewPerson()
+
+            // if (this.input_person.number) {
+            //     if (!isNaN(parseInt(this.input_person.number))) {
+            //         switch (this.input_person.number.length) {
+            //             case 8:
+            //                 this.input_person.identity_document_type_id = "1";
+            //                 this.showDialogNewPerson = true;
+            //                 break;
+
+            //             case 11:
+            //                 this.input_person.identity_document_type_id = "6";
+            //                 this.showDialogNewPerson = true;
+            //                 break;
+            //             default:
+            //                 this.input_person.identity_document_type_id = "6";
+            //                 this.showDialogNewPerson = true;
+            //                 break;
+            //         }
+            //     }
+            // }
+        },
+        openDialogNewPerson()
+        {
+            if (this.input_person.number) 
+            {
+                if (!isNaN(parseInt(this.input_person.number))) 
+                {
+                    switch (this.input_person.number.length) 
+                    {
                         case 8:
                             this.input_person.identity_document_type_id = "1";
                             this.showDialogNewPerson = true;
@@ -1339,6 +1393,7 @@ export default {
                 this.initForm();
                 this.getTables();
                 this.setFormPosLocalStorage();
+                this.setOriginalAffectationToItems()
 
             });
 

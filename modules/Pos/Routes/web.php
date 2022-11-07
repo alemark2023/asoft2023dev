@@ -26,9 +26,10 @@ if($current_hostname) {
                 Route::get('report-ticket/{cash}/{format?}', 'CashController@reportTicket');
                 Route::get('report-excel/{cash}', 'CashController@reportExcel');
                 Route::post('email', 'CashController@email');
+                Route::get('simple/report-a4/{cash}', 'CashController@reportSimpleA4');
 
                 Route::get('report-cash-income-egress/{cash}', 'CashController@reportCashIncomeEgress');
-                
+
 
             });
         });
