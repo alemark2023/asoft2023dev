@@ -14,8 +14,6 @@
     use App\Models\Tenant\DownloadTray;
     use Hyn\Tenancy\Environment;
     use App\CoreFacturalo\Helpers\Storage\StorageDocument;
-    use App\Models\Tenant\Company;
-    use App\Models\Tenant\Establishment;
     use Modules\Inventory\Exports\InventoryExport;
     use Barryvdh\DomPDF\Facade as PDF;
     use Modules\Inventory\Models\ItemWarehouse;
@@ -25,6 +23,7 @@
     use Mpdf\Config\FontVariables;
     use Modules\Report\Exports\DocumentExport;
     use App\Traits\JobReportTrait;
+    use Modules\Report\Http\Controllers\ReportDocumentController;
     
 
     class ProcessDocumentReport implements ShouldQueue
@@ -37,14 +36,8 @@
         use StorageDocument;
 
         public $tray_id;
-        public $params;
         public $columns;
-        public $records;
-        public $company;
-        public $establishment;
         public $filters;
-        public $categories;
-        public $categories_services;
         public $website_id;
 
 
@@ -53,27 +46,14 @@
          *
          * @return void
          */
-        public function __construct(int $tray_id, int $website_id, $records, $company, $establishment, $filters, $categories=null, $categories_services=null,$columns)
+        public function __construct(int $tray_id, int $website_id, array $filters, $columns)
         {
             $this->website_id = $website_id;
-            $this->showLogInfo("construuct Start WebsiteId => {$this->website_id}");
-
             $this->tray_id = $tray_id;
-            //$this->warehouse_id = $warehouse_id;
-            //$this->filter = $filter;
-            /*
-            $this->params = $params;
-            */
-            $this->establishment = $establishment;
             $this->filters = $filters;
-            $this->categories = $categories;
-            $this->categories_services = $categories_services;
-            $this->company = $company;
             $this->columns = $columns;
-            $this->records = $records;
-
-            $this->showLogInfo("construuct tray_id tray_id => {$this->tray_id}");
         }
+
 
         /**
          * Execute the job.
@@ -82,28 +62,33 @@
          */
         public function handle()
         {
-            /*
-            Log::debug("ProcessDocumentReport Start");
-            */
             $this->showLogInfo("ProcessDocumentReport Start WebsiteId => {$this->website_id}");
 
             $website = $this->findWebsite($this->website_id);
             $tenancy = app(Environment::class);
             $tenancy->tenant($website);
-
-            $this->showLogInfo("website => ".json_encode($website));
-
-
-            //$tray = DownloadTray::find($this->tray_id);
             $path = null;
             
-            try {
+            try 
+            {
+                $tray = $this->findDownloadTray($this->tray_id);
+                \Log::info("tra aq.".$tray->module);
 
-                $tray = DownloadTray::find($this->tray_id);
+                $company = $this->getDataCompany();
+                $establishment = $this->getDataEstablishment($this->filters['establishment_id']);
+                
+                $records = app(ReportDocumentController::class)->getRecords($this->filters, $this->filters['class_type_records']);
 
-                //ini_set('max_execution_time', 0);
+                //get categories
+                $categories = [];
+                $categories_services = [];
 
-                //$records = $this->getRecordsTranform($this->warehouse_id, $this->filter);
+                if($this->filters['include_categories'] == "true")
+                {
+                    $categories = app(ReportDocumentController::class)->getCategories($records, false);
+                    $categories_services = app(ReportDocumentController::class)->getCategories($records, true);
+                }
+
 
                 $format = $tray->format;
 
@@ -113,11 +98,10 @@
 
                     Log::debug("Render pdf init");
 
-                    $records=$this->records;
-                    $company=$this->company;
-                    $establishment=$this->establishment;
                     $filters=$this->filters;
                     $columns=$this->columns;
+
+                    Log::debug("Render columns columns");
 
                     $html = view('report::documents.report_pdf', compact("records", "company", "establishment", "filters","columns"))->render();
 
@@ -182,17 +166,17 @@
 
                 } else {
 
-                    Log::debug($this->records);
+                    Log::debug($records);
                     $filename = 'DOCUMENT_ReporteDoc_' . date('YmdHis') . '-' . $tray->user_id;
                     Log::debug("Render excel init");
                     $inventoryExport = new DocumentExport();
                     $inventoryExport
-                        ->records($this->records)
-                        ->company($this->company)
-                        ->establishment($this->establishment)
+                        ->records($records)
+                        ->company($company)
+                        ->establishment($establishment)
                         ->filters($this->filters)
-                        ->categories($this->categories)
-                        ->categories_services($this->categories_services)
+                        ->categories($categories)
+                        ->categories_services($categories_services)
                         ->columns($this->columns);
                     Log::debug("Render excel finish");
 
@@ -210,7 +194,9 @@
                 $tray->path = $path;
                 $tray->save();
 
-            } catch (Exception $e) {
+            } 
+            catch(Exception $e) 
+            {
                 Log::debug("ProcessDocumentReport Error transaction" . $e);
             }
 

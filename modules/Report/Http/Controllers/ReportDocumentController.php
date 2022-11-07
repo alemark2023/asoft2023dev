@@ -209,9 +209,12 @@ class ReportDocumentController extends Controller
         $trayId = $tray->id;
         */
 
+        /*
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+        */
 
+        /*
         $documentTypeId = "01";
         if ($request->has('document_type_id')) {
             $documentTypeId = str_replace('"', '', $request->document_type_id);
@@ -222,10 +225,17 @@ class ReportDocumentController extends Controller
         }
 
         $classType = $documentType->getCurrentRelatiomClass();
+
         $records = $this->getRecords($request->all(), $classType);
         $records= $records->get();
-        $filters = $request->all();
 
+        */
+
+        $filters = $request->all();
+        $this->setFiltersForJobReport($filters, $user, $request);
+        // dd($filters);
+
+        /*
         //get categories
         $categories = [];
         $categories_services = [];
@@ -234,26 +244,58 @@ class ReportDocumentController extends Controller
             $categories = $this->getCategories($records, false);
             $categories_services = $this->getCategories($records, true);
         }
-        \Log::info("tray:".$tray->id."website:". $website->id);
+        */
 
-        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
-        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
-        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
-        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
-        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
-        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
-        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
-        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
-        // ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
+        ProcessDocumentReport::dispatch($tray->id, $website->id, $filters, $columns);
 
-        ProcessDocumentReport::dispatch($tray->id, $website->id, $records, $company, $establishment, $filters, $categories, $categories_services, $columns );
+        return $this->getJobResponse();
 
+        /*
         return  [
             'success' => true,
             'message' => 'El reporte se esta procesando; puede ver el proceso en bandeja de descargas.'
         ];
+        */
     }
 
+    
+    /**
+     * 
+     * Asignar datos para filtros en query
+     *
+     * @param  mixed $filters
+     * @param  mixed $user
+     * @param  mixed $request
+     * @return void
+     */
+    private function setFiltersForJobReport(&$filters, $user, $request)
+    {
+        $filters['establishment_id'] = $filters['establishment_id'] ?? $user->establishment_id;
+        $filters['class_type_records'] = $this->getFilterClassType($request);
+    }
+
+    
+    /**
+     * 
+     * Retorna modelo (transaccion) dependiendo del tipo de documento seleccionado
+     *
+     * @param  Request $request
+     * @return string
+     */
+    private function getFilterClassType($request)
+    {
+        $documentTypeId = "01";
+        if ($request->has('document_type_id')) {
+            $documentTypeId = str_replace('"', '', $request->document_type_id);
+        }
+        $documentType = DocumentType::find($documentTypeId);
+        if (null === $documentType) {
+            $documentType = new DocumentType();
+        }
+
+        return $documentType->getCurrentRelatiomClass();
+    }
+    
 
     public function getCategories($records, $is_service) {
 
