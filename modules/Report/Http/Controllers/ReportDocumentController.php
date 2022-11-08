@@ -88,7 +88,6 @@ class ReportDocumentController extends Controller
     }
 
 
-
     public function pdf(Request $request) {
         set_time_limit (1800); // Maximo 30 minutos
         $columns=json_decode($request->columns);
@@ -187,7 +186,14 @@ class ReportDocumentController extends Controller
         return $documentExport->download('Reporte_Ventas_'.Carbon::now().'.xlsx');
 
     }
-
+    
+    /**
+     * 
+     * Generar reportes en cola
+     *
+     * @param  Request $request
+     * @return array
+     */
     public function export(Request $request)
     {
         $host = $request->getHost();
@@ -195,7 +201,14 @@ class ReportDocumentController extends Controller
 
         $website = $this->getTenantWebsite();
         $user = $this->getCurrentUser();
-        $tray = $this->createDownloadTray($user->id, 'DOCUMENTS', $request->input('format'), 'Reporte Ventas Documentos');
+        $tray = $this->createDownloadTray($user->id, 'REPORT', $request->input('format'), 'Reporte Documentos - Ventas');
+
+        $filters = $request->all();
+        $this->setFiltersForJobReport($filters, $user, $request);
+
+        ProcessDocumentReport::dispatch($tray->id, $website->id, $filters, $columns);
+
+        return $this->getJobResponse();
 
         /*
         $tray = DownloadTray::create([
@@ -207,14 +220,10 @@ class ReportDocumentController extends Controller
         ]);
 
         $trayId = $tray->id;
-        */
 
-        /*
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
-        */
 
-        /*
         $documentTypeId = "01";
         if ($request->has('document_type_id')) {
             $documentTypeId = str_replace('"', '', $request->document_type_id);
@@ -229,13 +238,6 @@ class ReportDocumentController extends Controller
         $records = $this->getRecords($request->all(), $classType);
         $records= $records->get();
 
-        */
-
-        $filters = $request->all();
-        $this->setFiltersForJobReport($filters, $user, $request);
-        // dd($filters);
-
-        /*
         //get categories
         $categories = [];
         $categories_services = [];
@@ -245,10 +247,6 @@ class ReportDocumentController extends Controller
             $categories_services = $this->getCategories($records, true);
         }
         */
-
-        ProcessDocumentReport::dispatch($tray->id, $website->id, $filters, $columns);
-
-        return $this->getJobResponse();
 
         /*
         return  [
@@ -270,8 +268,9 @@ class ReportDocumentController extends Controller
      */
     private function setFiltersForJobReport(&$filters, $user, $request)
     {
-        $filters['establishment_id'] = $filters['establishment_id'] ?? $user->establishment_id;
+        $filters['establishment_id_for_format'] = $filters['establishment_id'] ?? $user->establishment_id;
         $filters['class_type_records'] = $this->getFilterClassType($request);
+        $filters['session_user_id'] = $user->id;
     }
 
     

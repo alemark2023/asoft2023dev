@@ -67,57 +67,33 @@
             $website = $this->findWebsite($this->website_id);
             $tenancy = app(Environment::class);
             $tenancy->tenant($website);
-            $path = null;
             
             try 
             {
-                $tray = $this->findDownloadTray($this->tray_id);
-                \Log::info("tra aq.".$tray->module);
-
+                $download_tray = $this->findDownloadTray($this->tray_id);
+                $format = $download_tray->format;
+                $path = $this->getReportPath($format);
+                $filename = $this->getReportFilename($download_tray->module, 'Reporte_Documentos_Ventas');
                 $company = $this->getDataCompany();
-                $establishment = $this->getDataEstablishment($this->filters['establishment_id']);
+                $establishment = $this->getDataEstablishment($this->filters['establishment_id_for_format']);
                 
-                $records = app(ReportDocumentController::class)->getRecords($this->filters, $this->filters['class_type_records']);
+                $records = app(ReportDocumentController::class)->getRecords($this->filters, $this->filters['class_type_records'])->get();
 
-                //get categories
-                $categories = [];
-                $categories_services = [];
-
-                if($this->filters['include_categories'] == "true")
+                if ($format === 'pdf') 
                 {
-                    $categories = app(ReportDocumentController::class)->getCategories($records, false);
-                    $categories_services = app(ReportDocumentController::class)->getCategories($records, true);
-                }
-
-
-                $format = $tray->format;
-
-                if ($format === 'pdf') {
-
                     ini_set("pcre.backtrack_limit", "50000000");
 
                     Log::debug("Render pdf init");
 
-                    $filters=$this->filters;
-                    $columns=$this->columns;
-
-                    Log::debug("Render columns columns");
-
+                    $filters = $this->filters;
+                    $columns = $this->columns;
                     $html = view('report::documents.report_pdf', compact("records", "company", "establishment", "filters","columns"))->render();
-
                     $html = htmlspecialchars_decode($html);
-
-                    ////////////////////////////////
-
                     $base_template = $establishment->template_pdf;
-
-
                     $defaultConfig = (new ConfigVariables())->getDefaults();
                     $fontDirs = $defaultConfig['fontDir'];
-    
                     $defaultFontConfig = (new FontVariables())->getDefaults();
                     $fontData = $defaultFontConfig['fontdata'];
-
                     $pdf_font_regular = config('tenant.pdf_name_regular');
                     $pdf_font_bold = config('tenant.pdf_name_bold');
     
@@ -149,27 +125,34 @@
                     $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
 
                     $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
-
         
-                    $filename = 'DOCUMENT_ReporteDoc_' . date('YmdHis') . '-' . $tray->user_id;
                     Log::debug("Render pdf finish");
-                    Log::debug("Html".$html);
-                    Log::debug("Upload pdf init");
 
+
+                    Log::debug("Upload pdf init");
                     
-                    $this->uploadStorage($filename, $pdf->output('', 'S'), 'download_tray_pdf');
+                    $this->uploadStorage($filename, $pdf->output('', 'S'), $path);
+
                     Log::debug("Upload pdf finish");
                     
-                    $tray->file_name = $filename;
-                    $path = 'download_tray_pdf';
-                    
 
-                } else {
-
-                    Log::debug($records);
-                    $filename = 'DOCUMENT_ReporteDoc_' . date('YmdHis') . '-' . $tray->user_id;
+                } 
+                else 
+                {
                     Log::debug("Render excel init");
+
+                    //get categories
+                    $categories = [];
+                    $categories_services = [];
+
+                    if($this->filters['include_categories'] == "1")
+                    {
+                        $categories = app(ReportDocumentController::class)->getCategories($records, false);
+                        $categories_services = app(ReportDocumentController::class)->getCategories($records, true);
+                    }
+
                     $inventoryExport = new DocumentExport();
+
                     $inventoryExport
                         ->records($records)
                         ->company($company)
@@ -178,29 +161,26 @@
                         ->categories($categories)
                         ->categories_services($categories_services)
                         ->columns($this->columns);
+
                     Log::debug("Render excel finish");
 
                     Log::debug("Upload excel init");
 
-                    $inventoryExport->store(DIRECTORY_SEPARATOR . "download_tray_xlsx" . DIRECTORY_SEPARATOR . $filename . '.xlsx', 'tenant');
+                    $inventoryExport->store(DIRECTORY_SEPARATOR.$path.DIRECTORY_SEPARATOR.$filename.'.'.$format, 'tenant');
 
                     Log::debug("Upload excel finish");
-                    $tray->file_name = $filename;
-                    $path = 'download_tray_xlsx';
+
                 }
 
-                $tray->date_end = date('Y-m-d H:i:s');
-                $tray->status = 'FINISHED';
-                $tray->path = $path;
-                $tray->save();
+                $this->finishedDownloadTray($download_tray, $filename, $path);
 
             } 
             catch(Exception $e) 
             {
-                Log::debug("ProcessDocumentReport Error transaction" . $e);
+                $this->showLogInfo('ProcessDocumentReport Error transaction: '. $e->getMessage());
             }
 
-            Log::debug("ProcessDocumentReport Finish transaction");
+            $this->showLogInfo('ProcessDocumentReport Finish transaction');
         }
 
         

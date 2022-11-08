@@ -263,7 +263,7 @@
                             <el-button class="submit"
                                        icon="el-icon-tickets"
                                        type="danger"
-                                       @click.prevent="clickExport('pdf')">Exportar PDF
+                                       @click.prevent="clickDownload('pdf')">Exportar PDF
                             </el-button>
 
                             <el-button  v-if="resource == 'reports/sales'" class="submit"
@@ -274,13 +274,10 @@
 
                             <el-button class="submit"
                                        type="success"
-                                       @click.prevent="clickExport('xlsx')"><i class="fa fa-file-excel"></i> Exportal
+                                       @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel"></i> Exportal
                                                                                                                 Excel
                             </el-button>
-                            <el-button class="submit"
-                                       type="info"
-                                       @click.prevent="clickEmail()">C. Electrónico
-                            </el-button>
+
                         </template>
 
                     </div>
@@ -307,35 +304,35 @@
 
                             <template v-if="resource == 'reports/sales'">
                                 <tr>
-                                    <td :colspan="colspanFootSales"></td>
+                                    <td :colspan="13"></td>
                                     <td v-if="visibleColumns.guides.visible"></td>
                                     <td v-if="visibleColumns.options.visible"></td>
                                     <td v-if="visibleColumns.web_platforms.visible"></td>
                                     <td v-if="visibleColumns.total_charge.visible"></td>
                                     <td><strong>Totales PEN</strong></td>
-                                    <td v-if="visibleColumns.total_exonerated.visible">{{ totals.acum_total_exonerated }}</td>
-                                    <td v-if="visibleColumns.total_unaffected.visible">{{ totals.acum_total_unaffected }}</td>
-                                    <td v-if="visibleColumns.total_free.visible">{{ totals.acum_total_free }}</td>
+                                    <td>{{ totals.acum_total_exonerated }}</td>
+                                    <td>{{ totals.acum_total_unaffected }}</td>
+                                    <td>{{ totals.acum_total_free }}</td>
 
-                                    <td v-if="visibleColumns.total_taxed.visible">{{ totals.acum_total_taxed }}</td>
-                                    <td v-if="visibleColumns.total_igv.visible">{{ totals.acum_total_igv }}</td>
+                                    <td>{{ totals.acum_total_taxed }}</td>
+                                    <td>{{ totals.acum_total_igv }}</td>
                                     <td v-if="visibleColumns.total_isc.visible"></td>
-                                    <td v-if="visibleColumns.total.visible">{{ totals.acum_total }}</td>
+                                    <td>{{ totals.acum_total }}</td>
                                 </tr>
                                 <tr>
-                                    <td :colspan="colspanFootSales"></td>
+                                    <td :colspan="13"></td>
                                     <td v-if="visibleColumns.guides.visible"></td>
                                     <td v-if="visibleColumns.options.visible"></td>
                                     <td v-if="visibleColumns.web_platforms.visible"></td>
                                     <td v-if="visibleColumns.total_charge.visible"></td>
                                     <td><strong>Totales USD</strong></td>
-                                    <td v-if="visibleColumns.total_exonerated.visible"></td>
-                                    <td v-if="visibleColumns.total_unaffected.visible"></td>
-                                    <td v-if="visibleColumns.total_free.visible"></td>
-                                    <td v-if="visibleColumns.total_taxed.visible">{{ totals.acum_total_taxed_usd }}</td>
-                                    <td v-if="visibleColumns.total_igv.visible">{{ totals.acum_total_igv_usd }}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{ totals.acum_total_taxed_usd }}</td>
+                                    <td>{{ totals.acum_total_igv_usd }}</td>
                                     <td v-if="visibleColumns.total_isc.visible"></td>
-                                    <td v-if="visibleColumns.total.visible">{{ totals.acum_total_usd }}</td>
+                                    <td>{{ totals.acum_total_usd }}</td>
                                 </tr>
 
                             </template>
@@ -380,7 +377,7 @@
                 </div>
             </div>
         </div>
-        <email-options :showDialog.sync="showEmailOptions" :data="this.form" :columns="this.visibleColumns"></email-options>
+
     </div>
 </template>
 <style>
@@ -392,12 +389,8 @@
 
 import moment from 'moment'
 import queryString from 'query-string'
-import EmailOptions from '../views/documents/partials/options.vue'
 
 export default {
-    components: {
-        EmailOptions
-    },
     props: {
         resource: String,
         applyCustomer: {
@@ -415,11 +408,6 @@ export default {
             type: Boolean,
             required: false,
             default: false
-        },
-        colspanFootSales: {
-            type: Number,
-            required: false,
-            default: 7
         },
     },
     data() {
@@ -460,8 +448,7 @@ export default {
             sellers: [],
             items: [],
             all_items: [],
-            loading_search_items: false,
-            showEmailOptions:false,
+            loading_search_items: false
         }
     },
     computed: {
@@ -628,7 +615,6 @@ export default {
         },
         clickDownload(type) {
             let query = queryString.stringify({
-                columns: JSON.stringify(this.visibleColumns),
                 ...this.form
             });
             delete(query.user_id)
@@ -769,43 +755,6 @@ export default {
         filterItems() {
             this.items = this.all_items
         },
-        clickEmail(){
-            this.showEmailOptions = true
-        },
-        async clickExport(format) {
-            this.loading = true;
-            this.loadingSubmit = true;
-            this.loadingPdf = (format === 'pdf');
-            this.loadingXlsx = (format === 'xlsx');
-            this.errors = {};
-            await this.$http({
-                url: `/${this.resource}/export`,
-                method: 'POST',
-                data: {
-                    'format': format,
-                    columns: JSON.stringify(this.visibleColumns),
-                    ...this.form
-                },
-            })
-                .then(response => {
-                    let res = response.data;
-                    if (res.success) {
-                        this.$message.success(res.message);
-                    } else {
-                        this.$message.error('Error al exportar');
-                    }
-                })
-                .catch(error => {
-                    console.log(error);
-                    this.errors = error;
-                })
-                .then(() => {
-                    this.loadingPdf = false;
-                    this.loadingXlsx = false;
-                    this.loading = false;
-                });
-
-        }
     }
 }
 </script>
