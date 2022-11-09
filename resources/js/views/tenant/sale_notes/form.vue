@@ -423,6 +423,35 @@
                             </div>
 
                             <div class="col-md-12">
+
+                                <!-- descuentos -->
+                                <div class="row mt-1 mb-2"  v-if="form.total > 0">
+                                    <div class="col-lg-10 float-right">
+                                        <label class="float-right control-label">
+
+                                            <el-tooltip class="item"
+                                                :content="global_discount_type.description"
+                                                effect="dark"
+                                                placement="top">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+
+                                            DESCUENTO {{ is_amount ? 'MONTO' : '%' }}
+                                            <el-checkbox v-model="is_amount" class="ml-1 mr-1" @change="changeTypeDiscount"></el-checkbox>
+                                            :
+                                        </label>
+                                    </div>
+
+                                    <div class="col-lg-2 float-right">
+                                        <el-input-number v-model="total_global_discount"
+                                                            :min="0"
+                                                            class="input-custom"
+                                                            controls-position="right"
+                                                            @change="changeTotalGlobalDiscount"></el-input-number>
+                                    </div>
+                                </div>
+                                <!-- descuentos -->
+
                                 <p class="text-right" v-if="form.total_exportation > 0">OP.EXPORTACIÓN:
                                     {{ currency_type.symbol }} {{ form.total_exportation }}</p>
                                 <p class="text-right" v-if="form.total_free > 0">OP.GRATUITAS: {{
@@ -436,7 +465,7 @@
                                     {{ form.total_taxed }}</p>
                                 <p class="text-right" v-if="form.total_igv > 0">IGV: {{ currency_type.symbol }}
                                     {{ form.total_igv }}</p>
-                                <p class="text-right" v-if="form.total_discount > 0">DESCUENTO: {{
+                                <p class="text-right" v-if="form.total_discount > 0">DESCUENTOS TOTALES: {{
                                         currency_type.symbol
                                     }} {{ form.total_discount }}</p>
 
@@ -585,6 +614,11 @@
             {
                 return !_.isEmpty(this.id)
             },
+            isGlobalDiscountBase() 
+            {
+                return (this.config.global_discount_type_id === '02')
+            },
+
         },
     data() {
         return {
@@ -641,7 +675,11 @@
             total_global_charge: 0,
             global_charge_types: [],
             recordItem: null,
-            headers_token: headers_token,
+            headers_token: headers_token,            
+            global_discount_types: [],
+            global_discount_type: {},
+            is_amount: true,
+            total_global_discount: 0,
         }
     },
     async created() {
@@ -668,12 +706,15 @@
                 this.payment_destinations = response.data.payment_destinations
                 // this.configuration = response.data.configuration
                 this.sellers = response.data.sellers;
+                this.global_discount_types = response.data.global_discount_types
+
                 this.changeEstablishment()
                 this.changeDateOfIssue()
                 this.changeCurrencyType()
                 this.allCustomers()
                 this.selectDestinationSale()
                 this.setDefaultSerieByDocument()
+                this.setConfigGlobalDiscountType()
             })
         await this.getPercentageIgv();
         this.loading_form = true
@@ -863,12 +904,26 @@
             }
 
         },
-        setDataUpdate() {
-
+        setDataUpdate() 
+        {
             if (this.form.total_charge > 0) this.total_global_charge = this.form.total_charge
 
             this.form.charges = (this.form.charges) ? Object.values(this.form.charges) : []
 
+            this.form.discounts = this.getDataGlobalDiscount() 
+
+        },
+        getDataGlobalDiscount()
+        {
+            const discounts = this.form.discounts ? Object.values(this.form.discounts) : []
+
+            if(discounts.length === 1)
+            {
+                if(discounts[0].is_amount !== undefined && discounts[0].is_amount !== null) this.is_amount = discounts[0].is_amount
+                this.total_global_discount = this.is_amount ?  discounts[0].amount : (discounts[0].factor * 100)
+            }
+
+            return discounts
         },
         clickAddPayment() {
             this.form.payments.push({
@@ -980,6 +1035,9 @@
             this.enabled_payments = true
             this.total_global_charge = 0
             this.initInputPerson()
+
+            this.total_global_discount = 0
+            this.is_amount = true
 
         },
         resetForm() {
@@ -1141,8 +1199,99 @@
 
             this.chargeGlobal()
 
+            this.discountGlobal()
+
             this.setTotalDefaultPayment()
 
+        },
+        deleteDiscountGlobal() 
+        {
+            let discount = _.find(this.form.discounts, {'discount_type_id': this.config.global_discount_type_id})
+            let index = this.form.discounts.indexOf(discount)
+
+            if (index > -1) 
+            {
+                this.form.discounts.splice(index, 1)
+                this.form.total_discount = 0
+            }
+        },
+        discountGlobal()
+        {
+            this.deleteDiscountGlobal()
+
+            //input donde se ingresa monto o porcentaje
+            let input_global_discount = parseFloat(this.total_global_discount)
+
+            if (input_global_discount > 0)
+            {
+                const percentage_igv = this.percentage_igv * 100
+                let base = (this.isGlobalDiscountBase) ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
+                let amount = 0
+                let factor = 0
+
+                if (this.is_amount)
+                {
+                    amount = input_global_discount
+                    factor = _.round(amount / base, 5)
+                }
+                else
+                {
+                    factor = _.round(input_global_discount / 100, 5)
+                    amount = factor * base
+                }
+
+                this.form.total_discount = _.round(amount, 2)
+
+                // descuentos que afectan la bi
+                if(this.isGlobalDiscountBase)
+                {
+                    this.form.total_taxed = _.round(base - this.form.total_discount, 2)
+                    this.form.total_value = this.form.total_taxed
+                    this.form.total_igv = _.round(this.form.total_taxed * (percentage_igv / 100), 2)
+
+                    //impuestos (isc + igv + icbper)
+                    let total_plastic_bag_taxes = this.form.total_plastic_bag_taxes ? this.form.total_plastic_bag_taxes : 0
+
+                    this.form.total_taxes = _.round(this.form.total_igv + this.form.total_isc + total_plastic_bag_taxes, 2)
+                    this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
+                    this.form.subtotal = this.form.total
+
+                    if (this.form.total <= 0 && this.total_global_discount > 0) this.$message.error("El total debe ser mayor a 0, verifique el tipo de descuento asignado (Configuración/Avanzado/Contable)")
+
+                }
+                // descuentos que no afectan la bi
+                else
+                {
+                    this.form.total = _.round(this.form.total - amount, 2)
+                }
+
+                this.setGlobalDiscount(factor, _.round(amount, 2), base)
+
+            }
+
+        },
+        changeTypeDiscount() 
+        {
+            this.calculateTotal()
+        },
+        changeTotalGlobalDiscount() 
+        {
+            this.calculateTotal()
+        },
+        setConfigGlobalDiscountType()
+        {
+            this.global_discount_type = _.find(this.global_discount_types, { id : this.config.global_discount_type_id})
+        },
+        setGlobalDiscount(factor, amount, base)
+        {
+            this.form.discounts.push({
+                discount_type_id: this.global_discount_type.id,
+                description: this.global_discount_type.description,
+                factor: factor,
+                amount: amount,
+                base: base,
+                is_amount: this.is_amount
+            })
         },
         getGlobalCharge(id) {
             return _.find(this.global_charge_types, {id: id})

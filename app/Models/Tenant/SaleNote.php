@@ -838,10 +838,45 @@
                 'agent_name' => optional($this->agent)->search_description,
                 'reference_data' => $this->reference_data,
                 'payments' => $this->payments,
+
+                'total_discount' => $this->generalApplyNumberFormat($this->total_discount),
+                'items_for_report' => $this->getItemsforReport(),
+
             ];
         }
 
         
+        /**
+         * 
+         * Mostrar productos en reporte
+         *
+         * @return array
+         */
+        public function getItemsforReport()
+        {
+            return $this->items->map(function($row, $key){
+                return [
+                    'index' => $key+1,
+                    'description' => $this->fullDescriptionFromJsonItem($row),
+                    'quantity' => (float) $row->quantity,
+                ];
+            });
+        }
+        
+        
+        /**
+         *
+         * @param  SaleNoteItem $row
+         * @return string
+         */
+        public function fullDescriptionFromJsonItem($row)
+        {
+            $internal_id = $row->item->internal_id ?? false;
+
+            return ($internal_id ? $internal_id.' - ' : '').$row->item->description; 
+        }
+
+                
         /**
          *
          * @param  string $format
