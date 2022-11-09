@@ -1141,7 +1141,7 @@
                                 <label class="control-label">Modificar moneda al agregar producto
                                     <el-tooltip
                                         class="item"
-                                        content="Disponible en Nuevo CPE"
+                                        content="Disponible en Nuevo CPE, Notas de venta y Cotizaciones"
                                         effect="dark"
                                         placement="top-start">
                                         <i class="fa fa-info-circle"></i>

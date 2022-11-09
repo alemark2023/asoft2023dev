@@ -510,6 +510,39 @@
                             </div>
                         </div>
                         <div class="col-md-12">
+
+                            <!-- descuentos -->
+
+                            <div class="row mt-1 mb-2"  v-if="form.total > 0">
+
+                                <div class="col-lg-10 float-right">
+                                    <label class="float-right control-label">
+
+                                        <el-tooltip class="item"
+                                            :content="global_discount_type.description"
+                                            effect="dark"
+                                            placement="top">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+
+                                        DESCUENTO {{ is_amount ? 'MONTO' : '%' }}
+                                        <el-checkbox v-model="is_amount" class="ml-1 mr-1" @change="changeTypeDiscount"></el-checkbox>
+                                        :
+                                    </label>
+                                </div>
+
+                                <div class="col-lg-2 float-right">
+                                    <el-input-number v-model="total_global_discount"
+                                                        :min="0"
+                                                        class="input-custom"
+                                                        controls-position="right"
+                                                        @change="changeTotalGlobalDiscount"></el-input-number>
+                                </div>
+
+                            </div>
+
+                            <!-- descuentos -->
+
                             <p v-if="form.total_exportation > 0"
                                class="text-right">OP.EXPORTACIÓN: {{ currency_type.symbol }}
                                                                  {{ form.total_exportation }}</p>
@@ -532,6 +565,8 @@
 
                             <p v-if="form.total_isc > 0"
                                class="text-right">ISC: {{ currency_type.symbol }} {{ form.total_isc }}</p>
+
+                            <p v-if="form.total_discount > 0" class="text-right">DESCUENTOS TOTALES: {{ currency_type.symbol }} {{ form.total_discount }}</p>
 
                             <h3 v-if="form.total > 0"
                                 class="text-right"><b>TOTAL COMPRAS: </b>{{ currency_type.symbol }} {{ form.total }}
@@ -642,7 +677,7 @@
 import PurchaseFormItem from './partials/item.vue'
 import PersonForm from '../persons/form.vue'
 import PurchaseOptions from './partials/options.vue'
-import {exchangeRate, functions, fnPaymentsFee} from '../../../mixins/functions'
+import {exchangeRate, functions, fnPaymentsFee, operationsForDiscounts} from '../../../mixins/functions'
 import {calculateRowItem} from '../../../helpers/functions'
 import SeriesForm from './partials/series'
 import {mapActions, mapState} from "vuex";
@@ -650,7 +685,7 @@ import {mapActions, mapState} from "vuex";
 export default {
     props: ['purchase_order_id'],
     components: {PurchaseFormItem, PersonForm, PurchaseOptions, SeriesForm},
-    mixins: [functions, exchangeRate, fnPaymentsFee],
+    mixins: [functions, exchangeRate, fnPaymentsFee, operationsForDiscounts],
     computed: {
         ...mapState([
             'config',
@@ -665,6 +700,9 @@ export default {
         },
         isCreditPaymentCondition: function () {
             return ['02', '03'].includes(this.form.payment_condition_id)
+        },
+        isGlobalDiscountBase: function () {
+            return (this.config.global_discount_type_id === '02')
         },
     },
     data() {
@@ -723,6 +761,7 @@ export default {
                 this.payment_method_types = data.payment_method_types
                 this.payment_destinations = data.payment_destinations
                 this.all_customers = data.customers
+                this.global_discount_types = data.global_discount_types
 
                 this.charges_types = data.charges_types
                 this.$store.commit('setConfiguration', data.configuration);
@@ -737,7 +776,9 @@ export default {
                 this.changeDateOfIssue()
                 this.changeDocumentType()
                 this.changeCurrencyType()
+                this.setConfigGlobalDiscountType()
             })
+
         this.$eventHub.$on('reloadDataPersons', (supplier_id) => {
             this.reloadDataSuppliers(supplier_id)
         })
@@ -1134,6 +1175,10 @@ export default {
 
             this.initGlobalIgv()
 
+            this.total_global_discount = 0
+            this.is_amount = true
+
+
         },
         initGlobalIgv(){
             this.localHasGlobalIgv = this.config.checked_global_igv_to_purchase
@@ -1266,6 +1311,8 @@ export default {
             // this.setTotalDefaultPayment()
             this.calculatePayments()
             this.calculateFee()
+
+            this.discountGlobal()
 
         },
         setTotalDefaultPayment() {

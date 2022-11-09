@@ -534,6 +534,8 @@
                               :configuration="config"
                               :recordItem="recordItem"
                               :percentage-igv="percentage_igv"
+                              :currency-types="currency_types"
+                              :show-option-change-currency="true"
                               @add="addRow"></sale-notes-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
