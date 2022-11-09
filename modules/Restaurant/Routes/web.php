@@ -88,6 +88,13 @@ Route::prefix('restaurant')->group(function() {
 
     });
 
+      //Waiters
+      Route::prefix('waiter')->group(function() {
+        Route::post('', 'WaiterController@store');
+        Route::get('', 'WaiterController@records');
+        Route::delete('{id}', 'WaiterController@destroy');
+    });
+
 
 
 });

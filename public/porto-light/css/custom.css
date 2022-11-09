@@ -916,3 +916,8 @@ html.sidebar-dark:not(.sidebar-light) .card-header.bg-info {
 .fs-point-system{
   font-size: 15px;
 }
+
+
+.custom-change-select-currency {
+  width: 59px;
+}

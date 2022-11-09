@@ -122,13 +122,14 @@
             'soap_shipping_response',
             'data_affected_document',
             'related',
-            
+
             'send_to_pse',
             'response_signature_pse',
             'response_send_cdr_pse',
             'order_form_external',
 
             'terms_condition',
+            'additional_data'
         ];
 
         protected $casts = [
@@ -136,6 +137,16 @@
             'date_of_shipping' => 'date',
             'send_to_pse' => 'bool',
         ];
+
+        public function getAdditionalDataAttribute($value)
+        {
+            return (is_null($value))?null:(object) json_decode($value);
+        }
+
+        public function setAdditionalDataAttribute($value)
+        {
+            $this->attributes['additional_data'] = (is_null($value))?null:json_encode($value);
+        }
 
         public function getEstablishmentAttribute($value)
         {
@@ -216,7 +227,7 @@
         {
             $this->attributes['soap_shipping_response'] = (is_null($value)) ? null : json_encode($value);
         }
-                
+
         /**
          * Datos del DAM
          *
@@ -227,7 +238,7 @@
         {
             return (is_null($value)) ? null : (object)json_decode($value);
         }
-        
+
         /**
          * Datos del DAM
          *
@@ -432,9 +443,9 @@
             return $this->belongsTo(OrderNote::class, 'reference_order_note_id');
         }
 
-        
+
         /**
-         * 
+         *
          * Obtener orden de pedido externa o relacionada de order form
          *
          * @return string
@@ -454,7 +465,7 @@
             }
 
             return $order_form_description;
-            
+
         }
 
 
@@ -476,7 +487,7 @@
 
             if ($this->generate_document) $documents [] = ['description' => $this->generate_document->number_full];
             if ($this->reference_document) $documents [] = ['description' => $this->reference_document->number_full];
- 
+
 
             //
             return [
@@ -597,7 +608,7 @@
 
         }
 
-                
+
         /**
          * Retornar descripción del documento relacionado (DAM)
          *
@@ -615,20 +626,20 @@
             return null;
         }
 
-        
+
         /**
          * Obtener tipo de documento válido para enviar el xml a firmar al pse
          *
          * Usado en:
          * App\CoreFacturalo\Services\Helpers\SendDocumentPse
-         * 
+         *
          * @return string
          */
         public function getDocumentTypeForPse()
         {
             return 'GUIA';
         }
-        
+
         public function getResponseSendCdrPseAttribute($value)
         {
             return (is_null($value)) ? null : (object)json_decode($value);
@@ -649,28 +660,28 @@
             $this->attributes['response_signature_pse'] = (is_null($value)) ? null : json_encode($value);
         }
 
-        
+
         /**
-         * 
+         *
          * Retornar registro relacionado
-         * 
+         *
          * Guia generada desde: Cot, Nv, Ped
-         * 
+         *
          */
         public function getRelationExternalDocument()
         {
             if(!is_null($this->reference_quotation_id)) return $this->reference_quotation;
-            
+
             if(!is_null($this->reference_sale_note_id)) return $this->sale_note;
 
             if(!is_null($this->reference_order_note_id)) return $this->order_note;
-            
+
             return null;
         }
 
-        
+
         /**
-         * 
+         *
          * Validar si existe relación
          *
          * @param $relation_external_document
@@ -681,7 +692,7 @@
             return !is_null($relation_external_document);
         }
 
-        
+
         /**
          *
          * Filtro para no incluir relaciones en consulta

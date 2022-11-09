@@ -104,7 +104,7 @@ class DownloadController extends Controller
 
         $headers = [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$document->filename.'"'
+            'Content-Disposition' => 'inline; filename="'.$document->filename.'.pdf'.'"'
         ];
 
         return response()->file($temp, $headers);

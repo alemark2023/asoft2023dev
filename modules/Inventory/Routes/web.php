@@ -235,8 +235,12 @@
                         Route::get('excel', 'ReportMovementController@excel');
                         Route::get('filter', 'ReportMovementController@filter');
                         Route::get('records', 'ReportMovementController@records');
+
                         Route::get('stock/records', 'ReportMovementController@stockRecords');
-                        Route::get('stock/excel/excel', 'ReportMovementController@stockExcel');
+                        // Route::get('stock/excel/excel', 'ReportMovementController@stockExcel');
+
+                        Route::get('stock/format-stock-fit/{type}', 'ReportMovementController@formatStockFit');
+                        Route::get('filter-stock-fit', 'ReportMovementController@filterStockFit');
                     });
 
                 });

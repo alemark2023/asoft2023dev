@@ -2,6 +2,7 @@
 
 namespace App\Models\Tenant;
 
+use App\CoreFacturalo\Helpers\QrCode\QrCodeGenerate;
 use App\Http\Controllers\Tenant\DownloadController;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
@@ -1647,4 +1648,27 @@ class Document extends ModelTenant
         return $calculate_quantity_points;
     }
 
+    public function getQrAttribute($value)
+    {
+        if(!is_null($value)) {
+            return $value;
+        }
+        $company = Company::query()->first();
+        $customer = $this->customer;
+        $text = join('|', [
+            $company->number,
+            $this->document_type_id,
+            $this->series,
+            $this->number,
+            $this->total_igv,
+            $this->total,
+            $this->date_of_issue->format('Y-m-d'),
+            $customer->identity_document_type_id,
+            $customer->number,
+            $this->hash
+        ]);
+
+        $qrCode = new QrCodeGenerate();
+        return $qrCode->displayPNGBase64($text);
+    }
 }

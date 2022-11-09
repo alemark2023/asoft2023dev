@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Tenant\Company;
 use Carbon\Carbon;
 use Modules\Inventory\Http\Resources\ReportMovementCollection;
+use Modules\Inventory\Http\Resources\ReportStockFitCollection;
 use Modules\Inventory\Models\{
     Inventory,
     Warehouse,
@@ -16,6 +17,7 @@ use Modules\Inventory\Models\{
 use Modules\Inventory\Traits\InventoryTrait;
 use Modules\Inventory\Http\Requests\ReportMovementRequest;
 use Modules\Inventory\Exports\ReportStockExport;
+use App\CoreFacturalo\Helpers\Template\ReportHelper;
 
 
 class ReportMovementController extends Controller
@@ -106,21 +108,58 @@ class ReportMovementController extends Controller
     {
         $records = $this->getStockRecords($request->all());
 
-        return new ReportMovementCollection($records->paginate(config('tenant.items_per_page')));
+        return new ReportStockFitCollection($records->paginate(config('tenant.items_per_page')));
     }
 
-
+    
+    /**
+     * 
+     * Consulta de reporte ajuste stock
+     *
+     * @param  array $request
+     * @return Inventory
+     */
     private function getStockRecords($request)
     {
-
         $warehouse_id = $request['warehouse_id'];
         $date_start = $request['date_start'];
         $date_end = $request['date_end'];
+        $order_by_item = ReportHelper::getBoolValue($request['order_by_item']);
+        $order_by_timestamps = ReportHelper::getBoolValue($request['order_by_timestamps']);
+        
+        $additional_filters = [
+            'search_column' => $request['search_column'], 
+            'search_input' => $request['search_input'], 
+        ];
 
-        return Inventory::whereFilterReportStock($warehouse_id, $date_start, $date_end);
- 
+        return Inventory::whereFilterReportStock($warehouse_id, $date_start, $date_end, $order_by_item, $order_by_timestamps, $additional_filters);
     }
 
+    
+    /**
+     * 
+     * Exportar reportes de ajuste de stock
+     *
+     * @param  string $type
+     * @param  Request $request
+     * @return mixed
+     */
+    public function formatStockFit($type, Request $request)
+    {
+        $filename = 'Reporte_Ajuste_stock' . date('YmdHis');
+
+        if($type === 'excel')
+        {
+            $exportData = (new ReportStockExport)->data($this->getDataForFormatStock($request));
+            return $exportData->download($filename.'.xlsx');
+        }
+
+        
+        return (PDF::loadView('inventory::reports.movements.report_stock_template', $this->getDataForFormatStock($request)))->download($filename.'.pdf');
+    }
+
+
+    /*
     public function stockExcel(Request $request)
     {
         $exportData = new ReportStockExport();
@@ -128,6 +167,8 @@ class ReportMovementController extends Controller
 
         return $exportData->download('Reporte_Movimientos' . date('YmdHis') . '.xlsx');
     }
+    */
+
 
     private function getDataForFormatStock($request)
     {
@@ -137,4 +178,26 @@ class ReportMovementController extends Controller
             'records' => $this->getStockRecords($request->all())->get()->transform(function($row, $key) { return  $row->getRowResourceReportStock(); }),
         ];
     }
+
+    
+    /**
+     * 
+     * Filtros para reporte de ajuste de stock
+     *
+     * @return array
+     */
+    public function filterStockFit()
+    {
+		return [
+			'warehouses' => $this->optionsWarehouse(),
+			'columns' => [
+                'description' => 'Producto',
+                'internal_id' => 'Código interno',
+                'model' => 'Modelo',
+                'brand' => 'Marca',
+                'category' => 'Categoria'
+            ],
+		];
+    }
+
 }

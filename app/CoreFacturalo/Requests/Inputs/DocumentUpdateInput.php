@@ -301,6 +301,7 @@ class DocumentUpdateInput
                     $factor = $row['factor'];
                     $amount = $row['amount'];
                     $base = $row['base'];
+                    $is_amount = $row['is_amount'] ?? null; //registra si el descuento fue por monto o porcentaje
 
                     $discounts[] = [
                         'discount_type_id' => $discount_type_id,
@@ -308,6 +309,7 @@ class DocumentUpdateInput
                         'factor' => $factor,
                         'amount' => $amount,
                         'base' => $base,
+                        'is_amount' => $is_amount,
                     ];
                 }
 
