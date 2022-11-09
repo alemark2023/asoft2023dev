@@ -851,12 +851,14 @@
 
             file_put_contents($temp, $this->getStorage($order_note->filename, 'order_note'));
 
+            /*
             $headers = [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="'.$order_note->filename.'"'
             ];
+            */
 
-            return response()->file($temp, $headers);
+            return response()->file($temp, $this->generalPdfResponseFileHeaders($order_note->filename));
         }
 
         public function email(Request $request)

@@ -126,4 +126,19 @@ class GeneralPdfHelper
         return join('-', $data);
     }
 
+    
+    /**
+     * 
+     * @param  string $filename
+     * @return array
+     */
+    public static function pdfResponseFileHeaders($filename)
+    {
+        return [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$filename.'.pdf'.'"'
+        ];
+    }
+
+
 }

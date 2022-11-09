@@ -934,12 +934,14 @@ class SaleNoteController extends Controller
 
         file_put_contents($temp, $this->getStorage($sale_note->filename, 'sale_note'));
 
+        /*
         $headers = [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="'.$sale_note->filename.'"'
         ];
+        */
 
-        return response()->file($temp, $headers);
+        return response()->file($temp, $this->generalPdfResponseFileHeaders($sale_note->filename));
     }
 
     private function reloadPDF($sale_note, $format, $filename) {
