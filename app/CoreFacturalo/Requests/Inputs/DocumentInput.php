@@ -64,7 +64,7 @@ class DocumentInput
             $data_json = Functions::valueKeyInArray($inputs, 'data_json');
         }
 
-        $items = self::items($inputs);
+        $items = self::items($inputs, $configuration);
 
         //configuracion para envio individual de boleta
         $ticket_single_shipment = self::getTicketSingleShipment($inputs);
@@ -164,8 +164,10 @@ class DocumentInput
     }
 
 
-    public static function items($inputs)
+    public static function items($inputs, $configuration = null)
     {
+        $register_series_invoice_xml = $configuration->register_series_invoice_xml ?? false;
+
         if (array_key_exists('items', $inputs)) {
             $items = [];
             foreach ($inputs['items'] as $row) {
@@ -177,6 +179,13 @@ class DocumentInput
                 } else {
                     $name_product_xml = Functions::valueKeyInArray($row, 'name_product_pdf') ? self::getNameProductXml($row, $inputs) : null;
                 }
+
+                $items_attributes = self::attributes($row);
+
+                if($register_series_invoice_xml && in_array($inputs['document_type_id'], ['01', '03']))
+                {
+                    self::registerSeriesInvoiceXml($items_attributes, $row);
+                } 
 
                 $arayItem = [
                     'item_id' => $item->id,
@@ -223,7 +232,8 @@ class DocumentInput
                     'total_charge' => Functions::valueKeyInArray($row, 'total_charge', 0),
                     'total_discount' => Functions::valueKeyInArray($row, 'total_discount', 0),
                     'total' => $row['total'],
-                    'attributes' => self::attributes($row),
+                    'attributes' => $items_attributes,
+                    // 'attributes' => self::attributes($row),
                     'discounts' => self::discounts($row),
                     'charges' => self::charges($row),
                     'warehouse_id' => Functions::valueKeyInArray($row, 'warehouse_id'),
@@ -309,6 +319,64 @@ class DocumentInput
         }
         return null;
     }
+
+    
+    /**
+     * 
+     * Registrar series como atributos (5019) para vehiculos
+     *
+     * @param  array $items_attributes
+     * @param  array $row
+     * @return void
+     */
+    public static function registerSeriesInvoiceXml(&$items_attributes, $row)
+    {
+        $series = self::lots($row);
+        
+        if(!empty($series))
+        {
+            $series_to_attributes = self::getVehicleSeriesToAttributes($series);
+
+            if(is_null($items_attributes)) 
+            {
+                $items_attributes = $series_to_attributes;
+            }
+            else if(is_array($items_attributes))
+            {
+                $items_attributes = array_merge($items_attributes, $series_to_attributes);
+            } 
+        }
+    }
+
+    
+    /**
+     * 
+     * Generar arreglo de atributos en base a las series - Vehiculos
+     *
+     * @param  array $series
+     * @return array
+     */
+    private static function getVehicleSeriesToAttributes($series)
+    {
+        $attributes = [];
+        $attribute_type_id = '5019';
+        $description = 'Serie/Chasis';
+
+        foreach ($series as $serie) 
+        {
+            $attributes [] = [
+                'attribute_type_id' => $attribute_type_id,
+                'description' => $description,
+                'value' => $serie['series'],
+                'start_date' =>  null,
+                'end_date' => null,
+                'duration' =>  null,
+            ];
+        }
+
+        return $attributes;
+    }
+
 
     private static function charges($inputs)
     {
