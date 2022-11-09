@@ -525,6 +525,31 @@
 
                 return valid
             },
+            getPaymentsData(q)
+            {
+                let sale_note_payments = q.payments
+
+                if(this.form.payments !== undefined && Array.isArray(this.form.payments))
+                {
+                    let new_payments = []
+
+                    this.form.payments.forEach((row)=>{
+                        
+                        const payment = { ...row }
+
+                        if(!_.some(this.payment_destinations, { id : row.payment_destination_id }))
+                        {
+                            payment.payment_destination_id = null
+                        }
+
+                        new_payments.push(payment)
+                    })
+
+                    sale_note_payments = new_payments
+                }
+
+                return sale_note_payments
+            },
             assignDocument(){
                 let q = this.form.sale_note;
                 // console.log(q);
@@ -568,7 +593,8 @@
                     format_pdf : 'a4'
                 };
                 this.document.sale_note_id = this.form.id;
-                this.document.payments = q.payments;
+                // this.document.payments = q.payments;
+                this.document.payments = this.getPaymentsData(q)
                 this.document.seller_id = q.seller_id;
                 this.document.user_id = q.user_id;
                 this.document.fee = [];

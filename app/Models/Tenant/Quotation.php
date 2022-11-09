@@ -368,6 +368,7 @@ class Quotation extends ModelTenant
             'customer_number' => $row->customer->number,
             'customer_telephone' => $row->customer->telephone,
             'customer_email' => optional($row->customer)->email,
+            'exchange_rate_sale' => $row->exchange_rate_sale,
             'currency_type_id' => $row->currency_type_id,
             'total_exportation' => number_format($row->total_exportation,2),
             'total_free' => number_format($row->total_free,2),
@@ -480,12 +481,12 @@ class Quotation extends ModelTenant
 
 
     /**
-     * 
+     *
      * Filtro para no incluir relaciones en consulta
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
-     */  
+     */
     public function scopeWhereFilterWithOutRelations($query)
     {
         return $query->withOut(['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments']);
@@ -493,7 +494,7 @@ class Quotation extends ModelTenant
 
 
     /**
-     * 
+     *
      * Obtener descripción del tipo de documento
      *
      * @return string
@@ -503,9 +504,9 @@ class Quotation extends ModelTenant
         return 'COTIZACIÓN';
     }
 
-    
+
     /**
-     * 
+     *
      * Obtener pagos en efectivo
      *
      * @return Collection
@@ -516,12 +517,12 @@ class Quotation extends ModelTenant
             return $row->getRowResourceCashPayment();
         }});
     }
-    
-    
+
+
     /**
-     * 
+     *
      * Validar si el registro esta rechazado o anulado
-     * 
+     *
      * @return bool
      */
     public function isVoidedOrRejected()
@@ -531,7 +532,7 @@ class Quotation extends ModelTenant
 
 
     /**
-     * 
+     *
      * Obtener url para impresión
      *
      * @param  string $format
@@ -541,10 +542,10 @@ class Quotation extends ModelTenant
     {
         return url("quotations/print/{$this->external_id}/{$format}");
     }
-        
+
 
     /**
-     * 
+     *
      * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
      *
      * @param  Builder $query
@@ -554,5 +555,5 @@ class Quotation extends ModelTenant
     {
         return $query->whereFilterWithOutRelations();
     }
-    
+
 }

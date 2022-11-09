@@ -13,9 +13,9 @@ use App\Models\Tenant\Company;
 
 class GeneralPdfHelper
 {
-    
+
     /**
-     * 
+     *
      * Retornar archivo temporal para vista previa
      *
      * @param  string $temp_folder
@@ -28,12 +28,17 @@ class GeneralPdfHelper
 
         file_put_contents($temp, $file_content);
 
-        return response()->file($temp);
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="file.pdf"'
+        ];
+
+        return response()->file($temp, $headers);
     }
 
-    
+
     /**
-     * 
+     *
      * Crear pdf general
      * Disponible: A4
      *
@@ -45,7 +50,7 @@ class GeneralPdfHelper
      */
     public static function getBasicPdf($document_type, $document, $format_pdf = 'a4', $filename = null)
     {
-        
+
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
         $pdf = new Mpdf();
@@ -60,7 +65,7 @@ class GeneralPdfHelper
         $pdf_font_regular = config('tenant.pdf_name_regular');
         $pdf_font_bold = config('tenant.pdf_name_bold');
 
-        if ($pdf_font_regular != false) 
+        if ($pdf_font_regular != false)
         {
 
             $defaultConfig = (new ConfigVariables())->getDefaults();
@@ -105,9 +110,9 @@ class GeneralPdfHelper
 
     }
 
-    
+
     /**
-     * 
+     *
      * Retornar nombre de archivo
      *
      * @param  int|string $number

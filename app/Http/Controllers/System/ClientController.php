@@ -115,6 +115,7 @@
             $certificate_admin = $config->certificate;
             $soap_username = $config->soap_username;
             $soap_password = $config->soap_password;
+            $regex_password_client = $config->regex_password_client;
 
             return compact(
                 'url_base',
@@ -131,6 +132,7 @@
                 'group_restaurant',
                 'group_hotel_apps',
                 'group_pharmacy_apps',
+                'regex_password_client',
                 'group_restaurant_apps');
         }
 
@@ -718,6 +720,7 @@
                 'type' => $request->input('type'),
                 'locked' => true,
                 'permission_edit_cpe' => true,
+                'last_password_update' => date('Y-m-d H:i:s'),
             ]);
 
 

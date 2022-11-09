@@ -16,6 +16,7 @@ use Modules\Inventory\Models\InventoryTransaction;
 use Modules\Inventory\Models\Inventory;
 use Exception;
 use Modules\Item\Models\ItemLotsGroup;
+use Modules\Finance\Helpers\UploadFileHelper;
 
 
 class ItemsImport implements ToCollection
@@ -70,9 +71,9 @@ class ItemsImport implements ToCollection
                 $image_url = $row[20] ?? null;
 
                 // image names
-                $file_name = '';
-                $file_name_medium = '';
-                $file_name_small = '';
+                $file_name = 'imagen-no-disponible.jpg';
+                $file_name_medium = 'imagen-no-disponible.jpg';
+                $file_name_small = 'imagen-no-disponible.jpg';
 
 
 
@@ -87,6 +88,9 @@ class ItemsImport implements ToCollection
                             $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR;
                             $dateNow = date('YmdHis');
                             $content = file_get_contents($image_url);
+
+                            UploadFileHelper::checkIfImageCanBeProcessed($content);
+
                             $slugs = explode ("/", $image_url);
                             $latestSlug = $slugs [(count ($slugs) - 1)];
                             $image_name = strtok($latestSlug, '?');

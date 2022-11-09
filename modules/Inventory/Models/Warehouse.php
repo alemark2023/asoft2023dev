@@ -4,6 +4,7 @@ namespace Modules\Inventory\Models;
 
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\ModelTenant;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Modules\Inventory\Models\Warehouse
@@ -79,6 +80,56 @@ class Warehouse extends ModelTenant
     : Warehouse {
         $this->description = $description;
         return $this;
+    }
+
+
+    /**
+     * 
+     * Data para filtros - select
+     *
+     * @return array
+     */
+    public static function getDataForFilters()
+    {
+        return self::with(['establishment' => function($query){
+                $query->whereFilterWithOutRelations()
+                ->select(['id', 'description']);
+            }])
+            ->get()
+            ->transform(function($row){
+                return $row->getRowForFilter();
+            });
+    }
+    
+
+    /**
+     * 
+     * Campos para filtros - select
+     *
+     * @return array
+     */
+    public function getRowForFilter()
+    {
+        return [
+            'id' => $this->id,
+            'establishment_id' => $this->establishment_id,
+            'warehouse_description' => $this->description,
+            'establishment_description' => $this->establishment->description,
+        ];
+    }
+
+    
+    /**
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeSelectBasicColumns($query)
+    {
+        return $query->select([
+            'id',
+            'description',
+        ]);
     }
 
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models\Tenant;
 
+use App\CoreFacturalo\Helpers\QrCode\QrCodeGenerate;
 use App\Http\Controllers\Tenant\DownloadController;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
@@ -28,6 +29,7 @@ use Modules\Sale\Models\TechnicalService;
 use phpDocumentor\Reflection\Utils;
 use Modules\Pos\Models\Tip;
 use Illuminate\Support\Facades\DB;
+use Modules\Sale\Models\Agent;
 
 
 /**
@@ -142,6 +144,11 @@ class Document extends ModelTenant
 
     public const DOCUMENT_TYPE_TICKET = '03';
 
+    public const GROUP_INVOICE = '01';
+
+    public const GROUP_TICKET = '02';
+
+
     protected $with = [
         'user',
         'soap_type',
@@ -202,6 +209,7 @@ class Document extends ModelTenant
         'detraction',
         'legends',
         'additional_information',
+        'additional_data',
         'filename',
         'hash',
         'qr',
@@ -255,7 +263,11 @@ class Document extends ModelTenant
         'unique_filename', //registra nombre de archivo unico (campo validador para evitar duplicidad)
 
         'ticket_single_shipment',
-        'folio'
+        'point_system',
+        'point_system_data',
+        'folio',
+        'agent_id',
+        'force_send_by_summary',
     ];
 
     protected $casts = [
@@ -265,7 +277,10 @@ class Document extends ModelTenant
         'enabled_concurrency' => 'bool',
         'apply_concurrency' => 'bool',
         'send_to_pse' => 'bool',
+        'total' => 'float',
         'ticket_single_shipment' => 'bool',
+        'point_system' => 'bool',
+        'force_send_by_summary' => 'bool',
     ];
 
     public static function boot()
@@ -275,6 +290,16 @@ class Document extends ModelTenant
             self::adjustSellerIdField($model);
         });
 
+    }
+
+    public function getAdditionalDataAttribute($value)
+    {
+        return (is_null($value))?null:(object) json_decode($value);
+    }
+
+    public function setAdditionalDataAttribute($value)
+    {
+        $this->attributes['additional_data'] = (is_null($value))?null:json_encode($value);
     }
 
     /**
@@ -433,10 +458,28 @@ class Document extends ModelTenant
         $this->attributes['retention'] = (is_null($value)) ? null : json_encode($value);
     }
 
+    public function getPointSystemDataAttribute($value)
+    {
+        return (is_null($value)) ? null : (object)json_decode($value);
+    }
+
+    public function setPointSystemDataAttribute($value)
+    {
+        $this->attributes['point_system_data'] = (is_null($value)) ? null : json_encode($value);
+    }
+
     public function getAdditionalInformationAttribute($value)
     {
         $arr = explode('|', $value);
         return $arr;
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function agent()
+    {
+        return $this->belongsTo(Agent::class);
     }
 
     /**
@@ -1398,6 +1441,94 @@ class Document extends ModelTenant
 
     /**
      *
+     * Validar si se modifico la boleta enviada de forma individual, a resumen
+     *
+     * @return bool
+     */
+    public function isForceSendBySummary()
+    {
+        return $this->isDocumentTypeTicket() && $this->force_send_by_summary;
+    }
+
+
+    /**
+     *
+     * Validar si se puede modificar el tipo de envio de la boleta, individual a resumen
+     *
+     * @return bool
+     */
+    public function isAvailableForceSendBySummary()
+    {
+        return $this->isSingleDocumentShipment() && !$this->force_send_by_summary && $this->state_type_id === self::STATE_TYPE_REGISTERED && auth()->user()->permission_force_send_by_summary;
+    }
+
+
+    /**
+     *
+     * Verificar si es boleta
+     *
+     * @return bool
+     */
+    public function isDocumentTypeTicket()
+    {
+        return $this->document_type_id === self::DOCUMENT_TYPE_TICKET;
+    }
+
+
+    /**
+     *
+     * Determina si se muestra el boton consultar cdr
+     *
+     * @return bool
+     */
+    public function isAvailableConsultCdr()
+    {
+        $action = false;
+
+        if ($this->state_type_id === self::STATE_TYPE_REGISTERED && $this->soap_type_id === self::SOAP_TYPE_PRODUCTION)
+        {
+            if($this->group_id === self::GROUP_INVOICE)
+            {
+                $action = true;
+            }
+            else
+            {
+                if($this->isSingleDocumentShipment()) $action = true;
+            }
+        }
+
+        return $action;
+    }
+
+
+    /**
+     *
+     * Determina si se muestra el boton para reenvio
+     *
+     * @return bool
+     */
+    public function isAvailableResend()
+    {
+        $action = false;
+
+        if ($this->state_type_id === self::STATE_TYPE_REGISTERED)
+        {
+            if($this->group_id === self::GROUP_INVOICE)
+            {
+                $action = true;
+            }
+            else
+            {
+                if($this->isSingleDocumentShipment()) $action = true;
+            }
+        }
+
+        return $action;
+    }
+
+
+    /**
+     *
      * Filtrar registros para listado de documentos - app
      *
      * @param Builder $query
@@ -1467,5 +1598,77 @@ class Document extends ModelTenant
                 'dispatch_id',
                 'technical_service_id',
             ]);
+    }
+
+
+    /**
+     *
+     * Determina si es factura o boleta
+     *
+     * @return bool
+     */
+    public function isDocumentTypeInvoice()
+    {
+        return in_array($this->document_type_id, ['01', '03'], true);
+    }
+
+
+    /**
+     *
+     * Determina si fue usado para sistema por puntos
+     *
+     * @return bool
+     */
+    public function isPointSystem()
+    {
+        return $this->point_system;
+    }
+
+
+    /**
+     *
+     * Obtener puntos por la venta
+     *
+     * @return float
+     *
+     */
+    public function getPointsBySale()
+    {
+        $calculate_quantity_points = 0;
+
+        if($this->isPointSystem())
+        {
+            $point_system_data = $this->point_system_data;
+            $total = $this->total;
+
+            $value_quantity_points = ($total / $point_system_data->point_system_sale_amount) * $point_system_data->quantity_of_points;
+            $calculate_quantity_points = $point_system_data->round_points_of_sale ? intval($value_quantity_points) : round($value_quantity_points, 2);
+        }
+
+        return $calculate_quantity_points;
+    }
+
+    public function getQrAttribute($value)
+    {
+        if(!is_null($value)) {
+            return $value;
+        }
+        $company = Company::query()->first();
+        $customer = $this->customer;
+        $text = join('|', [
+            $company->number,
+            $this->document_type_id,
+            $this->series,
+            $this->number,
+            $this->total_igv,
+            $this->total,
+            $this->date_of_issue->format('Y-m-d'),
+            $customer->identity_document_type_id,
+            $customer->number,
+            $this->hash
+        ]);
+
+        $qrCode = new QrCodeGenerate();
+        return $qrCode->displayPNGBase64($text);
     }
 }

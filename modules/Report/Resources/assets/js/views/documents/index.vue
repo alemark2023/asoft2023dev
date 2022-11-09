@@ -56,6 +56,12 @@
                             <th v-if="columns.total_igv.visible" class="">Total IGV</th>
                             <th class="" v-if="columns.total_isc.visible">Total ISC</th>
                             <th v-if="columns.total.visible" class="">Total</th>
+                            
+                            <template v-if="configuration.enabled_sales_agents">
+                                <th>Agente</th>
+                                <th>Datos de referencia</th>
+                            </template>
+                            
                         </tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>
@@ -169,6 +175,11 @@
                                 }}
                             </td>
 
+
+                            <template v-if="configuration.enabled_sales_agents">
+                                <td>{{ row.agent_name }}</td>
+                                <td>{{ row.reference_data }}</td>
+                            </template>
 
                             <!-- <td>{{ (row.document_type_id == '07') ? -row.total_unaffected : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_unaffected) }}</td>
                             <td>{{ (row.document_type_id == '07') ? -row.total_free : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_free) }}</td>

@@ -791,7 +791,15 @@ export default {
                 .then(response => {
                     let res = response.data;
                     if (res.success) {
-                        this.$message.success(res.message);
+                        // this.$message.success(res.message);
+                        
+                        this.$notify({
+                            message: res.message,
+                            type: 'success',
+                            onClick: ()=>{
+                                window.open('/reports/download-tray')
+                            }
+                        })
                     } else {
                         this.$message.error('Error al exportar');
                     }

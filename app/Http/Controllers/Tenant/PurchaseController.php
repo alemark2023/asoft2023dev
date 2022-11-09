@@ -142,9 +142,10 @@
             $payment_conditions = GeneralPaymentCondition::get();
             $warehouses = Warehouse::get();
             $permissions = auth()->user()->getPermissionsPurchase();
+            $global_discount_types = ChargeDiscountType::whereIn('id', ['02', '03'])->whereActive()->get();
 
             return compact('suppliers', 'establishment', 'currency_types', 'discount_types', 'configuration', 'payment_conditions',
-                'charge_types', 'document_types_invoice', 'company', 'payment_method_types', 'payment_destinations', 'customers', 'warehouses','permissions');
+                'charge_types', 'document_types_invoice', 'company', 'payment_method_types', 'payment_destinations', 'customers', 'warehouses','permissions', 'global_discount_types');
         }
 
         public function table($table)
@@ -553,7 +554,12 @@
 
             file_put_contents($temp, $this->getStorage($purchase->filename, 'purchase'));
 
-            return response()->file($temp);
+            $headers = [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="'.$purchase->filename.'"'
+            ];
+
+            return response()->file($temp, $headers);
         }
 
         private function reloadPDF($purchase, $format, $filename)
@@ -748,21 +754,27 @@
 
             DB::connection('tenant')->transaction(function () use ($obj) {
 
+
                 foreach ($obj->items as $it) {
                     $it->lots()->delete();
                 }
 
+
                 $obj->state_type_id = 11;
                 $obj->save();
 
-                foreach ($obj->items as $item) {
+                foreach ($obj->items as $item)
+                {
+                    $item_warehouse_id = $item->warehouse_id ?? $obj->establishment->getCurrentWarehouseId();
+
                     $item->purchase->inventory_kardex()->create([
                         'date_of_issue' => date('Y-m-d'),
                         'item_id' => $item->item_id,
-                        'warehouse_id' => $item->warehouse_id,
+                        'warehouse_id' => $item_warehouse_id,
                         'quantity' => -$item->quantity,
                     ]);
-                    $wr = ItemWarehouse::where([['item_id', $item->item_id], ['warehouse_id', $item->warehouse_id]])->first();
+
+                    $wr = ItemWarehouse::where([['item_id', $item->item_id], ['warehouse_id', $item_warehouse_id]])->first();
                     $wr->stock = $wr->stock - $item->quantity;
                     $wr->save();
                 }

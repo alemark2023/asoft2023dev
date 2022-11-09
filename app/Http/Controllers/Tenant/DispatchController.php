@@ -168,8 +168,20 @@ class DispatchController extends Controller
         $type = null;
         $document = $sale_note;
         $dispatch = null;
-
-        return view('tenant.dispatches.form', compact('document', 'type', 'dispatch', 'sale_note'));
+        $configuration = Configuration::query()->first();
+        $items = [];
+        foreach ($document->items as $item) {
+            $name_product_pdf = ($configuration->show_pdf_name)?strip_tags($item->name_product_pdf):null;
+            $items[] = [
+                'item_id' => $item->item_id,
+                'item' => $item,
+                'quantity' => $item->quantity,
+                'description' => $item->item->description,
+                'name_product_pdf' => $name_product_pdf
+            ];
+        }
+        //dd($sale_note_id);
+        return view('tenant.dispatches.form', compact('document', 'type', 'dispatch', 'items'));
     }
 
     public function sendDispatchToSunat(Dispatch $document) {
@@ -649,6 +661,7 @@ class DispatchController extends Controller
             ->select('series', 'number', 'id', 'date_of_issue','soap_shipping_response')
             ->where('customer_id', $clientId)
             ->whereNull('reference_document_id')
+            ->whereStateTypeAccepted()
             ->orderBy('series')
             ->orderBy('number', 'desc')
             ->take(20)

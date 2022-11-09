@@ -142,6 +142,9 @@
                     Route::post('/transaction', 'InventoryController@store_transaction');
                     Route::post('move', 'InventoryController@move');
                     Route::post('move-multilple', 'InventoryController@moveMultiples');
+                    Route::post('stock', 'InventoryController@stock');
+                    Route::post('stock-multilple', 'InventoryController@stockMultiples');
+                    Route::post('import', 'InventoryController@import');
                     /**
                      * inventory/moves
                      * inventory/remove
@@ -232,6 +235,12 @@
                         Route::get('excel', 'ReportMovementController@excel');
                         Route::get('filter', 'ReportMovementController@filter');
                         Route::get('records', 'ReportMovementController@records');
+
+                        Route::get('stock/records', 'ReportMovementController@stockRecords');
+                        // Route::get('stock/excel/excel', 'ReportMovementController@stockExcel');
+
+                        Route::get('stock/format-stock-fit/{type}', 'ReportMovementController@formatStockFit');
+                        Route::get('filter-stock-fit', 'ReportMovementController@filterStockFit');
                     });
 
                 });
@@ -295,6 +304,16 @@
                     Route::get('create', 'DevolutionController@create')->name('devolutions.create');
                     Route::get('search-items', 'DevolutionController@searchItems');
                     Route::get('download/{external_id}/{format?}', 'DevolutionController@download');
+
+                });
+
+                
+                Route::prefix('inventory-review')->group(function () {
+
+                    Route::get('', 'InventoryReviewController@index')->name('tenant.inventory-review.index');
+                    Route::get('filters', 'InventoryReviewController@filters');
+                    Route::get('records', 'InventoryReviewController@records');
+                    Route::post('export', 'InventoryReviewController@export');
 
                 });
 

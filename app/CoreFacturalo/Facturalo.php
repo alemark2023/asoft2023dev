@@ -39,6 +39,7 @@ use Modules\Inventory\Models\Warehouse;
 use App\CoreFacturalo\Requests\Inputs\Functions;
 use App\Models\Tenant\PurchaseSettlement;
 use App\CoreFacturalo\Services\Helpers\SendDocumentPse;
+use Modules\Finance\Traits\FilePaymentTrait;
 
 
 /**
@@ -48,7 +49,7 @@ use App\CoreFacturalo\Services\Helpers\SendDocumentPse;
  */
 class Facturalo
 {
-    use StorageDocument, FinanceTrait, KardexTrait;
+    use StorageDocument, FinanceTrait, KardexTrait, FilePaymentTrait;
 
     const REGISTERED = '01';
     const SENT = '03';
@@ -261,9 +262,11 @@ class Facturalo
 
     public function updateQr()
     {
-        $this->document->update([
-            'qr' => $this->getQr(),
-        ]);
+        if(config('tenant.save_qrcode')) {
+            $this->document->update([
+                'qr' => $this->getQr(),
+            ]);
+        }
     }
 
     public function updateState($state_type_id)
@@ -362,6 +365,12 @@ class Facturalo
             $pdf_margin_bottom = 15;
             $pdf_margin_left = 14;
         }
+        if (substr($base_pdf_template, 0, 7) === 'facnova') {
+            $pdf_margin_top = 10;
+            $pdf_margin_right = 4;
+            $pdf_margin_bottom = 5;
+            $pdf_margin_left = 15;
+        }
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $this->document, $format_pdf);
 
@@ -433,6 +442,13 @@ class Facturalo
                 $height_legend = 10;
             }
 
+            $append_height = 0;
+
+            if($this->type === 'dispatch')
+            {
+                $this->appendHeightFromDispatch($append_height, $format, $this->document);
+            }
+
             $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
@@ -464,6 +480,7 @@ class Facturalo
                     $extra_by_item_additional_information+
                     $height_legend+
                     $document_transport+
+                    $append_height+
                     $document_retention
                 ],
                 'margin_top' => 0,
@@ -606,7 +623,6 @@ class Facturalo
                 }
 
                 $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
-
             }
 //            $html_footer = $template->pdfFooter();
 //            $pdf->SetHTMLFooter($html_footer);
@@ -670,6 +686,55 @@ class Facturalo
         $this->uploadFile($pdf->output('', 'S'), 'pdf');
         return $this;
     }
+
+    
+    /**
+     * 
+     * Agregar altura para ticket de guia
+     *
+     * @param  float $append_height
+     * @param  $document
+     * @return void
+     */
+    private function appendHeightFromDispatch(&$append_height, $format, $document)
+    {
+        $base_height = 0;
+        $observations = 0;
+        $data_affected_document = 0;
+        $transfer_reason_type = 0;
+        $transport_mode_type = 0;
+        $driver = 0;
+        $license_plate = 0;
+        $secondary_license_plates = 0;
+
+        if($format == 'ticket_58')
+        {
+            $base_height = 80;
+            if($document->data_affected_document) $data_affected_document = 25;
+        }
+        else
+        {
+            $base_height = 50;
+            if($document->data_affected_document) $data_affected_document = 20;
+        }
+
+        if($document->observations) $observations = 30;
+        if($document->transfer_reason_type) $transfer_reason_type = 6;
+        if($document->transport_mode_type) $transport_mode_type = 6;
+        if($document->license_plate) $license_plate = 5;
+        if($document->secondary_license_plates) $secondary_license_plates = 5;
+
+        if($document->driver)
+        {
+            if($document->driver->number)  $driver += 5;
+            if($document->driver->license)  $driver += 5;
+        }
+        
+        $append_height += $base_height + $observations + $data_affected_document + $transfer_reason_type + $transport_mode_type + $driver
+                            + $license_plate + $secondary_license_plates;
+
+    }
+
 
     public function loadXmlSigned()
     {
@@ -787,7 +852,7 @@ class Facturalo
             $this->updateRegularizeShipping($code, $message);
             return;
         }
-
+        //dd($message);
         // if($code === 'ERROR_CDR') {
         //     return;
         // }
@@ -909,12 +974,12 @@ class Facturalo
                     if(in_array($this->document->summary_status_type_id, ['1', '2']))
                     {
                         $this->updateStateDocuments(self::ACCEPTED);
-                    } 
-                    else 
+                    }
+                    else
                     {
                         $this->updateStateDocuments(self::VOIDED);
                     }
-                    
+
                     //enviar cdr a pse
                     $this->sendCdrToPse($res->getCdrZip(), $this->document);
                     //enviar cdr a pse
@@ -1106,8 +1171,8 @@ class Facturalo
 
     }
 
-    private function savePayments($document, $payments){
-
+    private function savePayments($document, $payments)
+    {
         $total = $document->total;
         $balance = $total - collect($payments)->sum('payment');
 
@@ -1152,6 +1217,9 @@ class Facturalo
             }
 
             $record = $document->payments()->create($row);
+
+            // para carga de voucher
+            $this->saveFilesFromPayments($row, $record, 'documents');
 
             //considerar la creacion de una caja chica cuando recien se crea el cliente
             if(isset($row['payment_destination_id'])){

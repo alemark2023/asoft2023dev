@@ -241,6 +241,9 @@ class DocumentController extends Controller
             $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'image_detractions'.DIRECTORY_SEPARATOR;
 
             $file_name_old = $image_pay_constancy['image'];
+
+            UploadFileHelper::checkIfValidFile($file_name_old, $image_pay_constancy['temp_path'], true);
+
             $file_name_old_array = explode('.', $file_name_old);
             $file_content = file_get_contents($image_pay_constancy['temp_path']);
             $datenow = date('YmdHis');
@@ -397,6 +400,27 @@ class DocumentController extends Controller
 
         return (new ConsultCdr)->search($document);
 
+    }
+
+        
+    /**
+     * 
+     * Forzar el envio por resumen a una boleta enviada de forma individual
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function forceSendBySummary(Request $request)
+    {
+        $document = Document::findOrFail($request->id);
+        $document->force_send_by_summary = true;
+        $document->ticket_single_shipment = false;
+        $document->update();
+
+        return [
+            'success' => true,
+            'message' => 'Se habilitó el comprobante para enviarlo por resumen'
+        ];
     }
 
 }

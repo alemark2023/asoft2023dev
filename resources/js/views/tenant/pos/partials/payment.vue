@@ -14,6 +14,23 @@
                     <div class="col-12 px-0">
                         <h4 class="font-weight-semibold m-0 text-secondary">{{ customer.description }}</h4>
                     </div>
+                    
+                    <!-- sistema por puntos -->
+                    <div v-if="enabledPointSystem" class="mt-3">
+                        <p class="fs-point-system">
+                            <label class="font-weight-bold">Puntos acumulados:</label> 
+                            <b>{{customer_accumulated_points}}</b> 
+
+                            <template v-if="total_exchange_points > 0">
+                            - <b style="color:red">{{ total_exchange_points }}</b> = <b>{{ calculate_customer_accumulated_points }}</b>
+                            </template>
+                        </p>
+                        <p class="fs-point-system">
+                            <label class="font-weight-bold text-danger">Puntos por la compra:</label> 
+                            <b>{{total_points_by_sale}}</b> 
+                        </p>
+                    </div>
+                    <!-- sistema por puntos -->
                 </div>
 
                 <template v-for="(item,index) in form.items">
@@ -33,6 +50,16 @@
                             <h5 class="font-weight-semibold m-0 text-right text-secondary">
                                 {{ currencyTypeActive.symbol }} {{ item.total }}</h5>
                         </div>
+
+                        <!-- sistema por puntos -->
+                        <template v-if="isAvailablePointSystem(item)">
+                            <div class="col-2">
+                            </div>
+                            <div class="col-10 px-0">
+                                <el-checkbox class="mt-2 mb-2" v-model="item.item.exchanged_for_points" @change="changeRowExchangePoints(item, index)"><b>{{ getExchangePointDescription(item) }}</b></el-checkbox>
+                            </div>
+                        </template>
+                        <!-- sistema por puntos -->
                     </div>
                 </template>
 
@@ -174,7 +201,7 @@
                 </div>
 
 
-                <div class="col-lg-8">
+                <div class="col-lg-8 mt-2">
                     <div class="card card-default">
 
                         <div class="card-body text-center">
@@ -315,7 +342,7 @@
                                         <el-input v-model="form.worker_full_name_tips"></el-input>
                                     </div>
                                 </div>
- 
+
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="control-label">Monto</label>
@@ -436,8 +463,13 @@
                 </div>
                 <div class="col-lg-8">
                     <div class="card card-default">
-                        <div class="card-body text-center">
+                        <div class="card-body">
                             <div class="row col-lg-12">
+                                
+                                <div class="col-md-12 col-lg-12 mb-1" v-if="configuration.enabled_sales_agents">
+                                    <search-agent @changeAgent="changeAgent"></search-agent>
+                                </div>
+
                                 <div class="col-md-12 col-lg-12">
                                     <div class="form-group">
                                         <label class="control-label">Datos de referencia</label>
@@ -445,10 +477,12 @@
                                                   type="textarea"></el-input>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
+                
             </div>
         </div>
         <options-form
@@ -474,6 +508,12 @@
         <card-brands-form :external="true"
                           :recordId="null"
                           :showDialog.sync="showDialogNewCardBrand"></card-brands-form>
+                          
+        <discount-permission-form 
+                    :showDialog.sync="showDialogDiscountPermission"
+                    :totalDiscountPercentage ="totalDiscountPercentage"
+                    :sellers-discount-limit="configuration.sellers_discount_limit"
+                    @tokenValidated="tokenValidated"></discount-permission-form>
     </div>
 </template>
 <style>
@@ -507,23 +547,35 @@ import CardBrandsForm from '../../card_brands/form.vue'
 import SaleNotesOptions from '../../sale_notes/partials/options.vue'
 import OptionsForm from './options.vue'
 import MultiplePaymentForm from './multiple_payment.vue'
+import {pointSystemFunctions} from '@mixins/functions'
+import {calculateRowItem} from "@helpers/functions"
+import DiscountPermissionForm from './discount_permission.vue'
+import SearchAgent from '@components/SearchAgent.vue'
+
 
 export default {
-    components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress},
+    components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress, DiscountPermissionForm, SearchAgent},
+    mixins: [pointSystemFunctions],
 
     props: [
-        'form', 
-        'customer', 
-        'currencyTypeActive', 
-        'exchangeRateSale', 
-        'is_payment', 
-        'soapCompany', 
-        'businessTurns', 
-        'isPrint', 
-        'globalDiscountTypeId', 
+        'form',
+        'customer',
+        'currencyTypeActive',
+        'exchangeRateSale',
+        'is_payment',
+        'soapCompany',
+        'businessTurns',
+        'isPrint',
+        'globalDiscountTypeId',
         'enabledTipsPos',
         'hidePdfViewDocuments',
+        'enabledPointSystem',
+        'affectationIgvTypes',
+        'percentageIgv',
+        'configuration',
+        'typeUser',
     ],
+    
     data() {
         return {
             enabled_discount: false,
@@ -559,8 +611,9 @@ export default {
             global_discount_type: {},
             error_global_discount: false,
             is_discount_amount: false,
-            payment_method_type_id: null
-
+            payment_method_type_id: null,
+            showDialogDiscountPermission: false,
+            totalDiscountPercentage: 0,
         }
     },
     async created() {
@@ -587,6 +640,16 @@ export default {
         if (!qz.websocket.isActive() && this.isPrint) {
             startConnection();
         }
+
+        if(this.enabledPointSystem)
+        {
+            await this.setCustomerAccumulatedPoints(this.form.customer_id, true)
+            this.setTotalExchangePoints()
+            this.checkUsedPointsByItem()
+        }
+
+        this.setTotalPointsBySale(this.configuration)
+
     },
     mounted() {
         // console.log(this.currencyTypeActive)
@@ -595,8 +658,44 @@ export default {
         isGlobalDiscountBase: function () {
             return (this.globalDiscountTypeId === '02')
         },
+        isInvoiceDocument()
+        {
+            return ['01', '03'].includes(this.form.document_type_id)
+        }
     },
-    methods: {
+    methods: 
+    {
+        changeAgent(agent_id)
+        {
+            this.form.agent_id = agent_id
+        },
+        checkUsedPointsByItem()
+        {
+            this.form.items.forEach(row => {
+                this.recalculateUsedPointsForExchange(row)
+            })
+        },
+        isAvailablePointSystem(row)
+        {
+            return (this.enabledPointSystem && this.customer_accumulated_points > 0 && row.item.exchange_points)
+        },
+        changeRowExchangePoints(row, index)
+        {
+            row.item.used_points_for_exchange = row.item.exchanged_for_points ? this.getUsedPoints(row) : null
+            this.setTotalExchangePoints()
+            this.changeRowFreeAffectationIgv(row, index)
+        },
+        async changeRowFreeAffectationIgv(row, index) 
+        {
+            this.form.items[index].affectation_igv_type_id = (row.item.exchanged_for_points) ? '15' : this.form.items[index].item.original_affectation_igv_type_id
+            this.form.items[index].affectation_igv_type = await _.find(this.affectationIgvTypes, {id: this.form.items[index].affectation_igv_type_id})
+            
+            let new_row = await calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentageIgv)
+            new_row['unit_type_id'] = row.unit_type_id
+
+            this.form.items[index] = new_row
+            await this.reCalculateTotal()
+        },
         handleFn113() {
             const code = this.form.document_type_id
             if (code == '01') {
@@ -706,8 +805,7 @@ export default {
 
             if (input_global_discount > 0 && !discount)
             {
-
-                const percentage_igv = 18
+                const percentage_igv = this.percentageIgv * 100
                 let base = (this.isGlobalDiscountBase) ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
                 let amount = 0
                 let factor = 0
@@ -798,12 +896,17 @@ export default {
                     total_free += parseFloat(row.total_value)
                 }
 
-                if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
+                // if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
+                if (['10', '20', '30', '40', '21'].indexOf(row.affectation_igv_type_id) > -1) 
+                {
                     total_igv += (row.total_igv_without_rounding) ? parseFloat(row.total_igv_without_rounding) : parseFloat(row.total_igv)
                     total += (row.total_without_rounding) ? parseFloat(row.total_without_rounding) : parseFloat(row.total)
                 }
 
-                total_value += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
+                if(!['21', '37'].includes(row.affectation_igv_type_id)) 
+                {
+                    total_value += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
+                }
 
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
@@ -858,6 +961,7 @@ export default {
 
             this.discountGlobal()
 
+            this.setTotalPointsBySale(this.configuration)
 
         },
         deleteDiscountGlobal() {
@@ -1106,10 +1210,59 @@ export default {
                 });
             }
         },
-        async clickPayment() {
-            // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
+        getDiscountPercentages()
+        {
+            if(this.form.discounts)
+            {
+                return _.sumBy(this.form.discounts, (discount)=>{
+                    return discount.factor * 100
+                })
+            }
 
-            if(this.form.total <= 0) return this.$message.error('El total debe ser mayor a 0')
+            return 0
+        },
+        tokenValidated()
+        {
+            this.form.token_validated_for_discount = true
+        },
+        validateRestrictSellerDiscount()
+        {
+            if(this.configuration.restrict_seller_discount && this.typeUser !== 'admin')
+            {
+                const all_percentages = this.getDiscountPercentages()
+
+                if(all_percentages > parseFloat(this.configuration.sellers_discount_limit) && !this.form.token_validated_for_discount)
+                {
+                    this.totalDiscountPercentage = _.round(all_percentages, 2)
+                    this.showDialogDiscountPermission = true
+
+                    return {
+                        success: false,
+                    }
+                }
+            }
+
+            return {
+                success: true
+            }
+        },
+        async clickPayment() 
+        {
+            // validacion restriccion de descuento
+            const validate_restrict_seller_discount = this.validateRestrictSellerDiscount()
+            if(!validate_restrict_seller_discount.success) return
+
+            // validacion sistema por puntos
+            if(this.enabledPointSystem)
+            {
+                const validate_exchange_points = this.validateExchangePoints()
+                if(!validate_exchange_points.success) return this.$message.error(validate_exchange_points.message)
+            }
+            else
+            {
+                if(this.form.total <= 0) return this.$message.error('El total debe ser mayor a 0')
+            }
+
 
             if (!moment(moment().format("YYYY-MM-DD")).isSame(this.form.date_of_issue)) {
                 return this.$message.error('La fecha de emisión no coincide con la del día actual');
@@ -1153,7 +1306,7 @@ export default {
                     }
 
                     this.documentNewId = response.data.data.id;
-                    
+
                     // this.showDialogOptions = true;
                     this.showOptionsDialog(response)
 
@@ -1180,7 +1333,7 @@ export default {
                 this.locked_submit = false
             });
         },
-        
+
         showOptionsDialog(response){
 
             if(this.hidePdfViewDocuments)
@@ -1209,7 +1362,7 @@ export default {
             {
                 this.showDialogOptions = true
             }
-            
+
         },
 
         gethtml(){
@@ -1248,10 +1401,10 @@ export default {
                 }
             ];
             // qz.print(configg, printData).catch(displayError);
-            
+
             qz.print(configg, printData)
                 .then(()=>{
-                    
+
                     this.$notify({
                         title: '',
                         message: 'Impresión en proceso...',

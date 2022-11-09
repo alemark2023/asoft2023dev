@@ -4,6 +4,9 @@
     use App\Models\Tenant\SaleNote;
     use App\Models\Tenant\Catalogs\DocumentType;
     use App\Models\Tenant\Series;
+
+    $enabled_sales_agents = App\Models\Tenant\Configuration::getRecordIndividualColumn('enabled_sales_agents');
+
 $col_num=6;
     //dd($columns);
 foreach ($columns as $value) {
@@ -278,6 +281,14 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                         @foreach ($categories_services as $category)
                             <th>{{$category->name}}</th>
                         @endforeach
+
+                        <th>TC</th>
+
+                        @if ($enabled_sales_agents)
+                            <th>Agente</th>
+                            <th>Datos de referencia</th>
+                        @endif
+
                     </tr>
                     </thead>
                     <tbody>
@@ -525,6 +536,21 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
     
                             @endif
     
+                            @php
+    
+                                $serie_affec =  '';
+    
+                                $quality_item=0;
+                                foreach ($value->items as $itm) {
+                                    $quality_item+=$itm->quantity;
+                                }
+    
+                            @endphp
+
+                            @if ($columns->items->visible)
+                                <td>{{$quality_item}}</td>
+                            @endif
+
                             @foreach ($categories as $category)
     
                                 @php
@@ -568,20 +594,14 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                                 $value->total = (in_array($document_type->id,['01','03', '07']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total;
                             @endphp
     
-                            @php
-    
-                                $serie_affec =  '';
-    
-                                $quality_item=0;
-                                foreach ($value->items as $itm) {
-                                    $quality_item+=$itm->quantity;
-                                }
-    
-                            @endphp
-                            @if ($columns->items->visible)
-                                <td>{{$quality_item}}</td>
+
+                            <td>{{ $value->exchange_rate_sale }}</td>
+
+                            @if ($enabled_sales_agents)
+                                <td>{{optional($value->agent)->search_description}}</td>
+                                <td>{{$value->reference_data}}</td>
                             @endif
-                            
+
                         </tr>
                         @php
                             if($value->currency_type_id == 'PEN'){

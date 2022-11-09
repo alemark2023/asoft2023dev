@@ -20,8 +20,12 @@ if ($hostname) {
 
             Route::prefix('restaurant')->group(function () {
                 Route::get('/items', 'RestaurantController@items');
+                Route::post('/items/price', 'RestaurantController@savePrice');
+
                 Route::get('/categories', 'RestaurantController@categories');
                 Route::get('/configurations', 'RestaurantConfigurationController@record');
+                Route::get('/waiters', 'WaiterController@records');
+
             });
 
         });
