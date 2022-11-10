@@ -102,12 +102,14 @@ class DownloadController extends Controller
 
         file_put_contents($temp, $this->getStorage($document->filename, 'pdf'));
 
+        /*
         $headers = [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="'.$document->filename.'.pdf'.'"'
         ];
+        */
 
-        return response()->file($temp, $headers);
+        return response()->file($temp, $this->generalPdfResponseFileHeaders($document->filename));
     }
 
     public function toTicket($model, $external_id, $format = null) {

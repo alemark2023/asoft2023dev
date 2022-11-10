@@ -36,6 +36,8 @@ use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use App\CoreFacturalo\Template;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
+
 
 class UnpaidController extends Controller
 {
@@ -155,12 +157,14 @@ class UnpaidController extends Controller
 
         file_put_contents($temp, $this->getStorage($sale_note->filename, 'unpaid'));
 
+        /*
         $headers = [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="'.$sale_note->filename.'"'
         ];
+        */
 
-        return response()->file($temp, $headers);
+        return response()->file($temp, GeneralPdfHelper::pdfResponseFileHeaders($sale_note->filename));
     }
 
     private function reloadPDF($sale_note, $format, $filename) {

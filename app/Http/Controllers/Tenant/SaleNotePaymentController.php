@@ -241,12 +241,14 @@ class SaleNotePaymentController extends Controller
         $temp = tempnam(sys_get_temp_dir(), 'sale_note');
         file_put_contents($temp, $this->getStorage($filename, 'sale_note'));
 
+        /*
         $headers = [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="'.$filename.'"'
         ];
+        */
 
-        return response()->file($temp, $headers);
+        return response()->file($temp, $this->generalPdfResponseFileHeaders($filename));
     }
 
 

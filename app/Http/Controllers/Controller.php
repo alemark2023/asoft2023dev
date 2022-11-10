@@ -22,6 +22,7 @@
     };
     use Modules\MobileApp\Http\Controllers\Api\ItemController as ItemControllerMobileApp;
     use Modules\Inventory\Models\Warehouse;
+    use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
 
 
     /**
@@ -354,5 +355,15 @@ $string = var_export($header,true);
             return Warehouse::where('establishment_id', auth()->user()->establishment_id)->selectBasicColumns()->firstOrFail();
         }
         
+
+        /**
+         * 
+         * @param  string $filename
+         * @return array
+         */
+        public static function generalPdfResponseFileHeaders($filename)
+        {
+            return GeneralPdfHelper::pdfResponseFileHeaders($filename);
+        }
 
     }

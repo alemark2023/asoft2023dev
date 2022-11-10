@@ -554,12 +554,14 @@
 
             file_put_contents($temp, $this->getStorage($purchase->filename, 'purchase'));
 
+            /*
             $headers = [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="'.$purchase->filename.'"'
             ];
+            */
 
-            return response()->file($temp, $headers);
+            return response()->file($temp, $this->generalPdfResponseFileHeaders($purchase->filename));
         }
 
         private function reloadPDF($purchase, $format, $filename)
