@@ -1481,6 +1481,13 @@
                                                        v-text="errors.plate_number[0]"></small>
                                             </div>
                                         </div>
+
+                                        <!-- propinas -->
+                                        <template v-if="config.enabled_tips_pos && !isUpdateDocument">
+                                            <set-tip class="full py-2 border-top mb-1 mt-2" @changeDataTip="changeDataTip"></set-tip>
+                                        </template>
+                                        <!-- propinas -->
+
                                         <div class="col-12 py-2 border-top">
                                             <span class="mr-3">Mostrar términos y condiciones.</span>
                                             <el-switch v-model="form.show_terms_condition"></el-switch>
@@ -1631,6 +1638,7 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import Keypress from "vue-keypress";
 import StoreItemSeriesIndex from "../Store/ItemSeriesIndex";
 import DocumentReportCustomer from './partials/report_customer.vue'
+import SetTip from '@components/SetTip.vue'
 
 export default {
     props: [
@@ -1654,6 +1662,7 @@ export default {
         DocumentDetraction,
         DocumentTransportForm,
         DocumentReportCustomer,
+        SetTip,
     },
     mixins: [functions, exchangeRate, pointSystemFunctions],
     data() {
@@ -1949,6 +1958,14 @@ export default {
 
     },
     methods: {
+        changeDataTip(tip)
+        {
+            if(tip)
+            {
+                this.form.worker_full_name_tips = tip.worker_full_name_tips 
+                this.form.total_tips = tip.total_tips 
+            }
+        },
         onSuccessUploadVoucher(response, file, fileList, index)
         {
             if (response.success)
@@ -2041,6 +2058,9 @@ export default {
                 has_retention: false,
                 retention: {},
                 quotation_id: null,
+                
+                worker_full_name_tips: null, //propinas
+                total_tips: 0, //propinas
             }
 
             this.form_cash_document = {
@@ -2070,6 +2090,8 @@ export default {
 
             this.calculate_customer_accumulated_points = 0
             this.total_exchange_points = 0
+
+            this.$eventHub.$emit('eventInitTip')
 
         },
         startConnectionQzTray() {
