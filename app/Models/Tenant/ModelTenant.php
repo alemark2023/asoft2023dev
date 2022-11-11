@@ -34,6 +34,7 @@
 
         public const SOAP_TYPE_PRODUCTION = '02';
 
+        public const NATIONAL_CURRENCY_ID = 'PEN';
 
 
         /**

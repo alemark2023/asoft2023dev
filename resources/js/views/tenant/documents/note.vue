@@ -922,7 +922,7 @@ export default {
         },
         applyPercentageChange(affectation_igv_type_id)
         {
-            const affectations = ['20', '30']
+            const affectations = ['20', '30', '40']
             const debit_note_types = ['02', '01', '03']
 
             return (affectations.includes(affectation_igv_type_id) && this.isDebitNote && debit_note_types.includes(this.form.note_credit_or_debit_type_id))

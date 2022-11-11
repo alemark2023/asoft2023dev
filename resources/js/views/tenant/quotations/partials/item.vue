@@ -193,13 +193,33 @@
                                 </el-tooltip>
 
                             </label>
-                            <el-input v-model="form.unit_price"
-                                      @input="calculateQuantity">
-                                <template v-if="form.item.currency_type_symbol"
-                                          slot="prepend">
-                                    {{ form.item.currency_type_symbol }}
-                                </template>
-                            </el-input>
+                            
+                            <template v-if="applyChangeCurrencyItem && changeCurrencyFromParent">
+
+                                <el-input v-model="form.unit_price"
+                                        @input="calculateQuantity">
+                                        
+                                        <el-select slot="prepend" v-model="form.item.currency_type_id" class="custom-change-select-currency">
+                                            <el-option v-for="option in currencyTypes"
+                                                        :key="option.id"
+                                                        :label="option.symbol"
+                                                        :value="option.id"></el-option>
+                                        </el-select>
+                                </el-input> 
+
+                            </template>
+                            <template v-else>
+
+                                <el-input v-model="form.unit_price"
+                                        @input="calculateQuantity">
+                                    <template v-if="form.item.currency_type_symbol"
+                                            slot="prepend">
+                                        {{ form.item.currency_type_symbol }}
+                                    </template>
+                                </el-input>
+
+                            </template>
+
                             <small v-if="errors.unit_price"
                                    class="form-control-feedback"
                                    v-text="errors.unit_price[0]"></small>
@@ -557,7 +577,9 @@ export default {
         'configuration',
         'displayDiscount',
         'customerId',
-        'percentageIgv'
+        'percentageIgv',
+        'currencyTypes',
+        'showOptionChangeCurrency',
     ],
     components: {
         itemForm,
@@ -684,7 +706,15 @@ export default {
             }
             return false;
         },
-
+        applyChangeCurrencyItem()
+        {
+            if(this.configuration) return this.configuration.change_currency_item
+            return false
+        },
+        changeCurrencyFromParent()
+        {
+            return (this.showOptionChangeCurrency !== undefined && this.showOptionChangeCurrency && this.currencyTypes !== undefined && Array.isArray(this.currencyTypes))
+        },
     },
     methods: {
         ...mapActions([
