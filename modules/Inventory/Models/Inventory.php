@@ -156,6 +156,7 @@ class Inventory extends ModelTenant
             $output = -$this->quantity;
         }
 
+        $guide_id = null;
         $guide_number = null;
         $guide_date_of_issue = null;
         if (count($this->inventory_kardex) > 0) {
@@ -165,6 +166,7 @@ class Inventory extends ModelTenant
                 if ($guide) {
                     $guide_number = $guide->series . '-' . $guide->number;
                     $guide_date_of_issue = $guide->date_of_issue->format('Y-m-d');
+                    $guide_id = $guide->id;
                 }
             }
         }
@@ -182,6 +184,7 @@ class Inventory extends ModelTenant
             'quantity' => $this->quantity,
             'input' => $input,
             'output' => $output,
+            'guide_id' => $guide_id,
             'date_time' => $this->created_at->format('Y-m-d H:i:s'),
             'guide_number' => $guide_number,
             'guide_date_of_issue' => $guide_date_of_issue,

@@ -236,11 +236,13 @@ class InventoryKardex extends ModelTenant
                 $data['balance'] = $balance += $qty;
                 $data['type_transaction'] = $inventory_kardexable->description;
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
+                $data['guide_id'] = null;
 
                 $guide = Guide::query()->where('id', $inventory_kardexable->guide_id)->first();
                 if($guide) {
                     $data['number'] = $guide->series.'-'.$guide->number;
                     $data['date_of_issue'] = $guide->date_of_issue->format('Y-m-d');
+                    $data['guide_id'] = $guide->id;
                 }
 
                 $inventory_transfer = InventoryTransfer::query()->where('id', $inventory_kardexable->inventories_transfer_id)->first();

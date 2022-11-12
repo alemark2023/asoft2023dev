@@ -112,6 +112,7 @@
                                         <th class="text-left">Motivo de traslado</th>
                                         <th class="text-right">Entrada</th>
                                         <th class="text-right">Salida</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -124,6 +125,14 @@
                                         <td class="text-left"> {{ row.description }} </td>
                                         <td class="text-right"> {{ row.input }} </td>
                                         <td class="text-right"> {{ row.output }} </td>
+                                        <td class="text-right">
+                                            <button class="btn waves-effect waves-light btn-xs btn-info"
+                                                    type="button"
+                                                    @click.prevent="downloadPdfGuide(row.guide_id)"
+                                                    v-if="row.guide_id">
+                                                <i class="fa fa-file-pdf"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -288,6 +297,11 @@ export default {
                 limit: this.limit,
                 ...this.form
             })
+        },
+        downloadPdfGuide(guide_id) {
+            if (guide_id) {
+                window.open(`/reports/kardex/get_pdf_guide/${guide_id}`, "_blank");
+            }
         },
         close() {
             this.$emit('update:showDialog', false)

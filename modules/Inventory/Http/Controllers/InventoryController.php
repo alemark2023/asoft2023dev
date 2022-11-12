@@ -4,10 +4,12 @@ namespace Modules\Inventory\Http\Controllers;
 
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Series;
+use Barryvdh\DomPDF\PDF;
 use Exception;
 
 //use App\Models\Tenant\Item;
 use Illuminate\Http\Request;
+use Modules\Inventory\Models\Guide;
 use Modules\Inventory\Models\InventoryTransfer;
 use Modules\Item\Models\ItemLot;
 use Illuminate\Support\Facades\DB;

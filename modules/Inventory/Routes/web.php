@@ -8,7 +8,7 @@
         Route::domain($hostname->fqdn)->group(function () {
             Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
 
-                Route::get('advanced-items-search', 'ItemController@advancedItemsSearch'); 
+                Route::get('advanced-items-search', 'ItemController@advancedItemsSearch');
 
                 // Config inventory
 
@@ -167,6 +167,7 @@
                         Route::post('export', 'ReportInventoryController@export');
                     });
 
+
                 });
 
                 Route::prefix('reports')->group(function () {
@@ -196,6 +197,7 @@
                         Route::get('/filter', 'ReportKardexController@filter')->name('reports.kardex.filter');
                         Route::get('/records', 'ReportKardexController@records')->name('reports.kardex.records');
                         Route::get('/lots/filter', 'ReportKardexController@records_lots');
+                        Route::get('get_pdf_guide/{guide}', 'ReportKardexController@getPdfGuide');
                     });
                     Route::get('kardex_lots/filter', 'ReportKardexController@filter')->name('reports.kardex.filter');
                     Route::get('kardex_series/filter', 'ReportKardexController@filter')->name('reports.kardex.filter');
