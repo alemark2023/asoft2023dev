@@ -483,6 +483,7 @@ class InventoryController extends Controller
 
             $inventory = new Inventory();
             $inventory->type = 3;
+            $inventory->inventory_transaction_id = '12';
             $inventory->description = 'Retiro';
             $inventory->item_id = $item_id;
             $inventory->warehouse_id = $warehouse_id;

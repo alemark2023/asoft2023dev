@@ -212,6 +212,7 @@ class Inventory extends ModelTenant
 
         $query->with(['inventory_kardex']);
 
+//        dd($movement_type);
         if($warehouse_id) {
             $query->where('warehouse_id', $warehouse_id);
         }
