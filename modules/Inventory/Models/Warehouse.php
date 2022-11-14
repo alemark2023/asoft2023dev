@@ -132,4 +132,20 @@ class Warehouse extends ModelTenant
         ]);
     }
 
+    
+    /**
+     * 
+     * Obtener id del almacen
+     *
+     * @param  Builder $query
+     * @param  int $establishment_id
+     * @return Builder
+     */
+    public function scopeGetWarehouseId($query, $establishment_id = null)
+    {
+        $establishment_id = $establishment_id ?? auth()->user()->establishment_id;
+
+        return $query->where('establishment_id', $establishment_id)->select('id')->firstOrFail()->id;
+    }
+
 }
