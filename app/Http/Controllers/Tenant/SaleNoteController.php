@@ -33,6 +33,7 @@ use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\SaleNoteItem;
+use App\Models\Tenant\SaleNotePayment;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\SaleNoteMigration;
 use App\Models\Tenant\Series;
@@ -545,10 +546,10 @@ class SaleNoteController extends Controller
         $configuration = Configuration::select('destination_sale','ticket_58')->first();
         // $sellers = User::GetSellers(false)->get();
         $sellers = User::getSellersToNvCpe($establishment_id,$userId);
-
+        $global_discount_types = ChargeDiscountType::getGlobalDiscounts();
 
         return compact('customers', 'establishments','currency_types', 'discount_types', 'configuration',
-                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers', 'global_charge_types');
+                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers', 'global_charge_types', 'global_discount_types');
     }
 
     public function changed($id)
@@ -935,12 +936,14 @@ class SaleNoteController extends Controller
 
         file_put_contents($temp, $this->getStorage($sale_note->filename, 'sale_note'));
 
+        /*
         $headers = [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="'.$sale_note->filename.'"'
         ];
+        */
 
-        return response()->file($temp, $headers);
+        return response()->file($temp, $this->generalPdfResponseFileHeaders($sale_note->filename));
     }
 
     private function reloadPDF($sale_note, $format, $filename) {
@@ -1644,23 +1647,23 @@ class SaleNoteController extends Controller
 
     }
 
-
+    
+    /**
+     * 
+     * Totales de nota venta, se visualiza en el listado
+     *
+     * @param  Request $request
+     * @return array
+     */
     public function totals(Request $request)
     {
+        $query = $this->getRecords($request)->whereStateTypeAccepted()->whereFilterWithOutRelations()->filterCurrencyPen();
 
-        $records =  $this->getRecords($request)->get(); //SaleNote::where([['state_type_id', '01'],['currency_type_id', 'PEN']])->get();
-        $total_pen = 0;
-        $total_paid_pen = 0;
-        $total_pending_paid_pen = 0;
+        $total_pen = $query->sum('total');
 
+        $sale_notes_id = $query->select('id')->get()->pluck('id')->toArray();
 
-        $total_pen = $records->sum('total');
-
-        foreach ($records as $sale_note) {
-
-            $total_paid_pen += $sale_note->payments->sum('payment');
-
-        }
+        $total_paid_pen = SaleNotePayment::sumPaymentsBySaleNote($sale_notes_id);
 
         $total_pending_paid_pen = $total_pen - $total_paid_pen;
 
@@ -1669,8 +1672,8 @@ class SaleNoteController extends Controller
             'total_paid_pen' => number_format($total_paid_pen, 2, ".", ""),
             'total_pending_paid_pen' => number_format($total_pending_paid_pen, 2, ".", "")
         ];
-
     }
+
 
     public function downloadExternal($external_id, $format = 'a4')
     {

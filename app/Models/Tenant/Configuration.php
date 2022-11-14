@@ -282,6 +282,7 @@
             'show_load_voucher',
             'search_factory_code_items',
             'enabled_dispatch_ticket_pdf',
+            'register_series_invoice_xml',
             'enable_discount_by_customer'
         ];
 
@@ -399,6 +400,8 @@
             'show_load_voucher'=>'bool',
             'search_factory_code_items'=>'bool',
             'enabled_dispatch_ticket_pdf'=>'bool',
+            'register_series_invoice_xml'=>'bool',
+            
             'enable_discount_by_customer' => 'boolean'
             
         ];
@@ -638,6 +641,8 @@
                 'show_load_voucher' => $this->show_load_voucher,
                 'search_factory_code_items' => $this->search_factory_code_items,
                 'enabled_dispatch_ticket_pdf' => $this->enabled_dispatch_ticket_pdf,
+                'register_series_invoice_xml' => $this->register_series_invoice_xml,
+                
                 'enable_discount_by_customer' => $this->enable_discount_by_customer,
 
             ];
@@ -2372,6 +2377,7 @@
                         'point_system_sale_amount',
                         'quantity_of_points',
                         'round_points_of_sale',
+                        'register_series_invoice_xml',
                     ])
                     ->firstOrFail();
         }
