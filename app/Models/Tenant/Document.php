@@ -268,6 +268,7 @@ class Document extends ModelTenant
         'folio',
         'agent_id',
         'force_send_by_summary',
+        'dispatch_ticket_pdf',
     ];
 
     protected $casts = [
@@ -281,6 +282,7 @@ class Document extends ModelTenant
         'ticket_single_shipment' => 'bool',
         'point_system' => 'bool',
         'force_send_by_summary' => 'bool',
+        'dispatch_ticket_pdf' => 'bool',
     ];
 
     public static function boot()

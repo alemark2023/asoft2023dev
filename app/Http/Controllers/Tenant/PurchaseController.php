@@ -386,7 +386,7 @@
                                 // factor de lista de precios
                                 $presentation_quantity = (isset($p_item->item->presentation->quantity_unit)) ? $p_item->item->presentation->quantity_unit : 1;
 
-                                ItemLotsGroup::create([
+                                $item_lots_group = ItemLotsGroup::create([
                                     'code' => $row['lot_code'],
                                     'quantity' => $row['quantity'] * $presentation_quantity,
                                     // 'quantity' => $row['quantity'],
@@ -394,6 +394,8 @@
                                     'item_id' => $row['item_id']
                                 ]);
 
+                                $p_item->item_lot_group_id = $item_lots_group->id;
+                                $p_item->update();
                             }
                         }
 
@@ -779,6 +781,8 @@
                     $wr = ItemWarehouse::where([['item_id', $item->item_id], ['warehouse_id', $item_warehouse_id]])->first();
                     $wr->stock = $wr->stock - $item->quantity;
                     $wr->save();
+
+                    self::voidedItemLotsGroup($item);
                 }
 
             });
@@ -788,6 +792,27 @@
                 'message' => 'Compra anulada con éxito'
             ];
         }
+
+        
+        /**
+         * 
+         * Anular lote ingresado por compra
+         *
+         * @param  PurchaseItem $purchase_item
+         * @return void
+         */
+        public static function voidedItemLotsGroup($purchase_item)
+        {
+            $lots_enabled = $purchase_item->item->lots_enabled ?? false;
+
+            if($lots_enabled && $purchase_item->lot_code && $purchase_item->item_lot_group_id)
+            {
+                $lot_group = self::findItemLotsGroup($purchase_item);
+                $lot_group->quantity = $lot_group->quantity - $purchase_item->quantity;
+                $lot_group->update();
+            }
+        }
+
 
         public static function verifyHasSaleItems($items)
         {
@@ -812,8 +837,14 @@
                     }
                 }
                 if ($lot_enabled) {
-                    if ($element->item->lots_enabled && $element->lot_code) {
+
+                    if ($element->item->lots_enabled && $element->lot_code) 
+                    {
+                        /*
                         $lot_group = ItemLotsGroup::where('code', $element->lot_code)->first();
+                        */
+
+                        $lot_group = self::findItemLotsGroup($element);
 
                         if (!$lot_group) {
                             $message = "Lote {$element->lot_code} no encontrado.";
@@ -837,6 +868,29 @@
 
 
         }
+
+        
+        /**
+         *
+         * buscar lote por id o codigo
+         * 
+         * @param  PurchaseItem $purchase_item
+         * @return ItemLotsGroup
+         */
+        public static function findItemLotsGroup($purchase_item)
+        {
+            if(!is_null($purchase_item->item_lot_group_id))
+            {
+                $lot_group = ItemLotsGroup::find($purchase_item->item_lot_group_id);
+            }
+            else
+            {
+                $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->first();
+            }
+
+            return $lot_group;
+        }
+
 
         public function searchItemById($id)
         {
