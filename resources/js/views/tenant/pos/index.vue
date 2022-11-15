@@ -1625,7 +1625,7 @@ export default {
                 created_from_pos: true,
                 token_validated_for_discount: false,
                 agent_id: null,
-
+                dispatch_ticket_pdf: this.configuration ? this.configuration.enabled_dispatch_ticket_pdf : false,
             };
             // console.log(this.configuration.show_terms_condition_pos);
             if (this.configuration.show_terms_condition_pos) {
