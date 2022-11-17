@@ -124,6 +124,17 @@
         </tr>
     @endif
 
+    @if ($document->isPointSystem())
+        <tr>
+            <td><p class="desc">P. Acumulados:</p></td>
+            <td><p class="desc">{{ $document->person->accumulated_points }}</p></td>
+        </tr>
+        <tr>
+            <td><p class="desc">Puntos por la compra:</p></td>
+            <td><p class="desc">{{ $document->getPointsBySale() }}</p></td>
+        </tr>
+    @endif
+
 </table>
 
 <table class="full-width mt-10 mb-10">
@@ -173,6 +184,12 @@
                      {{$item}}<br>
                  @endforeach
                 @endif
+                
+                @if($row->item->used_points_for_exchange ?? false)
+                    <br>
+                    <small>*** Canjeado por {{$row->item->used_points_for_exchange}}  puntos ***</small>
+                @endif
+                
             </td>
             <td class="text-right desc-9 align-top">{{ number_format($row->unit_price, 2) }}</td>
             <td class="text-right desc-9 align-top">{{ number_format($row->total, 2) }}</td>
@@ -307,5 +324,17 @@
     <tr><td class="pb-10"><strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}</td></tr>
 </table>
 @endif
+@if ($document->terms_condition)
+    <br>
+    <table class="full-width">
+        <tr>
+            <td>
+                <h6 style="font-size: 10px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                {!! $document->terms_condition !!}
+            </td>
+        </tr>
+    </table>
+@endif
+<br>
 </body>
 </html>

@@ -96,4 +96,36 @@ class SaleNotePayment extends ModelTenant
     }
 
 
+    /**
+     * 
+     * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterRelationsPayments($query)
+    {
+        // \Log::info("sln");
+        return $query->generalPaymentsWithOutRelations()
+                    ->with([
+                        'payment_method_type' => function($payment_method_type){
+                            $payment_method_type->select('id', 'description');
+                        }, 
+                    ]);
+    }
+
+    
+    /**
+     * 
+     * Total de pagos filtrado por id de la nota de venta
+     *
+     * @param  array $sale_notes_id
+     * @return float
+     */
+    public static function sumPaymentsBySaleNote($sale_notes_id)
+    {
+        return self::whereIn('sale_note_id', $sale_notes_id)->sum('payment');
+    }
+
+    
 }

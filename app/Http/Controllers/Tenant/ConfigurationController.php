@@ -26,6 +26,8 @@ use App\Models\Tenant\FormatTemplate;
 use Modules\LevelAccess\Models\ModuleLevel;
 use Validator;
 use App\Models\Tenant\Skin;
+use Modules\Finance\Helpers\UploadFileHelper;
+
 
 class ConfigurationController extends Controller
 {
@@ -103,7 +105,12 @@ class ConfigurationController extends Controller
 
     public function show($template)
     {
-        return response()->file(storage_path('app' . DIRECTORY_SEPARATOR . 'preprintedpdf' . DIRECTORY_SEPARATOR . $template . '.pdf'));
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="file.pdf"'
+        ];
+
+        return response()->file(storage_path('app' . DIRECTORY_SEPARATOR . 'preprintedpdf' . DIRECTORY_SEPARATOR . $template . '.pdf'), $headers);
     }
 
     // public function dispatch(Request $request) {
@@ -454,6 +461,8 @@ class ConfigurationController extends Controller
 
             request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
 
+            UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
+
             $file->storeAs('public/uploads/header_images', $name);
 
             $configuration->header_image = $name;
@@ -554,6 +563,7 @@ class ConfigurationController extends Controller
             $filename = $file->getClientOriginalName();
             $name = pathinfo($file->getClientOriginalName());
 
+            UploadFileHelper::checkIfValidCssFile($filename, $file->getPathName(), 'css', ['text/css', 'text/plain']);
 
             Storage::disk('public')->put('skins'.DIRECTORY_SEPARATOR.$filename, $file_content);
 

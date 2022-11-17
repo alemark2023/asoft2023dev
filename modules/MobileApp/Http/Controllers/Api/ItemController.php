@@ -47,7 +47,9 @@ class ItemController extends Controller
 
         switch ($table) {
             case 'categories':
-                $data = Category::filterForTables()->get();
+                $data = Category::filterForTables()->get()->transform(function($row){
+                    return $row->getRowResourceApi();
+                });
                 break;
             case 'affectation_igv_types':
                 $data = AffectationIgvType::whereActive()->get();
@@ -183,7 +185,28 @@ class ItemController extends Controller
         ];
     }
 
+     
+    /**
+     * 
+     * Activar/Desactivar favorito
+     *
+     * @param  int $id
+     * @param  bool $favorite
+     * @return array
+     */
+    public function changeFavorite($id, $favorite)
+    {
+        $record = Item::findOrFail($id);
+        $record->favorite = $favorite;
+        $record->save();
+        
+        return [
+            'success' => true,
+            'message' => $favorite ? 'Agregado a favoritos' : 'Eliminado de favoritos'
+        ];
+    }
 
+    
     /**
      * 
      * Guardar imágen de diferentes tamaños
@@ -205,11 +228,11 @@ class ItemController extends Controller
 
             //size medium
             $image_medium = $item->getImageResize($temp_path, 512);
-            $item->image_medium = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, $image_medium->encode('jpg', 30), "{$item->description}-{$item->id}", false, 'medium');
+            $item->image_medium = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, (string) $image_medium->encode('jpg', 30), "{$item->description}-{$item->id}", false, 'medium');
 
               //size small
             $image_small = $item->getImageResize($temp_path, 256);
-            $item->image_small = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, $image_small->encode('jpg', 20), "{$item->description}-{$item->id}", false, 'small');
+            $item->image_small = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, (string) $image_small->encode('jpg', 20), "{$item->description}-{$item->id}", false, 'small');
         }
         else if(!$request->image && !$request->temp_path && !$request->image_url)
         {

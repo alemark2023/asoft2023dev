@@ -358,6 +358,27 @@
                             </div>
                         </div>
 
+                        <div class="col-md-3">
+                            <div :class="{'has-danger': errors.factory_code}"
+                                 class="form-group">
+                                <label class="control-label">
+                                    Código de fábrica
+                                    <el-tooltip
+                                        class="item"
+                                        content="Para habilitar la búsqueda debe realizarlo en configuración/avanzado"
+                                        effect="dark"
+                                        placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <el-input v-model="form.factory_code">
+                                </el-input>
+                                <small v-if="errors.factory_code"
+                                       class="form-control-feedback"
+                                       v-text="errors.factory_code[0]"></small>
+                            </div>
+                        </div>
+
                         <div class="col-12">
                             <div class="table-responsive">
                                 <table class="table table-sm mb-0 table-borderless">
@@ -482,7 +503,7 @@
                             </div>
                         </template>
 
-                        
+
                         <div class="col-md-3">
                             <div :class="{'has-danger': errors.subject_to_detraction}"
                                  class="form-group">
@@ -494,6 +515,35 @@
                             </div>
                         </div>
 
+                        <template v-if="showPointSystem">
+                            <div class="col-md-3">
+                                <div :class="{'has-danger': errors.exchange_points}"
+                                    class="form-group">
+                                    <el-checkbox v-model="form.exchange_points">¿Se puede canjear por puntos?</el-checkbox>
+                                    <br>
+                                    <small v-if="errors.exchange_points"
+                                        class="form-control-feedback"
+                                        v-text="errors.exchange_points[0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 mb-2" v-if="form.exchange_points">
+                                <label class="control-label">
+                                    N° de puntos
+                                    <el-tooltip
+                                        class="item"
+                                        content="Total de puntos que necesitará el cliente para canjear el producto."
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.quantity_of_points}" class="form-group">
+                                    <el-input-number v-model="form.quantity_of_points" :min="0.01" :precision="2" :step="1" controls-position="right"></el-input-number>
+                                    <small v-if="errors.quantity_of_points" class="form-control-feedback" v-text="errors.quantity_of_points[0]"></small>
+                                </div>
+                            </div>
+                        </template>
 
                     </div>
                 </el-tab-pane>
@@ -555,7 +605,7 @@
                              class="col-md-12">
                             <div class="table-responsive">
                                 <table class="table table-sm mb-0">
-                                    <thead>
+                                    <thead class="bg-light">
                                     <tr>
                                         <th class="text-center">Código de barra</th>
                                         <th class="text-center">Unidad</th>
@@ -1111,7 +1161,7 @@
                     </div>
                 </el-tab-pane>
             </el-tabs>
-            <div class="form-actions text-right pt-2">
+            <div class="form-actions text-right pt-2 mt-2">
                 <el-button @click.prevent="close()">Cancelar</el-button>
                 <el-button :loading="loading_submit"
                            native-type="submit"
@@ -1206,6 +1256,12 @@ export default {
             if (this.config.is_pharmacy === true) return true;
             return false;
         },
+        showPointSystem()
+        {
+            if(this.config) return this.config.enabled_point_system
+
+            return false
+        }
 
     },
 
@@ -1487,6 +1543,11 @@ export default {
                 purchase_system_isc_type_id: null,
                 purchase_percentage_isc: 0,
                 subject_to_detraction: false,
+
+                exchange_points: false,
+                quantity_of_points: 0,
+                factory_code: null,
+
             }
 
             this.show_has_igv = true
@@ -1724,6 +1785,7 @@ this.activeName =  'first'
                         this.errors = error.response.data
                     } else {
                         console.log(error)
+                        this.$message.error(error.response.data.message)
                     }
                 })
                 .then(() => {

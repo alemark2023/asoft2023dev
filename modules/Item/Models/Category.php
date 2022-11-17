@@ -22,4 +22,25 @@ class Category extends ModelTenant
         return $query->select('id', 'name')->orderBy('name');
     }
 
+    public function getRowResourceApi()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'selected' => false,
+        ];
+    }
+
+    
+    /**
+     * 
+     * Data para filtros - select
+     *
+     * @return array
+     */
+    public static function getDataForFilters()
+    {
+        return self::select(['id', 'name'])->orderBy('name')->get();
+    }
+
 }

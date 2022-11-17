@@ -64,6 +64,7 @@ Vue.component('tenant-documents-note', require('./views/tenant/documents/note.vu
 
 // purchase-settlements
 Vue.component('tenant-purchase-settlements-index', require('./views/tenant/purchase-settlements/index.vue'));
+Vue.component('tenant-purchase-settlements-form', require('./views/tenant/purchase-settlements/form.vue'));
 
 Vue.component('tenant-documents-items-list', require('./views/tenant/documents/partials/item.vue'));
 Vue.component('tenant-summaries-index', require('./views/tenant/summaries/index.vue'));
@@ -138,6 +139,7 @@ Vue.component('tenant-account-format', require('../../modules/Account/Resources/
 Vue.component('tenant-company-accounts', require('../../modules/Account/Resources/assets/js/views/company_accounts/form.vue'));
 Vue.component('tenant-ledger-accounts', require('../../modules/Account/Resources/assets/js/views/ledger_accounts/form.vue'));
 
+Vue.component('inventory-review-index', require('@viewsModuleInventory/inventory-review/index.vue'));
 
 //
 Vue.component('tenant-inventory-report', require('../../modules/Inventory/Resources/assets/js/inventory/reports/index.vue'));
@@ -162,6 +164,7 @@ Vue.component('tenant-inventory-devolutions-form', require('../../modules/Invent
 Vue.component('tenant-documents-not-sent', require('../../modules/Document/Resources/assets/js/views/documents/not_sent.vue'));
 Vue.component('tenant-report-purchases-index', require('../../modules/Report/Resources/assets/js/views/purchases/index.vue'));
 Vue.component('tenant-report-documents-index', require('../../modules/Report/Resources/assets/js/views/documents/index.vue'));
+Vue.component('tenant-state-account-index', require('../../modules/Report/Resources/assets/js/views/state_account/index.vue'));
 Vue.component('tenant-report-customers-index', require('../../modules/Report/Resources/assets/js/views/customers/index.vue'));
 Vue.component('tenant-report-items-index', require('../../modules/Report/Resources/assets/js/views/items/index.vue'));
 Vue.component('tenant-report-items-extra-index', require('../../modules/Report/Resources/assets/js/views/items/index_extra.vue'));
@@ -251,6 +254,7 @@ Vue.component('tenant-payment-method-types-index', require('@viewsModuleSale/pay
 Vue.component('tenant-contracts-index', require('@viewsModuleSale/contracts/index.vue'));
 Vue.component('tenant-contracts-form', require('@viewsModuleSale/contracts/form.vue'));
 Vue.component('tenant-production-orders-index', require('@viewsModuleSale/production_orders/index.vue'));
+Vue.component('tenant-agents-index', require('@viewsModuleSale/agents/index.vue'));
 
 //Item
 Vue.component('tenant-web-platforms-index', require('@viewsModuleItem/web-platforms/index.vue'));
@@ -363,6 +367,8 @@ Vue.component('system-server-status', require('./views/system/configuration/serv
 //Configuración global del login
 Vue.component('system-login-settings', require('./views/system/configuration/login.vue'))
 
+Vue.component('system-login-other-configuration', require('./views/system/configuration/other_configuration.vue'))
+
 // Configuración del login
 Vue.component('tenant-login-page', require('./views/tenant/login/index.vue'))
 
@@ -428,6 +434,16 @@ Vue.component('tenant-payment-links-index', require('@viewsModulePayment/payment
 // MobileApp ::
 Vue.component('tenant-mobile-app-configuration', require('@viewsModuleMobileApp/configuration/index.vue'));
 Vue.component('tenant-mobile-app-permissions', require('@viewsModuleMobileApp/permissions/index.vue'));
+
+
+// LevelAccess
+Vue.component('tenant-system-activity-logs-generals-index', require('@viewsModuleLevelAccess/system_activity_logs/generals/index.vue'));
+Vue.component('tenant-system-activity-logs-transactions-index', require('@viewsModuleLevelAccess/system_activity_logs/transactions/index.vue'));
+Vue.component('tenant-remember-change-password', require('./views/tenant/users/partials/remember_change_password.vue'));
+
+// Reportes en system
+Vue.component('system-report-login-lockout-index', require('@viewsModuleReport/system/report_login_lockout/index.vue'));
+Vue.component('system-user-not-change-password-index', require('@viewsModuleReport/system/user_not_change_password/index.vue'));
 
 
 import VueClipboard from 'vue-clipboard2'

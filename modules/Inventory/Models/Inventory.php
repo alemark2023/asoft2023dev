@@ -64,7 +64,10 @@
             'quantity' => 'float',
             'inventories_transfer_id' => 'int',
             'date_of_issue' => 'date',
+            'real_stock' => 'float',
+            'system_stock' => 'float',
         ];
+
         protected $fillable = [
             'type',
             'description',
@@ -79,7 +82,10 @@
             'inventories_transfer_id',
             'comments',
             'date_of_issue',
-            'created_at'
+            'created_at',
+
+            'real_stock',
+            'system_stock',
         ];
 
         /**
@@ -215,6 +221,152 @@
         public function inventory_transaction()
         {
             return $this->belongsTo(InventoryTransaction::class, 'inventory_transaction_id', 'id');
+        }
+
+        public function scopeWhereFilterReportStock($query, $warehouse_id, $date_start, $date_end, $order_by_item, $order_by_timestamps, $additional_filters)
+        {
+
+            $query->with(['inventory_kardex'])
+                        ->whereHas('transaction')
+                        // ->where('warehouse_id', $warehouse_id)
+                        // ->where('description', 'like', 'STock Real')
+                        ->filterByWarehouse($warehouse_id)
+                        ->where('inventories.description', 'like', 'STock Real')
+                        ->whereHas('inventory_kardex', function($query) use($date_start, $date_end){
+
+                            if ($date_start) $query->where('date_of_issue', '>=', $date_start);
+                            if ($date_end) $query->where('date_of_issue', '<=', $date_end);
+
+                        })
+                        ->additionalFiltersStockReport($additional_filters);
+
+            if($order_by_timestamps) $query->applyOrderByCreatedAt();
+
+            if($order_by_item) $query->applyOrderByItemDescription();
+
+            return $query;
+        }
+
+
+        /**
+         *
+         * Filtros adicionales por campos del producto
+         * 
+         * @param  Builder $query
+         * @param  array $additional_filters
+         * @return Builder
+         */
+        public function scopeAdditionalFiltersStockReport($query, $additional_filters)
+        {
+            $search_column = $additional_filters['search_column'];
+            $search_input = $additional_filters['search_input'];
+
+            if($search_input && $search_input != '')
+            {
+                $query->whereHas('item', function($query_item) use($search_column, $search_input){
+                    return $query_item->filterRecordsStockReport($search_column, $search_input);
+                });
+            }
+
+            return $query;
+        }
+
+
+        /**
+         *
+         * Filtrar por almacén
+         * 
+         * @param  Builder $query
+         * @param  int $warehouse_id
+         * @return Builder
+         */
+        public function scopeFilterByWarehouse($query, $warehouse_id)
+        {
+            if($warehouse_id) $query->where('inventories.warehouse_id', $warehouse_id);
+
+            return $query;
+        }
+
+        
+        /**
+         *
+         * Ordener por fecha de creacion del registro
+         * 
+         * @param  Builder $query
+         * @param  string $order
+         * @return Builder
+         */
+        public function scopeApplyOrderByCreatedAt($query, $order = 'desc')
+        {
+            return $query->orderBy('inventories.created_at', $order);
+        }
+
+
+        /**
+         * 
+         * Ordernar por descripcion del producto
+         *
+         * @param  Builder $query
+         * @param  string $order
+         * @return Builder
+         */
+        public function scopeApplyOrderByItemDescription($query, $order = 'asc')
+        {
+            return $query->join('items', 'items.id', '=', 'inventories.item_id')
+                            ->select('inventories.*')
+                            ->orderBy('items.description', $order);
+        }
+
+        
+        /**
+         * 
+         * Datos para reporte de ajuste de stock
+         *
+         * @return array
+         */
+        public function getRowResourceReportStock()
+        {
+            $ajust = '-';
+            $input = '-';
+            $output = '-';
+
+            if($this->transaction->type === 'input')
+            {
+                $ajust = $this->quantity;
+                $input = $this->quantity;
+            }
+            else
+            {
+                $ajust = -$this->quantity;
+                $output = -$this->quantity;
+            }
+
+            // $stock_system=$this->getStockFull($this->created_at->format('Y-m-d'));
+            
+            return [
+                'item_description' => $this->item->getInternalIdDescription(),
+                // 'stock_system' => $stock_system,
+                // 'stock_real' => $stock_system+$ajust,
+                'ajust' => $ajust,
+
+                'real_stock' => $this->real_stock,
+                'system_stock' => $this->system_stock,
+                'description' => $this->description,
+                'inventory_transaction_id' => $this->inventory_transaction_id,
+                'input' => $input,
+                'output' => $output,
+                'date_time' => $this->created_at->format('Y-m-d H:i:s'),
+            ];
+
+        }
+
+
+        public function getStockFull($date)
+        {
+            $stock_system=InventoryKardex::where('inventory_kardexable_type', 'Modules\Inventory\Models\Inventory')->where('item_id',$this->item_id)->where('warehouse_id',$this->warehouse_id)->where('date_of_issue','<',$date)->sum('quantity');
+
+            return $stock_system;
+
         }
 
     }

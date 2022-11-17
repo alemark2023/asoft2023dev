@@ -2,6 +2,8 @@
     use App\Models\Tenant\Document;
     use App\CoreFacturalo\Helpers\Template\TemplateHelper;
     use App\Models\Tenant\SaleNote;
+
+    $enabled_sales_agents = App\Models\Tenant\Configuration::getRecordIndividualColumn('enabled_sales_agents');
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -120,6 +122,7 @@
 
                     <th class="">Forma de pago</th>
                     <th> MÉTODO DE PAGO </th>
+                    <th>TC</th>
                     <th>Total Cargos</th>
                     <th>Total Exonerado</th>
                     <th>Total Inafecto</th>
@@ -138,6 +141,11 @@
                     @foreach ($categories_services as $category)
                         <th>{{$category->name}}</th>
                     @endforeach
+
+                    @if ($enabled_sales_agents)
+                        <th>Agente</th>
+                        <th>Datos de referencia</th>
+                    @endif
                 </tr>
                 </thead>
                 <tbody>
@@ -247,6 +255,7 @@
                             @endforeach
 
                         </td>
+                        <td>{{ $value->exchange_rate_sale }}</td>
 
                     <!-- <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_exonerated}} </td>
                                 <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_unaffected}}</td>
@@ -349,6 +358,12 @@
 
                         @endphp
                         <td>{{$quality_item}}</td>
+                        
+                        @if ($enabled_sales_agents)
+                            <td>{{optional($value->agent)->search_description}}</td>
+                            <td>{{$value->reference_data}}</td>
+                        @endif
+
                     </tr>
                     @php
                         if($value->currency_type_id == 'PEN'){
@@ -429,16 +444,11 @@
                 @endforeach
                 <tr>
                     <td colspan="23"></td>
-                <!-- <td >Totales</td>
-                                <td>{{$acum_total_exonerado}}</td>
-                                <td>{{$acum_total_inafecto}}</td>
-                                <td>{{$acum_total_free}}</td> -->
-                    <td>Totales PEN</td>
+                    <td colspan="2">Totales PEN</td>
                     <td>{{number_format($acum_total_charges, 2)}}</td>
                     <td>{{number_format($acum_total_exonerado, 2)}}</td>
                     <td>{{number_format ($acum_total_inafecto, 2 )}}</td>
                     <td>{{number_format($acum_total_free, 2)}}</td>
-
                     <td>{{$acum_total_taxed}}</td>
                     <td></td>
                     <td>{{$acum_total_igv}}</td>
@@ -447,7 +457,7 @@
                 </tr>
                 <tr>
                     <td colspan="23"></td>
-                    <td>Totales USD</td>
+                    <td colspan="2">Totales USD</td>
                     <td></td>
                     <td></td>
                     <td></td>

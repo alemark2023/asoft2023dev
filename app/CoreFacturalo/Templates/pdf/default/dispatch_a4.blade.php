@@ -92,6 +92,12 @@
         <td>Modalidad de Transporte: {{ $document->transport_mode_type->description }}</td>
     </tr>
 
+    @if($document->transfer_reason_description)
+    <tr>
+        <td colspan="2">Descripción de motivo de traslado: {{ $document->transfer_reason_description }}</td>
+    </tr>
+    @endif
+
     @if($document->related)
     <tr>
         <td>Número de documento (DAM): {{ $document->related->number }}</td>
@@ -295,5 +301,18 @@
     @endif
 </table>
 @endif
+
+@if ($document->terms_condition)
+    <br>
+    <table class="full-width">
+        <tr>
+            <td>
+                <h6 style="font-size: 12px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                {!! $document->terms_condition !!}
+            </td>
+        </tr>
+    </table>
+@endif
+
 </body>
 </html>

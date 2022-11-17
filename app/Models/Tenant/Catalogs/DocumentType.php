@@ -159,6 +159,11 @@
             return $query->OnlyActive()->wherein('id', ['01', '02', '03', 'GU75', 'NE76', '14', '07', '08']);
         }
 
+        public function scopeDocumentsActiveToSettlement($query)
+        {
+            return $query->OnlyActive()->wherein('id', ['04']);
+        }
+
 
         /**
          * @return HasMany
@@ -299,6 +304,19 @@
         public function scopeOnlySaleDocuments($query)
         {
             return $query->onlyActive()->select('id', 'description')->whereIn('id', self::SALE_DOCUMENT_TYPES);
+        }
+
+
+        /**
+         * 
+         * Filtro para la descripción
+         *
+         * @param Builder $query
+         * @return Builder
+         */  
+        public function scopeFilterOnlyDescription($query)
+        {
+            return $query->select('id', 'description');
         }
 
     }

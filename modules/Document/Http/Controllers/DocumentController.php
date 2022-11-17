@@ -241,6 +241,9 @@ class DocumentController extends Controller
             $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'image_detractions'.DIRECTORY_SEPARATOR;
 
             $file_name_old = $image_pay_constancy['image'];
+
+            UploadFileHelper::checkIfValidFile($file_name_old, $image_pay_constancy['temp_path'], true);
+
             $file_name_old_array = explode('.', $file_name_old);
             $file_content = file_get_contents($image_pay_constancy['temp_path']);
             $datenow = date('YmdHis');
@@ -310,10 +313,11 @@ class DocumentController extends Controller
 
         $sale_note_item_id = $request->has('sale_note_item_id') ? $request->sale_note_item_id : null;
 
-        if ($request->document_item_id) 
+        if ($request->document_item_id)
         {
             //proccess credit note
-            $document_item = DocumentItem::findOrFail($request->document_item_id);
+            $document_item = DocumentItem::query()
+                ->findOrFail($request->document_item_id);
             /** @var array $lots */
             $lots = $document_item->item->lots;
             $records
@@ -326,7 +330,7 @@ class DocumentController extends Controller
         {
             $records = $this->getRecordsForSaleNoteItem($records, $sale_note_item_id, $request);
         }
-        else 
+        else
         {
             $warehouse = ModuleWarehouse::select('id')
                                         ->where('establishment_id', auth()->user()->establishment_id)
@@ -341,9 +345,9 @@ class DocumentController extends Controller
         return new ItemLotCollection($records->paginate(config('tenant.items_per_page')));
     }
 
-    
+
     /**
-     * 
+     *
      * Obtener series disponibles y vendidas en la nota de venta
      * Usado para edicion de item en nv
      *
@@ -360,7 +364,7 @@ class DocumentController extends Controller
         // obtener series vendidas en la nv
         $sale_note_item = SaleNoteItem::findOrFail($sale_note_item_id);
         $lots = $sale_note_item->item->lots;
-        
+
         $sale_lots = ItemLot::whereIn('id', collect($lots)->pluck('id')->toArray())->where('has_sale', true)->latest();
 
         return $sale_lots->union($records);
@@ -396,6 +400,27 @@ class DocumentController extends Controller
 
         return (new ConsultCdr)->search($document);
 
+    }
+
+        
+    /**
+     * 
+     * Forzar el envio por resumen a una boleta enviada de forma individual
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function forceSendBySummary(Request $request)
+    {
+        $document = Document::findOrFail($request->id);
+        $document->force_send_by_summary = true;
+        $document->ticket_single_shipment = false;
+        $document->update();
+
+        return [
+            'success' => true,
+            'message' => 'Se habilitó el comprobante para enviarlo por resumen'
+        ];
     }
 
 }

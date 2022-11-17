@@ -112,7 +112,7 @@
                                 <div :class="{'has-danger': errors.series_id}"
                                      class="form-group">
                                     <label class="control-label">Serie</label>
-                                    <el-select v-model="form.series_id">
+                                    <el-select v-model="form.series_id" :disabled="disabledSeries()">
                                         <el-option v-for="option in series"
                                                    :key="option.id"
                                                    :label="option.number"
@@ -228,6 +228,24 @@
                                                :value="option.id"></el-option>
                                 </el-select>
                             </div>
+
+                            <!-- sistema por puntos -->
+                            <div v-if="config.enabled_point_system && form.customer_id" class="form-group col-sm-6 mb-0 mt-3">
+                                <p class="fs-point-system">
+                                    <label class="font-weight-bold text-info">Puntos acumulados:</label>
+                                    <b>{{customer_accumulated_points}}</b>
+
+                                    <template v-if="total_exchange_points > 0">
+                                    - <b style="color:red">{{ total_exchange_points }}</b> = <b>{{ calculate_customer_accumulated_points }}</b>
+                                    </template>
+                                </p>
+                                <p class="fs-point-system">
+                                    <label class="font-weight-bold text-danger">Puntos por la compra:</label>
+                                    <b>{{total_points_by_sale}}</b>
+                                </p>
+                            </div>
+                            <!-- sistema por puntos -->
+
                         </div>
                     </div>
                     <div class="card-body border-top no-gutters p-0">
@@ -258,13 +276,21 @@
                                             row.item.presentation.hasOwnProperty('description') ?
                                                 row.item.presentation.description : ''
                                         }}
-
                                         <template v-if="row.total_plastic_bag_taxes > 0">
                                             <br/><small>ICBPER: {{ currency_type.symbol }}
                                             {{ row.total_plastic_bag_taxes }}</small>
                                         </template>
-
                                         <br/><small>{{ row.affectation_igv_type.description }}</small>
+                                        <template v-if="row.item.lots && row.item.lots.length > 0">
+                                            <br/>Series: {{ showItemSeries(row.item.lots) }}
+                                        </template>
+
+                                        <!-- sistema por puntos -->
+                                        <template v-if="config.enabled_point_system && customer_accumulated_points > 0 && row.item.exchange_points">
+                                            <el-checkbox class="mt-2 mb-2" v-model="row.item.exchanged_for_points" @change="changeRowExchangePoints(row, index)"><b>{{ getExchangePointDescription(row) }}</b></el-checkbox>
+                                        </template>
+                                        <!-- sistema por puntos -->
+
                                     </td>
                                     <td class="text-center">{{ row.item.unit_type_id }}</td>
 
@@ -280,6 +306,7 @@
 
                                     <td class="text-right">{{ currency_type.symbol }} {{ row.total_value }}</td>
                                     <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
+
                                     <td class="text-right">
                                         <template v-if="config.change_free_affectation_igv">
                                             <el-tooltip class="item"
@@ -290,7 +317,11 @@
                                                              @change="changeRowFreeAffectationIgv(row, index)"></el-checkbox>
                                             </el-tooltip>
                                         </template>
-
+                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-success"
+                                                @click.prevent="openDialogLots(row)"
+                                                v-if="row.item.series_enabled">
+                                            <i class="el-icon-check"></i> Series
+                                        </button>
                                         <button class="btn waves-effect waves-light btn-xs btn-danger"
                                                 type="button"
                                                 @click.prevent="clickRemoveItem(index)"><i class="fas fa-trash"></i>
@@ -301,6 +332,7 @@
                                             <span style='font-size:10px;'>&#9998;</span></button>
 
                                     </td>
+
                                 </tr>
                                 <!-- @todo: Mejorar evitando duplicar codigo -->
                                 <!-- Ocultar en cel -->
@@ -331,6 +363,13 @@
                                                    style="width: 100%;">
                                                 <tr v-if="form.total > 0 && enabled_discount_global">
                                                     <td>
+                                                        <el-tooltip class="item"
+                                                            :content="global_discount_type.description"
+                                                            effect="dark"
+                                                            placement="top">
+                                                            <i class="fa fa-info-circle"></i>
+                                                        </el-tooltip>
+
                                                         DESCUENTO
                                                         <template v-if="is_amount"> MONTO</template>
                                                         <template v-else> %</template>
@@ -361,12 +400,12 @@
                                                     </tr>
                                                 </template>
 
-                                                <template v-if="form.retention">
-                                                    <tr v-if="form.retention.amount > 0">
-                                                        <td>M. RETENCIÓN ({{ form.retention.percentage * 100 }}%):</td>
-                                                        <td>{{ currency_type.symbol }} {{ form.retention.amount }}</td>
-                                                    </tr>
-                                                </template>
+<!--                                                <template v-if="form.retention">-->
+<!--                                                    <tr v-if="form.retention.amount > 0">-->
+<!--                                                        <td>M. RETENCIÓN ({{ form.retention.percentage * 100 }}%):</td>-->
+<!--                                                        <td>{{ currency_type.symbol }} {{ form.retention.amount }}</td>-->
+<!--                                                    </tr>-->
+<!--                                                </template>-->
 
                                                 <tr v-if="form.total_exportation > 0">
                                                     <td>OP.EXPORTACIÓN:</td>
@@ -431,10 +470,31 @@
                                                     </td>
                                                 </tr>
 
-                                                <tr v-if="form.total > 0">
-                                                    <td><strong>TOTAL A PAGAR</strong>:</td>
-                                                    <td>{{ currency_type.symbol }} {{ form.total }}</td>
-                                                </tr>
+<!--                                                <tr v-if="form.total > 0">-->
+<!--                                                    <td><strong>TOTAL A PAGAR</strong>:</td>-->
+<!--                                                    <td>{{ currency_type.symbol }} {{ form.total }}</td>-->
+<!--                                                </tr>-->
+
+                                                <template v-if="form.has_retention">
+                                                    <tr v-if="form.total > 0">
+                                                        <td><strong>IMPORTE TOTAL</strong>:</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.total }}</td>
+                                                    </tr>
+                                                    <tr v-if="form.retention.amount > 0">
+                                                        <td>M. RETENCIÓN ({{form.retention.percentage * 100}}%):</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.retention.amount }}</td>
+                                                    </tr>
+                                                    <tr v-if="form.total > 0">
+                                                        <td><strong>TOTAL A PAGAR</strong>:</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.total - form.retention.amount }}</td>
+                                                    </tr>
+                                                </template>
+                                                <template v-if="!form.has_retention">
+                                                    <tr v-if="form.total > 0">
+                                                        <td><strong>TOTAL A PAGAR</strong>:</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.total }}</td>
+                                                    </tr>
+                                                </template>
 
                                                 <tr v-if="form.total > 0">
                                                     <td>CONDICIÓN DE PAGO:</td>
@@ -589,6 +649,10 @@
                                                             <table class="text-left table">
                                                                 <thead>
                                                                 <tr>
+                                                                    <template v-if="showLoadVoucher && form.payments.length>0">
+                                                                        <th style="width:50px">Voucher</th>
+                                                                    </template>
+
                                                                     <th v-if="form.payments.length>0"
                                                                         style="width: 120px">Método de pago
                                                                     </th>
@@ -615,6 +679,29 @@
                                                                 <tbody>
                                                                 <tr v-for="(row, index) in form.payments"
                                                                     :key="index">
+
+                                                                    <template v-if="showLoadVoucher">
+                                                                        <td class="" style="width: 50px">
+                                                                            <!-- <el-tooltip class="item" content="Cargar voucher" effect="dark" placement="top-start"> -->
+                                                                                <el-upload
+                                                                                    :data="{'index': index}"
+                                                                                    :headers="headers_token"
+                                                                                    :multiple="false"
+                                                                                    :on-remove="(file, fileList) => handleRemoveUploadVoucher(file, fileList, index)"
+                                                                                    :action="`/finances/payment-file/upload`"
+                                                                                    :show-file-list="true"
+                                                                                    :file-list="row.file_list"
+                                                                                    :on-success="(response, file, fileList) => onSuccessUploadVoucher(response, file, fileList, index)"
+                                                                                    :limit="1"
+                                                                                    >
+                                                                                        <button  type="button" class="btn btn-sm btn-primary"  slot="trigger">
+                                                                                            <i class="fas fa-fw fa-upload"></i>
+                                                                                        </button>
+                                                                                </el-upload>
+                                                                            <!-- </el-tooltip> -->
+                                                                        </td>
+                                                                    </template>
+
                                                                     <td>
                                                                         <el-select
                                                                             v-model="row.payment_method_type_id"
@@ -645,6 +732,8 @@
                                                                         <td>
                                                                             <el-input v-model="row.payment"></el-input>
                                                                         </td>
+
+
                                                                         <td class="text-center">
                                                                             <button
                                                                                 class="btn waves-effect waves-light btn-xs btn-danger"
@@ -699,6 +788,13 @@
                                        style="width: 100%;">
                                     <tr v-if="form.total > 0 && enabled_discount_global">
                                         <td>
+                                            <el-tooltip class="item"
+                                                :content="global_discount_type.description"
+                                                effect="dark"
+                                                placement="top">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+
                                             DESCUENTO
                                             <template v-if="is_amount"> MONTO</template>
                                             <template v-else> %</template>
@@ -944,6 +1040,11 @@
                                                 <table class="text-left">
                                                     <thead>
                                                     <tr>
+
+                                                        <template v-if="showLoadVoucher && form.payments.length>0">
+                                                            <th style="width:50px">Voucher</th>
+                                                        </template>
+
                                                         <th v-if="form.payments.length>0"
                                                             style="width: 120px">Método de pago
                                                         </th>
@@ -970,6 +1071,29 @@
                                                     <tbody>
                                                     <tr v-for="(row, index) in form.payments"
                                                         :key="index">
+
+                                                        <template v-if="showLoadVoucher">
+                                                            <td class="" style="width: 50px">
+                                                                <!-- <el-tooltip class="item" content="Cargar voucher" effect="dark" placement="top-start"> -->
+                                                                    <el-upload
+                                                                        :data="{'index': index}"
+                                                                        :headers="headers_token"
+                                                                        :multiple="false"
+                                                                        :on-remove="(file, fileList) => handleRemoveUploadVoucher(file, fileList, index)"
+                                                                        :action="`/finances/payment-file/upload`"
+                                                                        :show-file-list="true"
+                                                                        :file-list="row.file_list"
+                                                                        :on-success="(response, file, fileList) => onSuccessUploadVoucher(response, file, fileList, index)"
+                                                                        :limit="1"
+                                                                        >
+                                                                            <button  type="button" class="btn btn-sm btn-primary"  slot="trigger">
+                                                                                <i class="fas fa-fw fa-upload"></i>
+                                                                            </button>
+                                                                    </el-upload>
+                                                                <!-- </el-tooltip> -->
+                                                            </td>
+                                                        </template>
+
                                                         <td>
                                                             <el-select
                                                                 v-model="row.payment_method_type_id"
@@ -1386,11 +1510,20 @@
                                     </button>
                                 </el-tooltip>
                             </div>
+                            <button class="btn btn-primary btn-block mt-2"
+                                :disabled="form.customer_id == null"
+                                @click.prevent="visibleDialogReportCustomer">Consulta de documentos
+                            </button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
+
+        <document-report-customer
+            :showDialog.sync="showDialogReportCustomer"
+            :customerId="report_to_customer_id"></document-report-customer>
+
         <document-form-item
             :configuration="config"
             :currency-type-id-active="form.currency_type_id"
@@ -1405,6 +1538,7 @@
             :customer-id="form.customer_id"
             :currency-types="currency_types"
             :is-from-invoice="true"
+            :percentage-igv="percentage_igv"
             @add="addRow"></document-form-item>
 
         <person-form :document_type_id=form.document_type_id
@@ -1444,6 +1578,11 @@
             :isUpdateDocument="isUpdateDocument"
             :detractionDecimalQuantity="detractionDecimalQuantity"
             @addDocumentDetraction="addDocumentDetraction"></document-detraction>
+
+        <store-item-series-index :show-dialog.sync="showDialogItemSeriesIndex"
+                                 :item="recordItem"
+                                 :document-id="documentId"
+                                 @success="successItemSeries"></store-item-series-index>
     </div>
 </template>
 
@@ -1472,12 +1611,16 @@
 .content-body {
     padding: 20px;
 }
+
+.el-upload-list__item{
+    max-width: 100px;
+}
 </style>
 <script>
 import DocumentFormItem from './partials/item.vue'
 import PersonForm from '../persons/form.vue'
 import DocumentOptions from '../documents/partials/options.vue'
-import {exchangeRate, functions} from '../../../mixins/functions'
+import {exchangeRate, functions, pointSystemFunctions} from '../../../mixins/functions'
 import {calculateRowItem, showNamePdfOfDescription} from '../../../helpers/functions'
 import Logo from '../companies/logo.vue'
 import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
@@ -1486,6 +1629,8 @@ import DocumentDetraction from './partials/detraction.vue'
 import moment from 'moment'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import Keypress from "vue-keypress";
+import StoreItemSeriesIndex from "../Store/ItemSeriesIndex";
+import DocumentReportCustomer from './partials/report_customer.vue'
 
 export default {
     props: [
@@ -1495,9 +1640,11 @@ export default {
         'documentId',
         'table',
         'tableId',
-        'isUpdate'
+        'isUpdate',
+        'authUser',
     ],
     components: {
+        StoreItemSeriesIndex,
         DocumentFormItem,
         PersonForm,
         DocumentOptions,
@@ -1505,9 +1652,10 @@ export default {
         DocumentHotelForm,
         Keypress,
         DocumentDetraction,
-        DocumentTransportForm
+        DocumentTransportForm,
+        DocumentReportCustomer,
     },
-    mixins: [functions, exchangeRate],
+    mixins: [functions, exchangeRate, pointSystemFunctions],
     data() {
         return {
             datEmision: {
@@ -1536,6 +1684,7 @@ export default {
             has_data_detraction: false,
             showDialogFormHotel: false,
             showDialogFormTransport: false,
+            showDialogItemSeriesIndex: false,
             is_client: false,
             recordItem: null,
             resource: 'documents',
@@ -1591,10 +1740,23 @@ export default {
             payment_conditions: [],
             affectation_igv_types: [],
             total_discount_no_base: 0,
-            show_has_retention: true
+            show_has_retention: true,
+            global_discount_types: [],
+            global_discount_type: {},
+            error_global_discount: false,
+            headers_token: headers_token,
+            showDialogReportCustomer: false,
+            report_to_customer_id: null
         }
     },
     computed: {
+        showLoadVoucher()
+        {
+            return this.configuration.show_load_voucher && !this.isUpdateDocument
+        },
+        isGlobalDiscountBase: function () {
+            return (this.configuration.global_discount_type_id === '02')
+        },
         ...mapState([
             'config',
             'series',
@@ -1673,6 +1835,7 @@ export default {
                 this.payment_conditions = response.data.payment_conditions;
 
                 this.seller_class = (this.user == 'admin') ? 'col-lg-4 pb-2' : 'col-lg-6 pb-2';
+                this.global_discount_types = response.data.global_discount_types
 
                 // this.default_document_type = response.data.document_id;
                 // this.default_series_type = response.data.series_id;
@@ -1684,7 +1847,9 @@ export default {
                 this.changeDestinationSale()
                 this.changeCurrencyType()
                 this.setDefaultDocumentType();
+                this.setConfigGlobalDiscountType()
             })
+        await this.getPercentageIgv();
         this.loading_form = true
         this.$eventHub.$on('reloadDataPersons', (customer_id) => {
             this.reloadDataCustomers(customer_id)
@@ -1724,10 +1889,10 @@ export default {
             localStorage.removeItem('items');
             await this.$http.get('/documents/search-items', {params}).then(response => {
                 const itemsResponse = response.data.items.map(i => {
-                    return this.setItemFromResponse(i, itemsParsed);
+                    return this.setItemFromResponse(i, itemsParsed, true);
                 });
                 this.form.items = itemsResponse.map(i => {
-                    return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale)
+                    return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv)
                 });
             });
         }
@@ -1745,7 +1910,7 @@ export default {
                     return this.setItemFromResponse(i, itemsParsed);
                 });
                 this.form.items = itemsResponse.map(i => {
-                    return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale)
+                    return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv)
                 });
             });
         }
@@ -1784,6 +1949,31 @@ export default {
 
     },
     methods: {
+        onSuccessUploadVoucher(response, file, fileList, index)
+        {
+            if (response.success)
+            {
+                this.form.payments[index].filename = response.data.filename
+                this.form.payments[index].temp_path = response.data.temp_path
+                this.form.payments[index].file_list = fileList
+            }
+            else
+            {
+                this.cleanFileListUploadVoucher(index)
+                this.$message.error(response.message)
+            }
+
+        },
+        cleanFileListUploadVoucher(index)
+        {
+            this.form.payments[index].file_list = []
+        },
+        handleRemoveUploadVoucher(file, fileList, index)
+        {
+            this.form.payments[index].filename = null
+            this.form.payments[index].temp_path = null
+            this.cleanFileListUploadVoucher(index)
+        },
         ...mapActions([
             'loadConfiguration',
         ]),
@@ -1878,6 +2068,9 @@ export default {
             this.readonly_date_of_due = false
             this.total_discount_no_base = 0
 
+            this.calculate_customer_accumulated_points = 0
+            this.total_exchange_points = 0
+
         },
         startConnectionQzTray() {
 
@@ -1885,6 +2078,13 @@ export default {
                 startConnection();
             }
 
+        },
+        changeRowExchangePoints(row, index)
+        {
+            row.item.change_free_affectation_igv = !row.item.change_free_affectation_igv
+            row.item.used_points_for_exchange = row.item.change_free_affectation_igv ? this.getUsedPoints(row) : null
+            this.setTotalExchangePoints() //in mixins
+            this.changeRowFreeAffectationIgv(row, index)
         },
         async changeRowFreeAffectationIgv(row, index) {
 
@@ -1899,7 +2099,7 @@ export default {
                 this.form.items[index].affectation_igv_type = await _.find(this.affectation_igv_types, {id: this.form.items[index].affectation_igv_type_id})
             }
 
-            this.form.items[index] = await calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale)
+            this.form.items[index] = await calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv)
             await this.calculateTotal()
 
         },
@@ -1922,7 +2122,8 @@ export default {
             }
 
         },
-        setItemFromResponse(item, itemsParsed) {
+        setItemFromResponse(item, itemsParsed, sum_quantity = false)
+        {
             /* Obtiene el igv del item, si no existe, coloca el gravado*/
             if (item.sale_affectation_igv_type !== undefined) {
                 item.affectation_igv_type = item.sale_affectation_igv_type
@@ -1980,17 +2181,55 @@ export default {
 
             item.quantity = 1;
 
-            let tempItem = itemsParsed.find(ip => (ip.item_id == item.id) || (ip.id == item.id));
-            if (tempItem !== undefined) {
-                item.quantity = tempItem.quantity
+            if(sum_quantity)
+            {
+                const quantity_from_item_response = this.getQuantityFromItemResponse(item, itemsParsed)
+                if(quantity_from_item_response > 0) item.quantity = quantity_from_item_response
             }
+            else
+            {
+                let tempItem = itemsParsed.find(ip => (ip.item_id == item.id) || (ip.id == item.id));
+                if (tempItem !== undefined) {
+                    item.quantity = tempItem.quantity
+                }
+            }
+
             // item.quantity = itemsParsed.find(ip => ip.item_id == item.id).quantity;
             item.warehouse_id = null;
 
             return item
         },
+        getQuantityFromItemResponse(item, itemsParsed)
+        {
+            const group_items = itemsParsed.filter(ip => (ip.item_id == item.id) || (ip.id == item.id))
+
+            return _.sumBy(group_items, function(row){
+                return parseFloat(row.quantity)
+            })
+        },
+        disabledSeries()
+        {
+            return (this.configuration.restrict_series_selection_seller && this.typeUser !== 'admin')
+        },
+        setDefaultSerieByDocument()
+        {
+            if(this.authUser.multiple_default_document_types)
+            {
+                const default_document_type_serie = _.find(this.authUser.default_document_types, { document_type_id : this.form.document_type_id})
+
+                if(default_document_type_serie)
+                {
+                    const exist_serie = _.find(this.series, { id : default_document_type_serie.series_id})
+                    if(exist_serie) this.form.series_id = default_document_type_serie.series_id
+                }
+            }
+
+        },
         // #307 Ajuste para seleccionar automaticamente el tipo de comprobante y serie
         setDefaultDocumentType(from_function) {
+
+            if(this.authUser.multiple_default_document_types) return
+
             this.default_series_type = this.config.user.serie;
             this.default_document_type = this.config.user.document_id;
             // if (this.default_document_type === undefined) this.default_document_type = null;
@@ -2007,6 +2246,7 @@ export default {
             }
         },
         async onSetFormData(data) {
+            console.log('onSetFormData')
             this.currency_type = await _.find(this.currency_types, {'id': data.currency_type_id})
             this.form.establishment_id = data.establishment_id;
             this.form.document_type_id = data.document_type_id;
@@ -2035,11 +2275,17 @@ export default {
             this.form.pending_amount_prepayment = data.pending_amount_prepayment || 0;
             this.form.payment_method_type_id = data.payment_method_type_id;
             this.form.charges = data.charges || [];
-            this.form.discounts = data.discounts || [];
+
+            this.form.discounts = this.prepareDataGlobalDiscount(data)
+            // this.form.discounts = data.discounts || [];
+
             this.form.seller_id = data.seller_id;
             this.form.items = this.onPrepareItems(data.items);
             // this.form.series = data.series; //form.series no llena el selector
-            this.$store.commit('setSeries', this.onSetSeries(data.document_type_id, data.series))
+             if(this.table !== 'quotations') {
+                 this.$store.commit('setSeries', this.onSetSeries(data.document_type_id, data.series))
+             }
+            //
             // this.series = this.onSetSeries(data.document_type_id, data.series);
             this.form.state_type_id = data.state_type_id;
             this.form.total_discount = parseFloat(data.total_discount);
@@ -2062,7 +2308,7 @@ export default {
             this.form.subtotal = parseFloat(data.subtotal);
             this.form.total_igv_free = parseFloat(data.total_igv_free);
             this.form.series_id = this.onSetSeriesId(data.document_type_id, data.series);
-            this.form.operation_type_id = data.invoice?data.invoice.operation_type_id:data.operation_type_id;
+            this.form.operation_type_id = data.invoice ? data.invoice.operation_type_id : data.operation_type_id;
             this.form.terms_condition = data.terms_condition || '';
             this.form.guides = data.guides || [];
             this.form.show_terms_condition = data.terms_condition ? true : false;
@@ -2077,8 +2323,8 @@ export default {
             this.form.customer_address_id = null;
             this.form.type = 'invoice';
             this.form.invoice = {
-                operation_type_id: data.invoice?data.invoice.operation_type_id:data.operation_type_id,
-                date_of_due: data.invoice?data.invoice.date_of_due:data.date_of_due,
+                operation_type_id: data.invoice ? data.invoice.operation_type_id : data.operation_type_id,
+                date_of_due: data.invoice ? data.invoice.date_of_due : data.date_of_due,
             };
             // this.form.payment_condition_id = '01';
 
@@ -2112,6 +2358,22 @@ export default {
 
             this.calculateTotal();
             // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+        },
+        prepareDataGlobalDiscount(data)
+        {
+            const discounts = data.discounts ? Object.values(data.discounts) : []
+
+            if(discounts.length === 1)
+            {
+                if(discounts[0].is_amount !== undefined && discounts[0].is_amount !== null)
+                {
+                    this.is_amount = discounts[0].is_amount
+                }
+
+                this.total_global_discount = this.is_amount ?  discounts[0].amount : (discounts[0].factor * 100)
+            }
+
+            return discounts
         },
         async prepareDataCustomer() {
 
@@ -2191,10 +2453,17 @@ export default {
         onPrepareItems(items) {
             return items.map(i => {
 
-                i.unit_price_value = i.unit_value;
-                i.input_unit_price_value = (i.item.has_igv) ? i.unit_price : i.unit_value;
+                if(this.table)
+                {
+                    i.unit_price_value = i.unit_value;
+                    i.input_unit_price_value = (i.item.has_igv) ? i.item.unit_price : i.unit_value;
+                }
+                else
+                {
+                    i.unit_price_value = i.unit_value;
+                    i.input_unit_price_value = (i.item.has_igv) ? i.unit_price : i.unit_value;
+                }
 
-                // i.input_unit_price_value = i.unit_price;
                 i.discounts = (i.discounts) ? Object.values(i.discounts) : []
                 // i.discounts = i.discounts || [];
                 i.charges = i.charges || [];
@@ -2214,8 +2483,17 @@ export default {
             new_item.currency_type_symbol = currency_type.symbol
 
             new_item.sale_affectation_igv_type_id = data.affectation_igv_type_id
-            new_item.sale_unit_price = data.unit_price
-            new_item.unit_price = data.unit_price
+
+            if(this.table)
+            {
+                new_item.sale_unit_price = new_item.unit_price
+                new_item.unit_price = new_item.unit_price
+            }
+            else
+            {
+                new_item.sale_unit_price = data.unit_price
+                new_item.unit_price = data.unit_price
+            }
 
             return new_item
         },
@@ -2227,6 +2505,7 @@ export default {
             return null;
         },
         onSetSeries(documentType, serie) {
+            // console.log('onSetSeries')
             const find = this.all_series.find(s => s.document_type_id == documentType && s.number == serie);
             if (find) {
                 return [find];
@@ -2247,7 +2526,7 @@ export default {
 
             }
 
-            this.form.prepayments[index].total = (this.form.affectation_type_prepayment == 10) ? _.round(this.form.prepayments[index].amount * 1.18, 2) : this.form.prepayments[index].amount
+            this.form.prepayments[index].total = (this.form.affectation_type_prepayment == 10) ? _.round(this.form.prepayments[index].amount * (1 + this.percentage_igv), 2) : this.form.prepayments[index].amount
 
             this.changeTotalPrepayment()
 
@@ -2408,7 +2687,7 @@ export default {
 
                     this.form.total_discount = _.round(amount, 2)
                     this.form.total_taxed = _.round(this.form.total_taxed - amount, 2)
-                    this.form.total_igv = _.round(this.form.total_taxed * 0.18, 2)
+                    this.form.total_igv = _.round(this.form.total_taxed * this.percentage_igv, 2)
                     this.form.total_taxes = _.round(this.form.total_igv, 2)
                     this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
 
@@ -2428,7 +2707,7 @@ export default {
 
                         this.form.total_discount = _.round(amount, 2)
                         this.form.total_taxed = _.round(this.form.total_taxed - amount, 2)
-                        this.form.total_igv = _.round(this.form.total_taxed * 0.18, 2)
+                        this.form.total_igv = _.round(this.form.total_taxed * this.percentage_igv, 2)
                         this.form.total_taxes = _.round(this.form.total_igv, 2)
                         this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
 
@@ -2620,6 +2899,10 @@ export default {
         isActiveBussinessTurn(value) {
             return (_.find(this.business_turns, {'value': value})) ? true : false
         },
+        visibleDialogReportCustomer() {
+            this.report_to_customer_id = this.form.customer_id
+            this.showDialogReportCustomer = true
+        },
         clickAddDocumentHotel() {
             this.showDialogFormHotel = true
         },
@@ -2647,6 +2930,7 @@ export default {
                 total = this.form.total
             }
             this.form.date_of_due = moment().format('YYYY-MM-DD');
+
             this.form.payments.push({
                 id: null,
                 document_id: null,
@@ -2655,7 +2939,13 @@ export default {
                 reference: null,
                 payment_destination_id: this.getPaymentDestinationId(),
                 payment: total,
+
+                payment_received: true,
+                filename: null,
+                temp_path: null,
+                file_list: [],
             });
+
             this.calculatePayments()
 
         },
@@ -2712,11 +3002,22 @@ export default {
                 let percentage = _.round(parseFloat(this.config.igv_retention_percentage) / 100, 5)
                 let amount = _.round(base * percentage, 2)
 
+                let amount_pen = amount;
+                let amount_usd = _.round(amount / this.form.exchange_rate_sale, 2);
+                if(this.form.currency_type_id === 'USD') {
+                    amount_usd = amount;
+                    amount_pen = _.round(amount * this.form.exchange_rate_sale, 2);
+                }
+
                 this.form.retention = {
                     base: base,
                     code: '62', //Código de Retención del IGV
                     amount: amount,
-                    percentage: percentage
+                    percentage: percentage,
+                    currency_type_id: this.form.currency_type_id,
+                    exchange_rate: this.form.exchange_rate_sale,
+                    amount_pen: amount_pen,
+                    amount_usd: amount_usd,
                 }
 
                 this.setTotalPendingAmountRetention(amount)
@@ -2901,6 +3202,8 @@ export default {
                     if (seller !== undefined) {
                         this.form.seller_id = seller.id
                     }
+
+                    this.setCustomerAccumulatedPoints(alt.id, this.config.enabled_point_system)
                 }
 
 
@@ -2912,6 +3215,7 @@ export default {
             this.filterSeries();
             this.cleanCustomer();
             this.filterCustomers();
+            this.setDefaultSerieByDocument()
         },
         cleanCustomer() {
             this.form.customer_id = null
@@ -2941,15 +3245,17 @@ export default {
             }
 
         },
-        changeDateOfIssue() {
+        async changeDateOfIssue() {
 
             this.validateDateOfIssue()
 
             this.form.date_of_due = this.form.date_of_issue
             // if (! this.isUpdate) {
-            this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+            await this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                 this.form.exchange_rate_sale = response
             });
+            await this.getPercentageIgv();
+            this.changeCurrencyType();
             // }
         },
         assignmentDateOfPayment() {
@@ -2958,6 +3264,7 @@ export default {
             })
         },
         filterSeries() {
+            // console.log('filterSeries');
             this.form.series_id = null
             let series = _.filter(this.all_series, {
                 'establishment_id': this.form.establishment_id,
@@ -2975,6 +3282,7 @@ export default {
                 });
             }
 
+            //console.log(series);
 
             this.$store.commit('setSeries', series)
             this.form.series_id = (this.series.length > 0) ? this.series[0].id : null
@@ -2983,9 +3291,9 @@ export default {
             if (['0101', '1001', '1004'].includes(this.form.operation_type_id)) {
                 if (this.form.document_type_id === '01') {
 
-                    if(!_.isNull(this.form.customer_id)) {
+                    if (!_.isNull(this.form.customer_id)) {
                         const cus = _.find(this.all_customers, {'id': this.form.customer_id});
-                        if(cus && cus.identity_document_type_id !== '6') {
+                        if (cus && cus.identity_document_type_id !== '6') {
                             this.form.customer_id = null
                         }
                     }
@@ -3027,6 +3335,13 @@ export default {
                 //this.form.items.$set(this.recordItem.indexi, row)
                 this.form.items[this.recordItem.indexi] = row
                 this.recordItem = null
+
+                if(this.config.enabled_point_system)
+                {
+                    this.setTotalExchangePoints()
+                    this.recalculateUsedPointsForExchange(row)
+                }
+
             } else {
                 this.form.items.push(JSON.parse(JSON.stringify(row)));
             }
@@ -3036,17 +3351,20 @@ export default {
         clickRemoveItem(index) {
             this.form.items.splice(index, 1)
             this.calculateTotal()
+
+            if(this.config.enabled_point_system) this.setTotalExchangePoints()
         },
         changeCurrencyType() {
             this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
             let items = []
             this.form.items.forEach((row) => {
-                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv))
             });
             this.form.items = items
             this.calculateTotal()
         },
         calculateTotal() {
+
             let total_discount = 0
             let total_charge = 0
             let total_exportation = 0
@@ -3229,6 +3547,8 @@ export default {
 
             this.chargeGlobal()
 
+            this.setTotalPointsBySale(this.config)
+
         },
         sumDiscountsNoBaseByItem(row) {
 
@@ -3325,7 +3645,8 @@ export default {
         },
         deleteDiscountGlobal() {
 
-            let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
+            let discount = _.find(this.form.discounts, {'discount_type_id': this.configuration.global_discount_type_id})
+            // let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
             let index = this.form.discounts.indexOf(discount)
 
             if (index > -1) {
@@ -3334,31 +3655,51 @@ export default {
             }
 
         },
+        setConfigGlobalDiscountType()
+        {
+            this.global_discount_type = _.find(this.global_discount_types, { id : this.configuration.global_discount_type_id})
+        },
+        setGlobalDiscount(factor, amount, base)
+        {
+            this.form.discounts.push({
+                discount_type_id: this.global_discount_type.id,
+                description: this.global_discount_type.description,
+                factor: factor,
+                amount: amount,
+                base: base,
+                is_amount: this.is_amount
+            })
+        },
         discountGlobal() {
+
             this.deleteDiscountGlobal()
 
             //input donde se ingresa monto o porcentaje
             let input_global_discount = parseFloat(this.total_global_discount)
 
-            if (input_global_discount > 0) {
+            if (input_global_discount > 0)
+            {
                 const percentage_igv = 18
                 let base = (this.isGlobalDiscountBase) ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
                 let amount = 0
                 let factor = 0
 
-                if (this.is_amount) {
+                if (this.is_amount)
+                {
                     amount = input_global_discount
                     factor = _.round(amount / base, 5)
-                } else {
+                }
+                else
+                {
                     factor = _.round(input_global_discount / 100, 5)
                     amount = factor * base
                 }
 
                 this.form.total_discount = _.round(amount, 2)
-                this.form.total = _.round(this.form.total - amount, 2)
 
                 // descuentos que afectan la bi
-                if (this.isGlobalDiscountBase) {
+                if(this.isGlobalDiscountBase)
+                {
                     this.form.total_taxed = _.round(base - this.form.total_discount, 2)
                     this.form.total_value = this.form.total_taxed
                     this.form.total_igv = _.round(this.form.total_taxed * (percentage_igv / 100), 2)
@@ -3372,7 +3713,8 @@ export default {
 
                 }
                 // descuentos que no afectan la bi
-                else {
+                else
+                {
                     this.form.total = _.round(this.form.total - amount, 2)
                 }
 
@@ -3445,6 +3787,20 @@ export default {
 
         },
         async submit() {
+
+            //Validando las series seleccionadas
+            let errorSeries = false;
+            _.forEach(this.form.items, row => {
+                if(row.item.series_enabled) {
+                    errorSeries = parseFloat(row.quantity) !== row.item.lots.length
+                    return false;
+                }
+            });
+            if(errorSeries) {
+                this.$message.error('No se han seleccionado todas las series');
+                return false;
+            }
+
             if (this.form.show_terms_condition) {
                 this.form.terms_condition = this.config.terms_condition_sale;
             }
@@ -3481,6 +3837,14 @@ export default {
             if (!this.enabled_payments) {
                 this.form.payments = []
             }
+
+            // validacion sistema por puntos
+            if(this.config.enabled_point_system)
+            {
+                const validate_exchange_points = this.validateExchangePoints()
+                if(!validate_exchange_points.success) return this.$message.error(validate_exchange_points.message)
+            }
+            // validacion sistema por puntos
 
             this.loading_submit = true
             let path = `/${this.resource}`;
@@ -3611,7 +3975,7 @@ export default {
 
         },
         close() {
-            if(this.table) {
+            if (this.table) {
                 location.href = `/${this.table}`
             } else {
                 location.href = (this.is_contingency) ? `/contingencies` : `/${this.resource}`
@@ -3621,6 +3985,9 @@ export default {
             await this.$http.get(`/${this.resource}/search/customer/${customer_id}`).then((response) => {
                 this.customers = response.data.customers
                 this.form.customer_id = customer_id
+
+                this.setCustomerAccumulatedPoints(customer_id, this.config.enabled_point_system)
+
             })
         },
         changeCustomer() {
@@ -3637,6 +4004,7 @@ export default {
                 })
             }
 
+            this.setCustomerAccumulatedPoints(customer.id, this.config.enabled_point_system)
 
             let seller = this.sellers.find(element => element.id == customer.seller_id)
             if (seller !== undefined) {
@@ -3780,16 +4148,25 @@ export default {
             })
         },
         getTotal() {
+            let total_pay = this.form.total;
+            if(this.form.has_retention) {
+                total_pay -= this.form.retention.amount;
+            }
+            // console.log(this.form.retention)
+            // console.log(this.form.total_pending_payment)
+            // console.log(this.form.total)
 
             if (!_.isEmpty(this.form.detraction) && this.form.total_pending_payment > 0) {
                 return this.form.total_pending_payment
             }
 
             if (!_.isEmpty(this.form.retention) && this.form.total_pending_payment > 0) {
+                // console.log('1');
                 return this.form.total_pending_payment
             }
 
-            return this.form.total
+            // console.log('2');
+            return total_pay
         },
         setDescriptionOfItem(item) {
             return showNamePdfOfDescription(item, this.config.show_pdf_name)
@@ -3821,7 +4198,18 @@ export default {
             if (code === 'Escape') {
                 if (this.showDialogAddItem) this.showDialogAddItem = false
             }
-
+        },
+        openDialogLots(item) {
+            console.log(item);
+            this.recordItem = item;
+            this.showDialogItemSeriesIndex = true;
+        },
+        successItemSeries(series) {
+            let itemIndex = _.findIndex(this.form.items, {'item_id': this.recordItem.item_id});
+            this.form.items[itemIndex].item.lots = series;
+        },
+        showItemSeries(series) {
+            return series.map(o => o['series']).join(', ');
         }
     }
 }

@@ -77,7 +77,6 @@ class DownloadController extends Controller
             throw new Exception("El código {$external_id} es inválido, no se encontro documento relacionado");
         }
 
-
         if ($document_type == 'quotation'){
             // Las cotizaciones tienen su propio controlador, si se generan por este medio, dará error
             $quotation = new QuotationController();
@@ -90,12 +89,27 @@ class DownloadController extends Controller
         if ($document_type == 'dispatch') {
             $type = 'dispatch';
         }
+        if($document->document_type_id === '07') {
+            $type = 'credit';
+        }
+        if($document->document_type_id === '08') {
+            $type = 'debit';
+        }
+
         $this->reloadPDF($document, $type, $format);
 
         $temp = tempnam(sys_get_temp_dir(), 'pdf');
+
         file_put_contents($temp, $this->getStorage($document->filename, 'pdf'));
 
-        return response()->file($temp);
+        /*
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$document->filename.'.pdf'.'"'
+        ];
+        */
+
+        return response()->file($temp, $this->generalPdfResponseFileHeaders($document->filename));
     }
 
     public function toTicket($model, $external_id, $format = null) {

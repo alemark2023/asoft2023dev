@@ -33,6 +33,10 @@ class ItemLot extends ModelTenant
         'state'
     ];
 
+    protected $casts = [
+        'has_sale' => 'boolean',
+    ];
+
     public function item()
     {
         return $this->belongsTo(Item::class);
@@ -212,9 +216,9 @@ class ItemLot extends ModelTenant
 
     // }
 
-    
+
     /**
-     * 
+     *
      * Filtrar series disponibles
      *
      * @param  Builder $query
