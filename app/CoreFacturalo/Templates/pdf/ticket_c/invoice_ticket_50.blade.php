@@ -712,6 +712,11 @@
     <tr>
         <td class="text-center desc pt-5">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
     </tr>
+    @if(\App\Models\Tenant\Configuration::first()->isLegendFooter())
+        <tr>
+            <td class="text-center desc font-bold">Bienes transferidos y/o servicios prestados en la Amazonía para ser consumidos en la misma.</td>
+        </tr>
+    @endif
 </table>
 
 </body>

@@ -707,6 +707,11 @@
         </tr>
     @endif
     </tr>
+    @if(\App\Models\Tenant\Configuration::first()->isLegendFooter())
+        <tr>
+            <td class="text-center desc font-bold">Bienes transferidos y/o servicios prestados en la Amazonía para ser consumidos en la misma.</td>
+        </tr>
+    @endif
 </table>
 
 </body>
