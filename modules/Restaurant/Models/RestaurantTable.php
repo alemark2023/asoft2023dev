@@ -6,6 +6,8 @@ use App\Models\Tenant\ModelTenant;
 
 class RestaurantTable extends ModelTenant
 {
+    public $timestamps = false;
+
     protected $fillable = [
         'status',
         'products',

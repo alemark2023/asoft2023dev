@@ -3,6 +3,7 @@
 namespace Modules\Restaurant\Models;
 
 use App\Models\Tenant\ModelTenant;
+use Modules\Restaurant\Models\RestaurantTable;
 
 class RestaurantConfiguration extends ModelTenant
 {
@@ -11,16 +12,16 @@ class RestaurantConfiguration extends ModelTenant
         'menu_order',
         'menu_tables',
         'first_menu',
-        'tables_quantity',
         'menu_bar',
         'menu_kitchen',
         'enabled_environment_1',
         'enabled_environment_2',
         'enabled_environment_3',
+        'enabled_environment_4',
         'items_maintenance',
+        'tables_quantity',
         'tables_quantity_environment_2',
         'tables_quantity_environment_3',
-        'enabled_environment_4',
         'tables_quantity_environment_4'
 
     ];
@@ -35,15 +36,12 @@ class RestaurantConfiguration extends ModelTenant
             'menu_bar' => (bool)$this->menu_bar,
             'menu_kitchen' => (bool)$this->menu_kitchen,
             'first_menu' => $this->first_menu,
-            'tables_quantity' => $this->tables_quantity,
-            'tables_quantity_environment_2' => $this->tables_quantity_environment_2,
-            'tables_quantity_environment_3' => $this->tables_quantity_environment_3,
-            'tables_quantity_environment_4' => $this->tables_quantity_environment_4,
-            'enabled_environment_1' => (bool)$this->enabled_environment_1,
-            'enabled_environment_2' => (bool)$this->enabled_environment_2,
-            'enabled_environment_3' => (bool)$this->enabled_environment_3,
-            'enabled_environment_4' => (bool)$this->enabled_environment_4,
-            'items_maintenance' => (bool)$this->items_maintenance
+            'enabled_environment_1' => (object)['active' => (bool)$this->enabled_environment_1, 'tablesQuantity' => $this->tables_quantity],
+            'enabled_environment_2' => (object)['active' => (bool)$this->enabled_environment_2, 'tablesQuantity' => $this->tables_quantity_environment_2],
+            'enabled_environment_3' => (object)['active' => (bool)$this->enabled_environment_3, 'tablesQuantity' => $this->tables_quantity_environment_3],
+            'enabled_environment_4' => (object)['active' => (bool)$this->enabled_environment_4, 'tablesQuantity' => $this->tables_quantity_environment_4],
+            'items_maintenance' => (bool)$this->items_maintenance,
+           
         ];
     }
 }

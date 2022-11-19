@@ -16,7 +16,7 @@ class CreateRestaurantTablesTable extends Migration
         Schema::create('restaurant_tables', function (Blueprint $table) {
             $table->increments('id');
             $table->string('status');
-            $table->json('products');
+            $table->json('products')->nullable();
             $table->decimal('total', 12, 2);
             $table->integer('personas');
             $table->string('cliente')->nullable();
