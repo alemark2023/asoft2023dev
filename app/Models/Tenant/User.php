@@ -1190,4 +1190,31 @@ $withEstablishment = true){
         ];
     }
 
+
+    /**
+     * 
+     * Permisos de los modulos y submodulos por usuario
+     *
+     * @return array
+     */
+    public function getWebPermissionsByUser()
+    {
+        $modules_id = $this->getCurrentModuleByTenant()->pluck('module_id')->toArray();
+        $levels_id = $this->getCurrentModuleLevelByTenant()->pluck('module_level_id')->toArray();
+        $modules = Module::whereIn('id', $modules_id)->get();
+        $show_modules = [];
+
+        foreach ($modules as $module)
+        {
+            $show_modules [] = [
+                'id' => $module->id,
+                'value' => $module->value,
+                'description' => $module->description,
+                'levels' => $module->levels()->whereIn('id', $levels_id)->select(['id', 'value', 'description', 'module_id'])->get(),
+            ];
+        }
+
+        return $show_modules;
+    }
+
 }
