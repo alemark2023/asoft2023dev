@@ -401,6 +401,7 @@ class Quotation extends ModelTenant
             'created_at' => $row->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
             'print_ticket' => $row->getUrlPrintPdf('ticket'),
+            'filename' => $row->filename,
         ];
     }
 

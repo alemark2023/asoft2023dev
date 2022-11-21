@@ -432,11 +432,19 @@ class Facturalo
 
             //ajustes para footer amazonia
 
-            if($this->configuration->legend_footer AND $format_pdf === 'ticket') {
+            if($this->configuration->legend_footer
+                AND $format_pdf === 'ticket'
+                AND !in_array($base_pdf_template, ['ticket_c']))
+            {
                 $height_legend = 15;
-            } elseif($this->configuration->legend_footer AND $format_pdf === 'ticket_58') {
+            } elseif($this->configuration->legend_footer
+                AND $format_pdf === 'ticket_58'
+                AND !in_array($base_pdf_template, ['ticket_c']))
+            {
                 $height_legend = 30;
-            } elseif($this->configuration->legend_footer AND $format_pdf === 'ticket_50') {
+            } elseif($this->configuration->legend_footer
+                AND $format_pdf === 'ticket_50')
+            {
                 $height_legend = 10;
             } else {
                 $height_legend = 10;
@@ -609,21 +617,24 @@ class Facturalo
 
         // if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
             // dd($base_pdf_template);// = config(['tenant.pdf_template'=> $configuration]);
-            if(config('tenant.pdf_template_footer')) {
-                $html_footer = '';
-                if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
-                    $html_footer = $template->pdfFooter($base_pdf_template, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
-                    $html_footer_legend = "";
-                }
-                // dd($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03']));
-                // se quiere visuzalizar ahora la legenda amazona en todos los formatos
-                $html_footer_legend = '';
-                if($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03'])){
-                    $html_footer_legend = $template->pdfFooterLegend($base_pdf_template, $document);
-                }
-
-                $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
+        if(config('tenant.pdf_template_footer')) {
+            $html_footer = '';
+            if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
+                $html_footer = $template->pdfFooter($base_pdf_template, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
+                $html_footer_legend = "";
             }
+            // dd($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03']));
+            // se quiere visuzalizar ahora la legenda amazona en todos los formatos
+            $html_footer_legend = '';
+            if($this->configuration->legend_footer
+                && in_array($this->document->document_type_id, ['01', '03'])
+                && !in_array($base_pdf_template, ['ticket_c'])
+            ){
+                $html_footer_legend = $template->pdfFooterLegend($base_pdf_template, $document);
+            }
+
+            $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
+        }
 //            $html_footer = $template->pdfFooter();
 //            $pdf->SetHTMLFooter($html_footer);
         // }
@@ -680,6 +691,18 @@ class Facturalo
         else {
             $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
             $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+            $helper_facturalo = new HelperFacturalo();
+
+            if($helper_facturalo->isAllowedAddDispatchTicket($format_pdf, $this->type, $this->document))
+            {
+                $helper_facturalo->addDocumentDispatchTicket($pdf, $this->company, $this->document, [
+                    $template,
+                    $base_pdf_template,
+                    $width,
+                    ($quantity_rows * 8) + $extra_by_item_description
+                ]);
+            }
         }
 
         // echo $html_header.$html.$html_footer; exit();
@@ -687,9 +710,10 @@ class Facturalo
         return $this;
     }
 
-    
+
+
     /**
-     * 
+     *
      * Agregar altura para ticket de guia
      *
      * @param  float $append_height
@@ -729,7 +753,7 @@ class Facturalo
             if($document->driver->number)  $driver += 5;
             if($document->driver->license)  $driver += 5;
         }
-        
+
         $append_height += $base_height + $observations + $data_affected_document + $transfer_reason_type + $transport_mode_type + $driver
                             + $license_plate + $secondary_license_plates;
 

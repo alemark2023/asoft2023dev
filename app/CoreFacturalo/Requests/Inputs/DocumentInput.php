@@ -160,6 +160,7 @@ class DocumentInput
             'point_system' => $point_system_data['point_system'],
             'point_system_data' => $point_system_data['point_system_data'],
             'agent_id' => Functions::valueKeyInArray($inputs, 'agent_id'),
+            'dispatch_ticket_pdf' => Functions::valueKeyInArray($inputs, 'dispatch_ticket_pdf', false),
         ];
     }
 
