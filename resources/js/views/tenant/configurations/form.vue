@@ -573,7 +573,7 @@
                                 <label class="control-label">
                                     Habilitar registro de propinas
                                     <el-tooltip class="item"
-                                                content="Disponible en POS"
+                                                content="Disponible en POS - Nuevo CPE - Convertir pedido a CPE"
                                                 effect="dark"
                                                 placement="top-start">
                                         <i class="fa fa-info-circle"></i>
