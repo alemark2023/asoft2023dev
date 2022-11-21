@@ -1546,6 +1546,7 @@
             :currency-types="currency_types"
             :is-from-invoice="true"
             :percentage-igv="percentage_igv"
+            :isUpdateDocument="isUpdateDocument"
             @add="addRow"></document-form-item>
 
         <person-form :document_type_id=form.document_type_id
