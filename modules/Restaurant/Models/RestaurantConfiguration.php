@@ -36,12 +36,15 @@ class RestaurantConfiguration extends ModelTenant
             'menu_bar' => (bool)$this->menu_bar,
             'menu_kitchen' => (bool)$this->menu_kitchen,
             'first_menu' => $this->first_menu,
-            'enabled_environment_1' => (object)['active' => (bool)$this->enabled_environment_1, 'tablesQuantity' => $this->tables_quantity],
-            'enabled_environment_2' => (object)['active' => (bool)$this->enabled_environment_2, 'tablesQuantity' => $this->tables_quantity_environment_2],
-            'enabled_environment_3' => (object)['active' => (bool)$this->enabled_environment_3, 'tablesQuantity' => $this->tables_quantity_environment_3],
-            'enabled_environment_4' => (object)['active' => (bool)$this->enabled_environment_4, 'tablesQuantity' => $this->tables_quantity_environment_4],
-            'items_maintenance' => (bool)$this->items_maintenance,
-           
+            'tables_quantity' => $this->tables_quantity,
+            'tables_quantity_environment_2' => $this->tables_quantity_environment_2,
+            'tables_quantity_environment_3' => $this->tables_quantity_environment_3,
+            'tables_quantity_environment_4' => $this->tables_quantity_environment_4,
+            'enabled_environment_1' => (bool)$this->enabled_environment_1,
+            'enabled_environment_2' => (bool)$this->enabled_environment_2,
+            'enabled_environment_3' => (bool)$this->enabled_environment_3,
+            'enabled_environment_4' => (bool)$this->enabled_environment_4,
+            'items_maintenance' => (bool)$this->items_maintenance
         ];
     }
 }

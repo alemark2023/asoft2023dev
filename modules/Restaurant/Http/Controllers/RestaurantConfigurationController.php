@@ -41,8 +41,8 @@ class RestaurantConfigurationController extends Controller
             return (object)[
                 'id' => $row->id,
                 'status' => $row->status,
-                'products' => $row->products,
-                'total' => $row->total,
+                'products' => (array)$row->products,
+                'total' => (float)$row->total,
                 'personas' => $row->personas,
                 'label' => $row->label,
                 'shape' => $row->shape,
@@ -101,7 +101,7 @@ class RestaurantConfigurationController extends Controller
             for ($i = 1; $i <= $tables_quantity_environment_1; $i++) {
                 RestaurantTable::create([
                     'status' => 'available',
-                    'products' => [],
+                    'products' => array(),
                     'total' => 0,
                     'personas' => 1,
                     'label' => strval($i),
@@ -205,7 +205,8 @@ class RestaurantConfigurationController extends Controller
         ];
     }
 
-    public function table($id, Request $request) {
+    public function saveTable($id, Request $request)
+    {
         $table = RestaurantTable::findOrFail($id);
         $table->fill($request->all());
         $table->save();
@@ -214,6 +215,23 @@ class RestaurantConfigurationController extends Controller
             'success' => true,
             'message' => 'Mesa actualizada.',
         ];
+    }
 
+    public function getTable($id)
+    {
+        $row = RestaurantTable::findOrFail($id);
+
+        $table = (object)[
+            'id' => $row->id,
+            'status' => $row->status,
+            'products' => (array)$row->products,
+            'total' => (float)$row->total,
+            'personas' => $row->personas,
+            'label' => $row->label,
+            'shape' => $row->shape,
+            'environment' => $row->environment,
+        ];
+
+        return compact('table');
     }
 }

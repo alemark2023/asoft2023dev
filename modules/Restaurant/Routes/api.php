@@ -26,7 +26,9 @@ if ($hostname) {
                 Route::get('/configurations', 'RestaurantConfigurationController@record');
                 Route::get('/waiters', 'WaiterController@records');
                 Route::get('/tablesAndEnv', 'RestaurantConfigurationController@tablesAndEnv');
-                Route::post('/table/{id}', 'RestaurantConfigurationController@table');
+                Route::post('/table/{id}', 'RestaurantConfigurationController@saveTable');
+                Route::get('/table/{id}', 'RestaurantConfigurationController@getTable');
+
 
             });
 
