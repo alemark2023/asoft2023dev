@@ -2,12 +2,16 @@
     <div class="card">
         <div class="card-header bg-info">
             <h3 class="my-0">Envío de mensajes WhatsApp Cloud Api
-                <el-tooltip
-                    class="item"
-                    content="Registrarse y obtener los datos de configuración - https://developers.facebook.com/docs/whatsapp/cloud-api/overview"
-                    effect="dark"
-                    placement="top-start">
+                <el-tooltip class="item"
+                            effect="dark"
+                            placement="top-start">
                     <i class="fa fa-info-circle"></i>
+                    <div slot="content">
+                        <b>Documentación:</b><br/><br/>
+                        <a href="https://docs.google.com/document/d/1BW6EQBPH-JQNwoUEQQaFndRteTpNLLVM7w9YIqhKzdM/edit?usp=sharing" class="text-color-white" target="_blank">
+                            https://docs.google.com/document/d/1BW6EQBPH-JQNwoUEQQaFndRteTpNLLVM7w9YIqhKzdM/edit?usp=sharing
+                        </a>
+                    </div>
                 </el-tooltip>
             </h3>
         </div>
@@ -41,6 +45,14 @@
         </div> 
     </div>
 </template>
+
+<style>
+
+.text-color-white{
+    color:#FFF !important
+}
+
+</style>
 
 <script>
 
