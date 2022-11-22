@@ -45,6 +45,9 @@ class Company extends ModelTenant
         'url_login_pse',
         'user_pse',
 
+        'ws_api_token',
+        'ws_api_phone_number_id',
+
     ];
 
     protected $casts = [
@@ -159,6 +162,19 @@ class Company extends ModelTenant
         }
         
         return $app_logo;
+    }
+
+
+    /**
+     * 
+     * Filtrar datos para whatsapp api
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeSelectDataWhatsAppApi($query)
+    {
+        return $query->select('ws_api_token', 'ws_api_phone_number_id');
     }
 
     
