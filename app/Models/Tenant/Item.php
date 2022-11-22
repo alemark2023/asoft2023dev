@@ -2679,5 +2679,24 @@ class Item extends ModelTenant
         return $query;
     }
 
+    
+    /**
+     * @return bool
+     */
+    public function checkIsNotService()
+    {
+        return $this->unit_type_id !== self::SERVICE_UNIT_TYPE;
+    }
+
+    
+    /**
+     * @return bool
+     */
+    public function checkIsSet()
+    {
+        return $this->is_set;
+    }
+
+    
 }
 

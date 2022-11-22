@@ -110,24 +110,24 @@
     @endisset
 
     <tr>
-        <td class="align-top"><p class="">Cliente:</p></td>
-        <td><p class="text-uppercase"><b>{{ $customer->name }}</b></p></td>
+        <td class="align-top" colspan="2"><p class="">Cliente: <span class="text-uppercase"><b>{{ $customer->name }}</b></span></p></td>
     </tr>
     <tr>
-        <td><p class="">{{ $customer->identity_document_type->description }}:</p></td>
-        <td><p class=""text-uppercase><b>{{ $customer->number }}</b></p></td>
+        <td><p class="">{{ $customer->identity_document_type->description }}: <span><b>{{ $customer->number }}</b></span></p></td>
     </tr>
     @if ($customer->address !== '')
         <tr>
-            <td class="align-top"><p class="">Dirección:</p></td>
-            <td>
-                <p class="text-uppercase">
-                    <b>
-                        {{ $customer->address }}
-                        {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
-                        {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
-                        {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
-                    </b>
+            <td class="align-top" colspan="2">
+                <p class="">
+                    Dirección:
+                    <span class="text-uppercase">
+                        <b>
+                            {{ $customer->address }}
+                            {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
+                            {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
+                            {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
+                        </b>
+                    </span>
                 </p>
             </td>
         </tr>
@@ -710,6 +710,11 @@
     <tr>
         <td class="text-center desc pt-5">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
     </tr>
+    @if(\App\Models\Tenant\Configuration::first()->isLegendFooter())
+        <tr>
+            <td class="text-center desc font-bold">Bienes transferidos y/o servicios prestados en la Amazonía para ser consumidos en la misma.</td>
+        </tr>
+    @endif
 </table>
 
 </body>
