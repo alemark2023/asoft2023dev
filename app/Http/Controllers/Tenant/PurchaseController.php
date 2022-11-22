@@ -614,6 +614,7 @@
                     if (array_key_exists('item', $row)) {
                         if (isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true) {
 
+                            /*
                             // factor de lista de precios
                             $presentation_quantity = (isset($p_item->item->presentation->quantity_unit)) ? $p_item->item->presentation->quantity_unit : 1;
 
@@ -624,7 +625,9 @@
                                 'date_of_due' => $row['date_of_due'],
                                 'item_id' => $row['item_id']
                             ]);
+                            */
 
+                            $this->processUpdateItemLotsGroup($row, $p_item);
                         }
                     }
                 }
@@ -666,6 +669,71 @@
             ];
 
         }
+
+        
+        /**
+         * 
+         * Crear lote
+         *
+         * @param  string $lot_code
+         * @param  float $quantity
+         * @param  string $date_of_due
+         * @param  int $item_id
+         * @return ItemLotsGroup
+         */
+        private function createItemLotsGroup($lot_code, $quantity, $date_of_due, $item_id)
+        {
+            return ItemLotsGroup::create([
+                    'code' => $lot_code,
+                    'quantity' => $quantity,
+                    'date_of_due' => $date_of_due,
+                    'item_id' => $item_id
+                ]);
+        }
+
+        
+        /**
+         * 
+         * Proceso para actualizar lotes en la compra
+         *
+         * @param  array $row
+         * @param  PurchaseItem $purchase_item
+         * @return void
+         */
+        private function processUpdateItemLotsGroup($row, PurchaseItem $purchase_item)
+        {
+            $lot_code = $row['lot_code'] ?? null;
+            $date_of_due = $row['date_of_due'] ?? null;
+            
+            // factor de lista de precios
+            $presentation_quantity = (isset($purchase_item->item->presentation->quantity_unit)) ? $purchase_item->item->presentation->quantity_unit : 1;
+            $quantity = $row['quantity'] * $presentation_quantity;
+
+            if($lot_code && $date_of_due)
+            {
+                $item_lots_group = $this->createItemLotsGroup($lot_code, $quantity, $date_of_due, $row['item_id']); 
+                $purchase_item->item_lot_group_id = $item_lots_group->id;
+                $purchase_item->update();
+            }
+            else
+            {
+                $data_item_lot_group = $row['data_item_lot_group'] ?? null;
+                
+                if($data_item_lot_group)
+                {
+                    $new_date_of_due = $data_item_lot_group['date_of_due'];
+                    $new_lot_code = $data_item_lot_group['lot_code'];
+
+                    $item_lots_group = $this->createItemLotsGroup($new_lot_code, $quantity, $new_date_of_due, $row['item_id']); 
+
+                    $purchase_item->lot_code = $new_lot_code;
+                    $purchase_item->date_of_due = $new_date_of_due;
+                    $purchase_item->item_lot_group_id = $item_lots_group->id;
+                    $purchase_item->update();
+                }
+            }
+        }
+
 
         /**
          * @param Request $request
