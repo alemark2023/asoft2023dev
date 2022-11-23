@@ -85,6 +85,19 @@
                                             <el-checkbox v-model="form.show_premium" @change="showPremium()">Ver Premium</el-checkbox>
                                             <br><br>
                                             <p>Para mayor información comunícate con tu administrador o distribuidor</p>
+
+                                            <div class="row mt-4">
+                                                <div class="col-md-12">
+                                                    
+                                                    <el-tooltip
+                                                        class="item"
+                                                        content="Usa WhatsApp Cloud Api (Configuración/Empresa) - Disponible en el modo Punto de venta"
+                                                        effect="dark"
+                                                        placement="top-start">
+                                                        <el-checkbox v-model="form.direct_send_documents_whatsapp">Envío directo de comprobantes por WhatsApp</el-checkbox>
+                                                    </el-tooltip>
+                                                </div>
+                                            </div>
                                         </el-tab-pane>
                                         <!-- <el-tab-pane label="Tipo de operación">
                                             <el-radio-group class="pt-2" v-model="form.operation_type">
@@ -261,6 +274,7 @@
                     header_waves: false,
                     app_mode: 'default',
                     show_premium: false,
+                    direct_send_documents_whatsapp: false,
                     // operation_type: 1,
                     // permissions: {},
                 }

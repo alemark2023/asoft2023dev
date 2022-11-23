@@ -1638,4 +1638,24 @@
             return $query->where('currency_type_id', self::NATIONAL_CURRENCY_ID);
         }
 
+        
+        /**
+         *
+         * Filtrar registro para envio de mensajes por whatsapp
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public static function scopeFilterDataForSendMessage($query)
+        {
+            return $query->whereFilterWithOutRelations()
+                        ->select([
+                            'id',
+                            'external_id',
+                            'series',
+                            'number',
+                            'filename'
+                        ]);
+        }
+
     }

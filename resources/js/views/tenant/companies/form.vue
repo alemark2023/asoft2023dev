@@ -386,14 +386,14 @@ export default {
             .then(response => {
                 this.soap_sends = response.data.soap_sends
                 this.soap_types = response.data.soap_types
-                console.log(1)
+                // console.log(1)
             })
         await this.$http.get(`/${this.resource}/record`)
             .then(response => {
                 if (response.data !== '') {
                     this.form = response.data.data
                 }
-                console.log(2)
+                // console.log(2)
 
             })
         
