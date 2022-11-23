@@ -268,6 +268,7 @@ class Document extends ModelTenant
         'folio',
         'agent_id',
         'force_send_by_summary',
+        'dispatch_ticket_pdf',
     ];
 
     protected $casts = [
@@ -281,6 +282,7 @@ class Document extends ModelTenant
         'ticket_single_shipment' => 'bool',
         'point_system' => 'bool',
         'force_send_by_summary' => 'bool',
+        'dispatch_ticket_pdf' => 'bool',
     ];
 
     public static function boot()
@@ -1671,4 +1673,37 @@ class Document extends ModelTenant
         $qrCode = new QrCodeGenerate();
         return $qrCode->displayPNGBase64($text);
     }
+
+                
+    /**
+     *
+     * @param  string $format
+     * @return string
+     */
+    public function getUrlPrintByFormat($format)
+    {
+        return url("print/document/{$this->external_id}/{$format}");
+    }
+
+    
+    /**
+     *
+     * Filtrar registro para envio de mensajes por whatsapp
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public static function scopeFilterDataForSendMessage($query)
+    {
+        return $query->whereFilterWithOutRelations()
+                    ->select([
+                        'id',
+                        'external_id',
+                        'series',
+                        'number',
+                        'filename'
+                    ]);
+    }
+
+
 }

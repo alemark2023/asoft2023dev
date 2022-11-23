@@ -61,6 +61,8 @@ use Mpdf\Mpdf;
 use Modules\Finance\Traits\FilePaymentTrait;
 // use App\Http\Resources\Tenant\SaleNoteGenerateDocumentResource;
 // use App\Models\Tenant\Warehouse;
+use App\CoreFacturalo\HelperFacturalo;
+
 
 class SaleNoteController extends Controller
 {
@@ -934,12 +936,14 @@ class SaleNoteController extends Controller
 
         file_put_contents($temp, $this->getStorage($sale_note->filename, 'sale_note'));
 
+        /*
         $headers = [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="'.$sale_note->filename.'"'
         ];
+        */
 
-        return response()->file($temp, $headers);
+        return response()->file($temp, $this->generalPdfResponseFileHeaders($sale_note->filename));
     }
 
     private function reloadPDF($sale_note, $format, $filename) {
@@ -1208,6 +1212,19 @@ class SaleNoteController extends Controller
                 $pdf->SetHTMLFooter("");
             }
         }
+
+        $helper_facturalo = new HelperFacturalo();
+
+        if($helper_facturalo->isAllowedAddDispatchTicket($format_pdf, 'sale-note', $this->document))
+        {
+            $helper_facturalo->addDocumentDispatchTicket($pdf, $this->company, $this->document, [
+                $template, 
+                $base_template, 
+                $width, 
+                ($quantity_rows * 8) + $extra_by_item_description
+            ]);
+        }
+
 
         $this->uploadFile($this->document->filename, $pdf->output('', 'S'), 'sale_note');
     }

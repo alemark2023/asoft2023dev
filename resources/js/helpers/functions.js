@@ -76,6 +76,8 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         purchase_unit_price: row_old.item.purchase_unit_price,
         purchase_unit_value: row_old.item.purchase_unit_value,
         purchase_has_igv: row_old.item.has_igv,
+
+        data_item_lot_group: getDataItemLotGroup(row_old)
     };
 
     // console.log(row)
@@ -450,6 +452,29 @@ const filterWords = (input, items) => {
             .some(p => !text_filter.includes(p));
     });
 }
+
+
+/**
+ * 
+ * Retorna datos del lote en la edicion de compra
+ * 
+ */
+function getDataItemLotGroup(row_old)
+{
+    let data = null
+
+    if(row_old.date_of_due && row_old.lot_code)
+    {
+        data = {
+            date_of_due: row_old.date_of_due,
+            lot_code: row_old.lot_code,
+            item_lot_group_id: row_old.item_lot_group_id,
+        }
+    }
+
+    return data
+}
+
 
 export {
     calculateRowItem, getUniqueArray, showNamePdfOfDescription,

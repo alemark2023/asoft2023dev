@@ -224,6 +224,7 @@
             'point_system_data',
             'created_from_pos',
             'agent_id',
+            'dispatch_ticket_pdf',
 
         ];
 
@@ -270,6 +271,7 @@
 
             'point_system' => 'bool',
             'created_from_pos' => 'bool',
+            'dispatch_ticket_pdf' => 'bool',
 
         ];
 
@@ -1634,6 +1636,26 @@
         public function scopeFilterCurrencyPen($query)
         {
             return $query->where('currency_type_id', self::NATIONAL_CURRENCY_ID);
+        }
+
+        
+        /**
+         *
+         * Filtrar registro para envio de mensajes por whatsapp
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public static function scopeFilterDataForSendMessage($query)
+        {
+            return $query->whereFilterWithOutRelations()
+                        ->select([
+                            'id',
+                            'external_id',
+                            'series',
+                            'number',
+                            'filename'
+                        ]);
         }
 
     }

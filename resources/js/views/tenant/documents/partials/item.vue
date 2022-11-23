@@ -12,7 +12,7 @@
         />
 
         <form autocomplete="off"
-              @submit.prevent="clickAddItem">
+              @submit.prevent="clickAddItem" v-loading="loading_dialog">
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-7 col-lg-7 col-xl-7 col-sm-7">
@@ -651,6 +651,7 @@ export default {
         'isFromInvoice',
         'percentageIgv',
         'isCreditNoteAndType03',
+        'isUpdateDocument',
     ],
     components: {
         ItemForm,
@@ -708,6 +709,8 @@ export default {
             search_item_by_barcode_presentation: false,
             showDialogHistorySales: false,
             history_item_id: null,
+            loading_dialog: false,
+            validate_stock_add_item: false,
             //item_unit_type: {}
         }
     },
@@ -857,6 +860,7 @@ export default {
                 this.charge_types = data.charge_types
                 this.attribute_types = data.attribute_types
                 this.is_client = data.is_client;
+                this.validate_stock_add_item = data.validate_stock_add_item
 
                 if (this.canShowExtraData) {
                     this.$store.commit('setColors', data.colors);
@@ -1341,8 +1345,36 @@ export default {
         cleanTotalItem() {
             this.total_item = null
         },
+        async validateCurrentStock()
+        {
+            this.loading_dialog = true
+
+            const data = {
+                item_id: this.form.item_id,
+                quantity: this.form.quantity,
+                warehouse_id: this.form.warehouse_id,
+                presentation: this.item_unit_type,
+            }
+
+            const response = await this.$http.post(`/validate-current-item-stock`, data)
+
+            this.loading_dialog = false
+
+            return response.data
+        },
+        applyValidateStock()
+        {
+            return (this.validate_stock_add_item && (this.isFromInvoice !== undefined && this.isFromInvoice) && (this.isUpdateDocument !== undefined && !this.isUpdateDocument))
+        },
         async clickAddItem() 
         {
+            if(this.applyValidateStock())
+            {
+                const validate_current_stock = await this.validateCurrentStock()
+                if(!validate_current_stock.success) return this.$message.error(validate_current_stock.message)
+            }
+
+
             if(this.isNoteErrorDescription)
             {
                 if(parseFloat(this.form.unit_price_value) < 0) return this.$message.error('El Precio Unitario debe ser mayor o igual 0');

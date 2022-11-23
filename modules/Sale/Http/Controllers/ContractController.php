@@ -426,12 +426,14 @@ class ContractController extends Controller
 
         file_put_contents($temp, $this->getStorage($contract->filename, 'contract'));
 
+        /*
         $headers = [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="'.$contract->filename.'"'
         ];
+        */
 
-        return response()->file($temp, $headers);
+        return response()->file($temp, $this->generalPdfResponseFileHeaders($contract->filename));
     }
 
 

@@ -10,6 +10,8 @@
 
                 Route::get('advanced-items-search', 'ItemController@advancedItemsSearch');
 
+                Route::post('validate-current-item-stock', 'ItemController@validateCurrentItemStock');
+
                 // Config inventory
 
                 Route::prefix('warehouses')->group(function () {

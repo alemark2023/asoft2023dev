@@ -22,6 +22,7 @@
     };
     use Modules\MobileApp\Http\Controllers\Api\ItemController as ItemControllerMobileApp;
     use Modules\Inventory\Models\Warehouse;
+    use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
 
 
     /**
@@ -354,5 +355,28 @@ $string = var_export($header,true);
             return Warehouse::where('establishment_id', auth()->user()->establishment_id)->selectBasicColumns()->firstOrFail();
         }
         
+
+        /**
+         * 
+         * @param  string $filename
+         * @return array
+         */
+        public static function generalPdfResponseFileHeaders($filename)
+        {
+            return GeneralPdfHelper::pdfResponseFileHeaders($filename);
+        }
+
+                
+        /**
+         * 
+         * Verificar si es una factura o boleta
+         *
+         * @param  string $document_type_id
+         * @return bool
+         */
+        public function generalIsInvoiceDocument($document_type_id)
+        {
+            return in_array($document_type_id, ['01', '03'], true);
+        }
 
     }
