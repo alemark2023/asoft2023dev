@@ -60,6 +60,7 @@
                                                    :data="{'type': 'logo'}"
                                                    :headers="headers"
                                                    :on-success="successUpload"
+                                                   :on-error="errorUpload"
                                                    :show-file-list="false"
                                                    action="/companies/uploads">
                                             <el-button icon="el-icon-upload"
@@ -105,6 +106,7 @@
                                                    :data="{'type': 'img_firm'}"
                                                    :headers="headers"
                                                    :on-success="successUpload"
+                                                   :on-error="errorUpload"
                                                    :show-file-list="false"
                                                    action="/companies/uploads">
                                             <el-button icon="el-icon-upload"
@@ -124,6 +126,7 @@
                                                    :data="{'type': 'favicon'}"
                                                    :headers="headers"
                                                    :on-success="successUpload"
+                                                   :on-error="errorUpload"
                                                    :show-file-list="false"
                                                    action="/companies/uploads">
                                             <el-button icon="el-icon-upload"
@@ -146,6 +149,7 @@
                                                    :data="{'type': 'app_logo'}"
                                                    :headers="headers"
                                                    :on-success="successUpload"
+                                                   :on-error="errorUpload"
                                                    :show-file-list="false"
                                                    action="/companies/uploads">
                                             <el-button icon="el-icon-upload"
@@ -382,14 +386,14 @@ export default {
             .then(response => {
                 this.soap_sends = response.data.soap_sends
                 this.soap_types = response.data.soap_types
-                console.log(1)
+                // console.log(1)
             })
         await this.$http.get(`/${this.resource}/record`)
             .then(response => {
                 if (response.data !== '') {
                     this.form = response.data.data
                 }
-                console.log(2)
+                // console.log(2)
 
             })
         
@@ -467,6 +471,7 @@ export default {
                 })
         },
         successUpload(response, file, fileList) {
+
             if (response.success) {
                 this.$message.success(response.message)
                 this.form[response.type] = response.name
@@ -474,6 +479,10 @@ export default {
                 this.$message({message: 'Error al subir el archivo', type: 'error'})
             }
         },
+        errorUpload(error)
+        {
+            this.$message({message: 'Error al subir el archivo', type: 'error'})
+        }
     }
 }
 </script>

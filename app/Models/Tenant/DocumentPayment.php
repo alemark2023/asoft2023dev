@@ -128,4 +128,23 @@ class DocumentPayment extends ModelTenant
     }
     
 
+    /**
+     * 
+     * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterRelationsPayments($query)
+    {
+        // \Log::info("document");
+        return $query->generalPaymentsWithOutRelations()
+                    ->with([
+                        'payment_method_type' => function($payment_method_type){
+                            $payment_method_type->select('id', 'description');
+                        }, 
+                    ]);
+    }
+
+
 }

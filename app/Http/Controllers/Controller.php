@@ -15,6 +15,14 @@
     use Illuminate\Support\Facades\Route;
     use Modules\Report\Models\ReportConfiguration;
     use App\Models\Tenant\Configuration;
+    use Carbon\Carbon;
+    use App\Models\Tenant\{
+        Company,
+        Establishment,
+    };
+    use Modules\MobileApp\Http\Controllers\Api\ItemController as ItemControllerMobileApp;
+    use Modules\Inventory\Models\Warehouse;
+    use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
 
 
     /**
@@ -292,6 +300,83 @@ $string = var_export($header,true);
                 'success' => $success,
                 'message' => $message,
             ];
+        }
+        
+        
+        /**
+         * 
+         * Obtener datos temporales de imagen cargada
+         *
+         * @param  Request $request
+         * @return array
+         */
+        public function generalUploadTempImage(Request $request)
+        {
+            return app(ItemControllerMobileApp::class)->uploadTempImage($request);
+        }
+
+        
+        /**
+         * 
+         * Nombre para reportes
+         *
+         * @param  string $base_name
+         * @param  string $format
+         * @return string
+         */
+        public function generalFilenameReport($base_name, $format)
+        {
+            return $base_name.'_'.Carbon::now().'.'.$format;
+        }
+
+                
+        /**
+         * 
+         * Datos para cabecera de reportes
+         *
+         * @return array
+         */
+        public function generalDataForHeaderReport()
+        {
+            $company = Company::withOut(['identity_document_type'])->select(['number', 'name'])->first();
+
+            return compact('company');
+        }
+        
+  
+        /**
+         * 
+         * Obtener almacen asociado al usuario en sesion
+         *
+         * @return array
+         */
+        public function generalGetCurrentWarehouse()
+        {
+            return Warehouse::where('establishment_id', auth()->user()->establishment_id)->selectBasicColumns()->firstOrFail();
+        }
+        
+
+        /**
+         * 
+         * @param  string $filename
+         * @return array
+         */
+        public static function generalPdfResponseFileHeaders($filename)
+        {
+            return GeneralPdfHelper::pdfResponseFileHeaders($filename);
+        }
+
+                
+        /**
+         * 
+         * Verificar si es una factura o boleta
+         *
+         * @param  string $document_type_id
+         * @return bool
+         */
+        public function generalIsInvoiceDocument($document_type_id)
+        {
+            return in_array($document_type_id, ['01', '03'], true);
         }
 
     }

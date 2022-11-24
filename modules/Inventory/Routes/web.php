@@ -8,7 +8,9 @@
         Route::domain($hostname->fqdn)->group(function () {
             Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
 
-                Route::get('advanced-items-search', 'ItemController@advancedItemsSearch'); 
+                Route::get('advanced-items-search', 'ItemController@advancedItemsSearch');
+
+                Route::post('validate-current-item-stock', 'ItemController@validateCurrentItemStock');
 
                 // Config inventory
 
@@ -142,6 +144,9 @@
                     Route::post('/transaction', 'InventoryController@store_transaction');
                     Route::post('move', 'InventoryController@move');
                     Route::post('move-multilple', 'InventoryController@moveMultiples');
+                    Route::post('stock', 'InventoryController@stock');
+                    Route::post('stock-multilple', 'InventoryController@stockMultiples');
+                    Route::post('import', 'InventoryController@import');
                     /**
                      * inventory/moves
                      * inventory/remove
@@ -194,17 +199,18 @@
                         Route::get('/pdf', 'ReportKardexController@pdf')->name('reports.kardex.pdf');
                         Route::get('/excel', 'ReportKardexController@excel')->name('reports.kardex.excel');
                         Route::get('/filter', 'ReportKardexController@filter')->name('reports.kardex.filter');
+                        Route::get('/filter_by_warehouse/{warehouse}', 'ReportKardexController@filterByWarehouse');
                         Route::get('/records', 'ReportKardexController@records')->name('reports.kardex.records');
                         Route::get('/lots/filter', 'ReportKardexController@records_lots');
                     });
-                    Route::get('kardex_lots/filter', 'ReportKardexController@filter')->name('reports.kardex.filter');
-                    Route::get('kardex_series/filter', 'ReportKardexController@filter')->name('reports.kardex.filter');
-
+                    Route::get('kardex_lots/filter', 'ReportKardexController@filter');
+                    Route::get('kardex_lots/filter_by_warehouse/{warehouse}', 'ReportKardexController@filterByWarehouse');
+                    Route::get('kardex_series/filter', 'ReportKardexController@filter');
+                    Route::get('kardex_series/filter_by_warehouse/{warehouse}', 'ReportKardexController@filterByWarehouse');
 
                     Route::get('kardex_lots/records', 'ReportKardexController@records_lots_kardex')->name('reports.kardex_lots.records');
                     Route::get('kardex_lots/pdf', 'ReportKardexLotsController@pdf');
                     Route::get('kardex_lots/excel', 'ReportKardexLotsController@excel');
-
 
                     Route::get('kardex_series/records', 'ReportKardexController@records_series_kardex')->name('reports.kardex_series.records');
                     Route::get('kardex_series/pdf', 'ReportKardexSeriesController@pdf');
@@ -231,6 +237,12 @@
                         Route::get('excel', 'ReportMovementController@excel');
                         Route::get('filter', 'ReportMovementController@filter');
                         Route::get('records', 'ReportMovementController@records');
+
+                        Route::get('stock/records', 'ReportMovementController@stockRecords');
+                        // Route::get('stock/excel/excel', 'ReportMovementController@stockExcel');
+
+                        Route::get('stock/format-stock-fit/{type}', 'ReportMovementController@formatStockFit');
+                        Route::get('filter-stock-fit', 'ReportMovementController@filterStockFit');
                     });
 
                 });
@@ -294,6 +306,16 @@
                     Route::get('create', 'DevolutionController@create')->name('devolutions.create');
                     Route::get('search-items', 'DevolutionController@searchItems');
                     Route::get('download/{external_id}/{format?}', 'DevolutionController@download');
+
+                });
+
+                
+                Route::prefix('inventory-review')->group(function () {
+
+                    Route::get('', 'InventoryReviewController@index')->name('tenant.inventory-review.index');
+                    Route::get('filters', 'InventoryReviewController@filters');
+                    Route::get('records', 'InventoryReviewController@records');
+                    Route::post('export', 'InventoryReviewController@export');
 
                 });
 

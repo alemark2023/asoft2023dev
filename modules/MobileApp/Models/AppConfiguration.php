@@ -16,10 +16,14 @@ class AppConfiguration extends ModelTenant
         'card_color',
         'header_waves',
         'app_mode',
+        'direct_print',
+        'direct_send_documents_whatsapp',
     ];
 
     protected $casts = [
         'show_image_item' => 'bool',
+        'direct_print' => 'bool',
+        'direct_send_documents_whatsapp' => 'bool',
     ];
 
 
@@ -36,6 +40,10 @@ class AppConfiguration extends ModelTenant
             'card_color' => $this->card_color,
             'header_waves' => $this->header_waves,
             'app_mode' => $this->app_mode,
+            'direct_print' => $this->direct_print,
+            'has_igv_31556' => auth()->user() ? auth()->user()->establishment->has_igv_31556 : false,
+            'igv_31556_percentage' => config('tenant.igv_31556_percentage'),
+            'direct_send_documents_whatsapp' => $this->direct_send_documents_whatsapp,
         ];
     }
 

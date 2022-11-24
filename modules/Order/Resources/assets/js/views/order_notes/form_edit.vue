@@ -69,7 +69,7 @@
                                     <small class="form-control-feedback" v-if="errors.delivery_date" v-text="errors.delivery_date[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label class="control-label">Dirección de envío
@@ -88,7 +88,7 @@
                                     <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                                 </div>
                             </div> -->
-                            
+
                             <div class="col-lg-6">
                                 <div class="form-group" :class="{'has-danger': errors.observation}">
                                     <label class="control-label">Observación
@@ -172,6 +172,9 @@
                                                     <template v-if="row.id">
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteONItem(row.id, index)">x</button>
                                                     </template>
+                                                    <template v-else-if="row.record_id">
+                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteONItem(row.record_id, index)">x</button>
+                                                    </template>
                                                     <template v-else>
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
                                                     </template>
@@ -221,6 +224,7 @@
             :exchange-rate-sale="form.exchange_rate_sale"
             :showDialog.sync="showDialogAddItem"
             :typeUser="typeUser"
+            :percentage-igv="percentage_igv"
             @add="addRow"></order-note-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -321,7 +325,7 @@
                 this.setAddressByCustomer()
             },
             setAddressByCustomer(){
-                
+
                 let customer = _.find(this.customers, {id : this.form.customer_id})
 
                 if(customer){
@@ -407,13 +411,12 @@
                     // }
                 }
             },
-            initRecord()
-            {
-                this.$http.get(`/${this.resource}/record/${this.resourceId}` )
+            async initRecord() {
+                await this.$http.get(`/${this.resource}/record/${this.resourceId}` )
                     .then(response => {
-
                         let data = response.data.data.order_note
                         this.form.id = data.id
+                        this.form.establishment_id = data.establishment_id
                         this.form.customer_id = data.customer_id
                         this.form.currency_type_id = data.currency_type_id
                         this.form.payment_method_type_id = data.payment_method_type_id
@@ -427,9 +430,8 @@
                         this.form.observation = data.observation
                         this.calculateTotal()
                         this.reloadDataCustomers(this.form.customer_id)
-
                     })
-
+                await this.getPercentageIgv();
             },
 
             searchRemoteCustomers(input) {
@@ -516,11 +518,13 @@
             cleanCustomer(){
                 this.form.customer_id = null;
             },
-            changeDateOfIssue() {
+            async changeDateOfIssue() {
                 this.form.date_of_due = this.form.date_of_issue
-                this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+                await this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
                 })
+                await this.getPercentageIgv();
+                this.changeCurrencyType();
             },
             allCustomers() {
                 this.customers = this.all_customers
@@ -538,13 +542,13 @@
                 this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
                 let items = []
                 this.form.items.forEach((row) => {
-                    items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+                    items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv))
                 });
                 this.form.items = items
                 this.calculateTotal()
             },
             calculateTotal() {
-                
+
                 let total_discount = 0
                 let total_charge = 0
                 let total_exportation = 0
@@ -581,7 +585,7 @@
                         total += parseFloat(row.total)
                     }
                     // total_value += parseFloat(row.total_value)
-                    
+
                     if (!['21', '37'].includes(row.affectation_igv_type_id)) {
                         total_value += parseFloat(row.total_value)
                     }
@@ -597,7 +601,7 @@
                         total_igv_free += row.total_igv
 
                     }
-                    
+
                 });
 
                 this.form.total_igv_free = _.round(total_igv_free, 2)

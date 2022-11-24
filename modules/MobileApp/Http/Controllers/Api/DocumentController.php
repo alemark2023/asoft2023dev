@@ -16,9 +16,13 @@ use App\Http\Resources\Tenant\DocumentCollection;
 use App\Models\Tenant\StateType;
 use App\Http\Resources\Tenant\DocumentResource;
 use App\Models\Tenant\Catalogs\{
-    DocumentType
+    DocumentType,
+    ChargeDiscountType
 };
 use Modules\Finance\Traits\FinanceTrait;
+use Modules\MobileApp\Http\Requests\Api\SendDocumentWhatsappRequest;
+use Modules\WhatsAppApi\Services\WhatsAppCloudApi;
+use Modules\Document\Helpers\DocumentHelper;
 
 
 class DocumentController extends Controller
@@ -58,9 +62,33 @@ class DocumentController extends Controller
     {
         $affectation_igv_types = app(ItemController::class)->table('affectation_igv_types');
 
-        $document_types = DocumentType::onlySaleDocuments()->get();
+        $document_types = $this->table('document_types');
 
-        return compact('affectation_igv_types', 'document_types');
+        $item_discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
+
+        return compact('affectation_igv_types', 'document_types', 'item_discount_types');
+    }
+
+    
+    /**
+     * Tablas individuales
+     *
+     * @param  string $table
+     * @return array
+     */
+    public function table($table)
+    {
+        $data = [];
+
+        switch ($table) 
+        {
+            case 'document_types':
+                $data = DocumentType::onlySaleDocuments()->get();
+                break;
+            
+        }
+
+        return $data;
     }
 
     
@@ -133,5 +161,37 @@ class DocumentController extends Controller
             ]
         ];
     }
+
+    
+    /**
+     * 
+     * Enviar comprobante directo a Whatsapp (Texto/Archivo pdf) 
+     *
+     * @param  SendDocumentWhatsappRequest $request
+     * @return array
+     */
+    public function sendDocumentToWhatsapp(SendDocumentWhatsappRequest $request)
+    {
+        $document_helper = new DocumentHelper();
+        
+        $model = $document_helper->getModelByDocumentType($request->document_type_id);
+        $document = $document_helper->getDocumentDataForSendMessage($model, $request->id);
+        $params = $document_helper->getParamsForAppSendMessage($request->phone_number, $request->format, $document);
+
+        // dd($params, $model, $document);
+
+        $whatsapp_cloud_api = new WhatsAppCloudApi();
+
+        $send_text_message = $whatsapp_cloud_api->sendMessage($params);
+        if(!$send_text_message['success']) return $send_text_message;
+
+        $params['send_type'] = 'document';
+
+        return $whatsapp_cloud_api->sendMessage($params);
+    }
+
+
+    
+
 
 }

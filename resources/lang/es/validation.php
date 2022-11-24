@@ -322,6 +322,26 @@ return [
 		'user_pse' => 'usuario autenticación',
 		'beginning_balance' => 'saldo inicial',
 
+		'send_type' => 'tipo de envío',
+		'message' => 'mensaje',
+		'phone_number' => 'número de teléfono',
+
+		'document.link' => 'enlace del documento',
+		'document.filename' => 'nombre de archivo',
+
+		'ws_api_phone_number_id' => 'identificador de número de teléfono',
+		'ws_api_token' => 'token',
+		'certificate' => 'certificado',
+		'soap_url' => 'soap url envío',
+		'personal_email' => 'correo electrónico personal',
+		'corporate_email' => 'correo electrónico corporativo',
+		'personal_cell_phone' => 'celular personal',
+		'corporate_cell_phone' => 'celular corporativo',
+		'establishment_id' => 'establecimiento',
+
+		'default_document_types.*.document_type_id' => 'tipo de documento',
+		'default_document_types.*.series_id' => 'serie',
+
 
 	],
 ];

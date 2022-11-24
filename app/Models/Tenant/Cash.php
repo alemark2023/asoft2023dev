@@ -253,4 +253,32 @@ class Cash extends ModelTenant
         return ($this->state) ? 'Aperturada':'Cerrada';
     }
 
+        
+    /**
+     * 
+     * Se agrega scope polimorfico para filtrar destino en global payment
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeWithBankIfExist($query)
+    {
+        return $query;
+    }
+
+    
+    /**
+     * 
+     * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterRelationsGlobalPayment($query)
+    {
+        return $query->with([
+                        'cash_transaction'
+                    ]);
+    }
+
 }

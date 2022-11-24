@@ -252,12 +252,16 @@
 
             $input = self::setInputByRequest($request);
 
+            $search_factory_code_items = $request->has('search_factory_code_items') && (bool) $request->search_factory_code_items;
+
             if (!empty($input)) {
 
                 $whereItem[] = ['description', 'like', '%' . str_replace(' ','%',$input) . '%'];
                 $whereItem[] = ['internal_id', 'like', '%' . $input . '%'];
                 $whereItem[] = ['barcode', '=', $input];
                 $whereExtra[] = ['name', 'like', '%' .  str_replace(' ','%',$input) . '%'];
+
+                if($search_factory_code_items) $whereItem[] = ['factory_code', 'like', '%' . $input . '%'];
 
                 foreach ($whereItem as $index => $wItem) {
                     if ($index < 1) {

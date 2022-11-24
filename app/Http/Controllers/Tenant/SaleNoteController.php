@@ -33,6 +33,8 @@ use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\SaleNoteItem;
+use App\Models\Tenant\SaleNotePayment;
+use App\Models\Tenant\Document;
 use App\Models\Tenant\SaleNoteMigration;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\User;
@@ -56,8 +58,11 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
-
+use Modules\Finance\Traits\FilePaymentTrait;
+// use App\Http\Resources\Tenant\SaleNoteGenerateDocumentResource;
 // use App\Models\Tenant\Warehouse;
+use App\CoreFacturalo\HelperFacturalo;
+
 
 class SaleNoteController extends Controller
 {
@@ -67,6 +72,7 @@ class SaleNoteController extends Controller
     use SearchTrait;
     use StorageDocument;
     use OfflineTrait;
+    use FilePaymentTrait;
 
     protected $sale_note;
     protected $company;
@@ -432,6 +438,8 @@ class SaleNoteController extends Controller
 
         $records = $this->getRecords($request);
 
+        /* $records = new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
+        dd($records); */
         return new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
 
     }
@@ -538,10 +546,10 @@ class SaleNoteController extends Controller
         $configuration = Configuration::select('destination_sale','ticket_58')->first();
         // $sellers = User::GetSellers(false)->get();
         $sellers = User::getSellersToNvCpe($establishment_id,$userId);
-
+        $global_discount_types = ChargeDiscountType::getGlobalDiscounts();
 
         return compact('customers', 'establishments','currency_types', 'discount_types', 'configuration',
-                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers', 'global_charge_types');
+                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers', 'global_charge_types', 'global_discount_types');
     }
 
     public function changed($id)
@@ -616,7 +624,7 @@ class SaleNoteController extends Controller
             $this->deleteAllItems($this->sale_note->items);
 
 
-            foreach($data['items'] as $row) 
+            foreach($data['items'] as $row)
             {
 
                 // $item_id = isset($row['id']) ? $row['id'] : null;
@@ -644,23 +652,23 @@ class SaleNoteController extends Controller
                 // control de lotes
 
                 $id_lote_selected = $this->getIdLoteSelectedItem($row);
-                
+
                 // si tiene lotes y no fue generado a partir de otro documento (pedido...)
                 if($id_lote_selected && !$this->sale_note->isGeneratedFromExternalRecord())
                 {
-                    if(is_array($id_lote_selected)) 
+                    if(is_array($id_lote_selected))
                     {
                         // presentacion - factor de lista de precios
                         $quantity_unit = isset($sale_note_item->item->presentation->quantity_unit) ? $sale_note_item->item->presentation->quantity_unit : 1;
 
-                        foreach ($id_lote_selected as $item) 
+                        foreach ($id_lote_selected as $item)
                         {
                             $lot = ItemLotsGroup::query()->find($item['id']);
                             $lot->quantity = $lot->quantity - ($quantity_unit * $item['compromise_quantity']);
                             $this->validateStockLotGroup($lot, $sale_note_item);
                             $lot->save();
                         }
-                        
+
                     }
                     else {
 
@@ -705,11 +713,11 @@ class SaleNoteController extends Controller
 
 
     /**
-     * 
+     *
      * Obtener lote seleccionado
      *
      * @todo regularizar lots_group, no se debe guardar en bd, ya que tiene todos los lotes y no los seleccionados, reemplazar por IdLoteSelected
-     * 
+     *
      * @param  array $row
      * @return array
      */
@@ -734,7 +742,7 @@ class SaleNoteController extends Controller
 
 
     /**
-     * 
+     *
      * Asignar lote a item (regularizar propiedad en json item)
      *
      * @param  array $row
@@ -865,6 +873,8 @@ class SaleNoteController extends Controller
             $values['customer'] = $customer;
         }
 
+        $this->setDataPointSystemToValues($values, $inputs);
+
 
         unset($inputs['series_id']);
 
@@ -872,6 +882,32 @@ class SaleNoteController extends Controller
         $inputs = array_merge($inputs, $values);
         return $inputs;
     }
+
+
+    /**
+     * Configuración de sistema por puntos
+     *
+     * @param  array $values
+     * @param  array $inputs
+     * @return void
+     */
+    private function setDataPointSystemToValues(&$values, $inputs)
+    {
+        $configuration = Configuration::getDataPointSystem();
+
+        $created_from_pos = $inputs['created_from_pos'] ?? false;
+
+        if($created_from_pos && $configuration->enabled_point_system)
+        {
+            $values['point_system'] = $configuration->enabled_point_system;
+            $values['point_system_data'] = [
+                'point_system_sale_amount' => $configuration->point_system_sale_amount,
+                'quantity_of_points' => $configuration->quantity_of_points,
+                'round_points_of_sale' => $configuration->round_points_of_sale,
+            ];
+        }
+    }
+
 
 //    public function recreatePdf($sale_note_id)
 //    {
@@ -883,7 +919,7 @@ class SaleNoteController extends Controller
     {
         $name = [$this->sale_note->series,$this->sale_note->number,date('Ymd')];
         $this->sale_note->filename = join('-', $name);
-        
+
         $this->sale_note->unique_filename = $this->sale_note->filename; //campo único para evitar duplicados
 
         $this->sale_note->save();
@@ -900,15 +936,75 @@ class SaleNoteController extends Controller
 
         file_put_contents($temp, $this->getStorage($sale_note->filename, 'sale_note'));
 
-        return response()->file($temp);
+        /*
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$sale_note->filename.'"'
+        ];
+        */
+
+        return response()->file($temp, $this->generalPdfResponseFileHeaders($sale_note->filename));
     }
 
     private function reloadPDF($sale_note, $format, $filename) {
         $this->createPdf($sale_note, $format, $filename);
     }
+    
 
-    public function createPdf($sale_note = null, $format_pdf = null, $filename = null) {
+    /**
+     * 
+     * Obtener el ancho del ticket dependiendo del formato
+     *
+     * @param  string $format_pdf
+     * @return int
+     */
+    public function getWidthTicket($format_pdf)
+    {
+        $width = 0;
 
+        if(config('tenant.enabled_template_ticket_80'))
+        {
+            $width = 76;
+        } 
+        else
+        {
+            switch ($format_pdf)
+            {
+                case 'ticket_58':
+                    $width = 56;
+                    break;
+                case 'ticket_50':
+                    $width = 45;
+                    break;
+                default:
+                    $width = 78;
+                    break;
+            }
+        }
+
+        return $width;
+    }
+
+    
+    /**
+     * 
+     * Modificar valores del pdf para el formato ticket_50 (ancho, altura, margenes)
+     *
+     * @param  float $pdf_margin_right
+     * @param  float $pdf_margin_left
+     * @param  float $base_height
+     * @return void
+     */
+    public function changeValuesPdfTicket50(&$pdf_margin_right, &$pdf_margin_left, &$base_height)
+    {
+        $pdf_margin_right = 2;
+        $pdf_margin_left = 2;
+        $base_height = 90;
+    }
+    
+
+    public function createPdf($sale_note = null, $format_pdf = null, $filename = null)
+    {
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
         $pdf = new Mpdf();
@@ -922,10 +1018,17 @@ class SaleNoteController extends Controller
 
         $html = $template->pdf($base_template, "sale_note", $this->company, $this->document, $format_pdf);
 
-        if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58')) {
+        $pdf_margin_top = 2;
+        $pdf_margin_right = 5;
+        $pdf_margin_bottom = 0;
+        $pdf_margin_left = 5;
 
-            $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
-            if(config('tenant.enabled_template_ticket_80')) $width = 76;
+        // if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58'))
+        if(in_array($format_pdf, ['ticket', 'ticket_58', 'ticket_50']))
+        {
+            // $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
+            // if(config('tenant.enabled_template_ticket_80')) $width = 76;
+            $width = $this->getWidthTicket($format_pdf);
 
             $company_logo      = ($this->company->logo) ? 40 : 0;
             $company_name      = (strlen($this->company->name) / 20) * 10;
@@ -954,12 +1057,15 @@ class SaleNoteController extends Controller
             }
             $legends = $this->document->legends != '' ? '10' : '0';
             $bank_accounts = BankAccount::count() * 6;
+            $base_height = 120;
+
+            if($format_pdf === 'ticket_50') $this->changeValuesPdfTicket50($pdf_margin_right, $pdf_margin_left, $base_height);
 
             $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
-                    120 +
+                    $base_height +
                     ($quantity_rows * 8)+
                     ($discount_global * 3) +
                     $company_logo +
@@ -978,10 +1084,10 @@ class SaleNoteController extends Controller
                     $total_exonerated +
                     $extra_by_item_description +
                     $total_taxed],
-                'margin_top' => 2,
-                'margin_right' => 5,
-                'margin_bottom' => 0,
-                'margin_left' => 5
+                'margin_top' => $pdf_margin_top,
+                'margin_right' => $pdf_margin_right,
+                'margin_bottom' => $pdf_margin_bottom,
+                'margin_left' => $pdf_margin_left
             ]);
         } else if($format_pdf === 'a5'){
 
@@ -1091,7 +1197,7 @@ class SaleNoteController extends Controller
                         $html_footer_legend = $template->pdfFooterLegend($base_template, $this->document);
                     }
                 }
-                
+
                 if (($format_pdf === 'ticket') || ($format_pdf === 'ticket_58') || ($format_pdf === 'ticket_50')) {
                     $pdf->WriteHTML($html_footer.$html_footer_legend, HTMLParserMode::HTML_BODY);
                 }else{
@@ -1106,7 +1212,20 @@ class SaleNoteController extends Controller
                 $pdf->SetHTMLFooter("");
             }
         }
-        
+
+        $helper_facturalo = new HelperFacturalo();
+
+        if($helper_facturalo->isAllowedAddDispatchTicket($format_pdf, 'sale-note', $this->document))
+        {
+            $helper_facturalo->addDocumentDispatchTicket($pdf, $this->company, $this->document, [
+                $template, 
+                $base_template, 
+                $width, 
+                ($quantity_rows * 8) + $extra_by_item_description
+            ]);
+        }
+
+
         $this->uploadFile($this->document->filename, $pdf->output('', 'S'), 'sale_note');
     }
 
@@ -1528,23 +1647,23 @@ class SaleNoteController extends Controller
 
     }
 
-
+    
+    /**
+     * 
+     * Totales de nota venta, se visualiza en el listado
+     *
+     * @param  Request $request
+     * @return array
+     */
     public function totals(Request $request)
     {
+        $query = $this->getRecords($request)->whereStateTypeAccepted()->whereFilterWithOutRelations()->filterCurrencyPen();
 
-        $records =  $this->getRecords($request)->get(); //SaleNote::where([['state_type_id', '01'],['currency_type_id', 'PEN']])->get();
-        $total_pen = 0;
-        $total_paid_pen = 0;
-        $total_pending_paid_pen = 0;
+        $total_pen = $query->sum('total');
 
+        $sale_notes_id = $query->select('id')->get()->pluck('id')->toArray();
 
-        $total_pen = $records->sum('total');
-
-        foreach ($records as $sale_note) {
-
-            $total_paid_pen += $sale_note->payments->sum('payment');
-
-        }
+        $total_paid_pen = SaleNotePayment::sumPaymentsBySaleNote($sale_notes_id);
 
         $total_pending_paid_pen = $total_pen - $total_paid_pen;
 
@@ -1553,8 +1672,8 @@ class SaleNoteController extends Controller
             'total_paid_pen' => number_format($total_paid_pen, 2, ".", ""),
             'total_pending_paid_pen' => number_format($total_pending_paid_pen, 2, ".", "")
         ];
-
     }
+
 
     public function downloadExternal($external_id, $format = 'a4')
     {
@@ -1627,6 +1746,8 @@ class SaleNoteController extends Controller
                 ]);
             }
 
+            // para carga de voucher
+            $this->saveFilesFromPayments($row, $record_payment, 'sale_notes');
         }
     }
 
@@ -1676,7 +1797,7 @@ class SaleNoteController extends Controller
         if ($dateOfIssue&&!$dateOfDue) {
             $records = $records->where('date_of_issue', $dateOfIssue);
         }
-        
+
         if ($dateOfIssue&&$dateOfDue) {
             $records = $records->whereBetween('date_of_issue', [$dateOfIssue,$dateOfDue]);
         }
@@ -1836,6 +1957,45 @@ class SaleNoteController extends Controller
     {
         return SearchItemController::TransformToModalSaleNote(Item::whereIn('id', $request->ids)->get());
     }
+
+
+    /**
+     * Elimina la relación con factura (problema antiguo respecto un nuevo campo en notas de venta que se envía de forma incorrecta a la factura siendo esta rechazada)
+     * No se previene el error en este metodo
+     *
+     *
+     */
+    public function deleteRelationInvoice(Request $request) {
+        // dd($request->all());
+        try {
+            $sale_note = SaleNote::find($request->id);
+
+            $document = Document::find($sale_note->document_id);
+            $document->sale_note_id = null;
+            $document->save();
+
+            $sale_note->changed = 0;
+            $sale_note->document_id = null;
+            $sale_note->save();
+        }catch(RequestException $e){
+            return ['success' => false];
+        }
+
+        return ['success' => true];
+    }
+
+    
+    /**
+     * 
+     * Data para generar cpe desde nv
+     *
+     * @param  int $id
+     * @return SaleNoteGenerateDocumentResource
+     */
+    // public function recordGenerateDocument($id)
+    // {
+    //     return new SaleNoteGenerateDocumentResource(SaleNote::findOrFail($id));
+    // }
 
 
 }

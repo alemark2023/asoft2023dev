@@ -119,11 +119,11 @@ class ItemController extends Controller
      */
     public function getRecords(Request $request)
     {
- 
+
         // $records = Item::whereTypeUser()->whereNotIsSet();
         $records = $this->getInitialQueryRecords();
-        
-        switch ($request->column) 
+
+        switch ($request->column)
         {
 
             case 'brand':
@@ -180,16 +180,16 @@ class ItemController extends Controller
 
     }
 
-    
+
     /**
-     * 
+     *
      * Aplicar filtros iniciales a la consulta
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function getInitialQueryRecords()
     {
-        
+
         if(Configuration::getRecordIndividualColumn('list_items_by_warehouse'))
         {
             $records = Item::whereWarehouse()->whereNotIsSet();
@@ -326,6 +326,9 @@ class ItemController extends Controller
             $file_content = file_get_contents($temp_path);
             $datenow = date('YmdHis');
             $file_name = Str::slug($item->description).'-'.$datenow.'.'.$file_name_old_array[1];
+
+            UploadFileHelper::checkIfValidFile($file_name, $temp_path, true);
+
             Storage::put($directory.$file_name, $file_content);
             $item->image = $file_name;
 
@@ -578,6 +581,8 @@ class ItemController extends Controller
         foreach ($multi_images as $im) {
 
             $file_name = $im['filename'];
+            UploadFileHelper::checkIfValidFile($file_name, $im['temp_path'], true);
+
             $file_content = file_get_contents($im['temp_path']);
             Storage::put($directory.$file_name, $file_content);
 
@@ -602,7 +607,7 @@ class ItemController extends Controller
         // }
 
         $this->generateInternalId($item);
-        
+
         /********************************* SECCION PARA PRECIO POR ALMACENES ******************************************/
 
         // Precios por almacenes
@@ -657,9 +662,9 @@ class ItemController extends Controller
         ];
     }
 
-    
+
     /**
-     * 
+     *
      * Generar codigo interno de forma automatica
      *
      * @param  Item $item
@@ -669,7 +674,7 @@ class ItemController extends Controller
     {
         $inventory_configuration = InventoryConfiguration::select('generate_internal_id')->firstOrFail();
 
-        if($inventory_configuration->generate_internal_id && !$item->internal_id) 
+        if($inventory_configuration->generate_internal_id && !$item->internal_id)
         {
             $item->internal_id = str_pad($item->id, 5, '0', STR_PAD_LEFT);
             $item->save();
@@ -703,16 +708,16 @@ class ItemController extends Controller
         }
     }
 
-    
+
     /**
      * Eliminar item
-     * 
+     *
      * Usado en:
      * Modules\MobileApp\Http\Controllers\Api\ItemController
      *
      * @param  int $id
      * @return array
-     * 
+     *
      */
     public function destroy($id)
     {

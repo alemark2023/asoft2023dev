@@ -13,6 +13,7 @@ use App\Http\Requests\Tenant\DocumentRequest;
 use App\Http\Requests\Tenant\DocumentUpdateRequest;
 use App\Http\Resources\Tenant\DocumentCollection;
 use App\Http\Resources\Tenant\DocumentResource;
+use App\Imports\DocumentImportExcelFormat;
 use App\Imports\DocumentsImport;
 use App\Imports\DocumentsImportTwoFormat;
 use App\Mail\Tenant\DocumentEmail;
@@ -55,8 +56,11 @@ use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Excel;
 use Modules\BusinessTurn\Models\BusinessTurn;
+use Modules\Finance\Helpers\UploadFileHelper;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 use Modules\Item\Http\Requests\BrandRequest;
@@ -64,7 +68,9 @@ use Modules\Item\Http\Requests\CategoryRequest;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
 use Modules\Document\Helpers\DocumentHelper;
-
+use Modules\Inventory\Models\{
+    InventoryConfiguration
+};
 
 class DocumentController extends Controller
 {
@@ -85,6 +91,7 @@ class DocumentController extends Controller
         $is_client = $this->getIsClient();
         $import_documents = config('tenant.import_documents');
         $import_documents_second = config('tenant.import_documents_second_format');
+        $document_import_excel = config('tenant.document_import_excel');
         $configuration = Configuration::getPublicConfig();
 
         // apiperu
@@ -95,6 +102,7 @@ class DocumentController extends Controller
         return view('tenant.documents.index',
             compact('is_client', 'import_documents',
                 'import_documents_second',
+                'document_import_excel',
                 'configuration',
                 'view_apiperudev_validator_cpe',
                 'view_validator_cpe'));
@@ -317,6 +325,7 @@ class DocumentController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $is_client = $this->getIsClient();
+        $validate_stock_add_item = InventoryConfiguration::getRecordIndividualColumn('validate_stock_add_item');
 
         $configuration = Configuration::first();
 
@@ -365,6 +374,7 @@ class DocumentController extends Controller
             'CatItemStatus',
             'CatItemPackageMeasurement',
             'CatItemProductFamily',
+            'validate_stock_add_item',
             'CatItemUnitsPerPackage');
     }
 
@@ -1381,4 +1391,153 @@ class DocumentController extends Controller
         return response()->json(Document::where('external_id', $request->external_id)->first());
     }
 
+    public function importExcelFormat(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            try {
+                $import = new DocumentImportExcelFormat();
+                $import->import($request->file('file'), null, Excel::XLSX);
+                $data = $import->getData();
+
+                return [
+                    'success' => true,
+                    'message' =>  'Se importaron '.$data['registered'].' de '.$data['total_records'].' registros',
+                    'data' => $data
+                ];
+            } catch (Exception $e) {
+                return [
+                    'success' => false,
+                    'message' =>  $e->getMessage()
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
+    public function importExcelTables()
+    {
+        $document_types = DocumentType::query()
+            ->whereIn('id', ['01', '03'])
+            ->get();
+
+        $series = Series::query()
+            ->whereIn('document_type_id', ['01', '03'])
+            ->where('establishment_id', auth()->user()->establishment_id)
+            ->get();
+
+        return [
+            'document_types' => $document_types,
+            'series' => $series,
+        ];
+    }
+
+    public function retention($document_id)
+    {
+        $document = Document::query()
+            ->select('id', 'series', 'number', 'retention')
+            ->where('id', $document_id)->first();
+
+        if ($document->retention) {
+            $retention = $document->retention;
+            $amount = $retention->amount;
+            if ($retention->currency_type_id === 'USD') {
+                $amount = $amount * $retention->exchange_rate;
+            }
+            $amount = round($amount, 0);
+            return [
+                'success' => true,
+                'form' => [
+                    'document_id' => $document_id,
+                    'document_number' => $document->number_full,
+                    'amount' => $amount,
+                    'voucher_date_of_issue' => $retention->voucher_date_of_issue ?: null,
+                    'voucher_number' => $retention->voucher_number ?: null,
+                    'voucher_amount' => $retention->voucher_amount ?: $amount,
+                    'voucher_filename' => $retention->voucher_filename ?: null,
+                ]
+            ];
+        }
+
+        return [
+            'success' => false,
+            'message' => 'No existe retención'
+        ];
+    }
+
+    public function retentionStore(Request $request)
+    {
+        try {
+            $voucher_filename = $request->input('voucher_filename');
+            $temp_path = $request->input('temp_path');
+
+            if($temp_path) {
+                $file_name_old_array = explode('.', $voucher_filename);
+                $file_content = file_get_contents($temp_path);
+                $extension = $file_name_old_array[1];
+                $voucher_filename = Str::slug('r_'.$file_name_old_array[0]).'_'.date('YmdHis').'.'.$extension;
+                Storage::disk('tenant')->put('document_payment'.DIRECTORY_SEPARATOR.$voucher_filename, $file_content);
+            }
+
+            $document_id = $request->input('document_id');
+            $voucher_number = $request->input('voucher_number');
+            $voucher_date_of_issue = $request->input('voucher_date_of_issue');
+            $voucher_amount = $request->input('voucher_amount');
+
+            Document::query()
+                ->where('id', $document_id)->update([
+                    'retention->voucher_date_of_issue' => $voucher_date_of_issue,
+                    'retention->voucher_number' => $voucher_number,
+                    'retention->voucher_amount' => $voucher_amount,
+                    'retention->voucher_filename' => $voucher_filename
+                ]);
+
+            return [
+                'success' => true,
+                'message' => 'Retención actualizada satisfactoriamente',
+            ];
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+
+        }
+    }
+
+    public function retentionUpload(Request $request)
+    {
+        try {
+            $validate_upload = UploadFileHelper::validateUploadFile($request, 'file');
+
+            if (!$validate_upload['success']) {
+                return $validate_upload;
+            }
+
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $temp = tempnam(sys_get_temp_dir(), 'document_retention');
+                file_put_contents($temp, file_get_contents($file));
+
+                return [
+                    'success' => true,
+                    'data' => [
+                        'filename' => $file->getClientOriginalName(),
+                        'temp_path' => $temp,
+                    ]
+                ];
+            }
+            return [
+                'success' => false,
+                'message' => __('app.actions.upload.error'),
+            ];
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+        }
+    }
 }

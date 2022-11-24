@@ -18,6 +18,8 @@ use Modules\Inventory\Models\InventoryTransaction;
 use Modules\Inventory\Http\Requests\InventoryRequest;
 use Modules\Inventory\Http\Resources\InventoryResource;
 use Modules\Inventory\Http\Resources\InventoryCollection;
+use App\Imports\StockImport;
+use Maatwebsite\Excel\Excel;
 
 class InventoryController extends Controller
 {
@@ -467,4 +469,138 @@ class InventoryController extends Controller
 			'message' => 'Stock regularizado'
 		];
 	}
+
+	public function stock(Request $request)
+	{
+		$result = DB::connection('tenant')->transaction(function () use ($request) {
+			$id = $request->input('id');
+			$item_id = $request->input('item_id');
+			$warehouse_id = $request->input('warehouse_id');
+			$quantity = $request->input('quantity');
+			$quantity_real = $request->input('quantity_real');
+			$lots = ($request->has('lots')) ? $request->input('lots') : [];
+
+			if ($quantity_real <= 0) {
+				return  [
+					'success' => false,
+					'message' => 'La cantidad de stock real debe ser mayor a 0'
+				];
+			}
+			$type=1;
+			$quantity_new=0;
+			$quantity_new=$quantity_real-$quantity;
+			if ($quantity_real<$quantity) {
+				$quantity_new=$quantity-$quantity_real;
+				$type=null;
+			}
+
+			$inventory = new Inventory();
+			$inventory->type = $type;
+			$inventory->description = 'STock Real';
+			$inventory->item_id = $item_id;
+			$inventory->warehouse_id = $warehouse_id;
+			$inventory->quantity = $quantity_new;
+			if ($quantity_real<$quantity) {
+				$inventory->inventory_transaction_id = 28;
+			}
+
+			$inventory->real_stock = $request->quantity_real;
+			$inventory->system_stock = $request->quantity;
+
+			$inventory->save();
+
+			return  [
+				'success' => true,
+				'message' => 'Cantidad de stock actualizado con éxito'
+			];
+		});
+
+		return $result;
+	}
+
+	public function stockMultiples(Request $request)
+	{
+        $request->validate([
+            'items' => 'required|array'
+        ]);
+
+		DB::connection('tenant')->beginTransaction();
+		try {
+			$items = $request->items;
+			foreach ($items as $item) {
+				$item_id = $item['item_id'];
+				$warehouse_id = $item['warehouse_id'];
+				$quantity = $item['quantity'];
+				$quantity_real = $item['quantity_real'];
+				if ($quantity_real <= 0) {
+					throw new Exception("La cantidad del producto {$item['item_description']} a modificar debe ser mayor a 0", 500);
+				}
+
+				$type=1;
+				$quantity_new=0;
+				$quantity_new=$quantity_real-$quantity;
+				if ($quantity_real<$quantity) {
+					$quantity_new=$quantity-$quantity_real;
+					$type=null;
+				}
+
+				$inventory = new Inventory();
+				$inventory->type = $type;
+				$inventory->description = 'STock Real';
+				$inventory->item_id = $item_id;
+				$inventory->warehouse_id = $warehouse_id;
+				$inventory->quantity = $quantity_new;
+				if ($quantity_real<$quantity) {
+					$inventory->inventory_transaction_id = 28;
+				}
+				
+				$inventory->real_stock = $item['quantity_real'];
+				$inventory->system_stock = $item['quantity'];
+
+				$inventory->save();
+				
+			}
+			DB::connection('tenant')->commit();
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Cantidad de stock actualizado con éxito'
+			], 200);
+		} catch (\Throwable $th) {
+            DB::connection('tenant')->rollBack();
+
+			return response()->json([
+				'success' => false,
+				'message' => $th->getMessage(),
+			], 500);
+		}
+	}
+
+	public function import(Request $request)
+    {
+        $request->validate([
+            'warehouse_id' => 'required|numeric|min:1'
+        ]);
+        if ($request->hasFile('file')) {
+            try {
+                $import = new StockImport();
+                $import->import($request->file('file'), null, Excel::XLSX);
+                $data = $import->getData();
+                return [
+                    'success' => true,
+                    'message' =>  __('app.actions.upload.success'),
+                    'data' => $data
+                ];
+            } catch (Exception $e) {
+                return [
+                    'success' => false,
+                    'message' =>  $e->getMessage()
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
 }

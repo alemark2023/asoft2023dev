@@ -84,7 +84,7 @@
         <td>Teléfono:</td>
         <td>{{ $customer->telephone }}</td>
         <td>Vendedor:</td>
-        <td> @if($document->seller_id != 0)){{$document->seller->name }} @else {{ $document->user->name }} @endif</td>
+        <td> @if($document->seller_id != 0){{$document->seller->name }} @else {{ $document->user->name }} @endif</td>
     </tr>
     @if ($document->plate_number !== null)
     <tr>
@@ -122,6 +122,21 @@
         </tr>
     @endif
 </table>
+
+@if ($document->isPointSystem())
+    <table class="full-width mt-3">
+        <tr>
+            <td width="15%">P. ACUMULADOS</td>
+            <td width="8px">:</td>
+            <td>{{ $document->person->accumulated_points }}</td>
+
+            <td width="140px">PUNTOS POR LA COMPRA</td>
+            <td width="8px">:</td>
+            <td>{{ $document->getPointsBySale() }}</td>
+        </tr>
+    </table>
+@endif
+
 
 @if ($document->guides)
 <br/>
@@ -193,6 +208,11 @@
                  @endforeach
                 @endif
 
+                @if($row->item->used_points_for_exchange ?? false)
+                    <br>
+                    <span style="font-size: 9px">*** Canjeado por {{$row->item->used_points_for_exchange}}  puntos ***</span>
+                @endif
+                
             </td>
             <td class="text-center align-top">
 
@@ -364,6 +384,16 @@
 
 </table>
 @endif
-
+@if ($document->terms_condition)
+    <br>
+    <table class="full-width">
+        <tr>
+            <td>
+                <h6 style="font-size: 12px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                {!! $document->terms_condition !!}
+            </td>
+        </tr>
+    </table>
+@endif
 </body>
 </html>

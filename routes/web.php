@@ -81,6 +81,11 @@ if ($hostname) {
             Route::post('companies/store-send-pse', 'Tenant\CompanyController@storeSendPse');
             Route::get('companies/record-send-pse', 'Tenant\CompanyController@recordSendPse');
 
+            //configuracion WhatsApp Api
+            Route::post('companies/store-whatsapp-api', 'Tenant\CompanyController@storeWhatsAppApi');
+            Route::get('companies/record-whatsapp-api', 'Tenant\CompanyController@recordWhatsAppApi');
+            
+
             //Card Brands
             Route::get('card_brands/records', 'Tenant\CardBrandController@records');
             Route::get('card_brands/record/{card_brand}', 'Tenant\CardBrandController@record');
@@ -234,6 +239,9 @@ if ($hostname) {
                 Route::get('/export/barcode/print', 'Tenant\PersonController@printBarCode')->name('tenant.persons.export.barcode.print');
                 Route::get('/barcode/{item}', 'Tenant\PersonController@generateBarcode');
                 Route::get('/search/{barcode}', 'Tenant\PersonController@getPersonByBarcode');
+
+                Route::get('accumulated-points/{id}', 'Tenant\PersonController@getAccumulatedPoints');
+
             });
             //Documents
             Route::post('documents/categories', 'Tenant\DocumentController@storeCategories');
@@ -285,9 +293,17 @@ if ($hostname) {
             Route::get('documents/payments/excel/{month}/{anulled}', 'Tenant\DocumentController@report_payments')->name('tenant.document.payments.excel');
             Route::get('documents/payments-complete', 'Tenant\DocumentController@report_payments');
 
+
+            Route::post('documents/import_excel_format', 'Tenant\DocumentController@importExcelFormat');
+            Route::get('documents/import_excel_tables', 'Tenant\DocumentController@importExcelTables');
+
+
             Route::delete('documents/delete_document/{document_id}', 'Tenant\DocumentController@destroyDocument');
 
             Route::get('documents/data-table/items', 'Tenant\DocumentController@getDataTableItem');
+            Route::get('documents/retention/{document}', 'Tenant\DocumentController@retention');
+            Route::post('documents/retention', 'Tenant\DocumentController@retentionStore');
+            Route::post('documents/retention/upload', 'Tenant\DocumentController@retentionUpload');
 
             //Contingencies
             Route::get('contingencies', 'Tenant\ContingencyController@index')->name('tenant.contingencies.index')->middleware('redirect.level', 'tenant.internal.mode');
@@ -563,6 +579,9 @@ if ($hostname) {
 
             Route::post('sale-notes/transform-data-order', 'Tenant\SaleNoteController@transformDataOrder');
             Route::post('sale-notes/items-by-ids', 'Tenant\SaleNoteController@getItemsByIds');
+            Route::post('sale-notes/delete-relation-invoice', 'Tenant\SaleNoteController@deleteRelationInvoice');
+
+            // Route::get('sale-notes/record-generate-document/{salenote}', 'Tenant\SaleNoteController@recordGenerateDocument');
 
             //POS
             Route::get('pos', 'Tenant\PosController@index')->name('tenant.pos.index');
@@ -674,8 +693,19 @@ if ($hostname) {
             Route::get('purchase-settlements/columns', 'Tenant\PurchaseSettlementController@columns');
             Route::get('purchase-settlements/records', 'Tenant\PurchaseSettlementController@records');
 
+            Route::get('purchase-settlements/create/{order_id?}', 'Tenant\PurchaseSettlementController@create')->name('tenant.purchase-settlements.create');
+
+Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store');
+            Route::get('purchase-settlements/tables', 'Tenant\PurchaseSettlementController@tables');
+            Route::get('purchase-settlements/table/{table}', 'Tenant\PurchaseSettlementController@table');
+            Route::get('purchase-settlements/record/{document}', 'Tenant\PurchaseSettlementController@record');
+
             //Almacen de columnas por usuario
             Route::post('validate_columns','Tenant\SettingController@getColumnsToDatatable');
+
+            Route::post('general-upload-temp-image', 'Controller@generalUploadTempImage');
+
+            Route::get('general-get-current-warehouse', 'Controller@generalGetCurrentWarehouse');
 
             // test theme
             // Route::get('testtheme', function () {
@@ -762,6 +792,7 @@ if ($hostname) {
             Route::get('configurations', 'System\ConfigurationController@index')->name('system.configuration.index');
             Route::post('configurations/login', 'System\ConfigurationController@storeLoginSettings');
             Route::post('configurations/bg', 'System\ConfigurationController@storeBgLogin');
+            Route::post('configurations/other-configuration', 'System\ConfigurationController@storeOtherConfiguration');
 
             Route::get('companies/record', 'System\CompanyController@record');
             Route::post('companies', 'System\CompanyController@store');

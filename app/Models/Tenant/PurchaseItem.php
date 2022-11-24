@@ -68,7 +68,8 @@ class PurchaseItem extends ModelTenant
         'lot_code',
         'warehouse_id',
         'discounts',
-        'date_of_due'
+        'date_of_due',
+        'item_lot_group_id',
     ];
 
 

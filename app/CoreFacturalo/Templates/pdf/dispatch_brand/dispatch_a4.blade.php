@@ -278,6 +278,21 @@
     </tr>
     @endif
 </table>
+
+@elseif ($document->order_form_external)
+
+@if ($document->reference_document)
+<br>
+@endif
+<table class="full-width border-box">
+    <tr>
+        <td class="text-bold border-bottom font-bold">ORDEN DE PEDIDO</td>
+    </tr>
+    <tr>
+        <td>{{ $document->order_form_external }}</td>
+    </tr>
+</table>
+
 @endif
 
 @if ($document->reference_sale_note_id)
@@ -292,5 +307,16 @@
     @endif
 </table>
 @endif
+@if ($document->terms_condition)
+        <br>
+        <table class="full-width">
+            <tr>
+                <td>
+                    <h6 style="font-size: 12px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                    {!! $document->terms_condition !!}
+                </td>
+            </tr>
+        </table>
+    @endif
 </body>
 </html>
