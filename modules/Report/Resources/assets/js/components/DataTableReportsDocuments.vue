@@ -249,7 +249,7 @@
                     </div>
 
 
-                    <div class="col-lg-7 col-md-7 col-md-7 col-sm-12"
+                    <div class="col-lg-12 col-md-12 col-md-12 col-sm-12"
                          style="margin-top:29px">
                         <el-button :loading="loading_submit"
                                    class="submit"
@@ -260,11 +260,42 @@
 
                         <template v-if="records.length>0 && resource  !== 'reports/document-detractions'">
 
-                            <el-button class="submit"
+
+                            <div class="dropdown d-inline ml-1 mr-1">
+                                
+                                <el-button class="submit"
+                                        icon="el-icon-tickets"
+                                        type="danger"
+                                        id="dropdownMenuButton"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                        >Exportar PDF
+                                        <i class="el-icon-arrow-down el-icon--right"></i>
+                                </el-button>
+ 
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <button class="dropdown-item" @click.prevent="clickDownload('pdf')">
+                                        Formato estándar
+                                    </button>
+                                    
+                                    <el-tooltip class="item"
+                                        effect="dark"
+                                        content="Columnas dinámicas - Procesamiento asíncrono (bandeja de descargas)"
+                                        placement="right">
+                                        
+                                        <button class="dropdown-item" @click.prevent="clickExport('pdf')">
+                                            Formato dinámico
+                                        </button>
+                                    </el-tooltip>
+
+                                </div>
+                            </div>
+
+
+                            <!-- <el-button class="submit"
                                        icon="el-icon-tickets"
                                        type="danger"
                                        @click.prevent="clickExport('pdf')">Exportar PDF
-                            </el-button>
+                            </el-button> -->
 
                             <el-button  v-if="resource == 'reports/sales'" class="submit"
                                        icon="el-icon-tickets"
@@ -272,15 +303,57 @@
                                        @click.prevent="clickDownload('pdf-simple')">Exportar PDF Simple
                             </el-button>
 
-                            <el-button class="submit"
+
+
+                            <div class="dropdown d-inline ml-1 mr-1">
+                                
+                                <el-button class="submit"
+                                        type="success"
+                                        id="dropdownMenuButton"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                        >
+                                        <i class="fa fa-file-excel"></i>
+                                        Exportar Excel
+                                        <i class="el-icon-arrow-down el-icon--right"></i>
+                                </el-button>
+ 
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <button class="dropdown-item" @click.prevent="clickDownload('excel')">
+                                        Formato estándar
+                                    </button>
+
+                                    
+                                    <el-tooltip class="item"
+                                        effect="dark"
+                                        content="Columnas dinámicas - Procesamiento asíncrono (bandeja de descargas)"
+                                        placement="right">
+
+                                        <button class="dropdown-item" @click.prevent="clickExport('xlsx')">
+                                            Formato dinámico
+                                        </button>
+                                    </el-tooltip>
+
+                                </div>
+                            </div>
+
+                            <!-- <el-button class="submit"
                                        type="success"
                                        @click.prevent="clickExport('xlsx')"><i class="fa fa-file-excel"></i> Exportal
                                                                                                                 Excel
-                            </el-button>
-                            <el-button class="submit"
-                                       type="info"
-                                       @click.prevent="clickEmail()">C. Electrónico
-                            </el-button>
+                            </el-button> -->
+
+                            <el-tooltip class="item"
+                                effect="dark"
+                                content="Disponible para formato dinámico"
+                                placement="top-start">
+
+                                <el-button class="submit"
+                                        type="info"
+                                        @click.prevent="clickEmail()">C. Electrónico
+                                </el-button>
+
+                            </el-tooltip>
+
                         </template>
 
                     </div>
@@ -502,7 +575,6 @@ export default {
 
     },
     methods: {
-
         ChangedSalesnote(){
             if(this.form.document_type_id == '80' && this.form.user_type != null ){
                 this.form.user_type = 'CREADOR';
