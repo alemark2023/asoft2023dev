@@ -797,6 +797,26 @@ class DocumentController extends Controller
     public function show($documentId)
     {
         $document = Document::findOrFail($documentId);
+        foreach ($document->items as &$item) {
+            $discounts = [];
+            if($item->discounts) {
+                foreach ($item->discounts as $discount) {
+                    $discount_type = ChargeDiscountType::query()->find($discount->discount_type_id);
+                    $discounts[] = [
+                        'amount' => $discount->amount,
+                        'base' => $discount->base,
+                        'description' => $discount->description,
+                        'discount_type_id' => $discount->discount_type_id,
+                        'factor' => $discount->factor,
+                        'percentage' => $discount->factor * 100,
+                        'is_amount' => false,
+                        'discount_type' => $discount_type
+                    ];
+                }
+            }
+            $item->discounts = $discounts;
+        }
+
         return response()->json([
             'data' => $document,
             'success' => true,
