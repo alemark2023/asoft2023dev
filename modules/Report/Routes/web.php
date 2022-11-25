@@ -82,6 +82,10 @@
                             ->name('tenant.reports.sales.records');
                        Route::get('/pdf-simple', 'ReportDocumentController@pdfSimple')
                             ->name('tenant.reports.sales.pdfSimple');
+                         Route::post('/email', 'ReportDocumentController@email')
+                            ->name('tenant.reports.sales.email');
+                         Route::post('/export', 'ReportDocumentController@export')
+                         ->name('tenant.reports.sales.email');
                    });
                    /**
                     * /reports/sale-notes
