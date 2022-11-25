@@ -12,7 +12,7 @@
         />
 
         <form autocomplete="off"
-              @submit.prevent="clickAddItem">
+              @submit.prevent="clickAddItem" v-loading="loading_dialog">
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-7 col-lg-7 col-xl-7 col-sm-7">
@@ -377,9 +377,13 @@
                         <div v-if="showDiscounts"
                              class="col-md-12 mt-2">
                             <el-collapse v-model="activePanel">
-                                <el-collapse-item
-                                    v-if="!(recordItem != null)"
-                                                  name="1"
+
+<!--                                <el-collapse-item-->
+<!--                                    v-if="!(recordItem != null)"-->
+<!--                                    name="1"-->
+<!--                                    title="+ Agregar Descuentos/Cargos/Atributos especiales">-->
+
+                                <el-collapse-item name="1"
                                                   title="+ Agregar Descuentos/Cargos/Atributos especiales">
                                     <div v-if="discount_types.length > 0">
                                         <label class="control-label">
@@ -527,13 +531,7 @@
             <!-- Mostrar en cel -->
 
             <div class="row hidden-md-up form-actions text-center">
-                <div class="col-12">
-                    &nbsp;
-                </div>
-
-
-
-
+                <div class="col-12"></div>
                 <div class="col-6">
                     <el-popover
                         placement="top-start"
@@ -651,6 +649,7 @@ export default {
         'isFromInvoice',
         'percentageIgv',
         'isCreditNoteAndType03',
+        'isUpdateDocument',
     ],
     components: {
         ItemForm,
@@ -708,6 +707,8 @@ export default {
             search_item_by_barcode_presentation: false,
             showDialogHistorySales: false,
             history_item_id: null,
+            loading_dialog: false,
+            validate_stock_add_item: false,
             //item_unit_type: {}
         }
     },
@@ -857,6 +858,7 @@ export default {
                 this.charge_types = data.charge_types
                 this.attribute_types = data.attribute_types
                 this.is_client = data.is_client;
+                this.validate_stock_add_item = data.validate_stock_add_item
 
                 if (this.canShowExtraData) {
                     this.$store.commit('setColors', data.colors);
@@ -1104,6 +1106,9 @@ export default {
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
 
+                this.form.attributes = this.recordItem.attributes;
+                this.form.discounts = this.recordItem.discounts;
+                this.form.charges = this.recordItem.charges;
 
                 if (this.isEditItemNote) {
                     this.form.item.currency_type_id = this.currencyTypeIdActive
@@ -1341,8 +1346,36 @@ export default {
         cleanTotalItem() {
             this.total_item = null
         },
+        async validateCurrentStock()
+        {
+            this.loading_dialog = true
+
+            const data = {
+                item_id: this.form.item_id,
+                quantity: this.form.quantity,
+                warehouse_id: this.form.warehouse_id,
+                presentation: this.item_unit_type,
+            }
+
+            const response = await this.$http.post(`/validate-current-item-stock`, data)
+
+            this.loading_dialog = false
+
+            return response.data
+        },
+        applyValidateStock()
+        {
+            return (this.validate_stock_add_item && (this.isFromInvoice !== undefined && this.isFromInvoice) && (this.isUpdateDocument !== undefined && !this.isUpdateDocument))
+        },
         async clickAddItem() 
         {
+            if(this.applyValidateStock())
+            {
+                const validate_current_stock = await this.validateCurrentStock()
+                if(!validate_current_stock.success) return this.$message.error(validate_current_stock.message)
+            }
+
+
             if(this.isNoteErrorDescription)
             {
                 if(parseFloat(this.form.unit_price_value) < 0) return this.$message.error('El Precio Unitario debe ser mayor o igual 0');

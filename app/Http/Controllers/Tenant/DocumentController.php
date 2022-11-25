@@ -68,6 +68,9 @@ use Modules\Item\Http\Requests\CategoryRequest;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
 use Modules\Document\Helpers\DocumentHelper;
+use Modules\Inventory\Models\{
+    InventoryConfiguration
+};
 
 class DocumentController extends Controller
 {
@@ -322,6 +325,7 @@ class DocumentController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $is_client = $this->getIsClient();
+        $validate_stock_add_item = InventoryConfiguration::getRecordIndividualColumn('validate_stock_add_item');
 
         $configuration = Configuration::first();
 
@@ -370,6 +374,7 @@ class DocumentController extends Controller
             'CatItemStatus',
             'CatItemPackageMeasurement',
             'CatItemProductFamily',
+            'validate_stock_add_item',
             'CatItemUnitsPerPackage');
     }
 
@@ -792,6 +797,26 @@ class DocumentController extends Controller
     public function show($documentId)
     {
         $document = Document::findOrFail($documentId);
+        foreach ($document->items as &$item) {
+            $discounts = [];
+            if($item->discounts) {
+                foreach ($item->discounts as $discount) {
+                    $discount_type = ChargeDiscountType::query()->find($discount->discount_type_id);
+                    $discounts[] = [
+                        'amount' => $discount->amount,
+                        'base' => $discount->base,
+                        'description' => $discount->description,
+                        'discount_type_id' => $discount->discount_type_id,
+                        'factor' => $discount->factor,
+                        'percentage' => $discount->factor * 100,
+                        'is_amount' => false,
+                        'discount_type' => $discount_type
+                    ];
+                }
+            }
+            $item->discounts = $discounts;
+        }
+
         return response()->json([
             'data' => $document,
             'success' => true,
