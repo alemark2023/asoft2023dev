@@ -563,10 +563,18 @@ class DocumentUpdateInput
                 $exchange_rate = $retention['exchange_rate'];
                 $amount_pen = $retention['amount_pen'];
                 $amount_usd = $retention['amount_usd'];
+
+                $voucher_date_of_issue = Functions::valueKeyInArray($retention, 'voucher_date_of_issue');
+                $voucher_number = Functions::valueKeyInArray($retention, 'voucher_number');
+                $voucher_amount = Functions::valueKeyInArray($retention, 'voucher_amount');
+                $voucher_filename = Functions::valueKeyInArray($retention, 'voucher_filename');
+
+                /*
                 $voucher_date_of_issue = $inputs['voucher_date_of_issue'];
                 $voucher_number = $inputs['voucher_number'];
                 $voucher_amount = $inputs['voucher_amount'];
                 $voucher_filename = $inputs['voucher_filename'];
+                */
 
                 return [
                     'code' => $code,
