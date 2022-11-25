@@ -799,6 +799,8 @@ Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store')
             Route::post('configurations/login', 'System\ConfigurationController@storeLoginSettings');
             Route::post('configurations/bg', 'System\ConfigurationController@storeBgLogin');
             Route::post('configurations/other-configuration', 'System\ConfigurationController@storeOtherConfiguration');
+            Route::get('configurations/get-other-configuration', 'System\ConfigurationController@getOtherConfiguration');
+            Route::post('configurations/upload-tenant-ads', 'System\ConfigurationController@uploadTenantAds');
 
             Route::get('companies/record', 'System\CompanyController@record');
             Route::post('companies', 'System\CompanyController@store');
