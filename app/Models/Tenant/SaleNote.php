@@ -817,6 +817,7 @@
                 'seller_name'                     => ((int)$this->seller_id !=0)?$this->seller->name:'',
 
                 'status_dispatch'=>$status_dispatch,
+                'customer_region' => $this->customer->department->description ?? null,
             ];
         }
 
