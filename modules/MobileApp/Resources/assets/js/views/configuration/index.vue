@@ -41,13 +41,13 @@
                                                 <div class="row">
                                                     <div class="col-6">
                                                         <el-radio style="display:block;" label="multicolored">Multicolor</el-radio>
-                                                        <div style="width: 30px; height: 30px; background-color: #4A2CB3;display: inline-block;"></div>
-                                                        <div style="width: 30px; height: 30px; background-color: #3827B4;display: inline-block;"></div>
-                                                        <div style="width: 30px; height: 30px; background-color: #331B83;display: inline-block;"></div>
+                                                        <div :class="'box_color_tint_'+form.theme_color" style="width: 30px; height: 30px; display: inline-block;"></div>
+                                                        <div :class="'box_color_'+form.theme_color" style="width: 30px; height: 30px; display: inline-block;"></div>
+                                                        <div :class="'box_color_shade_'+form.theme_color" style="width: 30px; height: 30px; display: inline-block;"></div>
                                                     </div>
                                                     <div class="col-6">
                                                         <el-radio label="unicolor">Unicolor</el-radio>
-                                                        <div style="width: 20px; height: 20px; background-color: #4A2CB3;"></div>
+                                                        <div :class="'box_color_'+form.theme_color" style="width: 20px; height: 20px;"></div>
                                                     </div>
                                                 </div>
                                             </el-radio-group>
@@ -68,6 +68,36 @@
                                                     </div>
                                                 </div>
                                             </el-radio-group>
+                                        </el-tab-pane>
+                                        <el-tab-pane label="Modo">
+                                            <el-radio-group class="pt-2" v-model="form.app_mode" @change="changeMode()">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <el-radio label="default" style="display:block">Tradicional</el-radio>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <el-radio label="pos" style="display:block;">Punto de venta</el-radio>
+                                                    </div>
+                                                </div>
+                                            </el-radio-group>
+                                        </el-tab-pane>
+                                        <el-tab-pane label="Pack Premium">
+                                            <el-checkbox v-model="form.show_premium" @change="showPremium()">Ver Premium</el-checkbox>
+                                            <br><br>
+                                            <p>Para mayor información comunícate con tu administrador o distribuidor</p>
+
+                                            <div class="row mt-4">
+                                                <div class="col-md-12">
+                                                    
+                                                    <el-tooltip
+                                                        class="item"
+                                                        content="Usa WhatsApp Cloud Api (Configuración/Empresa) - Disponible en el modo Punto de venta"
+                                                        effect="dark"
+                                                        placement="top-start">
+                                                        <el-checkbox v-model="form.direct_send_documents_whatsapp">Envío directo de comprobantes por WhatsApp</el-checkbox>
+                                                    </el-tooltip>
+                                                </div>
+                                            </div>
                                         </el-tab-pane>
                                         <!-- <el-tab-pane label="Tipo de operación">
                                             <el-radio-group class="pt-2" v-model="form.operation_type">
@@ -90,7 +120,10 @@
 
             </div>
             <div class="col-md-5">
-                <iframe :src="path_app" frameborder="0" height="750" ref="appIframe" style="z-index: 999;min-width: 350px;" class="iphone-x">
+                <video class="iphone-x" v-if="form.show_premium" autoplay="" loop="" muted="" playsinline="" width="350" style="height:620px">
+                    <source src="https://facturaloperu.com/video/FacturaloPeru-APPPremium.mp4" type="video/mp4">
+                </video>
+                <iframe v-else :src="source_iframe" frameborder="0" height="750" ref="appIframe" style="z-index: 999;min-width: 350px;" class="iphone-x">
                     <i>Speaker</i>
                     <b>Camera</b>
                 </iframe>
@@ -167,6 +200,33 @@
     }
   }
 }
+.box_color_shade_dark {
+    background-color: #000000;
+}
+.box_color_tint_dark {
+    background-color: #141414;
+}
+.box_color_dark {
+    background-color: #1A1F1D;
+}
+.box_color_shade_blue {
+    background-color: #331B83;
+}
+.box_color_tint_blue {
+    background-color: #4A2CB3;
+}
+.box_color_blue {
+    background-color: #3827B4;
+}
+.box_color_shade_red {
+    background-color: #CC0D00;
+}
+.box_color_tint_red {
+    background-color: #A30B00;
+}
+.box_color_red {
+    background-color: #cb2027;
+}
 </style>
 
 <script>
@@ -176,9 +236,12 @@
                 form: {},
                 domain: window.location.origin,
                 path_app: window.location.origin + '/live-app',
+                path_premium: window.location.origin + '/live-app/premium',
+                source_iframe: '',
                 loading_submit: false,
                 resource: 'app-configurations',
                 loading: false,
+                change_mode: false,
             }
         },
         async created(){
@@ -196,6 +259,7 @@
                 await this.$http.get(`/${this.resource}/record`)
                         .then(response => {
                             this.form = response.data.data
+                            // console.log(response.data.data)
                         })
                         .then(()=>{
                             this.loading = false
@@ -208,10 +272,18 @@
                     theme_color: 'blue',
                     card_color: 'multicolored',
                     header_waves: false,
+                    app_mode: 'default',
+                    show_premium: false,
+                    direct_send_documents_whatsapp: false,
                     // operation_type: 1,
                     // permissions: {},
                 }
+                this.source_iframe = this.path_app
 
+            },
+            changeMode()
+            {
+                this.change_mode = true
             },
             changeThemePrimary() {
 
@@ -287,6 +359,7 @@
                         if (response.data.success) {
 
                             this.$message.success(response.data.message)
+                            // if(this.change_mode) location.reload() //reinicia el modo pos, pero valida la configuracion con la url que se inicia, por ejemplo demo, no del proyecto local
 
                         } else {
                             this.$message.error(response.data.message)
@@ -303,6 +376,13 @@
                         this.loading_submit = false
                     })
             },
+            showPremium() {
+                // if(this.form.show_premium) {
+
+                // }
+                // console.log(this.form.show_premium)
+                // this.source_iframe = this.form.show_premium ? this.path_premium : this.path_app
+            }
         }
     }
 </script>

@@ -169,12 +169,34 @@
                     <div class="col-md-4 col-sm-4">
                         <div :class="{'has-danger': errors.unit_price_value}" class="form-group">
                             <label class="control-label">Precio Unitario</label>
-                            <el-input tabindex="3" v-model="form.unit_price_value" :readonly="!edit_unit_price"
-                                      @input="calculateQuantity">
-                                <template v-if="form.item.currency_type_symbol" slot="prepend">
-                                    {{ form.item.currency_type_symbol }}
-                                </template>
-                            </el-input>
+
+                            <template v-if="applyChangeCurrencyItem && changeCurrencyFromParent">
+
+                                <el-input tabindex="3" v-model="form.unit_price_value" :readonly="!edit_unit_price"
+                                        @input="calculateQuantity">
+                                        
+                                        <template v-if="form.item.currency_type_symbol">
+                                            <el-select slot="prepend" v-model="form.item.currency_type_id" class="custom-change-select-currency">
+                                                <el-option v-for="option in currencyTypes"
+                                                            :key="option.id"
+                                                            :label="option.symbol"
+                                                            :value="option.id"></el-option>
+                                            </el-select>
+                                        </template>
+                                </el-input>
+
+                            </template>
+                            <template v-else>
+
+                                <el-input tabindex="3" v-model="form.unit_price_value" :readonly="!edit_unit_price"
+                                        @input="calculateQuantity">
+                                    <template v-if="form.item.currency_type_symbol" slot="prepend">
+                                        {{ form.item.currency_type_symbol }}
+                                    </template>
+                                </el-input>
+
+                            </template>
+
                             <small v-if="errors.unit_price_value" class="form-control-feedback"
                                    v-text="errors.unit_price[0]"></small>
                         </div>
@@ -515,7 +537,10 @@ export default {
         'isEditItemNote',
         'configuration',
         'documentTypeId',
-        'noteCreditOrDebitTypeId'
+        'noteCreditOrDebitTypeId',
+        'percentageIgv',
+        'currencyTypes',
+        'showOptionChangeCurrency',
     ],
     components: {
         ItemForm,
@@ -635,7 +660,21 @@ export default {
         },
         isUpdateItem(){
             return !_.isEmpty(this.recordItem)
-        }
+        },
+        enabledSearchFactoryCodeItems()
+        {
+            if(this.configuration) return this.configuration.search_factory_code_items ? 1 : 0
+            return 0
+        },
+        applyChangeCurrencyItem()
+        {
+            if(this.configuration) return this.configuration.change_currency_item
+            return false
+        },
+        changeCurrencyFromParent()
+        {
+            return (this.showOptionChangeCurrency !== undefined && this.showOptionChangeCurrency && this.currencyTypes !== undefined && Array.isArray(this.currencyTypes))
+        },
     },
     methods: {
         ...mapActions([
@@ -729,7 +768,7 @@ export default {
 
         },
         clickIncrease() {
-            this.form.quantity = parseInt(this.form.quantity + 1)
+            this.form.quantity = parseInt(this.form.quantity) + 1
             this.calculateTotal()
         },
         async searchRemoteItems(input) {
@@ -737,7 +776,8 @@ export default {
                 this.loading_search = true
                 const params = {
                     'input': input,
-                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0
+                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0,
+                    'search_factory_code_items' : this.enabledSearchFactoryCodeItems
                 }
                 await this.$http.get(`/${this.resource}/search-items/`, {params})
                     .then(response => {
@@ -885,7 +925,7 @@ export default {
                 let new_id_lote_selected = []
 
                 this.old_selected_lots_group.forEach(lot => {
-                    
+
                     let search_lot = _.find(this.form.lots_group, { id : lot.id})
 
                     if(search_lot)
@@ -893,7 +933,7 @@ export default {
                         search_lot.compromise_quantity = lot.compromise_quantity
                         new_id_lote_selected.push(lot)
                     }
-                    
+
                 })
 
                 if(new_id_lote_selected.length > 0)
@@ -901,12 +941,12 @@ export default {
                     return new_id_lote_selected
                 }
             }
-            
+
             return null
 
         },
         regularizeCompromiseQuantityLots(){
-            
+
             this.form.IdLoteSelected.forEach(lot => {
                 let search_lot = _.find(this.form.lots_group, { id : lot.id})
                 if(search_lot)  search_lot.compromise_quantity = lot.compromise_quantity
@@ -962,11 +1002,11 @@ export default {
 
         },
         async updateItem(){
-            
+
             if (this.isUpdateItem)
             {
                 await this.reloadDataItems(this.recordItem.item_id)
-                
+
                 this.form.quantity = parseFloat(this.recordItem.quantity)
                 this.setUnitPriceValue()
                 this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
@@ -1093,7 +1133,7 @@ export default {
             this.$emit('update:showDialog', false)
         },
         async changeItem() {
-            
+
             this.form.item = { ..._.find(this.items, {'id': this.form.item_id}) }
             // this.form.item = _.find(this.items, {'id': this.form.item_id});
             this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
@@ -1155,16 +1195,16 @@ export default {
             this.total_item = null
         },
         getResponseMessage(success, message = null){
-            
+
             return {
                 success: success,
                 message: message,
             }
-            
+
         },
         validateIdLoteSelected(){
-            
-            if (this.form.item.lots_enabled) 
+
+            if (this.form.item.lots_enabled)
             {
                 if (!this.form.IdLoteSelected)
                 {
@@ -1174,7 +1214,7 @@ export default {
                 {
                     const compromise_quantity = parseFloat(_.sumBy(this.form.IdLoteSelected, 'compromise_quantity'))
 
-                    if(compromise_quantity != parseFloat(this.form.quantity)) 
+                    if(compromise_quantity != parseFloat(this.form.quantity))
                     {
                         return this.getResponseMessage(false, 'La suma de cantidades comprometidas de los lotes debe der igual a la cantidad pedida.')
                     }
@@ -1209,7 +1249,7 @@ export default {
                     // do nothing
                     // exonerado de igv
                 }else{
-                    unit_price = this.form.unit_price_value * 1.18;
+                    unit_price = this.form.unit_price_value * (1 + this.percentageIgv);
 
                 }
             }
@@ -1218,12 +1258,12 @@ export default {
             if(this.configuration.validate_purchase_sale_unit_price)
             {
                 let val_purchase_unit_price = parseFloat(this.form.item.purchase_unit_price)
-                
+
                 if(val_purchase_unit_price > parseFloat(unit_price)){
                     return this.$message.error(`El precio de compra no puede ser superior al precio de venta (P. Compra: ${val_purchase_unit_price})`)
                 }
             }
-            
+
             this.form.input_unit_price_value = this.form.unit_price_value;
 
             this.form.unit_price = unit_price;
@@ -1233,7 +1273,7 @@ export default {
 
             let IdLoteSelected = this.form.IdLoteSelected
             let document_item_id = this.form.document_item_id
-            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
+            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv);
 
             this.row.item.name_product_pdf = this.row.name_product_pdf || '';
 

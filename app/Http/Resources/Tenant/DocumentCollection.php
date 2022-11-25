@@ -45,11 +45,26 @@ class DocumentCollection extends ResourceCollection
                     $btn_note = false;
                 }
             }
-            if ($row->group_id === '02') {
+
+            if ($row->group_id === '02')
+            {
                 if ($row->state_type_id === '05') {
                     $btn_note = true;
                     $btn_voided = true;
+
+                    // envio individual
+                    if($row->isSingleDocumentShipment()) $has_cdr = true;
+                    // envio individual
+
                 }
+
+                // envio individual reenviar
+                if ($row->state_type_id === '01' && $row->isSingleDocumentShipment())
+                {
+                    $btn_resend = true;
+                }
+                // envio individual reenviar
+
 
                 if (in_array($row->document_type_id, ['07', '08'])) {
                     $btn_note = false;
@@ -64,6 +79,7 @@ class DocumentCollection extends ResourceCollection
                 }
 
             }
+
             $btn_guide = $btn_note;
             if($btn_guide === false && ($row->state_type_id === '01')){
                 // #750
@@ -83,7 +99,13 @@ class DocumentCollection extends ResourceCollection
             }
 
             $total_payment = $row->payments->sum('payment');
-            $balance = number_format($row->total - $total_payment,2, ".", "");
+
+            if($row->retention) {
+                $balance = number_format($row->total - $row->retention->amount - $total_payment,2, ".", "");
+            } else {
+                $balance = number_format($row->total - $total_payment,2, ".", "");
+            }
+
 
             $message_regularize_shipping = null;
 
@@ -117,8 +139,10 @@ class DocumentCollection extends ResourceCollection
                     $payment=$pay->date_of_payment->format('Y-m-d');
                 }
             }
-            return [
 
+            $btn_retention = !is_null($row->retention);
+
+            return [
                 'id' => $row->id,
                 'group_id' => $row->group_id,
                 'soap_type_id' => $row->soap_type_id,
@@ -129,7 +153,9 @@ class DocumentCollection extends ResourceCollection
                 'customer_name' => $row->customer->name,
                 'customer_number' => $row->customer->number,
                 'customer_telephone' => $row->customer->telephone,
+                'customer_email' => optional($row->customer)->email,
                 'currency_type_id' => $row->currency_type_id,
+                'exchange_rate_sale' => $row->exchange_rate_sale,
                 'total_exportation' => $row->total_exportation,
                 'total_free' => $row->total_free,
                 'total_unaffected' => $row->total_unaffected,
@@ -198,8 +224,9 @@ class DocumentCollection extends ResourceCollection
                 'total_charge' => $row->total_charge,
                 'filename' => $row->filename,
                 'date_of_payment' => $payment,
+                'btn_force_send_by_summary' => $row->isAvailableForceSendBySummary(),
+                'btn_retention' => $btn_retention
             ];
-
         });
     }
 

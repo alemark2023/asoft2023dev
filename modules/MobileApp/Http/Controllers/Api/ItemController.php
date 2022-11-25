@@ -11,11 +11,13 @@ use Modules\Finance\Helpers\UploadFileHelper;
 use Modules\MobileApp\Http\Resources\Api\{
     ItemCollection,
     ItemResource,
+    ItemSaleCollection
 };
 use Modules\Item\Models\{
     Category
 };
 use App\Http\Controllers\Tenant\ItemController as ItemControllerWeb;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
 
 
 class ItemController extends Controller
@@ -30,13 +32,38 @@ class ItemController extends Controller
     public function tables()
     {
         return [
-            'categories' => Category::filterForTables()->get()
+            'categories' => $this->table('categories')
         ];
-    }  
+    } 
+    
+
+    /**
+     * 
+     * @return array
+     */
+    public function table($table)
+    {
+        $data = [];
+
+        switch ($table) {
+            case 'categories':
+                $data = Category::filterForTables()->get()->transform(function($row){
+                    return $row->getRowResourceApi();
+                });
+                break;
+            case 'affectation_igv_types':
+                $data = AffectationIgvType::whereActive()->get();
+                break;
+        }
+
+        return $data;
+    } 
+    
 
     /**
      * 
      * Obtener registros paginados
+     * Mantenimiento items - App
      *
      * @param  Request $request
      * @return array
@@ -44,10 +71,26 @@ class ItemController extends Controller
     public function records(Request $request)
     {
         $records = Item::whereFilterRecordsApi($request->input, $request->search_by_barcode);
-
+        
         return new ItemCollection($records->paginate(config('tenant.items_per_page')));
     }
 
+    
+    /**
+     * 
+     * Obtener registros paginados para ventas - Modo POS App
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function recordsSale(Request $request)
+    {
+        $records = Item::filterRecordsSaleApi($request);
+
+        return new ItemSaleCollection($records->paginate(config('tenant.items_per_page')));
+    }
+    
+ 
     
     /**
      * obtener registro
@@ -142,7 +185,28 @@ class ItemController extends Controller
         ];
     }
 
+     
+    /**
+     * 
+     * Activar/Desactivar favorito
+     *
+     * @param  int $id
+     * @param  bool $favorite
+     * @return array
+     */
+    public function changeFavorite($id, $favorite)
+    {
+        $record = Item::findOrFail($id);
+        $record->favorite = $favorite;
+        $record->save();
+        
+        return [
+            'success' => true,
+            'message' => $favorite ? 'Agregado a favoritos' : 'Eliminado de favoritos'
+        ];
+    }
 
+    
     /**
      * 
      * Guardar imágen de diferentes tamaños
@@ -164,11 +228,11 @@ class ItemController extends Controller
 
             //size medium
             $image_medium = $item->getImageResize($temp_path, 512);
-            $item->image_medium = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, $image_medium->encode('jpg', 30), "{$item->description}-{$item->id}", false, 'medium');
+            $item->image_medium = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, (string) $image_medium->encode('jpg', 30), "{$item->description}-{$item->id}", false, 'medium');
 
               //size small
             $image_small = $item->getImageResize($temp_path, 256);
-            $item->image_small = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, $image_small->encode('jpg', 20), "{$item->description}-{$item->id}", false, 'small');
+            $item->image_small = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, (string) $image_small->encode('jpg', 20), "{$item->description}-{$item->id}", false, 'small');
         }
         else if(!$request->image && !$request->temp_path && !$request->image_url)
         {

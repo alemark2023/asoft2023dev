@@ -111,6 +111,9 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 class Item extends ModelTenant
 {
     protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags','item_lots'];
+
+    public const SERVICE_UNIT_TYPE = 'ZZ';
+
     protected $fillable = [
         'warehouse_id',
         'name',
@@ -174,6 +177,12 @@ class Item extends ModelTenant
         'purchase_has_isc',
 
         'subject_to_detraction',
+        'favorite',
+
+        'exchange_points',
+        'quantity_of_points',
+        'factory_code',
+
         // 'warehouse_id'
     ];
 
@@ -186,6 +195,9 @@ class Item extends ModelTenant
         'subject_to_detraction' => 'boolean',
         'sale_unit_price' => 'float',
         'purchase_unit_price' => 'float',
+        'favorite' => 'boolean',
+        'exchange_points' => 'boolean',
+        'quantity_of_points' => 'float',
     ];
 
     /**
@@ -402,6 +414,16 @@ class Item extends ModelTenant
     public function scopeWhereNotIsSet($query)
     {
         return $query->where('is_set', false);
+    }
+
+    /**
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopeWhereIsNotService($query)
+    {
+        return $query->where('unit_type_id', '!=', 'ZZ');
     }
 
     /**
@@ -893,6 +915,7 @@ class Item extends ModelTenant
             'full_description'                 => $detail['full_description'],
             'model'                            => $this->model,
             'brand'                            => $detail['brand'],
+            'text_filter' => $this->text_filter,
             'stock_by_extra'                            =>  $stockPerCategory,
             'warehouse_description'            => $detail['warehouse_description'],
             'extra'                         => collect([
@@ -987,7 +1010,12 @@ class Item extends ModelTenant
             'percentage_isc' => $this->percentage_isc,
             'is_for_production'=>$this->isIsForProduction(),
             'subject_to_detraction' => $this->subject_to_detraction,
-
+            'exchange_points' => $this->exchange_points,
+            'quantity_of_points' => $this->quantity_of_points,
+            'exchanged_for_points' => false, //para determinar si desea canjear el producto
+            'used_points_for_exchange' => null, //total de puntos
+            'factory_code' => $this->factory_code,
+            
         ];
 
         // El nombre de producto, por defecto, sera la misma descripcion.
@@ -2232,7 +2260,7 @@ class Item extends ModelTenant
      */
     public function scopeWhereFilterWithOutRelations($query)
     {
-        return $query->withOut(['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags']);
+        return $query->withOut(['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags', 'item_lots']);
     }
 
 
@@ -2372,7 +2400,11 @@ class Item extends ModelTenant
             'purchase_unit_price' => $this->purchase_unit_price,
             'category_id' => $this->category_id,
             'active' => (bool) $this->active,
-
+            'stock' => $this->getWarehouseCurrentStock(),
+            'favorite' => $this->favorite,
+            'has_isc' => (bool)$this->has_isc,
+            'system_isc_type_id' => $this->system_isc_type_id,
+            'percentage_isc' => $this->percentage_isc,
         ];
     }
 
@@ -2452,5 +2484,219 @@ class Item extends ModelTenant
         return $query;
     }
 
+    
+    /**
+     * 
+     * Obtener stock del almacen asociado al usuario
+     *
+     * @param  Warehouse $warehouse
+     * @return float
+     */
+    public function getWarehouseCurrentStock($warehouse = null)
+    {
+        $stock = 0;
+
+        if($this->unit_type_id !== self::SERVICE_UNIT_TYPE)
+        {
+            $warehouse = $warehouse ?? Warehouse::select('id')->where('establishment_id', auth()->user()->establishment_id)->first();
+
+            if($warehouse)
+            {
+                $item_warehouse =  ItemWarehouse::select('stock')->where([['item_id', $this->id],['warehouse_id', $warehouse->id]])->first();
+                
+                if($item_warehouse) $stock = $item_warehouse->stock;
+            }
+        }
+
+        return (float) $stock;
+    }
+
+    
+    /**
+     *
+     * Filtro para no incluir todas las relaciones en consulta
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeFilterRecordsSaleApi($query, $request)
+    {
+
+        $category_id = $request->category_id ??  null;
+        $favorite = $request->has('favorite') && (bool) $request->favorite;
+
+        return $query->whereFilterWithOutRelations()
+                    ->with(['category', 'brand', 'currency_type'])
+                    ->whereFilterRecordsApi($request->input, $request->search_by_barcode)
+                    ->filterByCategory($category_id)
+                    ->filterFavorite($favorite)
+                    ->whereIsActive();
+    }
+
+
+    /**
+     *
+     * Filtrar favoritos
+     *
+     * @param  Builder $query
+     * @param  bool $favorite
+     * @return Builder
+     */
+    public function scopeFilterFavorite($query, $favorite)
+    {
+        if($favorite)  $query->where('favorite', $favorite);
+
+        return $query;
+    }
+
+
+    /**
+     *
+     * Obtener datos para lista de productos en ventas - Modo Pos
+     *
+     * @return array
+     */
+    public function getSaleApiRowResource($warehouse)
+    {
+        $currency = $this->currency_type;
+
+        return [
+            'id' => $this->id,
+            'item_id' => $this->id,
+            'name' => $this->name,
+            'full_description' => $this->getInternalIdDescription(),
+            'description' => $this->description,
+            'currency_type_id' => $this->currency_type_id,
+            'internal_id' => $this->internal_id,
+            'item_code' => $this->item_code,
+            'barcode' => $this->barcode,
+            'currency_type_symbol' => $currency->symbol,
+            'sale_unit_price' => $this->generalApplyNumberFormat($this->sale_unit_price),
+            'unit_type_id' => $this->unit_type_id,
+            'sale_affectation_igv_type_id' => $this->sale_affectation_igv_type_id,
+            'has_igv' => (bool) $this->has_igv,
+            'quantity' => 0,
+            'stock' => $this->getWarehouseCurrentStock($warehouse),
+            'image_url' => $this->getImageUrl(),
+            'brand_id' => $this->brand_id,
+            'category_id' => $this->category_id,
+            'is_set' => $this->is_set,
+        ];
+    }
+
+    
+    /**
+     * Stock de variantes para revision inventario
+     *
+     * @param  int $establishment_id
+     * @return array
+     */
+    public function getStockByVariantsInventoryReview($establishment_id)
+    {
+        return ItemMovement::getStockByVariantSizeColor($this->id, $establishment_id);
+    }
+
+
+    /**
+     *
+     * Filtrar por almacen
+     *
+     * @param  Builder $query
+     * @param  int $warehouse_id
+     * @return Builder
+     */
+    public function scopeFilterByWarehouseId($query, $warehouse_id)
+    {
+        if(!is_null($warehouse_id) && $warehouse_id != 'all')
+        {
+            $query->whereHas('warehouses', function ($query) use ($warehouse_id) {
+                return $query->where('warehouse_id', $warehouse_id);
+            });
+        }
+
+        return $query;
+    }
+    
+
+    /**
+     * 
+     * Filtro por coincidencia para X campo
+     *
+     * @param  Builder $query
+     * @param  string $column
+     * @param  string $input
+     * @return Builder
+     */
+    public function scopeWhereColumnFilterLike($query, $column, $input)
+    {
+        return $query->where($column, 'like', "%{$input}%");
+    }
+
+
+    /**
+     * 
+     * Filtro por coincidencia para X campo de una tabla relacionada
+     *
+     * @param  Builder $query
+     * @param  string $relation
+     * @param  string $column
+     * @param  string $input
+     * @return Builder
+     */
+    public function scopeFilterLikeCustomRelation($query, $relation, $column, $input)
+    {
+        return $query->whereHas($relation, function($q) use($column, $input){
+            return $q->where($column, 'like', "%{$input}%");
+        });
+    }
+
+
+    /**
+     * 
+     * Filtro para reporte ajuste stock - inventario
+     *
+     * @param  Builder $query
+     * @param  string $column
+     * @param  string $input
+     * @return Builder
+     */
+    public function scopeFilterRecordsStockReport($query, $column, $input)
+    {
+        switch($column) 
+        {
+            case 'description':
+            case 'internal_id':
+            case 'model':
+                $query->whereColumnFilterLike($column, $input);
+                break;
+
+            case 'category':
+            case 'brand':
+                $query->filterLikeCustomRelation($column, 'name', $input);
+                break;
+        }
+
+        return $query;
+    }
+
+    
+    /**
+     * @return bool
+     */
+    public function checkIsNotService()
+    {
+        return $this->unit_type_id !== self::SERVICE_UNIT_TYPE;
+    }
+
+    
+    /**
+     * @return bool
+     */
+    public function checkIsSet()
+    {
+        return $this->is_set;
+    }
+
+    
 }
 

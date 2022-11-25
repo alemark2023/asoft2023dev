@@ -1,4 +1,4 @@
-function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
+function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pigv) {
     // console.log(currency_type_id_new, exchange_rate_sale)
 
     let currency_type_id_old = row_old.item.currency_type_id
@@ -26,7 +26,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
     let has_isc = row_old.has_isc
 
-    console.log(row_old)
+    // console.log(row_old)
 
     let row = {
         item_id: row_old.item.id,
@@ -38,7 +38,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         affectation_igv_type_id: row_old.affectation_igv_type_id,
         affectation_igv_type: row_old.affectation_igv_type,
         total_base_igv: 0,
-        percentage_igv: 18,
+        percentage_igv: pigv * 100,
         total_igv: 0,
         system_isc_type_id: has_isc ? row_old.system_isc_type_id : null,
         // system_isc_type_id: null,
@@ -76,11 +76,13 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         purchase_unit_price: row_old.item.purchase_unit_price,
         purchase_unit_value: row_old.item.purchase_unit_value,
         purchase_has_igv: row_old.item.has_igv,
+
+        data_item_lot_group: getDataItemLotGroup(row_old)
     };
 
     // console.log(row)
 
-    let percentage_igv = 18
+    let percentage_igv = pigv * 100
     let unit_value = row.unit_price
 
     if (row.affectation_igv_type_id === '10') {
@@ -114,12 +116,14 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
             let affectation_igv_type_exonerated = ['20', '21', '30', '31', '32', '33', '34', '35', '36', '37']
 
-            if (discount.is_amount) {
-                if (discount.discount_type.base) {
-
+            if (discount.is_amount) 
+            {
+                if (discount.discount_type.base) 
+                {
                     discount.base = _.round(total_value_partial, 2)
                     //amount and percentage are equals in input
-                    discount.amount = _.round(discount.percentage, 2)
+                    // discount.amount = _.round(discount.percentage, 2)
+                    discount.amount = getAmountFromInputDiscount(discount)
 
                     discount.percentage = _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)), 5)
                     // discount.percentage =  _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)),2)
@@ -141,7 +145,9 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
                     discount.base = _.round(aux_total_line, 2)
                     //amount and percentage are equals in input
-                    discount.amount = _.round(discount.percentage, 2)
+                    // discount.amount = _.round(discount.percentage, 2)
+                    discount.amount = getAmountFromInputDiscount(discount)
+
                     discount.percentage = _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)), 2)
                     discount.factor = _.round(discount.percentage / 100, 5)
                     // discount.factor = _.round(discount.percentage / 100, 2)
@@ -261,7 +267,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
 
     //procedimiento para agregar isc
-    if(has_isc){
+    if (has_isc) {
 
         row.total_base_isc = _.round(total_value, 2) //total valor antes de aplicar isc
         row.total_isc = _.round(total_value * (row.percentage_isc / 100), 2)
@@ -364,6 +370,31 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     return row
 }
 
+
+/*
+* Monto de descuento por linea
+* Retorna el valor dependiendo del input asignado para monto de descuento (use_input_amount)
+* use_input_amount propiedad para determinar si se toma el valor de discount.amount
+* y no de discount.percentage cuando es descuento por monto
+*/
+function getAmountFromInputDiscount(discount) 
+{
+    let value = 0
+
+    if(discount.use_input_amount !== undefined && discount.use_input_amount === true)
+    {
+        value = _.round(discount.amount, 2)
+    }
+    else
+    {
+        //flujo antiguo con propiedad no regularizada (algunos componentes item.vue lo usan)
+        value = _.round(discount.percentage, 2)
+    }
+
+    return value
+}
+
+
 function getUniqueArray(arr, keyProps) {
     if (arr == null) return null
     return Object.values(
@@ -407,9 +438,45 @@ function sumAmountDiscountsNoBaseByItem(row) {
     return sum_discount_no_base
 }
 
-function FormatUnitPriceRow(unit_price){
+function FormatUnitPriceRow(unit_price) {
     return _.round(unit_price, 6)
     // return unit_price.toFixed(6)
 }
 
-export {calculateRowItem, getUniqueArray, showNamePdfOfDescription, sumAmountDiscountsNoBaseByItem, FormatUnitPriceRow}
+
+const filterWords = (input, items) => {
+    let search_value = input.toLowerCase();
+    return items.filter((item) => {
+        let text_filter = item.text_filter.toLowerCase();
+        return !search_value.split(' ')
+            .some(p => !text_filter.includes(p));
+    });
+}
+
+
+/**
+ * 
+ * Retorna datos del lote en la edicion de compra
+ * 
+ */
+function getDataItemLotGroup(row_old)
+{
+    let data = null
+
+    if(row_old.date_of_due && row_old.lot_code)
+    {
+        data = {
+            date_of_due: row_old.date_of_due,
+            lot_code: row_old.lot_code,
+            item_lot_group_id: row_old.item_lot_group_id,
+        }
+    }
+
+    return data
+}
+
+
+export {
+    calculateRowItem, getUniqueArray, showNamePdfOfDescription,
+    sumAmountDiscountsNoBaseByItem, FormatUnitPriceRow, filterWords
+}

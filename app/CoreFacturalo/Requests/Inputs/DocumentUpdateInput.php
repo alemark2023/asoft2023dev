@@ -15,6 +15,7 @@ use App\Models\Tenant\Item;
 use Illuminate\Support\Str;
 use Modules\Offline\Models\OfflineConfiguration;
 use Illuminate\Support\Facades\Storage;
+use Modules\Finance\Helpers\UploadFileHelper;
 
 
 class DocumentUpdateInput
@@ -54,7 +55,6 @@ class DocumentUpdateInput
             $data_json = Functions::valueKeyInArray($inputs, 'data_json');
         }
 
-
         return [
             'id' => $inputs['id'],
             'type' => $inputs['type'],
@@ -75,6 +75,7 @@ class DocumentUpdateInput
             'customer' => $customer,
             'currency_type_id' => $inputs['currency_type_id'],
             'purchase_order' => $inputs['purchase_order'],
+            'folio' => Functions::valueKeyInArray($inputs, 'folio'),
             'quotation_id' => Functions::valueKeyInArray($inputs, 'quotation_id'),
             'sale_note_id' => Functions::valueKeyInArray($inputs, 'sale_note_id'),
             'technical_service_id' => Functions::valueKeyInArray($inputs, 'technical_service_id'),
@@ -171,6 +172,9 @@ class DocumentUpdateInput
                         'cod_digemid' => $item->cod_digemid,
                         'unit_price' => $row['unit_price'] ?? 0,
                         'purchase_unit_price' => $row['item']['purchase_unit_price'] ?? 0,
+                        
+                        'exchanged_for_points' => $row['item']['exchanged_for_points'] ?? false,
+                        'used_points_for_exchange' => $row['item']['used_points_for_exchange'] ?? null,
 
                     ],
                     'quantity' => $row['quantity'],
@@ -201,7 +205,8 @@ class DocumentUpdateInput
                     'additional_information' => Functions::valueKeyInArray($row, 'additional_information'),
                     'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf'),
                     'name_product_xml' => Functions::valueKeyInArray($row, 'name_product_pdf') ? DocumentInput::getNameProductXml($row, $inputs) : null,
-                    'update_description' => Functions::valueKeyInArray($row, 'update_description', false)
+                    'update_description' => Functions::valueKeyInArray($row, 'update_description', false),
+                    'additional_data' => Functions::valueKeyInArray($row, 'additional_data'),
                 ];
             }
 
@@ -296,6 +301,7 @@ class DocumentUpdateInput
                     $factor = $row['factor'];
                     $amount = $row['amount'];
                     $base = $row['base'];
+                    $is_amount = $row['is_amount'] ?? null; //registra si el descuento fue por monto o porcentaje
 
                     $discounts[] = [
                         'discount_type_id' => $discount_type_id,
@@ -303,6 +309,7 @@ class DocumentUpdateInput
                         'factor' => $factor,
                         'amount' => $amount,
                         'base' => $base,
+                        'is_amount' => $is_amount,
                     ];
                 }
 
@@ -454,6 +461,9 @@ class DocumentUpdateInput
                 $file_content = file_get_contents($image_pay_constancy['temp_path']);
                 $datenow = date('YmdHis');
                 $file_name = $detraction['detraction_type_id'] . '-' . $detraction['bank_account'] . '-' . $datenow . '.' . $file_name_old_array[1];
+
+                UploadFileHelper::checkIfValidFile($file_name, $image_pay_constancy['temp_path'], true);
+
                 Storage::put($directory . $file_name, $file_content);
                 $set_image_pay_constancy = $file_name;
 
@@ -538,10 +548,8 @@ class DocumentUpdateInput
         ];
     }
 
-
     private static function retention($inputs)
     {
-
         if (array_key_exists('retention', $inputs)) {
 
             if ($inputs['retention']) {
@@ -551,12 +559,36 @@ class DocumentUpdateInput
                 $percentage = $retention['percentage'];
                 $amount = $retention['amount'];
                 $base = $retention['base'];
+                $currency_type_id = $retention['currency_type_id'];
+                $exchange_rate = $retention['exchange_rate'];
+                $amount_pen = $retention['amount_pen'];
+                $amount_usd = $retention['amount_usd'];
+
+                $voucher_date_of_issue = Functions::valueKeyInArray($retention, 'voucher_date_of_issue');
+                $voucher_number = Functions::valueKeyInArray($retention, 'voucher_number');
+                $voucher_amount = Functions::valueKeyInArray($retention, 'voucher_amount');
+                $voucher_filename = Functions::valueKeyInArray($retention, 'voucher_filename');
+
+                /*
+                $voucher_date_of_issue = $inputs['voucher_date_of_issue'];
+                $voucher_number = $inputs['voucher_number'];
+                $voucher_amount = $inputs['voucher_amount'];
+                $voucher_filename = $inputs['voucher_filename'];
+                */
 
                 return [
                     'code' => $code,
                     'percentage' => $percentage,
                     'amount' => $amount,
                     'base' => $base,
+                    'currency_type_id' => $currency_type_id,
+                    'exchange_rate' => $exchange_rate,
+                    'amount_pen' => $amount_pen,
+                    'amount_usd' => $amount_usd,
+                    'voucher_date_of_issue' => $voucher_date_of_issue,
+                    'voucher_number' => $voucher_number,
+                    'voucher_amount' => $voucher_amount,
+                    'voucher_filename' => $voucher_filename,
                 ];
             }
         }

@@ -33,6 +33,9 @@ use Modules\Sale\Models\UserCommission;
 use App\Models\Tenant\Configuration;
 use Modules\Restaurant\Models\RestaurantRole;
 use Modules\MobileApp\Models\AppModule;
+use Modules\LevelAccess\Models\SystemActivityLog;
+use Modules\LevelAccess\Models\AuthorizedDiscountUser;
+
 
 /**
  * Class User
@@ -181,10 +184,31 @@ class User extends Authenticatable
         'delete_payment',
         'create_payment',
 
+        'edit_purchase',
+        'annular_purchase',
+        'delete_purchase',
+
+        'last_password_update',
 
         // 'email_verified_at',
         // 'api_token',
         // 'remember_token',
+
+        // informacion personal
+        'names',
+        'last_names',
+        'personal_email',
+        'corporate_email',
+        'personal_cell_phone',
+        'corporate_cell_phone',
+        'date_of_birth',
+        'contract_date',
+        'position',
+        'photo_filename',
+        // informacion personal
+
+        'multiple_default_document_types',
+        'permission_force_send_by_summary',
 
     ];
 
@@ -208,6 +232,12 @@ class User extends Authenticatable
 
         'delete_payment' => 'bool',
         'create_payment' => 'bool',
+
+        'edit_purchase'=>'bool',
+        'annular_purchase'=>'bool',
+        'delete_purchase'=>'bool',
+        'multiple_default_document_types'=>'bool',
+        'permission_force_send_by_summary' => 'boolean',
     ];
 
     public function modules()
@@ -218,6 +248,11 @@ class User extends Authenticatable
     public function levels()
     {
         return $this->belongsToMany(ModuleLevel::class);
+    }
+
+    public function default_document_types()
+    {
+        return $this->hasMany(UserDefaultDocumentType::class);
     }
 
     public function authorizeModules($modules)
@@ -853,6 +888,15 @@ $withEstablishment = true){
     }
 
     /**
+     * @return HasMany
+     */
+    public function authorized_discount_users()
+    {
+        return $this->hasMany(AuthorizedDiscountUser::class);
+    }
+
+
+    /**
      * Devuelve las series que puede seleccionar el usuario.
      *
      * @return Series[]|Builder[]|Collection|\Illuminate\Support\Collection
@@ -963,6 +1007,7 @@ $withEstablishment = true){
             $app_modules[] = [
                 'id' => $app_module->id,
                 'description' => $app_module->description,
+                'value' => $app_module->value,
                 'checked' => (bool) in_array($app_module->id, $selected_app_modules)
             ];
         }
@@ -980,7 +1025,8 @@ $withEstablishment = true){
     public function getAppPermission()
     {
         // si es usuario principal y no tiene permisos asignados
-        if($this->id === 1 && $this->type === 'admin' && $this->app_modules->count() === 0)
+        if($this->id === 1 && $this->type === 'admin')
+        // if($this->id === 1 && $this->type === 'admin' && $this->app_modules->count() === 0)
         {
             return $this->getTransformPermissionsApp(AppModule::get());
         }
@@ -989,6 +1035,22 @@ $withEstablishment = true){
 
     }
     
+
+    /**
+     * 
+     * Obtener modulos/opciones disponibles en pos app
+     *
+     * @return array
+     */
+    public function getPosDocumentTypes()
+    {
+        return [
+            ['document_type_id' => '01', 'module' => 'invoice'],
+            ['document_type_id' => '03', 'module' => 'invoice-ticket'],
+            ['document_type_id' => '80', 'module' => 'sale-note'],
+        ];
+    }
+
 
     /**
      * 
@@ -1003,7 +1065,156 @@ $withEstablishment = true){
             return $row->getPermissionsApp();
         });
     }
+    
+
+    /**
+     * 
+     * Obtener datos generales del usuario
+     * 
+     * Usado para carga inicial en app
+     *
+     * @return array
+     */
+    public function getGeneralDataApp()
+    {
+        return [
+            'type' => $this->type,
+            'establishment_id' => $this->establishment_id,
+        ];
+    }
+    
+    public function getPermissionsPurchase()
+    {
+        return [
+            'edit_purchase' => $this->edit_purchase,
+            'annular_purchase' => $this->annular_purchase,
+            'delete_purchase' => $this->delete_purchase,
+        ];
+    }
+
+        
+    /**
+     *
+     * @return string
+     */
+    public function getPhotoForView()
+    {
+        return $this->photo_filename ? (new ModelTenant)->getPathPublicUploads('users', $this->photo_filename) : null;
+    }
 
     
+    /**
+     * 
+     * Filtro para no incluir relaciones en consulta
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */  
+    public function scopeWhereFilterWithOutRelations($query)
+    {
+        return $query->withOut([
+            'establishment',
+        ]);
+    }
+
+        
+    /**
+     * 
+     * Retorna nombre de la conexión
+     *
+     * @return string
+     */
+    public function getDbConnectionName()
+    {
+        return $this->getConnection()->getName();
+    }
+    
+
+    public function system_activity_logs()
+    {
+        return $this->morphMany(SystemActivityLog::class, 'origin');
+    }
+
+    
+    /**
+     * 
+     * Filtro para no incluir relaciones en consulta y obtener el nombre de usuario
+     *
+     * @param Builder $query
+     * @return Builder
+     */  
+    public function scopeFilterOnlyUsername($query)
+    {
+        return $query->whereFilterWithOutRelations()->select('id', 'name');
+    }
+
+
+
+    public function getDataOnlyAuthUser()
+    {
+        return [
+            'name' => $this->name,
+            'email' => $this->email,
+            'password' => $this->password,
+            'establishment_id' => $this->establishment_id,
+            'type' => $this->type,
+            'locked' => $this->locked,
+            'identity_document_type_id' => $this->identity_document_type_id,
+            'number' => $this->number,
+            'address' => $this->address,
+            'telephone' => $this->telephone,
+            'document_id' => $this->document_id,
+            'series_id' => $this->series_id,
+            'permission_edit_cpe' => $this->permission_edit_cpe,
+            'recreate_documents' => $this->recreate_documents,
+            'zone_id' => $this->zone_id,
+            'restaurant_role_id' => $this->restaurant_role_id,
+            'delete_payment' => $this->delete_payment,
+            'create_payment' => $this->create_payment,
+            'edit_purchase' => $this->edit_purchase,
+            'annular_purchase' => $this->annular_purchase,
+            'delete_purchase' => $this->delete_purchase,
+            'names' => $this->names,
+            'last_names' => $this->last_names,
+            'personal_email' => $this->personal_email,
+            'corporate_email' => $this->corporate_email,
+            'personal_cell_phone' => $this->personal_cell_phone,
+            'corporate_cell_phone' => $this->corporate_cell_phone,
+            'date_of_birth' => $this->date_of_birth,
+            'contract_date' => $this->contract_date,
+            'position' => $this->position,
+            'photo_filename' => $this->photo_filename,
+            'multiple_default_document_types' => $this->multiple_default_document_types,
+            'default_document_types' => $this->default_document_types,
+            'permission_force_send_by_summary' => $this->permission_force_send_by_summary,
+        ];
+    }
+
+
+    /**
+     * 
+     * Permisos de los modulos y submodulos por usuario
+     *
+     * @return array
+     */
+    public function getWebPermissionsByUser()
+    {
+        $modules_id = $this->getCurrentModuleByTenant()->pluck('module_id')->toArray();
+        $levels_id = $this->getCurrentModuleLevelByTenant()->pluck('module_level_id')->toArray();
+        $modules = Module::whereIn('id', $modules_id)->get();
+        $show_modules = [];
+
+        foreach ($modules as $module)
+        {
+            $show_modules [] = [
+                'id' => $module->id,
+                'value' => $module->value,
+                'description' => $module->description,
+                'levels' => $module->levels()->whereIn('id', $levels_id)->select(['id', 'value', 'description', 'module_id'])->get(),
+            ];
+        }
+
+        return $show_modules;
+    }
 
 }

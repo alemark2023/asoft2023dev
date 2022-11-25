@@ -898,6 +898,7 @@ class DashboardData
     /**
      * 
      * Método para acceder a los totales (método privado)
+     * El gráfico no incluye pedidos
      * 
      * Usado en:
      * ReportController - App
@@ -912,7 +913,15 @@ class DashboardData
      */
     public function getGeneralTotals($establishment_id, $d_start, $d_end, $period, $month_start, $month_end)
     {
-        return $this->totals($establishment_id, $d_start, $d_end, $period, $month_start, $month_end);
+        $data = $this->totals($establishment_id, $d_start, $d_end, $period, $month_start, $month_end);
+
+        $total_order_notes = $this->getTotalsOrderNote($establishment_id, $d_start, $d_end);
+        
+        $data['totals']['total_order_notes'] = $this->roundNumber($total_order_notes);
+        $data['totals']['total'] = $this->roundNumber($total_order_notes + (float) $data['totals']['total']);
+
+        return $data;
     }
+
 
 }

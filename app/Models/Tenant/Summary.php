@@ -171,10 +171,7 @@ class Summary extends ModelTenant
     */
     public function getDocumentTypeForPse()
     {
-        if($this->isAddModifySummary())
-        {
-            return 'RESU';
-        }
+        return $this->isAddModifySummary() ? 'RESU' : 'REAN';
     }
 
 
@@ -213,20 +210,17 @@ class Summary extends ModelTenant
     {
         $send_to_pse = false;
 
-        if($this->isAddModifySummary())
+        $summary_voided_documents = $this->documents;
+        $filter_quantity_documents = $summary_voided_documents->where('document.send_to_pse', true)->count();
+        
+        if($summary_voided_documents->count() === $filter_quantity_documents)
         {
-            $summary_voided_documents = $this->documents;
-            $filter_quantity_documents = $summary_voided_documents->where('document.document_type_id', '03')->where('document.send_to_pse', true)->count();
-            
-            if($summary_voided_documents->count() === $filter_quantity_documents)
-            {
-                $send_to_pse = true;
-            }
-            else
-            {
-                $difference = $summary_voided_documents->count() - $filter_quantity_documents;
-                $sendDocumentPse->throwException("La cantidad de boletas firmadas por el PSE, debe ser igual al total de boletas a enviar en el resumen: {$difference} boleta(s) no fueron firmadas por el PSE.");
-            }
+            $send_to_pse = true;
+        }
+        else
+        {
+            $difference = $summary_voided_documents->count() - $filter_quantity_documents;
+            $sendDocumentPse->throwException("La cantidad de documentos firmados por el PSE, debe ser igual al total de documentos a enviar en el resumen: {$difference} documento(s) no fueron firmados por el PSE.");
         }
 
         return $send_to_pse;

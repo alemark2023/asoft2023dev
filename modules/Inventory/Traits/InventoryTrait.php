@@ -8,6 +8,8 @@ use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Purchase;
 use App\Models\Tenant\PurchaseItem;
+use App\Models\Tenant\PurchaseSettlement;
+use App\Models\Tenant\PurchaseSettlementItem;
 use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\SaleNoteItem;
 use Exception;
@@ -21,6 +23,8 @@ use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
 use Modules\Order\Models\OrderNote;
 use App\Models\Tenant\ItemSupply;
+use App\Http\Controllers\Tenant\PurchaseController;
+
 
 /**
  * Se debe tener en cuenta este trait para llevar el control de Kardex
@@ -164,9 +168,14 @@ trait InventoryTrait
             ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
             ->whereNotIsSet();
         if ($search) {
-            $query->where('description', 'like', "%{$search}%")
-                ->orWhere('barcode', 'like', "%{$search}%")
-                ->orWhere('internal_id', 'like', "%{$search}%");
+            $query = func_filter_items($query, $search);
+//            $query->whereRaw(
+//                'match(text_filter) against(? in natural language mode) > 0.0000001',
+//                [$search]
+//            );
+//            $query->where('description', 'like', "%{$search}%")
+//                ->orWhere('barcode', 'like', "%{$search}%")
+//                ->orWhere('internal_id', 'like', "%{$search}%");
         }
         if ($take) {
             $query->take($take);
@@ -182,6 +191,7 @@ trait InventoryTrait
             return [
                 'id' => $row->id,
                 'description' => $description,
+                'text_filter' => $row->text_filter,
                 'lots_enabled' => (bool)$row->lots_enabled,
                 'series_enabled' => (bool)$row->series_enabled,
                 'lots' => $row->item_lots->where('has_sale', false)->transform(function ($row1) {
@@ -478,27 +488,27 @@ trait InventoryTrait
         if (isset($document_item->item->IdLoteSelected)) {
             if ($document_item->item->IdLoteSelected != null) {
 
-                if(is_array($document_item->item->IdLoteSelected)) 
-                { 
+                if(is_array($document_item->item->IdLoteSelected))
+                {
 
                     // presentacion - factor de lista de precios
                     $quantity_unit = isset($document_item->item->presentation->quantity_unit) ? $document_item->item->presentation->quantity_unit : 1;
                     $lotesSelecteds = $document_item->item->IdLoteSelected;
 
-                    foreach ($lotesSelecteds as $item) 
+                    foreach ($lotesSelecteds as $item)
                     {
                         $lot = ItemLotsGroup::query()->find($item->id);
                         $lot->quantity = $lot->quantity + ($quantity_unit * $item->compromise_quantity);
                         $lot->save();
                     }
-                    
+
                 }else {
                     $lot = ItemLotsGroup::find($document_item->item->IdLoteSelected);
                     $lot->quantity = $lot->quantity + $document_item->quantity;
                     $lot->save();
                 }
 
-              
+
             }
         }
         if (isset($document_item->item->lots)) {
@@ -512,9 +522,9 @@ trait InventoryTrait
         }
     }
 
-        
+
     /**
-     * 
+     *
      * Obtener factor de presentación
      *
      * @param  mixed $model_item
@@ -546,12 +556,12 @@ trait InventoryTrait
             $lot_group_selecteds =  $lot_group_selecteds_filter->all();
         }
 
-        if (count($lot_group_selecteds) > 0) 
+        if (count($lot_group_selecteds) > 0)
         {
 
             $quantity_unit = $this->getQuantityUnitPresentation($item);
 
-            foreach ($lot_group_selecteds as $lt) 
+            foreach ($lot_group_selecteds as $lt)
             {
                 $lot = ItemLotsGroup::find($lt->id);
                 $lot->quantity = $lot->quantity + ($quantity_unit * $lt->compromise_quantity);
@@ -561,11 +571,11 @@ trait InventoryTrait
         // lotes
 
         // series
-        if (isset($item->item->lots)) 
+        if (isset($item->item->lots))
         {
-            foreach ($item->item->lots as $it) 
+            foreach ($item->item->lots as $it)
             {
-                if ($it->has_sale) 
+                if ($it->has_sale)
                 {
                     $item_lot = ItemLot::find($it->id);
                     $item_lot->has_sale = false;
@@ -622,9 +632,16 @@ trait InventoryTrait
             throw new Exception("El producto {$purchase_item->item->description} contiene series vendidas!");
         }
     }
+
+
     /**
+     * 
      * Verifica si el producto ha tenido lotes en venta
      *
+     * Usado en:
+     * InventoryKardexServiceProvider - purchase_item_delete
+     * InventoryKardexServiceProvider - purchase_item_settlement_delete
+     * 
      * @param PurchaseItem $purchase_item
      *
      * @throws Exception
@@ -644,10 +661,16 @@ trait InventoryTrait
         if($lot_enabled) {
         // if(array_key_exists('lots_enabled', $purchase_item->item)) {
             if ($purchase_item->item->lots_enabled && $purchase_item->lot_code) {
+                /*
                 $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->first();
+                */
+
+                $lot_group = PurchaseController::findItemLotsGroup($purchase_item);
+
                 if (!$lot_group) {
                     throw new Exception("El lote {$purchase_item->lot_code} no existe!");
                 }
+
 
                 // factor de lista de precios
                 $presentation_quantity = (isset($purchase_item->item->presentation->quantity_unit)) ? $purchase_item->item->presentation->quantity_unit : 1;
@@ -658,11 +681,16 @@ trait InventoryTrait
             }
         }
     }
+
+
     /**
      * Borra las series y grupos en la compra para un item
      *
+     * Usado en:
+     * InventoryKardexServiceProvider - purchase_item_delete
+     * InventoryKardexServiceProvider - purchase_item_settlement_delete
+     * 
      * @param PurchaseItem $purchase_item
-     *
      * @throws Exception
      */
     public static function deleteItemSeriesAndGroup($purchase_item)
@@ -685,10 +713,17 @@ trait InventoryTrait
         if($lot_enabled) {
         //if(array_key_exists('lots_enabled', $purchase_item->item)) {
             if ($purchase_item->item->lots_enabled && $purchase_item->lot_code) {
+                
+                /*
                 $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->firstOrFail();
+                */
+
+                $lot_group = PurchaseController::findItemLotsGroup($purchase_item);
+
                 if (!$lot_group) {
                     throw new Exception("El lote {$purchase_item->lot_code} no existe!");
                 }
+
                 $lot_group->delete();
             }
         }
@@ -723,7 +758,7 @@ trait InventoryTrait
 
         $this->createInventoryKardex($document_item->document, $document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
 
-        if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->dispatch_id && !$document_item->document->sale_notes_relateds) 
+        if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->dispatch_id && !$document_item->document->sale_notes_relateds)
         {
             $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
         } else
@@ -746,15 +781,15 @@ trait InventoryTrait
     {
         return InventoryTransaction::get();
     }
-    
+
     /**
-     * 
+     *
      * Validar si el lote cuenta con stock disponible, controla descuento de lotes individuales y por presentacion
-     * 
+     *
      * Usado en:
      * InventoryKardexServiceProvider - método sale (venta cpe)
      * SaleNoteController - método store (registro nota venta)
-     * 
+     *
      * @param $lot
      * @param $document_item
      * @return void
@@ -767,9 +802,9 @@ trait InventoryTrait
         }
     }
 
-        
+
     /**
-     * 
+     *
      * Eliminar item de forma individual para activar el evento deleted del modelo asociado
      *
      * @param  $items
@@ -777,7 +812,7 @@ trait InventoryTrait
      */
     public function deleteAllItems($items)
     {
-        foreach ($items as $item) 
+        foreach ($items as $item)
         {
             $item->delete();
         }

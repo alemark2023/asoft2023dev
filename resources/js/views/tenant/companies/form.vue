@@ -60,6 +60,7 @@
                                                    :data="{'type': 'logo'}"
                                                    :headers="headers"
                                                    :on-success="successUpload"
+                                                   :on-error="errorUpload"
                                                    :show-file-list="false"
                                                    action="/companies/uploads">
                                             <el-button icon="el-icon-upload"
@@ -105,6 +106,7 @@
                                                    :data="{'type': 'img_firm'}"
                                                    :headers="headers"
                                                    :on-success="successUpload"
+                                                   :on-error="errorUpload"
                                                    :show-file-list="false"
                                                    action="/companies/uploads">
                                             <el-button icon="el-icon-upload"
@@ -124,6 +126,7 @@
                                                    :data="{'type': 'favicon'}"
                                                    :headers="headers"
                                                    :on-success="successUpload"
+                                                   :on-error="errorUpload"
                                                    :show-file-list="false"
                                                    action="/companies/uploads">
                                             <el-button icon="el-icon-upload"
@@ -135,6 +138,29 @@
                                                                               PNG</small></div>
                                 </div>
                             </div>
+
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Logo APP</label>
+                                    <el-input v-model="form.app_logo"
+                                              :readonly="true">
+                                        <el-upload slot="append"
+                                                   :data="{'type': 'app_logo'}"
+                                                   :headers="headers"
+                                                   :on-success="successUpload"
+                                                   :on-error="errorUpload"
+                                                   :show-file-list="false"
+                                                   action="/companies/uploads">
+                                            <el-button icon="el-icon-upload"
+                                                       type="primary"></el-button>
+                                        </el-upload>
+                                    </el-input>
+                                    <div class="sub-title text-danger"><small>Se recomienda color blanco</small>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div v-if="form.soap_type_id == '02'"
                                  class="col-md-6">
                                 <div :class="{'has-danger': errors.certificate_due}"
@@ -360,14 +386,14 @@ export default {
             .then(response => {
                 this.soap_sends = response.data.soap_sends
                 this.soap_types = response.data.soap_types
-                console.log(1)
+                // console.log(1)
             })
         await this.$http.get(`/${this.resource}/record`)
             .then(response => {
                 if (response.data !== '') {
                     this.form = response.data.data
                 }
-                console.log(2)
+                // console.log(2)
 
             })
         
@@ -419,6 +445,7 @@ export default {
                 cod_digemid: null,
                 integrated_query_client_id: null,
                 integrated_query_client_secret: null,
+                app_logo: null,
 
             }
         },
@@ -444,6 +471,7 @@ export default {
                 })
         },
         successUpload(response, file, fileList) {
+
             if (response.success) {
                 this.$message.success(response.message)
                 this.form[response.type] = response.name
@@ -451,6 +479,10 @@ export default {
                 this.$message({message: 'Error al subir el archivo', type: 'error'})
             }
         },
+        errorUpload(error)
+        {
+            this.$message({message: 'Error al subir el archivo', type: 'error'})
+        }
     }
 }
 </script>

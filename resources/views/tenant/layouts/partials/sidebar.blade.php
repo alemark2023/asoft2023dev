@@ -1,11 +1,15 @@
 <?php
 
     use App\Models\Tenant\Configuration;
+    use Modules\Inventory\Models\InventoryConfiguration;
 
     $configuration = Configuration::first();
     $firstLevel = $path[0] ?? null;
     $secondLevel = $path[1] ?? null;
     $thridLevel = $path[2] ?? null;
+
+    $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
+
 ?>
 <aside id="sidebar-left"
        class="sidebar-left">
@@ -500,6 +504,7 @@
                         <li class="nav-parent
                         {{ ($firstLevel === 'persons' && $secondLevel === 'customers')?'nav-active nav-expanded':'' }}
                         {{ $firstLevel === 'person-types' ? 'nav-active nav-expanded' : '' }}
+                        {{ $firstLevel === 'agents' ? 'nav-active nav-expanded' : '' }}
                             ">
                             <a class="nav-link"
                                href="#">
@@ -534,6 +539,14 @@
                                            href="{{route('tenant.person_types.index')}}">Tipos de clientes</a>
                                     </li>
                                 @endif
+
+                                @if($configuration->enabled_sales_agents)
+                                    <li class="{{ ($firstLevel === 'agents')?'nav-active':'' }}">
+                                        <a class="nav-link"
+                                           href="{{route('tenant.agents.index')}}">Agentes</a>
+                                    </li>
+                                @endif
+                                
                             </ul>
                         </li>
                     @endif
@@ -548,6 +561,7 @@
                                 $firstLevel === 'expenses' ||
                                 $firstLevel === 'bank_loan' ||
                                 $firstLevel === 'purchase-quotations' ||
+                                $firstLevel === 'purchase-orders' ||
                                 $firstLevel === 'fixed-asset'
                                 ) ?'nav-active nav-expanded':'' }}
                                 ">
@@ -655,7 +669,7 @@
                         {{-- Inventario --}}
                         @if(in_array('inventory', $vc_modules))
                             <li class="nav-parent
-                            {{ (in_array($firstLevel, ['inventory', 'moves', 'transfers', 'devolutions', 'extra_info_items']) |($firstLevel === 'reports' && in_array($secondLevel, ['kardex', 'inventory', 'valued-kardex'])))?'nav-active nav-expanded':'' }}
+                            {{ (in_array($firstLevel, ['inventory', 'moves', 'transfers', 'devolutions', 'extra_info_items', 'inventory-review']) |($firstLevel === 'reports' && in_array($secondLevel, ['kardex', 'inventory', 'valued-kardex'])))?'nav-active nav-expanded':'' }}
                                 ">
                                 <a class="nav-link"
                                    href="#">
@@ -712,7 +726,7 @@
                                                href="{{route('reports.inventory.index')}}">Reporte Inventario</a>
                                         </li>
                                     @endif
-                                    @if(in_array('inventory_report_kardex', $vc_module_levels))
+                                    @if(in_array('inventory_report_valued_kardex', $vc_module_levels))
                                         {{-- <li class="{{ ($firstLevel === 'warehouses')?'nav-active':'' }}">
                                             <a class="nav-link" href="{{route('warehouses.index')}}">Almacenes</a>
                                         </li> --}}
@@ -727,6 +741,15 @@
                                                href="{{route('extra_info_items.index')}}">Datos extra de items</a>
                                         </li>
                                     @endif
+
+                                    
+                                    @if($inventory_configuration->inventory_review)
+                                        <li class="{{ ($firstLevel === 'inventory-review')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                            href="{{route('tenant.inventory-review.index')}}">Revisión de inventario</a>
+                                        </li>
+                                    @endif
+                            
                                 </ul>
                             </li>
                         @endif
@@ -847,7 +870,8 @@
                         </li>
                     @endif
                     @if(in_array('reports', $vc_modules))
-                        <li class="{{  ($firstLevel === 'reports' && in_array($secondLevel, ['purchases', 'search','sales','customers','items', 'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated', 'order-notes-general', 'sales-consolidated', 'user-commissions', 'fixed-asset-purchases', 'massive-downloads', 'tips'])) ? 'nav-active' : ''}} {{ $firstLevel === 'list-reports' ? 'nav-active' : '' }}">
+                        <li class="{{  ($firstLevel === 'reports' && in_array($secondLevel, ['purchases', 'search','sales','customers','items', 'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated', 'order-notes-general', 'sales-consolidated', 'user-commissions', 'fixed-asset-purchases', 'massive-downloads', 'tips'])) ? 'nav-active' : ''}} {{ in_array($firstLevel, ['list-reports', 'system-activity-logs']) ? 'nav-active' : '' }}">
+                        {{-- <li class="{{  ($firstLevel === 'reports' && in_array($secondLevel, ['purchases', 'search','sales','customers','items', 'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated', 'order-notes-general', 'sales-consolidated', 'user-commissions', 'fixed-asset-purchases', 'massive-downloads', 'tips'])) ? 'nav-active' : ''}} {{ $firstLevel === 'list-reports' ? 'nav-active' : '' }}"> --}}
                             <a class="nav-link"
                                href="{{ url('list-reports') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg"

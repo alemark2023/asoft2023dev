@@ -17,4 +17,9 @@ class LiveAppController extends Controller
     {
         return view('mobileapp::configuration.index');
     }
+
+    public function premium()
+    {
+        return view('mobileapp::mobile_app_white.index');
+    }
 }

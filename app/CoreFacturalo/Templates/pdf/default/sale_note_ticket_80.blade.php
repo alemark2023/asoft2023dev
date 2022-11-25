@@ -86,6 +86,10 @@
             </td>
         </tr>
     @endif
+    <tr>
+        <td>Vendedor:</td>
+        <td> @if($document->seller_id != 0){{$document->seller->name }} @else {{ $document->user->name }} @endif</td>
+    </tr>
     @if ($document->purchase_order)
         <tr>
             <td><p class="desc">Orden de Compra:</p></td>

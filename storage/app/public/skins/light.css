@@ -574,7 +574,7 @@ html.sidebar-light:not(.dark) .page-header .breadcrumbs span {
 .card-body.pointer.px-2.pt-2 p {
     display: -webkit-box;
     -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
+    /* -webkit-box-orient: vertical; */
     text-overflow: ellipsis;
     overflow: hidden;
 }

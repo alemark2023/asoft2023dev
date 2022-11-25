@@ -263,6 +263,7 @@
                               :exchange-rate-sale="form.exchange_rate_sale"
                               :typeUser="typeUser"
                               :configuration="config"
+                              :percentage-igv="percentage_igv"
                               @add="addRow"></order-note-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -339,7 +340,7 @@ export default {
         this.loadEstablishment()
         this.loadCompany()
     },
-    mounted() {
+    async mounted() {
         this.initForm()
         this.$eventHub.$on('reloadDataPersons', (customer_id) => {
             this.reloadDataCustomers(customer_id)
@@ -347,7 +348,7 @@ export default {
         this.$eventHub.$on('initInputPerson', () => {
             this.initInputPerson()
         });
-        this.$http.get(`/${this.resource}/tables`)
+        await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
                 this.currency_types = response.data.currency_types
                 this.establishments = response.data.establishments
@@ -372,7 +373,7 @@ export default {
                 let fromCotizacion = localStorage.getItem('FromQuotation')
                 let q = localStorage.getItem('Quotation')
 
-                if (fromCotizacion !== undefined && fromCotizacion && q !== undefined) 
+                if (fromCotizacion !== undefined && fromCotizacion && q !== undefined)
                 {
 
                     this.is_generate_from_quotation = true
@@ -403,6 +404,7 @@ export default {
                 }
 
             })
+        await this.getPercentageIgv();
         this.loading_form = true
     },
     methods: {
@@ -417,10 +419,10 @@ export default {
             if(row.IdLoteSelected)
             {
                 this.lots_group.forEach(l_group => {
-                    
+
                     const lot = _.find(row.IdLoteSelected, {id : l_group.id})
 
-                    if(lot) l_group.compromise_quantity = lot.compromise_quantity 
+                    if(lot) l_group.compromise_quantity = lot.compromise_quantity
 
                 })
             }
@@ -440,7 +442,7 @@ export default {
 
         },
         async openDialogLotsGroup(index, row){
-            
+
             await this.getLotsGroup(row.item_id)
             await this.regularizeCompromiseQuantity(row)
             this.current_index_item = index
@@ -457,7 +459,7 @@ export default {
             this.setAddressByCustomer()
         },
         setAddressByCustomer(){
-            
+
             let customer = _.find(this.customers, {id : this.form.customer_id})
 
             if(customer){
@@ -572,11 +574,13 @@ export default {
         cleanCustomer() {
             this.form.customer_id = null;
         },
-        changeDateOfIssue() {
+        async changeDateOfIssue() {
             // this.form.date_of_due = this.form.date_of_issue > this.form.date_of_due ? this.form.date_of_issue:null
-            this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+            await this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                 this.form.exchange_rate_sale = response
             })
+            await this.getPercentageIgv();
+            this.changeCurrencyType();
         },
         allCustomers() {
             this.customers = this.all_customers
@@ -594,7 +598,7 @@ export default {
             this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
             let items = []
             this.form.items.forEach((row) => {
-                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv))
             });
             this.form.items = items
             this.calculateTotal()
@@ -638,7 +642,7 @@ export default {
                 }
 
                 // total_value += parseFloat(row.total_value)
-                
+
                 if (!['21', '37'].includes(row.affectation_igv_type_id)) {
                     total_value += parseFloat(row.total_value)
                 }
@@ -668,28 +672,28 @@ export default {
             this.form.total_taxes = _.round(total_igv, 2)
             this.form.total = _.round(total, 2)
         },
-        
+
         async validateQuantityLotsGroup() {
 
             let error_lots_group = 0
 
             await this.form.items.forEach((element) => {
 
-                if (element.item.lots_enabled) 
+                if (element.item.lots_enabled)
                 {
                     if (!element.IdLoteSelected) error_lots_group++
                 }
 
             });
 
-            if(error_lots_group > 0) 
+            if(error_lots_group > 0)
             {
                 return {
                     success: false,
                     message: 'Las cantidades y lotes seleccionados deben ser iguales.',
                 }
             }
-            
+
             return {success: true}
         },
 

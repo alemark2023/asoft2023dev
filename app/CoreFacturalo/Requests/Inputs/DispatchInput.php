@@ -74,6 +74,7 @@ class DispatchInput
             'secondary_license_plates' => self::secondary_license_plates($inputs),
             'related' => self::related($inputs),
             'order_form_external' => Functions::valueKeyInArray($inputs, 'order_form_external'),
+            'additional_data' => Functions::valueKeyInArray($inputs, 'additional_data'),
         ];
 
         if(isset($inputs['data_affected_document'])){
@@ -82,9 +83,9 @@ class DispatchInput
         return $data;
     }
 
-        
+
     /**
-     * 
+     *
      * Documento relacionado (DAM), usado para exportación
      *
      * @param  $inputs
@@ -92,13 +93,13 @@ class DispatchInput
      */
     private static function related($inputs)
     {
-        if(array_key_exists('related', $inputs)) 
+        if(array_key_exists('related', $inputs))
         {
             $related = $inputs['related'];
 
             if(!empty($related)) return $related;
         }
-        
+
         return null;
     }
 
@@ -175,7 +176,7 @@ class DispatchInput
                 $item = Item::find($row['item_id']);
                 $itemDispatch = $row['item']??[];
                 $row['IdLoteSelected'] =  $row['IdLoteSelected']??$itemDispatch['IdLoteSelected']??null;
-                
+
                 $temp = [
                     'item_id' => $item->id,
                     'item' => [
@@ -191,6 +192,7 @@ class DispatchInput
                     ],
                     'quantity' => $row['quantity'],
                     'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf'),
+                    'additional_data' => Functions::valueKeyInArray($row, 'additional_data'),
                 ];
 
                 if(isset($temp['item']['lot_group']['date_of_due'])){
@@ -200,7 +202,6 @@ class DispatchInput
                 }
                 $items[] = $temp;
             }
-
             return $items;
         }
         return null;

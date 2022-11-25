@@ -359,13 +359,6 @@
                                                     </tr>
                                                 </template>
 
-                                                <template v-if="form.retention">
-                                                    <tr v-if="form.retention.amount > 0">
-                                                        <td>M. RETENCIÓN ({{form.retention.percentage * 100}}%):</td>
-                                                        <td>{{ currency_type.symbol }} {{ form.retention.amount }}</td>
-                                                    </tr>
-                                                </template>
-
                                                 <tr v-if="form.total_exportation > 0">
                                                     <td>OP.EXPORTACIÓN:</td>
                                                     <td>{{ currency_type.symbol }} {{ form.total_exportation }}</td>
@@ -429,10 +422,27 @@
                                                     </td>
                                                 </tr>
 
-                                                <tr v-if="form.total > 0">
-                                                    <td><strong>TOTAL A PAGAR</strong>:</td>
-                                                    <td>{{ currency_type.symbol }} {{ form.total }}</td>
-                                                </tr>
+                                                <template v-if="form.has_retention">
+                                                    <tr v-if="form.total > 0">
+                                                        <td><strong>IMPORTE TOTAL</strong>:</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.total }}</td>
+                                                    </tr>
+                                                    <tr v-if="form.retention.amount > 0">
+                                                        <td>M. RETENCIÓN ({{form.retention.percentage * 100}}%):</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.retention.amount }}</td>
+                                                    </tr>
+                                                    <tr v-if="form.total > 0">
+                                                        <td><strong>TOTAL A PAGAR</strong>:</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.total - form.retention.amount }}</td>
+                                                    </tr>
+                                                </template>
+                                                <template v-if="!form.has_retention">
+                                                    <tr v-if="form.total > 0">
+                                                        <td><strong>TOTAL A PAGAR</strong>:</td>
+                                                        <td>{{ currency_type.symbol }} {{ form.total }}</td>
+                                                    </tr>
+                                                </template>
+
 
                                                 <tr v-if="form.total > 0">
                                                     <td>CONDICIÓN DE PAGO:</td>
@@ -451,6 +461,7 @@
                                                         </el-select>
                                                     </td>
                                                 </tr>
+
 
 
                                                 <!-- <template v-if="form.detraction">
@@ -1378,6 +1389,7 @@
             :customer-id="form.customer_id"
             :currency-types="currency_types"
             :is-from-invoice="true"
+            :percentage-igv="percentage_igv"
             @add="addRow"></document-form-item>
 
         <person-form :document_type_id=form.document_type_id
@@ -1460,6 +1472,7 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import Keypress from "vue-keypress";
 
 export default {
+    name: 'DocumentGenerate',
     props: [
         'idUser',
         'typeUser',
@@ -1657,6 +1670,7 @@ export default {
                 this.changeCurrencyType()
                 this.setDefaultDocumentType();
             })
+        await this.getPercentageIgv();
         this.loading_form = true
         this.$eventHub.$on('reloadDataPersons', (customer_id) => {
             this.reloadDataCustomers(customer_id)
@@ -1685,7 +1699,7 @@ export default {
                     return this.setItemFromResponse(i, itemsParsed);
                 });
                 this.form.items = itemsResponse.map(i => {
-                    return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale)
+                    return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv)
                 });
             });
         }
@@ -1703,7 +1717,7 @@ export default {
                     return this.setItemFromResponse(i, itemsParsed);
                 });
                 this.form.items = itemsResponse.map(i => {
-                    return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale)
+                    return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv)
                 });
             });
         }
@@ -1747,7 +1761,7 @@ export default {
         ]),
         startConnectionQzTray(){
 
-            if (!qz.websocket.isActive() && this.isAutoPrint) 
+            if (!qz.websocket.isActive() && this.isAutoPrint)
             {
                 startConnection();
             }
@@ -1766,7 +1780,7 @@ export default {
                 this.form.items[index].affectation_igv_type = await _.find(this.affectation_igv_types, {id: this.form.items[index].affectation_igv_type_id})
             }
 
-            this.form.items[index] = await calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale)
+            this.form.items[index] = await calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv)
             await this.calculateTotal()
 
         },
@@ -2125,7 +2139,7 @@ export default {
 
             }
 
-            this.form.prepayments[index].total = (this.form.affectation_type_prepayment == 10) ? _.round(this.form.prepayments[index].amount * 1.18, 2) : this.form.prepayments[index].amount
+            this.form.prepayments[index].total = (this.form.affectation_type_prepayment == 10) ? _.round(this.form.prepayments[index].amount * (1 + this.percentage_igv), 2) : this.form.prepayments[index].amount
 
             this.changeTotalPrepayment()
 
@@ -2286,7 +2300,7 @@ export default {
 
                     this.form.total_discount = _.round(amount, 2)
                     this.form.total_taxed = _.round(this.form.total_taxed - amount, 2)
-                    this.form.total_igv = _.round(this.form.total_taxed * 0.18, 2)
+                    this.form.total_igv = _.round(this.form.total_taxed * this.percentage_igv, 2)
                     this.form.total_taxes = _.round(this.form.total_igv, 2)
                     this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
 
@@ -2306,7 +2320,7 @@ export default {
 
                         this.form.total_discount = _.round(amount, 2)
                         this.form.total_taxed = _.round(this.form.total_taxed - amount, 2)
-                        this.form.total_igv = _.round(this.form.total_taxed * 0.18, 2)
+                        this.form.total_igv = _.round(this.form.total_taxed * this.percentage_igv, 2)
                         this.form.total_taxes = _.round(this.form.total_igv, 2)
                         this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
 
@@ -2676,18 +2690,28 @@ export default {
 
         },
         changeRetention() {
-
             if (this.form.has_retention) {
 
                 let base = this.form.total
                 let percentage = _.round(parseFloat(this.config.igv_retention_percentage) / 100, 5)
                 let amount = _.round(base * percentage, 2)
 
+                let amount_pen = amount;
+                let amount_usd = _.round(amount / this.form.exchange_rate_sale, 2);
+                if(this.form.currency_type_id === 'USD') {
+                    amount_usd = amount;
+                    amount_pen = _.round(amount * this.form.exchange_rate_sale, 2);
+                }
+
                 this.form.retention = {
                     base: base,
                     code: '62', //Código de Retención del IGV
                     amount: amount,
-                    percentage: percentage
+                    percentage: percentage,
+                    currency_type_id: this.form.currency_type_id,
+                    exchange_rate: this.form.exchange_rate_sale,
+                    amount_pen: amount_pen,
+                    amount_usd: amount_usd,
                 }
 
                 this.setTotalPendingAmountRetention(amount)
@@ -2913,15 +2937,16 @@ export default {
             }
 
         },
-        changeDateOfIssue() {
+        async changeDateOfIssue() {
 
             this.validateDateOfIssue()
-
             this.form.date_of_due = this.form.date_of_issue
             // if (! this.isUpdate) {
-            this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+            await this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                 this.form.exchange_rate_sale = response
             });
+            await this.getPercentageIgv();
+            this.changeCurrencyType();
             // }
         },
         assignmentDateOfPayment() {
@@ -3007,7 +3032,7 @@ export default {
             this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
             let items = []
             this.form.items.forEach((row) => {
-                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+                items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv))
             });
             this.form.items = items
             this.calculateTotal()
@@ -3309,7 +3334,7 @@ export default {
 
             if (input_global_discount > 0)
             {
-                const percentage_igv = 18
+                const percentage_igv = this.percentage_igv * 100;
                 let base = (this.isGlobalDiscountBase) ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
                 let amount = 0
                 let factor = 0
@@ -3469,7 +3494,7 @@ export default {
                     this.$eventHub.$emit('reloadDataItems', null)
                     this.resetForm();
                     this.documentNewId = response.data.data.id;
-                    
+
                     this.showOptionsDialog(response)
 
                     this.form_cash_document.document_id = response.data.data.id;
@@ -3514,7 +3539,7 @@ export default {
             {
                 this.showDialogOptions = true
             }
-            
+
         },
         autoPrintDocument(){
 
@@ -3548,7 +3573,7 @@ export default {
 
                 qz.print(config, printData)
                     .then(()=>{
-                        
+
                         this.$notify({
                             title: '',
                             message: 'Impresión en proceso...',
@@ -3762,16 +3787,25 @@ export default {
             })
         },
         getTotal() {
+            let total_pay = this.form.total;
+            if(this.form.has_retention) {
+                total_pay -= this.form.retention.amount;
+            }
+            console.log(this.form.retention)
+            console.log(this.form.total_pending_payment)
+            console.log(this.form.total)
 
             if (!_.isEmpty(this.form.detraction) && this.form.total_pending_payment > 0) {
                 return this.form.total_pending_payment
             }
 
             if (!_.isEmpty(this.form.retention) && this.form.total_pending_payment > 0) {
+                console.log('1');
                 return this.form.total_pending_payment
             }
 
-            return this.form.total
+            console.log('2');
+            return total_pay
         },
         setDescriptionOfItem(item) {
             return showNamePdfOfDescription(item, this.config.show_pdf_name)

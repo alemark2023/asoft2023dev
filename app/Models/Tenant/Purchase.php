@@ -532,6 +532,8 @@ class Purchase extends ModelTenant
             'number'                         => $this->number_full,
             'supplier_name'                  => $this->supplier->name,
             'supplier_number'                => $this->supplier->number,
+            'supplier_telephone'             => optional($this->supplier)->telephone,
+            'supplier_email'                 => optional($this->supplier)->email,
             'currency_type_id'               => $this->currency_type_id,
             'total_exportation'              => $this->total_exportation,
             'total_free'                     => self::NumberFormat($this->total_free),
@@ -762,5 +764,36 @@ class Purchase extends ModelTenant
         return url("purchases/print/{$this->external_id}/{$format}");
     }
         
+
+    /**
+     * 
+     * Filtro para no incluir relaciones en consulta
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */  
+    public function scopeWhereFilterWithOutRelations($query)
+    {
+        return $query->withOut(['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments']);
+    }
+
+
+    /**
+     * 
+     * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterRelationsGlobalPayment($query)
+    {
+        return $query->whereFilterWithOutRelations()
+                    ->with([
+                        'document_type'=> function($q){
+                            $q->select('id', 'description');
+                        }, 
+                    ]);
+    }
+    
 
 }
