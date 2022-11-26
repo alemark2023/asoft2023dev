@@ -10,6 +10,8 @@ use Modules\Restaurant\Models\RestaurantRole;
 use Modules\Restaurant\Models\RestaurantTable;
 use Modules\Restaurant\Models\RestaurantTableEnv;
 use App\Models\Tenant\User;
+use App\Models\Tenant\Company;
+
 
 
 class RestaurantConfigurationController extends Controller
@@ -28,10 +30,13 @@ class RestaurantConfigurationController extends Controller
     public function record()
     {
         $configurations = RestaurantConfiguration::first();
+        $company = Company::query()->first();
+        $user = auth()->user();
 
         return [
             'success' => true,
-            'data' => $configurations->getCollectionData()
+            'data' => $configurations->getCollectionData(),
+            'info' => ['ruc' => $company->number, 'userEmail' => $user->email, 'socketServer' => config('tenant.socket_server') ?? 'http://localhost:8070'],
         ];
     }
 
