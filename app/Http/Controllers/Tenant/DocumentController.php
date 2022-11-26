@@ -68,6 +68,9 @@ use Modules\Item\Http\Requests\CategoryRequest;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
 use Modules\Document\Helpers\DocumentHelper;
+use Modules\Inventory\Models\{
+    InventoryConfiguration
+};
 
 class DocumentController extends Controller
 {
@@ -322,6 +325,7 @@ class DocumentController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $is_client = $this->getIsClient();
+        $validate_stock_add_item = InventoryConfiguration::getRecordIndividualColumn('validate_stock_add_item');
 
         $configuration = Configuration::first();
 
@@ -370,6 +374,7 @@ class DocumentController extends Controller
             'CatItemStatus',
             'CatItemPackageMeasurement',
             'CatItemProductFamily',
+            'validate_stock_add_item',
             'CatItemUnitsPerPackage');
     }
 

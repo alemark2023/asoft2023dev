@@ -224,6 +224,7 @@
             'point_system_data',
             'created_from_pos',
             'agent_id',
+            'dispatch_ticket_pdf',
 
         ];
 
@@ -270,6 +271,7 @@
 
             'point_system' => 'bool',
             'created_from_pos' => 'bool',
+            'dispatch_ticket_pdf' => 'bool',
 
         ];
 
