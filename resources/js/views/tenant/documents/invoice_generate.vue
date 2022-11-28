@@ -1756,7 +1756,8 @@ export default {
             error_global_discount: false,
             headers_token: headers_token,
             showDialogReportCustomer: false,
-            report_to_customer_id: null
+            report_to_customer_id: null,
+            retention_query_data: null,
         }
     },
     computed: {
@@ -2092,6 +2093,8 @@ export default {
             this.calculate_customer_accumulated_points = 0
             this.total_exchange_points = 0
 
+            this.retention_query_data = null
+
             this.$eventHub.$emit('eventInitTip')
 
         },
@@ -2356,6 +2359,7 @@ export default {
             this.form.fee = data.fee;
             this.form.retention = data.retention
 
+
             this.form.quotation_id = data.quotation_id;
 
             this.form.additional_information = this.onPrepareAdditionalInformation(data.additional_information);
@@ -2418,8 +2422,11 @@ export default {
 
             this.form.has_retention = !_.isEmpty(this.form.retention)
 
-            if (this.form.has_retention) {
+            if (this.form.has_retention) 
+            {
                 this.setTotalPendingAmountRetention(this.form.retention.amount)
+
+                this.retention_query_data = { ...this.form.retention }
             }
 
         },
@@ -3019,6 +3026,7 @@ export default {
 
         },
         changeRetention() {
+            
             if (this.form.has_retention) {
 
                 let base = this.form.total
@@ -3032,6 +3040,7 @@ export default {
                     amount_pen = _.round(amount * this.form.exchange_rate_sale, 2);
                 }
 
+
                 this.form.retention = {
                     base: base,
                     code: '62', //Código de Retención del IGV
@@ -3043,6 +3052,7 @@ export default {
                     amount_usd: amount_usd,
                 }
 
+                this.setDataVoucherRetention()
                 this.setTotalPendingAmountRetention(amount)
 
             } else {
@@ -3052,6 +3062,16 @@ export default {
                 this.calculateAmountToPayments()
             }
 
+        },
+        setDataVoucherRetention()
+        {
+            if(this.isUpdateDocument && this.retention_query_data)
+            {
+                this.form.retention.voucher_date_of_issue = this.retention_query_data.voucher_date_of_issue
+                this.form.retention.voucher_number = this.retention_query_data.voucher_number
+                this.form.retention.voucher_amount = this.retention_query_data.voucher_amount
+                this.form.retention.voucher_filename = this.retention_query_data.voucher_filename
+            }
         },
         setTotalPendingAmountRetention(amount) {
 

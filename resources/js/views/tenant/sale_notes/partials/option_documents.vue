@@ -131,6 +131,7 @@
                                     <el-date-picker v-model="row.date" type="date"
                                                     value-format="yyyy-MM-dd"
                                                     format="dd/MM/yyyy"
+                                                    @change="changeDatePaymentCondition(index)"
                                                     :clearable="false"></el-date-picker>
                                 </div>
                             </td>
@@ -296,6 +297,13 @@
            // console.log(moment().format('YYYY-MM-DD'))
         },
         methods: {
+            changeDatePaymentCondition(index)
+            {
+                const max_date = _.maxBy(this.document.fee, 'date')
+
+                if(max_date) this.document.date_of_due = max_date.date
+
+            },
             changePaymentCondition() {
                 this.document.fee = [];
                 this.document.payments = [];

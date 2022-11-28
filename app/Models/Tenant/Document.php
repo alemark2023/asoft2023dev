@@ -1673,4 +1673,37 @@ class Document extends ModelTenant
         $qrCode = new QrCodeGenerate();
         return $qrCode->displayPNGBase64($text);
     }
+
+                
+    /**
+     *
+     * @param  string $format
+     * @return string
+     */
+    public function getUrlPrintByFormat($format)
+    {
+        return url("print/document/{$this->external_id}/{$format}");
+    }
+
+    
+    /**
+     *
+     * Filtrar registro para envio de mensajes por whatsapp
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public static function scopeFilterDataForSendMessage($query)
+    {
+        return $query->whereFilterWithOutRelations()
+                    ->select([
+                        'id',
+                        'external_id',
+                        'series',
+                        'number',
+                        'filename'
+                    ]);
+    }
+
+
 }

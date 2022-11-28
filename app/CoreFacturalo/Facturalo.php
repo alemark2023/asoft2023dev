@@ -454,6 +454,7 @@ class Facturalo
 
             if($this->type === 'dispatch')
             {
+                $append_height = 15;
                 $this->appendHeightFromDispatch($append_height, $format, $this->document);
             }
 

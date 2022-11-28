@@ -366,4 +366,17 @@ $string = var_export($header,true);
             return GeneralPdfHelper::pdfResponseFileHeaders($filename);
         }
 
+                
+        /**
+         * 
+         * Verificar si es una factura o boleta
+         *
+         * @param  string $document_type_id
+         * @return bool
+         */
+        public function generalIsInvoiceDocument($document_type_id)
+        {
+            return in_array($document_type_id, ['01', '03'], true);
+        }
+
     }
