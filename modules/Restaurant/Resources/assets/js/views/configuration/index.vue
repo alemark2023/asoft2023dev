@@ -371,6 +371,10 @@
                 </div>
               </div>
             </el-tab-pane>
+             <el-tab-pane class="mb-3"  name="four">
+              <span slot="label">Notas</span>
+                <Notas/>
+            </el-tab-pane>
           </el-tabs>
         </form>
       </template>
@@ -386,11 +390,26 @@
 </style>
 
 <script>
-
+import { io } from 'socket.io-client'
 import {deletable} from '@mixins/deletable'
+import Notas from '../notes/index.vue'
+const url = 'https://socketio.facturalo.pro'
+const SOCKET = io(url, {
+  reconnectionDelayMax: 100,
+  transports: ['polling'],
+  autoConnect: false,
+})
+
+connect()
+
+function connect(username = 'usuario') {
+    SOCKET.auth = { username }
+    SOCKET.connect()
+}
 
 export default {
     mixins: [deletable],
+    components: {Notas},
     data() {
       return {
         resource: 'restaurant',
@@ -421,7 +440,13 @@ export default {
           last_name: null,
           id: null
         },
-        waiters: []
+        waiters: [],
+        info : {
+          ruc:null,
+          userEmail: null,
+          socketServer: null
+        },
+        socket: null
       }
     },
     computed: {
@@ -435,11 +460,18 @@ export default {
       this.getWaiters();
 
     },
+    mounted() {
+      
+    },
     methods: {
-      getRecords() {
-        this.$http.get(`/${this.resource}/configuration/record`).then(response => {
+      async getRecords() {
+        await this.$http.get(`/${this.resource}/configuration/record`).then(response => {
           if (response.data !== '') {
             this.form = response.data.data;
+            const infoData = response.data.info
+            this.info.ruc = infoData.ruc
+            this.info.userEmail = infoData.userEmail
+            this.info.socketServer = infoData.socketServer
           }
         });
         this.$http.get(`/${this.resource}/get-roles`).then(response => {
@@ -447,6 +479,8 @@ export default {
             this.roles = response.data.data;
           }
         });
+
+        this.sendCompany()
       },
       getUsers() {
         this.$http.get(`/${this.resource}/get-users`).then(response => {
@@ -465,6 +499,7 @@ export default {
           let data = response.data;
           if (data.success) {
             this.$message.success(data.message);
+            this.resetTablensAndEnvClients()
           } else {
             this.$message.error(data.message);
           }
@@ -477,9 +512,7 @@ export default {
           } else {
             console.log(error);
           }
-        }).then(() => {
-          // this.loading_submit = false;
-        });
+        })
       },
       sendFormRole() {
         this.$http.post(`/${this.resource}/user/set-role`, this.form_role).then(response => {
@@ -534,6 +567,16 @@ export default {
         this.destroy(`/${this.resource}/waiter/${id}`).then(() =>
           this.getWaiters()
         )
+      },
+      resetTablensAndEnvClients() {
+        SOCKET.emit('reset-table-envs')
+      },
+      sendCompany() {
+        const data = {
+          ruc: this.info.ruc,
+          user: this.info.userEmail
+        }
+        SOCKET.emit('data-company', data)
       }
     }
 }
