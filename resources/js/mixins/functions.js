@@ -497,3 +497,38 @@ export const operationsForDiscounts = {
 }
 
 
+/**
+ * 
+ * Funciones para gestionar las columnas visibles en los listados
+ * Usado en:
+ * modules\Report\Resources\assets\js\views\sale_notes\index.vue
+ * 
+ */
+export const fnListVisibleColumns = {
+    data() {
+        return {
+        }
+    },
+    methods: {
+        async generalSetColumnsToShow(updated = false)
+        {
+            await this.$http.post('/validate_columns',{
+                    columns : this.columns,
+                    report : this.name_report_colums, // Nombre del reporte.
+                    updated : updated,
+                })
+                .then((response) => {
+
+                    if(!updated)
+                    {
+                        const current_cols = response.data.columns
+                        if(current_cols !== undefined) this.columns = current_cols
+                    }
+
+                })
+                .catch((error) => {
+                    console.error(error)
+                })
+        },
+    }
+}

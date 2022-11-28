@@ -1960,12 +1960,37 @@ class SaleNoteController extends Controller
     {
         return SearchItemController::TransformToModalSaleNote(Item::whereIn('id', $request->ids)->get());
     }
-
+    
+    /**
+     * Despachos de la nv
+     *
+     * @param  int $sale_note_id
+     * @return array
+     */
     public function recordsDispatch($sale_note_id)
     {
+        $sale_note = SaleNote::whereFilterWithOutRelations()
+                                ->with(['dispatch_sale'])
+                                ->select([
+                                    'id',
+                                    'number',
+                                    'series'
+                                ])
+                                ->findOrFail($sale_note_id);
+
+        return [
+            'id' => $sale_note->id,
+            'number_full' => $sale_note->number_full,
+            'status_dispatch' => $sale_note->getStatusDispatch(),
+            'records' => new DispatchSaleNoteCollection($sale_note->dispatch_sale),
+        ];
+
+        /*
         $records = DispatchSaleNote::where('sale_note_id', $sale_note_id)->get();
 
         return new DispatchSaleNoteCollection($records);
+        */
+
     }
 
     public function recordDispatch(Request $request)

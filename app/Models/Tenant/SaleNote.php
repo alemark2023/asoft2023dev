@@ -757,6 +757,7 @@
             $mails = $person->getCollectionData();
             $customer_email=  $mails['optional_email_send'];
 
+            /*
             $status_dispatch=$this->dispatch_sale;
             
             if (count($status_dispatch)>0) {
@@ -773,6 +774,7 @@
             }else {
                 $status_dispatch='PENDIENTE';
             }
+            */
             
             $date_pay=$this->payments()->select('date_of_payment')->get();
 
@@ -858,7 +860,7 @@
                 'filename' => $this->filename,
                 'seller_name'                     => ((int)$this->seller_id !=0)?$this->seller->name:'',
 
-                'status_dispatch'=>$status_dispatch,
+                'status_dispatch' => $this->getStatusDispatch(),
                 'customer_region' => $this->customer->department->description ?? null,
                 'date_of_payment'              => $date_of_pay,
 // 'number' => $this->number,
@@ -870,6 +872,43 @@
                 'items_for_report' => $this->getItemsforReport(),
 
             ];
+        }
+
+        
+        /**
+         * 
+         * Obtener estado de la entrega
+         *
+         * @return string
+         */
+        public function getStatusDispatch()
+        {
+            $status = 'pending';
+
+            if($this->dispatch_sale->count() > 0)
+            {
+                $status = ($this->dispatch_sale->some('status', 1)) ? 'delivered' : 'partial';
+            }
+
+            return $this->getDescriptionStatusDispatch($status);
+        }
+
+        
+        /**
+         * getDescriptionStatusDispatch
+         *
+         * @param  string $status
+         * @return string
+         */
+        public function getDescriptionStatusDispatch($status)
+        {
+            $data = [
+                'pending' => 'PENDIENTE',
+                'partial' => 'PARCIAL',
+                'delivered' => 'ENTREGADO'
+            ];
+
+            return $data[$status] ?? null;
         }
 
         
