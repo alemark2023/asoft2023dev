@@ -393,7 +393,7 @@
 import { io } from 'socket.io-client'
 import {deletable} from '@mixins/deletable'
 import Notas from '../notes/index.vue'
-const url = 'http://localhost:8070'
+const url = 'https://socketio.facturalo.pro'
 const SOCKET = io(url, {
   reconnectionDelayMax: 100,
   transports: ['polling'],
