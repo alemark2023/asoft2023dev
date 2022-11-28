@@ -371,6 +371,10 @@
                 </div>
               </div>
             </el-tab-pane>
+             <el-tab-pane class="mb-3"  name="four">
+              <span slot="label">Notas</span>
+                <Notas/>
+            </el-tab-pane>
           </el-tabs>
         </form>
       </template>
@@ -388,6 +392,7 @@
 <script>
 import { io } from 'socket.io-client'
 import {deletable} from '@mixins/deletable'
+import Notas from '../notes/index.vue'
 const url = 'http://localhost:8070'
 const SOCKET = io(url, {
   reconnectionDelayMax: 100,
@@ -404,6 +409,7 @@ function connect(username = 'usuario') {
 
 export default {
     mixins: [deletable],
+    components: {Notas},
     data() {
       return {
         resource: 'restaurant',

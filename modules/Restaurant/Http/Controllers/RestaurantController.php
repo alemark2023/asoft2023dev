@@ -20,6 +20,8 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\Tenant\EmailController;
 use App\Mail\Tenant\CulqiEmail;
 use Modules\Restaurant\Models\RestaurantConfiguration;
+use Modules\Restaurant\Models\RestaurantNote;
+
 
 
 
@@ -234,5 +236,4 @@ class RestaurantController extends Controller
             'message' => 'Precio editado correctamente.'
         ];
     }
-
 }
