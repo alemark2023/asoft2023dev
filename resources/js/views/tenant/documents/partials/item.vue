@@ -377,9 +377,13 @@
                         <div v-if="showDiscounts"
                              class="col-md-12 mt-2">
                             <el-collapse v-model="activePanel">
-                                <el-collapse-item
-                                    v-if="!(recordItem != null)"
-                                                  name="1"
+
+<!--                                <el-collapse-item-->
+<!--                                    v-if="!(recordItem != null)"-->
+<!--                                    name="1"-->
+<!--                                    title="+ Agregar Descuentos/Cargos/Atributos especiales">-->
+
+                                <el-collapse-item name="1"
                                                   title="+ Agregar Descuentos/Cargos/Atributos especiales">
                                     <div v-if="discount_types.length > 0">
                                         <label class="control-label">
@@ -527,13 +531,7 @@
             <!-- Mostrar en cel -->
 
             <div class="row hidden-md-up form-actions text-center">
-                <div class="col-12">
-                    &nbsp;
-                </div>
-
-
-
-
+                <div class="col-12"></div>
                 <div class="col-6">
                     <el-popover
                         placement="top-start"
@@ -1108,6 +1106,9 @@ export default {
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
 
+                this.form.attributes = this.recordItem.attributes;
+                this.form.discounts = this.recordItem.discounts;
+                this.form.charges = this.recordItem.charges;
 
                 if (this.isEditItemNote) {
                     this.form.item.currency_type_id = this.currencyTypeIdActive
