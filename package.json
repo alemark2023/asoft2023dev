@@ -17,8 +17,7 @@
         "laravel-mix": "^3.0.0",
         "lodash": "^4.17.15",
         "popper.js": "^1.12",
-        "vue": "^2.5.7",
-        "webpack-cli": "^5.0.0"
+        "vue": "^2.5.7"
     },
     "dependencies": {
         "@ckeditor/ckeditor5-build-classic": "^20.0.0",

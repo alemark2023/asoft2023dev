@@ -310,7 +310,9 @@ class InventoryController extends Controller
 
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
             ];
         }
     }
