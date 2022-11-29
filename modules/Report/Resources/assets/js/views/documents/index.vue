@@ -61,6 +61,7 @@
                                 <th>Agente</th>
                                 <th>Datos de referencia</th>
                             </template>
+                            <th>Placa</th>
                             
                         </tr>
                         <tr slot-scope="{ index, row }">
@@ -180,6 +181,8 @@
                                 <td>{{ row.agent_name }}</td>
                                 <td>{{ row.reference_data }}</td>
                             </template>
+
+                            <td>{{ row.plate_number }}</td>
 
                             <!-- <td>{{ (row.document_type_id == '07') ? -row.total_unaffected : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_unaffected) }}</td>
                             <td>{{ (row.document_type_id == '07') ? -row.total_free : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_free) }}</td>

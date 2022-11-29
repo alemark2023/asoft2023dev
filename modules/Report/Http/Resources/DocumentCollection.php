@@ -117,6 +117,7 @@ class DocumentCollection extends ResourceCollection
 
                 'agent_name' => optional($row->agent)->search_description,
                 'reference_data' => $row->reference_data,
+                'plate_number' => $row->getPlateNumberSaleReport(),
 
             ];
         });

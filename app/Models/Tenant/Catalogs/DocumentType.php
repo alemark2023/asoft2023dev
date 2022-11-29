@@ -319,4 +319,14 @@
             return $query->select('id', 'description');
         }
 
+        
+        /**
+         *
+         * @return bool
+         */
+        public function isInvoice()
+        {
+            return in_array($this->id, self::INVOICE_DOCUMENTS_IDS, true);
+        }
+        
     }
