@@ -108,10 +108,12 @@ class DispatchInput
     {
         if(array_key_exists('origin', $inputs)) {
             $origin = $inputs['origin'];
-            $location_id = $origin['location_id'][2] == '0' ? $origin['location_id'] : $origin['location_id'][2];
+            $country_id = $origin['country_id'];
             $address = $origin['address'];
+            $location_id = $origin['location_id'][2] == '0' ? $origin['location_id'] : $origin['location_id'][2];
 
             return [
+                'country_id' => $country_id,
                 'location_id' => $location_id,
                 'address' => $address,
             ];
@@ -123,10 +125,17 @@ class DispatchInput
     {
         if(array_key_exists('delivery', $inputs)) {
             $delivery = $inputs['delivery'];
-            $location_id = $delivery['location_id'][2] == '0' ? $delivery['location_id'] : $delivery['location_id'][2];
+            $country_id = $delivery['country_id'];
             $address = $delivery['address'];
 
+//            if($inputs['transfer_reason_type_id'] === '09') {
+//                $location_id = [];
+//            } else {
+                $location_id = $delivery['location_id'][2] == '0' ? $delivery['location_id'] : $delivery['location_id'][2];
+//            }
+
             return [
+                'country_id' => $country_id,
                 'location_id' => $location_id,
                 'address' => $address,
             ];

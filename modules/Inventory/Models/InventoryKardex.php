@@ -71,7 +71,7 @@ class InventoryKardex extends ModelTenant
     {
         return Warehouse::find($this->warehouse_id);
     }
-    
+
     /**
      * Obtener notas de venta asociadas a documento
      *
@@ -90,12 +90,12 @@ class InventoryKardex extends ModelTenant
         {
             $data = [];
 
-            foreach ($inventory_kardexable->sale_notes_relateds as $sale_note) 
+            foreach ($inventory_kardexable->sale_notes_relateds as $sale_note)
             {
                 if(isset($sale_note->items)){
-                    
+
                     $exist_sale_note = collect($sale_note->items)->where('item_id', $this->item_id)->first();
-    
+
                     if($exist_sale_note) $data [] = $sale_note->number_full;
                 }
             }
@@ -161,7 +161,7 @@ class InventoryKardex extends ModelTenant
             case $models[0]: //venta
 
                 $cpe_input = ($qty > 0) ? (isset($inventory_kardexable->sale_note_id) || isset($inventory_kardexable->order_note_id) || isset($inventory_kardexable->sale_notes_relateds) ? "-" : $qty) : "-";
-                
+
                 $cpe_output = ($qty < 0) ? (isset($inventory_kardexable->sale_note_id) || isset($inventory_kardexable->order_note_id) || isset($inventory_kardexable->sale_notes_relateds) ? "-" : $qty) : "-";
 
                 $cpe_discounted_stock = false;
@@ -233,10 +233,26 @@ class InventoryKardex extends ModelTenant
                 } else {
                     $output = ($transaction->type == 'output') ? $qty : "-";
                 }
+
                 $user = auth()->user();
                 $data['balance'] = $balance += $qty;
                 $data['type_transaction'] = $inventory_kardexable->description;
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
+                $data['guide_id'] = null;
+
+                $guide = Guide::query()->where('id', $inventory_kardexable->guide_id)->first();
+                if($guide) {
+                    $data['number'] = $guide->series.'-'.$guide->number;
+                    $data['date_of_issue'] = $guide->date_of_issue->format('Y-m-d');
+                    $data['guide_id'] = $guide->id;
+                }
+
+                $inventory_transfer = InventoryTransfer::query()->where('id', $inventory_kardexable->inventories_transfer_id)->first();
+                if($inventory_transfer) {
+                    $data['number'] = $inventory_transfer->series.'-'.$inventory_transfer->number;
+                    $data['date_of_issue'] = $inventory_transfer->created_at->format('Y-m-d');
+                }
+
                 if ($inventory_kardexable->warehouse_destination_id === $user->establishment_id) {
                     $data['input'] = $output;
                     $data['output'] = $input;

@@ -56,15 +56,20 @@
         <td>Razón Social: {{ $customer->name }}</td>
     </tr>
     <tr>
-        <td>RUC: {{ $customer->number }}
+        <td>{{ $customer->identity_document_type->description }}: {{ $customer->number }}
         </td>
     </tr>
     <tr>
+        @if($document->transfer_reason_type_id === '09')
+            <td>Dirección: {{ $customer->address }} - {{ $customer->country->description }}
+            </td>
+        @else
         <td>Dirección: {{ $customer->address }}
             {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
             {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
             {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
         </td>
+        @endif
     </tr>
     @if ($customer->telephone)
     <tr>
@@ -112,8 +117,10 @@
         @endif
     </tr>
     <tr>
-        <td>P.Partida: {{ $document->origin->location_id }} - {{ $document->origin->address }}</td>
-        <td>P.Llegada: {{ $document->delivery->location_id }} - {{ $document->delivery->address }}</td>
+        <td colspan="2">P.Partida: {{ $document->origin->location_id }} - {{ $document->origin->address }}</td>
+    </tr>
+    <tr>
+        <td colspan="2">P.Llegada: {{ $document->delivery->location_id }} - {{ $document->delivery->address }}</td>
     </tr>
     @if($document->order_form_external)
     <tr>

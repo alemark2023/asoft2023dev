@@ -173,7 +173,7 @@
             //dispatcher
             if ($request->has('searchBy')) {
                 if ($request->searchBy == 'dispatches') {
-                    $identity_document_type_id = ['6', '4', '1'];
+                    $identity_document_type_id = ['6', '4', '1', '0'];
                 }
             }
             $customers = Person::where('number', 'like', "%{$request->input}%")
@@ -227,11 +227,11 @@ $string = var_export($header,true);
             return $header;
         }
 
-        
+
         /**
-         * 
+         *
          * Determinar si aplica conversión a soles en reportes registrados en ReportConfiguration
-         * 
+         *
          * Usado en:
          * ReportGeneralItemController
          *
@@ -246,27 +246,27 @@ $string = var_export($header,true);
 
             return false;
         }
-        
+
 
         /**
-         * 
+         *
          * Determinar si aplica busqueda avanzada
-         * 
+         *
          * Usado en:
          * ItemController
          *
          * @return bool
          */
         public function applyAdvancedRecordsSearch()
-        {   
+        {
             return Configuration::isEnabledAdvancedRecordsSearch();
         }
 
 
         /**
-         * 
+         *
          * Asignar lote a item (regularizar propiedad en json item)
-         * 
+         *
          * Usado en:
          * OrderNoteController
          *
@@ -284,10 +284,10 @@ $string = var_export($header,true);
                 $row['item']['IdLoteSelected'] = isset($row['item']['IdLoteSelected']) ? $row['item']['IdLoteSelected'] : null;
             }
         }
-        
-        
+
+
         /**
-         * 
+         *
          * Retornar array para respuestas en peticiones
          *
          * @param  bool $success
