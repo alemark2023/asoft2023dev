@@ -66,24 +66,15 @@ class PersonController extends Controller
     public function tables()
     {
         $countries = Country::whereActive()->orderByDescription()->get();
-        $departments = Department::whereActive()->orderByDescription()->get();
-        $provinces = Province::whereActive()->orderByDescription()->get();
-        $districts = District::whereActive()->orderByDescription()->get();
         $identity_document_types = IdentityDocumentType::whereActive()->get();
         $person_types = PersonType::get();
-        $locations = $this->getLocationCascade();
+        $locations = func_get_locations();
         $zones = Zone::all();
         $sellers = $this->getSellers();
-        $discount_types = [
-            ['id' => '01', 'name' => 'Monto'],
-            ['id' => '02', 'name' => 'Porcentaje'],
-        ];
-        // $configuration = Configuration::first();
-        // $api_service_token = $configuration->token_apiruc == 'false' ? config('configuration.api_service_token') : $configuration->token_apiruc;
         $api_service_token = \App\Models\Tenant\Configuration::getApiServiceToken();
 
-        return compact('countries', 'departments', 'provinces', 'districts',
-            'identity_document_types', 'locations', 'person_types', 'api_service_token', 'zones', 'sellers', 'discount_types');
+        return compact('countries', 'identity_document_types', 'locations','person_types','api_service_token'
+        ,'zones','sellers');
     }
 
     public function record($id)
@@ -117,6 +108,14 @@ class PersonController extends Controller
         $data = $request->all();
         unset($data['optional_email'], $data['id']);
         $person->fill($data);
+
+        $location_id = $request->input('location_id');
+        if(count($location_id) === 3) {
+            $person->district_id = $location_id[2];
+            $person->province_id = $location_id[1];
+            $person->department_id = $location_id[0];
+        }
+
         $person->save();
 
         $person->addresses()->delete();

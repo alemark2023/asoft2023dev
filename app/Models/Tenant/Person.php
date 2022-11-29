@@ -8,15 +8,11 @@
     use App\Models\Tenant\Catalogs\District;
     use App\Models\Tenant\Catalogs\IdentityDocumentType;
     use App\Models\Tenant\Catalogs\Province;
-    use Eloquent;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
     use Illuminate\Database\Eloquent\Collection;
-    use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Modules\DocumentaryProcedure\Models\DocumentaryFile;
     use Modules\Expense\Models\Expense;
-    use Modules\FullSuscription\Models\Tenant\FullSuscriptionServerDatum;
-    use Modules\FullSuscription\Models\Tenant\FullSuscriptionUserDatum;
     use Modules\Order\Models\OrderForm;
     use Modules\Order\Models\OrderNote;
     use Modules\Purchase\Models\FixedAssetPurchase;
@@ -495,7 +491,6 @@
          */
         public function getCollectionData($withFullAddress = false, $childrens = false, $servers=false)
         {
-
             $addresses = $this->addresses;
             if ($withFullAddress == true) {
                 $addresses = collect($addresses)->transform(function ($row) {
@@ -528,6 +523,7 @@
                 ];
             }
 
+            $location_id = [];
             /** @var \App\Models\Tenant\Catalogs\Department  $department */
             $department = \App\Models\Tenant\Catalogs\Department::find($this->department_id);
             if(!empty($department)){
@@ -536,6 +532,7 @@
                 "description" => $department->description,
                 "active" => $department->active,
                 ];
+                array_push($location_id, $department['id']);
             }
             $province = \App\Models\Tenant\Catalogs\Province::find($this->province_id);
 
@@ -545,6 +542,7 @@
                     "description" => $province->description,
                     "active" => $province->active,
                 ];
+                array_push($location_id, $province['id']);
             }
             $district = \App\Models\Tenant\Catalogs\District::find($this->district_id);
 
@@ -554,6 +552,7 @@
                     "description" => $district->description,
                     "active" => $district->active,
                 ];
+                array_push($location_id, $district['id']);
             }
             $seller = User::find($this->seller_id);
             if(!empty($seller)){
@@ -613,7 +612,7 @@
                 'has_discount' => $this->has_discount,
                 'discount_type' => $this->discount_type,
                 'discount_amount' => $this->discount_amount,
-
+                'location_id' => $location_id
             ];
             if ($childrens == true) {
                 $child = $this->children_person->transform(function ($row) {
@@ -911,7 +910,6 @@
                         ->take($take);
         }
 
-
         /**
          *
          * Filtro para cliente varios por defecto
@@ -941,5 +939,4 @@
         {
             return $query->whereFilterWithOutRelations()->select('accumulated_points')->findOrFail($id)->accumulated_points;
         }
-
     }
