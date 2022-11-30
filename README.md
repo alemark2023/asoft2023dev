@@ -47,8 +47,8 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 
 * Docker
 
-[SSL](https://docs.google.com/document/d/1kcgtIDrOWnGKQbWO3sW2KEkUoNdadIB5YHBgaSb87uA/edit "Clic")
-[Script](https://gitlab.com/b.mendoza/facturadorpro3/-/snippets/1955372/raw/master/updateSSL.sh "Clic")
+[SSL](https://docs.google.com/document/d/1kcgtIDrOWnGKQbWO3sW2KEkUoNdadIB5YHBgaSb87uA/edit "Clic") <br>
+[Script](https://gitlab.com/b.mendoza/facturadorpro3/-/snippets/1955372/raw/master/updateSSL.sh "Clic") <br>
 [Video](https://www.loom.com/share/577a32e168a44cc7afc6e2919589de56 "Clic")
 
 
