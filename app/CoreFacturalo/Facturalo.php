@@ -119,10 +119,10 @@ class Facturalo
             case 'debit':
             case 'credit':
                 $document = Document::create($inputs);
+                $document->note()->create($inputs['note']);
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
                 }
-                $document->note()->create($inputs['note']);
                 if($this->type === 'credit') $this->saveFee($document, $inputs['fee']);
                 $this->document = Document::find($document->id);
                 break;
