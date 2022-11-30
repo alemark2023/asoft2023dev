@@ -1705,5 +1705,16 @@ class Document extends ModelTenant
                     ]);
     }
 
+    
+    /**
+     * 
+     * Placa para reporte de ventas
+     *
+     * @return string
+     */
+    public function getPlateNumberSaleReport()
+    {
+        return $this->plate_number;
+    }
 
 }

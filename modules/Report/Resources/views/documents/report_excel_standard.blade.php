@@ -146,6 +146,9 @@
                         <th>Agente</th>
                         <th>Datos de referencia</th>
                     @endif
+
+                    <th>Placa</th>
+
                 </tr>
                 </thead>
                 <tbody>
@@ -363,6 +366,8 @@
                             <td>{{optional($value->agent)->search_description}}</td>
                             <td>{{$value->reference_data}}</td>
                         @endif
+
+                        <td>{{$value->getPlateNumberSaleReport() }}</td>
 
                     </tr>
                     @php

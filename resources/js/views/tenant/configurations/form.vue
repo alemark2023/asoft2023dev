@@ -345,7 +345,7 @@
 
                                     <el-tooltip
                                         class="item"
-                                        content="Muestra el nombre del producto que se ingresa en el pdf, en vez del nombre del producto. Solo para CPE y Cotización"
+                                        content="Muestra el nombre del producto que se ingresa en el pdf, en vez del nombre del producto. Disponible para CPE, Cotización y Nota de venta"
                                         effect="dark"
                                         placement="top-start">
                                         <i class="fa fa-info-circle"></i>

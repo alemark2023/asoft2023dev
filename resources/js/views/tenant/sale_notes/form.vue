@@ -347,7 +347,10 @@
                                         <tbody v-if="form.items.length > 0">
                                         <tr v-for="(row, index) in form.items" :key="index">
                                             <td>{{ index + 1 }}</td>
-                                            <td>{{ row.item.description }}
+                                            <td>
+                                                <!-- {{ row.item.description }} -->
+                                                {{ setDescriptionOfItem (row.item) }}
+                                                
                                                 <template v-if="row.item.presentation">
                                                     {{ row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : '' }}
                                                 </template>
@@ -565,7 +568,7 @@
     import PersonForm from '../persons/form.vue'
     import SaleNotesOptions from './partials/options.vue'
     import {functions, exchangeRate} from '../../../mixins/functions'
-    import {calculateRowItem, sumAmountDiscountsNoBaseByItem} from '../../../helpers/functions'
+    import {calculateRowItem, sumAmountDiscountsNoBaseByItem, showNamePdfOfDescription} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
     import {mapActions, mapState} from "vuex/dist/vuex.mjs";
     import Keypress from "vue-keypress";
@@ -728,6 +731,10 @@
         this.changeCurrencyType()
     },
     methods: {
+        setDescriptionOfItem(item)
+        {
+            return showNamePdfOfDescription(item, this.config.show_pdf_name)
+        },
         onSuccessUploadVoucher(response, file, fileList, index) 
         {
             if (response.success)
