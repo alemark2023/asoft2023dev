@@ -363,6 +363,7 @@ class MobileController extends Controller
         $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
         $search_by_barcode = $request->has('search_by_barcode') && (bool) $request->search_by_barcode;
         $category_id = $request->category_id ?? null;
+        $limit = $request->limit ?? null;
 
         $item_query = Item::query();
 
@@ -373,6 +374,8 @@ class MobileController extends Controller
         else
         {
             $item_query->where('description', 'like', "%{$request->input}%")->orWhere('internal_id', 'like', "%{$request->input}%");
+
+            if($limit) $item_query->limit($limit);
         }
 
         $items = $item_query->whereHasInternalId()
