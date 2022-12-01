@@ -10,10 +10,8 @@ use App\Models\Tenant\Company;
 use Carbon\Carbon;
 use Modules\Inventory\Http\Resources\ReportMovementCollection;
 use Modules\Inventory\Http\Resources\ReportStockFitCollection;
-use Modules\Inventory\Models\{
-    Inventory,
-    Warehouse,
-};
+use Modules\Inventory\Models\Inventory;
+use Modules\Inventory\Models\Warehouse;
 use Modules\Inventory\Traits\InventoryTrait;
 use Modules\Inventory\Http\Requests\ReportMovementRequest;
 use Modules\Inventory\Exports\ReportStockExport;
@@ -22,9 +20,8 @@ use App\CoreFacturalo\Helpers\Template\ReportHelper;
 
 class ReportMovementController extends Controller
 {
-
 	use InventoryTrait;
-     
+
     public function filter()
     {
 		return [
@@ -48,19 +45,21 @@ class ReportMovementController extends Controller
      */
     private function getRecords($request)
     {
-
         $warehouse_id = $request['warehouse_id'];
         $inventory_transaction_id = $request['inventory_transaction_id'];
         $date_start = $request['date_start'];
         $date_end = $request['date_end'];
         $item_id = $request['item_id'];
+        $movement_type = $request['movement_type'];
         $order_inventory_transaction_id = $request['order_inventory_transaction_id'];
 
+//        dd('aca');
 
-        return Inventory::whereFilterReportMovement($warehouse_id, $inventory_transaction_id, $date_start, $date_end, $item_id, $order_inventory_transaction_id);
- 
+        return Inventory::whereFilterReportMovement($warehouse_id, $inventory_transaction_id, $date_start, $date_end,
+            $item_id, $order_inventory_transaction_id, $movement_type);
+
     }
-    
+
 
     /**
      * PDF
@@ -87,8 +86,8 @@ class ReportMovementController extends Controller
 
         return $exportData->download('Reporte_Movimientos' . date('YmdHis') . '.xlsx');
     }
- 
-    
+
+
     /**
      * Obtener datos para generar reporte pdf/excel
      *
@@ -97,9 +96,16 @@ class ReportMovementController extends Controller
      */
     private function getDataForFormat($request)
     {
+        $warehouse_id = $request->input('warehouse_id', '');
+        if($warehouse_id) {
+            $warehouse = Warehouse::query()->select('description')->find($warehouse_id);
+            $warehouse_name = $warehouse->description;
+        } else {
+            $warehouse_name = 'Todos';
+        }
         return [
             'company' => Company::first(),
-            'warehouse' => Warehouse::select('description')->find($request->warehouse_id),
+            'warehouse_name' => $warehouse_name,
             'records' => $this->getRecords($request->all())->get()->transform(function($row, $key) { return  $row->getRowResourceReport(); }),
         ];
     }
@@ -111,9 +117,9 @@ class ReportMovementController extends Controller
         return new ReportStockFitCollection($records->paginate(config('tenant.items_per_page')));
     }
 
-    
+
     /**
-     * 
+     *
      * Consulta de reporte ajuste stock
      *
      * @param  array $request
@@ -126,18 +132,18 @@ class ReportMovementController extends Controller
         $date_end = $request['date_end'];
         $order_by_item = ReportHelper::getBoolValue($request['order_by_item']);
         $order_by_timestamps = ReportHelper::getBoolValue($request['order_by_timestamps']);
-        
+
         $additional_filters = [
-            'search_column' => $request['search_column'], 
-            'search_input' => $request['search_input'], 
+            'search_column' => $request['search_column'],
+            'search_input' => $request['search_input'],
         ];
 
         return Inventory::whereFilterReportStock($warehouse_id, $date_start, $date_end, $order_by_item, $order_by_timestamps, $additional_filters);
     }
 
-    
+
     /**
-     * 
+     *
      * Exportar reportes de ajuste de stock
      *
      * @param  string $type
@@ -154,7 +160,7 @@ class ReportMovementController extends Controller
             return $exportData->download($filename.'.xlsx');
         }
 
-        
+
         return (PDF::loadView('inventory::reports.movements.report_stock_template', $this->getDataForFormatStock($request)))->download($filename.'.pdf');
     }
 
@@ -179,9 +185,9 @@ class ReportMovementController extends Controller
         ];
     }
 
-    
+
     /**
-     * 
+     *
      * Filtros para reporte de ajuste de stock
      *
      * @return array

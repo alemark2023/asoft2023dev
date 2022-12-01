@@ -149,14 +149,13 @@ export const serviceNumber = {
                 this.form.name = data.name
                 this.form.trade_name = data.trade_name
                 this.form.address = data.address
-                this.form.department_id = data.department_id
-                this.form.province_id = data.province_id
-                this.form.district_id = data.district_id
+                this.form.location_id = data.location_id
+                // this.form.department_id = data.department_id
+                // this.form.province_id = data.province_id
+                // this.form.district_id = data.district_id
                 this.form.phone = data.phone
-
-                this.filterProvinces()
-                this.filterDistricts()
-
+                // this.filterProvinces()
+                // this.filterDistricts()
             } else {
                 this.$message.error(response.data.message)
             }

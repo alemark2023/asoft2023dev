@@ -311,7 +311,6 @@ class DispatchController extends Controller
             ->get()
             ->transform(function ($row) {
                 $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
-
                 return [
                     'id'                               => $row->id,
                     'full_description'                 => $full_description,
@@ -342,7 +341,7 @@ class DispatchController extends Controller
                 ];
             });
 
-        $identities = ['6', '4', '1'];
+        $identities = ['6', '4', '1', '0'];
 
         // $dni_filter = config('tenant.document_type_03_filter');
         // if($dni_filter){
@@ -375,50 +374,19 @@ class DispatchController extends Controller
                 ];
             });
 
-        $locations = [];
-        $departments = Department::whereActive()->get();
-        /** @var Department $department */
-        /** @var Province $province */
-        /** @var District $district */
-        foreach ($departments as $department) {
-            $children_provinces = [];
-            foreach ($department->provinces as $province) {
-                $children_districts = [];
-                foreach ($province->districts as $district) {
-                    $children_districts[] = [
-                        'value' => $district->id,
-                        'label' => $district->id." - ".$district->description
-                    ];
-                }
-                $children_provinces[] = [
-                    'value'    => $province->id,
-                    'label'    => $province->description,
-                    'children' => $children_districts
-                ];
-            }
-            $locations[] = [
-                'value'    => $department->id,
-                'label'    => $department->description,
-                'children' => $children_provinces
-            ];
-        }
+        $countries = func_get_countries();
+        $locations = func_get_locations();
+        $identityDocumentTypes = func_get_identity_document_types();
 
-        $identityDocumentTypes = IdentityDocumentType::whereActive()->get();
         $transferReasonTypes = TransferReasonType::whereActive()->get();
         $transportModeTypes = TransportModeType::whereActive()->get();
         $unitTypes = UnitType::whereActive()->get()->toArray();
-        $countries = Country::whereActive()->get()->toArray();
         $establishments = Establishment::all();
         $series = Series::all()->toArray();
         $company = Company::select('number')->first();
         $drivers = Driver::all();
         $dispachers = Dispatcher::all();
         $related_document_types = RelatedDocumentType::get();
-
-        // ya se tiene un locations con lo siguiente combinado
-        // $departments = Department::whereActive()->get();
-        // $provinces = Province::whereActive()->get();
-        // $districts = District::whereActive()->get();
 
         return compact(
             'establishments',
