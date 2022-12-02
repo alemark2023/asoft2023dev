@@ -403,7 +403,7 @@ const SOCKET = io(url, {
 connect()
 
  function connect(username = 'usuario') {
-     SOCKET.auth = { username }
+    SOCKET.auth = { username }
     SOCKET.connect()
  }
 
