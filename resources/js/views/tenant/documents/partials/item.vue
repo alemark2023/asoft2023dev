@@ -384,7 +384,8 @@
 <!--                                    title="+ Agregar Descuentos/Cargos/Atributos especiales">-->
 
                                 <el-collapse-item name="1"
-                                                  title="+ Agregar Descuentos/Cargos/Atributos especiales">
+                                                  title="+ Agregar Descuentos/Cargos/Atributos especiales"
+                                                  v-if="showSpecialData">
                                     <div v-if="discount_types.length > 0">
                                         <label class="control-label">
                                             Descuentos
@@ -822,6 +823,16 @@ export default {
         {
             if(this.isCreditNoteAndType03 !== undefined) return this.isCreditNoteAndType03
             return false
+        },
+        isOpenFromInvoice()
+        {
+            if(this.isFromInvoice !== undefined && this.isFromInvoice) return this.isFromInvoice
+
+            return false
+        },
+        showSpecialData()
+        {
+            return (this.recordItem == null || this.recordItem == undefined) || (!_.isEmpty(this.recordItem) && this.isOpenFromInvoice)
         }
     },
     methods: {
@@ -1084,6 +1095,7 @@ export default {
         //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
         // },
         async create() {
+
             this.extra_temp = undefined;
 
             this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
@@ -1106,9 +1118,12 @@ export default {
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
 
-                this.form.attributes = this.recordItem.attributes;
-                this.form.discounts = this.recordItem.discounts;
-                this.form.charges = this.recordItem.charges;
+                if(this.isOpenFromInvoice)
+                {
+                    this.form.attributes = this.recordItem.attributes
+                    this.form.discounts = this.recordItem.discounts
+                    this.form.charges = this.recordItem.charges
+                }
 
                 if (this.isEditItemNote) {
                     this.form.item.currency_type_id = this.currencyTypeIdActive
