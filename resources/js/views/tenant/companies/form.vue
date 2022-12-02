@@ -139,7 +139,7 @@
                                 </div>
                             </div>
 
-                            
+
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="control-label">Logo APP</label>
@@ -338,7 +338,40 @@
                                 </div>
                             </div>
                         </template>
-
+                        <div class="row">
+                            <div class="col-md-12 mt-2">
+                                <h4 class="border-bottom">API SUNAT
+                                    <el-tooltip class="item"
+                                                content="Envío de guias electrónicas"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.api_sunat_id}"
+                                     class="form-group">
+                                    <label class="control-label">ID</label>
+                                    <el-input v-model="form.api_sunat_id"></el-input>
+                                    <small v-if="errors.api_sunat_id"
+                                           class="form-control-feedback"
+                                           v-text="errors.api_sunat_id[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.api_sunat_secret}"
+                                     class="form-group">
+                                    <label class="control-label">CLAVE</label>
+                                    <el-input v-model="form.api_sunat_secret"></el-input>
+                                    <small v-if="errors.api_sunat_secret"
+                                           class="form-control-feedback"
+                                           v-text="errors.api_sunat_secret[0]"></small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-actions text-right pt-2">
                         <el-button :loading="loading_submit"
@@ -396,7 +429,7 @@ export default {
                 // console.log(2)
 
             })
-        
+
         this.events()
     },
     methods: {
@@ -411,7 +444,7 @@ export default {
 
         },
         async getRecord(){
-            
+
             await this.$http.get(`/${this.resource}/record`)
                     .then(response => {
                         if (response.data !== '') {
@@ -446,7 +479,8 @@ export default {
                 integrated_query_client_id: null,
                 integrated_query_client_secret: null,
                 app_logo: null,
-
+                api_sunat_id: null,
+                api_sunat_secret: null,
             }
         },
         submit() {
