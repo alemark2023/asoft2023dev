@@ -393,19 +393,19 @@
 import { io } from 'socket.io-client'
 import {deletable} from '@mixins/deletable'
 import Notas from '../notes/index.vue'
-const url = 'https://socketio.facturalo.pro'
+const url = 'http://socketio.facturalo.pro:8080'
 const SOCKET = io(url, {
   reconnectionDelayMax: 100,
   transports: ['polling'],
   autoConnect: false,
 })
 
-// connect()
+connect()
 
-// function connect(username = 'usuario') {
-//     SOCKET.auth = { username }
-//     SOCKET.connect()
-// }
+ function connect(username = 'usuario') {
+     SOCKET.auth = { username }
+    SOCKET.connect()
+ }
 
 export default {
     mixins: [deletable],
