@@ -130,7 +130,7 @@ class ServiceDispatchController extends Controller
                         'pdf' => $record->download_external_pdf,
                         'cdr' => $download_external_cdr,
                     ],
-                    'response' => $res['cdr_data'],
+                    'response' => $has_cdr?$res['cdr_data']:$res,
                 ];
             }
 

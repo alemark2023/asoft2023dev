@@ -29,6 +29,6 @@ class TenantAddSunatToCompanies extends Migration
      */
     public function down()
     {
-        
+
     }
 }
