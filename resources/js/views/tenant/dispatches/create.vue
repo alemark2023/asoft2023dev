@@ -1,7 +1,7 @@
 <template>
     <div class="card mb-0 pt-2 pt-md-0">
         <div class="card-header bg-info">
-            <h3 class="my-0">Nueva Guía de Remisión</h3>
+            <h3 class="my-0">Nueva Guía de Remisión 2</h3>
         </div>
         <div class="card-body">
             <form autocomplete="off"
@@ -252,15 +252,6 @@
                                        v-text="errors.order_form_external[0]"></small>
                             </div>
                         </div>
-                        <!--                        <div class="col-lg-6">-->
-                        <!--                            <label class="control-label">Dirección</label>-->
-                        <!--                            <el-select v-model="form.customer_address_id">-->
-                        <!--&lt;!&ndash;                                <el-option v-for="option in customer_addresses"&ndash;&gt;-->
-                        <!--&lt;!&ndash;                                           :key="option.id"&ndash;&gt;-->
-                        <!--&lt;!&ndash;                                           :label="option.address"&ndash;&gt;-->
-                        <!--&lt;!&ndash;                                           :value="option.id"></el-option>&ndash;&gt;-->
-                        <!--                            </el-select>-->
-                        <!--                        </div>-->
                     </div>
                     <div class="row">
                     </div>
@@ -270,22 +261,6 @@
                     <h4>Datos envío</h4>
                     <h6>Dirección partida</h6>
                     <div class="row">
-                        <!--                        <div class="col-lg-2">-->
-                        <!--                            <div :class="{'has-danger': errors.origin}"-->
-                        <!--                                 class="form-group">-->
-                        <!--                                <label class="control-label">País<span class="text-danger"> *</span></label>-->
-                        <!--                                <el-select v-model="form.origin.country_id"-->
-                        <!--                                           filterable>-->
-                        <!--                                    <el-option v-for="option in countries"-->
-                        <!--                                               :key="option.id"-->
-                        <!--                                               :label="option.description"-->
-                        <!--                                               :value="option.id"></el-option>-->
-                        <!--                                </el-select>-->
-                        <!--                                <small v-if="errors.origin"-->
-                        <!--                                       class="form-control-feedback"-->
-                        <!--                                       v-text="errors.origin.country_id[0]"></small>-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
                         <div class="col-lg-5">
                             <div :class="{'has-danger': errors.origin}"
                                  class="form-group">
@@ -313,23 +288,6 @@
                     </div>
                     <h6>Dirección llegada</h6>
                     <div class="row">
-                        <!--                        <div class="col-lg-5" v-if="form.transfer_reason_type_id === '09'">-->
-                        <!--                            <div :class="{'has-danger': errors.delivery}"-->
-                        <!--                                 class="form-group">-->
-                        <!--                                <label class="control-label">País<span class="text-danger"> *</span></label>-->
-                        <!--                                <el-select v-model="form.delivery.country_id"-->
-                        <!--                                           filterable>-->
-                        <!--                                    <el-option v-for="option in countries"-->
-                        <!--                                               :key="option.id"-->
-                        <!--                                               :label="option.description"-->
-                        <!--                                               :value="option.id"></el-option>-->
-                        <!--                                </el-select>-->
-                        <!--                                <small v-if="errors.delivery"-->
-                        <!--                                       class="form-control-feedback"-->
-                        <!--                                       v-text="errors.delivery.country_id[0]"></small>-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
-                        <!--                        <div class="col-lg-5" v-else>-->
                         <div class="col-lg-5">
                             <div :class="{'has-danger': errors.delivery}"
                                  class="form-group">
@@ -342,7 +300,6 @@
                                        v-text="errors.delivery.location_id[0]"></small>
                             </div>
                         </div>
-                        <!--                        </div>-->
                         <template v-if="form.transfer_reason_type_id === '09'">
                             <div class="col-lg-7">
                                 <div :class="{'has-danger': errors['delivery.address']}"
@@ -395,148 +352,178 @@
                         </template>
                     </div>
                     <hr>
-                    <h4>Datos transportista</h4>
-                    <div class="row">
-                        <div class="col-lg-4">
-                            <div :class="{'has-danger': errors.dispacher}"
-                                 class="form-group">
-                                <label class="control-label">Selección rápida de transportista</label>
-                                <el-select v-model="dispacher"
-                                           clearable
-                                           @change="changeTransport">
-                                    <el-option
-                                        v-for="option in dispachers"
-                                        :key="option.id"
-                                        :label="option.number +' - '+ option.name"
-                                        :value="option.id"></el-option>
-                                </el-select>
-                                <small v-if="errors.dispacher"
-                                       class="form-control-feedback"
-                                       v-text="errors.dispacher[0]"></small>
+                    <template v-if="form.transport_mode_type_id === '01'">
+                        <h4>Datos transportista</h4>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div :class="{'has-danger': errors.dispacher}"
+                                     class="form-group">
+                                    <label class="control-label">Selección rápida de transportista</label>
+                                    <el-select v-model="dispacher"
+                                               clearable
+                                               @change="changeTransport">
+                                        <el-option
+                                            v-for="option in dispachers"
+                                            :key="option.id"
+                                            :label="option.number +' - '+ option.name"
+                                            :value="option.id"></el-option>
+                                    </el-select>
+                                    <small v-if="errors.dispacher"
+                                           class="form-control-feedback"
+                                           v-text="errors.dispacher[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-12">&nbsp;</div>
+                            <div class="col-lg-4">
+                                <div :class="{'has-danger': errors['dispatcher.identity_document_type_id']}"
+                                     class="form-group">
+                                    <label class="control-label">Tipo Doc.
+                                        Identidad<span class="text-danger"> *</span></label>
+                                    <el-select v-model="form.dispatcher.identity_document_type_id"
+                                               filterable>
+                                        <el-option v-for="option in identityDocumentTypes"
+                                                   :key="option.id"
+                                                   :label="option.description"
+                                                   :value="option.id"></el-option>
+                                    </el-select>
+                                    <small v-if="errors['dispatcher.identity_document_type_id']"
+                                           class="form-control-feedback"
+                                           v-text="errors['dispatcher.identity_document_type_id'][0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div :class="{'has-danger': errors['dispatcher.number']}"
+                                     class="form-group">
+                                    <label class="control-label">Número<span class="text-danger"> *</span></label>
+                                    <el-input v-model="form.dispatcher.number"
+                                              :maxlength="11"
+                                              placeholder="Número..."
+                                    ></el-input>
+                                    <small v-if="errors['dispatcher.number']"
+                                           class="form-control-feedback"
+                                           v-text="errors['dispatcher.number'][0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div :class="{'has-danger': errors['dispatcher.name']}"
+                                     class="form-group">
+                                    <label class="control-label">Nombre y/o razón social<span class="text-danger"> *</span></label>
+                                    <el-input v-model="form.dispatcher.name"
+                                              :maxlength="100"
+                                              placeholder="Nombre y/o razón social..."
+                                    ></el-input>
+                                    <small v-if="errors['dispatcher.name']"
+                                           class="form-control-feedback"
+                                           v-text="errors['dispatcher.name'][0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div :class="{'has-danger': errors['dispatcher.number_mtc']}"
+                                     class="form-group">
+                                    <label class="control-label">MTC<span class="text-danger"> *</span></label>
+                                    <el-input v-model="form.dispatcher.number_mtc"
+                                              :maxlength="12"
+                                              placeholder="MTC..."></el-input>
+                                    <small v-if="errors['dispatcher.number_mtc']"
+                                           class="form-control-feedback"
+                                           v-text="errors['dispatcher.number_mtc'][0]"></small>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-12">&nbsp;</div>
-                        <div class="col-lg-4">
-                            <div :class="{'has-danger': errors['dispatcher.identity_document_type_id']}"
-                                 class="form-group">
-                                <label class="control-label">Tipo Doc.
-                                    Identidad<span class="text-danger"> *</span></label>
-                                <el-select v-model="form.dispatcher.identity_document_type_id"
-                                           filterable>
-                                    <el-option v-for="option in identityDocumentTypes"
-                                               :key="option.id"
-                                               :label="option.description"
-                                               :value="option.id"></el-option>
-                                </el-select>
-                                <small v-if="errors['dispatcher.identity_document_type_id']"
-                                       class="form-control-feedback"
-                                       v-text="errors['dispatcher.identity_document_type_id'][0]"></small>
+                    </template>
+                    <template v-if="form.transport_mode_type_id === '02'">
+                        <h4>Datos conductor</h4>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div :class="{'has-danger': errors.driver}"
+                                     class="form-group">
+                                    <label class="control-label">Selección rápida de conductor</label>
+                                    <el-select v-model="driver"
+                                               clearable
+                                               @change="changeDriver">
+                                        <el-option
+                                            v-for="option in drivers"
+                                            :key="option.id"
+                                            :label="option.number +' - '+ option.name"
+                                            :value="option.id"></el-option>
+                                    </el-select>
+                                    <small v-if="errors.dispacher"
+                                           class="form-control-feedback"
+                                           v-text="errors.dispacher[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-12">&nbsp;</div>
+                            <div class="col-lg-4">
+                                <div :class="{'has-danger': errors['driver.identity_document_type_id']}"
+                                     class="form-group">
+                                    <label class="control-label">Tipo Doc. Identidad</label>
+                                    <el-select v-model="form.driver.identity_document_type_id"
+                                               filterable>
+                                        <el-option v-for="option in identityDocumentTypes"
+                                                   :key="option.id"
+                                                   :label="option.description"
+                                                   :value="option.id"></el-option>
+                                    </el-select>
+                                    <small v-if="errors['driver.identity_document_type_id']"
+                                           class="form-control-feedback"
+                                           v-text="errors['driver.identity_document_type_id'][0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div :class="{'has-danger': errors['driver.number']}"
+                                     class="form-group">
+                                    <label class="control-label">Número
+                                         <span class="text-danger"> *</span>
+                                    </label>
+                                    <el-input v-model="form.driver.number"
+                                              :maxlength="11"
+                                              placeholder="Número..."></el-input>
+                                    <small v-if="errors['driver.number']"
+                                           class="form-control-feedback"
+                                           v-text="errors['driver.number'][0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div :class="{'has-danger': errors['driver.name']}"
+                                     class="form-group">
+                                    <label class="control-label">Apellidos y nombres
+                                         <span class="text-danger"> *</span>
+                                    </label>
+                                    <el-input v-model="form.driver.name"
+                                              placeholder="Apellidos y nombres..."></el-input>
+                                    <small v-if="errors['driver.name']"
+                                           class="form-control-feedback"
+                                           v-text="errors['driver.name'][0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <label class="control-label">Licencia del conductor</label>
+                                    <span class="text-danger"> *</span>
+                                    <el-input v-model="form.driver.license"></el-input>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div :class="{'has-danger': errors.license_plate}"
+                                     class="form-group">
+                                    <label class="control-label">Numero de placa del vehiculo</label>
+                                    <span class="text-danger"> *</span>
+                                    <el-input v-model="form.license_plate"
+                                              :maxlength="8"
+                                              placeholder="Numero de placa del vehiculo..."></el-input>
+                                    <small v-if="errors.license_plate"
+                                           class="form-control-feedback"
+                                           v-text="errors.license_plate[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <label class="control-label">N° placa semirremolque</label>
+                                    <el-input v-model="form.secondary_license_plates.semitrailer"></el-input>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-4">
-                            <div :class="{'has-danger': errors['dispatcher.number']}"
-                                 class="form-group">
-                                <label class="control-label">Número<span class="text-danger"> *</span></label>
-                                <el-input v-model="form.dispatcher.number"
-                                          :maxlength="11"
-                                          placeholder="Número..."
-                                ></el-input>
-                                <small v-if="errors['dispatcher.number']"
-                                       class="form-control-feedback"
-                                       v-text="errors['dispatcher.number'][0]"></small>
-                            </div>
-                        </div>
-                        <div class="col-lg-4">
-                            <div :class="{'has-danger': errors['dispatcher.name']}"
-                                 class="form-group">
-                                <label class="control-label">Nombre y/o razón social<span class="text-danger"> *</span></label>
-                                <el-input v-model="form.dispatcher.name"
-                                          :maxlength="100"
-                                          placeholder="Nombre y/o razón social..."
-                                ></el-input>
-                                <small v-if="errors['dispatcher.name']"
-                                       class="form-control-feedback"
-                                       v-text="errors['dispatcher.name'][0]"></small>
-                            </div>
-                        </div>
-                    </div>
-                    <h4>Datos conductor</h4>
-                    <div class="row">
-                        <div class="col-lg-4">
-                            <div :class="{'has-danger': errors.driver}"
-                                 class="form-group">
-                                <label class="control-label">Selección rápida de conductor</label>
-                                <el-select v-model="driver"
-                                           clearable
-                                           @change="changeDriver">
-                                    <el-option
-                                        v-for="option in drivers"
-                                        :key="option.id"
-                                        :label="option.number +' - '+ option.name"
-                                        :value="option.id"></el-option>
-                                </el-select>
-                                <small v-if="errors.dispacher"
-                                       class="form-control-feedback"
-                                       v-text="errors.dispacher[0]"></small>
-                            </div>
-                        </div>
-                        <div class="col-12">&nbsp;</div>
-                        <div class="col-lg-4">
-                            <div :class="{'has-danger': errors['driver.identity_document_type_id']}"
-                                 class="form-group">
-                                <label class="control-label">Tipo Doc. Identidad</label>
-                                <el-select v-model="form.driver.identity_document_type_id"
-                                           filterable>
-                                    <el-option v-for="option in identityDocumentTypes"
-                                               :key="option.id"
-                                               :label="option.description"
-                                               :value="option.id"></el-option>
-                                </el-select>
-                                <small v-if="errors['driver.identity_document_type_id']"
-                                       class="form-control-feedback"
-                                       v-text="errors['driver.identity_document_type_id'][0]"></small>
-                            </div>
-                        </div>
-                        <div class="col-lg-4">
-                            <div :class="{'has-danger': errors['driver.number']}"
-                                 class="form-group">
-                                <label class="control-label">Número
-                                    <!-- <span class="text-danger"> *</span> -->
-                                </label>
-                                <el-input v-model="form.driver.number"
-                                          :maxlength="11"
-                                          placeholder="Número..."></el-input>
-                                <small v-if="errors['driver.number']"
-                                       class="form-control-feedback"
-                                       v-text="errors['driver.number'][0]"></small>
-                            </div>
-                        </div>
-                        <div class="col-lg-4">
-                            <div :class="{'has-danger': errors.license_plate}"
-                                 class="form-group">
-                                <label class="control-label">Numero de placa del vehiculo</label>
-                                <el-input v-model="form.license_plate"
-                                          :maxlength="8"
-                                          placeholder="Numero de placa del vehiculo..."></el-input>
-                                <small v-if="errors.license_plate"
-                                       class="form-control-feedback"
-                                       v-text="errors.license_plate[0]"></small>
-                            </div>
-                        </div>
-                        <div class="col-lg-4">
-                            <div class="form-group">
-                                <label class="control-label">Licencia del conductor</label>
-                                <el-input v-model="form.driver.license"
-                                ></el-input>
-                            </div>
-                        </div>
-                        <div class="col-lg-4">
-                            <div class="form-group">
-                                <label class="control-label">N° placa semirremolque</label>
-                                <el-input v-model="form.secondary_license_plates.semitrailer"></el-input>
-                            </div>
-                        </div>
-                    </div>
+                    </template>
                 </div>
                 <hr>
                 <div class="col-md-12">
@@ -1027,11 +1014,13 @@ export default {
                 this.form.dispatcher.number = v.number;
                 this.form.dispatcher.name = v.name;
                 this.form.dispatcher.identity_document_type_id = v.identity_document_type_id;
+                this.form.dispatcher.number_mtc = v.number_mtc;
             }
         },
         changeDriver() {
             let v = _.find(this.drivers, {'id': this.driver})
             if (v !== undefined) {
+                this.form.driver.name = v.name;
                 this.form.driver.number = v.number;
                 this.form.driver.license = v.license;
                 this.form.driver.identity_document_type_id = v.identity_document_type_id;
@@ -1237,7 +1226,7 @@ export default {
                 date_of_shipping: moment().format('YYYY-MM-DD'),
                 customer_id: customer_id,
                 observations: '',
-                transport_mode_type_id: null,
+                transport_mode_type_id: '02',
                 transfer_reason_type_id: '01',
                 transfer_reason_description: null,
                 transshipment_indicator: false,
@@ -1407,6 +1396,41 @@ export default {
         async submit() {
             if (this.config.affect_all_documents) {
                 this.form.terms_condition = this.config.terms_condition_sale;
+            }
+            if(this.form.transport_mode_type_id === '02') {
+                this.form.dispatcher = null;
+                if(this.form.driver.identity_document_type_id === '' || _.isNull(this.form.driver.identity_document_type_id)) {
+                    return this.$message.error('El tipo de documento del conductor es requerido')
+                }
+                if(this.form.driver.number === '' || _.isNull(this.form.driver.number)) {
+                    return this.$message.error('El número del conductor es requerido')
+                }
+                if(this.form.driver.name === '' || _.isNull(this.form.driver.name)) {
+                    return this.$message.error('El nombre del conductor es requerido')
+                }
+                if(this.form.driver.license === '' || _.isNull(this.form.driver.license)) {
+                    return this.$message.error('La licencia del conductor es requerido')
+                }
+                if(this.form.license_plate === '' || _.isNull(this.form.license_plate)) {
+                    return this.$message.error('El número de placa es requerido')
+                }
+                this.form.driver.names = this.form.driver.name;
+                this.form.driver.lastnames = this.form.driver.name;
+            }
+            if(this.form.transport_mode_type_id === '01') {
+                this.form.driver = null;
+                if(this.form.dispatcher.identity_document_type_id === '' || _.isNull(this.form.dispatcher.identity_document_type_id)) {
+                    return this.$message.error('El tipo de documento del transportista es requerido')
+                }
+                if(this.form.dispatcher.number === '' || _.isNull(this.form.dispatcher.number)) {
+                    return this.$message.error('El número del transportista es requerido')
+                }
+                if(this.form.dispatcher.name === '' || _.isNull(this.form.dispatcher.name)) {
+                    return this.$message.error('El nombre del transportista es requerido')
+                }
+                if(this.form.dispatcher.number_mtc === '' || _.isNull(this.form.dispatcher.number_mtc)) {
+                    return this.$message.error('El MTC del transportista es requerido')
+                }
             }
             const validateQuantity = await this.verifyQuantityItems()
             if (!validateQuantity.validate) {

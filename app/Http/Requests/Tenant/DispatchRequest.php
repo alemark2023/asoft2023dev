@@ -35,15 +35,15 @@ class DispatchRequest extends FormRequest
                 'max:100',
 
             ],
-            'dispatcher.identity_document_type_id'=> [
-                'required',
-            ],
-            'dispatcher.number'=> [
-                'required',
-            ],
-            'dispatcher.name'=> [
-                'required',
-            ],
+//            'dispatcher.identity_document_type_id'=> [
+//                'required',
+//            ],
+//            'dispatcher.number'=> [
+//                'required',
+//            ],
+//            'dispatcher.name'=> [
+//                'required',
+//            ],
             // 'driver.identity_document_type_id'=> [
             //     'required',
             // ],
@@ -92,7 +92,7 @@ class DispatchRequest extends FormRequest
     public function messages()
     {
         return [
-            
+
             'transfer_reason_description.required' => 'El campo Descripción de motivo de traslado es obligatorio.',
             'observations.required' => 'El campo Observaciones es obligatorio.',
             'dispatcher.identity_document_type_id.required' => 'El campo Tipo Doc. Identidad es obligatorio.',
