@@ -564,6 +564,7 @@ class Purchase extends ModelTenant
                     'key'         => $key + 1,
                     'id'          => $row->id,
                     'description' => $row->item->description,
+                    'name_product_pdf' => $row->name_product_pdf,
                     'quantity'    => round($row->quantity, 2)
                 ];
             }),

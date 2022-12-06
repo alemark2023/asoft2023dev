@@ -476,9 +476,11 @@
                                     <tr v-for="(row, index) in form.items"
                                         :key="index">
                                         <td>{{ index + 1 }}</td>
-                                        <td>{{
-                                                row.item.description
-                                            }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
+                                        <td>
+                                            {{
+                                                setDescriptionOfItem(row.item)
+                                            }}
+                                            <br/><small>{{ row.affectation_igv_type.description }}</small></td>
                                         <td class="text-left">{{ row.warehouse_description }}</td>
                                         <td class="text-left">{{ row.lot_code }}</td>
                                         <td class="text-center">{{ row.item.unit_type_id }}</td>
@@ -678,7 +680,7 @@ import PurchaseFormItem from './partials/item.vue'
 import PersonForm from '../persons/form.vue'
 import PurchaseOptions from './partials/options.vue'
 import {exchangeRate, functions, fnPaymentsFee, operationsForDiscounts} from '../../../mixins/functions'
-import {calculateRowItem} from '../../../helpers/functions'
+import {calculateRowItem, showNamePdfOfDescription} from '../../../helpers/functions'
 import SeriesForm from './partials/series'
 import {mapActions, mapState} from "vuex";
 
@@ -801,6 +803,10 @@ export default {
         this.initGlobalIgv()
     },
     methods: {
+        setDescriptionOfItem(item)
+        {
+            return showNamePdfOfDescription(item, this.config.show_pdf_name)
+        },
         ...mapActions([
             'loadConfiguration',
             'loadEstablishment',

@@ -995,6 +995,7 @@ export default {
 
             this.row.date_of_due = date_of_due
 
+            this.row.item.name_product_pdf = this.row.name_product_pdf || ''
 
             this.initForm()
 

@@ -70,6 +70,7 @@ class PurchaseItem extends ModelTenant
         'discounts',
         'date_of_due',
         'item_lot_group_id',
+        'name_product_pdf',
     ];
 
 
