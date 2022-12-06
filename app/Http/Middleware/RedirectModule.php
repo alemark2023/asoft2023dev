@@ -35,6 +35,7 @@
             $modules = $request->user()->getModules();
             $this->route_path = $request->path();
 
+
             if (!$request->ajax()) {
 
                 if (count($modules)) {
@@ -74,7 +75,7 @@
                 $firstLevel == "documents" ||
                 $firstLevel == "dashboard" ||
                 $firstLevel == "quotations" ||
-                $firstLevel == "items" ||
+                // $firstLevel == "items" ||
                 $firstLevel == "summaries" ||
                 $firstLevel == "voided") {
                 $group = "documents";
@@ -179,9 +180,26 @@
                 $firstLevel == "suscription") {
                 $group = "suscription_app";
             }
+            else if($this->existLevelInModules($firstLevel, ['items']))
+            {
+                $group = 'items';
+            }
 
             return $group;
         }
+
+        
+        /**
+         *
+         * @param  string $level
+         * @param  array $options
+         * @return bool
+         */
+        private function existLevelInModules($level, $options)
+        {
+            return in_array($level, $options);
+        }
+        
 
         /**
          * @param $modules
@@ -230,7 +248,8 @@
                     return redirect()->route('tenant.companies.create');
 
                 case 'inventory':
-                    return redirect()->route('warehouses.index');
+                    return redirect()->route('inventory.index');
+                    // return redirect()->route('warehouses.index');
 
                 case 'accounting':
                     return redirect()->route('tenant.account.index');
