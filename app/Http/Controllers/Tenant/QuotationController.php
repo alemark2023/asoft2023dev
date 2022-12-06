@@ -144,6 +144,9 @@ class QuotationController extends Controller
             $records = $records->whereBetween('date_of_issue', [$form->date_start, $form->date_end]);
         }
 
+        $state_type_id = $form->state_type_id ?? null;
+        if($state_type_id) $records->where('state_type_id', $state_type_id);
+
         return $records;
     }
 

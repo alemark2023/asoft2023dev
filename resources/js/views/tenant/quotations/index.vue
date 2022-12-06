@@ -24,7 +24,7 @@
                 </el-dropdown>
             </div>
             <div class="card-body">
-                <data-table :resource="resource">
+                <data-table :resource="resource" :state-types="state_types">
                     <tr slot="heading">
                         <th>#</th>
                         <th class="text-center">Fecha Emisión</th>
@@ -363,8 +363,8 @@ export default {
             )
 
         },
-        filter() {
-            this.$http.get(`/${this.resource}/filter`)
+        async filter() {
+            await this.$http.get(`/${this.resource}/filter`)
                 .then(response => {
                     this.state_types = response.data.state_types
                 })
