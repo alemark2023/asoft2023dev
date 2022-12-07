@@ -117,6 +117,7 @@ class ServiceDispatchController extends Controller
                 if ($has_cdr) {
                     $download_external_cdr = $record->download_external_cdr;
                 }
+
                 return [
                     'success' => true,
                     'data' => [
