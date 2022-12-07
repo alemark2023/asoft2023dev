@@ -823,6 +823,9 @@ class QuotationController extends Controller
 
     public function email(Request $request)
     {
+        $request->validate([
+            'customer_email' => 'required|email'
+        ]);
 
         $client = Person::find($request->customer_id);
         $quotation = Quotation::find($request->id);
