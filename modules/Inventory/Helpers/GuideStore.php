@@ -10,6 +10,8 @@ use Modules\Inventory\Models\InventoryTransaction;
 use Modules\Inventory\Models\Warehouse;
 use Modules\Store\Helpers\DocumentData;
 use Modules\Template\Formats\InternalFormat;
+use Exception;
+
 
 class GuideStore
 {
@@ -33,6 +35,8 @@ class GuideStore
             ->where('establishment_id', $data['establishment_id'])
             ->where('document_type_id', $data['document_type_id'])
             ->first();
+
+        if(is_null($series)) throw new Exception("No se encontró una serie para el tipo de documento {$data['document_type_id']}, registre la serie en Establecimientos/Series");
 
         $data['series'] = $series->number;
         $data['number'] = '#';

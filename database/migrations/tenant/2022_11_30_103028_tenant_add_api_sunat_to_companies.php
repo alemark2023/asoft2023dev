@@ -15,8 +15,10 @@ class TenantAddApiSunatToCompanies extends Migration
     public function up()
     {
         Schema::table('companies', function (Blueprint $table) {
-            $table->string('api_sunat_id')->nullable()->after('ws_api_token');
-            $table->string('api_sunat_secret')->nullable()->after('api_sunat_id');
+            $table->string('soap_sunat_username', 20)->nullable()->after('ws_api_token');
+            $table->string('soap_sunat_password', 20)->nullable()->after('soap_sunat_username');
+            $table->string('api_sunat_id', 36)->nullable()->after('soap_sunat_password');
+            $table->string('api_sunat_secret', 50)->nullable()->after('api_sunat_id');
         });
     }
 
@@ -28,6 +30,8 @@ class TenantAddApiSunatToCompanies extends Migration
     public function down()
     {
         Schema::table('companies', function (Blueprint $table) {
+            $table->dropColumn('soap_sunat_username');
+            $table->dropColumn('soap_sunat_password');
             $table->dropColumn('api_sunat_id');
             $table->dropColumn('api_sunat_secret');
         });

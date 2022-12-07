@@ -1470,6 +1470,28 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Mostrar precio en etiqueta
+                                    <el-tooltip
+                                        class="item"
+                                        content="Mostrar precio en etiqueta de código de barras de productos"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.show_price_barcode_ticket}"
+                                        class="form-group">
+                                    <el-switch v-model="form.show_price_barcode_ticket"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.show_price_barcode_ticket"
+                                            class="form-control-feedback"
+                                            v-text="errors.show_price_barcode_ticket[0]"></small>
+                                </div>
+                            </div>
+
 
                             <div class="col-md-3 mt-4">
                                 <label class="control-label">Modificar cantidad de decimales
@@ -1964,7 +1986,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="col-6 mt-4">
                                 <div class="form-group">
                                     <label>
