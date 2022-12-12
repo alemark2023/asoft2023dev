@@ -422,10 +422,11 @@ export default {
         },
         async discountGlobal() {
 
-            console.log('discountGlobal');
+            // console.log('discountGlobal');
             // let is_exonerated = this.isExonerated()
             // let is_exonerated = false
-            console.log(this.discount_type);
+            // console.log(this.discount_type);
+
             let base = parseFloat(this.form.total)
             let global_discount = parseFloat(this.discount_amount)
 
@@ -713,13 +714,23 @@ export default {
                 payment: this.form.total,
             }
 
+            /*
             this.form_cash_document = {
                 document_id: null,
                 sale_note_id: null
             }
+            */
+
+            this.initFormCashDocument()
 
         },
-
+        initFormCashDocument()
+        {
+            this.form_cash_document = {
+                document_id: null,
+                sale_note_id: null
+            }
+        },
         filterSeries() {
             this.form.series_id = null
             this.series = _.filter(this.all_series, {'document_type_id': this.form.document_type_id});
@@ -911,6 +922,9 @@ export default {
                 })
                 .catch(error => {
                     console.log(error);
+                })
+                .finally(() => {
+                    this.initFormCashDocument()
                 })
         },
         savePaymentMethod() {

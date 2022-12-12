@@ -22,6 +22,9 @@ class DownloadController extends Controller
 
         if ($format != null) $this->reloadPDF($document, 'invoice', $format);
 
+        if(in_array($document->document_type_id, ['09', '31']) && $type === 'cdr') {
+            $type = 'cdr_xml';
+        }
         return $this->download($type, $document);
     }
 
@@ -32,6 +35,9 @@ class DownloadController extends Controller
                 break;
             case 'xml':
                 $folder = 'signed';
+                break;
+            case 'cdr_xml':
+                $folder = 'cdr_xml';
                 break;
             case 'cdr':
                 $folder = 'cdr';

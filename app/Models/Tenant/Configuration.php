@@ -136,6 +136,7 @@
      * @method static Builder|Configuration whereUrlApiruc($value)
      * @method static Builder|Configuration whereUseLoginGlobal($value)
      * @method static Builder|Configuration whereApkUrl($value)
+     * @property bool|false  $show_price_barcode_ticket
      */
     class Configuration extends ModelTenant
     {
@@ -267,14 +268,12 @@
             'enabled_remember_change_password',
             'quantity_month_remember_change_password',
             'restrict_series_selection_seller',
-
             'enabled_point_system',
             'point_system_sale_amount',
             'quantity_of_points',
             'round_points_of_sale',
             'show_complete_name_pos',
             'enable_categories_products_view',
-
             'restrict_seller_discount',
             'sellers_discount_limit',
             'enabled_sales_agents',
@@ -283,7 +282,8 @@
             'search_factory_code_items',
             'enabled_dispatch_ticket_pdf',
             'register_series_invoice_xml',
-            'enable_discount_by_customer'
+            'enable_discount_by_customer',
+            'show_price_barcode_ticket',
         ];
 
         protected $casts = [
@@ -386,13 +386,11 @@
             'quantity_month_remember_change_password' => 'int',
             'restrict_series_selection_seller'=>'bool',
             'show_complete_name_pos'=>'bool',
-
             'enabled_point_system'=>'bool',
             'point_system_sale_amount'=>'float',
             'quantity_of_points'=>'float',
             'round_points_of_sale'=>'bool',
             'enable_categories_products_view'=>'bool',
-
             'restrict_seller_discount'=>'bool',
             'sellers_discount_limit'=>'float',
             'enabled_sales_agents'=>'bool',
@@ -401,9 +399,8 @@
             'search_factory_code_items'=>'bool',
             'enabled_dispatch_ticket_pdf'=>'bool',
             'register_series_invoice_xml'=>'bool',
-            
-            'enable_discount_by_customer' => 'boolean'
-            
+            'enable_discount_by_customer' => 'boolean',
+            'show_price_barcode_ticket' => 'boolean',
         ];
 
         protected $hidden = [
@@ -624,16 +621,13 @@
                 'dashboard_products' => (bool)$this->dashboard_products,
                 'affect_all_documents' => (bool)$this->affect_all_documents,
                 'restrict_series_selection_seller' => $this->restrict_series_selection_seller,
-
                 'enabled_point_system' => $this->enabled_point_system,
                 'point_system_sale_amount' => $this->point_system_sale_amount,
                 'quantity_of_points' => $this->quantity_of_points,
                 'round_points_of_sale' => $this->round_points_of_sale,
-
                 'delete_relation_note_to_invoice' => (bool)config('tenant.delete_relation_note_to_invoice'),
                 'show_complete_name_pos' => (bool)$this->show_complete_name_pos,
                 'enable_categories_products_view' => $this->enable_categories_products_view,
-
                 'restrict_seller_discount' => $this->restrict_seller_discount,
                 'sellers_discount_limit' => $this->sellers_discount_limit,
                 'enabled_sales_agents' => $this->enabled_sales_agents,
@@ -642,9 +636,8 @@
                 'search_factory_code_items' => $this->search_factory_code_items,
                 'enabled_dispatch_ticket_pdf' => $this->enabled_dispatch_ticket_pdf,
                 'register_series_invoice_xml' => $this->register_series_invoice_xml,
-                
                 'enable_discount_by_customer' => $this->enable_discount_by_customer,
-
+                'show_price_barcode_ticket' => $this->show_price_barcode_ticket,
             ];
         }
 
@@ -2380,6 +2373,15 @@
                         'register_series_invoice_xml',
                     ])
                     ->firstOrFail();
+        }
+
+        /**
+         * ticket de impresión de código de barra
+         * @return bool
+         */
+        public function isShowPriceBarcodeTicket(): ?bool
+        {
+            return (bool)$this->show_price_barcode_ticket;
         }
 
     }

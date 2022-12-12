@@ -1705,5 +1705,46 @@ class Document extends ModelTenant
                     ]);
     }
 
+    
+    /**
+     * 
+     * Placa para reporte de ventas
+     *
+     * @return string
+     */
+    public function getPlateNumberSaleReport()
+    {
+        return $this->plate_number;
+    }
+    
+
+    /**
+     *
+     * @return bool
+     */
+    public function isCreditNote()
+    {
+        return $this->document_type_id === DocumentType::CREDIT_NOTE_ID;
+    }
+
+
+    /**
+     * 
+     * Determina si es nota credito tipo 13
+     *
+     * @return bool
+     */
+    public function isCreditNoteAndType13()
+    {
+        if($this->isCreditNote())
+        {
+            if($this->note)
+            {
+                return $this->note->isTypePaymentDateAdjustments();
+            }
+        }
+
+        return false;
+    }
 
 }

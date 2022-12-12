@@ -93,6 +93,9 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
         DocumentItem::created(function (DocumentItem $document_item) {
 
+            // si es nota credito tipo 13, no se asocia a inventario
+            if($document_item->document->isCreditNoteAndType13()) return;
+
             if (!$document_item->item->is_set) 
             {
                 $presentationQuantity = (!empty($document_item->item->presentation)) ? $document_item->item->presentation->quantity_unit : 1;

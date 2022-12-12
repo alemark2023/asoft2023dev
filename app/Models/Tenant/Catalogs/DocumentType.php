@@ -66,6 +66,8 @@
 
         public const SALE_DOCUMENT_TYPES = ['01', '03', '80'];
 
+        public const CREDIT_NOTE_ID = '07';
+
         public $incrementing = false;
         public $timestamps = false;
         protected $table = "cat_document_types";
@@ -319,4 +321,14 @@
             return $query->select('id', 'description');
         }
 
+        
+        /**
+         *
+         * @return bool
+         */
+        public function isInvoice()
+        {
+            return in_array($this->id, self::INVOICE_DOCUMENTS_IDS, true);
+        }
+        
     }
