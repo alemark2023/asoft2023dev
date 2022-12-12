@@ -100,6 +100,16 @@ class Facturalo
         return $this->document;
     }
 
+    public function setXmlUnsigned($xmlUnsigned)
+    {
+        $this->xmlUnsigned = $xmlUnsigned;
+    }
+
+    public function getXmlSigned()
+    {
+        return $this->xmlSigned;
+    }
+
     public function setType($type)
     {
         $this->type = $type;
@@ -339,7 +349,13 @@ class Facturalo
         $format_pdf = ($format != null) ? $format : $format_pdf;
         $this->type = ($type != null) ? $type : $this->type;
 
-        // dd($this->document);
+        if(in_array($this->document->document_type_id, ['09', '31'])) {
+            if($this->document->qr_url) {
+                $qrCode = new QrCodeGenerate();
+                $this->document->qr = $qrCode->displayPNGBase64($this->document->qr_url);
+            }
+        }
+
         $base_pdf_template = Establishment::find($this->document->establishment_id)->template_pdf;
         if (($format_pdf === 'ticket') OR
             ($format_pdf === 'ticket_58') OR

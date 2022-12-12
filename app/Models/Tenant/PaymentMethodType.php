@@ -338,4 +338,14 @@
         {
             return $query->where('is_cash', '!=', 1);
         }
+
+        
+        /**
+         * @return bool
+         */
+        public function isCredit()
+        {
+            return (bool)$this->is_credit;
+        }
+
     }

@@ -69,11 +69,39 @@ class StoreController extends Controller
         $rec['quotation_id'] = $table_id;
         $rec['additional_information'] = $rec['description'];
 
+        $this->setPaymentsFromQuotation($rec, $record);
+
         return [
             'success' => true,
             'data' => $rec
         ];
     }
+
+    
+    /**
+     * 
+     * Asignar valores relacionados a pago credito
+     *
+     * @param  array $rec
+     * @param  Quotation $document
+     * @return void
+     */
+    private function setPaymentsFromQuotation(&$rec, $document)
+    {
+        $payment_method_type = $document->payment_method_type;
+
+        if($payment_method_type)
+        {
+            if($payment_method_type->isCredit())
+            {
+                //credito o credito con cuotas
+                $rec['payment_condition_id'] = ($payment_method_type->number_days) ? '02' : '03';
+                $rec['data_payments_fee'] = $document->payments;
+                $rec['document_payment_method_type'] = $payment_method_type;
+            }
+        }
+    }  
+
 
     public function getItems()
     {

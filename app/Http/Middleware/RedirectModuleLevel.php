@@ -150,7 +150,8 @@
                 } elseif (in_array($path[0], ["items", "brands", "item-sets"])) {
                     $group = "items";
                 } elseif (in_array($path[0], ["categories"])) {
-                    $group = "catalogs";
+                    // $group = "catalogs";
+                    $group = "items";
                 } elseif (in_array($path[0], ["summaries", "voided"])) {
                     $group = "summary_voided";
                 } elseif ($path[0] == "quotations") {
