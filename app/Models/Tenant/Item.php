@@ -2742,5 +2742,26 @@ class Item extends ModelTenant
     }
 
     
+    /**
+     * 
+     * Obtener item por codigo interno
+     * 
+     * Usado para importacion lotes/series en movimientos
+     *
+     * @return Item
+     */
+    public static function getItemByInternalId($internal_id)
+    {
+        return self::whereFilterWithOutRelations()
+                    ->where('internal_id', $internal_id)
+                    ->select([
+                        'id', 
+                        'internal_id',
+                        'lots_enabled'
+                    ])
+                    ->first();
+    }
+
+    
 }
 

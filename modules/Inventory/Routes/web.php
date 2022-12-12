@@ -11,6 +11,11 @@ if ($hostname) {
             Route::get('advanced-items-search', 'ItemController@advancedItemsSearch');
             Route::post('validate-current-item-stock', 'ItemController@validateCurrentItemStock');
 
+            
+            Route::prefix('items')->group(function () {
+                Route::post('import-item-lots-group', 'ItemController@importItemLotsGroup');
+            });
+
             // Config inventory
 
             Route::prefix('warehouses')->group(function () {

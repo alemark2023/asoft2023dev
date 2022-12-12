@@ -9,6 +9,27 @@
                 <button type="button" class="btn btn-success btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Imp. Ajuste de stock</button>
                 <button type="button" class="btn btn-success btn-sm  mt-2 mr-2" @click.prevent="clickReportStock()"><i class="fa fa-file-excel"></i> Reporte Aj. stock</button>
                 <button type="button" class="btn btn-success btn-sm  mt-2 mr-2" @click.prevent="clickReport()"><i class="fa fa-file-excel"></i> Reporte</button>
+
+                
+                <div class="btn-group flex-wrap">
+                    <button
+                        aria-expanded="false"
+                        class="btn btn-custom btn-sm mt-2 mr-2 dropdown-toggle"
+                        data-toggle="dropdown"
+                        type="button"
+                    >
+                        <i class="fa fa-upload"></i> Importar
+                        <span class="caret"></span>
+                    </button>
+                    <div
+                        class="dropdown-menu"
+                        role="menu"
+                        style="position: absolute;will-change: transform;top: 0px;left: 0px;transform: translate3d(0px, 42px, 0px);" x-placement="bottom-start">
+                        <a class="dropdown-item text-1" href="#" @click.prevent="clickImportSpecialAttributes('item-lots-group')">Lotes</a>
+                        <a class="dropdown-item text-1" href="#" @click.prevent="clickImportSpecialAttributes('item-lots')">Series</a>
+                    </div>
+                </div>
+
                 <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate('input')"><i class="fa fa-plus-circle"></i> Ingreso</button>
                 <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickOutput()"><i class="fa fa-minus-circle"></i> Salida</button>
             </div>
@@ -97,6 +118,13 @@
             <stock-report
                             :showDialog.sync="showDialogStockReport"
                                 ></stock-report>
+
+
+            <import-special-attributes 
+                :showDialog.sync="showDialogSpecialAttributes"
+                :special-attribute-type="special_attribute_type"
+                ></import-special-attributes>
+
         </div>
     </div>
 </template>
@@ -119,10 +147,12 @@
     import StockImport from './import.vue'
 
     import StockReport from './reports/stock_report.vue';
+    import ImportSpecialAttributes from './partials/import_special_attributes.vue'
+
 
     export default {
         props: ['type', 'typeUser'],
-        components: {DataTable, InventoriesForm, InventoriesMove, InventoriesRemove, InventoriesFormOutput, MoveGlobal, MovementReport, InventoriesStock, StockGlobal, StockImport, StockReport},
+        components: {DataTable, InventoriesForm, InventoriesMove, InventoriesRemove, InventoriesFormOutput, MoveGlobal, MovementReport, InventoriesStock, StockGlobal, StockImport, StockReport, ImportSpecialAttributes},
         data() {
             return {
                 showHideModalMoveGlobal: false,
@@ -140,12 +170,19 @@
                 showHideStockMoveGlobal: false,
                 showImportDialog: false,
                 showDialogStockReport:false,
+                showDialogSpecialAttributes:false,
+                special_attribute_type: null,
             }
         },
         created() {
             this.title = 'Inventario'
         },
         methods: {
+            clickImportSpecialAttributes(type)
+            {
+                this.showDialogSpecialAttributes = true
+                this.special_attribute_type = type
+            },
             clickReport(){
                 this.showDialogMovementReport = true
             },
