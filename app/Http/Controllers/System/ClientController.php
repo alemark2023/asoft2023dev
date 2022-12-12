@@ -708,6 +708,10 @@
                 ['establishment_id' => 1, 'document_type_id' => '40', 'number' => 'P001'],
                 ['establishment_id' => 1, 'document_type_id' => '80', 'number' => 'NV01'],
                 ['establishment_id' => 1, 'document_type_id' => '04', 'number' => 'L001'],
+
+                ['establishment_id' => 1, 'document_type_id' => 'U2', 'number' => 'NIA1'],
+                ['establishment_id' => 1, 'document_type_id' => 'U3', 'number' => 'NSA1'],
+                ['establishment_id' => 1, 'document_type_id' => 'U4', 'number' => 'NTA1'],
             ]);
 
 

@@ -33,6 +33,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Modules\ApiPeruDev\Http\Controllers\ServiceDispatchController;
 use Modules\Document\Traits\SearchTrait;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
@@ -206,23 +207,31 @@ class DispatchController extends Controller
 
     public function store(DispatchRequest $request)
     {
-
         $configuration = Configuration::first();
         if ($request->series[0] == 'T') {
             /** @var Facturalo $fact */
             $fact = DB::connection('tenant')->transaction(function () use ($request, $configuration) {
                 $facturalo = new Facturalo();
                 $facturalo->save($request->all());
-                $facturalo->createXmlUnsigned();
+
+                $document = $facturalo->getDocument();
+                $data = (new ServiceDispatchController())->getData($document->id);
+                $facturalo->setXmlUnsigned((new ServiceDispatchController())->createXmlUnsigned($data));
                 $facturalo->signXmlUnsigned();
+
+//                $facturalo->createXmlUnsigned();
+//                $facturalo->signXmlUnsigned();
                 $facturalo->createPdf();
-                if($configuration->isAutoSendDispatchsToSunat()) {
-                     $facturalo->senderXmlSignedBill();
-                }
+//                if($configuration->isAutoSendDispatchsToSunat()) {
+//                     $facturalo->senderXmlSignedBill();
+//                }
                 return $facturalo;
             });
 
             $document = $fact->getDocument();
+
+            ((new ServiceDispatchController())->send($document->external_id));
+
             // $response = $fact->getResponse();
         } else {
             /** @var Facturalo $fact */

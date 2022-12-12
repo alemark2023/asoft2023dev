@@ -67,6 +67,7 @@ class DispatchTransform
             return [
                 'location_id' => $origin['ubigeo'],
                 'address' => $origin['direccion'],
+                'code' => $origin['codigo_del_domicilio_fiscal'],
             ];
         }
         return null;
@@ -80,6 +81,7 @@ class DispatchTransform
             return [
                 'location_id' => $delivery['ubigeo'],
                 'address' => $delivery['direccion'],
+                'code' => $delivery['codigo_del_domicilio_fiscal'],
             ];
         }
         return null;
@@ -94,6 +96,7 @@ class DispatchTransform
                 'identity_document_type_id' => $dispatcher['codigo_tipo_documento_identidad'],
                 'number' => $dispatcher['numero_documento'],
                 'name' => $dispatcher['apellidos_y_nombres_o_razon_social'],
+                'number_mtc' => $dispatcher['numero_mtc'],
             ];
         }
         return null;
@@ -104,10 +107,12 @@ class DispatchTransform
         $driver = null;
         if (key_exists('chofer', $inputs)) {
             $driver = $inputs['chofer'];
-
             return [
                 'identity_document_type_id' => $driver['codigo_tipo_documento_identidad'],
-                'number' => $driver['numero_documento']
+                'number' => $driver['numero_documento'],
+                'names' => Functions::valueKeyInArray($driver, 'nombres'),
+                'lastnames' => Functions::valueKeyInArray($driver, 'apellidos'),
+                'license' => Functions::valueKeyInArray($driver, 'numero_licencia')
             ];
         }
         return null;

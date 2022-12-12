@@ -47,6 +47,9 @@ class Company extends ModelTenant
 
         'ws_api_token',
         'ws_api_phone_number_id',
+
+        'soap_sunat_username',
+        'soap_sunat_password',
         'api_sunat_id',
         'api_sunat_secret'
 
