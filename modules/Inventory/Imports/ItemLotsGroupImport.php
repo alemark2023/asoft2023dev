@@ -12,12 +12,15 @@ use Modules\Inventory\Http\Requests\InventoryRequest;
 use App\Models\Tenant\{
     Item
 };
+use Illuminate\Support\Facades\Log;
+
 
 class ItemLotsGroupImport implements ToCollection
 {
     use Importable;
 
     protected $data;
+    protected $response;
 
     public function collection(Collection $rows)
     {
@@ -25,6 +28,7 @@ class ItemLotsGroupImport implements ToCollection
         $warehouse_id = request('warehouse_id');
         $registered = 0;
         $inventory_transaction_id = '102'; //Entrada por importacion masiva (xlsx)
+        $response = [];
 
         unset($rows[0]);
 
@@ -35,7 +39,6 @@ class ItemLotsGroupImport implements ToCollection
             $lot_code = $row[1];
             $stock = $row[2];
             $date_of_due = Date::excelToDateTimeObject($row[3])->format('Y-m-d');
-
             $item = Item::getItemByInternalId($internal_id);
 
             // dd($item, $internal_id, $lot_code, $stock, $date_of_due);
@@ -61,21 +64,48 @@ class ItemLotsGroupImport implements ToCollection
                     ];
         
                     $request = new InventoryRequest($params);
-
-                    dd($params, $request);
+                    // dd($params, $request);
         
                     $res = app(InventoryController::class)->store_transaction($request);
 
-                    \Log::info("res import:". json_encode($res));
+                    $this->setResponse($res['success'], $res['message']);
+
         
                     $registered += 1;
                 }
+                else
+                {
+                    $this->setResponse(false, "El producto no maneja lotes.");
+                }
+            }
+            else
+            {
+                $this->setResponse(false, "El producto con código interno {$internal_id} no existe.");
             }
 
         }
-        $this->data = compact('total', 'registered', 'warehouse_id_de');
+
+        Log::info("Log de lotes importados: ". json_encode($this->response));
+
+        $this->data = compact('total', 'registered');
 
     }
+
+    
+    /**
+     *
+     * @param  bool $success
+     * @param  string $message
+     * @return void
+     */
+    public function setResponse($success, $message)
+    {
+        $this->response [] = [
+            'success' => $success,
+            'message' => $message
+        ];
+    }
+    
 
     public function getData()
     {

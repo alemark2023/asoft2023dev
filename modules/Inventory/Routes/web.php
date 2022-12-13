@@ -14,6 +14,7 @@ if ($hostname) {
             
             Route::prefix('items')->group(function () {
                 Route::post('import-item-lots-group', 'ItemController@importItemLotsGroup');
+                Route::post('import-item-lots', 'ItemController@importItemLots');
             });
 
             // Config inventory

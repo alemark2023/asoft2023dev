@@ -2757,6 +2757,7 @@ class Item extends ModelTenant
                     ->select([
                         'id', 
                         'internal_id',
+                        'series_enabled',
                         'lots_enabled'
                     ])
                     ->first();
