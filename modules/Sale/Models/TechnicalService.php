@@ -1525,4 +1525,52 @@
             }});
         }
 
+        
+        /**
+         * Total del servicio tecnico
+         *
+         * @return float
+         */
+        public function getTotalRecordAttribute()
+        {
+            return $this->cost + $this->total;
+        }
+
+
+        /**
+         * 
+         * Total pagado
+         *
+         * @return float
+         */
+        public function getTotalPaidAttribute()
+        {
+            return (float) $this->payments()->sum('payment');
+        }
+
+
+        /**
+         *
+         * Validar si esta pagado a la totalidad
+         *
+         * @return bool
+         */
+        public function hasFullPayment()
+        {
+            return $this->total_record == $this->total_paid;
+        }
+
+
+        /**
+         *
+         * Validar si cumple las condiciones para sumar a los ingresos en reporte (pos)
+         *
+         * @return bool
+         */
+        public function applyToCash()
+        {
+            return $this->hasFullPayment();
+        }
+
+
     }
