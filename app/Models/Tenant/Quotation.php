@@ -300,6 +300,19 @@ class Quotation extends ModelTenant
         ]);
     }
 
+    
+    /**
+     * 
+     * Verificar si tiene documentos válidos
+     *
+     * @return bool
+     */
+    public function hasAcceptedDocuments()
+    {
+        return $this->documents()->whereStateTypeAccepted()->count() > 0;
+    }
+
+
     /**
      * Devuelve datos standar para cotizacion.
      * Si $with_items es verdadero, devuelve los item de la cotizacion.
@@ -319,7 +332,9 @@ class Quotation extends ModelTenant
         }
 
         $row = $this;
-        $btn_generate = (count($row->documents) > 0 || count($row->sale_notes) > 0)?false:true;
+        // $btn_generate = (count($row->documents) > 0 || count($row->sale_notes) > 0)?false:true;
+        $btn_generate = ($this->hasAcceptedDocuments() || count($row->sale_notes) > 0)?false:true;
+
         $btn_generate_cnt = $row->contract ?false:true;
         $external_id_contract = $row->contract ? $row->contract->external_id : null;
 
@@ -382,6 +397,8 @@ class Quotation extends ModelTenant
             'documents' => $row->documents->transform(function($row) {
                 return [
                     'number_full' => $row->number_full,
+                    'is_voided_or_rejected' => $row->isVoidedOrRejected(),
+                    'state_type_description' => $row->state_type->description,
                 ];
             }),
             'sale_notes' => $row->sale_notes->transform(function($row) {

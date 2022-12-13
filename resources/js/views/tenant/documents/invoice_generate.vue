@@ -541,11 +541,11 @@
                                                         <!-- Crédito con cuotas -->
                                                         <div v-if="form.payment_condition_id === '03'"
                                                              class="table-responsive">
-                                                            <table v-if="form.fee.length>0"
+                                                            <table 
                                                                    class="text-left table"
                                                                    width="100%">
                                                                 <thead>
-                                                                <tr>
+                                                                <tr v-if="form.fee.length > 0">
                                                                     <th class="text-left"
                                                                         style="width: 100px">Fecha
                                                                     </th>
@@ -933,11 +933,11 @@
                                             colspan="2">
                                             <!-- Crédito con cuotas -->
                                             <div v-if="form.payment_condition_id === '03'">
-                                                <table v-if="form.fee.length>0"
+                                                <table
                                                        class="text-left"
                                                        width="100%">
                                                     <thead>
-                                                    <tr>
+                                                    <tr v-if="form.fee.length > 0">
                                                         <th class="text-left"
                                                             style="width: 100px">Fecha
                                                         </th>
@@ -1761,6 +1761,10 @@ export default {
         }
     },
     computed: {
+        isGeneratedFromExternal()
+        {
+            return (this.table != undefined && this.table) && (this.tableId != undefined && this.tableId)
+        },
         showLoadVoucher()
         {
             return this.configuration.show_load_voucher && !this.isUpdateDocument
@@ -2373,6 +2377,11 @@ export default {
                 this.clickAddInitGuides();
             }
 
+            if(this.isGeneratedFromExternal)
+            {
+                this.preparePaymentsFee(data)
+            }
+
             await this.reloadDataCustomers(this.form.customer_id)
 
             this.establishment = data.establishment;
@@ -2385,6 +2394,25 @@ export default {
 
             this.calculateTotal();
             // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+
+        },
+        preparePaymentsFee(data)
+        {
+            if(this.isCreditPaymentCondition)
+            {
+                // credito
+                if (this.form.payment_condition_id === '02')
+                {
+                    this.clickAddFeeNew()
+                    const index = 0
+                    this.readonly_date_of_due = true
+                    
+                    this.form.fee[index].payment_method_type_id = data.document_payment_method_type.id
+                    this.form.fee[index].amount = _.sumBy(data.data_payments_fee, 'payment')
+
+                    this.changePaymentMethodType(index)
+                }
+            }
         },
         prepareDataGlobalDiscount(data)
         {

@@ -1003,7 +1003,7 @@ class SaleNoteController extends Controller
     }
     
 
-    public function createPdf($sale_note = null, $format_pdf = null, $filename = null)
+    public function createPdf($sale_note = null, $format_pdf = null, $filename = null, $output = 'pdf')
     {
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
@@ -1181,6 +1181,9 @@ class SaleNoteController extends Controller
 
         $stylesheet = file_get_contents($path_css);
 
+        // para impresion automatica
+        if($output == 'html') return $this->getHtmlDirectPrint($pdf, $stylesheet, $html);
+
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
@@ -1228,6 +1231,45 @@ class SaleNoteController extends Controller
 
         $this->uploadFile($this->document->filename, $pdf->output('', 'S'), 'sale_note');
     }
+
+            
+    /**
+     * 
+     * Html para impresion directa
+     *
+     * @param  Mpdf $pdf
+     * @param  string $stylesheet
+     * @param  string $html
+     * @return string
+     */
+    public function getHtmlDirectPrint(&$pdf, $stylesheet, $html)
+    {
+        $path_html = app_path('CoreFacturalo' . DIRECTORY_SEPARATOR . 'Templates' . DIRECTORY_SEPARATOR . 'pdf' . DIRECTORY_SEPARATOR . 'ticket_html.css');
+        $ticket_html = file_get_contents($path_html);
+        $pdf->WriteHTML($ticket_html, HTMLParserMode::HEADER_CSS);
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+        return "<style>".$ticket_html.$stylesheet."</style>".$html;
+    }
+
+
+    /**
+     * 
+     * Impresión directa en pos
+     *
+     * @param  int $id
+     * @param  string $format
+     * @return string
+     */
+    public function toTicket($id, $format = 'ticket') 
+    {
+        $document = SaleNote::find($id);
+
+        if (!$document) throw new Exception("El código {$id} es inválido, no se encontro documento relacionado");
+
+        return $this->createPdf($document, $format, $document->filename, 'html');
+    }
+
 
     public function uploadFile($filename, $file_content, $file_type)
     {
