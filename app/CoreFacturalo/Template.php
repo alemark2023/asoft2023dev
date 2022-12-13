@@ -2,6 +2,7 @@
 
 namespace App\CoreFacturalo;
 use Illuminate\Support\Facades\Log;
+
 class Template
 {
     public function pdf($base_template, $template, $company, $document, $format_pdf)
@@ -119,9 +120,9 @@ class Template
         return view('pdf.'.$base_template.'.partials.footer_dispatch', compact('document'))->render();
     }
 
-        
+
     /**
-     * 
+     *
      * Renderizar pdf por nombre sin considerar formato
      *
      * @param  string $base_template
@@ -136,9 +137,9 @@ class Template
         return self::render($path_template, $company, $document);
     }
 
-    
+
     /**
-     * 
+     *
      * Validar si existe el template
      *
      * @param  string $base_template

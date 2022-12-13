@@ -33,12 +33,16 @@ class ServiceDispatchController extends Controller
                 $xml_signed
             );
 
+            $ticket = null;
+            $reception_date = null;
             if (key_exists('numTicket', $res)) {
+                $ticket = $res['numTicket'];
+                $reception_date = $res['fecRecepcion'];
                 Dispatch::query()
                     ->where('id', $dispatch->id)
                     ->update([
-                        'ticket' => $res['numTicket'],
-                        'reception_date' => $res['fecRecepcion']
+                        'ticket' => $ticket,
+                        'reception_date' => $reception_date
                     ]);
             }
 
@@ -46,8 +50,9 @@ class ServiceDispatchController extends Controller
                 'success' => true,
                 'filename' => $dispatch->filename,
                 'external_id' => $external_id,
-                'ticket' => $res['numTicket'],
-                'reception_date' => $res['fecRecepcion'],
+                'ticket' => $ticket,
+                'reception_date' => $reception_date,
+                'res' => $res,
             ];
         }
 
@@ -131,7 +136,7 @@ class ServiceDispatchController extends Controller
                         'pdf' => $record->download_external_pdf,
                         'cdr' => $download_external_cdr,
                     ],
-                    'response' => $has_cdr?$res['cdr_data']:$res,
+                    'response' => $has_cdr ? $res['cdr_data'] : $res,
                 ];
             }
 

@@ -2405,9 +2405,53 @@ class Item extends ModelTenant
             'has_isc' => (bool)$this->has_isc,
             'system_isc_type_id' => $this->system_isc_type_id,
             'percentage_isc' => $this->percentage_isc,
+            
+            'warehouses' => $this->getApiDataWarehouses(),
+            'item_unit_types' => $this->getApiDataItemUnitTypes(),
         ];
     }
 
+    
+    /**
+     * 
+     * Datos de almacenes asociados al item
+     *
+     * @return array
+     */
+    public function getApiDataWarehouses()
+    {
+        return $this->warehouses->transform(function($row) {
+            return [
+                'warehouse_description' => $row->warehouse->description,
+                'stock' => $row->stock,
+                'warehouse_id' => $row->warehouse_id,
+            ];
+        });
+    }
+
+    
+    /**
+     * 
+     * Datos de lista de precios asociados al item
+     *
+     * @return array
+     */
+    public function getApiDataItemUnitTypes()
+    {
+        return $this->item_unit_types->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->description,
+                'unit_type_id' => $row->unit_type_id,
+                'quantity_unit' => $row->quantity_unit,
+                'price1' => $row->price1,
+                'price2' => $row->price2,
+                'price3' => $row->price3,
+                'price_default' => $row->price_default,
+            ];
+        });
+    }
+    
 
     /**
      *

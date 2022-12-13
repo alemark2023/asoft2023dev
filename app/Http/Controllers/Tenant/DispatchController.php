@@ -207,6 +207,9 @@ class DispatchController extends Controller
 
     public function store(DispatchRequest $request)
     {
+        $company = Company::query()
+            ->select('soap_type_id')
+            ->first();
         $configuration = Configuration::first();
         if ($request->series[0] == 'T') {
             /** @var Facturalo $fact */
@@ -230,7 +233,9 @@ class DispatchController extends Controller
 
             $document = $fact->getDocument();
 
-            ((new ServiceDispatchController())->send($document->external_id));
+            if($company->soap_type_id === '02') {
+                ((new ServiceDispatchController())->send($document->external_id));
+            }
 
             // $response = $fact->getResponse();
         } else {
