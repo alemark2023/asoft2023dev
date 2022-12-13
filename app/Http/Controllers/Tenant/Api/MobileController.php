@@ -61,6 +61,7 @@ class MobileController extends Controller
             'seriedefault' => $user->series_id,
             'token' => $user->api_token,
             'restaurant_role_id' => $user->restaurant_role_id,
+            'restaurant_role_code' => $user->restaurant_role_id ? $user->restaurant_role->code : null,
             'ruc' => $company->number,
             'app_logo' => $company->app_logo,
             'app_logo_base64' => '',//base64_encode(file_get_contents(config('app.url').'/storage/uploads/logos/'.$company->app_logo)),
