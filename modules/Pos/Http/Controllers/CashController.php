@@ -367,43 +367,50 @@ class CashController extends Controller
                 // fin items
             }
             /** Documentos de Tipo Servicio tecnico */
-            elseif ($cash_document->technical_service) {
+            elseif ($cash_document->technical_service) 
+            {
                 $usado = '<br>Se usan para cash<br>';
                 $technical_service = $cash_document->technical_service;
-                $cash_income += $technical_service->cost;
-                $final_balance += $technical_service->cost;
-                if (count($technical_service->payments) > 0) {
-                    $usado = '<br>Se usan los pagos<br>';
-                    $pays = $technical_service->payments;
-                    foreach ($methods_payment as $record) {
-                        $record->sum = ($record->sum + $pays->where('payment_method_type_id', $record->id)->sum('payment'));
-                        if (!empty($record_total)) {
-                            $usado .= self::getStringPaymentMethod($record->id).'<br>Se usan los pagos Tipo '.$record->id.'<br>';
+
+                if($technical_service->applyToCash())
+                {
+                    $cash_income += $technical_service->total_record;
+                    $final_balance += $technical_service->total_record;
+
+                    if (count($technical_service->payments) > 0) {
+                        $usado = '<br>Se usan los pagos<br>';
+                        $pays = $technical_service->payments;
+                        foreach ($methods_payment as $record) {
+                            $record->sum = ($record->sum + $pays->where('payment_method_type_id', $record->id)->sum('payment'));
+                            if (!empty($record_total)) {
+                                $usado .= self::getStringPaymentMethod($record->id).'<br>Se usan los pagos Tipo '.$record->id.'<br>';
+                            }
                         }
+
+                        $data['total_cash_income_pmt_01'] += $this->getIncomeEgressCashDestination($technical_service->payments);
+
                     }
 
-                    $data['total_cash_income_pmt_01'] += $this->getIncomeEgressCashDestination($technical_service->payments);
+                    $order_number = 4;
 
+                    $temp = [
+                        'type_transaction'          => 'Venta',
+                        'document_type_description' => 'Servicio técnico',
+                        'number'                    => 'TS-'.$technical_service->id,//$value->document->number_full,
+                        'date_of_issue'             => $technical_service->date_of_issue->format('Y-m-d'),
+                        'date_sort'                 => $technical_service->date_of_issue,
+                        'customer_name'             => $technical_service->customer->name,
+                        'customer_number'           => $technical_service->customer->number,
+                        'total'                     => $technical_service->total_record,
+                        // 'total'                     => $technical_service->cost,
+                        'currency_type_id'          => 'PEN',
+                        'usado'                     => $usado." ".__LINE__,
+                        'tipo'                      => 'technical_service',
+                        'total_payments'            => $technical_service->payments->sum('payment'),
+                        'type_transaction_prefix'   => 'income',
+                        'order_number_key'          => $order_number.'_'.$technical_service->created_at->format('YmdHis'),
+                    ];
                 }
-
-                $order_number = 4;
-
-                $temp = [
-                    'type_transaction'          => 'Venta',
-                    'document_type_description' => 'Servicio técnico',
-                    'number'                    => 'TS-'.$technical_service->id,//$value->document->number_full,
-                    'date_of_issue'             => $technical_service->date_of_issue->format('Y-m-d'),
-                    'date_sort'                 => $technical_service->date_of_issue,
-                    'customer_name'             => $technical_service->customer->name,
-                    'customer_number'           => $technical_service->customer->number,
-                    'total'                     => $technical_service->cost,
-                    'currency_type_id'          => 'PEN',
-                    'usado'                     => $usado." ".__LINE__,
-                    'tipo'                      => 'technical_service',
-                    'total_payments'            => $technical_service->payments->sum('payment'),
-                    'type_transaction_prefix'   => 'income',
-                    'order_number_key'          => $order_number.'_'.$technical_service->created_at->format('YmdHis'),
-                ];
 
             }
             /** Documentos de Tipo Gastos */

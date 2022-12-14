@@ -79,10 +79,7 @@ class DispatchController extends Controller
             $res = ((new ServiceDispatchController())->statusTicket($external_id));
             (new Facturalo())->createPdf($record, 'dispatch', 'a4');
 
-            return [
-                'success' => true,
-                'data' => $res
-            ];
+            return $res;
         }
 
         return [

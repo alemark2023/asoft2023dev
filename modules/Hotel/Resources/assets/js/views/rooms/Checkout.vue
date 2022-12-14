@@ -525,9 +525,9 @@ export default {
         
         // console.log(this.document.items);
         await this.onCalculateTotals();
-        console.log(this.document);
-        this.onCalculatePaidAndDebts();
-        this.clickAddPayment();
+        // console.log(this.document);
+        await this.onCalculatePaidAndDebts();
+        await this.clickAddPayment();
         this.validateIdentityDocumentType();
         const date = moment().format("YYYY-MM-DD");
         await this.searchExchangeRateByDate(date).then((res) => {
@@ -585,8 +585,18 @@ export default {
                 this.series.length > 0 ? this.series[0].id : null;
         },
         clickAddPayment() {
+
+            /*
             const payment =
                 this.document.payments.length == 0 ? this.document.total : 0;
+            */
+
+            let payment = 0
+
+            if(this.document.payments.length == 0)
+            {
+                payment = (this.totalDebt > 0) ? this.totalDebt : this.document.total
+            }
 
             this.document.payments.push({
                 id: null,

@@ -24,7 +24,7 @@
                 </el-dropdown>
             </div>
             <div class="card-body">
-                <data-table :resource="resource">
+                <data-table :resource="resource" :state-types="state_types">
                     <tr slot="heading">
                         <th>#</th>
                         <th class="text-center">Fecha Emisión</th>
@@ -52,7 +52,8 @@
                         <th class="text-right">T.Igv</th>
                         <th class="text-right">Total</th>
                         <th class="text-center">PDF</th>
-                        <th class="text-right">Acciones</th>
+                        <th class="text-right"></th>
+                        <!-- <th class="text-right">Acciones</th> -->
                     <tr>
                     <tr slot-scope="{ index, row }" :class="{ anulate_color : row.state_type_id == '11' }">
                         <td>{{ index }}</td>
@@ -77,7 +78,15 @@
                         </td>
                         <td>
                             <template v-for="(document,i) in row.documents">
-                                <label :key="i" v-text="document.number_full" class="d-block"></label>
+                                <template v-if="document.is_voided_or_rejected">
+                                    <label :key="i" class="d-block text-danger">
+                                        {{ document.number_full }}
+                                        <!-- {{ document.number_full }} ({{document.state_type_description}}) -->
+                                    </label>
+                                </template>
+                                <template v-else>
+                                    <label :key="i" v-text="document.number_full" class="d-block"></label>
+                                </template>
                             </template>
                         </td>
                         <td>
@@ -168,20 +177,92 @@
 
                         <td class="text-right">
 
+                            <div class="dropdown">
+                                <button class="btn btn-default btn-sm" type="button" id="dropdownMenuButton"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+                                    <button v-if="row.btn_options"
+                                        class="dropdown-item"
+                                        @click.prevent="clickGenerateDocument(row.id)">
+                                        Generar comprobante
+                                    </button>
+
+                                    <button v-if="row.btn_options"
+                                        class="dropdown-item"
+                                        @click.prevent="clickOptions(row.id)">
+                                        Generar nota de venta
+                                    </button>
+
+                                    <a v-if="row.documents.length == 0 && row.state_type_id != '11'"
+                                        :href="`/${resource}/edit/${row.id}`" type="button"
+                                        class="dropdown-item">
+                                        Editar
+                                    </a>
+
+                                    <button v-if="row.documents.length == 0 && row.state_type_id != '11'" type="button"
+                                        class="dropdown-item"
+                                        @click.prevent="clickAnulate(row.id)">
+                                        Anular
+                                    </button>
+
+                                    <button @click="duplicate(row.id)" type="button"
+                                        class="dropdown-item">
+                                        Duplicar
+                                    </button>
+
+                                    <a :href="`/dispatches/create_new/quotation/${row.id}`"
+                                        class="dropdown-item">
+                                        Guía
+                                    </a>
+
+                                    <template v-if="row.btn_generate_cnt && row.state_type_id != '11'">
+                                        <a :href="`/contracts/generate-quotation/${row.id}`"
+                                            class="dropdown-item">
+                                            Generar contrato
+                                        </a>
+                                    </template>
+                                    <template v-else>
+                                        <button type="button" @click="clickPrintContract(row.external_id_contract)"
+                                            class="dropdown-item">
+                                            Ver contrato
+                                        </button>
+                                    </template>
+
+                                    <!-- pedidos -->
+                                    <button
+                                        v-if="canMakeOrderNote(row)"
+                                        @click="makeOrder(row.id)"
+                                        type="button"
+                                        class="dropdown-item">
+                                        Generar Pedido
+                                    </button>
+
+                                    <button
+                                        @click="clickSendQuotation(row.id)"
+                                        type="button"
+                                        class="dropdown-item">
+                                        Enviar cotización
+                                    </button>
+                                </div>
+                            </div>
+
                             <!--                            /*-->
                             <!--                             #830-->
                             <!--                             */-->
-                            <button v-if="row.btn_options"
+                            <!-- <button v-if="row.btn_options"
                                     type="button"
                                     class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickGenerateDocument(row.id)">
                                 Generar comprobante
-                            </button>
+                            </button> -->
                             <!--                            /*-->
                             <!--                             #830-->
                             <!--                             */-->
 
-                            <button v-if="row.btn_options"
+                            <!-- <button v-if="row.btn_options"
                                     type="button"
                                     class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)">
@@ -191,13 +272,16 @@
                             <a v-if="row.documents.length == 0 && row.state_type_id != '11'"
                                :href="`/${resource}/edit/${row.id}`" type="button"
                                class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
+
                             <button v-if="row.documents.length == 0 && row.state_type_id != '11'" type="button"
                                     class="btn waves-effect waves-light btn-xs btn-danger"
                                     @click.prevent="clickAnulate(row.id)">Anular
                             </button>
+
                             <button @click="duplicate(row.id)" type="button"
                                     class="btn waves-effect waves-light btn-xs btn-info">Duplicar
                             </button>
+
                             <a :href="`/dispatches/create/${row.id}/q`"
                                class="btn waves-effect waves-light btn-xs btn-warning m-1__2">Guía</a>
 
@@ -209,15 +293,16 @@
                                 <button type="button" @click="clickPrintContract(row.external_id_contract)"
                                         class="btn waves-effect waves-light btn-xs btn-primary m-1__2">Ver contrato
                                 </button>
-                            </template>
+                            </template> -->
+
                             <!-- pedidos -->
-                            <button
+                            <!-- <button
                                 v-if="canMakeOrderNote(row)"
                                 @click="makeOrder(row.id)"
                                 type="button"
                                 class="btn waves-effect waves-light btn-xs btn-tumblr">
                                 Generar Pedido
-                            </button>
+                            </button> -->
 
                         </td>
 
@@ -238,6 +323,12 @@
 
             <quotation-payments :showDialog.sync="showDialogPayments"
                                 :recordId="recordId"></quotation-payments>
+
+
+            <send-email-document :showDialog.sync="showDialogSendEmailDocument"
+                                :recordId="recordId"
+                                :resource="resource"></send-email-document>
+
         </div>
     </div>
 </template>
@@ -254,6 +345,7 @@ import DataTable from '../../../components/DataTableQuotation.vue'
 import {deletable} from '../../../mixins/deletable'
 import QuotationPayments from './partials/payments.vue'
 import {mapActions, mapState} from "vuex";
+import SendEmailDocument from '@components/secondary/SendEmailDocument.vue'
 
 export default {
     props: [
@@ -268,7 +360,8 @@ export default {
         DataTable,
         QuotationOptions,
         QuotationOptionsPdf,
-        QuotationPayments
+        QuotationPayments,
+        SendEmailDocument
     },
     computed: {
         ...mapState([
@@ -279,6 +372,7 @@ export default {
     data() {
         return {
             resource: 'quotations',
+            showDialogSendEmailDocument: false,
             recordId: null,
             showDialogPayments: false,
             showDialogOptions: false,
@@ -331,6 +425,11 @@ export default {
         this.loadConfiguration()
     },
     methods: {
+        clickSendQuotation(id)
+        {
+            this.recordId = id
+            this.showDialogSendEmailDocument = true
+        },
         ...mapActions([
             'loadConfiguration',
         ]),
@@ -363,8 +462,8 @@ export default {
             )
 
         },
-        filter() {
-            this.$http.get(`/${this.resource}/filter`)
+        async filter() {
+            await this.$http.get(`/${this.resource}/filter`)
                 .then(response => {
                     this.state_types = response.data.state_types
                 })

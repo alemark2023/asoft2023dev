@@ -57,7 +57,7 @@ class DispatchInput
             'total_weight' => $inputs['total_weight'],
             'packages_number' => $inputs['packages_number'],
             'container_number' => $inputs['container_number'],
-            'license_plate' => (isset($inputs['license_plate'])) ? $inputs['license_plate'] : null,
+            'license_plate' => (isset($inputs['license_plate'])) ? func_str_to_upper_utf8($inputs['license_plate']) : null,
             'origin' => self::origin($inputs),
             'delivery' => self::delivery($inputs),
             'dispatcher' => self::dispatcher($inputs),
