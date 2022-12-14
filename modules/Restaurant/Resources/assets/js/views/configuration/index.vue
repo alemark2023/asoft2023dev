@@ -412,7 +412,7 @@
 import { io } from 'socket.io-client'
 import {deletable} from '@mixins/deletable'
 import Notas from '../notes/index.vue'
-const url = 'http://localhost:8080'
+const url = 'https://socketio.facturalo.pro'
 const SOCKET = io(url, {
   reconnectionDelayMax: 100,
   transports: ['polling'],
@@ -556,7 +556,8 @@ export default {
         }).then(() => {
           this.getUsers();
           const role = this.roles.find(x => x.id == this.form_role.role_id)
-          this.sendUserUpdate(this.form_role.user_id, this.form_role.role_id, role.code )
+          const user = this.users.find(x => x.id == this.form_role.user_id)
+          this.sendUserUpdate(user.email, role.code )
           this.form_role.user_id = '';
           this.form_role.role_id = '';
           // this.loading_submit = false;
@@ -598,10 +599,9 @@ export default {
       resetTablensAndEnvClients() {
         SOCKET.emit('reset-table-envs')
       },
-      sendUserUpdate(id, roleId, roleCode) {
+      sendUserUpdate(userEmail, roleCode) {
         const data = {
-          user_id: id,
-          role_id: roleId,
+          user_email: userEmail,
           role_code: roleCode,
         }
         SOCKET.emit('data-user-profile', data)
