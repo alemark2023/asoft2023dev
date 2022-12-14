@@ -133,18 +133,19 @@
                             <template v-if="!is_client">
                                 <el-checkbox v-model="search_item_by_barcode"
                                              :disabled="recordItem != null">Buscar por
-                                                                            código de
-                                                                            barras
+                                    código de
+                                    barras
                                 </el-checkbox>
                                 <br>
                                 <template v-if="search_item_by_barcode">
-                                    <el-checkbox v-model="search_item_by_barcode_presentation">Por presentación</el-checkbox>
+                                    <el-checkbox v-model="search_item_by_barcode_presentation">Por presentación
+                                    </el-checkbox>
                                     <br>
                                 </template>
                             </template>
                             <el-checkbox v-model="form.has_plastic_bag_taxes"
                                          :disabled="isEditItemNote">Impuesto a la
-                                                                    Bolsa Plástica
+                                Bolsa Plástica
                             </el-checkbox>
                             <small v-if="errors.item_id"
                                    class="form-control-feedback"
@@ -211,9 +212,9 @@
                                 Precio Unitario
 
                                 <el-tooltip v-if="itemLastPrice" class="item" :content="itemLastPrice"
-                                                effect="dark"
-                                                placement="top-start">
-                                        <i class="fa fa-info-circle"></i>
+                                            effect="dark"
+                                            placement="top-start">
+                                    <i class="fa fa-info-circle"></i>
                                 </el-tooltip>
                             </label>
 
@@ -221,17 +222,18 @@
 
                                 <template v-if="form.item">
                                     <el-input v-model="form.unit_price_value"
-                                            :tabindex="'3'"
-                                            :readonly="!edit_unit_price"
-                                            @input="calculateQuantity">
+                                              :tabindex="'3'"
+                                              :readonly="!edit_unit_price"
+                                              @input="calculateQuantity">
 
                                         <template v-if="form.item.currency_type_symbol">
-                                            <el-select slot="prepend" v-model="form.item.currency_type_id" class="el-select-currency">
+                                            <el-select slot="prepend" v-model="form.item.currency_type_id"
+                                                       class="el-select-currency">
 
                                                 <el-option v-for="option in currencyTypes"
-                                                            :key="option.id"
-                                                            :label="option.symbol"
-                                                            :value="option.id"></el-option>
+                                                           :key="option.id"
+                                                           :label="option.symbol"
+                                                           :value="option.id"></el-option>
                                             </el-select>
                                         </template>
                                     </el-input>
@@ -241,11 +243,11 @@
                             <template v-else>
 
                                 <el-input v-model="form.unit_price_value"
-                                        :tabindex="'3'"
-                                        :readonly="!edit_unit_price"
-                                        @input="calculateQuantity">
+                                          :tabindex="'3'"
+                                          :readonly="!edit_unit_price"
+                                          @input="calculateQuantity">
                                     <template v-if="form.item.currency_type_symbol"
-                                            slot="prepend">
+                                              slot="prepend">
                                         {{ form.item.currency_type_symbol }}
                                     </template>
                                 </el-input>
@@ -273,8 +275,8 @@
                         <a class="text-center font-weight-bold text-info"
                            href="#"
                            @click.prevent="clickLotGroup">[&#10004;
-                                                          Seleccionar
-                                                          lote]</a>
+                            Seleccionar
+                            lote]</a>
                     </div>
 
                     <div v-if="showSeries"
@@ -283,8 +285,8 @@
                         <a class="text-center font-weight-bold text-info"
                            href="#"
                            @click.prevent="clickSelectLots">[&#10004;
-                                                            Seleccionar
-                                                            series]</a>
+                            Seleccionar
+                            series]</a>
                     </div>
                     <div v-show="form.item.calculate_quantity"
                          class="col-md-3 col-sm-6">
@@ -378,10 +380,10 @@
                              class="col-md-12 mt-2">
                             <el-collapse v-model="activePanel">
 
-<!--                                <el-collapse-item-->
-<!--                                    v-if="!(recordItem != null)"-->
-<!--                                    name="1"-->
-<!--                                    title="+ Agregar Descuentos/Cargos/Atributos especiales">-->
+                                <!--                                <el-collapse-item-->
+                                <!--                                    v-if="!(recordItem != null)"-->
+                                <!--                                    name="1"-->
+                                <!--                                    title="+ Agregar Descuentos/Cargos/Atributos especiales">-->
 
                                 <el-collapse-item name="1"
                                                   title="+ Agregar Descuentos/Cargos/Atributos especiales"
@@ -417,7 +419,9 @@
                                                     <el-input v-model="row.description"></el-input>
                                                 </td>
                                                 <td>
-                                                    <el-checkbox v-model="row.is_amount" @change="changeIsDiscountAmount(index)">Ingresar monto fijo
+                                                    <el-checkbox v-model="row.is_amount"
+                                                                 @change="changeIsDiscountAmount(index)">Ingresar monto
+                                                        fijo
                                                     </el-checkbox>
                                                     <br>
                                                     <template v-if="row.is_amount">
@@ -601,7 +605,6 @@
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
 
-        
 
     </el-dialog>
 </template>
@@ -632,6 +635,7 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 import Keypress from "vue-keypress";
 import HistorySalesForm from "../../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
+
 export default {
     props: [
         'recordItem',
@@ -807,31 +811,27 @@ export default {
             }
             return false;
         },
-        applyChangeCurrencyItem(){
+        applyChangeCurrencyItem() {
 
-            if(this.configuration) return this.configuration.change_currency_item
+            if (this.configuration) return this.configuration.change_currency_item
 
             return false
 
         },
-        enabledSearchFactoryCodeItems()
-        {
-            if(this.configuration) return this.configuration.search_factory_code_items ? 1 : 0
+        enabledSearchFactoryCodeItems() {
+            if (this.configuration) return this.configuration.search_factory_code_items ? 1 : 0
             return 0
         },
-        isNoteErrorDescription()
-        {
-            if(this.isCreditNoteAndType03 !== undefined) return this.isCreditNoteAndType03
+        isNoteErrorDescription() {
+            if (this.isCreditNoteAndType03 !== undefined) return this.isCreditNoteAndType03
             return false
         },
-        isOpenFromInvoice()
-        {
-            if(this.isFromInvoice !== undefined && this.isFromInvoice) return this.isFromInvoice
+        isOpenFromInvoice() {
+            if (this.isFromInvoice !== undefined && this.isFromInvoice) return this.isFromInvoice
 
             return false
         },
-        showSpecialData()
-        {
+        showSpecialData() {
             return (this.recordItem == null || this.recordItem == undefined) || (!_.isEmpty(this.recordItem) && this.isOpenFromInvoice)
         }
     },
@@ -944,14 +944,13 @@ export default {
         },
         async searchRemoteItems(input) {
 
-            if (input.length > 2)
-            {
+            if (input.length > 2) {
                 this.loading_search = true
                 const params = {
                     'input': input,
                     'search_by_barcode': this.search_item_by_barcode ? 1 : 0,
                     'search_item_by_barcode_presentation': this.search_item_by_barcode_presentation ? 1 : 0,
-                    'search_factory_code_items' : this.enabledSearchFactoryCodeItems
+                    'search_factory_code_items': this.enabledSearchFactoryCodeItems
                 }
                 await this.$http.get(`/${this.resource}/search-items/`, {params})
                     .then(response => {
@@ -977,14 +976,11 @@ export default {
                 this.$refs.selectBarcode.$data.selectedLabel = '';
 
                 //busqueda por presentacion
-                if(this.search_item_by_barcode_presentation)
-                {
-                    if (this.items.length == 1)
-                    {
-                        const item_unit_type = _.find(this.items[0].item_unit_types, { barcode : input})
+                if (this.search_item_by_barcode_presentation) {
+                    if (this.items.length == 1) {
+                        const item_unit_type = _.find(this.items[0].item_unit_types, {barcode: input})
 
-                        if(!_.isEmpty(item_unit_type))
-                        {
+                        if (!_.isEmpty(item_unit_type)) {
                             this.form.item_id = this.items[0].id;
                             this.$refs.selectBarcode.blur();
                             this.changeItem()
@@ -993,8 +989,7 @@ export default {
                     }
                 }
                 //busqueda comun
-                else
-                {
+                else {
                     if (this.items.length == 1) {
                         this.form.item_id = this.items[0].id;
                         this.$refs.selectBarcode.blur();
@@ -1118,8 +1113,7 @@ export default {
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
 
-                if(this.isOpenFromInvoice)
-                {
+                if (this.isOpenFromInvoice) {
                     this.form.attributes = this.recordItem.attributes
                     this.form.discounts = this.recordItem.discounts
                     this.form.charges = this.recordItem.charges
@@ -1164,7 +1158,7 @@ export default {
                 }
                 this.calculateQuantity()
 
-                if(this.recordItem.item.exchanged_for_points) this.form.item.exchanged_for_points = this.recordItem.item.exchanged_for_points
+                if (this.recordItem.item.exchanged_for_points) this.form.item.exchanged_for_points = this.recordItem.item.exchanged_for_points
 
             } else {
                 this.isUpdateWarehouseId = null
@@ -1230,8 +1224,7 @@ export default {
             let discount_type_id = this.form.discounts[index].discount_type_id
             this.form.discounts[index].discount_type = _.find(this.discount_types, {id: discount_type_id})
         },
-        changeIsDiscountAmount(index)
-        {
+        changeIsDiscountAmount(index) {
             this.form.discounts[index].amount = 0
             this.form.discounts[index].percentage = 0
         },
@@ -1336,7 +1329,7 @@ export default {
 
             //this.item_unit_types = this.form.item.item_unit_types;
             //(this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
-            if(this.form.item.name_product_pdf && this.config.item_name_pdf_description){
+            if (this.form.item.name_product_pdf && this.config.item_name_pdf_description) {
                 this.form.name_product_pdf = this.form.item.name_product_pdf;
             }
 
@@ -1361,8 +1354,7 @@ export default {
         cleanTotalItem() {
             this.total_item = null
         },
-        async validateCurrentStock()
-        {
+        async validateCurrentStock() {
             this.loading_dialog = true
 
             const data = {
@@ -1378,26 +1370,20 @@ export default {
 
             return response.data
         },
-        applyValidateStock()
-        {
+        applyValidateStock() {
             return (this.validate_stock_add_item && (this.isFromInvoice !== undefined && this.isFromInvoice) && (this.isUpdateDocument !== undefined && !this.isUpdateDocument))
         },
-        async clickAddItem() 
-        {
-            if(this.applyValidateStock())
-            {
+        async clickAddItem() {
+            if (this.applyValidateStock()) {
                 const validate_current_stock = await this.validateCurrentStock()
-                if(!validate_current_stock.success) return this.$message.error(validate_current_stock.message)
+                if (!validate_current_stock.success) return this.$message.error(validate_current_stock.message)
             }
 
 
-            if(this.isNoteErrorDescription)
-            {
-                if(parseFloat(this.form.unit_price_value) < 0) return this.$message.error('El Precio Unitario debe ser mayor o igual 0');
-            }
-            else
-            {
-                if(parseFloat(this.form.unit_price_value) <= 0) return this.$message.error('El Precio Unitario debe ser mayor a 0');
+            if (this.isNoteErrorDescription) {
+                if (parseFloat(this.form.unit_price_value) < 0) return this.$message.error('El Precio Unitario debe ser mayor o igual 0');
+            } else {
+                if (parseFloat(this.form.unit_price_value) <= 0) return this.$message.error('El Precio Unitario debe ser mayor a 0');
             }
 
             // if(this.form.quantity < this.getMinQuantity()){
@@ -1432,13 +1418,11 @@ export default {
 
 
             //validar precio compra y venta
-            if(this.configuration)
-            {
-                if(this.configuration.validate_purchase_sale_unit_price)
-                {
+            if (this.configuration) {
+                if (this.configuration.validate_purchase_sale_unit_price) {
                     let val_purchase_unit_price = parseFloat(this.form.item.purchase_unit_price)
 
-                    if(val_purchase_unit_price > parseFloat(unit_price)){
+                    if (val_purchase_unit_price > parseFloat(unit_price)) {
                         return this.$message.error(`El precio de compra no puede ser superior al precio de venta (P. Compra: ${val_purchase_unit_price})`)
                     }
                 }
@@ -1495,7 +1479,7 @@ export default {
                 this.setFocusSelectItem();
             }
         },
-        showMessageDetraction(){
+        showMessageDetraction() {
 
             let total = (this.currencyTypeIdActive === 'PEN') ? this.row.total : (this.row.total * this.exchangeRateSale)
             let total_restriction = 700
@@ -1747,24 +1731,24 @@ export default {
                 }
             }
         },
-        checkKey(e){
+        checkKey(e) {
             let code = e.event.code;
-            if(code === 'Escape'){
+            if (code === 'Escape') {
                 this.close()
             }
         },
         async getLastPriceItem() {
-            this.itemLastPrice =null
-            let show_last_price_sale = _.has(this.configuration, 'show_last_price_sale')?this.configuration.show_last_price_sale:false;
-            if(show_last_price_sale) {
-                if(this.customerId && this.form.item_id) {
+            this.itemLastPrice = null
+            let show_last_price_sale = _.has(this.configuration, 'show_last_price_sale') ? this.configuration.show_last_price_sale : false;
+            if (show_last_price_sale) {
+                if (this.customerId && this.form.item_id) {
                     const params = {
                         'type_document': 'CPE',
                         'customer_id': this.customerId,
                         'item_id': this.form.item_id
                     }
                     await this.$http.get(`/items/last-sale`, {params}).then((response) => {
-                        if(response.data.unit_price) {
+                        if (response.data.unit_price) {
                             this.itemLastPrice = `Último precio de venta: ${response.data.unit_price}`
                         }
 

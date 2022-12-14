@@ -193,19 +193,19 @@
                                 </el-tooltip>
 
                             </label>
-                            
+
                             <template v-if="applyChangeCurrencyItem && changeCurrencyFromParent">
 
                                 <el-input v-model="form.unit_price"
                                         @input="calculateQuantity">
-                                        
+
                                         <el-select slot="prepend" v-model="form.item.currency_type_id" class="custom-change-select-currency">
                                             <el-option v-for="option in currencyTypes"
                                                         :key="option.id"
                                                         :label="option.symbol"
                                                         :value="option.id"></el-option>
                                         </el-select>
-                                </el-input> 
+                                </el-input>
 
                             </template>
                             <template v-else>
@@ -234,7 +234,6 @@
                                       @input="calculateTotal"></el-input>
                         </div>
                     </div>
-                    <!--
                     <div v-if="showLots" class="col-md-3 col-sm-3" style="padding-top: 1%;">
                         <a class="text-center font-weight-bold text-info" href="#" @click.prevent="clickLotGroup">[&#10004;
                             Seleccionar
@@ -246,7 +245,6 @@
                             Seleccionar
                             series]</a>
                     </div>
-                    -->
                     <div v-show="form.item.calculate_quantity"
                          class="col-md-3 col-sm-6">
                         <div :class="{'has-danger': errors.total_item}"
@@ -393,7 +391,7 @@
                                                     <template v-else>
                                                         <el-input v-model="row.percentage"></el-input>
                                                     </template>
-                                                    <!-- 
+                                                    <!--
                                                     <el-checkbox v-model="row.is_amount">Ingresar monto fijo
                                                     </el-checkbox>
                                                     <br>
@@ -540,6 +538,12 @@
         <item-form :external="true"
                    :showDialog.sync="showDialogNewItem"></item-form>
 
+        <lots-group
+            :lots_group="form.lots_group"
+            :quantity="form.quantity"
+            :showDialog.sync="showDialogLots"
+            @addRowLotGroup="addRowLotGroup">
+        </lots-group>
 
         <warehouses-detail
             :isUpdateWarehouseId="isUpdateWarehouseId"
@@ -558,6 +562,7 @@
 <script>
 
 import itemForm from '../../items/form.vue'
+import LotsGroup from '../../documents/partials/lots_group'
 
 import {calculateRowItem} from '../../../../helpers/functions'
 import WarehousesDetail from './warehouses.vue'
@@ -584,7 +589,8 @@ export default {
     components: {
         itemForm,
         WarehousesDetail,
-        'vue-ckeditor': VueCkeditor.component
+        'vue-ckeditor': VueCkeditor.component,
+        LotsGroup
     },
     data() {
         return {
@@ -1136,7 +1142,7 @@ export default {
                     })
                 })
             }
-            // this.form.lots_group = this.form.item.lots_group
+            this.form.lots_group = this.form.item.lots_group
             if(this.form.item.name_product_pdf && this.config.item_name_pdf_description){
                 this.form.name_product_pdf = this.form.item.name_product_pdf;
             }

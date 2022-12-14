@@ -33,7 +33,9 @@
                         <td>{{ row.number }}</td>
                         <td>
                             <span class="badge bg-secondary text-white"
-                                  :class="{'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}">{{ row.state_type_description }}</span>
+                                  :class="{'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}">{{
+                                    row.state_type_description
+                                }}</span>
                         </td>
                         <td class="text-center">{{ row.date_of_shipping }}</td>
 
@@ -161,7 +163,12 @@ export default {
                 'external_id': external_id
             })
                 .then((result) => {
-                    console.log(result.data);
+                    let data = result.data;
+                    if (data.success) {
+                        this.$message.success(data.message)
+                    } else {
+                        this.$message.error(data.message)
+                    }
                     this.$eventHub.$emit('reloadData')
                 }).catch(() => {
                 this.$notify.success({
