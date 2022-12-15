@@ -140,5 +140,36 @@ class GeneralPdfHelper
         ];
     }
 
+    
+    /**
+     *
+     * Retornar archivo temporal para vista previa con nombre de archivo
+     *
+     * @param  string $temp_folder
+     * @param  string $filename
+     * @param  string $file_content
+     * @return mixed
+     * 
+     */
+    public static function getPreviewTempPdfWithFilename($temp_folder, $filename, $file_content)
+    {
+        $temp = tempnam(sys_get_temp_dir(), $temp_folder);
+
+        file_put_contents($temp, $file_content);
+
+        return response()->file($temp, self::pdfResponseFileHeaders($filename));
+    }
+
+        
+    /**
+     *
+     * @param  float $value
+     * @param  int $decimals
+     * @return float
+     */
+    public static function setNumberFormat($value, $decimals = 2)
+    {
+        return number_format($value, $decimals, ".", "");
+    }
 
 }

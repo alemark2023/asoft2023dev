@@ -2,6 +2,9 @@
 
 namespace Modules\Pos\Traits;
 
+use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
+use Mpdf\Mpdf;
+
 
 trait CashReportTrait
 {
@@ -123,6 +126,7 @@ trait CashReportTrait
     
         
     /**
+     * 
      * Asignar valores finales
      *
      * @param  array $data
@@ -142,7 +146,7 @@ trait CashReportTrait
         // total compras al contado por transferencia
         $data['total_cash_purchases_transfer'] = $data['purchase_cash']['total_transfer'] + $data['amortization_credit_purchases']['total_transfer'];
 
-        // saldos
+
         // saldo en efectivo
         $data['cash_balance'] = $data['total_cash_sales'] - $data['total_cash_purchases'];
 
@@ -152,8 +156,8 @@ trait CashReportTrait
         // saldo total
         $data['total_balance'] = $data['cash_balance'] + $data['balance_transfer'];
         
-        // dd($data);
     }
+
 
     /**
      * 
@@ -206,6 +210,28 @@ trait CashReportTrait
             $data['purchase_cash']['total'] += $total_cash_transfer;
         }
     }
+
+    
+    /**
+     * 
+     * Imprimir reporte a4
+     *
+     * @param  string $view
+     * @param  string $temp_folder
+     * @param  string $filename
+     * @param  array $data
+     */
+    public function generalToPrintReport($view, $temp_folder, $filename, $pdf_data)
+    {
+        $view = view($view, $pdf_data);
+        $html = $view->render();
+
+        $pdf = new Mpdf(['mode' => 'utf-8']);
+        $pdf->WriteHTML($html);
+
+        return GeneralPdfHelper::getPreviewTempPdfWithFilename($temp_folder, $filename, $pdf->output('', 'S'));
+    }
+
 
 
 }

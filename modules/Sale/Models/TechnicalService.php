@@ -1608,7 +1608,7 @@
             return [
                 'transaction_type' => $this->getTransactionTypeCash(),
                 'document_type' => $this->getDocumentTypeCash(),
-                'apply' => $this->hasAcceptedState(),
+                'apply' => true,
             ];
         }
 
@@ -1636,16 +1636,5 @@
             return $this->payments()->filterTransferPayment()->sum('payment');
         }
         
-        
-        /**
-         * 
-         * Validar si tiene estado permitido para calculos/etc
-         *
-         * @return bool
-         */
-        public function hasAcceptedState()
-        {
-            return in_array($this->state_type_id, self::STATE_TYPES_ACCEPTED, true);
-        }
 
     }
