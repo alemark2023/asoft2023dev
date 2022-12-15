@@ -26,6 +26,8 @@ use Modules\Inventory\Http\Resources\InventoryResource;
 use Modules\Inventory\Http\Resources\InventoryCollection;
 use App\Imports\StockImport;
 use Maatwebsite\Excel\Excel;
+use Modules\Inventory\Http\Requests\RemoveRequest;
+
 
 class InventoryController extends Controller
 {
@@ -703,10 +705,10 @@ class InventoryController extends Controller
         return $result;
     }
 
-    public function remove(Request $request)
+    public function remove(RemoveRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
-            // dd($request->all());
+            dd($request->all());
             $item_id = $request->input('item_id');
             $warehouse_id = $request->input('warehouse_id');
             $quantity = $request->input('quantity');
@@ -780,6 +782,13 @@ class InventoryController extends Controller
                     $item_lot->delete();
                 }
             }
+
+            
+            // if (isset($request->IdLoteSelected)) {
+            //     $lot = ItemLotsGroup::find($request->IdLoteSelected);
+            //     $lot->quantity = ($lot->quantity - $quantity);
+            //     $lot->save();
+            // }
 
             return [
                 'success' => true,

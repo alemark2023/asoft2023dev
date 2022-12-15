@@ -2763,6 +2763,26 @@ class Item extends ModelTenant
                     ->first();
     }
 
-    
+        
+    /**
+     * 
+     * Obtener lotes para gestionar compra/venta/movimiento
+     *
+     * @return array
+     */
+    public function getLotsGroupForCompromise()
+    {
+        return $this->lots_group->transform(function ($lots_group) {
+            return [
+                'id'          => $lots_group->id,
+                'code'        => $lots_group->code,
+                'quantity'    => $lots_group->quantity,
+                'date_of_due' => $lots_group->date_of_due,
+                'checked'     => false,
+                'compromise_quantity' => 0
+            ];
+        });
+    }
+
 }
 

@@ -35,7 +35,8 @@
                             <tr>
                                 <!--<th>Seleccionado</th>-->
                                 <th width="145">Comprometer</th>
-                                <th>codigo</th>
+                                <th></th>
+                                <th>Código</th>
                                 <th>Cantidad</th>
                                 <th>Fecha vencimiento  <el-button icon="el-icon-d-caret" @click="orderData()" plain></el-button> </th>
                             </tr>
@@ -56,6 +57,12 @@
                                 <th>
                                     <el-input-number v-model="row.compromise_quantity" v-bind:class="{ 'text-danger': (row.compromise_quantity > row.quantity) }" ></el-input-number>
                                 </th>
+                                
+                                <th>
+                                    <el-button icon="el-icon-d-arrow-left" round @click="setTotalQuantityToCompromise(row)">
+                                    </el-button>
+                                </th>
+
                                 <th>{{ row.code }}</th>
                                 <th class>{{ row.quantity }}</th>
                                 <th class>{{ row.date_of_due }}</th>
@@ -104,6 +111,11 @@ export default {
         }
     },
     methods: {
+        setTotalQuantityToCompromise(row)
+        {
+            row.compromise_quantity = parseFloat(row.quantity)
+            this.$message.success('Cantidad asignada')
+        },
         orderData() {
             this.orderT =  this.orderT == 'desc' ? 'asc' : 'desc'
         },
