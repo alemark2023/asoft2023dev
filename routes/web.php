@@ -388,6 +388,7 @@ if ($hostname) {
                 Route::get('/search/customers', 'Tenant\DispatchController@searchCustomers');
                 Route::get('/search/customer/{id}', 'Tenant\DispatchController@searchClientById');
                 Route::post('/status_ticket', 'Tenant\Api\DispatchController@statusTicket');
+                Route::get('create_new/{table}/{id}', 'Tenant\DispatchController@createNew');
             });
 
             Route::get('customers/list', 'Tenant\PersonController@clientsForGenerateCPE');

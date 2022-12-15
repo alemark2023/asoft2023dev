@@ -11,9 +11,9 @@
         <form autocomplete="off">
           <el-tabs v-model="activeName" type="border-card" class="rounded">
             <el-tab-pane class="mb-3"  name="first">
-              <span slot="label">Visual</span>
+              <span slot="label">Ambientes</span>
               <div class="row">
-                <div class="col-sm-6 col-md-4 mt-4">
+                <!--<div class="col-sm-6 col-md-4 mt-4">
                   <label class="control-label">
                     Habilitar menú POS
                   </label>
@@ -120,7 +120,7 @@
                             class="form-control-feedback"
                             v-text="errors.first_menu[0]"></small>
                   </div>
-                </div>
+                </div>-->
                 <!--<div class="col-sm-6 col-md-6 mt-4">
                   <div :class="{'has-danger': errors.tables_quantity}"
                         class="form-group">
@@ -300,6 +300,7 @@
                           <th>Usuario</th>
                           <th>Correo</th>
                           <th>Rol</th>
+                          <th>Accesos</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -307,6 +308,20 @@
                           <td>{{user.name}}</td>
                           <td>{{user.email}}</td>
                           <td>{{user.restaurant_role_name }}</td>
+                          <td>
+                            <template v-if="user.restaurant_role_code == 'ADM'">
+                              <el-tag type="warning" v-for="(item, index) in permission_adm" :key="index + 'ADM'">{{ item }}</el-tag>
+                            </template>
+                            <template v-else-if="user.restaurant_role_code == 'CAJA'">
+                              <el-tag type="warning" v-for="(item, index) in permission_caja" :key="index + 'CAJA'">{{ item }}</el-tag>
+                            </template>
+                            <template v-else-if="user.restaurant_role_code == 'KITBAR'">
+                               <el-tag type="warning" v-for="(item, index) in permission_kitbar" :key="index + 'KITBAR'">{{ item }}</el-tag>
+                            </template>
+                            <template v-else-if="user.restaurant_role_code == 'MOZO'">
+                              <el-tag type="warning" v-for="(item, index) in permission_mozo" :key="index + 'MOZO'">{{ item }}</el-tag>
+                            </template>
+                          </td>
                         </tr>
                       </tbody>
                     </table>
@@ -314,7 +329,7 @@
                 </div>
               </div>
             </el-tab-pane>
-            <el-tab-pane class="mb-3"  name="third">
+            <!--<el-tab-pane class="mb-3"  name="third">
               <span slot="label">Mozos</span>
               <div class="row d-flex align-items-end">
                 <div class="col-sm-4 col-md-4 mt-4">
@@ -370,7 +385,7 @@
                   </div>
                 </div>
               </div>
-            </el-tab-pane>
+            </el-tab-pane>-->
              <el-tab-pane class="mb-3"  name="four">
               <span slot="label">Notas</span>
                 <Notas/>
@@ -387,6 +402,10 @@
     border-top-right-radius: 5px;
     border-top-left-radius: 5px ;
 }
+
+.el-tag {
+  margin-left: 2px;
+}
 </style>
 
 <script>
@@ -400,12 +419,12 @@ const SOCKET = io(url, {
   autoConnect: false,
 })
 
-// connect()
+connect()
 
-// function connect(username = 'usuario') {
-//     SOCKET.auth = { username }
-//     SOCKET.connect()
-// }
+ function connect(username = 'usuario') {
+    SOCKET.auth = { username }
+    SOCKET.connect()
+ }
 
 export default {
     mixins: [deletable],
@@ -446,7 +465,13 @@ export default {
           userEmail: null,
           socketServer: null
         },
-        socket: null
+        socket: null,
+        permission_adm: ['Todos los menús'],
+        permission_caja: ['POS', 'Mesas', 'Pedidos'],
+        permission_mozo: ['POS', 'Mesas', 'Comandas'],
+        permission_kitbar: ['Comandas'],
+
+
       }
     },
     computed: {
@@ -530,6 +555,9 @@ export default {
           }
         }).then(() => {
           this.getUsers();
+          const role = this.roles.find(x => x.id == this.form_role.role_id)
+          const user = this.users.find(x => x.id == this.form_role.user_id)
+          this.sendUserUpdate(user.email, role.code )
           this.form_role.user_id = '';
           this.form_role.role_id = '';
           // this.loading_submit = false;
@@ -570,6 +598,13 @@ export default {
       },
       resetTablensAndEnvClients() {
         SOCKET.emit('reset-table-envs')
+      },
+      sendUserUpdate(userEmail, roleCode) {
+        const data = {
+          user_email: userEmail,
+          role_code: roleCode,
+        }
+        SOCKET.emit('data-user-profile', data)
       },
       sendCompany() {
         const data = {

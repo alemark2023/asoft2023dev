@@ -33,12 +33,16 @@ class ServiceDispatchController extends Controller
                 $xml_signed
             );
 
+            $ticket = null;
+            $reception_date = null;
             if (key_exists('numTicket', $res)) {
+                $ticket = $res['numTicket'];
+                $reception_date = $res['fecRecepcion'];
                 Dispatch::query()
                     ->where('id', $dispatch->id)
                     ->update([
-                        'ticket' => $res['numTicket'],
-                        'reception_date' => $res['fecRecepcion']
+                        'ticket' => $ticket,
+                        'reception_date' => $reception_date
                     ]);
             }
 
@@ -46,8 +50,9 @@ class ServiceDispatchController extends Controller
                 'success' => true,
                 'filename' => $dispatch->filename,
                 'external_id' => $external_id,
-                'ticket' => $res['numTicket'],
-                'reception_date' => $res['fecRecepcion'],
+                'ticket' => $ticket,
+                'reception_date' => $reception_date,
+                'res' => $res,
             ];
         }
 
@@ -78,16 +83,23 @@ class ServiceDispatchController extends Controller
                 $has_cdr = false;
                 $qr_url = null;
                 $state_type_id = '01';
+                $message = '';
+                $success = true;
                 switch ($res['codRespuesta']) {
                     case '98':
+                        $success = false;
                         $state_type_id = '03';
+                        $message = 'La guía aún está en proceso, vuelva a consultar.';
                         break;
                     case '0':
                         $state_type_id = '05';
+//                        $message = 'La guía fue aceptada correctamente sin observaciones.';
                         $has_cdr = true;
                         break;
                     case '99':
+                        $success = false;
                         $state_type_id = '09';
+                        //$message = 'La guía fue rechazada.';
                         if ($res['indCdrGenerado'] === '1') {
                             $has_cdr = true;
                         }
@@ -116,9 +128,11 @@ class ServiceDispatchController extends Controller
                 $download_external_cdr = null;
                 if ($has_cdr) {
                     $download_external_cdr = $record->download_external_cdr;
+                    $message = $res['cdr_data']['message'];
                 }
+
                 return [
-                    'success' => true,
+                    'success' => $success,
                     'data' => [
                         'number' => $record->number_full,
                         'filename' => $record->filename,
@@ -130,7 +144,8 @@ class ServiceDispatchController extends Controller
                         'pdf' => $record->download_external_pdf,
                         'cdr' => $download_external_cdr,
                     ],
-                    'response' => $has_cdr?$res['cdr_data']:$res,
+                    'message' => $message,
+//                    'response' => $has_cdr ? $res['cdr_data'] : $res,
                 ];
             }
 
