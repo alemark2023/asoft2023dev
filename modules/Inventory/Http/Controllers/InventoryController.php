@@ -708,7 +708,7 @@ class InventoryController extends Controller
     public function remove(RemoveRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
-            dd($request->all());
+            // dd($request->all());
             $item_id = $request->input('item_id');
             $warehouse_id = $request->input('warehouse_id');
             $quantity = $request->input('quantity');
@@ -783,12 +783,7 @@ class InventoryController extends Controller
                 }
             }
 
-            
-            // if (isset($request->IdLoteSelected)) {
-            //     $lot = ItemLotsGroup::find($request->IdLoteSelected);
-            //     $lot->quantity = ($lot->quantity - $quantity);
-            //     $lot->save();
-            // }
+            $this->removeItemLotsGroup($request);
 
             return [
                 'success' => true,
@@ -798,6 +793,29 @@ class InventoryController extends Controller
 
         return $result;
     }
+
+    
+    /**
+     * Remover lotes
+     *
+     * @param  RemoveRequest $request
+     * @return void
+     */
+    public function removeItemLotsGroup($request)
+    {
+        $selected_lots_group = $request->selected_lots_group ?? null;
+
+        if($selected_lots_group) 
+        {
+            foreach ($selected_lots_group as $lots_group) 
+            {
+                $lot = $this->getItemLotsGroupById($lots_group['id']);
+                $lot->quantity = $lot->quantity - $lots_group['compromise_quantity'];
+                $lot->save();
+            }
+        }
+    }
+
 
     public function initialize()
     {

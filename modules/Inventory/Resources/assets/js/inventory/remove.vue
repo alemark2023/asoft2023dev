@@ -54,7 +54,8 @@
             :lots_group="form.lots_group"
             :quantity="form.quantity_remove"
             :showDialog.sync="showDialogLotsGroup"
-            @addRowLotGroup="addRowLotGroup">
+            @addRowLotGroup="addRowLotGroup"
+            :compromise-all-quantity="true">
         </lots-group>
 
     </el-dialog>
@@ -140,18 +141,26 @@
             {
                 if (this.form.lots_enabled) 
                 {
-                    if (!this.form.selected_lots_group)
-                        return {
-                            success: true,
-                            message: 'Debe seleccionar lote.'
-                        }
+                    if (!this.form.selected_lots_group) return this.getObjectResponse(false, 'Debe seleccionar los lotes.')
+
+                    if(this.getTotalCompromiseQuantity() != parseFloat(this.form.quantity_remove)) return this.getObjectResponse(false, 'La cantidad a retirar es diferente del total comprometido.')
                 }
+
+                return this.getObjectResponse()
+            },
+            getObjectResponse(success = true, message = null)
+            {
                 return {
-                    success: true
+                    success: success,
+                    message: message
                 }
             },
-            async submit() {
-
+            getTotalCompromiseQuantity()
+            {
+                return _.sumBy(this.form.selected_lots_group, 'compromise_quantity')
+            },
+            async submit() 
+            {
                 if(this.form.series_enabled){
                     let select_lots = await _.filter(this.form.lots, {'has_sale':true})
                     if(select_lots.length != this.form.quantity_remove){
@@ -159,9 +168,11 @@
                     }
                 }
 
+                const validet_lots_group = this.validetLotsGroup()
+                if(!validet_lots_group.success) return this.$message.error(validet_lots_group.message)
                 
 
-                // this.loading_submit = true
+                this.loading_submit = true
                 await this.$http.post(`/${this.resource}/remove`, this.form)
                     .then(response => {
                         if (response.data.success) {
