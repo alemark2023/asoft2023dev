@@ -35,25 +35,28 @@ class ServiceDispatchController extends Controller
 
             $ticket = null;
             $reception_date = null;
-            if (key_exists('numTicket', $res)) {
-                $ticket = $res['numTicket'];
-                $reception_date = $res['fecRecepcion'];
-                Dispatch::query()
-                    ->where('id', $dispatch->id)
-                    ->update([
-                        'ticket' => $ticket,
-                        'reception_date' => $reception_date
-                    ]);
+            if($res['success']) {
+                if (key_exists('numTicket', $res)) {
+                    $ticket = $res['numTicket'];
+                    $reception_date = $res['fecRecepcion'];
+                    Dispatch::query()
+                        ->where('id', $dispatch->id)
+                        ->update([
+                            'ticket' => $ticket,
+                            'reception_date' => $reception_date
+                        ]);
+                }
+                return [
+                    'success' => true,
+                    'filename' => $dispatch->filename,
+                    'external_id' => $external_id,
+                    'ticket' => $ticket,
+                    'reception_date' => $reception_date,
+                    'res' => $res,
+                ];
+            } else {
+                return $res;
             }
-
-            return [
-                'success' => true,
-                'filename' => $dispatch->filename,
-                'external_id' => $external_id,
-                'ticket' => $ticket,
-                'reception_date' => $reception_date,
-                'res' => $res,
-            ];
         }
 
         return [

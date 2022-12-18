@@ -5,6 +5,7 @@ namespace Modules\ApiPeruDev\Services;
 use App\Models\Tenant\Company;
 use Exception;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Modules\ApiPeruDev\Helpers\Zip;
 
 class DispatchService
@@ -61,6 +62,7 @@ class DispatchService
 
             if (array_key_exists('access_token', $data)) {
                 $token = $data['access_token'];
+                Log::info('Cache toke_sunat actualizado');
                 Cache::put('token_sunat', $token, 60);
                 return [
                     'success' => true,
@@ -129,7 +131,7 @@ class DispatchService
             }
             if (key_exists('status', $res)) {
                 if ($res['status'] === 401) {
-
+                    throw new Exception('No se encuentra autorizado');
                 }
             }
             return $res;
