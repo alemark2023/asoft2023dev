@@ -328,7 +328,7 @@ class ConfigurationController extends Controller
 
         Cache::forget('token_sunat');
 
-        Log::info('Cache toke_sunat eliminado');
+        Log::error('Cache toke_sunat eliminado');
         return [
             'success' => true,
             'configuration' => $configuration->getCollectionData(),

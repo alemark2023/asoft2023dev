@@ -62,7 +62,7 @@ class DispatchService
 
             if (array_key_exists('access_token', $data)) {
                 $token = $data['access_token'];
-                Log::info('Cache toke_sunat actualizado');
+                Log::error('Cache toke_sunat actualizado');
                 Cache::put('token_sunat', $token, 60);
                 return [
                     'success' => true,
