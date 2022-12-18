@@ -111,7 +111,9 @@
 
         <select-lots-form
             :showDialog.sync="showDialogSelectLots"
+            :itemId="form.item_id"
             :lots="form.lots"
+            :quantity="form.quantity"
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
 
@@ -122,8 +124,10 @@
 <script>
 //  import InputLotsForm from '../../../../../../resources/js/views/tenant/items/partials/lots.vue'
 // import OutputLotsForm from './partials/lots.vue'
-import LotsGroup from './lots_group.vue'
-import SelectLotsForm from './lots.vue'
+//import LotsGroup from './lots_group.vue'
+import LotsGroup from '../../../../../../resources/js/views/tenant/documents/partials/lots_group.vue'
+import SelectLotsForm from '../../../../../../resources/js/views/tenant/documents/partials/lots.vue'
+//import SelectLotsForm from './lots.vue'
 import {filterWords} from "../../../../../../resources/js/helpers/functions";
 
 
@@ -147,9 +151,9 @@ export default {
             inventory_transactions: [],
         }
     },
-    // created() {
-    //     this.initForm()
-    // },
+    created() {
+        this.initForm()
+    },
     methods: {
         async changeItem() {
             this.form.lots = []
@@ -234,8 +238,8 @@ export default {
         },
         async submit() {
             if (this.form.lots.length > 0 && this.form.series_enabled) {
-                let select_lots = await _.filter(this.form.lots, {'has_sale': true})
-                if (select_lots.length !== this.form.quantity) {
+                //let select_lots = await _.filter(this.form.lots, {'has_sale': true})
+                if (this.form.lots.length !== parseInt(this.form.quantity)) {
                     return this.$message.error('La cantidad ingresada es diferente a las series seleccionadas');
                 }
             }
@@ -243,6 +247,18 @@ export default {
                 if (!this.form.IdLoteSelected)
                     return this.$message.error('Debe seleccionar un lote.');
             }
+
+            // let _lots_group = [];
+            // _.forEach(this.form.lots_group, row => {
+            //     _lots_group.push({
+            //         'checked': row.checked,
+            //         'code': row.code,
+            //         'date_of_due': row.date_of_due,
+            //         'id': row.id,
+            //         'quantity': row.quantity,
+            //     })
+            // })
+            //this.form.lots_group = _.head(this.form.lots_group);
             this.loading_submit = true
             this.form.type = this.type
             // console.log(this.form)
@@ -282,6 +298,7 @@ export default {
             this.showDialogSelectLots = true
         },
         addRowSelectLot(lots) {
+            console.log(lots);
             this.form.lots = lots
         },
     }

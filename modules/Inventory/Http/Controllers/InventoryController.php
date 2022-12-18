@@ -9,6 +9,7 @@ use Exception;
 
 //use App\Models\Tenant\Item;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Modules\Inventory\Models\Guide;
 use Modules\Inventory\Models\InventoryTransfer;
 use Modules\Item\Models\ItemLot;
@@ -294,10 +295,20 @@ class InventoryController extends Controller
                 }
 
                 if (isset($request->IdLoteSelected)) {
-                    $lot = ItemLotsGroup::find($request->IdLoteSelected);
-                    $lot->quantity = ($lot->quantity - $quantity);
-                    $lot->save();
+                    if (is_array($request->IdLoteSelected)) {
+                        foreach ($request->IdLoteSelected as $row) {
+                            Log::info($row);
+                            $lot = ItemLotsGroup::find($row['id']);
+                            $lot->quantity = ($lot->quantity - $row['compromise_quantity']);
+                            $lot->save();
+                        }
+                    } else {
+                        $lot = ItemLotsGroup::find($request->IdLoteSelected);
+                        $lot->quantity = ($lot->quantity - $quantity);
+                        $lot->save();
+                    }
                 }
+
             }
             DB::connection('tenant')->commit();
 
