@@ -40,9 +40,10 @@ class ServiceDispatchController extends Controller
                 $ticket = null;
                 $reception_date = null;
                 if($res['success']) {
-                    if (key_exists('numTicket', $res)) {
-                        $ticket = $res['numTicket'];
-                        $reception_date = $res['fecRecepcion'];
+                    $data = $res['data'];
+                    if (key_exists('numTicket', $data)) {
+                        $ticket = $data['numTicket'];
+                        $reception_date = $data['fecRecepcion'];
                         Dispatch::query()
                             ->where('id', $dispatch->id)
                             ->update([
@@ -57,7 +58,7 @@ class ServiceDispatchController extends Controller
                         'external_id' => $external_id,
                         'ticket' => $ticket,
                         'reception_date' => $reception_date,
-                        'res' => $res,
+                        'res' => $data,
                     ];
                 } else {
                     return $res;
