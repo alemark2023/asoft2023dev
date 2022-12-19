@@ -419,12 +419,12 @@ const SOCKET = io(url, {
   autoConnect: false,
 })
 
-connect()
+// connect()
 
- function connect(username = 'usuario') {
-    SOCKET.auth = { username }
-    SOCKET.connect()
- }
+//  function connect(username = 'usuario') {
+//     SOCKET.auth = { username }
+//     SOCKET.connect()
+//  }
 
 export default {
     mixins: [deletable],

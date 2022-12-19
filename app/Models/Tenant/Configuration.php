@@ -284,6 +284,7 @@
             'register_series_invoice_xml',
             'enable_discount_by_customer',
             'show_price_barcode_ticket',
+            'price_selected_add_product',
         ];
 
         protected $casts = [
@@ -401,6 +402,7 @@
             'register_series_invoice_xml'=>'bool',
             'enable_discount_by_customer' => 'boolean',
             'show_price_barcode_ticket' => 'boolean',
+            'price_selected_add_product'=>'bool',
         ];
 
         protected $hidden = [
@@ -638,6 +640,7 @@
                 'register_series_invoice_xml' => $this->register_series_invoice_xml,
                 'enable_discount_by_customer' => $this->enable_discount_by_customer,
                 'show_price_barcode_ticket' => $this->show_price_barcode_ticket,
+                'price_selected_add_product' => $this->price_selected_add_product,
             ];
         }
 
