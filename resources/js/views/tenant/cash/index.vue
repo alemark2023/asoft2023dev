@@ -58,6 +58,8 @@
                                     <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'simple_a4')">Simple A4</a>
                                     <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReport(row.id, 'excel')">Excel</a>
                                     <!-- <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'excel')">Excel</a> -->
+
+                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickReportSummaryDailyOperations(row.id)">Resumen de Operaciones Diarias</a>
                                 </div>
                             </div>
 
@@ -258,6 +260,10 @@
             },
             clickDownloadReportIncomeEgress(id){
                 window.open(`/${this.resource}/report-cash-income-egress/${id}`, '_blank');
+            },
+            clickReportSummaryDailyOperations(id)
+            {
+                window.open(`/cash-reports/summary-daily-operations/${id}`, '_blank');
             },
         }
     }
