@@ -59,6 +59,9 @@ class DispatchService
             curl_close($curl);
 
             $data = json_decode($response, true);
+            Log::info('-----getToken------');
+            Log::info($data);
+            Log::info('-----getToken------');
 
             if (array_key_exists('access_token', $data)) {
                 $token = $data['access_token'];
@@ -82,6 +85,7 @@ class DispatchService
             ];
         } catch (Exception $e) {
             $message = "Code: {$e->getCode()} - Message: {$e->getMessage()}";
+            Log::info($message.' getToken');
             return [
                 'success' => false,
                 'message' => $message
@@ -122,7 +126,11 @@ class DispatchService
 
             $response = curl_exec($curl);
             curl_close($curl);
+
             $res = json_decode($response, true);
+            Log::info('-----send------');
+            Log::info($res);
+            Log::info('-----send------');
 
             if (key_exists('cod', $res)) {
 
@@ -137,6 +145,7 @@ class DispatchService
             return $res;
         } catch (Exception $e) {
             $message = "Code: {$e->getCode()} - Message: {$e->getMessage()}";
+            Log::info($message.' send');
             return [
                 'success' => false,
                 'message' => $message
@@ -167,10 +176,15 @@ class DispatchService
             ));
             $response = curl_exec($curl);
             curl_close($curl);
+            $res = json_decode($response, true);
+            Log::info('-----ticket------');
+            Log::info($res);
+            Log::info('-----ticket------');
 
-            return json_decode($response, true);
+            return $res;
         } catch (Exception $e) {
             $message = "Code: {$e->getCode()} - Message: {$e->getMessage()}";
+            Log::info($message.' ticket');
             return [
                 'success' => false,
                 'message' => $message

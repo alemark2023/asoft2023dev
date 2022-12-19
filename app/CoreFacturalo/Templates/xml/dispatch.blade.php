@@ -26,10 +26,10 @@
         <cbc:Note>{{ config('configuration.signature_note') }}</cbc:Note>
         <cac:SignatoryParty>
             <cac:PartyIdentification>
-                <cbc:ID>{{ $document['company_name'] }}</cbc:ID>
+                <cbc:ID>{{ $document['company_number'] }}</cbc:ID>
             </cac:PartyIdentification>
             <cac:PartyName>
-                <cbc:Name><![CDATA[{{ $document['company_trade_name'] }}]]></cbc:Name>
+                <cbc:Name><![CDATA[{{ $document['company_name'] }}]]></cbc:Name>
             </cac:PartyName>
         </cac:SignatoryParty>
         <cac:DigitalSignatureAttachment>
@@ -60,7 +60,7 @@
                         schemeID="{{ $document['customer_identity_document_type_id'] }}">{{ $document['customer_number'] }}</cbc:ID>
             </cac:PartyIdentification>
             <cac:PartyLegalEntity>
-                <cbc:RegistrationName>{{ $document['customer_name'] }}</cbc:RegistrationName>
+                <cbc:RegistrationName><![CDATA[{{ $document['customer_name'] }}]]></cbc:RegistrationName>
             </cac:PartyLegalEntity>
         </cac:Party>
     </cac:DeliveryCustomerParty>
@@ -128,9 +128,11 @@
                 <cbc:ID schemeAgencyName="PE:INEI"
                         schemeName="Ubigeos">{{ $document['delivery_location_id'] }}</cbc:ID>
                 <!-- CODIGO DE ESTABLECIMIENTO ANEXO DE LLEGADA -->
+                @if($document['customer_identity_document_type_id'] === '6')
                 <cbc:AddressTypeCode listAgencyName="PE:SUNAT"
                                      listName="Establecimientos anexos"
                                      listID="{{ $document['customer_number'] }}">0000</cbc:AddressTypeCode>
+                @endif
                 <cac:AddressLine>
                     <cbc:Line><![CDATA[{{ $document['delivery_address'] }}]]></cbc:Line>
                 </cac:AddressLine>
