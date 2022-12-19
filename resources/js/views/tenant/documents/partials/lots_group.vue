@@ -90,14 +90,14 @@ export default {
         };
     },
     async created() {
-      
+
     },
     computed: {
         lotsGroupOrdered() {
             return _.orderBy(this.lots_group_, 'date_of_due', this.orderT)
         },
         quantityCompleted(){
-            return this.lots_group_.filter(x => x.checked == true).reduce((accum,item) => accum + Number(item.quantity), 0) >= this.quantity 
+            return this.lots_group_.filter(x => x.checked == true).reduce((accum,item) => accum + Number(item.quantity), 0) >= this.quantity
         },
         toAttend() {
             return this.quantity - this.lots_group_.filter(x => x.compromise_quantity > 0).reduce((accum,item) => accum + Number(item.compromise_quantity), 0)
@@ -142,7 +142,7 @@ export default {
         },
 
         async submit() {
-            
+
             //validar cantidad comprometida igual a cantidad pedida
             let compromise_quantity = this.lots_group_.filter(x => x.compromise_quantity > 0).reduce((accum,item) => accum + Number(item.compromise_quantity), 0)
             if (compromise_quantity != this.quantity) {

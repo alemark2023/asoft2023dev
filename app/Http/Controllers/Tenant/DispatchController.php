@@ -316,13 +316,18 @@ class DispatchController extends Controller
             }
         }
 
+        if($res['success']) {
+            $message = "Se creo la guía de remisión {$document->series}-{$document->number}, y fue enviada a SUNAT";
+        } else {
+            $message = "Se creo la guía de remisión {$document->series}-{$document->number}, {$res['message']}";
+        }
+
         return [
             'success' => true,
-            'message' => "Se creo la guía de remisión {$document->series}-{$document->number}",
+            'message' => $message,
             'data' => [
                 'id' => $document->id,
             ],
-            'response' => $res
         ];
     }
 

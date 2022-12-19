@@ -3,20 +3,9 @@
 namespace Modules\Template\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Factory;
 
 class TemplateServiceProvider extends ServiceProvider
 {
-    /**
-     * @var string $moduleName
-     */
-    protected $moduleName = 'Template';
-
-    /**
-     * @var string $moduleNameLower
-     */
-    protected $moduleNameLower = 'template';
-
     /**
      * Boot the application events.
      *
@@ -44,15 +33,17 @@ class TemplateServiceProvider extends ServiceProvider
      */
     public function registerViews()
     {
-        $viewPath = resource_path('views/modules/' . $this->moduleNameLower);
+        $viewPath = resource_path('views/modules/template');
 
-        $sourcePath = module_path($this->moduleName, 'Resources/templates');
+        $sourcePath = __DIR__.'/../Resources/views';
 
         $this->publishes([
             $sourcePath => $viewPath
-        ], ['views', $this->moduleNameLower . '-module-views']);
+        ],'views');
 
-        $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
+        $this->loadViewsFrom(array_merge(array_map(function ($path) {
+            return $path . '/modules/template';
+        }, \Config::get('view.paths')), [$sourcePath]), 'template');
     }
 
     /**
@@ -63,16 +54,5 @@ class TemplateServiceProvider extends ServiceProvider
     public function provides()
     {
         return [];
-    }
-
-    private function getPublishableViewPaths(): array
-    {
-        $paths = [];
-        foreach (\Config::get('view.paths') as $path) {
-            if (is_dir($path . '/modules/' . $this->moduleNameLower)) {
-                $paths[] = $path . '/modules/' . $this->moduleNameLower;
-            }
-        }
-        return $paths;
     }
 }

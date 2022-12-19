@@ -358,20 +358,20 @@
                             <div class="col-lg-6">
                                 <label class="control-label font-bold">Datos transportista</label>
                                 <span class="text-danger"> *</span>
-                                <div :class="{'has-danger': errors.dispacher}"
+                                <div :class="{'has-danger': errors.dispatcher}"
                                      class="form-group">
-                                    <el-select v-model="dispacher"
+                                    <el-select v-model="dispatcher"
                                                clearable
                                                placeholder="Seleccionar transportista">
                                         <el-option
-                                            v-for="option in dispachers"
+                                            v-for="option in dispatchers"
                                             :key="option.id"
                                             :label="option.number +' - '+ option.name +' - '+ option.number_mtc"
                                             :value="option.id"></el-option>
                                     </el-select>
-                                    <small v-if="errors.dispacher"
+                                    <small v-if="errors.dispatcher"
                                            class="form-control-feedback"
-                                           v-text="errors.dispacher[0]"></small>
+                                           v-text="errors.dispatcher[0]"></small>
                                 </div>
                             </div>
                         </template>
@@ -659,8 +659,8 @@ export default {
             establishments: [],
             drivers: [],
             driver: null,
-            dispachers: [],
-            dispacher: null,
+            dispatchers: [],
+            dispatcher: null,
             countries: [],
             seriesAll: [],
             unitTypes: [],
@@ -760,7 +760,7 @@ export default {
             this.locations = response.data.locations;
             this.seriesAll = response.data.series;
             this.drivers = response.data.drivers;
-            this.dispachers = response.data.dispachers;
+            this.dispatchers = response.data.dispachers;
             if (itemsFromSummary) {
                 this.onLoadItemsFromSummary(response.data.itemsFromSummary, JSON.parse(itemsFromSummary));
             }
@@ -1319,6 +1319,12 @@ export default {
                 if (!this.dispatcher) {
                     return this.$message.error('El transportista es requerido')
                 }
+                let v = _.find(this.dispatchers, {'id': this.dispatcher})
+                this.form.dispatcher.identity_document_type_id = v.identity_document_type_id;
+                this.form.dispatcher.number = v.number;
+                this.form.dispatcher.name = v.name;
+                this.form.dispatcher.number_mtc = v.number_mtc;
+
                 if (this.form.dispatcher.identity_document_type_id === '' || _.isNull(this.form.dispatcher.identity_document_type_id)) {
                     return this.$message.error('El tipo de documento del transportista es requerido')
                 }

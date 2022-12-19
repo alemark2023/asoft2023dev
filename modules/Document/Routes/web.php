@@ -40,6 +40,7 @@ if($current_hostname) {
                 Route::get('regularize-lots/{document_item_id}', 'DocumentController@regularizeLots');
 
                 Route::post('force-send-by-summary', 'DocumentController@forceSendBySummary');
+                Route::post('item_lots', 'DocumentController@searchItemLots');
 
             });
 
