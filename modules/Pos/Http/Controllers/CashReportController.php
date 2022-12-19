@@ -16,6 +16,35 @@ class CashReportController extends Controller
     
     use CashReportTrait;
 
+    /**
+     *
+     * Generar reporte de pagos asociados a caja, con destino caja y en efectivo
+     * 
+     * Disponible para cpe u nv
+     *
+     * @param  int $cash
+     */
+    public function reportPaymentsAssociatedCash($cash_id)
+    {
+        $cash = Cash::with([
+                        'global_destination' => function($query){
+                            return $query->filtersPaymentsAssociatedCash();
+                        }
+                    ])
+                    ->findOrFail($cash_id);
+
+        $data = app(CashController::class)->getHeaderCommonDataToReport($cash);
+
+        $filename = 'Reporte_ingresos_caja_efectivo_'.date('YmdHis');
+
+        return $this->generalToPrintReport(
+            'pos::cash.reports.report_payments_associated_cash_pdf', 
+            'report_payments_associated_cash',
+            $filename, 
+            $this->getDataPaymentsAssociatedCash($cash, $data)
+        );
+    }
+
 
     /**
      *

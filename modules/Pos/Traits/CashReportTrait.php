@@ -8,7 +8,31 @@ use Mpdf\Mpdf;
 
 trait CashReportTrait
 {
+       
+    /**
+     *
+     * Data para reporte de pagos asociados a caja, con destino caja y en efectivo
+     * 
+     * @return array
+     */
+    public function getDataPaymentsAssociatedCash($cash, &$data)
+    {
+        $payments = collect();
+
+        foreach ($cash->global_destination as $global_payment) 
+        {
+            $payments->push($global_payment->payment->getRowResourceCashPayment());
+        }
         
+        $data['total_income'] = $payments->sum('payment');
+
+        return [
+            'data' => $data,
+            'payments' => $payments,
+        ];
+    }
+
+
     /**
      *
      * @return array
