@@ -1,5 +1,11 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
+    <el-dialog :title="titleDialog"
+               :visible="showDialog"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false"
+               append-to-body
+               @close="close"
+               @open="create">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
@@ -46,7 +52,7 @@
                         <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickLotGroup">[&#10004;
                             Seleccionar lote]</a>
                     </div>
-                    <div style="padding-top: 3%;" class="col-md-3 col-sm-3" v-if="form.item_id && form.series_enabled">
+                    <div style="padding-top: 3%;" class="col-md-3 col-sm-3" v-if="form.item_id && form.series_enabled && form.warehouse_id">
                         <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
                         <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickSelectLots">[&#10004;
                             Seleccionar series]</a>
@@ -111,9 +117,11 @@
 
         <select-lots-form
             :showDialog.sync="showDialogSelectLots"
+            :lots-all="lotsAll"
             :itemId="form.item_id"
             :lots="form.lots"
             :quantity="form.quantity"
+            :warehouseId="form.warehouse_id"
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
 
@@ -149,6 +157,7 @@ export default {
             items: [],
             warehouses: [],
             inventory_transactions: [],
+            lotsAll: [],
         }
     },
     created() {
@@ -159,19 +168,19 @@ export default {
             this.form.lots = []
             let item = await _.find(this.items, {'id': this.form.item_id})
             this.form.lots_enabled = item.lots_enabled
-            let lots = await _.filter(item.lots, {'warehouse_id': this.form.warehouse_id})
+            this.lotsAll = await _.filter(item.lots, {'warehouse_id': this.form.warehouse_id})
             // console.log(item)
-            this.form.lots = lots
+            // this.form.lots = lots
             this.form.lots_enabled = item.lots_enabled
             this.form.series_enabled = item.series_enabled
             this.form.lots_group = item.lots_group
         },
-        addRowOutputLot(lots) {
-            this.form.lots = lots
-        },
-        addRowLot(lots) {
-            this.form.lots = lots
-        },
+        // addRowOutputLot(lots) {
+        //     this.form.lots = lots
+        // },
+        // addRowLot(lots) {
+        //     this.form.lots = lots
+        // },
         clickLotcode() {
             this.showDialogLots = true
         },
@@ -209,7 +218,7 @@ export default {
         },
         async create() {
             this.loading = true;
-            this.titleDialog = 'Salida de producto del almacén'
+            this.titleDialog = 'Salida de producto del almacén 3'
             await this.initTables();
             this.initForm();
             this.loading = false;

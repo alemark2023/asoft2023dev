@@ -1,5 +1,11 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
+    <el-dialog :title="titleDialog"
+               :visible="showDialog"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false"
+               append-to-body
+               @close="close"
+               @open="create">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
@@ -60,8 +66,10 @@
         <output-lots-form
             :showDialog.sync="showDialogLotsOutput"
             :itemId="form.item_id"
+            :lots-all="lotsAll"
             :lots="form.lots"
             :quantity="form.quantity_move"
+            :warehouseId="form.warehouse_id"
             @addRowOutputLot="addRowOutputLot">
         </output-lots-form>
     </el-dialog>
@@ -84,11 +92,12 @@ export default {
             errors: {},
             form: {},
             warehouses: [],
+            lotsAll: [],
         }
     },
-    created() {
+    async created() {
         this.initForm()
-        this.$http.get(`/${this.resource}/tables`)
+        await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
                 this.warehouses = response.data.warehouses
             })
@@ -117,12 +126,15 @@ export default {
                 detail: null
             }
         },
-        create() {
-            this.titleDialog = 'Traslado entre almacenes'
-            this.$http.get(`/${this.resource}/record/${this.recordId}`)
+        async create() {
+            this.titleDialog = 'Traslado entre almacenes 3'
+            await this.$http.get(`/${this.resource}/record/${this.recordId}`)
                 .then(response => {
-                    this.form = response.data.data
-                    this.form.lots = Object.values(response.data.data.lots)
+                    let data = response.data.data;
+                    this.form = _.clone(data);
+                    this.form.lots = []; //Object.values(response.data.data.lots)
+                    this.lotsAll = data.lots; //Object.values(response.data.data.lots);
+                    this.form = Object.assign({}, this.form, {'quantity_move': 0});
                 })
         },
         async submit() {

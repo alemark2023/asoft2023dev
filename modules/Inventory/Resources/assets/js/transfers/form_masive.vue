@@ -232,6 +232,7 @@
 
         <output-lots-form
             :itemId="form_add.item_id"
+            :lots-all="lotsAll"
             :lots="form_add.lots"
             :quantity="form_add.quantity"
             :showDialog.sync="showDialogLotsOutput"
@@ -264,6 +265,7 @@ export default {
             loading_search: false,
             search_item_by_barcode: false,
             all_items: [],
+            lotsAll: []
         };
     },
     async created() {
@@ -308,7 +310,13 @@ export default {
                 });
 
             let row = this.items.find(x => x.id == this.form_add.item_id);
-            this.form_add.lots = row.lots;
+
+            // this.form = _.clone(data);
+            // this.form.lots = []; //Object.values(response.data.data.lots)
+            this.lotsAll = row.lots; //Object.values(response.data.data.lots);
+            // this.form = Object.assign({}, this.form, {'quantity_remove': 0});
+
+            // this.form_add.lots = row.lots;
             this.form_add.lots_enabled = row.lots_enabled;
             this.form_add.series_enabled = row.series_enabled;
 
