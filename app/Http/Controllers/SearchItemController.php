@@ -871,6 +871,7 @@
                         ];
                     }),
                     'series_enabled' => (bool)$row->series_enabled,
+                    'lots_enabled' => (bool)$row->lots_enabled,
                 ];
             });
         }
