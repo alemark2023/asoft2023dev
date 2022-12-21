@@ -507,10 +507,10 @@ class InventoryController extends Controller
 			$quantity_real = $request->input('quantity_real');
 			$lots = ($request->has('lots')) ? $request->input('lots') : [];
 
-			if ($quantity_real <= 0) {
+			if ($quantity_real < 0) {
 				return  [
 					'success' => false,
-					'message' => 'La cantidad de stock real debe ser mayor a 0'
+					'message' => 'La cantidad de stock real debe ser mayor o igual a 0'
 				];
 			}
 			$type=1;
@@ -559,9 +559,8 @@ class InventoryController extends Controller
 				$warehouse_id = $item['warehouse_id'];
 				$quantity = $item['quantity'];
 				$quantity_real = $item['quantity_real'];
-				if ($quantity_real <= 0) {
-					throw new Exception("La cantidad del producto {$item['item_description']} a modificar debe ser mayor a 0", 500);
-				}
+
+				if ($quantity_real < 0) throw new Exception("La cantidad del producto {$item['item_description']} a modificar debe ser mayor o igual a 0", 500);
 
 				$type=1;
 				$quantity_new=0;
