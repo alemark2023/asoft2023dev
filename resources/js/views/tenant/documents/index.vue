@@ -357,7 +357,7 @@
                                        v-if="row.btn_note">
                                         Nota
                                     </a>
-                                    <a :href="`/dispatches/create/${row.id}`"
+                                    <a :href="`/dispatches/create_new/document/${row.id}`"
                                        class="dropdown-item"
                                        v-if="row.btn_guide">
                                         Guía

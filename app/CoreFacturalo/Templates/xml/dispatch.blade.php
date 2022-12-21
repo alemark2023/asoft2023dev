@@ -26,10 +26,10 @@
         <cbc:Note>{{ config('configuration.signature_note') }}</cbc:Note>
         <cac:SignatoryParty>
             <cac:PartyIdentification>
-                <cbc:ID>{{ $document['company_name'] }}</cbc:ID>
+                <cbc:ID>{{ $document['company_number'] }}</cbc:ID>
             </cac:PartyIdentification>
             <cac:PartyName>
-                <cbc:Name><![CDATA[{{ $document['company_trade_name'] }}]]></cbc:Name>
+                <cbc:Name><![CDATA[{{ $document['company_name'] }}]]></cbc:Name>
             </cac:PartyName>
         </cac:SignatoryParty>
         <cac:DigitalSignatureAttachment>
@@ -60,7 +60,7 @@
                         schemeID="{{ $document['customer_identity_document_type_id'] }}">{{ $document['customer_number'] }}</cbc:ID>
             </cac:PartyIdentification>
             <cac:PartyLegalEntity>
-                <cbc:RegistrationName>{{ $document['customer_name'] }}</cbc:RegistrationName>
+                <cbc:RegistrationName><![CDATA[{{ $document['customer_name'] }}]]></cbc:RegistrationName>
             </cac:PartyLegalEntity>
         </cac:Party>
     </cac:DeliveryCustomerParty>
@@ -85,40 +85,40 @@
                 <cbc:StartDate>{{ $document['date_of_shipping'] }}</cbc:StartDate>
             </cac:TransitPeriod>
             @if($document['transport_mode_type_id'] === '01')
-            <cac:CarrierParty>
-                <cac:PartyIdentification>
-                    <cbc:ID schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06"
-                            schemeAgencyName="PE:SUNAT"
-                            schemeName="Documento de Identidad"
-                            schemeID="{{ $document['dispatcher_identity_document_type_id'] }}">{{ $document['dispatcher_number'] }}</cbc:ID>
-                </cac:PartyIdentification>
-                <cac:PartyLegalEntity>
-                    <!-- NOMBRE/RAZON SOCIAL DEL TRANSPORTISTA-->
-                    <cbc:RegistrationName><![CDATA[{{ $document['dispatcher_name'] }}]]></cbc:RegistrationName>
-                    <!-- NUMERO DE REGISTRO DEL MTC -->
-                    <cbc:CompanyID>{{ $document['dispatcher_number_mtc'] }}</cbc:CompanyID>
-                </cac:PartyLegalEntity>
-            </cac:CarrierParty>
+                <cac:CarrierParty>
+                    <cac:PartyIdentification>
+                        <cbc:ID schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06"
+                                schemeAgencyName="PE:SUNAT"
+                                schemeName="Documento de Identidad"
+                                schemeID="{{ $document['dispatcher_identity_document_type_id'] }}">{{ $document['dispatcher_number'] }}</cbc:ID>
+                    </cac:PartyIdentification>
+                    <cac:PartyLegalEntity>
+                        <!-- NOMBRE/RAZON SOCIAL DEL TRANSPORTISTA-->
+                        <cbc:RegistrationName><![CDATA[{{ $document['dispatcher_name'] }}]]></cbc:RegistrationName>
+                        <!-- NUMERO DE REGISTRO DEL MTC -->
+                        <cbc:CompanyID>{{ $document['dispatcher_number_mtc'] }}</cbc:CompanyID>
+                    </cac:PartyLegalEntity>
+                </cac:CarrierParty>
             @endif
             @if($document['transport_mode_type_id'] === '02')
             <!-- CONDUCTOR PRINCIPAL -->
-            <cac:DriverPerson>
-                <!-- TIPO Y NUMERO DE DOCUMENTO DE IDENTIDAD -->
-                <cbc:ID schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06"
-                        schemeAgencyName="PE:SUNAT"
-                        schemeName="Documento de Identidad"
-                        schemeID="{{ $document['driver_identity_document_type_id'] }}">{{ $document['driver_number'] }}</cbc:ID>
-                <!-- NOMBRES -->
-                <cbc:FirstName>{{ $document['driver_names'] }}</cbc:FirstName>
-                <!-- APELLIDOS -->
-                <cbc:FamilyName>{{ $document['driver_lastnames'] }}</cbc:FamilyName>
-                <!-- TIPO DE CONDUCTOR: PRINCIPAL -->
-                <cbc:JobTitle>Principal</cbc:JobTitle>
-                <cac:IdentityDocumentReference>
-                    <!-- LICENCIA DE CONDUCIR -->
-                    <cbc:ID>{{ $document['driver_license'] }}</cbc:ID>
-                </cac:IdentityDocumentReference>
-            </cac:DriverPerson>
+                <cac:DriverPerson>
+                    <!-- TIPO Y NUMERO DE DOCUMENTO DE IDENTIDAD -->
+                    <cbc:ID schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06"
+                            schemeAgencyName="PE:SUNAT"
+                            schemeName="Documento de Identidad"
+                            schemeID="{{ $document['driver_identity_document_type_id'] }}">{{ $document['driver_number'] }}</cbc:ID>
+                    <!-- NOMBRES -->
+                    <cbc:FirstName>{{ $document['driver_names'] }}</cbc:FirstName>
+                    <!-- APELLIDOS -->
+                    <cbc:FamilyName>{{ $document['driver_lastnames'] }}</cbc:FamilyName>
+                    <!-- TIPO DE CONDUCTOR: PRINCIPAL -->
+                    <cbc:JobTitle>Principal</cbc:JobTitle>
+                    <cac:IdentityDocumentReference>
+                        <!-- LICENCIA DE CONDUCIR -->
+                        <cbc:ID>{{ $document['driver_license'] }}</cbc:ID>
+                    </cac:IdentityDocumentReference>
+                </cac:DriverPerson>
             @endif
         </cac:ShipmentStage>
         <cac:Delivery>
@@ -128,9 +128,11 @@
                 <cbc:ID schemeAgencyName="PE:INEI"
                         schemeName="Ubigeos">{{ $document['delivery_location_id'] }}</cbc:ID>
                 <!-- CODIGO DE ESTABLECIMIENTO ANEXO DE LLEGADA -->
+                @if($document['customer_identity_document_type_id'] === '6')
                 <cbc:AddressTypeCode listAgencyName="PE:SUNAT"
                                      listName="Establecimientos anexos"
-                                     listID="{{ $document['customer_number'] }}">0</cbc:AddressTypeCode>
+                                     listID="{{ $document['customer_number'] }}">0000</cbc:AddressTypeCode>
+                @endif
                 <cac:AddressLine>
                     <cbc:Line><![CDATA[{{ $document['delivery_address'] }}]]></cbc:Line>
                 </cac:AddressLine>
@@ -144,7 +146,7 @@
                     <!-- CODIGO DE ESTABLECIMIENTO ANEXO DE PARTIDA -->
                     <cbc:AddressTypeCode listName="Establecimientos anexos"
                                          listAgencyName="PE:SUNAT"
-                                         listID="{{ $document['company_number'] }}">0</cbc:AddressTypeCode>
+                                         listID="{{ $document['company_number'] }}">0000</cbc:AddressTypeCode>
                     <!-- DIRECCION COMPLETA Y DETALLADA DE PARTIDA -->
                     <cac:AddressLine>
                         <cbc:Line><![CDATA[{{ $document['origin_address'] }}]]></cbc:Line>
@@ -152,15 +154,17 @@
                 </cac:DespatchAddress>
             </cac:Despatch>
         </cac:Delivery>
-        <cac:TransportHandlingUnit>
-            @if($document['transport_mode_type_id'] === '02')
-            <cac:TransportEquipment>
-                <!-- VEHICULO PRINCIPAL -->
-                <!-- PLACA - VEHICULO PRINCIPAL -->
-                <cbc:ID>{{ $document['license_plate'] }}</cbc:ID>
-            </cac:TransportEquipment>
-            @endif
-        </cac:TransportHandlingUnit>
+        @if($document['transport_mode_type_id'] === '02')
+{{--            @if($document['license_plate'])--}}
+                <cac:TransportHandlingUnit>
+                    <cac:TransportEquipment>
+                        <!-- VEHICULO PRINCIPAL -->
+                        <!-- PLACA - VEHICULO PRINCIPAL -->
+                        <cbc:ID>{{ $document['license_plate'] }}</cbc:ID>
+                    </cac:TransportEquipment>
+                </cac:TransportHandlingUnit>
+{{--            @endif--}}
+        @endif
     </cac:Shipment>
     <!-- DETALLES DE BIENES A TRASLADAR -->
     @foreach($document['items'] as $row)

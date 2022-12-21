@@ -22,6 +22,8 @@ use Modules\Inventory\Http\Requests\InventoryRequest;
 use Modules\Inventory\Http\Requests\TransferRequest;
 
 use Modules\Item\Models\ItemLot;
+use Exception;
+
 
 class TransferController extends Controller
 {
@@ -213,6 +215,26 @@ class TransferController extends Controller
 
     }
 
+    
+    /**
+     * 
+     * Validar si existe la serie
+     *
+     * @param  Series $series
+     * @param  string $document_type_id
+     * @return void
+     */
+    public function checkIfExistSerie($series, $document_type_id)
+    {
+        if(is_null($series))
+        {
+            $document_type_description = $this->generalGetDocumentTypeDescription($document_type_id);
+
+            throw new Exception("No se encontró una serie para el tipo de documento {$document_type_id} - {$document_type_description}, registre la serie en Establecimientos/Series");
+        }
+    }
+
+
     public function store(TransferRequest $request)
     {
         DB::connection('tenant')->beginTransaction();
@@ -230,6 +252,8 @@ class TransferController extends Controller
                 ->where('establishment_id', $warehouse->establishment_id)
                 ->where('document_type_id', 'U4')
                 ->first();
+
+            $this->checkIfExistSerie($series, $document_type_id);
 
             $row = InventoryTransfer::query()
                 ->create([

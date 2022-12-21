@@ -8,6 +8,8 @@ use App\CoreFacturalo\Template;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Dispatch;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Modules\ApiPeruDev\Helpers\CdrRead;
 use Modules\ApiPeruDev\Services\DispatchService;
 use Modules\Store\Helpers\StorageHelper;
@@ -18,43 +20,62 @@ class ServiceDispatchController extends Controller
 
     public function send($external_id)
     {
-        $dispatch = Dispatch::query()
-            ->select('id', 'document_type_id', 'series', 'number', 'filename', 'ticket')
-            ->where('external_id', $external_id)->first();
-        if ($dispatch) {
-            $cp = $this->getCompany();
-            $xml_signed = (new StorageHelper())->getXmlSigned($dispatch->filename);
-            $res = (new DispatchService())->send(
-                $cp->soap_sunat_username,
-                $cp->soap_sunat_password,
-                $cp->api_sunat_id,
-                $cp->api_sunat_secret,
-                $dispatch->filename,
-                $xml_signed
-            );
+        DB::connection('tenant')->beginTransaction();
+        try {
+            $dispatch = Dispatch::query()
+                ->select('id', 'document_type_id', 'series', 'number', 'filename', 'ticket')
+                ->where('external_id', $external_id)->first();
+            if ($dispatch) {
+                $cp = $this->getCompany();
+                $xml_signed = (new StorageHelper())->getXmlSigned($dispatch->filename);
+                $res = (new DispatchService())->send(
+                    $cp->soap_sunat_username,
+                    $cp->soap_sunat_password,
+                    $cp->api_sunat_id,
+                    $cp->api_sunat_secret,
+                    $dispatch->filename,
+                    $xml_signed
+                );
 
-            if (key_exists('numTicket', $res)) {
-                Dispatch::query()
-                    ->where('id', $dispatch->id)
-                    ->update([
-                        'ticket' => $res['numTicket'],
-                        'reception_date' => $res['fecRecepcion']
-                    ]);
+                $ticket = null;
+                $reception_date = null;
+                if($res['success']) {
+                    $data = $res['data'];
+                    if (key_exists('numTicket', $data)) {
+                        $ticket = $data['numTicket'];
+                        $reception_date = $data['fecRecepcion'];
+                        Dispatch::query()
+                            ->where('id', $dispatch->id)
+                            ->update([
+                                'ticket' => $ticket,
+                                'reception_date' => $reception_date
+                            ]);
+                        DB::connection('tenant')->commit();
+                    }
+                    return [
+                        'success' => true,
+                        'filename' => $dispatch->filename,
+                        'external_id' => $external_id,
+                        'ticket' => $ticket,
+                        'reception_date' => $reception_date,
+                        'res' => $data,
+                    ];
+                } else {
+                    return $res;
+                }
             }
-
             return [
-                'success' => true,
-                'filename' => $dispatch->filename,
-                'external_id' => $external_id,
-                'ticket' => $res['numTicket'],
-                'reception_date' => $res['fecRecepcion'],
+                'success' => false,
+                'message' => 'El external id es incorrecto'
+            ];
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            DB::connection('tenant')->rollBack();
+            return [
+                'success' => false,
+                'message' => 'No fue posible enviar a SUNAT'
             ];
         }
-
-        return [
-            'success' => false,
-            'message' => 'El external id es incorrecto'
-        ];
     }
 
     public function statusTicket($external_id)
@@ -78,16 +99,23 @@ class ServiceDispatchController extends Controller
                 $has_cdr = false;
                 $qr_url = null;
                 $state_type_id = '01';
+                $message = '';
+                $success = true;
                 switch ($res['codRespuesta']) {
                     case '98':
+                        $success = false;
                         $state_type_id = '03';
+                        $message = 'La guía aún está en proceso, vuelva a consultar.';
                         break;
                     case '0':
                         $state_type_id = '05';
+//                        $message = 'La guía fue aceptada correctamente sin observaciones.';
                         $has_cdr = true;
                         break;
                     case '99':
+                        $success = false;
                         $state_type_id = '09';
+                        //$message = 'La guía fue rechazada.';
                         if ($res['indCdrGenerado'] === '1') {
                             $has_cdr = true;
                         }
@@ -116,9 +144,11 @@ class ServiceDispatchController extends Controller
                 $download_external_cdr = null;
                 if ($has_cdr) {
                     $download_external_cdr = $record->download_external_cdr;
+                    $message = $res['cdr_data']['message'];
                 }
+
                 return [
-                    'success' => true,
+                    'success' => $success,
                     'data' => [
                         'number' => $record->number_full,
                         'filename' => $record->filename,
@@ -130,7 +160,7 @@ class ServiceDispatchController extends Controller
                         'pdf' => $record->download_external_pdf,
                         'cdr' => $download_external_cdr,
                     ],
-                    'response' => $has_cdr?$res['cdr_data']:$res,
+                    'message' => $message,
                 ];
             }
 

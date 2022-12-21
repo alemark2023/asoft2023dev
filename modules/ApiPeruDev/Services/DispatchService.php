@@ -5,6 +5,7 @@ namespace Modules\ApiPeruDev\Services;
 use App\Models\Tenant\Company;
 use Exception;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Modules\ApiPeruDev\Helpers\Zip;
 
 class DispatchService
@@ -12,23 +13,23 @@ class DispatchService
     public function getToken($soap_username, $soap_password, $client_id, $client_secret)
     {
         try {
-            if(Cache::has('token_sunat')) {
+            if (Cache::has('token_sunat')) {
                 return [
                     'success' => true,
                     'token' => Cache::get('token_sunat'),
                     'cache' => true
                 ];
             }
-            if(is_null($soap_username) || $soap_username === '') {
+            if (is_null($soap_username) || $soap_username === '') {
                 throw new Exception('El Soap Username es requerido');
             }
-            if(is_null($soap_password) || $soap_password === '') {
+            if (is_null($soap_password) || $soap_password === '') {
                 throw new Exception('El Soap Password es requerido');
             }
-            if(is_null($client_id) || $client_id === '') {
+            if (is_null($client_id) || $client_id === '') {
                 throw new Exception('El Client ID es requerido');
             }
-            if(is_null($client_secret) || $client_secret === '') {
+            if (is_null($client_secret) || $client_secret === '') {
                 throw new Exception('El Client Secret es requerido');
             }
 
@@ -58,9 +59,13 @@ class DispatchService
             curl_close($curl);
 
             $data = json_decode($response, true);
+            Log::info('-----getToken------');
+            Log::info($data);
+            Log::info('-----getToken------');
 
             if (array_key_exists('access_token', $data)) {
                 $token = $data['access_token'];
+                Log::error('Cache toke_sunat actualizado');
                 Cache::put('token_sunat', $token, 60);
                 return [
                     'success' => true,
@@ -80,6 +85,7 @@ class DispatchService
             ];
         } catch (Exception $e) {
             $message = "Code: {$e->getCode()} - Message: {$e->getMessage()}";
+            Log::info($message . ' getToken');
             return [
                 'success' => false,
                 'message' => $message
@@ -95,10 +101,10 @@ class DispatchService
                 throw new Exception($res['message']);
             }
             $token = $res['token'];
-            $file_zip = (new Zip())->compress($filename.'.xml', $file_content);
+            $file_zip = (new Zip())->compress($filename . '.xml', $file_content);
             $form_params = [
                 "archivo" => [
-                    'nomArchivo' => $filename.'.zip',
+                    'nomArchivo' => $filename . '.zip',
                     'arcGreZip' => base64_encode($file_zip),
                     'hashZip' => hash('sha256', $file_zip)
                 ]
@@ -120,7 +126,11 @@ class DispatchService
 
             $response = curl_exec($curl);
             curl_close($curl);
+
             $res = json_decode($response, true);
+            Log::info('-----send------');
+            Log::info($res);
+            Log::info('-----send------');
 
             if (key_exists('cod', $res)) {
 
@@ -129,12 +139,16 @@ class DispatchService
             }
             if (key_exists('status', $res)) {
                 if ($res['status'] === 401) {
-
+                    throw new Exception('No se encuentra autorizado');
                 }
             }
-            return $res;
+            return [
+                'success' => true,
+                'data' => $res
+            ];
         } catch (Exception $e) {
             $message = "Code: {$e->getCode()} - Message: {$e->getMessage()}";
+            Log::info($message . ' send');
             return [
                 'success' => false,
                 'message' => $message
@@ -165,10 +179,15 @@ class DispatchService
             ));
             $response = curl_exec($curl);
             curl_close($curl);
+            $res = json_decode($response, true);
+            Log::info('-----ticket------');
+            Log::info($res);
+            Log::info('-----ticket------');
 
-            return json_decode($response, true);
+            return $res;
         } catch (Exception $e) {
             $message = "Code: {$e->getCode()} - Message: {$e->getMessage()}";
+            Log::info($message . ' ticket');
             return [
                 'success' => false,
                 'message' => $message

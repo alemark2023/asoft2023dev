@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenant\Api;
 
 use App\CoreFacturalo\Facturalo;
 use App\Http\Controllers\Controller;
+use App\Models\Tenant\Company;
 use App\Models\Tenant\Dispatch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -40,38 +41,50 @@ class DispatchController extends Controller
 
         $document = $fact->getDocument();
 
-        $res = ((new ServiceDispatchController())->send($document->external_id));
+        $company = Company::query()
+            ->select('soap_type_id')
+            ->first();
 
-        if ($res['success']) {
-            return [
-                'success' => true,
-                'data' => [
-                    'number' => $document->number_full,
-                    'filename' => $document->filename,
-                    'external_id' => $document->external_id,
-                    'ticket' => $res['ticket'],
-                    'reception_date' => $res['reception_date'],
-                ],
-            ];
+        $res = null;
+        $ticket = null;
+        $reception_date = null;
+
+        if ($company->soap_type_id === '02') {
+            $res = ((new ServiceDispatchController())->send($document->external_id));
+            $ticket = $res['ticket'];
+            $reception_date = $res['reception_date'];
         }
 
-        return $res;
+        return [
+            'success' => true,
+            'data' => [
+                'number' => $document->number_full,
+                'filename' => $document->filename,
+                'external_id' => $document->external_id,
+                'ticket' => $ticket,
+                'reception_date' => $reception_date,
+            ],
+            'res' => $res
+        ];
     }
 
     public function statusTicket(Request $request)
     {
         $external_id = $request->input('external_id');
-        $res = ((new ServiceDispatchController())->statusTicket($external_id));
-
         $record = Dispatch::query()
             ->where('external_id', $external_id)
             ->first();
 
-        (new Facturalo())->createPdf($record, 'dispatch', 'a4');
+        if ($record->soap_type_id === '02') {
+            $res = ((new ServiceDispatchController())->statusTicket($external_id));
+            (new Facturalo())->createPdf($record, 'dispatch', 'a4');
+
+            return $res;
+        }
 
         return [
-            'success' => true,
-            'data' => $res
+            'success' => false,
+            'data' => 'No es posible consultar el ticket de un comprobante registrado en un enterno DEMO'
         ];
     }
 }

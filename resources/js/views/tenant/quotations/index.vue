@@ -195,7 +195,7 @@
                                         @click.prevent="clickOptions(row.id)">
                                         Generar nota de venta
                                     </button>
-                                    
+
                                     <a v-if="row.documents.length == 0 && row.state_type_id != '11'"
                                         :href="`/${resource}/edit/${row.id}`" type="button"
                                         class="dropdown-item">
@@ -213,7 +213,7 @@
                                         Duplicar
                                     </button>
 
-                                    <a :href="`/dispatches/create/${row.id}/q`"
+                                    <a :href="`/dispatches/create_new/quotation/${row.id}`"
                                         class="dropdown-item">
                                         Guía
                                     </a>
@@ -230,7 +230,7 @@
                                             Ver contrato
                                         </button>
                                     </template>
-                                    
+
                                     <!-- pedidos -->
                                     <button
                                         v-if="canMakeOrderNote(row)"
@@ -294,7 +294,7 @@
                                         class="btn waves-effect waves-light btn-xs btn-primary m-1__2">Ver contrato
                                 </button>
                             </template> -->
-                            
+
                             <!-- pedidos -->
                             <!-- <button
                                 v-if="canMakeOrderNote(row)"
@@ -328,7 +328,7 @@
             <send-email-document :showDialog.sync="showDialogSendEmailDocument"
                                 :recordId="recordId"
                                 :resource="resource"></send-email-document>
-                                
+
         </div>
     </div>
 </template>

@@ -7,8 +7,10 @@ use App\Http\Resources\Tenant\ConfigurationResource;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Item;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Tenant\Catalogs\{
     AffectationIgvType,
@@ -324,7 +326,9 @@ class ConfigurationController extends Controller
         $configuration->fill($request->all());
         $configuration->save();
 
+        Cache::forget('token_sunat');
 
+        Log::error('Cache toke_sunat eliminado');
         return [
             'success' => true,
             'configuration' => $configuration->getCollectionData(),

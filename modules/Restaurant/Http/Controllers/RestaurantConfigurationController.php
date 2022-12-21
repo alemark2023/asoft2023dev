@@ -99,7 +99,7 @@ class RestaurantConfigurationController extends Controller
         $tables_quantity_environment_3 = (int)$request->tables_quantity_environment_3;
         $tables_quantity_environment_4 = (int)$request->tables_quantity_environment_4;
 
-        RestaurantTable::whereIn('environment', [RestaurantTableEnv::ENV_1, RestaurantTableEnv::ENV_2, RestaurantTableEnv::ENV_3, RestaurantTableEnv::ENV_4])->delete();
+        RestaurantTable::truncate();
 
         //create env 1
         if ($enabled_environment_1) {

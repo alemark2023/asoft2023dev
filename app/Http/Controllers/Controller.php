@@ -23,6 +23,10 @@
     use Modules\MobileApp\Http\Controllers\Api\ItemController as ItemControllerMobileApp;
     use Modules\Inventory\Models\Warehouse;
     use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
+    use App\Models\Tenant\Catalogs\{
+        DocumentType
+    };
+    use Exception;
 
 
     /**
@@ -379,4 +383,20 @@ $string = var_export($header,true);
             return in_array($document_type_id, ['01', '03'], true);
         }
 
+        
+        /**
+         * 
+         * Descripcion del tipo de documento
+         *
+         * @return string
+         */
+        public function generalGetDocumentTypeDescription($document_type_id)
+        {
+            $document_type = DocumentType::filterOnlyDescription()->find($document_type_id);
+
+            if($document_type) return $document_type->description;
+
+            throw new Exception('El tipo de documento no existe');
+        }
+        
     }

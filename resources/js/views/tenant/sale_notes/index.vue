@@ -215,7 +215,7 @@
                                         effect="dark"
                                         content="Generar guía desde Nota Venta"
                                         placement="left">
-                                        <a :href="`/dispatches/generate/${row.id}`"
+                                        <a :href="`/dispatches/create_new/sale_note/${row.id}`"
                                         class="dropdown-item"
                                         >
                                             Generar guía

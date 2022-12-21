@@ -489,7 +489,7 @@ class Dispatch extends ModelTenant
 
 
         $btn_status_ticket = false;
-        if (in_array($this->state_type_id, ['01', '03'])) {
+        if ($this->soap_type_id === '02' && in_array($this->state_type_id, ['01', '03'])) {
             $btn_status_ticket = true;
         }
         //
