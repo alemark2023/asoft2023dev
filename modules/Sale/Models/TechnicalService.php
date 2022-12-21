@@ -1572,5 +1572,69 @@
             return $this->hasFullPayment();
         }
 
+            
+        /**
+         * 
+         * Tipo de transaccion para caja
+         *
+         * @return string
+         */
+        public function getTransactionTypeCash()
+        {
+            return 'income';
+        }
+
+
+        /**
+         * 
+         * Tipo de documento para caja
+         *
+         * @return string
+         */
+        public function getDocumentTypeCash()
+        {
+            return $this->getTable();
+        }
+
+        
+        /**
+         * 
+         * Datos para resumen diario de operaciones
+         *
+         * @return array
+         */
+        public function applySummaryDailyOperations()
+        {
+            return [
+                'transaction_type' => $this->getTransactionTypeCash(),
+                'document_type' => $this->getDocumentTypeCash(),
+                'apply' => true,
+            ];
+        }
+
+
+        /**
+         *
+         * Obtener total de pagos en efectivo sin considerar destino
+         *
+         * @return float
+         */
+        public function totalCashPaymentsWithoutDestination()
+        {
+            return $this->payments()->filterCashPaymentWithoutDestination()->sum('payment');
+        }
+
+        
+        /**
+         *
+         * Obtener total de pagos en transferencia
+         *
+         * @return float
+         */
+        public function totalTransferPayments()
+        {
+            return $this->payments()->filterTransferPayment()->sum('payment');
+        }
+        
 
     }

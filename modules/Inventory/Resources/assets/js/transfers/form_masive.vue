@@ -198,13 +198,13 @@
                                     <td>{{ row.description }}</td>
                                     <td>
                                         <!-- {{ row.quantity }} -->
-                                        
+
                                         <el-input-number v-model="row.quantity"
                                                             :min="0.01"
                                                             :step="1"
                                                             @change="changeQuantity(row, index)"></el-input-number>
                                     </td>
-                                    
+
                                     <td class="series-table-actions text-center">
                                         <button
                                             class="btn waves-effect waves-light btn-xs btn-danger"
@@ -231,7 +231,10 @@
         </div>
 
         <output-lots-form
+            :itemId="form_add.item_id"
+            :lots-all="lotsAll"
             :lots="form_add.lots"
+            :quantity="form_add.quantity"
             :showDialog.sync="showDialogLotsOutput"
             @addRowOutputLot="addRowOutputLot"
         ></output-lots-form>
@@ -239,7 +242,8 @@
 </template>
 
 <script>
-import OutputLotsForm from "./partials/lots.vue";
+//import OutputLotsForm from "./partials/lots.vue";
+import OutputLotsForm from '../../../../../../resources/js/views/tenant/documents/partials/lots.vue'
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../../../resources/js/helpers/modal_item";
 import {filterWords} from "../../../../../../resources/js/helpers/functions";
 
@@ -261,6 +265,7 @@ export default {
             loading_search: false,
             search_item_by_barcode: false,
             all_items: [],
+            lotsAll: []
         };
     },
     async created() {
@@ -305,7 +310,13 @@ export default {
                 });
 
             let row = this.items.find(x => x.id == this.form_add.item_id);
-            this.form_add.lots = row.lots;
+
+            // this.form = _.clone(data);
+            // this.form.lots = []; //Object.values(response.data.data.lots)
+            this.lotsAll = row.lots; //Object.values(response.data.data.lots);
+            // this.form = Object.assign({}, this.form, {'quantity_remove': 0});
+
+            // this.form_add.lots = row.lots;
             this.form_add.lots_enabled = row.lots_enabled;
             this.form_add.series_enabled = row.series_enabled;
 
@@ -332,7 +343,7 @@ export default {
         },
         changeQuantity(row, index)
         {
-            if (parseFloat(row.current_stock) < row.quantity) 
+            if (parseFloat(row.current_stock) < row.quantity)
             {
                 row.quantity = 1
                 return this.$message.error('El stock es menor a la cantidad de traslado.')
@@ -375,7 +386,7 @@ export default {
         },
         validateAddItem()
         {
-            if (parseFloat(this.form_add.stock) < 1) 
+            if (parseFloat(this.form_add.stock) < 1)
             {
                 return {
                     success: false,
@@ -383,7 +394,7 @@ export default {
                 }
             }
 
-            if (this.form_add.quantity < 1) 
+            if (this.form_add.quantity < 1)
             {
                 return {
                     success: false,
@@ -391,7 +402,7 @@ export default {
                 }
             }
 
-            if (parseFloat(this.form_add.stock) < this.form_add.quantity) 
+            if (parseFloat(this.form_add.stock) < this.form_add.quantity)
             {
                 return {
                     success: false,
@@ -403,18 +414,18 @@ export default {
                 success: true
             }
         },
-        clickAddItemByBarcode() 
+        clickAddItemByBarcode()
         {
             const validate_add_item = this.validateAddItem()
             if(!validate_add_item.success) return this.$message.error(validate_add_item.message)
 
             let exist_item = this.form.items.find(row => row.id == this.form_add.item_id)
-            
+
             if(exist_item)
             {
                 exist_item.quantity++
 
-                if (parseFloat(this.form_add.stock) < exist_item.quantity) 
+                if (parseFloat(this.form_add.stock) < exist_item.quantity)
                 {
                     exist_item.quantity--
                     this.form_add.input_search = null
@@ -424,7 +435,7 @@ export default {
             else
             {
                 const row = this.items.find(x => x.id == this.form_add.item_id)
-    
+
                 this.form.items.push({
                     id: row.id,
                     description: row.description,
@@ -470,8 +481,8 @@ export default {
             }
 
             if (this.form_add.series_enabled) {
-                let selected_lots = this.form_add.lots.filter(x => x.has_sale == true).length;
-                if (this.form_add.quantity != selected_lots) {
+                //let selected_lots = this.form_add.lots.filter(x => x.has_sale == true).length;
+                if (parseInt(this.form_add.quantity) !== this.form_add.lots.length) {
                     return this.$message.error("La cantidad de series seleccionadas es diferente a la cantidad de traslado");
                 }
             }
@@ -559,12 +570,12 @@ export default {
                         .post(`/${this.resource}/search-items`, {params})
                         .then(response => {
                             let items = response.data.items;
-                            if (items.length > 0) 
+                            if (items.length > 0)
                             {
                                 this.items = items; //filterWords(input, items);
                                 this.enabledSearchItemByBarcode()
                             }
-                            else 
+                            else
                             {
                                 this.filterItems()
                                 if(this.search_item_by_barcode) this.itemBarcodeNotFound()
