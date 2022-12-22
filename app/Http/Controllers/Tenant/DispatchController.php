@@ -273,15 +273,13 @@ class DispatchController extends Controller
             $fact = DB::connection('tenant')->transaction(function () use ($request, $configuration) {
                 $facturalo = new Facturalo();
                 $facturalo->save($request->all());
-
                 $document = $facturalo->getDocument();
                 $data = (new ServiceDispatchController())->getData($document->id);
                 $facturalo->setXmlUnsigned((new ServiceDispatchController())->createXmlUnsigned($data));
                 $facturalo->signXmlUnsigned();
-
 //                $facturalo->createXmlUnsigned();
 //                $facturalo->signXmlUnsigned();
-                $facturalo->createPdf();
+//                $facturalo->createPdf();
 //                if($configuration->isAutoSendDispatchsToSunat()) {
 //                     $facturalo->senderXmlSignedBill();
 //                }
@@ -289,11 +287,9 @@ class DispatchController extends Controller
             });
 
             $document = $fact->getDocument();
-
-            if ($company->soap_type_id === '02') {
-                $res = ((new ServiceDispatchController())->send($document->external_id));
-            }
-
+//            if ($company->soap_type_id === '02') {
+//                $res = ((new ServiceDispatchController())->send($document->external_id));
+//            }
             // $response = $fact->getResponse();
         } else {
             /** @var Facturalo $fact */
@@ -316,11 +312,7 @@ class DispatchController extends Controller
             }
         }
 
-        if($res['success']) {
-            $message = "Se creo la guía de remisión {$document->series}-{$document->number}, y fue enviada a SUNAT";
-        } else {
-            $message = "Se creo la guía de remisión {$document->series}-{$document->number}, {$res['message']}";
-        }
+        $message = "Se creo la guía de remisión {$document->series}-{$document->number}";
 
         return [
             'success' => true,
@@ -459,7 +451,7 @@ class DispatchController extends Controller
         $transportModeTypes = TransportModeType::whereActive()->get();
         $unitTypes = UnitType::query()
             ->where('active', true)
-            ->whereIn('id', ['KGM', 'TM'])->get()->transform(function ($r) {
+            ->whereIn('id', ['KGM', 'TNE'])->get()->transform(function ($r) {
                 return [
                     'id' => $r->id,
                     'name' => func_str_to_upper_utf8($r->description)

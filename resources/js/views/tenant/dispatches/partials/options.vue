@@ -19,6 +19,19 @@
             </div>
         </div>
 
+        <div v-if="loading_sunat_send">
+            Enviando comprobante a sunat
+        </div>
+        <div v-if="loading_sunat_send_response">
+            {{ response_sunat_send.message }}
+        </div>
+        <div v-if="loading_sunat_status_ticket">
+            Consultando ticket a sunat
+        </div>
+        <div v-if="loading_sunat_status_ticket_response">
+            {{ response_sunat_status_ticket.message }}
+        </div>
+
         <div v-if="form.send_to_pse"
              class="row">
 
@@ -147,12 +160,18 @@ export default {
         return {
             titleDialog: null,
             loading: false,
+            loading_sunat_send: false,
+            loading_sunat_send_response: false,
+            loading_sunat_status_ticket: false,
+            loading_sunat_status_ticket_response: false,
             resource: 'dispatches',
             errors: {},
             form: {},
             company: {},
             locked_emission: {},
             text_button: null,
+            response_sunat_send: {},
+            response_sunat_status_ticket: {},
         }
     },
     async created() {
@@ -161,20 +180,16 @@ export default {
         this.text_button = 'Nueva guía'
     },
     methods: {
-
         clickDownload(format = 'a4') {
-            if( (this.form && this.form.external_id)) {
+            if ((this.form && this.form.external_id)) {
                 window.open(`/print/dispatch/${this.form.external_id}/${format}`, '_blank');
             }
         },
         clickSendWhatsapp() {
-
             if (!this.form.customer_telephone) {
                 return this.$message.error('El número es obligatorio')
             }
-
             window.open(`https://wa.me/51${this.form.customer_telephone}?text=${this.form.message_text}`, '_blank');
-
         },
         initForm() {
             this.errors = {};
@@ -213,6 +228,24 @@ export default {
                 this.titleDialog = 'Guía: ' + this.form.number;
             });
 
+            this.loading_sunat_send = true;
+            await this.$http.get(`/api/service/dispatch/send/${this.form.external_id}`)
+                .then(response => {
+                    console.log(response.data);
+                    // this.response_sunat_send = response.data;
+                }).then(() => {
+                  this.loading_sunat_send = false;
+                });
+            //
+            // if(this.response_sunat_send.success) {
+            //     this.loading_sunat_status_ticket = true;
+            //     await this.$http.get(`/api/service/dispatch/status_ticket/${this.form.external_id}`)
+            //         .then(response => {
+            //             this.response_sunat_status_ticket = response.data;
+            //         }).then(() => {
+            //             this.loading_sunat_status_ticket = false;
+            //         });
+            // }
         },
         clickPrint(format) {
             window.open(`/${this.resource}/print/${this.form.external_id}/${format}`, '_blank');
