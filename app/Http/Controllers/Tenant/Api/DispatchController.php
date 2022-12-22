@@ -75,16 +75,16 @@ class DispatchController extends Controller
             ->where('external_id', $external_id)
             ->first();
 
-        if ($record->soap_type_id === '02') {
+//        if ($record->soap_type_id === '02') {
             $res = ((new ServiceDispatchController())->statusTicket($external_id));
             (new Facturalo())->createPdf($record, 'dispatch', 'a4');
 
             return $res;
-        }
-
-        return [
-            'success' => false,
-            'data' => 'No es posible consultar el ticket de un comprobante registrado en un enterno DEMO'
-        ];
+//        }
+//
+//        return [
+//            'success' => false,
+//            'data' => 'No es posible consultar el ticket de un comprobante registrado en un enterno DEMO'
+//        ];
     }
 }

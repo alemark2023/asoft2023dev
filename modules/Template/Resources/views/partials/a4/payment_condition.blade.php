@@ -34,8 +34,7 @@
                 <tr>
                     <td>&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
                 </tr>
-                @endforeach
-                </tr>
+            @endforeach
         </table>
     @endif
 @else
@@ -45,7 +44,6 @@
                 <td>&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1) : $quote->getStringPaymentMethodType()) }} /
                     Fecha Vencimiento: {{ (new \App\CoreFacturalo\HelperFacturalo())->date_of_issue_format($quote->date) }} / Monto: {{ $quote->currency_type->symbol }} {{ $quote->amount }}</td>
             </tr>
-            @endforeach
-            </tr>
+        @endforeach
     </table>
 @endif
