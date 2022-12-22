@@ -683,6 +683,26 @@
         
 
         /**
+         * 
+         * Datos en b64 para pdf
+         *
+         * @return array
+         */
+        public function getBase64PdfFooterImages()
+        {
+            return collect($this->getPdfFooterImages())->transform(function($row){
+
+                $public_path = $this->getGeneralFilePublicPath('pdf_footer_images', $row->filename);
+
+                return [
+                    'name' => $row->filename,
+                    'url'=> 'data:'.mime_content_type($public_path).';base64, '.base64_encode(file_get_contents($public_path))."alt={$row->filename}"
+                ];
+            });
+        }
+        
+
+        /**
          * @return bool
          */
         public function isDispatchesAddressText(): ?bool

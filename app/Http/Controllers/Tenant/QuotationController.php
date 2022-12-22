@@ -836,7 +836,7 @@ class QuotationController extends Controller
     {
         if($format_pdf === 'a4' && $configuration->applyImagesInPdfFooter() && in_array($base_template, ['default', 'default3']))
         {
-            $html_footer_images = $template->pdfFooterImages($base_template, $configuration->getDataPdfFooterImages());
+            $html_footer_images = $template->pdfFooterImages($base_template, $configuration->getBase64PdfFooterImages());
         }
     }
 
