@@ -577,10 +577,9 @@
             :dialogVisible.sync="showDialogAddItems"
             @addItem="addItem"></items>
 
-        <dispatch-options :isUpdate="(order_form_id) ? true:false"
-                          :recordId="recordId"
-                          :showClose="false"
-                          :showDialog.sync="showDialogOptions"></dispatch-options>
+        <dispatch-finish :recordId="recordId"
+                         :showClose="false"
+                         :showDialog.sync="showDialogFinish"></dispatch-finish>
         <item-form :external="true"
                    :showDialog.sync="showDialogNewItem"></item-form>
         <lots-group
@@ -605,7 +604,7 @@ import Items from './items.vue';
 import itemForm from '../items/form.vue';
 import LotsGroup from '../documents/partials/lots_group.vue';
 
-import DispatchOptions from './partials/options.vue'
+import DispatchFinish from './partials/finish'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import WarehousesDetail from '@components/WarehousesDetail.vue'
 import {setDefaultSeriesByMultipleDocumentTypes} from '@mixins/functions'
@@ -625,7 +624,7 @@ export default {
         LotsGroup,
         PersonForm,
         Items,
-        DispatchOptions,
+        DispatchFinish,
         WarehousesDetail,
     },
     mixins: [setDefaultSeriesByMultipleDocumentTypes],
@@ -647,7 +646,7 @@ export default {
             min_qty: 0.0001,
             input_person: {},
             // min_qty: 0.1,
-            showDialogOptions: false,
+            showDialogFinish: false,
             showDialogNewPerson: false,
             identityDocumentTypes: [],
             showDialogAddItems: false,
@@ -1357,7 +1356,7 @@ export default {
                 if (response.data.success) {
                     this.initForm();
                     this.recordId = response.data.data.id
-                    this.showDialogOptions = true
+                    this.showDialogFinish = true
                 } else {
                     this.$message.error(response.data.message);
                 }

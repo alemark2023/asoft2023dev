@@ -13,8 +13,6 @@ if($current_hostname) {
         Route::middleware(['auth:api'])->group(function () {
             Route::prefix('service')->group(function () {
                 Route::get('{type}/{number}', 'ServiceController@service');
-                Route::get('dispatch/send/{external_id}', 'ServiceDispatchController@send');
-                Route::get('dispatch/status_ticket/{external_id}', 'ServiceDispatchController@statusTicket');
             });
         });
     });
