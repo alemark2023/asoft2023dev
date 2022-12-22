@@ -29,13 +29,18 @@
                     </el-input>
                 </div>
 
+                <div class="col-lg-5 col-md-5 col-sm-12 pb-2" v-if="showCompromiseAllQuantity">
+                    <el-checkbox v-model="set_compromise_all_quantity" @change="changeCompromiseAllQuantity">Comprometer todos los lotes</el-checkbox>
+                </div>
+
                 <div class="col-lg-12 col-md-12">
                     <table class="table">
                         <thead>
                             <tr>
                                 <!--<th>Seleccionado</th>-->
                                 <th width="145">Comprometer</th>
-                                <th>codigo</th>
+                                <th></th>
+                                <th>Código</th>
                                 <th>Cantidad</th>
                                 <th>Fecha vencimiento  <el-button icon="el-icon-d-caret" @click="orderData()" plain></el-button> </th>
                             </tr>
@@ -56,6 +61,12 @@
                                 <th>
                                     <el-input-number v-model="row.compromise_quantity" v-bind:class="{ 'text-danger': (row.compromise_quantity > row.quantity) }" ></el-input-number>
                                 </th>
+                                
+                                <th>
+                                    <el-button icon="el-icon-d-arrow-left" round @click="setTotalQuantityToCompromise(row)">
+                                    </el-button>
+                                </th>
+
                                 <th>{{ row.code }}</th>
                                 <th class>{{ row.quantity }}</th>
                                 <th class>{{ row.date_of_due }}</th>
@@ -75,7 +86,7 @@
 
 <script>
 export default {
-    props: ["showDialog", "lots_group", "stock", "recordId", "quantity"],
+    props: ["showDialog", "lots_group", "stock", "recordId", "quantity", 'compromiseAllQuantity'],
     data() {
         return {
             titleDialog: "Lotes",
@@ -86,7 +97,8 @@ export default {
             idSelected: null,
             search: '',
             lots_group_: [],
-            orderT: 'desc'
+            orderT: 'desc',
+            set_compromise_all_quantity: false,
         };
     },
     async created() {
@@ -101,9 +113,38 @@ export default {
         },
         toAttend() {
             return this.quantity - this.lots_group_.filter(x => x.compromise_quantity > 0).reduce((accum,item) => accum + Number(item.compromise_quantity), 0)
+        },
+        showCompromiseAllQuantity()
+        {
+            if(this.compromiseAllQuantity !== undefined && this.compromiseAllQuantity) return this.compromiseAllQuantity
+
+            return false
         }
     },
     methods: {
+        changeCompromiseAllQuantity()
+        {
+            this.lotsGroupOrdered.forEach(row => {
+
+                if(this.set_compromise_all_quantity)
+                {
+                    this.setTotalQuantityToCompromise(row, false)
+                }
+                else
+                {
+                    row.compromise_quantity = 0
+                }
+
+            })
+
+            this.$message.success('La cantidad comprometida de todos los lotes fue actualizada')
+
+        },
+        setTotalQuantityToCompromise(row, show_message = true)
+        {
+            row.compromise_quantity = parseFloat(row.quantity)
+            if(show_message) this.$message.success('Cantidad asignada')
+        },
         orderData() {
             this.orderT =  this.orderT == 'desc' ? 'asc' : 'desc'
         },
@@ -139,6 +180,7 @@ export default {
         },
         create() {
           this.filter()
+            this.set_compromise_all_quantity = false
         },
 
         async submit() {

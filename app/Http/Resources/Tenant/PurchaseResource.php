@@ -95,6 +95,7 @@ class PurchaseResource extends JsonResource
                 'price_type' => $row->price_type,
                 'lots' => $row->lots,
                 'warehouse' => ($row->warehouse) ? $row->warehouse :  self::getWarehouse($row->purchase->establishment_id),
+                'name_product_pdf' => $row->name_product_pdf,
             ];
         });
 

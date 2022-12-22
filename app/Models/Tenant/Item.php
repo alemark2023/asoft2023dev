@@ -2742,5 +2742,47 @@ class Item extends ModelTenant
     }
 
     
+    /**
+     * 
+     * Obtener item por codigo interno
+     * 
+     * Usado para importacion lotes/series en movimientos
+     *
+     * @return Item
+     */
+    public static function getItemByInternalId($internal_id)
+    {
+        return self::whereFilterWithOutRelations()
+                    ->where('internal_id', $internal_id)
+                    ->select([
+                        'id', 
+                        'internal_id',
+                        'series_enabled',
+                        'lots_enabled'
+                    ])
+                    ->first();
+    }
+
+        
+    /**
+     * 
+     * Obtener lotes para gestionar compra/venta/movimiento
+     *
+     * @return array
+     */
+    public function getLotsGroupForCompromise()
+    {
+        return $this->lots_group->transform(function ($lots_group) {
+            return [
+                'id'          => $lots_group->id,
+                'code'        => $lots_group->code,
+                'quantity'    => $lots_group->quantity,
+                'date_of_due' => $lots_group->date_of_due,
+                'checked'     => false,
+                'compromise_quantity' => 0
+            ];
+        });
+    }
+
 }
 

@@ -342,6 +342,7 @@ return [
 		'default_document_types.*.document_type_id' => 'tipo de documento',
 		'default_document_types.*.series_id' => 'serie',
 
+		'quantity_remove' => 'cantidad a retirar',
 
 	],
 ];
