@@ -12,9 +12,17 @@ use Modules\Document\Helpers\DocumentHelper;
 use Illuminate\Support\Facades\Log;
 
 use App\Models\Tenant\SaleNote;
+use App\Models\Tenant\{
+    Establishment
+};
+use App\Traits\LockedEmissionTrait;
+
 
 class LockedEmissionProvider extends ServiceProvider
 {
+
+    use LockedEmissionTrait;
+
     /**
      * Register services.
      *
@@ -35,6 +43,8 @@ class LockedEmissionProvider extends ServiceProvider
         $this->locked_emission();
         $this->locked_users();
         $this->update_quantity_documents();
+
+        $this->lockedCreateEstablishments();
     }
 
 
@@ -56,6 +66,13 @@ class LockedEmissionProvider extends ServiceProvider
         Document::created(function ($document) {
 
             $configuration = Configuration::firstOrFail();
+
+            
+            // $start_billing_cycle = DocumentHelper::getStartBillingCycleFromSystem();
+            // $start_end_date = DocumentHelper::getStartEndDateForFilterDocument($start_billing_cycle);
+            // dd($start_end_date);
+
+
             
             if($configuration->locked_emission)
             {
@@ -72,6 +89,7 @@ class LockedEmissionProvider extends ServiceProvider
             //         throw new Exception("Ha superado el límite permitido para la emisión de comprobantes");
 
             // }
+
 
         });
 
@@ -109,4 +127,33 @@ class LockedEmissionProvider extends ServiceProvider
         
         }); 
     }
+    
+    
+    /**
+     * 
+     * Validar creacion de establecimientos en base al plan
+     *
+     * @return void
+     */
+    private function lockedCreateEstablishments()
+    {
+        Establishment::creating(function ($establishment) {
+            
+            $locked_create_establishments = $this->getConfigurationColumn('locked_create_establishments');
+
+            if($locked_create_establishments)
+            {
+                $plan = $this->getClientPlan(['id', 'name', 'establishments_limit', 'establishments_unlimited']);
+
+                if(!$plan->isEstablishmentsUnlimited())
+                {
+                    $establishments_quantity = $this->getQuantityByModel(Establishment::class);
+
+                    if($establishments_quantity >= $plan->establishments_limit) $this->throwException('Ha superado el límite permitido para la creación de establecimientos');
+                }
+            }
+        });
+    }
+
+
 }

@@ -284,6 +284,8 @@
             'register_series_invoice_xml',
             'enable_discount_by_customer',
             'show_price_barcode_ticket',
+            'locked_create_establishments',
+            'restrict_sales_limit',
         ];
 
         protected $casts = [
@@ -401,6 +403,8 @@
             'register_series_invoice_xml'=>'bool',
             'enable_discount_by_customer' => 'boolean',
             'show_price_barcode_ticket' => 'boolean',
+            'locked_create_establishments' => 'boolean',
+            'restrict_sales_limit' => 'boolean',
         ];
 
         protected $hidden = [
@@ -1371,7 +1375,7 @@
         {
             return (bool)$this->locked_users;
         }
-
+        
         /**
          * @param bool|null $locked_users
          *
@@ -2382,6 +2386,24 @@
         public function isShowPriceBarcodeTicket(): ?bool
         {
             return (bool)$this->show_price_barcode_ticket;
+        }
+
+        
+        /**
+         * @return bool
+         */
+        public function isLockedCreateEstablishments()
+        {
+            return $this->locked_create_establishments;
+        }
+
+        
+        /**
+         * @return bool
+         */
+        public function isRestrictSalesLimit()
+        {
+            return $this->restrict_sales_limit;
         }
 
     }

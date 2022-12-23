@@ -17,7 +17,21 @@ class Plan extends Model
         'limit_documents',
         'plan_documents', 
         'locked', 
+        'establishments_limit', 
+        'establishments_unlimited', 
+        
+        'sales_limit', 
+        'sales_unlimited', 
     ];
+
+
+    protected $casts = [
+        'establishments_unlimited' => 'boolean',
+        'establishments_limit' => 'int',
+        'sales_unlimited' => 'boolean',
+        'sales_limit' => 'float',
+    ];
+
 
     public function setPlanDocumentsAttribute($value)
     {
@@ -34,4 +48,25 @@ class Plan extends Model
     {
         return $this->hasMany(Client::class);
     }
+
+    
+    /**
+     *
+     * @return bool
+     */
+    public function isEstablishmentsUnlimited()
+    {
+        return $this->establishments_unlimited;
+    }
+
+    
+    /**
+     *
+     * @return bool
+     */
+    public function isSalesUnlimited()
+    {
+        return $this->sales_unlimited;
+    }
+
 }

@@ -998,5 +998,25 @@
             ];
         }
 
+                
+        /**
+         *
+         * @param  Request $request
+         * @return array
+         */
+        public function lockedByColumn(Request $request)
+        {
+            $column = $request->column;
+            $client = Client::findOrFail($request->id);
+            $client->{$column} = $request->{$column};
+            $client->save();
+
+            $tenancy = app(Environment::class);
+            $tenancy->tenant($client->hostname->website);
+            DB::connection('tenant')->table('configurations')->where('id', 1)->update([$column => $client->{$column}]);
+
+            return $this->generalResponse(true, $client->{$column} ? 'Activado correctamente' : 'Desactivado correctamente');
+        }
+
 
     }

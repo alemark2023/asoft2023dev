@@ -343,6 +343,8 @@ return [
 		'default_document_types.*.series_id' => 'serie',
 
 		'quantity_remove' => 'cantidad a retirar',
+		'establishments_limit' => 'límite de establecimientos',
+		'sales_limit' => 'límite de ventas',
 
 	],
 ];
