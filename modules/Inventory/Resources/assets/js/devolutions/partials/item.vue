@@ -46,12 +46,15 @@
                         </div>
                     </div>
 
-                    <div style="padding-top: 1%;" class="col-md-3 col-sm-3 mt-3"
-                         v-if="form.item_id && form.item.lots_enabled && form.lots_group.length > 0">
-                        <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickLotGroup">[&#10004;
-                            Seleccionar lote]</a>
-                    </div>
+<!--                    <div style="padding-top: 1%;" class="col-md-3 col-sm-3 mt-3"-->
+<!--                         v-if="form.item_id && form.item.lots_enabled && form.lots_group.length > 0">-->
+<!--                        <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickLotGroup">[&#10004;-->
+<!--                            Seleccionar lote]</a>-->
+<!--                    </div>-->
 
+                    <div class="col-md-4 mt-4" v-if="form.item_id && form.item.lots_enabled">
+                        <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickLotGroup">[&#10004; Seleccionar lotes]</a>
+                    </div>
                     <div style="padding-top: 1%;" class="col-md-3 col-sm-3 mt-3"
                          v-if="form.item_id && form.item.series_enabled">
                         <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickSelectLots">[&#10004;
@@ -68,12 +71,24 @@
             </div>
         </form>
 
+<!--        <lots-group-->
+<!--            :showDialog.sync="showDialogLots"-->
+<!--            :itemId="form.item_id"-->
+<!--            :quantity="form.quantity"-->
+<!--            :lots_group="form.lots_group"-->
+<!--            @addRowLotGroup="addRowLotGroup">-->
+<!--        </lots-group>-->
+
         <lots-group
-            :quantity="form.quantity"
             :showDialog.sync="showDialogLots"
+            :itemId="form.item_id"
+            :lots-group-all="lotsGroupAll"
             :lots_group="form.lots_group"
-            @addRowLotGroup="addRowLotGroup">
+            :quantity="form.quantity"
+            @addRowLotGroup="addRowLotGroup"
+            :compromise-all-quantity="true">
         </lots-group>
+
 
         <select-lots-form
             :showDialog.sync="showDialogSelectLots"
@@ -96,8 +111,9 @@
 
 <script>
 
-import LotsGroup from './lots_group.vue'
+//import LotsGroup from './lots_group.vue'
 // import SelectLotsForm from '@views/documents/partials/lots.vue'
+import LotsGroup from '../../../../../../../resources/js/views/tenant/documents/partials/lots_group';
 import SelectLotsForm from '../../../../../../../resources/js/views/tenant/documents/partials/lots.vue';
 
 export default {
@@ -116,6 +132,7 @@ export default {
             showDialogLots: false,
             showDialogSelectLots: false,
             lots: [],
+            lotsGroupAll: []
         }
     },
     async created() {
@@ -191,7 +208,7 @@ export default {
             this.form.quantity = 1;
             this.cleanTotalItem();
 
-            this.form.lots_group = this.form.item.lots_group
+            this.lotsGroupAll = this.form.item.lots_group
 
         },
         cleanTotalItem() {

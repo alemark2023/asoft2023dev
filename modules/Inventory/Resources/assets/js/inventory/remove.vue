@@ -62,9 +62,11 @@
         </output-lots-form>
 
         <lots-group
+            :showDialog.sync="showDialogLotsGroup"
+            :itemId="form.item_id"
+            :lots-group-all="lotsGroupAll"
             :lots_group="form.lots_group"
             :quantity="form.quantity_remove"
-            :showDialog.sync="showDialogLotsGroup"
             @addRowLotGroup="addRowLotGroup"
             :compromise-all-quantity="true">
         </lots-group>
@@ -76,8 +78,9 @@
 
 <script>
 import OutputLotsForm from '../../../../../../resources/js/views/tenant/documents/partials/lots.vue'
+import LotsGroup from '../../../../../../resources/js/views/tenant/documents/partials/lots_group'
 // import OutputLotsForm from './partials/lots.vue'
-import LotsGroup from '@views/documents/partials/lots_group.vue'
+//import LotsGroup from '@views/documents/partials/lots_group.vue'
 
 export default {
     components: {OutputLotsForm, LotsGroup},
@@ -93,6 +96,7 @@ export default {
             items: [],
             warehouses: [],
             lotsAll: [],
+            lotsGroupAll: [],
             showDialogLotsGroup: false,
         }
     },
@@ -104,9 +108,9 @@ export default {
                 this.warehouses = response.data.warehouses
             })
     },
-    methods: 
-    {            
-        addRowLotGroup(id) 
+    methods:
+    {
+        addRowLotGroup(id)
         {
             this.form.selected_lots_group = id
         },
@@ -146,14 +150,16 @@ export default {
                 .then(response => {
                     let data = response.data.data;
                     this.form = _.clone(data);
-                    this.form.lots = []; //Object.values(response.data.data.lots)
-                    this.lotsAll = data.lots; //Object.values(response.data.data.lots);
+                    this.form.lots = [];
+                    this.form.lots_group = []; //Object.values(response.data.data.lots)
+                    this.lotsAll = data.lots;
+                    this.lotsGroupAll = data.lots_group;//Object.values(response.data.data.lots);
                     this.form = Object.assign({}, this.form, {'quantity_remove': 0});
                 })
         },
         validetLotsGroup()
         {
-            if (this.form.lots_enabled) 
+            if (this.form.lots_enabled)
             {
                 if (!this.form.selected_lots_group) return this.getObjectResponse(false, 'Debe seleccionar los lotes.')
 
