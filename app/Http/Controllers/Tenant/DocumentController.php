@@ -568,19 +568,35 @@ class DocumentController extends Controller
 
         return $record;
     }
+    
 
+    /**
+     * 
+     * Generar cpe
+     *
+     * @param  DocumentRequest $request
+     * @return array
+     */
     public function store(DocumentRequest $request)
     {
+        try 
+        {
+            $validate = $this->validateDocument($request);
+            if (!$validate['success']) return $validate;
 
-        $validate = $this->validateDocument($request);
-        if (!$validate['success']) return $validate;
+            $res = $this->storeWithData($request->all());
+            $document_id = $res['data']['id'];
+            $this->associateDispatchesToDocument($request, $document_id);
+            $this->associateSaleNoteToDocument($request, $document_id);
 
-        $res = $this->storeWithData($request->all());
-        $document_id = $res['data']['id'];
-        $this->associateDispatchesToDocument($request, $document_id);
-        $this->associateSaleNoteToDocument($request, $document_id);
+            return $res;
+        } 
+        catch(Exception $e)
+        {
+            $this->generalWriteErrorLog($e);
 
-        return $res;
+            return $this->generalResponse(false, 'Ocurrió un error: '.$e->getMessage());
+        }
     }
 
 

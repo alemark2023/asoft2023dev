@@ -22,6 +22,7 @@ class Plan extends Model
         
         'sales_limit', 
         'sales_unlimited', 
+        'include_sale_notes_sales_limit', 
     ];
 
 
@@ -30,6 +31,7 @@ class Plan extends Model
         'establishments_limit' => 'int',
         'sales_unlimited' => 'boolean',
         'sales_limit' => 'float',
+        'include_sale_notes_sales_limit' => 'boolean',
     ];
 
 
@@ -68,5 +70,15 @@ class Plan extends Model
     {
         return $this->sales_unlimited;
     }
+    
 
+    /**
+     *
+     * @return bool
+     */
+    public function includeSaleNotesSalesLimit()
+    {
+        return $this->include_sale_notes_sales_limit;
+    }
+    
 }

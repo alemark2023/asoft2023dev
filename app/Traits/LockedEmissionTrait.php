@@ -12,6 +12,8 @@ use App\Models\Tenant\{
     Configuration
 };
 use Exception;
+use Modules\Document\Helpers\DocumentHelper;
+use Modules\Dashboard\Helpers\DashboardData;
 
 
 trait LockedEmissionTrait
@@ -105,6 +107,94 @@ trait LockedEmissionTrait
     public function throwException($message)
     {
         throw new Exception($message);
+    }
+
+    
+    /**
+     * 
+     * Validar el limite de ventas mensual, cpe y nv
+     *
+     * @return array
+     */
+    public function exceedSalesLimit($type = 'document')
+    {
+        //fecha de inicio del ciclo de facturacion
+        $start_billing_cycle = DocumentHelper::getStartBillingCycleFromSystem();
+        
+        if($start_billing_cycle)
+        {
+            $plan = $this->getClientPlan(['id', 'name', 'sales_limit', 'sales_unlimited', 'include_sale_notes_sales_limit']);
+
+            if(!$plan->isSalesUnlimited())
+            {
+                if($type === 'document' || ($type === 'sale-note' && $plan->includeSaleNotesSalesLimit()))
+                {
+                    //obtener fecha inicio y fin
+                    $start_end_date = DocumentHelper::getStartEndDateForFilterDocument($start_billing_cycle);
+                    $start_date = $start_end_date['start_date']->format('Y-m-d');
+                    $end_date = $start_end_date['end_date']->format('Y-m-d');
+    
+                    //obtener totales
+                    $totals = $this->getTotalsDocumentSaleNote($start_date, $end_date, $plan->includeSaleNotesSalesLimit());
+    
+                    // dd($start_date, $end_date, $totals, $plan->sales_limit);
+    
+                    if($totals['total'] > $plan->sales_limit)
+                    {
+                        return $this->getResponse(true, 'Ha superado el límite de ventas permitido.');
+                    }
+                }
+            }
+        }
+
+        return $this->getResponse(false);
+    }
+
+    
+    /**
+     *
+     * @param  string $start_date
+     * @param  string $end_date
+     * @param  bool $include_sale_notes
+     * @return array
+     */
+    public function getTotalsDocumentSaleNote($start_date, $end_date, $include_sale_notes = false)
+    {
+        $dashboard_data = new DashboardData();
+                
+        //total cpe
+        $document_totals = $dashboard_data->document_totals_globals($start_date, $end_date);
+
+        // total nota venta
+        $sale_note_totals = 0;
+
+        if($include_sale_notes)
+        {
+            $sale_note_totals = $dashboard_data->sale_note_totals_global($start_date, $end_date);
+        }
+
+        $total = $document_totals + $sale_note_totals;
+
+        return [
+            'sale_note_totals' => $sale_note_totals,
+            'document_totals' => $document_totals,
+            'total' => $total,
+        ];
+    }
+
+
+    /**
+     *
+     * @param  bool $success
+     * @param  string $message
+     * @return array
+     */
+    public function getResponse($success, $message = null)
+    {
+        return [
+            'success' => $success,
+            'message' => $message,
+        ];
     }
 
 }

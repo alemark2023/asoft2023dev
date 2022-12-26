@@ -62,7 +62,15 @@
                     
                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.sales_limit}">
-                            <label class="control-label">Límite de ventas mensual</label>
+                            <label class="control-label">
+                                Límite de ventas mensual
+                                <el-tooltip class="item"
+                                            :content="form.include_sale_notes_sales_limit ? 'Disponible para CPE y Nota de venta' : 'Disponible para CPE'"
+                                            effect="dark"
+                                            placement="top">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
 
                             <template v-if="form.sales_unlimited">
                                 <el-input value="∞" disabled></el-input>
@@ -72,6 +80,8 @@
                             </template>
 
                             <el-checkbox v-model="form.sales_unlimited">Ilimitado</el-checkbox><br>
+                            <el-checkbox v-model="form.include_sale_notes_sales_limit">Incluir notas de venta</el-checkbox><br>
+
 
                             <small class="form-control-feedback d-block" v-if="errors.sales_limit" v-text="errors.sales_limit[0]"></small>
                         </div>
@@ -155,6 +165,7 @@
 
                     sales_limit : 0,
                     sales_unlimited : true,
+                    include_sale_notes_sales_limit : false,
                 }
 
             },

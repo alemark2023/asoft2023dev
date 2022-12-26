@@ -45,6 +45,8 @@ class LockedEmissionProvider extends ServiceProvider
         $this->update_quantity_documents();
 
         $this->lockedCreateEstablishments();
+
+        $this->lockedEmissionSaleNotes();
     }
 
 
@@ -59,7 +61,13 @@ class LockedEmissionProvider extends ServiceProvider
         }); 
     }
     
-
+    
+    /**
+     * 
+     * Controlar limite de ventas y cantidad de documentos mensual
+     *
+     * @return void
+     */
     private function locked_emission()
     {
 
@@ -67,17 +75,18 @@ class LockedEmissionProvider extends ServiceProvider
 
             $configuration = Configuration::firstOrFail();
 
-            
-            // $start_billing_cycle = DocumentHelper::getStartBillingCycleFromSystem();
-            // $start_end_date = DocumentHelper::getStartEndDateForFilterDocument($start_billing_cycle);
-            // dd($start_end_date);
-
-
-            
             if($configuration->locked_emission)
             {
                 $exceed_limit = DocumentHelper::exceedLimitDocuments($configuration);
                 if($exceed_limit['success']) throw new Exception($exceed_limit['message']);
+            }
+
+
+            //limite de ventas mensual
+            if($configuration->isRestrictSalesLimit())
+            {
+                $exceed_sales_limit = $this->exceedSalesLimit($configuration);
+                if($exceed_sales_limit['success']) $this->throwException($exceed_sales_limit['message']);
             }
 
             // $configuration = Configuration::first();
@@ -90,6 +99,33 @@ class LockedEmissionProvider extends ServiceProvider
 
             // }
 
+
+        });
+
+    }
+
+    
+    /**
+     * 
+     * Controlar limite de ventas y cantidad de documentos mensual
+     *
+     * @return void
+     */
+    private function lockedEmissionSaleNotes()
+    {
+
+        SaleNote::created(function ($sale_note) {
+
+
+            $configuration = Configuration::firstOrFail();
+
+            //limite de ventas mensual
+            if($configuration->isRestrictSalesLimit())
+            {
+                // que en la config del plan, se incluya las nv
+                $exceed_sales_limit = $this->exceedSalesLimit($configuration);
+                if($exceed_sales_limit['success']) $this->throwException($exceed_sales_limit['message']);
+            }
 
         });
 
