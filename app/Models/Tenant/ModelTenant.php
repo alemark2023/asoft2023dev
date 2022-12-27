@@ -203,4 +203,18 @@
             return asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $filename);
         }
 
+        
+        /**
+         * 
+         * Path imagen
+         *
+         * @param  string $folder
+         * @param  string $filename
+         * @return string
+         */
+        public function getGeneralFilePublicPath($folder, $filename)
+        {
+            return public_path('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $filename);
+        }
+
     }
