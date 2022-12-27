@@ -85,7 +85,7 @@ class LockedEmissionProvider extends ServiceProvider
             //limite de ventas mensual
             if($configuration->isRestrictSalesLimit())
             {
-                $exceed_sales_limit = $this->exceedSalesLimit($configuration);
+                $exceed_sales_limit = $this->exceedSalesLimit();
                 if($exceed_sales_limit['success']) $this->throwException($exceed_sales_limit['message']);
             }
 
@@ -98,7 +98,6 @@ class LockedEmissionProvider extends ServiceProvider
             //         throw new Exception("Ha superado el límite permitido para la emisión de comprobantes");
 
             // }
-
 
         });
 
@@ -113,22 +112,15 @@ class LockedEmissionProvider extends ServiceProvider
      */
     private function lockedEmissionSaleNotes()
     {
-
         SaleNote::created(function ($sale_note) {
 
-
-            $configuration = Configuration::firstOrFail();
-
-            //limite de ventas mensual
-            if($configuration->isRestrictSalesLimit())
+            if($this->getConfigurationColumn('restrict_sales_limit'))
             {
-                // que en la config del plan, se incluya las nv
-                $exceed_sales_limit = $this->exceedSalesLimit($configuration);
+                $exceed_sales_limit = $this->exceedSalesLimit('sale-note');
                 if($exceed_sales_limit['success']) $this->throwException($exceed_sales_limit['message']);
             }
 
         });
-
     }
 
 

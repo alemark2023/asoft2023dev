@@ -1432,7 +1432,7 @@
             if (!this.enabled_payments) {
                 this.form.payments = []
             }
-            // this.loading_submit = true
+            this.loading_submit = true
             this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
                     if (response.data.success) {

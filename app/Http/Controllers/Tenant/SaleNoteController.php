@@ -702,7 +702,11 @@ class SaleNoteController extends Controller
                 ],
             ];
 
-        } catch (Exception $e) {
+        } 
+        catch(Exception $e) 
+        {
+            $this->generalWriteErrorLog($e);
+
             DB::connection('tenant')->rollBack();
             return [
                 'success' => false,

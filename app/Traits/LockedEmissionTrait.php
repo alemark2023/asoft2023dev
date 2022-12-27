@@ -137,8 +137,6 @@ trait LockedEmissionTrait
                     //obtener totales
                     $totals = $this->getTotalsDocumentSaleNote($start_date, $end_date, $plan->includeSaleNotesSalesLimit());
     
-                    // dd($start_date, $end_date, $totals, $plan->sales_limit);
-    
                     if($totals['total'] > $plan->sales_limit)
                     {
                         return $this->getResponse(true, 'Ha superado el límite de ventas permitido.');
