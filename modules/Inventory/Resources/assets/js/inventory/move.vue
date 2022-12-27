@@ -56,6 +56,11 @@
                         <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickLotcodeOutput">[&#10004;
                             Seleccionar series]</a>
                     </div>
+                    <div style="padding-top: 3%;" class="col-md-2 col-sm-2"
+                         v-if="form.item_id && form.lots_enabled">
+                        <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickLotsGroup">[&#10004;
+                            Seleccionar lote]</a>
+                    </div>
                 </div>
             </div>
             <div class="form-actions text-right mt-4">
@@ -72,27 +77,40 @@
             :warehouseId="form.warehouse_id"
             @addRowOutputLot="addRowOutputLot">
         </output-lots-form>
+        <output-lots-group-form
+            :showDialog.sync="showDialogLotsGroupOutput"
+            :itemId="form.item_id"
+            :lots-group-all="lotsGroupAll"
+            :lots-group="form.lots_group"
+            :quantity="form.quantity_move"
+            :warehouseId="form.warehouse_id"
+            @addRowOutputLot="addRowOutputLot">
+        </output-lots-group-form>
     </el-dialog>
 
 </template>
 
 <script>
+
+import OutputLotsGroupForm from '../../../../../../resources/js/views/tenant/documents/partials/lots_group'
 import OutputLotsForm from '../../../../../../resources/js/views/tenant/documents/partials/lots.vue'
 //import OutputLotsForm from './partials/lots.vue';
 
 export default {
-    components: {OutputLotsForm},
+    components: {OutputLotsForm, OutputLotsGroupForm},
     props: ['showDialog', 'recordId'],
     data() {
         return {
             loading_submit: false,
             titleDialog: null,
             showDialogLotsOutput: false,
+            showDialogLotsGroupOutput: false,
             resource: 'inventory',
             errors: {},
             form: {},
             warehouses: [],
             lotsAll: [],
+            lotsGroupAll: [],
         }
     },
     async created() {
@@ -108,6 +126,9 @@ export default {
         },
         clickLotcodeOutput() {
             this.showDialogLotsOutput = true
+        },
+        clickLotsGroup() {
+            this.showDialogLotsGroupOutput = true
         },
         initForm() {
             this.errors = {}
@@ -132,8 +153,10 @@ export default {
                 .then(response => {
                     let data = response.data.data;
                     this.form = _.clone(data);
-                    this.form.lots = []; //Object.values(response.data.data.lots)
+                    this.form.lots = [];
+                    this.form.lots_group = []; //Object.values(response.data.data.lots)
                     this.lotsAll = data.lots; //Object.values(response.data.data.lots);
+                    this.lotsGroupAll = data.lots_group; //Object.values(response.data.data.lots);
                     this.form = Object.assign({}, this.form, {'quantity_move': 0});
                 })
         },

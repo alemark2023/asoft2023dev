@@ -342,6 +342,8 @@ return [
 		'default_document_types.*.document_type_id' => 'tipo de documento',
 		'default_document_types.*.series_id' => 'serie',
 
+		'additional_data.*.title' => 'título',
+		'additional_data.*.description' => 'descripción',
 		'quantity_remove' => 'cantidad a retirar',
 		'establishments_limit' => 'límite de establecimientos',
 		'sales_limit' => 'límite de ventas',

@@ -286,6 +286,7 @@
             'show_price_barcode_ticket',
             'locked_create_establishments',
             'restrict_sales_limit',
+            'pdf_footer_images',
         ];
 
         protected $casts = [
@@ -644,6 +645,66 @@
                 'show_price_barcode_ticket' => $this->show_price_barcode_ticket,
             ];
         }
+        
+
+        /**
+         *
+         * @return array
+         */
+        public function getPdfFooterImages()
+        {
+            return $this->pdf_footer_images ?? [];
+        }
+
+
+        /**
+         *
+         * Validar si se agrega pdf footer con imagenes
+         * 
+         * @return bool
+         */
+        public function applyImagesInPdfFooter()
+        {
+            return collect($this->getPdfFooterImages())->count() > 0;
+        }
+
+        
+        /**
+         * 
+         * Datos para consulta de imagenes footer
+         *
+         * @return array
+         */
+        public function getDataPdfFooterImages()
+        {
+            return collect($this->getPdfFooterImages())->transform(function($row){
+                return [
+                    'name' => $row->filename,
+                    'url'=> $this->getPathPublicUploads('pdf_footer_images', $row->filename)
+                ];
+            });
+        }
+        
+
+        /**
+         * 
+         * Datos en b64 para pdf
+         *
+         * @return array
+         */
+        public function getBase64PdfFooterImages()
+        {
+            return collect($this->getPdfFooterImages())->transform(function($row){
+
+                $public_path = $this->getGeneralFilePublicPath('pdf_footer_images', $row->filename);
+
+                return [
+                    'name' => $row->filename,
+                    'url'=> 'data:'.mime_content_type($public_path).';base64, '.base64_encode(file_get_contents($public_path))."alt={$row->filename}"
+                ];
+            });
+        }
+        
 
         /**
          * @return bool
@@ -918,6 +979,16 @@
         public function getFinancesAttribute($value)
         {
             return is_null($value) ? ['apply_arrears' => false, 'arrears_amount' => 0] : (object)json_decode($value);
+        }
+        
+        public function getPdfFooterImagesAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+
+        public function setPdfFooterImagesAttribute($value)
+        {
+            $this->attributes['pdf_footer_images'] = (is_null($value)) ? null : json_encode($value);
         }
 
         /**
