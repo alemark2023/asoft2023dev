@@ -344,5 +344,7 @@ return [
 
 		'additional_data.*.title' => 'título',
 		'additional_data.*.description' => 'descripción',
+		'quantity_remove' => 'cantidad a retirar',
+
 	],
 ];

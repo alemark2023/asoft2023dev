@@ -476,9 +476,11 @@
                                     <tr v-for="(row, index) in form.items"
                                         :key="index">
                                         <td>{{ index + 1 }}</td>
-                                        <td>{{
-                                                row.item.description
-                                            }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
+                                        <td>
+                                            {{
+                                                setDescriptionOfItem(row.item)
+                                            }}
+                                            <br/><small>{{ row.affectation_igv_type.description }}</small></td>
                                         <td class="text-left">{{ row.warehouse_description }}</td>
                                         <td class="text-left">{{ row.lot_code }}</td>
                                         <td class="text-center">{{ row.item.unit_type_id }}</td>
@@ -493,12 +495,21 @@
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
                                         <td class="text-right">
+
+                                            <button v-if="applyLotsGroup(row.item)"
+                                                    class="btn waves-effect waves-light btn-xs btn-info mr-2"
+                                                    type="button"
+                                                    @click.prevent="clickOpenLotsGroup(index)">
+                                                Lote
+                                            </button>
+
                                             <button v-if="purchase_order_id && row.item.series_enabled"
                                                     class="btn waves-effect waves-light btn-xs btn-info"
                                                     type="button"
                                                     @click.prevent="clickOpenSeries(index, row.quantity, row.lots)">
                                                 Series
                                             </button>
+
                                             <button class="btn waves-effect waves-light btn-xs btn-danger"
                                                     type="button"
                                                     @click.prevent="clickRemoveItem(index)">x
@@ -669,6 +680,13 @@
             @addRowLot="addRowLot">
         </series-form>
 
+        <input-lot-group
+            :showDialog.sync="showDialogInputLotGroup"
+            :rowItem="rowItem"
+            :rowIndex="rowIndex"
+            @saveInputLotGroup="saveInputLotGroup">
+        </input-lot-group>
+
     </div>
 </template>
 
@@ -678,13 +696,14 @@ import PurchaseFormItem from './partials/item.vue'
 import PersonForm from '../persons/form.vue'
 import PurchaseOptions from './partials/options.vue'
 import {exchangeRate, functions, fnPaymentsFee, operationsForDiscounts} from '../../../mixins/functions'
-import {calculateRowItem} from '../../../helpers/functions'
+import {calculateRowItem, showNamePdfOfDescription} from '../../../helpers/functions'
 import SeriesForm from './partials/series'
 import {mapActions, mapState} from "vuex";
+import InputLotGroup from '@components/secondary/InputLotGroup.vue'
 
 export default {
     props: ['purchase_order_id'],
-    components: {PurchaseFormItem, PersonForm, PurchaseOptions, SeriesForm},
+    components: {PurchaseFormItem, PersonForm, PurchaseOptions, SeriesForm, InputLotGroup},
     mixins: [functions, exchangeRate, fnPaymentsFee, operationsForDiscounts],
     computed: {
         ...mapState([
@@ -704,6 +723,10 @@ export default {
         isGlobalDiscountBase: function () {
             return (this.config.global_discount_type_id === '02')
         },
+        isFromPurchaseOrder()
+        {
+            return this.purchase_order_id != undefined && this.purchase_order_id != null
+        }
     },
     data() {
         return {
@@ -743,6 +766,9 @@ export default {
             loading_search: false,
             purchaseNewId: null,
             showDialogLots: false,
+            showDialogInputLotGroup: false,
+            rowItem: null,
+            rowIndex: -1,
         }
     },
     async mounted() {
@@ -801,6 +827,31 @@ export default {
         this.initGlobalIgv()
     },
     methods: {
+        saveInputLotGroup(params)
+        {
+            this.form.items[params.index].lot_code = params.data.lot_code
+            this.form.items[params.index].date_of_due = params.data.date_of_due
+            this.initDataRow()
+        },
+        initDataRow()
+        {
+            this.rowItem = null
+            this.rowIndex = -1
+        },
+        clickOpenLotsGroup(index)
+        {
+            this.rowItem = this.form.items[index]
+            this.rowIndex = index
+            this.showDialogInputLotGroup = true
+        },
+        applyLotsGroup(item)
+        {
+            return this.isFromPurchaseOrder && item.lots_enabled != undefined && item.lots_enabled
+        },
+        setDescriptionOfItem(item)
+        {
+            return showNamePdfOfDescription(item, this.config.show_pdf_name)
+        },
         ...mapActions([
             'loadConfiguration',
             'loadEstablishment',
@@ -859,8 +910,10 @@ export default {
             return _.round(unit_price, 6)
             // return unit_price.toFixed(6)
         },
-        async isGeneratePurchaseOrder() {
-            if (this.purchase_order_id) {
+        async isGeneratePurchaseOrder() 
+        {
+            if (this.purchase_order_id) 
+            {
 
                 await this.$http.get(`/purchase-orders/record/${this.purchase_order_id}`)
                     .then(response => {
@@ -894,11 +947,15 @@ export default {
                         this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
 
                         this.form.items.forEach((it) => {
+
                             it.warehouse_id = warehouse.id
                             it.charges = it.charges ? Object.values(it.charges) : []
                             it.attributes = it.attributes ? Object.values(it.attributes) : []
                             it.discounts = it.discounts ? Object.values(it.discounts) : []
                             it.lots = it.item.lots ? it.item.lots : []
+
+                            it.lot_code = null
+                            it.date_of_due = null
                         })
                         // this.changeDocumentType()
 
@@ -1370,11 +1427,42 @@ export default {
             }
 
         },
+        validateDataItems()
+        {
+            let errors_lots_group = 0
+
+            this.form.items.forEach(row => {
+
+                // validar lotes cuando se genera desde oc
+                if(this.isFromPurchaseOrder)
+                {
+                    if(row.item.lots_enabled)
+                    {
+                        if(!row.lot_code || !row.date_of_due) errors_lots_group++
+                    }
+                }
+                
+            })
+
+            if(errors_lots_group > 0) return this.getCurrentResponse(false, 'No ha registrado el lote o fecha de vencimiento para el producto')
+
+            return this.getCurrentResponse()
+        },
+        getCurrentResponse(success = true, message = null)
+        {
+            return {
+                success: success,
+                message: message,
+            }
+        },
         async submit() {
             let validate_item_series = await this.validationItemSeries()
             if (!validate_item_series.success) {
                 return this.$message.error(validate_item_series.message);
             }
+            
+            const validate_data_items = await this.validateDataItems()
+            if (!validate_data_items.success) return this.$message.error(validate_data_items.message)
 
             let validate = await this.validate_payments()
             if (!validate.success) {

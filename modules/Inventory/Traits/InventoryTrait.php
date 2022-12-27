@@ -818,4 +818,15 @@ trait InventoryTrait
         }
     }
 
+    
+    /**
+     *
+     * @param  int $id
+     * @return ItemLotsGroup
+     */
+    public function getItemLotsGroupById($id)
+    {
+        return ItemLotsGroup::find($id);
+    }
+
 }

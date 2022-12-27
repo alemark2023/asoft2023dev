@@ -871,6 +871,7 @@
                         ];
                     }),
                     'series_enabled' => (bool)$row->series_enabled,
+                    'lots_enabled' => (bool)$row->lots_enabled,
                 ];
             });
         }
@@ -1009,6 +1010,9 @@
             return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
                 /** @var Item $row */
                 $temp = array_merge($row->getCollectionData(), $row->getDataToItemModal());
+
+                if(isset($temp['name_product_pdf'])) $temp['name_product_pdf'] = null;
+
                 $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
                 $data = [
                     'id' => $row->id,

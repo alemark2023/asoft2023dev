@@ -488,9 +488,21 @@ class Dispatch extends ModelTenant
         if ($this->reference_document) $documents [] = ['description' => $this->reference_document->number_full];
 
 
+        $btn_pdf = false;
+        $btn_send = false;
+        $btn_options = false;
         $btn_status_ticket = false;
-        if ($this->soap_type_id === '02' && in_array($this->state_type_id, ['01', '03'])) {
+        $btn_generate_document = false;
+        if ($this->state_type_id === '01') {
+            $btn_send = true;
+        }
+        if ($this->state_type_id === '03' && !is_null($this->ticket)) {
             $btn_status_ticket = true;
+        }
+        if($this->state_type_id === '05') {
+            $btn_pdf = true;
+            $btn_options = true;
+            $btn_generate_document = true;
         }
         //
         return [
@@ -523,14 +535,16 @@ class Dispatch extends ModelTenant
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             'soap_shipping_response' => $this->soap_shipping_response,
-            'btn_generate_document' => $this->generate_document || $this->reference_document_id ? false : true,
+            'btn_generate_document' => $this->generate_document || $this->reference_document_id || !$btn_generate_document ? false : true,
             'transfer_reason_type' => $this->transfer_reason_type,
             'transfer_reason_description' => $this->transfer_reason_description,
             'documents' => $documents,
             'order_form_description' => $this->getOrderFormDescription(),
-            'btn_status_ticket' => $btn_status_ticket
-        ];
-
+            'btn_status_ticket' => $btn_status_ticket,
+            'btn_send' => $btn_send,
+            'btn_pdf' => $btn_pdf,
+            'btn_options' => $btn_options,
+         ];
     }
 
 
