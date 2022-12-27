@@ -2036,6 +2036,34 @@
                                     </div>
                                 </div>
                             </div>
+
+                            
+                            <div class="col-6 mt-4">
+                                <div class="form-group">
+                                    <label>
+                                        Agregar producto al seleccionar precio
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">
+                                                Agrega de forma automática el producto al seleccionar una opción del listado de precios - Disponible en POS/Venta rápida
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.price_selected_add_product}"
+                                         class="form-group">
+                                        <el-switch v-model="form.price_selected_add_product"
+                                                   active-text="Si"
+                                                   inactive-text="No"
+                                                   @change="submit"></el-switch>
+                                        <small v-if="errors.price_selected_add_product"
+                                               class="form-control-feedback"
+                                               v-text="errors.price_selected_add_product[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3"  name="nine">
@@ -2519,6 +2547,7 @@ export default {
                 register_series_invoice_xml: false,
                 enable_discount_by_customer: false,
                 enabled_dispatch_ticket_pdf: false,
+                price_selected_add_product: false,
             };
         },
         UpdateFormPurchase(e) {
