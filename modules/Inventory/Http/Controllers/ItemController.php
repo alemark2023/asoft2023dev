@@ -10,6 +10,12 @@ use Modules\Inventory\Models\{
     ItemWarehouse,
     InventoryConfiguration
 };
+use Modules\Inventory\Imports\{
+    ItemLotsGroupImport,
+    ItemLotsImport
+};
+use Exception;
+use Maatwebsite\Excel\Excel;
 
 
 class ItemController extends Controller
@@ -140,5 +146,78 @@ class ItemController extends Controller
         return ItemWarehouse::getItemStockData($item_id, $warehouse_id)->first();
     }
 
+    
+    /**
+     * 
+     * Importar lotes
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function importItemLotsGroup(Request $request)
+    {
+        if ($request->hasFile('file')) 
+        {
+            try 
+            {
+                $import = new ItemLotsGroupImport();
+                $import->import($request->file('file'), null, Excel::XLSX);
+                $data = $import->getData();
+                return [
+                    'success' => true,
+                    'message' => __('app.actions.upload.success'),
+                    'data' => $data
+                ];
+            }
+            catch (Exception $e) 
+            {
+                return [
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' => __('app.actions.upload.error'),
+        ];
+    }
+
+    
+    /**
+     * 
+     * Importar series
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function importItemLots(Request $request)
+    {
+        if ($request->hasFile('file')) 
+        {
+            try 
+            {
+                $import = new ItemLotsImport();
+                $import->import($request->file('file'), null, Excel::XLSX);
+                $data = $import->getData();
+                return [
+                    'success' => true,
+                    'message' => __('app.actions.upload.success'),
+                    'data' => $data
+                ];
+            }
+            catch (Exception $e) 
+            {
+                return [
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' => __('app.actions.upload.error'),
+        ];
+    }
 
 }

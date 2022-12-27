@@ -50,27 +50,24 @@
                                     @click.prevent="clickDownload(row.download_external_xml)">XML
                             </button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickDownload(row.download_external_pdf)">PDF
+                                    @click.prevent="clickDownload(row.download_external_pdf)" v-if="row.btn_pdf">PDF
                             </button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickDownload(row.download_external_cdr)" v-if="row.has_cdr">CDR
                             </button>
                         </td>
                         <td class="text-center">
-                            <button v-if="row.btn_generate_document" type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="onGenerateDocument(row.id)">Generar comprobante
-                            </button>
-                            <button v-if="row.btn_status_ticket" type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="btnStatusTicket(row.external_id)">Consultar ticket
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="onGenerateDocument(row.id)" v-if="row.btn_generate_document">Generar comprobante
                             </button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickOptions(row.id)">Opciones
+                                    @click.prevent="btnStatusTicket(row.external_id)" v-if="row.btn_status_ticket">Consultar ticket
                             </button>
-                            <button v-if="showSentSunat(row)" type="button"
-                                    class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="sendSunat(row.id)">Enviar a Sunat
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickOptions(row.id)" v-if="row.btn_options">Opciones
+                            </button>
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="sendSunat(row.external_id)" v-if="row.btn_send">Enviar a Sunat
                             </button>
                         </td>
                     </tr>
@@ -122,27 +119,47 @@ export default {
             if (data.sent === null || data.sent === false) return true;
             return false;
         },
-        sendSunat(id) {
-            this.$http.post(`/dispatches/sendSunat/${id}`)
-                .then((result) => {
-                    let data = result.data;
-                    if (data.sent === false) {
-                        this.$notify.error({
-                            title: 'Envio no realizado',
-                            message: data.description,
-                        });
-                    } else {
+        async sendSunat(external_id) {
+            await this.$http.get(`/service/dispatch/send/${external_id}`)
+                .then(response => {
+                    // console.log(response.data);
+                    let data = response.data;
+                    if(data.success) {
                         this.$notify.success({
                             title: 'Se ha realizado el envio',
-                            message: data.description,
+                            message: data.message,
+                        });
+                    } else {
+                        this.$notify.error({
+                            title: 'Envio no realizado',
+                            message: data.message,
                         });
                     }
-                }).catch(() => {
-                this.$notify.success({
-                    title: 'Error',
-                    message: 'Error desconocido',
+                }).then(() => {
+                    //this.loading_sunat_send = false;
                 });
-            })
+            this.$eventHub.$emit('reloadData')
+
+            // this.$http.post(`/dispatches/sendSunat/${id}`)
+            //     .then((result) => {
+            //         let data = result.data;
+            //         if (data.sent === false) {
+            //             this.$notify.error({
+            //                 title: 'Envio no realizado',
+            //                 message: data.description,
+            //             });
+            //         } else {
+            //             this.$notify.success({
+            //                 title: 'Se ha realizado el envio',
+            //                 message: data.description,
+            //             });
+            //         }
+            //     }).catch(() => {
+            //     this.$notify.success({
+            //         title: 'Error',
+            //         message: 'Error desconocido',
+            //     });
+            // })
         },
         onGenerateDocument(dispatchId) {
             this.recordId = dispatchId;

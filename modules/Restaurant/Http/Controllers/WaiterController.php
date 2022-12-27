@@ -5,12 +5,20 @@ use App\Http\Controllers\Controller;
 use Modules\Restaurant\Models\Waiter;
 use Illuminate\Http\Request;
 use Exception;
+use Modules\Restaurant\Models\RestaurantRole;
+use App\Models\Tenant\User;
 
 class WaiterController extends Controller
 {
     public function records()
     {
-        $records = Waiter::all();
+        $role_mozo = RestaurantRole::where('code', 'MOZO')->first();
+        $records = User::where('restaurant_role_id', $role_mozo ? $role_mozo->id : null)->get()->transform(function ($row){
+            return [
+                'id' => $row->id,
+                'name' => $row->name,
+            ];
+        });
 
         return [
             'data' => $records
@@ -25,6 +33,7 @@ class WaiterController extends Controller
 
     public function store(Request $request)
     {
+
         $id = $request->input('id');
         $bank = Waiter::firstOrNew(['id' => $id]);
         $bank->fill($request->all());

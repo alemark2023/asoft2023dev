@@ -358,20 +358,20 @@
                             <div class="col-lg-6">
                                 <label class="control-label font-bold">Datos transportista</label>
                                 <span class="text-danger"> *</span>
-                                <div :class="{'has-danger': errors.dispacher}"
+                                <div :class="{'has-danger': errors.dispatcher}"
                                      class="form-group">
-                                    <el-select v-model="dispacher"
+                                    <el-select v-model="dispatcher"
                                                clearable
                                                placeholder="Seleccionar transportista">
                                         <el-option
-                                            v-for="option in dispachers"
+                                            v-for="option in dispatchers"
                                             :key="option.id"
                                             :label="option.number +' - '+ option.name +' - '+ option.number_mtc"
                                             :value="option.id"></el-option>
                                     </el-select>
-                                    <small v-if="errors.dispacher"
+                                    <small v-if="errors.dispatcher"
                                            class="form-control-feedback"
-                                           v-text="errors.dispacher[0]"></small>
+                                           v-text="errors.dispatcher[0]"></small>
                                 </div>
                             </div>
                         </template>
@@ -577,10 +577,9 @@
             :dialogVisible.sync="showDialogAddItems"
             @addItem="addItem"></items>
 
-        <dispatch-options :isUpdate="(order_form_id) ? true:false"
-                          :recordId="recordId"
-                          :showClose="false"
-                          :showDialog.sync="showDialogOptions"></dispatch-options>
+        <dispatch-finish :recordId="recordId"
+                         :showClose="false"
+                         :showDialog.sync="showDialogFinish"></dispatch-finish>
         <item-form :external="true"
                    :showDialog.sync="showDialogNewItem"></item-form>
         <lots-group
@@ -605,7 +604,7 @@ import Items from './items.vue';
 import itemForm from '../items/form.vue';
 import LotsGroup from '../documents/partials/lots_group.vue';
 
-import DispatchOptions from './partials/options.vue'
+import DispatchFinish from './partials/finish'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import WarehousesDetail from '@components/WarehousesDetail.vue'
 import {setDefaultSeriesByMultipleDocumentTypes} from '@mixins/functions'
@@ -625,7 +624,7 @@ export default {
         LotsGroup,
         PersonForm,
         Items,
-        DispatchOptions,
+        DispatchFinish,
         WarehousesDetail,
     },
     mixins: [setDefaultSeriesByMultipleDocumentTypes],
@@ -647,7 +646,7 @@ export default {
             min_qty: 0.0001,
             input_person: {},
             // min_qty: 0.1,
-            showDialogOptions: false,
+            showDialogFinish: false,
             showDialogNewPerson: false,
             identityDocumentTypes: [],
             showDialogAddItems: false,
@@ -659,8 +658,8 @@ export default {
             establishments: [],
             drivers: [],
             driver: null,
-            dispachers: [],
-            dispacher: null,
+            dispatchers: [],
+            dispatcher: null,
             countries: [],
             seriesAll: [],
             unitTypes: [],
@@ -760,7 +759,7 @@ export default {
             this.locations = response.data.locations;
             this.seriesAll = response.data.series;
             this.drivers = response.data.drivers;
-            this.dispachers = response.data.dispachers;
+            this.dispatchers = response.data.dispachers;
             if (itemsFromSummary) {
                 this.onLoadItemsFromSummary(response.data.itemsFromSummary, JSON.parse(itemsFromSummary));
             }
@@ -1319,6 +1318,12 @@ export default {
                 if (!this.dispatcher) {
                     return this.$message.error('El transportista es requerido')
                 }
+                let v = _.find(this.dispatchers, {'id': this.dispatcher})
+                this.form.dispatcher.identity_document_type_id = v.identity_document_type_id;
+                this.form.dispatcher.number = v.number;
+                this.form.dispatcher.name = v.name;
+                this.form.dispatcher.number_mtc = v.number_mtc;
+
                 if (this.form.dispatcher.identity_document_type_id === '' || _.isNull(this.form.dispatcher.identity_document_type_id)) {
                     return this.$message.error('El tipo de documento del transportista es requerido')
                 }
@@ -1351,7 +1356,7 @@ export default {
                 if (response.data.success) {
                     this.initForm();
                     this.recordId = response.data.data.id
-                    this.showDialogOptions = true
+                    this.showDialogFinish = true
                 } else {
                     this.$message.error(response.data.message);
                 }

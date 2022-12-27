@@ -37,6 +37,7 @@ class InventoryResource extends JsonResource
                     'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
                 ];
             })->values(),
+            'lots_group' => $this->item->getLotsGroupForCompromise()
         ];
     }
 }

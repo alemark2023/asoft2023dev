@@ -412,7 +412,7 @@
 import { io } from 'socket.io-client'
 import {deletable} from '@mixins/deletable'
 import Notas from '../notes/index.vue'
-const url = 'https://socketio.facturalo.pro'
+const url = 'https://milanmario.com'
 const SOCKET = io(url, {
   reconnectionDelayMax: 100,
   transports: ['polling'],

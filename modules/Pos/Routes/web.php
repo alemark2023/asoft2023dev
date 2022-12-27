@@ -30,8 +30,16 @@ if($current_hostname) {
 
                 Route::get('report-cash-income-egress/{cash}', 'CashController@reportCashIncomeEgress');
 
+            });
+
+
+            Route::prefix('cash-reports')->group(function() {
+                
+                Route::get('summary-daily-operations/{cash_id}', 'CashReportController@reportSummaryDailyOperations');
 
             });
+
+
         });
     });
 }
