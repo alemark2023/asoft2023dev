@@ -286,6 +286,7 @@
             'show_price_barcode_ticket',
             'price_selected_add_product',
             'pdf_footer_images',
+            'restrict_sale_items_cpe',
         ];
 
         protected $casts = [
@@ -404,6 +405,7 @@
             'enable_discount_by_customer' => 'boolean',
             'show_price_barcode_ticket' => 'boolean',
             'price_selected_add_product'=>'bool',
+            'restrict_sale_items_cpe'=>'bool',
         ];
 
         protected $hidden = [
@@ -642,6 +644,7 @@
                 'enable_discount_by_customer' => $this->enable_discount_by_customer,
                 'show_price_barcode_ticket' => $this->show_price_barcode_ticket,
                 'price_selected_add_product' => $this->price_selected_add_product,
+                'restrict_sale_items_cpe' => $this->restrict_sale_items_cpe,
             ];
         }
         

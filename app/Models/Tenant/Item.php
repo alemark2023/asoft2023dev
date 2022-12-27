@@ -182,6 +182,7 @@ class Item extends ModelTenant
         'exchange_points',
         'quantity_of_points',
         'factory_code',
+        'restrict_sale_cpe',
 
         // 'warehouse_id'
     ];
@@ -198,6 +199,7 @@ class Item extends ModelTenant
         'favorite' => 'boolean',
         'exchange_points' => 'boolean',
         'quantity_of_points' => 'float',
+        'restrict_sale_cpe' => 'boolean',
     ];
 
     /**
@@ -1015,6 +1017,7 @@ class Item extends ModelTenant
             'exchanged_for_points' => false, //para determinar si desea canjear el producto
             'used_points_for_exchange' => null, //total de puntos
             'factory_code' => $this->factory_code,
+            'restrict_sale_cpe' => $this->restrict_sale_cpe,
             
         ];
 
