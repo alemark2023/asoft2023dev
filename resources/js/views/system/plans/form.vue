@@ -185,6 +185,11 @@
                     if(isNaN(this.form.establishments_limit)) return this.getResponseValidations(false, 'Límite de establecimientos no es un número válido.')
                 } 
 
+                if(!this.form.sales_unlimited)
+                {
+                    if(isNaN(this.form.sales_limit)) return this.getResponseValidations(false, 'Límite de ventas no es un número válido.')
+                } 
+
                 return this.getResponseValidations()
             },
             submit() {   
