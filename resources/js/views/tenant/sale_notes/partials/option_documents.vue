@@ -225,6 +225,16 @@
                         </tbody>
                     </table>
                 </div>
+
+                <template v-if="fnApplyRestrictSaleItemsCpe">
+                    <list-document-items
+                        :form="document"
+                        :configuration="configuration"
+                        class="mt-3"
+                        >
+                    </list-document-items>
+                </template>
+
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="clickClose">Cerrar</el-button>
@@ -252,10 +262,14 @@
 
     import DocumentOptions from '../../documents/partials/options.vue'
     import moment from "moment";
+    import ListDocumentItems from '@components/secondary/ListDocumentItems.vue'
+    import {fnRestrictSaleItemsCpe} from '@mixins/functions'
 
     export default {
-        components: {DocumentOptions},
-
+        components: {DocumentOptions, ListDocumentItems},
+        mixins: [
+            fnRestrictSaleItemsCpe
+        ],
         props: [
             'show',
             'recordId',
@@ -288,6 +302,7 @@
                 payment_method_types: [],
                 payment_condition_id: '01',
                 fee: [],
+                configuration: {}
             }
         },
         created() {
@@ -471,7 +486,12 @@
                     message: message
                 }
             },
-            async submit() {
+            async submit() 
+            {
+                // validacion restriccion de productos
+                const validate_restrict_sale_items_cpe = this.fnValidateRestrictSaleItemsCpe(this.document)
+                if(!validate_restrict_sale_items_cpe.success) return this.$message.error(validate_restrict_sale_items_cpe.message)
+
 
                 if(this.generate_dispatch){
                     if(!this.dispatch_id){
@@ -649,6 +669,7 @@
                     this.payment_destinations = response.data.payment_destinations;
                     this.payment_method_types = response.data.payment_method_types;
                     this.sellers = response.data.sellers
+                    this.configuration = response.data.configuration
                     // this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
                     // this.changeDocumentType();
                 });

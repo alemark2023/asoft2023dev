@@ -1550,8 +1550,9 @@ class SaleNoteController extends Controller
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
         $sellers = User::GetSellers(false)->get();
+        $configuration = Configuration::select(['restrict_sale_items_cpe'])->first();
 
-        return compact('series', 'document_types_invoice', 'payment_method_types', 'payment_destinations','sellers');
+        return compact('series', 'document_types_invoice', 'payment_method_types', 'payment_destinations','sellers', 'configuration');
     }
 
     public function email(Request $request)

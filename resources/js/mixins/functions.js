@@ -496,3 +496,57 @@ export const operationsForDiscounts = {
 }
 
 
+
+// funciones para restriccion de productos
+
+export const fnRestrictSaleItemsCpe = {
+    data()
+    {
+        return {
+        }
+    },
+    computed:
+    {
+        fnApplyRestrictSaleItemsCpe()
+        {
+            if (this.configuration) return this.configuration.restrict_sale_items_cpe
+
+            return false 
+        },
+    },
+    methods: 
+    {
+        fnValidateRestrictSaleItemsCpe(form)
+        {
+            if(this.fnApplyRestrictSaleItemsCpe)
+            {
+                let errors_restricted = 0
+
+                form.items.forEach(row => {
+                    if(this.fnIsRestrictedForSale(row.item, form.document_type_id)) errors_restricted++
+                })
+
+                if(errors_restricted > 0) return this.fnGetObjectResponse(false, 'No puede generar el comprobante, tiene productos restringidos.')
+            }
+            
+            return this.fnGetObjectResponse()
+        },
+        fnCheckIsInvoice(document_type_id)
+        {
+            return ['01', '03'].includes(document_type_id)
+        },
+        fnIsRestrictedForSale(item, document_type_id)
+        {
+            return this.fnApplyRestrictSaleItemsCpe && this.fnCheckIsInvoice(document_type_id) && (item != undefined && item.restrict_sale_cpe)
+        },
+        fnGetObjectResponse(success = true, message = null)
+        {
+            return {
+                success: success,
+                message: message,
+            }
+        },
+    }
+}
+
+

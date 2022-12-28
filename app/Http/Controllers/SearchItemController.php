@@ -771,6 +771,7 @@
                         ];
                     }),
                     'lot_code' => $row->lot_code,
+                    'restrict_sale_cpe' => $row->restrict_sale_cpe,
                     'date_of_due' => $row->date_of_due
                 ];
             });

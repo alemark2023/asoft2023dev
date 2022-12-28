@@ -160,12 +160,21 @@
                 </table>
             </div>
 
+            <template v-if="fnApplyRestrictSaleItemsCpe">
+                <list-document-items
+                    :form="document"
+                    :configuration="configuration"
+                    class="mt-3"
+                    >
+                </list-document-items>
+            </template>
             
             <!-- propinas -->
             <template v-if="configuration.enabled_tips_pos && isInvoiceDocument">
                 <set-tip class="full py-2 border-top mt-2" @changeDataTip="changeDataTip"></set-tip>
             </template>
             <!-- propinas -->
+        
         </div>
 
         <span slot="footer" class="dialog-footer">
@@ -191,14 +200,19 @@
 import DocumentOptions from "@views/documents/partials/options.vue";
 import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
 import SetTip from '@components/SetTip.vue'
+import ListDocumentItems from '@components/secondary/ListDocumentItems.vue'
+import {fnRestrictSaleItemsCpe} from '@mixins/functions'
 
 export default {
     components: {
         DocumentOptions,
         SaleNoteOptions,
-        SetTip
+        SetTip,
+        ListDocumentItems
     },
-
+    mixins: [
+        fnRestrictSaleItemsCpe
+    ],
     props: ["showDialog", "recordId", "showClose", "showGenerate", "type", 'typeUser', 'configuration'],
     data() {
         return {
@@ -391,13 +405,18 @@ export default {
 
         },
         async submit() {
-            await this.assignDocument();
+            // await this.assignDocument();
 
             let validate_payment_destination = await this.validatePaymentDestination()
 
             if (validate_payment_destination.error_by_item > 0) {
                 return this.$message.error('El destino del pago es obligatorio');
             }
+            
+            // validacion restriccion de productos
+            const validate_restrict_sale_items_cpe = this.fnValidateRestrictSaleItemsCpe(this.document)
+            if(!validate_restrict_sale_items_cpe.success) return this.$message.error(validate_restrict_sale_items_cpe.message)
+
 
             this.loading_submit = true;
             if (this.document.document_type_id === "80") {
@@ -555,7 +574,8 @@ export default {
 
             return new_items
         },
-        async create() {
+        async create() 
+        {
             await this.$http.get(`/${this.resource}/option/tables`).then(response => {
                 this.all_document_types = response.data.document_types_invoice;
                 this.all_series = response.data.series;
@@ -577,6 +597,7 @@ export default {
                 });
 
             await this.clickAddPayment()
+            await this.assignDocument();
 
         },
         changeDocumentType() {
