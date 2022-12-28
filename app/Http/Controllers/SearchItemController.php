@@ -771,7 +771,8 @@
                         ];
                     }),
                     'lot_code' => $row->lot_code,
-                    'date_of_due' => $row->date_of_due
+                    'date_of_due' => $row->date_of_due,
+                    'item_attributes' => $row->getItemAttributes(),
                 ];
             });
         }

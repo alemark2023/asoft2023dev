@@ -6,7 +6,8 @@
                @close="close"
                @open="create">
         <form autocomplete="off"
-              @submit.prevent="clickAddItem">
+              @submit.prevent="clickAddItem"
+              v-loading="loading_dialog">
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-7 col-lg-7 col-xl-7 col-sm-7">
@@ -528,6 +529,7 @@ export default {
             editors: {
                 classic: ClassicEditor
             },
+            loading_dialog: false,
         }
     },
 
@@ -977,8 +979,10 @@ export default {
             this.initForm()
             this.$emit('update:showDialog', false)
         },
-        changeItem() {
-            this.getItems();
+        async changeItem() 
+        {
+            await this.getItems()
+
             this.form.item = _.find(this.items, {'id': this.form.item_id});
             this.form.unit_price = this.form.item.sale_unit_price;
 
@@ -994,9 +998,32 @@ export default {
 
             this.form.lots_group = this.form.item.lots_group
 
+            this.setDefaultAttributes()
+
             this.cleanTotalItem();
         },
+        setDefaultAttributes()
+        {
+            this.form.attributes = []
 
+            if(this.hasAttributes())
+            {
+                this.form.item.item_attributes.forEach(row => {
+                    this.form.attributes.push({
+                        attribute_type_id: row.attribute_type_id,
+                        description: row.description,
+                        duration: row.duration,
+                        end_date: row.end_date,
+                        start_date: row.start_date,
+                        value: row.value,
+                    })
+                })
+            }
+        },
+        hasAttributes()
+        {
+            return this.form.item != undefined && this.form.item.item_attributes && Array.isArray(this.form.item.item_attributes) && this.form.item.item_attributes.length > 0
+        },
         focusTotalItem(change) {
             if (!change && this.form.item.calculate_quantity) {
                 this.$refs.total_item.$el.getElementsByTagName('input')[0].focus()
@@ -1131,9 +1158,15 @@ export default {
 
             this.calculateQuantity()
         },
-        getItems() {
-            this.$http.get(`/${this.resource}/item/tables`).then(response => {
+        async getItems() 
+        {
+            this.loading_dialog = true
+
+            await this.$http.get(`/${this.resource}/item/tables`).then(response => {
                 this.items = response.data.items
+            })
+            .then(()=>{
+                this.loading_dialog = false
             })
         },
         addRowLotGroup(id) {
