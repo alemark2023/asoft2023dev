@@ -243,6 +243,9 @@
                             <th class="text-right">Inicio Ciclo Facturacion</th>
                             <th class="text-center">Comprobantes Ciclo Facturacion</th>
                             <th class="text-center">Usuarios</th>
+
+                            <th class="text-center">Establecimientos</th>
+
                             <th class="text-center">F.Creación</th>
                             <th class="text-center">Consultas <br>API Peru <br>(mes)</th>
 
@@ -390,6 +393,37 @@
                                     <strong>{{ row.max_users }}</strong>
                                 </template>
                             </td>
+
+                            <td class="text-center">
+
+                                <template v-if="!row.establishments_unlimited && row.quantity_establishments > row.max_quantity_establishments">
+                                    <el-popover
+                                        content="El límite de establecimientos fue superado."
+                                        placement="top-start"
+                                        trigger="hover"
+                                        width="220"
+                                    >
+                                        <label slot="reference"
+                                               class="text-danger">
+                                            <strong>{{ row.quantity_establishments }}</strong>
+                                        </label>
+                                    </el-popover>
+                                </template>
+                                <template v-else>
+                                    <label>
+                                        <strong>{{ row.quantity_establishments }}</strong>
+                                    </label>
+                                </template>
+                                /                                
+                                <template v-if="row.establishments_unlimited">
+                                    <i class="fas fa-infinity"></i>
+                                </template>
+                                <template v-else>
+                                    <strong>{{ row.max_quantity_establishments }}</strong>
+                                </template>
+
+                            </td>
+
                             <td class="text-center">{{ row.created_at }}</td>
                             <td>{{ row.queries_to_apiperu }}</td>
 

@@ -59,6 +59,11 @@ class ClientCollection extends ResourceCollection
                 'queries_to_apiperu' => $apiPeruAsk,
                 'locked_create_establishments' => $row->locked_create_establishments,
                 'restrict_sales_limit' => $row->restrict_sales_limit,
+
+                'quantity_establishments' => $row->quantity_establishments,
+                'max_quantity_establishments' => $row->plan->establishments_limit,
+                'establishments_unlimited' => $row->plan->establishments_unlimited,
+                
             ];
         });
     }

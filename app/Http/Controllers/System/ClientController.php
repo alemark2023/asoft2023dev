@@ -212,10 +212,23 @@
                     //dd($row->count_sales_notes);
 
                 }
+                
+                $row->quantity_establishments = $this->getQuantityRecordsFromTable('establishments');
 
             }
 
             return new ClientCollection($records);
+        }
+
+        
+        /**
+         *
+         * @param  string $table
+         * @return int
+         */
+        private function getQuantityRecordsFromTable($table)
+        {
+            return DB::connection('tenant')->table($table)->count();
         }
 
 
