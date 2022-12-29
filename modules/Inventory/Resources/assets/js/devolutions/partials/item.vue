@@ -239,14 +239,15 @@ export default {
                 this.form.item.lot_selected = await _.find(this.form.lots_group, {id: IdLoteSelected, checked: true})
             }
 
-            this.form.IdLoteSelected = IdLoteSelected
-
+            // this.form.IdLoteSelected = IdLoteSelected
+            this.form.IdLoteSelected = null;
             this.$emit('add', this.form);
 
             this.initForm();
 
         },
         addRowLotGroup(id) {
+            // console.log(id);
             this.form.IdLoteSelected = id
         },
         clickLotGroup() {

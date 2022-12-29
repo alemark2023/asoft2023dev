@@ -590,11 +590,22 @@
             :type="true"
         ></history-sales-form>
         <lots-group
-            :lots_group="form.lots_group"
+            :lots-group="form.lots_group"
+            :itemId="form.item_id"
             :quantity="form.quantity"
             :showDialog.sync="showDialogLots"
             @addRowLotGroup="addRowLotGroup">
         </lots-group>
+
+<!--        <lots-group-->
+<!--            :showDialog.sync="showDialogLots"-->
+<!--            :itemId="form.item_id"-->
+<!--            :lots-group-all="lotsGroupAll"-->
+<!--            :lots_group="form.lots_group"-->
+<!--            :quantity="form.quantity"-->
+<!--            @addRowLotGroup="addRowLotGroup"-->
+<!--            :compromise-all-quantity="true">-->
+<!--        </lots-group>-->
 
         <select-lots-form
             :showDialog.sync="showDialogSelectLots"
@@ -637,6 +648,7 @@ import Keypress from "vue-keypress";
 import HistorySalesForm from "../../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
 
 export default {
+    name: 'DocumentPartialItem',
     props: [
         'recordItem',
         'showDialog',
