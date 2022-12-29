@@ -500,6 +500,7 @@
             :resource="resource_options"
             :showDialog.sync="showDialogOptions"
             :statusDocument="statusDocument"
+            :fromPos="true"
         ></options-form>
 
         <multiple-payment-form

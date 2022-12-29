@@ -393,6 +393,7 @@ export const pointSystemFunctions = {
 // funciones para descuentos globales
 // Usado en:
 // tenant\purchases\form.vue
+// resources\js\components\secondary\ListRestrictItems.vue
 
 export const operationsForDiscounts = {
     data() {
@@ -402,6 +403,13 @@ export const operationsForDiscounts = {
             is_amount: true,
             total_global_discount: 0,
         }
+    },
+    computed: 
+    {
+        isGlobalDiscountBase()
+        {
+            return (this.config.global_discount_type_id === '02')
+        },
     },
     methods: {
         deleteDiscountGlobal() 
@@ -489,15 +497,21 @@ export const operationsForDiscounts = {
                 description: this.global_discount_type.description,
                 factor: factor,
                 amount: amount,
-                base: base
+                base: base,
+                is_amount: this.is_amount
             })
         },
     }
 }
 
 
-
 // funciones para restriccion de productos
+
+// Usado en:
+// resources\js\components\secondary\ListRestrictItems.vue
+// modules\Order\Resources\assets\js\views\order_notes\partials\options.vue
+// resources\js\views\tenant\documents\invoice_generate.vue
+// resources\js\views\tenant\sale_notes\partials\option_documents.vue
 
 export const fnRestrictSaleItemsCpe = {
     data()

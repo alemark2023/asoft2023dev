@@ -227,12 +227,14 @@
                 </div>
 
                 <template v-if="fnApplyRestrictSaleItemsCpe">
-                    <list-document-items
+                    <list-restrict-items
+                        v-if="load_list_document_items"
                         :form="document"
                         :configuration="configuration"
+                        :globalDiscountTypes="global_discount_types"
                         class="mt-3"
                         >
-                    </list-document-items>
+                    </list-restrict-items>
                 </template>
 
             </div>
@@ -262,11 +264,11 @@
 
     import DocumentOptions from '../../documents/partials/options.vue'
     import moment from "moment";
-    import ListDocumentItems from '@components/secondary/ListDocumentItems.vue'
+    import ListRestrictItems from '@components/secondary/ListRestrictItems.vue'
     import {fnRestrictSaleItemsCpe} from '@mixins/functions'
 
     export default {
-        components: {DocumentOptions, ListDocumentItems},
+        components: {DocumentOptions, ListRestrictItems},
         mixins: [
             fnRestrictSaleItemsCpe
         ],
@@ -302,7 +304,9 @@
                 payment_method_types: [],
                 payment_condition_id: '01',
                 fee: [],
-                configuration: {}
+                configuration: {},
+                global_discount_types: [],
+                load_list_document_items: false,
             }
         },
         created() {
@@ -442,12 +446,15 @@
                     hotel: {},
                 }
             },
-            resetDocument(){
+            resetDocument()
+            {
                 this.generate = (this.showGenerate) ? true:false
                 this.flag_generate = true
                 this.initDocument()
                 this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 this.changeDocumentType()
+
+                this.load_list_document_items = false
             },
             validatePaymentDestination(){
 
@@ -492,6 +499,7 @@
                 const validate_restrict_sale_items_cpe = this.fnValidateRestrictSaleItemsCpe(this.document)
                 if(!validate_restrict_sale_items_cpe.success) return this.$message.error(validate_restrict_sale_items_cpe.message)
 
+                if(this.document.items.length === 0) return this.$message.error('No tiene productos agregados.')
 
                 if(this.generate_dispatch){
                     if(!this.dispatch_id){
@@ -506,7 +514,7 @@
                 }
 
                 let validate_payment_date = this.validatePaymentDate()
-                console.log(validate_payment_date)
+                // console.log(validate_payment_date)
 
                 if(validate_payment_date.error_by_item > 0) {
                     return this.$message.error(validate_payment_date.message);
@@ -525,6 +533,8 @@
                                 // this.flag_generate = false
                             });
                             this.resetDocument()
+
+                            this.$emit('hasGeneratedDocument')
 
                             this.$emit('update:show', false)
                         } else {
@@ -670,6 +680,8 @@
                     this.payment_method_types = response.data.payment_method_types;
                     this.sellers = response.data.sellers
                     this.configuration = response.data.configuration
+                    this.global_discount_types = response.data.global_discount_types
+                    
                     // this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
                     // this.changeDocumentType();
                 });
@@ -680,6 +692,7 @@
                         this.validateIdentityDocumentType()
 
                         this.assignDocument();
+                        this.load_list_document_items = true
                         this.titleDialog = 'Nota de venta registrada: '+this.form.number_full
                     })
 
