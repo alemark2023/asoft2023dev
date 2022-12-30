@@ -538,6 +538,7 @@
                     :typeUser="typeUser"
                     :visibleTagsCustomer="focusClienteSelect"
                     :searchFromBarcode="searchFromBarcode"
+                    :originIsGarage="true"
                 ></table-items>
 
                 <div v-if="place == 'prod' || place == 'cat2'" class="row">
@@ -1618,7 +1619,9 @@ export default {
                     return this.$message.error(response.message);
                 }
 
-                this.form_item.item = item;
+                // this.form_item.item = item;
+                this.form_item.item = { ...item }
+
                 this.form_item.unit_price_value = this.form_item.item.sale_unit_price;
                 this.form_item.has_igv = this.form_item.item.has_igv;
                 this.form_item.has_plastic_bag_taxes = this.form_item.item.has_plastic_bag_taxes;
@@ -1684,6 +1687,20 @@ export default {
             this.loading = false;
 
             await this.setFormPosLocalStorage();
+
+            await this.setDefaultDataPriceSelected(item)
+
+        },
+        setDefaultDataPriceSelected(item)
+        {
+            if(item.apply_price_selected_add_product != undefined && item.apply_price_selected_add_product && this.configuration.price_selected_add_product)
+            {
+                item.sale_unit_price = parseFloat(item.aux_sale_unit_price)
+                item.unit_type_id = item.aux_unit_type_id
+                item.presentation = null
+
+                item.apply_price_selected_add_product = false
+            }
         },
         async getStatusStock(item_id, quantity) {
             let data = {};

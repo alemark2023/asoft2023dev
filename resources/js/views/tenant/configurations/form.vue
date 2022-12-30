@@ -345,7 +345,7 @@
 
                                     <el-tooltip
                                         class="item"
-                                        content="Muestra el nombre del producto que se ingresa en el pdf, en vez del nombre del producto. Disponible para CPE, Cotización y Nota de venta"
+                                        content="Muestra el nombre del producto que se ingresa en el pdf, en vez del nombre del producto. Disponible para CPE, Cotización, Compra y Nota de venta"
                                         effect="dark"
                                         placement="top-start">
                                         <i class="fa fa-info-circle"></i>
@@ -1535,6 +1535,30 @@
                                 </div>
                             </template>
 
+                            <div class="col-md-6 mt-4">
+                                <!-- <label class="control-label">Agregar imágenes al pdf 
+                                    <el-tooltip
+                                        class="item"
+                                        content="Agrega las imágenes en el footer del pdf - Disponible para Cotización en formato A4, usando la plantilla pdf Default/Default3"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label> -->
+                                <div class="form-group">
+                                    <a class="text-center font-weight-bold text-info" href="#" @click.prevent="showDialogPdfFooterImages = true">
+                                        [+ Agregar imágenes al pdf]
+                                        <el-tooltip
+                                            class="item"
+                                            content="Agrega las imágenes en el footer del pdf - Disponible para Cotización en formato A4, usando la plantilla pdf Default/Default3"
+                                            effect="dark"
+                                            placement="top-start">
+                                            <i class="ml-2 fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </a>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="five">
@@ -2012,6 +2036,34 @@
                                     </div>
                                 </div>
                             </div>
+
+                            
+                            <div class="col-6 mt-4">
+                                <div class="form-group">
+                                    <label>
+                                        Agregar producto al seleccionar precio
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">
+                                                Agrega de forma automática el producto al seleccionar una opción del listado de precios - Disponible en POS/Venta rápida
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.price_selected_add_product}"
+                                         class="form-group">
+                                        <el-switch v-model="form.price_selected_add_product"
+                                                   active-text="Si"
+                                                   inactive-text="No"
+                                                   @change="submit"></el-switch>
+                                        <small v-if="errors.price_selected_add_product"
+                                               class="form-control-feedback"
+                                               v-text="errors.price_selected_add_product[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3"  name="nine">
@@ -2274,6 +2326,8 @@
                 <allowance-charge :form="form"
                                     :showClose="false"
                                     :showDialog.sync="showDialogAllowanceCharge"></allowance-charge>
+
+                <pdf-footer-images :showDialog.sync="showDialogPdfFooterImages"></pdf-footer-images>
             </form>
         </template>
     </div>
@@ -2294,6 +2348,8 @@ import TermsConditionSale from '@views/documents/partials/terms_condition.vue'
 import AllowanceCharge from './partials/allowance_charge.vue'
 import {mapActions, mapState} from "vuex";
 import ReportConfigurationsIndex from './partials/report_configurations_index.vue'
+import PdfFooterImages from './partials/pdf_footer_images.vue'
+
 
 export default {
     props: [
@@ -2305,6 +2361,7 @@ export default {
         TermsConditionSale,
         AllowanceCharge,
         ReportConfigurationsIndex,
+        PdfFooterImages,
     },
     computed: {
         ...mapState([
@@ -2316,6 +2373,7 @@ export default {
             headers: headers_token,
             showDialogTermsCondition: false,
             showDialogTermsConditionSales: false,
+            showDialogPdfFooterImages: false,
             showDialogAllowanceCharge: false,
             loading_submit: false,
             resource: 'configurations',
@@ -2489,6 +2547,7 @@ export default {
                 register_series_invoice_xml: false,
                 enable_discount_by_customer: false,
                 enabled_dispatch_ticket_pdf: false,
+                price_selected_add_product: false,
             };
         },
         UpdateFormPurchase(e) {

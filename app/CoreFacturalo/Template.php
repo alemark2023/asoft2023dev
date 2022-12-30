@@ -157,4 +157,20 @@ class Template
         return str_replace(DIRECTORY_SEPARATOR, '.', $path_template_default);
     }
 
+        
+    /**
+     * Imagenes en footer pdf
+     * 
+     * Disponible para cotizacion a4, en template default/default3
+     *
+     * @param  string $base_template
+     * @return string
+     */
+    public function pdfFooterImages($base_template, $images)
+    {
+        view()->addLocation(__DIR__.'/Templates');
+
+        return view('pdf.'.$base_template.'.partials.footer_images', compact('images'))->render();
+    }
+
 }

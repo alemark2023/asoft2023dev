@@ -48,17 +48,19 @@ class ServiceDispatchController extends Controller
                             ->where('id', $dispatch->id)
                             ->update([
                                 'ticket' => $ticket,
-                                'reception_date' => $reception_date
+                                'reception_date' => $reception_date,
+                                'state_type_id' => '03'
                             ]);
                         DB::connection('tenant')->commit();
                     }
                     return [
                         'success' => true,
-                        'filename' => $dispatch->filename,
-                        'external_id' => $external_id,
-                        'ticket' => $ticket,
-                        'reception_date' => $reception_date,
-                        'res' => $data,
+                        'message' => 'Se obtuvo el nro. de ticket correctamente',
+//                        'filename' => $dispatch->filename,
+//                        'external_id' => $external_id,
+//                        'ticket' => $ticket,
+//                        'reception_date' => $reception_date,
+//                        'res' => $data,
                     ];
                 } else {
                     return $res;
@@ -118,6 +120,8 @@ class ServiceDispatchController extends Controller
                         //$message = 'La guía fue rechazada.';
                         if ($res['indCdrGenerado'] === '1') {
                             $has_cdr = true;
+                        } else {
+                            $message = $res['error']['desError'];
                         }
                         break;
                 }
@@ -160,6 +164,7 @@ class ServiceDispatchController extends Controller
                         'pdf' => $record->download_external_pdf,
                         'cdr' => $download_external_cdr,
                     ],
+                    'res' => $res,
                     'message' => $message,
                 ];
             }

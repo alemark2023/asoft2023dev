@@ -105,6 +105,12 @@ export default {
       this.$http
         .post(`/${this.resource}/stock-multilple`, data)
         .then((response) => {
+
+          if(response.data.success)
+          {
+            this.$eventHub.$emit('reloadData')
+          }
+          
           this.$message({
             message: response.data.message,
             type: "success",

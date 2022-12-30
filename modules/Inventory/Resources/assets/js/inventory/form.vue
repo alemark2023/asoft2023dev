@@ -148,7 +148,7 @@ export default {
             items: [],
             warehouses: [],
             inventory_transactions: [],
-            precision:2,
+            precision:4,
         }
     },
     // created() {
@@ -211,7 +211,7 @@ export default {
                 /* Para series, debe ser entero*/
                 this.precision = 0;
             }else{
-                this.precision = 2;
+                this.precision = 4;
             }
         },
         async initTables() {
@@ -225,7 +225,7 @@ export default {
         },
         async create() {
             this.loading = true;
-            this.titleDialog = (this.type === 'input') ? 'Ingreso de producto al almacén' : 'Salida de producto del almacén'
+            this.titleDialog = (this.type === 'input') ? 'Ingreso de producto al almacén 3' : 'Salida de producto del almacén'
             await this.initTables();
             this.initForm();
             this.loading = false;
