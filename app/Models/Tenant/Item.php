@@ -1024,6 +1024,20 @@ class Item extends ModelTenant
         return $data;
     }
 
+    
+    /**
+     * Obtener atributos del campo attributes
+     *
+     * @return array
+     */
+    public function getItemAttributes()
+    {
+        $attributes = $this->getAttributesAttribute($this->attributes['attributes']);
+
+        return $attributes ?? [];
+    }
+    
+
     /**
      * @return Model|\Illuminate\Database\Query\Builder|mixed|CatDigemid|object|null
      */
