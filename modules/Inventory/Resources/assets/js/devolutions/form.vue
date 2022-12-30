@@ -87,10 +87,10 @@
                                             <td class="text-center">{{ row.item.unit_type_id }}</td>
                                             <td class="text-right">{{ row.quantity }}</td>
                                             <td class="text-right">
-                                                {{ (row.item.lot_selected) ? row.item.lot_selected.code : '' }}
+                                                <div v-for="lg in row.item.lots_group">{{ lg.code }}</div>
                                             </td>
                                             <td class="text-right">
-                                                {{ (row.item.lot_selected) ? row.item.lot_selected.date_of_due : '' }}
+                                                <div v-for="lg in row.item.lots_group">{{ lg.date_of_due }}</div>
                                             </td>
                                             <td class="text-right">
                                                 <button type="button"
