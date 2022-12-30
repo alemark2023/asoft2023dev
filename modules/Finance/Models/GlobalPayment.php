@@ -841,4 +841,40 @@
 
         }
 
+        
+        /**
+         * 
+         * Filtro para reporte de pagos en efectivo asociados a caja
+         * 
+         * @param Builder $query
+         * @return Builder
+         * 
+         */
+        public function scopeFiltersPaymentsAssociatedCash($query)
+        {
+            $query->with([
+                    'payment' => function ($q){
+                        $q->filterRelationsPayments()
+                            ->with(['associated_record_payment' => function($query){
+                                $query->filterRelationsGlobalPayment();
+                            }]);
+                    }
+                ])
+                ->whereHas('doc_payments', function ($q) {
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereStateTypeAccepted();
+                    })
+                    ->filterCashPaymentWithoutDestination();
+                })
+                ->orWhereHas('sln_payments', function ($q) {
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereStateTypeAccepted()
+                            ->whereNotChanged();
+                    })
+                    ->filterCashPaymentWithoutDestination();
+                });
+
+            return $query;
+        }
+
     }

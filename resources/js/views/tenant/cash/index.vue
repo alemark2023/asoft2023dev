@@ -71,6 +71,13 @@
                                     <!-- <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'pdf')">PDF</a> -->
                                     <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportCash(row.id, 'excel')">Excel</a>
                                     <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportIncomeEgress(row.id)">Ingresos y egresos</a>
+
+                                    <el-tooltip class="item"
+                                                content="Ingresos en efectivo con destino caja - Disponible para facturas, boletas y notas de venta"
+                                                effect="dark"
+                                                placement="right-end">
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickReportPaymentsAssociatedCash(row.id)">Pagos asociados a caja</a>
+                                    </el-tooltip>
                                 </div>
                             </div>
 
@@ -264,6 +271,10 @@
             clickReportSummaryDailyOperations(id)
             {
                 window.open(`/cash-reports/summary-daily-operations/${id}`, '_blank');
+            },
+            clickReportPaymentsAssociatedCash(id)
+            {
+                window.open(`/cash-reports/payments-associated-cash/${id}`, '_blank');
             },
         }
     }
