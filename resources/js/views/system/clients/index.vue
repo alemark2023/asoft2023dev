@@ -246,6 +246,9 @@
 
                             <th class="text-center">Establecimientos</th>
 
+                            <th class="text-center">Ventas (Mes)</th>
+
+
                             <th class="text-center">F.Creación</th>
                             <th class="text-center">Consultas <br>API Peru <br>(mes)</th>
 
@@ -264,7 +267,7 @@
                                     content="Límite de ventas mensual asociado al ciclo de facturación"
                                     effect="dark"
                                     placement="top">
-                                    <label>Limitar Ventas</label>
+                                    <label>Limitar Ventas (Mes)</label>
                                 </el-tooltip>
                             </th>
 
@@ -396,33 +399,29 @@
 
                             <td class="text-center">
 
-                                <template v-if="!row.establishments_unlimited && row.quantity_establishments > row.max_quantity_establishments">
-                                    <el-popover
-                                        content="El límite de establecimientos fue superado."
-                                        placement="top-start"
-                                        trigger="hover"
-                                        width="220"
+                                <data-limit-notification
+                                    entity_description="establecimientos"
+                                    :unlimited="row.establishments_unlimited"
+                                    :quantity="row.quantity_establishments"
+                                    :max_quantity="row.max_quantity_establishments"
                                     >
-                                        <label slot="reference"
-                                               class="text-danger">
-                                            <strong>{{ row.quantity_establishments }}</strong>
-                                        </label>
-                                    </el-popover>
-                                </template>
-                                <template v-else>
-                                    <label>
-                                        <strong>{{ row.quantity_establishments }}</strong>
-                                    </label>
-                                </template>
-                                /                                
-                                <template v-if="row.establishments_unlimited">
-                                    <i class="fas fa-infinity"></i>
-                                </template>
-                                <template v-else>
-                                    <strong>{{ row.max_quantity_establishments }}</strong>
-                                </template>
+                                </data-limit-notification>
 
                             </td>
+
+                            <td class="text-center">
+
+                                <data-limit-notification
+                                    entity_description="ventas"
+                                    style_div="width: 150px !important"
+                                    :unlimited="row.sales_unlimited"
+                                    :quantity="row.monthly_sales_total"
+                                    :max_quantity="row.max_sales_limit"
+                                    >
+                                </data-limit-notification>
+
+                            </td>
+
 
                             <td class="text-center">{{ row.created_at }}</td>
                             <td>{{ row.queries_to_apiperu }}</td>
@@ -551,6 +550,7 @@ import ChartLine from "./charts/Line";
 import ClientPayments from "./partials/payments.vue";
 import AccountStatus from "./partials/account_status.vue";
 import ClientDelete from "./partials/delete.vue";
+import DataLimitNotification from "./partials/DataLimitNotification.vue";
 
 export default {
     mixins: [
@@ -569,7 +569,8 @@ export default {
         ChartLine,
         ClientPayments,
         AccountStatus,
-        ClientDelete
+        ClientDelete,
+        DataLimitNotification
     },
     data() {
         return {

@@ -60,10 +60,15 @@ class ClientCollection extends ResourceCollection
                 'locked_create_establishments' => $row->locked_create_establishments,
                 'restrict_sales_limit' => $row->restrict_sales_limit,
 
+                //para limite de establecimientos
                 'quantity_establishments' => $row->quantity_establishments,
                 'max_quantity_establishments' => $row->plan->establishments_limit,
                 'establishments_unlimited' => $row->plan->establishments_unlimited,
                 
+                // para limite de ventas mensual
+                'monthly_sales_total' => number_format($row->monthly_sales_total, 2, '.', ''),
+                'max_sales_limit' => number_format($row->plan->sales_limit, 2, '.', ''),
+                'sales_unlimited' => $row->plan->sales_unlimited,
             ];
         });
     }

@@ -23,6 +23,7 @@
     use Illuminate\Support\Facades\DB;
     use Modules\Document\Helpers\DocumentHelper;
     use Modules\MobileApp\Models\System\AppModule;
+    use App\CoreFacturalo\ClientHelper;
 
 
     class ClientController extends Controller
@@ -180,6 +181,7 @@
                 $row->document_regularize_shipping = $quantity_pending_documents['document_regularize_shipping'];
                 $row->document_not_sent = $quantity_pending_documents['document_not_sent'];
                 $row->document_to_be_canceled = $quantity_pending_documents['document_to_be_canceled'];
+                $row->monthly_sales_total = 0;
 
                 if ($row->start_billing_cycle) {
 
@@ -211,10 +213,11 @@
                     ->quantity_sales_notes;
                     //dd($row->count_sales_notes);
 
+                    $client_helper = new ClientHelper();
+                    $row->monthly_sales_total = $client_helper->getSalesTotal($init->format('Y-m-d'), $end->format('Y-m-d'), $row->plan);
                 }
                 
                 $row->quantity_establishments = $this->getQuantityRecordsFromTable('establishments');
-
             }
 
             return new ClientCollection($records);
