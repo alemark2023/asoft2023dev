@@ -16,6 +16,30 @@ class CashReportController extends Controller
     
     use CashReportTrait;
 
+    
+    /**
+     * 
+     * Reporte general de caja v2, asociado a pagos
+     *
+     * @param  int $cash_id
+     */
+    public function generalCashReportWithPayments($cash_id)
+    {
+        $cash = Cash::filterDataGeneralCashReport()->findOrFail($cash_id);
+
+        $data = app(CashController::class)->getHeaderCommonDataToReport($cash);
+
+        $filename = 'Reporte_general_caja_v2_'.date('YmdHis');
+
+        return $this->generalToPrintReport(
+            'pos::cash.reports.general_cash_report_payments_pdf', 
+            'general_cash_report_payments',
+            $filename, 
+            $this->getDataCashReportWithPayments($cash, $data)
+        );
+    }
+
+    
     /**
      *
      * Generar reporte de pagos asociados a caja, con destino caja y en efectivo

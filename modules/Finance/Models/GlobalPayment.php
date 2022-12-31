@@ -877,4 +877,85 @@
             return $query;
         }
 
+        
+        /**
+         * 
+         * Filtrar destino caja
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeWhereCashDestination($query)
+        {
+            return $query->where('destination_type', Cash::class);
+        }
+        
+        
+        /**
+         * 
+         * Filtros para reporte general de caja V2, asociado a pagos
+         * 
+         * @param Builder $query
+         * @return Builder
+         * 
+         */
+        public function scopeGeneralCashReportWithPayments($query)
+        {
+            $query->with([
+                    'payment' => function ($q){
+                        $q->filterRelationsPayments()
+                            ->with(['associated_record_payment' => function($query){
+                                $query->filterRelationsGlobalPayment();
+                            }])
+                            ;
+                    }
+                ])
+                // ingresos
+                ->whereHas('doc_payments', function ($q) {
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereStateTypeAccepted();
+                    })
+                    ->whereCashPaymentMethodType();
+                })
+                ->orWhereHas('sln_payments', function ($q) {
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereStateTypeAccepted()
+                            ->whereNotChanged();
+                    })
+                    ->whereCashPaymentMethodType();
+                })
+                ->orWhereHas('quo_payment', function ($q) {
+                    
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereStateTypeAccepted()
+                            ->whereNotHasDocuments();
+                    })
+                    ->whereCashPaymentMethodType();
+                })
+                ->orWhereHas('tec_serv_payment', function ($q) {
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereNotHasDocuments();
+                    })
+                    ->whereCashPaymentMethodType();
+                })
+                // ingresos
+
+                // egresos
+                ->orWhereHas('pur_payment', function ($q) {
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereStateTypeAccepted();
+                    })
+                    ->whereCashPaymentMethodType();
+                })
+                ->orWhereHas('exp_payment', function ($q) {
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereStateTypeAccepted();
+                    });
+                })
+                // egresos
+                ->whereCashDestination();
+
+            return $query;
+        }
+
     }
