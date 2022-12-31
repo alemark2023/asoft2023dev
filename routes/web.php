@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
 if ($hostname) {
@@ -392,6 +394,45 @@ if ($hostname) {
                 Route::get('/search/customer/{id}', 'Tenant\DispatchController@searchClientById');
                 Route::post('/status_ticket', 'Tenant\Api\DispatchController@statusTicket');
                 Route::get('create_new/{table}/{id}', 'Tenant\DispatchController@createNew');
+            });
+
+            Route::prefix('drivers')->group(function () {
+                /**
+                 * drivers/
+                 * drivers/columns
+                 * drivers/records
+                 * drivers/record/{id}
+                 * drivers/tables
+                 * drivers/{id}
+                 */
+
+                Route::get('/', 'Tenant\DriverController@index')->name('tenant.drivers.index');
+                Route::get('columns', 'Tenant\DriverController@columns');
+                Route::get('records', 'Tenant\DriverController@records');
+                Route::get('record/{id}', 'Tenant\DriverController@record');
+                Route::get('tables', 'Tenant\DriverController@tables');
+                Route::post('/', 'Tenant\DriverController@store');
+                Route::delete('/{id}', 'Tenant\DriverController@destroy');
+            });
+
+            Route::prefix('dispatchers')->group(function () {
+                Route::get('/', 'Tenant\DispatcherController@index')->name('tenant.dispatchers.index');
+                Route::get('columns', 'Tenant\DispatcherController@columns');
+                Route::get('records', 'Tenant\DispatcherController@records');
+                Route::get('record/{id}', 'Tenant\DispatcherController@record');
+                Route::get('tables', 'Tenant\DispatcherController@tables');
+                Route::post('/', 'Tenant\DispatcherController@store');
+                Route::delete('/{id}', 'Tenant\DispatcherController@destroy');
+            });
+
+            Route::prefix('transports')->group(function () {
+                Route::get('/', 'Tenant\TransportController@index')->name('tenant.transports.index');
+                Route::get('columns', 'Tenant\TransportController@columns');
+                Route::get('records', 'Tenant\TransportController@records');
+                Route::get('record/{id}', 'Tenant\TransportController@record');
+                Route::get('tables', 'Tenant\TransportController@tables');
+                Route::post('/', 'Tenant\TransportController@store');
+                Route::delete('/{id}', 'Tenant\TransportController@destroy');
             });
 
             Route::get('customers/list', 'Tenant\PersonController@clientsForGenerateCPE');

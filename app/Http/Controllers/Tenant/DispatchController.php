@@ -29,6 +29,7 @@ use App\Models\Tenant\Person;
 use App\Models\Tenant\Quotation;
 use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\Series;
+use App\Models\Tenant\Transport;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -185,8 +186,10 @@ class DispatchController extends Controller
         } elseif ($parentTable === 'order_note') {
             $reference_order_note_id = $parentId;
             $query = OrderNote::query();
+        } elseif ($parentTable === 'dispatch') {
+            $query = Dispatch::query();
         }
-        $document = $query->select('id', 'customer_id')->find($parentId);
+        $document = $query->find($parentId);
         $configuration = Configuration::query()->first();
         $items = [];
         foreach ($document->items as $item) {
@@ -201,15 +204,40 @@ class DispatchController extends Controller
             ];
         }
 
-        $data = [
-            'customer_id' => $document->customer_id,
-            'items' => $items,
-            'reference_document_id' => $reference_document_id,
-            'reference_quotation_id' => $reference_quotation_id,
-            'reference_sale_note_id' => $reference_sale_note_id,
-            'reference_order_form_id' => $reference_order_form_id,
-            'reference_order_note_id' => $reference_order_note_id,
-        ];
+        if ($parentTable === 'dispatch') {
+            $data = [
+                'id' => $document->id,
+                'series' => $document->series,
+                'number' => $document->number,
+                'establishment_id' => $document->establishment_id,
+                'customer_id' => $document->customer_id,
+                'items' => $items,
+                'date_of_issue' => $document->date_of_issue->format('Y-m-d'),
+                'date_of_shipping' => $document->date_of_shipping->format('Y-m-d'),
+                'packages_number' => $document->packages_number,
+                'total_weight' => $document->total_weight,
+                'transfer_reason_type_id' => $document->transfer_reason_type_id,
+                'transfer_reason_description' => $document->transfer_reason_description,
+                'transport_mode_type_id' => $document->transport_mode_type_id,
+                'transshipment_indicator' => $document->transshipment_indicator,
+                'unit_type_id' => $document->unit_type_id,
+                'observations' => $document->observations,
+                'driver_id' => $document->driver_id,
+                'dispatcher_id' => $document->dispatcher_id,
+                'license_plate' => $document->license_plate,
+            ];
+        } else {
+            $data = [
+                'establishment_id' => $document->establishment_id,
+                'customer_id' => $document->customer_id,
+                'items' => $items,
+                'reference_document_id' => $reference_document_id,
+                'reference_quotation_id' => $reference_quotation_id,
+                'reference_sale_note_id' => $reference_sale_note_id,
+                'reference_order_form_id' => $reference_order_form_id,
+                'reference_order_note_id' => $reference_order_note_id,
+            ];
+        }
 
         return view('tenant.dispatches.form', [
             'document' => $data,
@@ -279,7 +307,7 @@ class DispatchController extends Controller
                 $facturalo->signXmlUnsigned();
 //                $facturalo->createXmlUnsigned();
 //                $facturalo->signXmlUnsigned();
-//                $facturalo->createPdf();
+                $facturalo->createPdf();
 //                if($configuration->isAutoSendDispatchsToSunat()) {
 //                     $facturalo->senderXmlSignedBill();
 //                }
@@ -319,6 +347,7 @@ class DispatchController extends Controller
             'message' => $message,
             'data' => [
                 'id' => $document->id,
+                'send_sunat' => $configuration->auto_send_dispatchs_to_sunat
             ],
         ];
     }
@@ -462,7 +491,8 @@ class DispatchController extends Controller
         $series = Series::all()->toArray();
         $company = Company::select('number')->first();
         $drivers = Driver::all();
-        $dispachers = Dispatcher::all();
+        $transports = Transport::all();
+        $dispatchers = Dispatcher::all();
         $related_document_types = RelatedDocumentType::get();
 
         return compact(
@@ -481,7 +511,8 @@ class DispatchController extends Controller
             'locations',
             'company',
             'drivers',
-            'dispachers',
+            'dispatchers',
+            'transports',
             'related_document_types',
             'itemsFromSummary'
         );
