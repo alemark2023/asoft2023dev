@@ -495,9 +495,13 @@ class Dispatch extends ModelTenant
         $btn_send = false;
         $btn_options = false;
         $btn_status_ticket = false;
+<<<<<<< HEAD
         $btn_generate_document = false;
         $btn_edit = false;
 
+=======
+        $btn_generate_document = config('tenant.internal_dispatch') ? config('tenant.internal_dispatch') : false;
+>>>>>>> 45b021c87147de5ff072bc6e9fc279cc2c55e6dd
         if ($this->state_type_id === '01') {
             $btn_send = true;
         }
