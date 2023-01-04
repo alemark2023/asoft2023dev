@@ -46,7 +46,8 @@
                                 <el-input v-model="form.number"
                                           :maxlength="maxLength"
                                           dusk="number">
-                                    <template v-if="form.identity_document_type_id === '6' || form.identity_document_type_id === '1'">
+                                    <template
+                                        v-if="form.identity_document_type_id === '6' || form.identity_document_type_id === '1'">
                                         <el-button slot="append"
                                                    :loading="loading_search"
                                                    icon="el-icon-search"
@@ -93,8 +94,6 @@
                         </div>
                     </div>
                 </div>
-
-
                 <div class="row">
                     <div class="col-md-6">
                         <div :class="{'has-danger': errors.telephone}"
@@ -105,6 +104,13 @@
                             <small v-if="errors.telephone"
                                    class="form-control-feedback"
                                    v-text="errors.telephone[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group" style="margin-top: 32px;">
+                            <el-switch v-model="form.is_default"
+                                       active-text="Predeterminado"
+                                       inactive-text=""></el-switch>
                         </div>
                     </div>
                 </div>
@@ -174,6 +180,8 @@ export default {
                 name: null,
                 license: null,
                 telephone: null,
+                is_default: false,
+                is_active: true,
             }
         },
         async opened() {
@@ -195,15 +203,8 @@ export default {
             this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
                     if (response.data.success) {
-
                         this.$message.success(response.data.message)
-
-                        if (this.external) {
-                            this.$eventHub.$emit('reloadDataDrivers', response.data.id)
-                        } else {
-                            this.$eventHub.$emit('reloadData')
-                        }
-
+                        this.$emit('success', response.data.id)
                         this.close()
 
                     } else {

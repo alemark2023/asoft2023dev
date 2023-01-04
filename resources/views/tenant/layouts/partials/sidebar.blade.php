@@ -803,49 +803,54 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                         </li>
                     @endif
 
-                    @if(in_array('advanced', $vc_modules) && $vc_company->soap_type_id != '03')
-                        <li class="nav-parent
-                            {{ ($firstLevel === 'dispatches')?'nav-active nav-expanded':'' }}
-                        {{ ($firstLevel === 'drivers')?'nav-active nav-expanded':'' }}
-                        {{ ($firstLevel === 'dispatchers')?'nav-active nav-expanded':'' }}
-                        {{ ($firstLevel === 'transports')?'nav-active nav-expanded':'' }}">
-                            <a class="nav-link"
-                               href="#">
-                                <i class="fas fa-receipt"
-                                   aria-hidden="true"></i>
-                                <span>Guías de remisión</span>
-                            </a>
-                            <ul class="nav nav-children"
-                                style="">
-                                <li class="{{ ($firstLevel === 'dispatches')?'nav-active':'' }}">
-                                    <a class="nav-link"
-                                       href="{{route('tenant.dispatches.index')}}">Listado</a>
-                                </li>
-                                <li class="{{ ($firstLevel === 'dispatchers')?'nav-active':'' }}">
-                                    <a class="nav-link"
-                                       href="{{route('tenant.dispatchers.index')}}">Transportistas</a>
-                                </li>
-                                <li class="{{ ($firstLevel === 'drivers')?'nav-active':'' }}">
-                                    <a class="nav-link"
-                                       href="{{route('tenant.drivers.index')}}">Conductores</a>
-                                </li>
-                                <li class="{{ ($firstLevel === 'transports')?'nav-active':'' }}">
-                                    <a class="nav-link"
-                                       href="{{route('tenant.transports.index')}}">Vehículos</a>
-                                </li>
-                            </ul>
-                        </li>
-                    @endif
+                    {{--                    @if(in_array('advanced', $vc_modules) && $vc_company->soap_type_id != '03')--}}
+                    {{--                        <li class="nav-parent--}}
+                    {{--                            {{ ($firstLevel === 'dispatches')?'nav-active nav-expanded':'' }}--}}
+                    {{--                        {{ ($firstLevel === 'drivers')?'nav-active nav-expanded':'' }}--}}
+                    {{--                        {{ ($firstLevel === 'dispatchers')?'nav-active nav-expanded':'' }}--}}
+                    {{--                        {{ ($firstLevel === 'transports')?'nav-active nav-expanded':'' }}">--}}
+                    {{--                            <a class="nav-link"--}}
+                    {{--                               href="#">--}}
+                    {{--                                <i class="fas fa-receipt"--}}
+                    {{--                                   aria-hidden="true"></i>--}}
+                    {{--                                <span>Guías de remisión</span>--}}
+                    {{--                            </a>--}}
+                    {{--                            <ul class="nav nav-children"--}}
+                    {{--                                style="">--}}
+                    {{--                                <li class="{{ ($firstLevel === 'dispatches')?'nav-active':'' }}">--}}
+                    {{--                                    <a class="nav-link"--}}
+                    {{--                                       href="{{route('tenant.dispatches.index')}}">Listado</a>--}}
+                    {{--                                </li>--}}
+                    {{--                                <li class="{{ ($firstLevel === 'dispatchers')?'nav-active':'' }}">--}}
+                    {{--                                    <a class="nav-link"--}}
+                    {{--                                       href="{{route('tenant.dispatchers.index')}}">Transportistas</a>--}}
+                    {{--                                </li>--}}
+                    {{--                                <li class="{{ ($firstLevel === 'drivers')?'nav-active':'' }}">--}}
+                    {{--                                    <a class="nav-link"--}}
+                    {{--                                       href="{{route('tenant.drivers.index')}}">Conductores</a>--}}
+                    {{--                                </li>--}}
+                    {{--                                <li class="{{ ($firstLevel === 'transports')?'nav-active':'' }}">--}}
+                    {{--                                    <a class="nav-link"--}}
+                    {{--                                       href="{{route('tenant.transports.index')}}">Vehículos</a>--}}
+                    {{--                                </li>--}}
+                    {{--                                <li class="{{ ($firstLevel === 'origin_addresses')?'nav-active':'' }}">--}}
+                    {{--                                    <a class="nav-link"--}}
+                    {{--                                       href="{{route('tenant.origin_addresses.index')}}">Direcciones de partida</a>--}}
+                    {{--                                </li>--}}
+                    {{--                            </ul>--}}
+                    {{--                        </li>--}}
+                    {{--                    @endif--}}
 
                     @if(in_array('advanced', $vc_modules) && $vc_company->soap_type_id != '03')
                         <li class="nav-parent
                         {{ ($firstLevel === 'retentions')?'nav-active nav-expanded':'' }}
-                        {{ ($firstLevel === 'dispatches')?'nav-active nav-expanded':'' }}
                         {{ ($firstLevel === 'perceptions')?'nav-active nav-expanded':'' }}
+                        {{ ($firstLevel === 'order-forms')?'nav-active nav-expanded':'' }}
+                        {{ ($firstLevel === 'purchase-settlements')?'nav-active nav-expanded':'' }}
+                        {{ ($firstLevel === 'dispatches')?'nav-active nav-expanded':'' }}
                         {{ ($firstLevel === 'drivers')?'nav-active nav-expanded':'' }}
                         {{ ($firstLevel === 'dispatchers')?'nav-active nav-expanded':'' }}
-                        {{ ($firstLevel === 'order-forms')?'nav-active nav-expanded':'' }}
-                        {{ ($firstLevel === 'purchase-settlements')?'nav-active nav-expanded':'' }}">
+                        {{ ($firstLevel === 'transports')?'nav-active nav-expanded':'' }}">
                             <a class="nav-link"
                                href="#">
                                 <i class="fas fa-receipt"
@@ -874,19 +879,45 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                     </li>
                                 @endif
                                 @if(in_array('advanced_order_forms', $vc_module_levels))
-                                    <li class="nav-parent
-                                {{ ($firstLevel === 'order-forms')?'nav-active nav-expanded':'' }}
-                                        ">
+                                    <li class="{{ ($firstLevel === 'order-forms')?'nav-active':'' }}">
                                         <a class="nav-link"
-                                           href="#">Ordenes de pedido</a>
-                                        <ul class="nav nav-children">
-                                            <li class="{{ ($firstLevel === 'order-forms')?'nav-active':'' }}">
-                                                <a class="nav-link"
-                                                   href="{{route('tenant.order_forms.index')}}">Listado</a>
-                                            </li>
-                                        </ul>
+                                           href="{{route('tenant.order_forms.index')}}">Ordenes de pedido</a>
                                     </li>
                                 @endif
+                                <li class="nav-parent
+                                {{ ($firstLevel === 'dispatches')?'nav-active nav-expanded':'' }}
+                                {{ ($firstLevel === 'drivers')?'nav-active nav-expanded':'' }}
+                                {{ ($firstLevel === 'dispatchers')?'nav-active nav-expanded':'' }}
+                                {{ ($firstLevel === 'transports')?'nav-active nav-expanded':'' }}">
+                                    <a class="nav-link"
+                                       href="#">
+                                        <span>Guías de remisión</span>
+                                    </a>
+                                    <ul class="nav nav-children"
+                                        style="">
+                                        <li class="{{ ($firstLevel === 'dispatches')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{route('tenant.dispatches.index')}}">Listado</a>
+                                        </li>
+                                        <li class="{{ ($firstLevel === 'dispatchers')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{route('tenant.dispatchers.index')}}">Transportistas</a>
+                                        </li>
+                                        <li class="{{ ($firstLevel === 'drivers')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{route('tenant.drivers.index')}}">Conductores</a>
+                                        </li>
+                                        <li class="{{ ($firstLevel === 'transports')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{route('tenant.transports.index')}}">Vehículos</a>
+                                        </li>
+                                        <li class="{{ ($firstLevel === 'origin_addresses')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{route('tenant.origin_addresses.index')}}">Direcciones de
+                                                partida</a>
+                                        </li>
+                                    </ul>
+                                </li>
                             </ul>
                         </li>
                     @endif

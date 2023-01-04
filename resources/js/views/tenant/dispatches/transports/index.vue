@@ -22,6 +22,7 @@
                         <th class="text-left">Nro. de Placa</th>
                         <th class="text-left">Modelo</th>
                         <th class="text-left">Marca</th>
+                        <th class="text-center">Predeterminado</th>
                         <th class="text-right">Acciones</th>
                     <tr>
                     <tr slot-scope="{ index, row }">
@@ -29,6 +30,7 @@
                         <td class="text-left">{{ row.plate_number }}</td>
                         <td class="text-left">{{ row.model }}</td>
                         <td class="text-left">{{ row.brand }}</td>
+                        <td class="text-center">{{ row.is_default }}</td>
                         <td class="text-right">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickCreate(row.id)">Editar
@@ -44,7 +46,8 @@
             </div>
 
             <transport-form :showDialog.sync="showDialog"
-                            :recordId="recordId"></transport-form>
+                            :recordId="recordId"
+                            @success="successCreate"></transport-form>
         </div>
     </div>
 </template>
@@ -81,6 +84,9 @@ export default {
                 this.$eventHub.$emit('reloadData')
             )
         },
+        successCreate() {
+            this.$eventHub.$emit('reloadData')
+        }
     }
 }
 </script>

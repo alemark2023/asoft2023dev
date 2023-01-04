@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Tenant;
+namespace Modules\Dispatch\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,7 +21,8 @@ class DriverResource extends JsonResource
             'name' => $this->name,
             'telephone' => $this->telephone,
             'license' => $this->license,
-
+            'is_default' => $this->is_default,
+            'is_active' => $this->is_active,
         ];
     }
 }

@@ -146,11 +146,10 @@
         <td>Nombre y/o razón social: {{ $document->dispatcher->name }}</td>
         <td>{{ $document_type_dispatcher->description }}: {{ $document->dispatcher->number }}</td>
     </tr>
-    @endif
-    @if($document->transport_mode_type_id === '02')
+    @else
     <tr>
-        @if($document->license_plate)
-            <td>Número de placa del vehículo: {{ $document->license_plate }}</td>
+        @if($document->transport_data)
+            <td>Número de placa del vehículo: {{ $document->transport_data['plate_number'] }}</td>
         @endif
         @if($document->driver->number)
             <td>Conductor: {{ $document->driver->number }}</td>

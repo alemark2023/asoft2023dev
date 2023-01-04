@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Order\Models;
+namespace Modules\Dispatch\Models;
 
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use App\Models\Tenant\ModelTenant;
 
-class Dispatcher extends ModelTenant
+class Driver extends ModelTenant
 {
     protected $with = ['identity_document_type'];
 
@@ -13,8 +13,15 @@ class Dispatcher extends ModelTenant
         'identity_document_type_id',
         'number',
         'name',
-        'address',
-        'number_mtc'
+        'license',
+        'telephone',
+        'is_default',
+        'is_active'
+    ];
+
+    protected $casts = [
+        'is_default' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     public function identity_document_type()

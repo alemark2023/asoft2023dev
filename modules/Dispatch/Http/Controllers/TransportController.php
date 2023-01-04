@@ -1,19 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Tenant;
+namespace Modules\Dispatch\Http\Controllers;
 
-use App\Http\Requests\Tenant\TransportRequest;
-use App\Http\Resources\Tenant\TransportCollection;
-use App\Http\Resources\Tenant\TransportResource;
-use App\Models\Tenant\Configuration;
-use App\Models\Tenant\Transport;
-use Modules\Order\Http\Requests\DriverRequest;
-use Modules\Order\Http\Resources\DriverCollection;
-use Modules\Order\Http\Resources\DriverResource;
-use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use App\Http\Controllers\Controller;
-use Modules\Order\Models\Driver;
 use Illuminate\Http\Request;
+use Modules\Dispatch\Http\Requests\TransportRequest;
+use Modules\Dispatch\Http\Resources\TransportCollection;
+use Modules\Dispatch\Http\Resources\TransportResource;
+use Modules\Dispatch\Models\Transport;
 
 class TransportController extends Controller
 {
@@ -39,7 +33,6 @@ class TransportController extends Controller
         return new TransportCollection($records->paginate(config('tenant.items_per_page')));
     }
 
-
     public function record($id)
     {
         $record = new TransportResource(Transport::findOrFail($id));
@@ -50,6 +43,12 @@ class TransportController extends Controller
     public function store(TransportRequest $request)
     {
         $id = $request->input('id');
+        $is_default = $request->input('is_default');
+        if($is_default) {
+            Transport::query()->update([
+                'is_default' => false
+            ]);
+        }
         $record = Transport::firstOrNew(['id' => $id]);
         $record->fill($request->all());
         $record->save();
@@ -70,7 +69,21 @@ class TransportController extends Controller
             'success' => true,
             'message' => 'Vehículo eliminado con éxito'
         ];
-
     }
 
+    public function getOptions()
+    {
+        return Transport::query()
+            ->where('is_active', true)
+            ->get()
+            ->transform(function ($row) {
+                return [
+                    'id' => $row->id,
+                    'plate_number' => $row->plate_number,
+                    'model' => $row->model,
+                    'brand' => $row->brand,
+                    'is_default' => $row->is_default
+                ];
+            });
+    }
 }

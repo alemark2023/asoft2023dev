@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Tenant;
+namespace Modules\Dispatch\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,7 +20,9 @@ class DispatcherResource extends JsonResource
             'number' => $this->number,
             'name' => $this->name,
             'address' => $this->address,
-            'number_mtc' => $this->number_mtc
+            'number_mtc' => $this->number_mtc,
+            'is_default' => $this->is_default,
+            'is_active' => $this->is_active,
         ];
     }
 }

@@ -279,6 +279,7 @@ Vue.component('tenant-expense-method-types-index', require('@viewsModuleExpense/
 Vue.component('tenant-drivers-index', require('./views/tenant/dispatches/drivers/index.vue'));
 Vue.component('tenant-dispatchers-index', require('./views/tenant/dispatches/dispatchers/index.vue'));
 Vue.component('tenant-transports-index', require('./views/tenant/dispatches/transports/index.vue'));
+Vue.component('tenant-origin_addresses-index', require('./views/tenant/dispatches/OriginAddress/Index'));
 
 Vue.component('tenant-order-forms-index', require('@viewsModuleOrder/order_forms/index.vue'));
 Vue.component('tenant-order-forms-form', require('@viewsModuleOrder/order_forms/form.vue'));

@@ -46,12 +46,17 @@ class DispatchService
             curl_setopt_array($curl, array(
                 CURLOPT_URL => "https://api-seguridad.sunat.gob.pe/v1/clientessol/{$client_id}/oauth2/token",
                 CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT => 2,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
                 CURLOPT_FOLLOWLOCATION => true,
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_SSL_VERIFYHOST => false,
+                CURLOPT_SSL_VERIFYPEER => false,
                 CURLOPT_POSTFIELDS => http_build_query($form_params),
                 CURLOPT_HTTPHEADER => array(
+                    'Conte: application/json',
                     'Content-Type: application/x-www-form-urlencoded',
                 ),
             ));
@@ -117,6 +122,8 @@ class DispatchService
                 CURLOPT_FOLLOWLOCATION => true,
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_SSL_VERIFYHOST => false,
+                CURLOPT_SSL_VERIFYPEER => false,
                 CURLOPT_POSTFIELDS => json_encode($form_params),
                 CURLOPT_HTTPHEADER => array(
                     "Authorization: Bearer {$token}",
@@ -172,6 +179,8 @@ class DispatchService
                 CURLOPT_FOLLOWLOCATION => true,
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'GET',
+                CURLOPT_SSL_VERIFYHOST => false,
+                CURLOPT_SSL_VERIFYPEER => false,
                 CURLOPT_HTTPHEADER => array(
                     "Authorization: Bearer {$token}",
                     'Content-Type: application/json'

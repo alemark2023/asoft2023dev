@@ -5,7 +5,6 @@
 
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
     // $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
-    $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
 
     $logo = "storage/uploads/logos/{$company->logo}";
     if($establishment->logo) {
@@ -104,7 +103,7 @@
         <td>Motivo Traslado: {{ $document->transfer_reason_type->description }}</td>
         <td>Modalidad de Transporte: {{ $document->transport_mode_type->description }}</td>
     </tr>
-    
+
     @if($document->related)
     <tr>
         <td>Número de documento (DAM): {{ $document->related->number }}</td>
@@ -131,14 +130,18 @@
     </tr>
     </thead>
     <tbody>
+    @if($document->transport_mode_type_id === '01')
+        @php
+            $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
+        @endphp
     <tr>
         <td>Nombre y/o razón social: {{ $document->dispatcher->name }}</td>
         <td>{{ $document_type_dispatcher->description }}: {{ $document->dispatcher->number }}</td>
     </tr>
-    <tbody>
+    @else
     <tr>
-        @if($document->license_plate)
-        <td>Número de placa del vehículo: {{ $document->license_plate }}</td>
+        @if($document->transport_data)
+        <td>Número de placa del vehículo: {{ $document->transport_data['plate_number'] }}</td>
         @endif
         @if($document->driver->number)
         <td>Conductor: {{ $document->driver->number }}</td>
@@ -154,6 +157,8 @@
             <td>Licencia del conductor: {{ $document->driver->license }}</td>
         @endif
     </tr>
+    @endif
+    </tbody>
 </table>
 <table class="full-width border-box mt-10 mb-10">
     <thead class="">
@@ -302,6 +307,15 @@
 </table>
 @endif
 
+@if($document->qr)
+    <table class="full-width">
+        <tr>
+            <td class="text-left">
+                <img src="data:image/png;base64, {{ $document->qr }}" style="margin-right: -10px;"/>
+            </td>
+        </tr>
+    </table>
+@endif
 @if ($document->terms_condition)
     <br>
     <table class="full-width">

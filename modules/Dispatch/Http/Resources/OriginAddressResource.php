@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources\Tenant;
+namespace Modules\Dispatch\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TransportResource extends JsonResource
+class OriginAddressResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,9 +16,8 @@ class TransportResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'plate_number' => $this->plate_number,
-            'model' => $this->model,
-            'brand' => $this->brand,
+            'address' => $this->address,
+            'location_id' => $this->location_id,
             'is_default' => $this->is_default,
             'is_active' => $this->is_active,
         ];

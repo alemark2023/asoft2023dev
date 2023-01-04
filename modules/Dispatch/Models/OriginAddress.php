@@ -1,18 +1,20 @@
 <?php
 
-namespace App\Models\Tenant;
+namespace Modules\Dispatch\Models;
 
-class Transport extends ModelTenant
+use App\Models\Tenant\ModelTenant;
+
+class OriginAddress extends ModelTenant
 {
     protected $fillable = [
-        'model',
-        'brand',
-        'plate_number',
+        'address',
+        'location_id',
         'is_default',
         'is_active'
     ];
 
     protected $casts = [
+        'location_id' => 'array',
         'is_default' => 'boolean',
         'is_active' => 'boolean',
     ];

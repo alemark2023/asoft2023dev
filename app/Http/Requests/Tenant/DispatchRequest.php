@@ -23,17 +23,19 @@ class DispatchRequest extends FormRequest
             'unit_type_id' => [
                 'required',
             ],
+            'delivery_address_id'=> [
+                'required',
+            ],
+            'origin_address_id'=> [
+                'required',
+            ],
             // 'transfer_reason_description' => [
             //     'required',
             // ],
             // 'observations' => [
             //     'required',
             // ],
-            'delivery.address'=> [
-                'required',
-                'max:100',
 
-            ],
 //            'dispatcher.identity_document_type_id'=> [
 //                'required',
 //            ],
@@ -52,15 +54,15 @@ class DispatchRequest extends FormRequest
             // 'license_plate'=> [
             //     'required',
             // ],
-            'license_plate'=> [
+//            'license_plate'=> [
+//                'required_if:transport_mode_type_id, "02"',
+//            ],
+            'driver_id'=> [
                 'required_if:transport_mode_type_id, "02"',
             ],
-            'driver.identity_document_type_id'=> [
-                'required_if:transport_mode_type_id, "02"',
-            ],
-            'driver.number'=> [
-                'required_if:transport_mode_type_id, "02"',
-            ],
+//            'driver.number'=> [
+//                'required_if:transport_mode_type_id, "02"',
+//            ],
             'customer_id'=> [
                 'required',
             ],
@@ -81,8 +83,6 @@ class DispatchRequest extends FormRequest
             'related.document_type_id'=> [
                 'required_if:transfer_reason_type_id, "09"',
             ],
-
-
         ];
     }
 

@@ -133,14 +133,18 @@ class Dispatch extends ModelTenant
         'additional_data',
         'ticket',
         'reception_date',
-        'qr_url'
+        'qr_url',
+        'origin_address_id',
+        'delivery_address_id',
+        'transport_data'
     ];
 
     protected $casts = [
         'date_of_issue' => 'date',
         'date_of_shipping' => 'date',
         'send_to_pse' => 'bool',
-        'reception_date' => 'timestamp'
+        'reception_date' => 'timestamp',
+        'transport_data' => 'array'
     ];
 
     public function getAdditionalDataAttribute($value)
@@ -495,13 +499,8 @@ class Dispatch extends ModelTenant
         $btn_send = false;
         $btn_options = false;
         $btn_status_ticket = false;
-<<<<<<< HEAD
-        $btn_generate_document = false;
         $btn_edit = false;
-
-=======
         $btn_generate_document = config('tenant.internal_dispatch') ? config('tenant.internal_dispatch') : false;
->>>>>>> 45b021c87147de5ff072bc6e9fc279cc2c55e6dd
         if ($this->state_type_id === '01') {
             $btn_send = true;
         }
@@ -518,11 +517,11 @@ class Dispatch extends ModelTenant
             $btn_edit = true;
         }
 
-        if(!is_null($this->reference_sale_note_id) || !is_null($this->reference_document_id) ||
-            !is_null($this->reference_quotation_id) || !is_null($this->reference_order_form_id) ||
-            !is_null($this->reference_order_note_id) ) {
-            $btn_edit = false;
-        }
+//        if(!is_null($this->reference_sale_note_id) || !is_null($this->reference_document_id) ||
+//            !is_null($this->reference_quotation_id) || !is_null($this->reference_order_form_id) ||
+//            !is_null($this->reference_order_note_id) ) {
+//            $btn_edit = false;
+//        }
 
         return [
             'id' => $this->id,

@@ -160,7 +160,7 @@
                     <cac:TransportEquipment>
                         <!-- VEHICULO PRINCIPAL -->
                         <!-- PLACA - VEHICULO PRINCIPAL -->
-                        <cbc:ID>{{ $document['license_plate'] }}</cbc:ID>
+                        <cbc:ID>{{ $document['transport_plate_number'] }}</cbc:ID>
                     </cac:TransportEquipment>
                 </cac:TransportHandlingUnit>
 {{--            @endif--}}

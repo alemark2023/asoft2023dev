@@ -105,7 +105,7 @@ class ServiceDispatchController extends Controller
                 $success = true;
                 switch ($res['codRespuesta']) {
                     case '98':
-                        $success = false;
+//                        $success = false;
                         $state_type_id = '03';
                         $message = 'La guía aún está en proceso, vuelva a consultar.';
                         break;
@@ -115,7 +115,7 @@ class ServiceDispatchController extends Controller
                         $has_cdr = true;
                         break;
                     case '99':
-                        $success = false;
+//                        $success = false;
                         $state_type_id = '09';
                         //$message = 'La guía fue rechazada.';
                         if ($res['indCdrGenerado'] === '1') {
@@ -164,7 +164,7 @@ class ServiceDispatchController extends Controller
                         'pdf' => $record->download_external_pdf,
                         'cdr' => $download_external_cdr,
                     ],
-                    'res' => $res,
+//                    'res' => $res,
                     'message' => $message,
                 ];
             }
@@ -250,10 +250,10 @@ class ServiceDispatchController extends Controller
             'delivery_code' => $record->delivery->code,
             'driver_identity_document_type_id' => optional($record->driver)->identity_document_type_id,
             'driver_number' => optional($record->driver)->number,
-            'driver_names' => optional($record->driver)->names,
-            'driver_lastnames' => optional($record->driver)->lastnames,
+            'driver_names' => optional($record->driver)->name,
+            'driver_lastnames' => optional($record->driver)->name,
             'driver_license' => optional($record->driver)->license,
-            'license_plate' => $record->license_plate,
+            'transport_plate_number' => $record->transport_data?$record->transport_data['plate_number']:null,
             'dispatcher_identity_document_type_id' => optional($record->dispatcher)->identity_document_type_id,
             'dispatcher_number' => optional($record->dispatcher)->number,
             'dispatcher_name' => optional($record->dispatcher)->name,

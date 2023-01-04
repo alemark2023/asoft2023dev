@@ -10,6 +10,9 @@ use App\Models\Tenant\Company;
 use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\Item;
 use Illuminate\Support\Str;
+use Modules\Dispatch\Models\Dispatcher;
+use Modules\Dispatch\Models\Driver;
+use Modules\Dispatch\Models\Transport;
 
 class DispatchInput
 {
@@ -23,13 +26,16 @@ class DispatchInput
         $soap_type_id = $company->soap_type_id;
         $number = Functions::newNumber($soap_type_id, $document_type_id, $series, $number, Dispatch::class);
 
-        Functions::validateUniqueDocument($soap_type_id, $document_type_id, $series, $number, Dispatch::class);
+        if (is_null($inputs['id'])) {
+            Functions::validateUniqueDocument($soap_type_id, $document_type_id, $series, $number, Dispatch::class);
+        }
 
         $filename = Functions::filename($company, $document_type_id, $series, $number);
         $establishment = EstablishmentInput::set($inputs['establishment_id']);
         $customer = PersonInput::set($inputs['customer_id']);
         $inputs['type'] = 'dispatch';
         $data = [
+            'id' => Functions::valueKeyInArray($inputs, 'id'),
             'type' => $inputs['type'],
             'user_id' => auth()->id(),
             'external_id' => Str::uuid()->toString(),
@@ -57,11 +63,12 @@ class DispatchInput
             'total_weight' => $inputs['total_weight'],
             'packages_number' => $inputs['packages_number'],
             'container_number' => $inputs['container_number'],
-            'license_plate' => (isset($inputs['license_plate'])) ? func_str_to_upper_utf8($inputs['license_plate']) : null,
+//            'license_plate' => (isset($inputs['license_plate'])) ? func_str_to_upper_utf8($inputs['license_plate']) : null,
             'origin' => self::origin($inputs),
             'delivery' => self::delivery($inputs),
             'dispatcher' => self::dispatcher($inputs),
             'driver' => self::driver($inputs),
+            'transport_data' => self::transport($inputs),
             'items' => self::items($inputs),
             'legends' => LegendInput::set($inputs),
             'optional' => Functions::valueKeyInArray($inputs, 'optional'),
@@ -75,6 +82,11 @@ class DispatchInput
             'related' => self::related($inputs),
             'order_form_external' => Functions::valueKeyInArray($inputs, 'order_form_external'),
             'additional_data' => Functions::valueKeyInArray($inputs, 'additional_data'),
+            'origin_address_id' => Functions::valueKeyInArray($inputs, 'origin_address_id', 0),
+            'delivery_address_id' => Functions::valueKeyInArray($inputs, 'delivery_address_id', 0),
+            'driver_id' => self::getDriverId($inputs), //Functions::valueKeyInArray($inputs, 'driver_id'),
+            'dispatcher_id' => self::getDispatcherId($inputs), //Functions::valueKeyInArray($inputs, 'dispatcher_id'),
+            'transport_id' => self::getTransportId($inputs),// Functions::valueKeyInArray($inputs, 'transport_id'),
         ];
 
         if (isset($inputs['data_affected_document'])) {
@@ -143,13 +155,13 @@ class DispatchInput
 
     private static function dispatcher($inputs)
     {
-        if($inputs['transport_mode_type_id'] === '01') {
+        if ($inputs['transport_mode_type_id'] === '01') {
             if (array_key_exists('dispatcher', $inputs)) {
                 $dispatcher = $inputs['dispatcher'];
                 $identity_document_type_id = $dispatcher['identity_document_type_id'];
-                $number = (isset($dispatcher['number'])) ? $dispatcher['number'] : null; // $dispatcher['number'];
-                $name = (isset($dispatcher['name'])) ? $dispatcher['name'] : null;
-                $number_mtc = $dispatcher['number_mtc']; //$dispatcher['name'];
+                $number = $dispatcher['number'];
+                $name = $dispatcher['name'];
+                $number_mtc = (isset($dispatcher['number_mtc'])) ? $dispatcher['number_mtc'] : null;
 
                 return [
                     'identity_document_type_id' => $identity_document_type_id,
@@ -164,21 +176,41 @@ class DispatchInput
 
     private static function driver($inputs)
     {
-        if($inputs['transport_mode_type_id'] === '02') {
+        if ($inputs['transport_mode_type_id'] === '02') {
             if (array_key_exists('driver', $inputs)) {
                 $driver = $inputs['driver'];
                 $identity_document_type_id = $driver['identity_document_type_id'];
                 $number = $driver['number'];
-                $names = (isset($driver['names'])) ? $driver['names'] : null;
-                $lastnames = (isset($driver['lastnames'])) ? $driver['lastnames'] : null;
-                $license = (isset($driver['license'])) ? $driver['license'] : null;
+                $name = $driver['name'];
+                $license = $driver['license'];
+                $telephone = $driver['telephone'];
 
                 return [
                     'identity_document_type_id' => $identity_document_type_id,
                     'number' => $number,
-                    'names' => $names,
-                    'lastnames' => $lastnames,
+                    'name' => $name,
                     'license' => $license,
+                    'telephone' => $telephone,
+                ];
+            }
+        }
+
+        return null;
+    }
+
+    private static function transport($inputs)
+    {
+        if ($inputs['transport_mode_type_id'] === '02') {
+            if (array_key_exists('transport', $inputs)) {
+                $transport = $inputs['transport'];
+                $plate_number = $transport['plate_number'];
+                $model = $transport['model'];
+                $brand = $transport['brand'];
+
+                return [
+                    'plate_number' => $plate_number,
+                    'model' => $model,
+                    'brand' => $brand,
                 ];
             }
         }
@@ -227,19 +259,77 @@ class DispatchInput
 
     private static function secondary_license_plates($inputs)
     {
-
         if (array_key_exists('secondary_license_plates', $inputs)) {
-
             $secondary_license_plates = $inputs['secondary_license_plates'];
             $semitrailer = $secondary_license_plates['semitrailer'];
-
             return [
                 'semitrailer' => $semitrailer,
             ];
 
         }
-
         return null;
     }
 
+    private static function getDispatcherId($inputs)
+    {
+        if ($inputs['transport_mode_type_id'] === '01') {
+            if (key_exists('dispatcher_id', $inputs)) {
+                return $inputs['dispatcher_id'];
+            }
+            $dispatcher = $inputs['dispatcher'];
+            $record = Dispatcher::query()
+                ->firstOrCreate([
+                    'identity_document_type_id' => $dispatcher['identity_document_type_id'],
+                    'number' => $dispatcher['number']
+                ], [
+                    'name' => $dispatcher['name'],
+                    'number_mtc' => $dispatcher['number_mtc']
+                ]);
+
+            return $record->id;
+        }
+        return null;
+    }
+
+    private static function getDriverId($inputs)
+    {
+        if ($inputs['transport_mode_type_id'] === '02') {
+            if (key_exists('driver_id', $inputs)) {
+                return $inputs['driver_id'];
+            }
+            $driver = $inputs['driver'];
+            $record = Driver::query()
+                ->firstOrCreate([
+                    'identity_document_type_id' => $driver['identity_document_type_id'],
+                    'number' => $driver['number']
+                ], [
+                    'name' => $driver['name'],
+                    'license' => $driver['license'],
+                    'telephone' => $driver['telephone']
+                ]);
+
+            return $record->id;
+        }
+        return null;
+    }
+
+    private static function getTransportId($inputs)
+    {
+        if ($inputs['transport_mode_type_id'] === '02') {
+            if (key_exists('transport_id', $inputs)) {
+                return $inputs['transport_id'];
+            }
+            $transport = $inputs['transport'];
+            $record = Transport::query()
+                ->firstOrCreate([
+                    'plate_number' => $transport['plate_number']
+                ], [
+                    'model' => $transport['model'],
+                    'brand' => $transport['brand']
+                ]);
+
+            return $record->id;
+        }
+        return null;
+    }
 }

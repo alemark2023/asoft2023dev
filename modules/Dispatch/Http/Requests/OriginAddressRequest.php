@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Tenant;
+namespace Modules\Dispatch\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class TransportRequest extends FormRequest
+class OriginAddressRequest extends FormRequest
 {
     public function authorize()
     {
@@ -18,17 +18,12 @@ class TransportRequest extends FormRequest
         $id = $this->input('id');
 
         return [
-            'plate_number' => [
-                'required',
-                Rule::unique('tenant.transports')->ignore($id),
-            ],
-            'brand' => [
+            'address' => [
                 'required',
             ],
-            'model' => [
+            'location_id' => [
                 'required',
             ],
-
         ];
     }
 

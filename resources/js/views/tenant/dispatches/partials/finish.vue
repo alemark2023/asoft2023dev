@@ -17,7 +17,7 @@
                 </el-alert>
             </div>
         </div>
-        <div>
+        <div v-if="sendSunat">
             <div>Enviando comprobante a sunat</div>
             <div>{{ response_sunat_send.message }}</div>
             <template v-if="response_sunat_send.success">
@@ -266,7 +266,8 @@ export default {
             location.href = `/${this.resource}`
         },
         clickNewDocument() {
-            this.clickClose()
+            location.href = `/${this.resource}/create`
+            // this.clickClose()
         },
         clickClose() {
             this.$emit('update:showDialog', false);

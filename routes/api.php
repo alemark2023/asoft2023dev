@@ -46,6 +46,7 @@ if ($hostname) {
             Route::post('services/validate_cpe', 'Tenant\Api\ServiceController@validateCpe');
             Route::post('perceptions', 'Tenant\Api\PerceptionController@store');
 
+            Route::post('dispatches/send', 'Tenant\Api\DispatchController@send');
             Route::post('dispatches/status_ticket', 'Tenant\Api\DispatchController@statusTicket');
 
             Route::post('documents_server', 'Tenant\Api\DocumentController@storeServer');

@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\Tenant;
+namespace Modules\Dispatch\Http\Controllers;
 
-use Modules\Order\Http\Requests\DispatcherRequest;
-use Modules\Order\Http\Resources\DispatcherCollection;
-use Modules\Order\Http\Resources\DispatcherResource;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use App\Http\Controllers\Controller;
-use Modules\Order\Models\Dispatcher;
 use Illuminate\Http\Request;
+use Modules\Dispatch\Http\Requests\DispatcherRequest;
+use Modules\Dispatch\Http\Resources\DispatcherCollection;
+use Modules\Dispatch\Http\Resources\DispatcherResource;
+use Modules\Dispatch\Models\Dispatcher;
 
 class DispatcherController extends Controller
 {
-
     public function index()
     {
         return view('tenant.dispatches.dispatchers.index');
@@ -28,13 +27,11 @@ class DispatcherController extends Controller
 
     public function records(Request $request)
     {
-
         $records = Dispatcher::where($request->column, 'like', "%{$request->value}%")
                             ->orderBy('name');
 
         return new DispatcherCollection($records->paginate(config('tenant.items_per_page')));
     }
-
 
     public function tables()
     {
@@ -53,8 +50,14 @@ class DispatcherController extends Controller
 
     public function store(DispatcherRequest $request)
     {
-
         $id = $request->input('id');
+        $is_default = $request->input('is_default');
+        if($is_default) {
+            Dispatcher::query()->update([
+                'is_default' => false
+            ]);
+        }
+
         $record = Dispatcher::firstOrNew(['id' => $id]);
         $record->fill($request->all());
         $record->save();
@@ -68,7 +71,6 @@ class DispatcherController extends Controller
 
     public function destroy($id)
     {
-
         $record = Dispatcher::findOrFail($id);
         $record->delete();
 
@@ -76,7 +78,22 @@ class DispatcherController extends Controller
             'success' => true,
             'message' => 'Transportista eliminado con éxito'
         ];
-
     }
 
+    public function getOptions()
+    {
+        return Dispatcher::query()
+            ->where('is_active', true)
+            ->get()
+            ->transform(function ($row) {
+                return [
+                    'id' => $row->id,
+                    'identity_document_type_id' => $row->identity_document_type_id,
+                    'number' => $row->number,
+                    'name' => $row->name,
+                    'number_mtc' => $row->number_mtc,
+                    'is_default' => $row->is_default,
+                ];
+            });
+    }
 }
