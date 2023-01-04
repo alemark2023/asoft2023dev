@@ -13,13 +13,6 @@ class DispatchService
     public function getToken($soap_username, $soap_password, $client_id, $client_secret)
     {
         try {
-            if (Cache::has('token_sunat')) {
-                return [
-                    'success' => true,
-                    'token' => Cache::get('token_sunat'),
-                    'cache' => true
-                ];
-            }
             if (is_null($soap_username) || $soap_username === '') {
                 throw new Exception('El Soap Username es requerido');
             }
