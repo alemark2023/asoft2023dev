@@ -143,7 +143,7 @@ class Dispatch extends ModelTenant
         'date_of_issue' => 'date',
         'date_of_shipping' => 'date',
         'send_to_pse' => 'bool',
-        'reception_date' => 'timestamp',
+//        'reception_date' => 'timestamp',
         'transport_data' => 'array'
     ];
 

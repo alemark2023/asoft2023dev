@@ -27,7 +27,7 @@
                         <el-checkbox class="ml-2 mt-1" v-model="search_item_by_barcode_presentation">Por presentación</el-checkbox>
                     </template> -->
                 </h2>
-                
+
                 <div class="row" v-if="search_item_by_barcode">
                     <div class="col-md-12">
                         <el-checkbox class="mt-1 font-weight-bold" v-model="search_item_by_barcode_presentation">Por presentación</el-checkbox>
@@ -35,7 +35,7 @@
                     <div class="col-md-12">
 
                         <el-checkbox class="mt-1 mb-1 font-weight-bold" v-model="electronic_scale_barcode">Balanza electrónica</el-checkbox>
-                        
+
                         <el-tooltip class="item" effect="dark" placement="top-start">
 
                             <div slot="content">
@@ -178,7 +178,7 @@
                         @keyup.native="keyupTabCustomer"
                         ref="ref_search_items"
                         class="m-bottom mt-3"
-                        
+
                         @focus="searchFromBarcode = true"
                         @blur="searchFromBarcode = false"
                     >
@@ -1167,7 +1167,7 @@ export default {
             }
             return false;
         },
-        changeValuesElectronicScale() 
+        changeValuesElectronicScale()
         {
             return this.electronic_scale_barcode && this.electronic_scale_data.pass_validations
         }
@@ -1853,8 +1853,8 @@ export default {
                 this.row["unit_type_id"] = item.unit_type_id;
 
                 this.form.items[pos] = this.row;
-            } 
-            else 
+            }
+            else
             {
                 response = await this.getStatusStock(
                     item.item_id,
@@ -1883,7 +1883,7 @@ export default {
 
                 // balanza
                 this.setScaleQuantityIfNotExistItem()
-                
+
                 if(this.changeValuesElectronicScale)
                 {
                     unit_price = this.getUnitPriceFromElectronicScale()
@@ -2034,8 +2034,8 @@ export default {
                 }
 
                 // total_value += parseFloat(row.total_value);
-                
-                if(!['21', '37'].includes(row.affectation_igv_type_id)) 
+
+                if(!['21', '37'].includes(row.affectation_igv_type_id))
                 {
                     total_value += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
@@ -2226,7 +2226,7 @@ export default {
             // console.log("barcode", this.electronic_scale_data.barcode)
             // console.log("weight", this.electronic_scale_data.weight)
             // console.log("total", this.electronic_scale_data.total)
-            
+
             // console.log("parse_weight", this.electronic_scale_data.parse_weight)
             // console.log("parse_total", this.electronic_scale_data.parse_total)
 
@@ -2242,9 +2242,9 @@ export default {
             }
 
         },
-        async searchItemsBarcode() 
+        async searchItemsBarcode()
         {
-            if (this.input_item.length > 1) 
+            if (this.input_item.length > 1)
             {
                 this.loading = true;
                 let parameters = `input_item=${this.input_item}&search_item_by_barcode_presentation=${this.search_item_by_barcode_presentation}`;

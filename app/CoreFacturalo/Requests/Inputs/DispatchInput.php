@@ -283,7 +283,8 @@ class DispatchInput
                     'number' => $dispatcher['number']
                 ], [
                     'name' => $dispatcher['name'],
-                    'number_mtc' => $dispatcher['number_mtc']
+                    'number_mtc' => $dispatcher['number_mtc'],
+                    'address' => '-'
                 ]);
 
             return $record->id;

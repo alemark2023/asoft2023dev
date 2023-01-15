@@ -447,8 +447,6 @@ class ItemController extends Controller
             $v_lots = isset($request->lots) ? $request->lots:[];
 
             foreach ($v_lots as $lot) {
-
-                // $item->lots()->create($lot);
                 $item->lots()->create([
                     'date' => $lot['date'],
                     'series' => $lot['series'],
@@ -936,7 +934,6 @@ class ItemController extends Controller
                 'id' => $row->id,
                 'item_id' => $row->item_id,
                 'image' => $row->image,
-                'id' => $row->id,
                 'name' => $row->image,
                 'url'=> asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image)
             ];
@@ -1304,8 +1301,8 @@ class ItemController extends Controller
     public function printBarCodeX(Request $request)
     {
         ini_set("pcre.backtrack_limit", "50000000");
-        $id = $request->id;
-        $format = $request->format;
+        $id = $request->input('id');
+        $format = $request->input('format');
 
         $record = Item::find($id);
         $item_warehouse = ItemWarehouse::where([['item_id', $id], ['warehouse_id', auth()->user()
