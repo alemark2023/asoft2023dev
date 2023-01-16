@@ -1014,6 +1014,7 @@ class CashController extends Controller
         $data['cash_date_closed'] = $cash->date_closed;
         $data['cash_time_closed'] = $cash->time_closed;
         $data['cash_time_opening'] = $cash->time_opening;
+        $data['cash_beginning_balance'] = $cash->beginning_balance;
         $data['company_name'] = $company->name;
         $data['company_number'] = $company->number;
 

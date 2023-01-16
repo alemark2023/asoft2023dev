@@ -60,6 +60,14 @@
                                     <!-- <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'excel')">Excel</a> -->
 
                                     <a class="dropdown-item text-1" href="#" @click.prevent="clickReportSummaryDailyOperations(row.id)">Resumen de Operaciones Diarias</a>
+
+                                    <el-tooltip class="item"
+                                                content="Reporte general de caja asociado a los pagos al contado con destino caja"
+                                                effect="dark"
+                                                placement="right-end">
+                                        <a class="dropdown-item text-1" href="#" @click.prevent="clickReportCashWithPayments(row.id)">Reporte general caja V2</a>
+                                    </el-tooltip>
+
                                 </div>
                             </div>
 
@@ -276,6 +284,10 @@
             {
                 window.open(`/cash-reports/payments-associated-cash/${id}`, '_blank');
             },
+            clickReportCashWithPayments(id)
+            {
+                window.open(`/cash-reports/general-with-payments/${id}`, '_blank');
+            }
         }
     }
 </script>
