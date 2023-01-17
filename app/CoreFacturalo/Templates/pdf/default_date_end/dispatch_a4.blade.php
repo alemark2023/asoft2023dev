@@ -208,15 +208,19 @@
             {{-- <td class="text-left">{{ $row->item->model ?? '' }}</td> --}}
             @if($is_pharma == true)
                 <td class="text-center align-top">
-                    {{$row->item->sanitary ?? '' }}
+                    {{$row->relation_item->sanitary ?? '' }}
                 </td>
             @endif
             <td class="text-center align-top">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
-                {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
+                @php
+                    $lot_group = Modules\Item\Models\ItemLotsGroup::where('code', $row->relation_item->lot_code)->first();
+                @endphp
+                {{-- {{ dd($row->relation_item->lot_code) }} --}}
+                {{ $itemLotGroup->getLote($lot_group->id) }}
             </td>
             <td class="text-center align-top">
-                {!! $itemLotGroup->getItemLotGroupDateOfDue($row->item->IdLoteSelected) !!}
+                {!! $itemLotGroup->getItemLotGroupDateOfDue($lot_group->id) !!}
             </td>
 
             <td class="text-center">{{ $row->item->unit_type_id }}</td>
