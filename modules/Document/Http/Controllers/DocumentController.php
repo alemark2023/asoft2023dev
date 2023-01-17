@@ -369,7 +369,7 @@ class DocumentController extends Controller
                 ->latest();
         }
 
-        return new ItemLotCollection($query->get());
+        return new ItemLotCollection($query->paginate(config('tenant.items_per_page')));
     }
 
 
