@@ -32,6 +32,7 @@ use Modules\Dispatch\Http\Controllers\DispatcherController;
 use Modules\Dispatch\Http\Controllers\DriverController;
 use Modules\Dispatch\Http\Controllers\OriginAddressController;
 use Modules\Dispatch\Http\Controllers\TransportController;
+use Modules\Dispatch\Models\DeliveryAddress;
 use Modules\Dispatch\Models\Dispatcher;
 use Modules\Dispatch\Models\Driver;
 use Modules\Dispatch\Models\OriginAddress;
@@ -95,23 +96,26 @@ class DispatchController extends Controller
 
 
         if ($d_start && $d_end) {
-            $records = Dispatch::where('series', 'like', '%' . $series . '%')->whereBetween('date_of_issue', [$d_start, $d_end]);
+            $query = Dispatch::query()
+                ->where('document_type_id', '09')
+                ->where('series', 'like', '%' . $series . '%')
+                ->whereBetween('date_of_issue', [$d_start, $d_end]);
         } else {
-            $records = Dispatch::where('series', 'like', '%' . $series . '%');
+            $query = Dispatch::query()
+                ->where('document_type_id', '09')
+                ->where('series', 'like', '%' . $series . '%');
         }
 
         if ($number) {
-            $records = $records->where('number', $number);
+            $query->where('number', $number);
         }
 
         if ($customer_id) {
-            $records = $records->where('customer_id', $customer_id);
+            $query->where('customer_id', $customer_id);
         }
 
-        return $records->latest();
-
+        return $query->latest();
     }
-
 
     public function data_table()
     {
@@ -797,20 +801,6 @@ class DispatchController extends Controller
             'address' => $record->address,
         ];
 
-
-//        return OriginAddress::query()
-//            ->where('is_active', true)
-//            ->get()
-//            ->transform(function ($row) {
-//                return [
-//                    'id' => $row->id,
-//                    'plate_number' => $row->plate_number,
-//                    'model' => $row->model,
-//                    'brand' => $row->brand,
-//                    'is_default' => $row->is_default
-//                ];
-//            });
-
         $origin_addresses = OriginAddress::query()
             ->where('is_active', true)
             ->get();
@@ -829,7 +819,7 @@ class DispatchController extends Controller
     {
         $records = [];
         $record = Person::query()
-            ->with('person_addresses')
+//            ->with('person_addresses')
             ->find($id);
         $records[] = [
             'id' => 0,
@@ -840,15 +830,27 @@ class DispatchController extends Controller
             ],
             'address' => $record->address,
         ];
-        foreach ($record->person_addresses as $row) {
+//        foreach ($record->person_addresses as $row) {
+//            $records[] = [
+//                'id' => $row->id,
+//                'location_id' => [
+//                    $row->department_id,
+//                    $row->province_id,
+//                    $row->district_id,
+//                ],
+//                'address' => $row->address,
+//            ];
+//        }
+
+        $delivery_addresses = DeliveryAddress::query()
+            ->where('person_id', $id)
+            ->where('is_active', true)
+            ->get();
+        foreach ($delivery_addresses as $row) {
             $records[] = [
                 'id' => $row->id,
-                'location_id' => [
-                    $row->department_id,
-                    $row->province_id,
-                    $row->district_id,
-                ],
                 'address' => $row->address,
+                'location_id' => $row->location_id,
             ];
         }
 

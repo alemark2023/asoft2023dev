@@ -263,11 +263,11 @@
                         <div class="col-lg-12">
                             <div :class="{'has-danger': errors.origin_address_id}"
                                  class="form-group">
-                                <label class="control-label">Dirección partida<span class="text-danger"> *</span>
-                                    <a v-if="can_add_new_product"
-                                       href="#"
+                                <label class="control-label">Punto de partida<span class="text-danger"> *</span>
+                                    <a href="#"
                                        @click.prevent="showDialogOriginAddressForm = true">[+ Nuevo]</a></label>
-                                <el-select v-model="form.origin_address_id">
+                                <el-select v-model="form.origin_address_id"
+                                           placeholder="Seleccionar punto de partida">
                                     <el-option v-for="option in origin_addresses"
                                                :key="option.id"
                                                :label="option.address"
@@ -307,10 +307,12 @@
                         <div class="col-lg-12">
                             <div :class="{'has-danger': errors.delivery_address_id}"
                                  class="form-group">
-                                <label class="control-label">Dirección llegada<span
-                                    class="text-danger"> *</span></label>
+                                <label class="control-label">Punto de llegada<span class="text-danger"> *</span>
+                                    <a href="#"
+                                       v-if="form.customer_id"
+                                       @click.prevent="showDialogDeliveryAddressForm = true">[+ Nuevo]</a></label>
                                 <el-select v-model="form.delivery_address_id"
-                                           placeholder="Seleccionar dirección de llegada">
+                                           placeholder="Seleccionar punto de llegada">
                                     <el-option v-for="option in delivery_addresses"
                                                :key="option.id"
                                                :label="option.address"
@@ -575,6 +577,11 @@
         <origin-address-form :showDialog.sync="showDialogOriginAddressForm"
                              @success="successOriginAddress"></origin-address-form>
 
+        <delivery-address-form :showDialog.sync="showDialogDeliveryAddressForm"
+                               title="Nuevo punto de llegada"
+                               :person-id="form.customer_id"
+                               @success="successDeliveryAddress"></delivery-address-form>
+
         <items
             :dialogVisible.sync="showDialogAddItems"
             @addItem="addItem"></items>
@@ -610,6 +617,7 @@ import DriverForm from './drivers/form.vue';
 import DispatcherForm from './dispatchers/form.vue';
 import TransportForm from './transports/form.vue';
 import OriginAddressForm from './OriginAddress/Form';
+import DeliveryAddressForm from './partials/DispatchAddressForm';
 
 import DispatchFinish from './partials/finish'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
@@ -636,7 +644,8 @@ export default {
         DriverForm,
         DispatcherForm,
         TransportForm,
-        OriginAddressForm
+        OriginAddressForm,
+        DeliveryAddressForm
     },
     mixins: [setDefaultSeriesByMultipleDocumentTypes],
     computed: {
@@ -658,6 +667,7 @@ export default {
             showDialogTransportForm: false,
             showDialogDispatcherForm: false,
             showDialogOriginAddressForm: false,
+            showDialogDeliveryAddressForm: false,
             IdLoteSelected: false,
             showDialogLots: false,
             min_qty: 0.0001,
@@ -1282,14 +1292,18 @@ export default {
             this.form.origin_address_id = id;
             await this.getOriginAddresses(this.form.establishment_id);
         },
+        async successDeliveryAddress(id) {
+            this.form.delivery_address_id = id;
+            await this.getDeliveryAddresses(this.form.customer_id);
+        },
         async getOriginAddresses(establishment_id) {
             await this.$http.get(`/${this.resource}/get_origin_addresses/${establishment_id}`)
                 .then(response => {
                     this.origin_addresses = response.data;
                 });
         },
-        async getDeliveryAddresses(person_id) {
-            await this.$http.get(`/${this.resource}/get_delivery_addresses/${person_id}`)
+        async getDeliveryAddresses(customer_id) {
+            await this.$http.get(`/dispatch_addresses/get_options/${customer_id}`)
                 .then(response => {
                     this.delivery_addresses = response.data;
                 });

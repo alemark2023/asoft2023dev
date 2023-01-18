@@ -4,8 +4,8 @@
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
 
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
-    $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
+    //$document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
+    //$document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
 
     $allowed_items = 90;
     $quantity_items = $document->items()->count();
@@ -131,26 +131,12 @@
     </tbody>
 </table>
 
+@if($document->transport_mode_type_id === '01')
+    @php
+        $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
+    @endphp
 <table class="full-width border-box mt-10 mb-10">
     <tr>
-        <td width="45%" class="border-box pl-3">
-            <table class="full-width">
-                <tr>
-                    <td style="text-decoration: underline;" colspan="2"><strong>UNIDAD DE TRANSPORTE - CONDUCTOR</td>
-                </tr>
-                <tr>
-                    <td><strong>N° Doc:</strong> {{ $document->driver->identity_document_type_id }}: {{ $document->driver->number }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Placa N°:</strong> {{ $document->license_plate }}</td>
-                </tr>
-                <tr>
-                    <td><strong>N° Licencia:</strong> {{ $document->driver->license }}</td>
-                </tr>
-            </table>
-        </td>
-        <td width="3%"></td>
-
         <td width="50%" class="border-box pl-3">
             <table class="full-width">
                 <tr>
@@ -164,13 +150,39 @@
                 </tr>
                 <tr>
                     <td></td>
-                    {{-- <td>Dirección: {{ $document->driver->license }}</td> --}}
                 </tr>
             </table>
         </td>
-
     </tr>
 </table>
+@else
+<table class="full-width border-box mt-10 mb-10">
+    <tr>
+        <td width="50%" class="border-box pl-3">
+            <table class="full-width">
+                <tr>
+                    <td style="text-decoration: underline;" colspan="2"><strong>UNIDAD DE TRANSPORTE - CONDUCTOR</strong></td>
+                </tr>
+                @if($document->driver->number)
+                <tr>
+                    <td><strong>N° Doc:</strong>: {{ $document->driver->number }}</td>
+                </tr>
+                @endif
+                @if($document->transport_data)
+                <tr>
+                    <td><strong>Placa N°:</strong> {{ $document->transport_data['plate_number'] }}</td>
+                </tr>
+                @endif
+                @if($document->driver->license)
+                <tr>
+                    <td><strong>N° Licencia:</strong> {{ $document->driver->license }}</td>
+                </tr>
+                @endif
+            </table>
+        </td>
+    </tr>
+</table>
+@endif
 
 
 <table class="full-width mt-0 mb-0" >
