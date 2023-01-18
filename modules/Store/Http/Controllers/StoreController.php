@@ -77,30 +77,28 @@ class StoreController extends Controller
         ];
     }
 
-    
+
     /**
-     * 
+     *
      * Asignar valores relacionados a pago credito
      *
-     * @param  array $rec
-     * @param  Quotation $document
+     * @param array $rec
+     * @param Quotation $document
      * @return void
      */
     private function setPaymentsFromQuotation(&$rec, $document)
     {
         $payment_method_type = $document->payment_method_type;
 
-        if($payment_method_type)
-        {
-            if($payment_method_type->isCredit())
-            {
+        if ($payment_method_type) {
+            if ($payment_method_type->isCredit()) {
                 //credito o credito con cuotas
                 $rec['payment_condition_id'] = ($payment_method_type->number_days) ? '02' : '03';
                 $rec['data_payments_fee'] = $document->payments;
                 $rec['document_payment_method_type'] = $payment_method_type;
             }
         }
-    }  
+    }
 
 
     public function getItems()
@@ -194,13 +192,16 @@ class StoreController extends Controller
     {
         $identity_document_type_id = $request->input('identity_document_type_id');
         $input = $request->input('input');
-        $customers = Person::query()
+        $query = Person::query()
             ->where('number', 'like', "%{$input}%")
             ->orWhere('name', 'like', "%{$input}%")
-            ->whereType('customers')
+            ->whereType('customers');
+        if ($identity_document_type_id) {
+            $query->whereIn('identity_document_type_id', $identity_document_type_id);
+        }
+
+        $customers = $query->whereIsEnabled()
             ->orderBy('name')
-            ->whereIn('identity_document_type_id', $identity_document_type_id)
-            ->whereIsEnabled()
             ->get()->transform(function ($row) {
                 return $row->getCollectionData();
             });

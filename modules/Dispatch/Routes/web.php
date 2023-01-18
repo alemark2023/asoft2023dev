@@ -50,6 +50,27 @@ if ($current_hostname) {
                 Route::delete('/{id}', 'OriginAddressController@destroy');
                 Route::get('get_options', 'OriginAddressController@getOptions');
             });
+
+            Route::prefix('delivery_addresses')->group(function () {
+                Route::get('tables', 'DeliveryAddressController@tables');
+                Route::post('/', 'DeliveryAddressController@store');
+                Route::get('get_options', 'DeliveryAddressController@getOptions');
+            });
+
+            Route::prefix('dispatch_persons')->group(function () {
+                Route::get('tables', 'DispatchPersonController@tables');
+                Route::post('/', 'DispatchPersonController@store');
+                Route::get('get_options', 'DispatchPersonController@getOptions');
+                Route::post('get_filter_options', 'DispatchPersonController@getFilterOptions');
+            });
+
+            Route::prefix('dispatch_addresses')->group(function () {
+                Route::get('tables', 'DispatchAddressController@tables');
+                Route::post('/', 'DispatchAddressController@store');
+                Route::delete('/{id}', 'DispatchAddressController@destroy');
+                Route::get('get_options/{sender_id}', 'DispatchAddressController@getOptions');
+                Route::get('search/{person_id}', 'DispatchAddressController@searchAddress');
+            });
         });
     });
 }

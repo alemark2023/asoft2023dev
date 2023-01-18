@@ -24,10 +24,10 @@ class DispatchRequest extends FormRequest
                 'required',
             ],
             'delivery_address_id'=> [
-                'required',
+                'required_if:document_type_id, "09"',
             ],
             'origin_address_id'=> [
-                'required',
+                'required_if:document_type_id, "09"',
             ],
             // 'transfer_reason_description' => [
             //     'required',
@@ -64,16 +64,16 @@ class DispatchRequest extends FormRequest
 //                'required_if:transport_mode_type_id, "02"',
 //            ],
             'customer_id'=> [
-                'required',
+                'required_if:document_type_id, "09"',
             ],
             'transport_mode_type_id'=> [
-                'required',
+                'required_if:document_type_id, "09"',
             ],
             'transfer_reason_type_id'=> [
-                'required',
+                'required_if:document_type_id, "09"',
             ],
             'origin.address'=> [
-                'required',
+                'required_if:document_type_id, "09"',
                 'max:100',
             ],
             'related.number'=> [

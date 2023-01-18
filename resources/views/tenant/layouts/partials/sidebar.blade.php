@@ -897,7 +897,11 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                         style="">
                                         <li class="{{ ($firstLevel === 'dispatches')?'nav-active':'' }}">
                                             <a class="nav-link"
-                                               href="{{route('tenant.dispatches.index')}}">Listado</a>
+                                               href="{{route('tenant.dispatches.index')}}">G.R. Remitente</a>
+                                        </li>
+                                        <li class="{{ ($firstLevel === 'dispatch_carrier')?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{route('tenant.dispatch_carrier.index')}}">G.R. Transportista</a>
                                         </li>
                                         <li class="{{ ($firstLevel === 'dispatchers')?'nav-active':'' }}">
                                             <a class="nav-link"

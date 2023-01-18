@@ -263,10 +263,18 @@ export default {
                 })
         },
         clickFinalize() {
-            location.href = `/${this.resource}`
+            if (this.form.document_type_id === '31') {
+                location.href = `/dispatch_carrier`
+            } else {
+                location.href = `/${this.resource}`
+            }
         },
         clickNewDocument() {
-            location.href = `/${this.resource}/create`
+            if (this.form.document_type_id === '31') {
+                location.href = `/dispatch_carrier/create`
+            } else {
+                location.href = `/${this.resource}/create`
+            }
             // this.clickClose()
         },
         clickClose() {
