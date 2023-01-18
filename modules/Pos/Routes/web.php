@@ -38,6 +38,8 @@ if($current_hostname) {
                 Route::get('summary-daily-operations/{cash_id}', 'CashReportController@reportSummaryDailyOperations');
                 Route::get('payments-associated-cash/{cash_id}', 'CashReportController@reportPaymentsAssociatedCash');
 
+                Route::get('general-with-payments/{cash_id}', 'CashReportController@generalCashReportWithPayments');
+
             });
 
 

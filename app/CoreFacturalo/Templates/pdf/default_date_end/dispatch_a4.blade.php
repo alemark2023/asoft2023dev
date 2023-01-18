@@ -10,7 +10,7 @@
 
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
     // $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
-    $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
+    // $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
 
 @endphp
 <html>
@@ -113,25 +113,43 @@
     </tr>
     </thead>
     <tbody>
+    @if($document->transport_mode_type_id === '01')
+        @php
+            $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
+        @endphp
     <tr>
         <td>Nombre y/o razón social: {{ $document->dispatcher->name }}</td>
         <td>{{ $document_type_dispatcher->description }}: {{ $document->dispatcher->number }}</td>
     </tr>
-    <tbody>
+    @else
+    @php
+        $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
+    @endphp
     <tr>
-        <td>Número de placa del vehículo: {{ $document->license_plate }}</td>
-        <td>Conductor: {{ $document->driver->number }}</td>
-    </tr>
-    <tr>
+        @if($document->transport_data)
+            <td>Número de placa del vehículo: {{ $document->transport_data['plate_number'] }}</td>
+        @endif
         @if($document->secondary_license_plates)
             @if($document->secondary_license_plates->semitrailer)
                 <td>Número de placa semirremolque: {{ $document->secondary_license_plates->semitrailer }}</td>
             @endif
         @endif
+    </tr>
+    <tr>
+        @if($document->driver->name)
+            <td>
+                Conductor: {{ $document->driver->name }}
+                @if($document->driver->number)
+                    <br>{{ $document_type_driver->description }}: {{ $document->driver->number }}
+                @endif
+            </td>
+        @endif
         @if($document->driver->license)
-            <td>Licencia del conductor: {{ $document->driver->license }}</td>
+            <td class="align-top">Licencia del conductor: {{ $document->driver->license }}</td>
         @endif
     </tr>
+    @endif
+    <tbody>
 </table>
 <table class="full-width border-box mt-10 mb-10">
     <thead class="">
@@ -190,15 +208,19 @@
             {{-- <td class="text-left">{{ $row->item->model ?? '' }}</td> --}}
             @if($is_pharma == true)
                 <td class="text-center align-top">
-                    {{$row->item->sanitary ?? '' }}
+                    {{$row->relation_item->sanitary ?? '' }}
                 </td>
             @endif
             <td class="text-center align-top">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
-                {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
+                @php
+                    $lot_group = Modules\Item\Models\ItemLotsGroup::where('code', $row->relation_item->lot_code)->first();
+                @endphp
+                {{-- {{ dd($row->relation_item->lot_code) }} --}}
+                {{ $itemLotGroup->getLote($lot_group->id) }}
             </td>
             <td class="text-center align-top">
-                {!! $itemLotGroup->getItemLotGroupDateOfDue($row->item->IdLoteSelected) !!}
+                {!! $itemLotGroup->getItemLotGroupDateOfDue($lot_group->id) !!}
             </td>
 
             <td class="text-center">{{ $row->item->unit_type_id }}</td>
