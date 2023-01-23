@@ -184,7 +184,12 @@ class ReportKardexController extends Controller
 
         $data
             ->orderBy('item_id')
-            ->orderBy('id');
+            ->orderBy('id')
+            ->get()->transform(function($row) {
+                return $row->getCollectionData();
+            });
+
+        // dd($data->first());
         return $data;
 
     }

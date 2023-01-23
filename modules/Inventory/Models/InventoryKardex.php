@@ -51,6 +51,15 @@ class InventoryKardex extends ModelTenant
         return $this->belongsTo(Item::class);
     }
 
+    public function getCollectionData()
+    {
+        $data = [
+            'id' => $this->id
+        ];
+
+        return $data;
+    }
+
     /**
      * @return ItemWarehousePrice|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|mixed|object|null
      */
@@ -234,6 +243,7 @@ class InventoryKardex extends ModelTenant
                     $output = ($transaction->type == 'output') ? $qty : "-";
                 }
 
+                // dd($inventory_kardexable->date_of_issue->format('Y-m-d'));
                 $user = auth()->user();
                 $data['balance'] = $balance += $qty;
                 $data['type_transaction'] = $inventory_kardexable->description;
@@ -286,13 +296,14 @@ class InventoryKardex extends ModelTenant
                 $data['doc_asoc'] = isset($inventory_kardexable->reference_document_id) ? $inventory_kardexable->reference_document->getNumberFullAttribute() : '-';
                 break;
             case $models[7]: // liquidacion de compra
-            
+
                 $data['balance'] = $balance += $qty;
                 $data['number'] = optional($inventory_kardexable)->series . '-' . optional($inventory_kardexable)->number;
                 $data['type_transaction'] = ($qty < 0) ? "Anulación Liquidacion Compra" : "Liquidacion Compra";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 break;
         }
+        $data['date_of_register'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
         $decimalRound = 6; // Cantidad de decimales a aproximar
         $data['balance'] =$data['balance'] ? round( $data['balance'] ,$decimalRound):0;
         return $data;
