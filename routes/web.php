@@ -790,6 +790,7 @@ Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store')
 
             Route::post('clients/set_billing_cycle', 'System\ClientController@startBillingCycle');
 
+            Route::post('clients/locked-by-column', 'System\ClientController@lockedByColumn');
 
             Route::post('clients/upload', 'System\ClientController@upload');
 

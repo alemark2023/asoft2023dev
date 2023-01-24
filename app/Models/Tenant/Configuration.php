@@ -285,6 +285,8 @@
             'enable_discount_by_customer',
             'show_price_barcode_ticket',
             'price_selected_add_product',
+            'locked_create_establishments',
+            'restrict_sales_limit',
             'pdf_footer_images',
         ];
 
@@ -404,6 +406,8 @@
             'enable_discount_by_customer' => 'boolean',
             'show_price_barcode_ticket' => 'boolean',
             'price_selected_add_product'=>'bool',
+            'locked_create_establishments' => 'boolean',
+            'restrict_sales_limit' => 'boolean',
         ];
 
         protected $hidden = [
@@ -644,7 +648,7 @@
                 'price_selected_add_product' => $this->price_selected_add_product,
             ];
         }
-        
+
 
         /**
          *
@@ -659,7 +663,7 @@
         /**
          *
          * Validar si se agrega pdf footer con imagenes
-         * 
+         *
          * @return bool
          */
         public function applyImagesInPdfFooter()
@@ -667,9 +671,9 @@
             return collect($this->getPdfFooterImages())->count() > 0;
         }
 
-        
+
         /**
-         * 
+         *
          * Datos para consulta de imagenes footer
          *
          * @return array
@@ -683,10 +687,10 @@
                 ];
             });
         }
-        
+
 
         /**
-         * 
+         *
          * Datos en b64 para pdf
          *
          * @return array
@@ -703,7 +707,7 @@
                 ];
             });
         }
-        
+
 
         /**
          * @return bool
@@ -979,7 +983,7 @@
         {
             return is_null($value) ? ['apply_arrears' => false, 'arrears_amount' => 0] : (object)json_decode($value);
         }
-        
+
         public function getPdfFooterImagesAttribute($value)
         {
             return (is_null($value)) ? null : (object)json_decode($value);
@@ -2456,6 +2460,24 @@
         public function isShowPriceBarcodeTicket(): ?bool
         {
             return (bool)$this->show_price_barcode_ticket;
+        }
+
+
+        /**
+         * @return bool
+         */
+        public function isLockedCreateEstablishments()
+        {
+            return $this->locked_create_establishments;
+        }
+
+
+        /**
+         * @return bool
+         */
+        public function isRestrictSalesLimit()
+        {
+            return $this->restrict_sales_limit;
         }
 
     }

@@ -243,6 +243,12 @@
                             <th class="text-right">Inicio Ciclo Facturacion</th>
                             <th class="text-center">Comprobantes Ciclo Facturacion</th>
                             <th class="text-center">Usuarios</th>
+
+                            <th class="text-center">Establecimientos</th>
+
+                            <th class="text-center">Ventas (Mes)</th>
+
+
                             <th class="text-center">F.Creación</th>
                             <th class="text-center">Consultas <br>API Peru <br>(mes)</th>
 
@@ -253,6 +259,19 @@
 
                             <th class="text-right">Limitar Doc.</th>
                             <th class="text-center">Limitar Usuarios</th>
+
+                            <th class="text-center">Limitar Establecimientos</th>
+
+                            <th class="text-center">
+                                <el-tooltip class="item"
+                                    content="Límite de ventas mensual asociado al ciclo de facturación"
+                                    effect="dark"
+                                    placement="top">
+                                    <label>Limitar Ventas (Mes)</label>
+                                </el-tooltip>
+                            </th>
+
+
                             <th class="text-right">Acciones</th>
                             <th class="text-right">Pagos</th>
                             <th class="text-right">E. Cuenta</th>
@@ -377,6 +396,33 @@
                                     <strong>{{ row.max_users }}</strong>
                                 </template>
                             </td>
+
+                            <td class="text-center">
+
+                                <data-limit-notification
+                                    entity_description="establecimientos"
+                                    :unlimited="row.establishments_unlimited"
+                                    :quantity="row.quantity_establishments"
+                                    :max_quantity="row.max_quantity_establishments"
+                                    >
+                                </data-limit-notification>
+
+                            </td>
+
+                            <td class="text-center">
+
+                                <data-limit-notification
+                                    entity_description="ventas"
+                                    style_div="width: 150px !important"
+                                    :unlimited="row.sales_unlimited"
+                                    :quantity="row.monthly_sales_total"
+                                    :max_quantity="row.max_sales_limit"
+                                    >
+                                </data-limit-notification>
+
+                            </td>
+
+
                             <td class="text-center">{{ row.created_at }}</td>
                             <td>{{ row.queries_to_apiperu }}</td>
 
@@ -406,6 +452,22 @@
                                     v-model="row.locked_users"
                                     style="display: block"
                                     @change="changeLockedUser(row)"
+                                ></el-switch>
+                            </td>
+
+                            <td class="text-center">
+                                <el-switch
+                                    v-model="row.locked_create_establishments"
+                                    style="display: block"
+                                    @change="changeLockedByColumn(row, 'locked_create_establishments')"
+                                ></el-switch>
+                            </td>
+
+                            <td class="text-center">
+                                <el-switch
+                                    v-model="row.restrict_sales_limit"
+                                    style="display: block"
+                                    @change="changeLockedByColumn(row, 'restrict_sales_limit')"
                                 ></el-switch>
                             </td>
 
@@ -488,6 +550,7 @@ import ChartLine from "./charts/Line";
 import ClientPayments from "./partials/payments.vue";
 import AccountStatus from "./partials/account_status.vue";
 import ClientDelete from "./partials/delete.vue";
+import DataLimitNotification from "./partials/DataLimitNotification.vue";
 
 export default {
     mixins: [
@@ -506,7 +569,8 @@ export default {
         ChartLine,
         ClientPayments,
         AccountStatus,
-        ClientDelete
+        ClientDelete,
+        DataLimitNotification
     },
     data() {
         return {
@@ -602,7 +666,38 @@ export default {
                 .then(() => {
                 });
         },
+        changeLockedByColumn(row, column)
+        {
+            const params = { ...row }
+            params.column = column
 
+            this.$http
+                .post(`${this.resource}/locked-by-column`, params)
+                .then(response => {
+                    
+                    if (response.data.success) 
+                    {
+                        this.$message.success(response.data.message)
+                        this.$eventHub.$emit("reloadData")
+                    }
+                    else
+                    {
+                        this.$message.error(response.data.message)
+                    }
+                })
+                .catch(error => {
+                    if (error.response.status === 500) 
+                    {
+                        this.$message.error(error.response.data.message)
+                    }
+                    else 
+                    {
+                        console.log(error.response)
+                    }
+                })
+                .then(() => {
+                })
+        },
         setStartBillingCycle(event, id) {
             this.$http
                 .post(`${this.resource}/set_billing_cycle`, {

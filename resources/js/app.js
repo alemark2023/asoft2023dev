@@ -502,6 +502,13 @@ Vue.mixin({
                     message: response.data.message
                   });
             }
+        },
+        getResponseValidations(success = true, message = null)
+        {
+            return {
+                success: success,
+                message: message
+            }
         }
     }
 })
