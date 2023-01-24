@@ -171,13 +171,13 @@
     <tbody>
     @foreach($document->items as $row)
         <tr>
-            <td class="text-center">{{ $loop->iteration }}</td>
-            <td class="text-center">{{ $row->item->internal_id }}</td>
-            <td class="text-left">
+            <td class="text-center align-top">{{ $loop->iteration }}</td>
+            <td class="text-center align-top font-md">{{ $row->item->internal_id }}</td>
+            <td class="text-left align-top font-md">
                 @if($row->name_product_pdf)
-                    {!!$row->name_product_pdf!!}
+                    <b>{!!$row->name_product_pdf!!}</b>
                 @else
-                    {!!$row->item->description!!}
+                    <b>{!!$row->item->description!!}</b>
                 @endif
 
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
@@ -207,24 +207,24 @@
             </td>
             {{-- <td class="text-left">{{ $row->item->model ?? '' }}</td> --}}
             @if($is_pharma == true)
-                <td class="text-center align-top">
+                <td class="text-center align-top font-md">
                     {{$row->relation_item->sanitary ?? '' }}
                 </td>
             @endif
-            <td class="text-center align-top">
+            <td class="text-center align-top font-md">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
                 @php
                     $lot_group = Modules\Item\Models\ItemLotsGroup::where('code', $row->relation_item->lot_code)->first();
                 @endphp
                 {{-- {{ dd($row->relation_item->lot_code) }} --}}
-                {{ $itemLotGroup->getLote($lot_group->id) }}
+                <b>{{ $itemLotGroup->getLote($lot_group->id) }}</b>
             </td>
-            <td class="text-center align-top">
+            <td class="text-center align-top font-md">
                 {!! $itemLotGroup->getItemLotGroupDateOfDue($lot_group->id) !!}
             </td>
 
-            <td class="text-center">{{ $row->item->unit_type_id }}</td>
-            <td class="text-right">
+            <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
+            <td class="text-right align-top">
                 @if(((int)$row->quantity != $row->quantity))
                     {{ $row->quantity }}
                 @else
