@@ -130,6 +130,10 @@
                                 </el-input>
                             </template>
 
+                            <template v-if="hasSelectedItem">
+                                <span v-if="isRestrictedForSale" class="text-danger mt-1 mb-2 d-block">Restringido para venta</span>
+                            </template>
+
                             <template v-if="!is_client">
                                 <el-checkbox v-model="search_item_by_barcode"
                                              :disabled="recordItem != null">Buscar por
@@ -845,7 +849,21 @@ export default {
         },
         showSpecialData() {
             return (this.recordItem == null || this.recordItem == undefined) || (!_.isEmpty(this.recordItem) && this.isOpenFromInvoice)
-        }
+        },
+        applyRestrictSaleItemsCpe()
+        {
+            if (this.configuration) return this.configuration.restrict_sale_items_cpe
+
+            return false 
+        },
+        isRestrictedForSale()
+        {
+            return this.applyRestrictSaleItemsCpe && this.isOpenFromInvoice && (this.form.item != undefined && this.form.item.restrict_sale_cpe)
+        },
+        hasSelectedItem()
+        {
+            return this.form.item_id && !_.isEmpty(this.form.item)
+        },
     },
     methods: {
         ...mapActions([
@@ -1385,7 +1403,10 @@ export default {
         applyValidateStock() {
             return (this.validate_stock_add_item && (this.isFromInvoice !== undefined && this.isFromInvoice) && (this.isUpdateDocument !== undefined && !this.isUpdateDocument))
         },
-        async clickAddItem() {
+        async clickAddItem() 
+        {
+            if(this.isRestrictedForSale) return this.$message.error('No puede agregar el producto, está restringido para venta.')
+
             if (this.applyValidateStock()) {
                 const validate_current_stock = await this.validateCurrentStock()
                 if (!validate_current_stock.success) return this.$message.error(validate_current_stock.message)

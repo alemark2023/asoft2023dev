@@ -393,6 +393,7 @@ export const pointSystemFunctions = {
 // funciones para descuentos globales
 // Usado en:
 // tenant\purchases\form.vue
+// resources\js\components\secondary\ListRestrictItems.vue
 
 export const operationsForDiscounts = {
     data() {
@@ -402,6 +403,13 @@ export const operationsForDiscounts = {
             is_amount: true,
             total_global_discount: 0,
         }
+    },
+    computed: 
+    {
+        isGlobalDiscountBase()
+        {
+            return (this.config.global_discount_type_id === '02')
+        },
     },
     methods: {
         deleteDiscountGlobal() 
@@ -489,8 +497,68 @@ export const operationsForDiscounts = {
                 description: this.global_discount_type.description,
                 factor: factor,
                 amount: amount,
-                base: base
+                base: base,
+                is_amount: this.is_amount
             })
+        },
+    }
+}
+
+
+// funciones para restriccion de productos
+
+// Usado en:
+// resources\js\components\secondary\ListRestrictItems.vue
+// modules\Order\Resources\assets\js\views\order_notes\partials\options.vue
+// resources\js\views\tenant\documents\invoice_generate.vue
+// resources\js\views\tenant\sale_notes\partials\option_documents.vue
+
+export const fnRestrictSaleItemsCpe = {
+    data()
+    {
+        return {
+        }
+    },
+    computed:
+    {
+        fnApplyRestrictSaleItemsCpe()
+        {
+            if (this.configuration) return this.configuration.restrict_sale_items_cpe
+
+            return false 
+        },
+    },
+    methods: 
+    {
+        fnValidateRestrictSaleItemsCpe(form)
+        {
+            if(this.fnApplyRestrictSaleItemsCpe)
+            {
+                let errors_restricted = 0
+
+                form.items.forEach(row => {
+                    if(this.fnIsRestrictedForSale(row.item, form.document_type_id)) errors_restricted++
+                })
+
+                if(errors_restricted > 0) return this.fnGetObjectResponse(false, 'No puede generar el comprobante, tiene productos restringidos.')
+            }
+            
+            return this.fnGetObjectResponse()
+        },
+        fnCheckIsInvoice(document_type_id)
+        {
+            return ['01', '03'].includes(document_type_id)
+        },
+        fnIsRestrictedForSale(item, document_type_id)
+        {
+            return this.fnApplyRestrictSaleItemsCpe && this.fnCheckIsInvoice(document_type_id) && (item != undefined && item.restrict_sale_cpe)
+        },
+        fnGetObjectResponse(success = true, message = null)
+        {
+            return {
+                success: success,
+                message: message,
+            }
         },
     }
 }

@@ -776,6 +776,30 @@
                                             v-text="errors.search_factory_code_items[0]"></small>
                                 </div>
                             </div>
+                            
+                            <div class="col-md-6 mt-4">
+
+                                <label class="control-label">
+                                    Restringir venta de productos
+                                    <el-tooltip class="item"
+                                                content="Disponible para CPE"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+
+                                <div :class="{'has-danger': errors.restrict_sale_items_cpe}"
+                                        class="form-group">
+                                    <el-switch v-model="form.restrict_sale_items_cpe"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.restrict_sale_items_cpe"
+                                            class="form-control-feedback"
+                                            v-text="errors.restrict_sale_items_cpe[0]"></small>
+                                </div>
+                            </div>
 
                         </div>
                     </el-tab-pane>
@@ -2064,6 +2088,34 @@
                                 </div>
                             </div>
 
+
+                            
+                            <div class="col-6 mt-4">
+                                <div class="form-group">
+                                    <label>
+                                        Convertir a CPE
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">
+                                                Al finalizar la venta en POS, se mostrará un atajo para convertir la nota de venta a cpe
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.show_convert_cpe_pos}"
+                                         class="form-group">
+                                        <el-switch v-model="form.show_convert_cpe_pos"
+                                                   active-text="Si"
+                                                   inactive-text="No"
+                                                   @change="submit"></el-switch>
+                                        <small v-if="errors.show_convert_cpe_pos"
+                                               class="form-control-feedback"
+                                               v-text="errors.show_convert_cpe_pos[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3"  name="nine">
@@ -2548,6 +2600,8 @@ export default {
                 enable_discount_by_customer: false,
                 enabled_dispatch_ticket_pdf: false,
                 price_selected_add_product: false,
+                restrict_sale_items_cpe: false,
+                show_convert_cpe_pos: false,
             };
         },
         UpdateFormPurchase(e) {

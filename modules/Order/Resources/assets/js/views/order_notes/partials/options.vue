@@ -160,12 +160,29 @@
                 </table>
             </div>
 
-            
+            <template v-if="fnApplyRestrictSaleItemsCpe">
+                <list-restrict-items
+                    v-if="load_list_document_items"
+                    :form="document"
+                    :configuration="configuration"
+                    :globalDiscountTypes="global_discount_types"
+                    class="mt-3"
+                    >
+                </list-restrict-items>
+            </template>
+
+            <div class="col-lg-12" v-show="document.total > 0">
+                <div class="form-group pull-right">
+                    <label class="control-label"> Total: {{ document.total }} {{document.currency_type_id}}</label>
+                </div>
+            </div>
+
             <!-- propinas -->
             <template v-if="configuration.enabled_tips_pos && isInvoiceDocument">
                 <set-tip class="full py-2 border-top mt-2" @changeDataTip="changeDataTip"></set-tip>
             </template>
             <!-- propinas -->
+        
         </div>
 
         <span slot="footer" class="dialog-footer">
@@ -191,14 +208,19 @@
 import DocumentOptions from "@views/documents/partials/options.vue";
 import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
 import SetTip from '@components/SetTip.vue'
+import ListRestrictItems from '@components/secondary/ListRestrictItems.vue'
+import {fnRestrictSaleItemsCpe} from '@mixins/functions'
 
 export default {
     components: {
         DocumentOptions,
         SaleNoteOptions,
-        SetTip
+        SetTip,
+        ListRestrictItems
     },
-
+    mixins: [
+        fnRestrictSaleItemsCpe
+    ],
     props: ["showDialog", "recordId", "showClose", "showGenerate", "type", 'typeUser', 'configuration'],
     data() {
         return {
@@ -224,7 +246,9 @@ export default {
             loading_search: false,
             payment_destinations: [],
             form_cash_document: {},
-            payment_method_types: []
+            payment_method_types: [],
+            global_discount_types: [],
+            load_list_document_items: false,
         };
     },
     created() {
@@ -376,6 +400,9 @@ export default {
             this.document.document_type_id =
                 this.document_types.length > 0 ? this.document_types[0].id : null;
             this.changeDocumentType();
+
+            this.load_list_document_items = false
+
         },
         validatePaymentDestination() {
 
@@ -391,13 +418,19 @@ export default {
 
         },
         async submit() {
-            await this.assignDocument();
+            // await this.assignDocument();
+            if(this.document.items.length === 0) return this.$message.error('No tiene productos agregados.')
 
             let validate_payment_destination = await this.validatePaymentDestination()
 
             if (validate_payment_destination.error_by_item > 0) {
                 return this.$message.error('El destino del pago es obligatorio');
             }
+            
+            // validacion restriccion de productos
+            const validate_restrict_sale_items_cpe = this.fnValidateRestrictSaleItemsCpe(this.document)
+            if(!validate_restrict_sale_items_cpe.success) return this.$message.error(validate_restrict_sale_items_cpe.message)
+
 
             this.loading_submit = true;
             if (this.document.document_type_id === "80") {
@@ -427,6 +460,9 @@ export default {
                         this.resetDocument();
                         this.document.customer_id = this.form.order_note.customer_id;
                         this.changeCustomer();
+
+                        this.clickClose()
+
                     } else {
                         this.$message.error(response.data.message);
                     }
@@ -555,12 +591,14 @@ export default {
 
             return new_items
         },
-        async create() {
+        async create() 
+        {
             await this.$http.get(`/${this.resource}/option/tables`).then(response => {
                 this.all_document_types = response.data.document_types_invoice;
                 this.all_series = response.data.series;
                 this.payment_destinations = response.data.payment_destinations
                 this.payment_method_types = response.data.payment_method_types;
+
                 // this.document.document_type_id = (this.all_document_types.length > 0)?this.all_document_types[0].id:null
                 // this.changeDocumentType()
             });
@@ -577,6 +615,9 @@ export default {
                 });
 
             await this.clickAddPayment()
+            await this.assignDocument();
+            
+            this.load_list_document_items = true
 
         },
         changeDocumentType() {

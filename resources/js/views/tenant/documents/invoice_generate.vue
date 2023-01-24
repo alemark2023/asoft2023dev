@@ -291,6 +291,12 @@
                                         </template>
                                         <!-- sistema por puntos -->
 
+                                        <template v-if="fnApplyRestrictSaleItemsCpe && isGeneratedFromExternal">
+                                            <template v-if="fnIsRestrictedForSale(row.item, form.document_type_id)">
+                                                <span class="text-danger mt-1 mb-2 d-block">Restringido para venta en CPE</span>
+                                            </template>
+                                        </template>
+
                                     </td>
                                     <td class="text-center">{{ row.item.unit_type_id }}</td>
 
@@ -1628,7 +1634,7 @@
 import DocumentFormItem from './partials/item.vue'
 import PersonForm from '../persons/form.vue'
 import DocumentOptions from '../documents/partials/options.vue'
-import {exchangeRate, functions, pointSystemFunctions} from '../../../mixins/functions'
+import {exchangeRate, functions, pointSystemFunctions, fnRestrictSaleItemsCpe} from '../../../mixins/functions'
 import {calculateRowItem, showNamePdfOfDescription} from '../../../helpers/functions'
 import Logo from '../companies/logo.vue'
 import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
@@ -1665,7 +1671,7 @@ export default {
         DocumentReportCustomer,
         SetTip,
     },
-    mixins: [functions, exchangeRate, pointSystemFunctions],
+    mixins: [functions, exchangeRate, pointSystemFunctions, fnRestrictSaleItemsCpe],
     data() {
         return {
             datEmision: {
@@ -3859,6 +3865,7 @@ export default {
         },
         async submit() {
 
+
             //Validando las series seleccionadas
             let errorSeries = false;
             _.forEach(this.form.items, row => {
@@ -3916,6 +3923,13 @@ export default {
                 if(!validate_exchange_points.success) return this.$message.error(validate_exchange_points.message)
             }
             // validacion sistema por puntos
+
+            if(this.isGeneratedFromExternal)
+            {
+                // validacion restriccion de productos
+                const validate_restrict_sale_items_cpe = this.fnValidateRestrictSaleItemsCpe(this.form)
+                if(!validate_restrict_sale_items_cpe.success) return this.$message.error(validate_restrict_sale_items_cpe.message)
+            }
 
             this.loading_submit = true
             let path = `/${this.resource}`;
