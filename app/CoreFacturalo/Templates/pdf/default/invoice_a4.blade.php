@@ -537,12 +537,17 @@
                 {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
 
             </td>
-            <td class="text-center align-top">
+            <td class="text-center">
 
                 @isset($row->item->lots)
                     @foreach($row->item->lots as $lot)
                         @if( isset($lot->has_sale) && $lot->has_sale)
-                            <span style="font-size: 9px">{{ $lot->series }}</span><br>
+                            <span style="font-size: 9px">
+                                {{ $lot->series }}
+                                @if(!$loop->last)
+                                -
+                                @endif
+                            </span>
                         @endif
                     @endforeach
                 @endisset

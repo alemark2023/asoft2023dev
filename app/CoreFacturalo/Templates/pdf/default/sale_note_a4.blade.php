@@ -62,7 +62,7 @@
     <tr>
         <td>{{ $customer->identity_document_type->description }}:</td>
         <td>{{ $customer->number }}</td>
-        
+
         @if ($document->due_date)
             <td class="align-top">Fecha Vencimiento:</td>
             <td>{{ $document->getFormatDueDate() }}</td>
@@ -212,7 +212,7 @@
                     <br>
                     <span style="font-size: 9px">*** Canjeado por {{$row->item->used_points_for_exchange}}  puntos ***</span>
                 @endif
-                
+
             </td>
             <td class="text-center align-top">
 
@@ -244,7 +244,12 @@
                 @isset($row->item->lots)
                     @foreach($row->item->lots as $lot)
                         @if( isset($lot->has_sale) && $lot->has_sale)
-                            <span style="font-size: 9px">{{ $lot->series }}</span><br>
+                            <span style="font-size: 9px">
+                                {{ $lot->series }}
+                                @if(!$loop->last)
+                                -
+                                @endif
+                            </span>
                         @endif
                     @endforeach
                 @endisset
@@ -309,19 +314,19 @@
             <td colspan="7" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>--}}
-        
+
         @if($document->total_charge > 0 && $document->charges)
             <tr>
                 <td colspan="7" class="text-right font-bold">CARGOS ({{$document->getTotalFactor()}}%): {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_charge, 2) }}</td>
             </tr>
         @endif
-        
+
         <tr>
             <td colspan="7" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
         </tr>
-        
+
         @php
             $change_payment = $document->getChangePayment();
         @endphp
