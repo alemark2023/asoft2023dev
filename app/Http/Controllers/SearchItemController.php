@@ -710,7 +710,7 @@
             $items_services = self::getServiceItem($request, $id);
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
-
+// aqui
             return self::TransformModalToOrderNote($items_not_services->merge($items_services), $warehouse);
         }
 
@@ -739,6 +739,7 @@
                     'category' => $detail['category'],
                     'stock' => $detail['stock'],
                     'description' => $row->description,
+                    'calculate_quantity' => (bool)$row->calculate_quantity,
                     'currency_type_id' => $row->currency_type_id,
                     'currency_type_symbol' => $row->currency_type->symbol,
                     'sale_unit_price' => round($row->sale_unit_price, 2),

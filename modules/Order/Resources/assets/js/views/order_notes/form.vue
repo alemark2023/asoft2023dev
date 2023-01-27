@@ -147,12 +147,12 @@
                                 </div>
                             </div>
 
-                            
+
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label class="control-label">Datos adicionales</label>
                                 </div>
-                                
+
                                 <table class="table table-responsive table-bordered">
                                     <thead>
                                         <tr width="100%">
@@ -169,7 +169,7 @@
                                                 <div class="form-group mb-2 mr-2">
 
                                                     <el-input v-model="row.title"></el-input>
-                                                    
+
                                                     <template v-if="errors[`additional_data.${index}.title`]">
                                                         <div class="form-group" :class="{'has-danger': errors[`additional_data.${index}.title`]}">
                                                             <small class="form-control-feedback" v-text="errors[`additional_data.${index}.title`][0]"></small>
@@ -179,9 +179,9 @@
                                             </td>
                                             <td>
                                                 <div class="form-group mb-2 mr-2">
-                                                    
+
                                                     <el-input v-model="row.description"></el-input>
-                                                    
+
                                                     <template v-if="errors[`additional_data.${index}.description`]">
                                                         <div class="form-group" :class="{'has-danger': errors[`additional_data.${index}.description`]}">
                                                             <small class="form-control-feedback" v-text="errors[`additional_data.${index}.description`][0]"></small>

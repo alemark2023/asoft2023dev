@@ -668,7 +668,7 @@
 
         public function update(OrderNoteRequest $request)
         {
-            
+
             DB::connection('tenant')->transaction(function () use ($request) {
 
 
@@ -705,10 +705,10 @@
             ];
 
         }
-        
+
 
         /**
-         * 
+         *
          * Obtener id de la fila al editar pedido
          *
          * @param  array $row
