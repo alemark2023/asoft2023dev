@@ -167,9 +167,18 @@
                                         <tr v-for="(row, index) in form.additional_data" :key="index" width="100%">
                                             <td>
                                                 <div class="form-group mb-2 mr-2">
-
-                                                    <el-input v-model="row.title"></el-input>
-
+                                                    <!-- <el-input v-model="row.title"></el-input> -->
+                                                    <el-select
+                                                        v-model="row.title"
+                                                        filterable
+                                                        allow-create>
+                                                        <el-option
+                                                        v-for="item in aditional_titles"
+                                                        :key="item.value"
+                                                        :label="item.label"
+                                                        :value="item.value">
+                                                        </el-option>
+                                                    </el-select>
                                                     <template v-if="errors[`additional_data.${index}.title`]">
                                                         <div class="form-group" :class="{'has-danger': errors[`additional_data.${index}.title`]}">
                                                             <small class="form-control-feedback" v-text="errors[`additional_data.${index}.title`][0]"></small>
@@ -386,6 +395,28 @@ export default {
             showDialogLotsGroup: false,
             lots_group: [],
             input_person: {},
+            aditional_titles: [{
+                value: 'INGRESO',
+                label: 'INGRESO'
+            },{
+                value: 'ENTREGA',
+                label: 'ENTREGA'
+            },{
+                value: 'DOCUMENTO',
+                label: 'DOCUMENTO'
+            },{
+                value: 'CONTACTO',
+                label: 'CONTACTO'
+            },{
+                value: 'CELULAR',
+                label: 'CELULAR'
+            },{
+                value: 'TRANSPORTE',
+                label: 'TRANSPORTE'
+            },{
+                value: 'FORMA DE PAGO',
+                label: 'FORMA DE PAGO'
+            }],
         }
     },
     created() {

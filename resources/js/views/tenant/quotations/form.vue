@@ -416,6 +416,7 @@
                     this.payment_destinations = data.payment_destinations
                     // this.configuration = data.configuration
                     this.sellers = data.sellers;
+                    this.form.seller_id = (this.sellers.length > 0)?this.sellers[0].id:null
 
                     this.changeEstablishment()
                     this.changeDateOfIssue()
