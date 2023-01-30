@@ -854,7 +854,7 @@ export default {
         {
             if (this.configuration) return this.configuration.restrict_sale_items_cpe
 
-            return false 
+            return false
         },
         isRestrictedForSale()
         {
@@ -1403,7 +1403,7 @@ export default {
         applyValidateStock() {
             return (this.validate_stock_add_item && (this.isFromInvoice !== undefined && this.isFromInvoice) && (this.isUpdateDocument !== undefined && !this.isUpdateDocument))
         },
-        async clickAddItem() 
+        async clickAddItem()
         {
             if(this.isRestrictedForSale) return this.$message.error('No puede agregar el producto, está restringido para venta.')
 
