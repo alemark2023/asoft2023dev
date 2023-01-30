@@ -20,7 +20,7 @@ use App\Models\System\Client;
 
 class MovementController extends Controller
 {
-    
+
     use FinanceTrait;
 
     public function index(){
@@ -127,7 +127,7 @@ class MovementController extends Controller
     }
 
     public function postExcel(Request $request) {
-        
+
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id)
             : auth()->user()->establishment;
