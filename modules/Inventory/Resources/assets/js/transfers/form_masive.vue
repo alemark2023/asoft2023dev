@@ -239,7 +239,6 @@
 
         <output-lots-form
             :itemId="form_add.item_id"
-            :lots-all="lotsAll"
             :lots="form_add.lots"
             :quantity="form_add.quantity"
             :showDialog.sync="showDialogLotsOutput"
