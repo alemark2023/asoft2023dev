@@ -594,7 +594,7 @@
                    :showDialog.sync="showDialogNewItem"></item-form>
         <lots-group
             v-if="item"
-            :lots_group="item.lots_group"
+            :lotsGroup="item.lots_group"
             :quantity="quantity"
             :showDialog.sync="showDialogLots"
             @addRowLotGroup="addRowLotGroup">
