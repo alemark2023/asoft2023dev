@@ -819,10 +819,17 @@ export default {
         },
         setDescriptionOfItem(item) {
             console.log(this.config.show_pdf_name)
-            console.log(item.item.name_product_pdf)
+            console.log(item.item == undefined)
             if (this.config.show_pdf_name) {
-                if (item.item.name_product_pdf !== '' && !_.isNull(item.item.name_product_pdf)) {
-                    return item.item.name_product_pdf;
+                if(item.item != undefined && item.item.name_product_pdf != undefined) {
+                    if (item.item.name_product_pdf !== '' && !_.isNull(item.item.name_product_pdf)) {
+                        return item.item.name_product_pdf;
+                    }
+                }
+                if(item.name_product_pdf != undefined) {
+                    if (item.name_product_pdf !== '' && !_.isNull(item.name_product_pdf)) {
+                        return item.name_product_pdf;
+                    }
                 }
             }
             return item.description;
