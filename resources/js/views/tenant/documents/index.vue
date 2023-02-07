@@ -293,7 +293,15 @@
                         <td class="text-right">{{ row.total_taxed }}</td>
                         <td class="text-right">{{ row.total_igv }}</td>
                         <td class="text-right" v-if="columns.total.visible">{{ row.total }}</td>
-                        <td class="text-right" v-if="columns.balance.visible">{{ row.balance }}</td>
+                        <td class="text-right"
+                            v-if="columns.balance.visible"
+                            :class="{
+                                'text-warning': (row.balance > 0),
+                                'text-success': (row.balance == 0),
+                                }"
+                        >
+                            {{ row.balance }}
+                        </td>
                         <td v-if="columns.purchase_order.visible">{{ row.purchase_order }}</td>
                         <td class="text-center">
                             <button type="button"

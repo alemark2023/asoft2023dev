@@ -58,7 +58,7 @@
                         <td v-if="columns.date_of_due.visible" class="text-center">{{ row.date_of_due }}</td>
                         <td>{{ row.supplier_name }}<br/><small v-text="row.supplier_number"></small></td>
                         <td>{{row.state_type_description}}</td>
-                        <td>{{row.state_type_payment_description}}</td>
+                        <td :class="row.state_type_payment_description == 'Pagado' ? 'text-success': 'text-warning'">{{row.state_type_payment_description}}</td>
                         <td>{{ row.number }}<br/>
                             <small v-text="row.document_type_description"></small><br/>
                         </td>
@@ -71,9 +71,9 @@
                                 <el-table :data="row.items">
                                     <el-table-column width="80" property="key" label="#"></el-table-column>
                                     <!-- <el-table-column width="220" property="description" label="Nombre"></el-table-column> -->
-                                    
+
                                     <el-table-column width="220" label="Nombre">
-                                        <template slot-scope="scope">  
+                                        <template slot-scope="scope">
                                             <template v-if="scope.row.name_product_pdf">
                                                 <span v-html="scope.row.name_product_pdf"></span>
                                             </template>
@@ -133,7 +133,7 @@
                             <template v-if="permissions.delete_purchase&&row.state_type_id=='11'">
                                 <button v-if="row.state_type_id == '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
                             </template>
-                            
+
                             <button  type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickOptions(row.id)">Opciones</button>
                             <button
                                 type="button"
