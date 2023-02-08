@@ -568,10 +568,10 @@ class DocumentController extends Controller
 
         return $record;
     }
-    
+
 
     /**
-     * 
+     *
      * Generar cpe
      *
      * @param  DocumentRequest $request
@@ -579,7 +579,7 @@ class DocumentController extends Controller
      */
     public function store(DocumentRequest $request)
     {
-        try 
+        try
         {
             $validate = $this->validateDocument($request);
             if (!$validate['success']) return $validate;
@@ -590,7 +590,7 @@ class DocumentController extends Controller
             $this->associateSaleNoteToDocument($request, $document_id);
 
             return $res;
-        } 
+        }
         catch(Exception $e)
         {
             $this->generalWriteErrorLog($e);
