@@ -123,6 +123,11 @@ class InventoryTransfer extends ModelTenant
         return $this->hasMany(Inventory::class, 'inventories_transfer_id');
     }
 
+    public function inventory_transfer_item()
+    {
+        return $this->hasMany(InventoryTransferItem::class);
+    }
+
 
     public function getPdfData()
     {

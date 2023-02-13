@@ -503,6 +503,15 @@ export default {
                 lots: this.form_add.lots
             });
 
+            // cargamos lotes seleccionados previamentes
+            if(this.form.selected_lots_group.length > 0){
+                console.log(this.form.selected_lots_group)
+                this.form.selected_lots_group.forEach(element => {
+                    console.log(element)
+                    this.form.lot_groups_total.push(element)
+                });
+            }
+
             this.initFormAdd();
         },
 
@@ -519,7 +528,9 @@ export default {
                 warehouse_id: null,
                 warehouse_destination_id: null,
                 description: null,
-                items: []
+                items: [],
+                selected_lots_group: [],
+                lot_groups_total: [],
             };
         },
         async submit() {

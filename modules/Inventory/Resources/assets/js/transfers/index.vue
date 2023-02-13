@@ -56,7 +56,7 @@
                                     <el-table-column label="Cantidad"
                                                      property="quantity"></el-table-column>
 
-                                    <el-table-column label="Series">
+                                    <el-table-column label="Series/Lotes">
                                         <template slot-scope="scope"
                                                   width="100">
                                             <ul v-if="scope.row.lots" class="list-unstyled">
@@ -65,7 +65,9 @@
                                                 </li>
                                             </ul>
                                             <ul v-if="scope.row.lots_enabled" class="list-unstyled">
-                                                <li>{{ scope.row.description }}</li>
+                                                <li v-for="(item, index) in scope.row.lot_codes" :key="index">
+                                                    {{ item.lot_code }}
+                                                </li>
                                             </ul>
                                         </template>
                                     </el-table-column>
