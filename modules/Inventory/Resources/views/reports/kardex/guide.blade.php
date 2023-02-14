@@ -82,7 +82,7 @@
             <td>{{$row['item_name']}}</td>
             <td>{{$row['unit_type_id']}}</td>
             <td style="text-align: right">{{$row['quantity']}}</td>
-            <td>{{$row['lot']}}</td>
+            <td style="text-align: right">{{$row['lot']}}</td>
         </tr>
     @endforeach
     </tbody>

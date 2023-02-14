@@ -442,16 +442,21 @@ class ReportKardexController extends Controller
             ->with('inventory_transaction', 'warehouse', 'document_type', 'items', 'items.item')
             ->find($guide_id);
 
+        // dd($record);
+
         $items = [];
-        foreach ($record->items as $i) {
+        foreach ($record->items as $item) {
+            $lot = ItemLotsGroup::where('item_id', $item->item_id)->where('created_at', $record->created_at)->first();
             $items[] = [
-                'item_internal_id' => $i->item->internal_id,
-                'item_name' => $i->item_name,
-                'unit_type_id' => $i->item->unit_type_id,
-                'quantity' => $i->quantity,
-                'lot' => ''
+                'item_internal_id' => $item->item->internal_id,
+                'item_name' => $item->item_name,
+                'unit_type_id' => $item->item->unit_type_id,
+                'quantity' => $item->quantity,
+                'lot' => $lot?$lot->code:null,
             ];
         }
+
+        // dd($items);
 
         $data = [
             'company_number' => $company->number,
@@ -468,6 +473,6 @@ class ReportKardexController extends Controller
         // $pdf->setPaper('A4', 'landscape');
         $filename = 'Guia_' . date('YmdHis');
 
-        return $pdf->download($filename . '.pdf');
+        return $pdf->stream($filename . '.pdf');
     }
 }
