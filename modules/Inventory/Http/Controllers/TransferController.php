@@ -380,13 +380,14 @@ class TransferController extends Controller
     public function getPdf(InventoryTransfer $inventoryTransfer): \Illuminate\Http\Response
     {
         $data = $inventoryTransfer->getPdfData();
+        // dd($inventoryTransfer->getPdfData());
         // return View('inventory::transfers.export.pdf', compact('data'));
         $pdf = PDF::loadView('inventory::transfers.export.pdf', compact('data'));
         $pdf->setPaper('A4', 'portrait');
         // $pdf->setPaper('A4', 'landscape');
         $filename = 'Reporte_Traslado_' . $inventoryTransfer->id . '_' . date('YmdHis');
 
-        return $pdf->download($filename . '.pdf');
+        return $pdf->stream($filename . '.pdf');
 
     }
 
