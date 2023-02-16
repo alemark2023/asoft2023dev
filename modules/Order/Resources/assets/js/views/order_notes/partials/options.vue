@@ -182,7 +182,7 @@
                 <set-tip class="full py-2 border-top mt-2" @changeDataTip="changeDataTip"></set-tip>
             </template>
             <!-- propinas -->
-        
+
         </div>
 
         <span slot="footer" class="dialog-footer">
@@ -268,8 +268,8 @@ export default {
         {
             if(tip)
             {
-                this.document.worker_full_name_tips = tip.worker_full_name_tips 
-                this.document.total_tips = tip.total_tips 
+                this.document.worker_full_name_tips = tip.worker_full_name_tips
+                this.document.total_tips = tip.total_tips
             }
         },
         cleanFormTip()
@@ -383,7 +383,7 @@ export default {
                 payments: [],
                 hotel: {},
                 seller_id: 0,
-                
+
                 worker_full_name_tips: null, //propinas
                 total_tips: 0, //propinas
             };
@@ -426,7 +426,7 @@ export default {
             if (validate_payment_destination.error_by_item > 0) {
                 return this.$message.error('El destino del pago es obligatorio');
             }
-            
+
             // validacion restriccion de productos
             const validate_restrict_sale_items_cpe = this.fnValidateRestrictSaleItemsCpe(this.document)
             if(!validate_restrict_sale_items_cpe.success) return this.$message.error(validate_restrict_sale_items_cpe.message)
@@ -558,26 +558,26 @@ export default {
 
             let new_items = items
 
-            if (this.document.document_type_id != '80') 
+            if (this.document.document_type_id != '80')
             {
                 new_items = items.map((row) => {
 
                     // si existe propiedad regularizada en json item
                     if(row.item.IdLoteSelected)
                     {
-                        if (Array.isArray(row.item.IdLoteSelected)) 
+                        if (Array.isArray(row.item.IdLoteSelected))
                         {
                             row.IdLoteSelected = row.item.IdLoteSelected
                         }
                     }
                     else
                     {
-                        if (Array.isArray(row.item.lots_group)) 
+                        if (Array.isArray(row.item.lots_group))
                         {
                             // obtener lotes vendidos, con cantidad mayor a 0
                             let sale_lots_group = this.getSaleLotsGroup(row.item.lots_group)
-    
-                            if (sale_lots_group.length > 0) 
+
+                            if (sale_lots_group.length > 0)
                             {
                                 // generar arreglo de lotes vendidos con la data necesaria para que sea procesado en registro de cpe
                                 row.IdLoteSelected = this.transformSaleLotsGroup(sale_lots_group)
@@ -591,7 +591,7 @@ export default {
 
             return new_items
         },
-        async create() 
+        async create()
         {
             await this.$http.get(`/${this.resource}/option/tables`).then(response => {
                 this.all_document_types = response.data.document_types_invoice;
@@ -616,7 +616,7 @@ export default {
 
             await this.clickAddPayment()
             await this.assignDocument();
-            
+
             this.load_list_document_items = true
 
         },
@@ -658,6 +658,14 @@ export default {
                 // this.document_types = _.filter(this.all_document_types, {id: "03"});
             } else {
                 this.document_types = this.all_document_types;
+            }
+
+            // recorrer items para determinar si hay productos de exportacion
+            let item_export = this.form.order_note.items.filter(item => item.affectation_igv_type_id == 40)
+            // calcular cantidad y asignar true a exportacion para habilitar factura
+            if(item_export.length > 0) {
+                this.document_types = this.all_document_types
+                this.document.operation_type_id = '0200'
             }
 
             this.document.document_type_id = this.document_types.length > 0 ? this.document_types[0].id : null;
