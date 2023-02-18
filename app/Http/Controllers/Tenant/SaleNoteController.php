@@ -58,6 +58,9 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
+use App\Models\Tenant\DispatchSaleNote;
+use App\Http\Resources\Tenant\DispatchSaleNoteCollection;
+
 use Modules\Finance\Traits\FilePaymentTrait;
 // use App\Http\Resources\Tenant\SaleNoteGenerateDocumentResource;
 // use App\Models\Tenant\Warehouse;
@@ -2005,8 +2008,85 @@ class SaleNoteController extends Controller
     {
         return SearchItemController::TransformToModalSaleNote(Item::whereIn('id', $request->ids)->get());
     }
+    
+    /**
+     * Despachos de la nv
+     *
+     * @param  int $sale_note_id
+     * @return array
+     */
+    public function recordsDispatch($sale_note_id)
+    {
+        $sale_note = SaleNote::whereFilterWithOutRelations()
+                                ->with(['dispatch_sale'])
+                                ->select([
+                                    'id',
+                                    'number',
+                                    'series'
+                                ])
+                                ->findOrFail($sale_note_id);
 
+        return [
+            'id' => $sale_note->id,
+            'number_full' => $sale_note->number_full,
+            'status_dispatch' => $sale_note->getStatusDispatch(),
+            'records' => new DispatchSaleNoteCollection($sale_note->dispatch_sale),
+        ];
 
+        /*
+        $records = DispatchSaleNote::where('sale_note_id', $sale_note_id)->get();
+
+        return new DispatchSaleNoteCollection($records);
+        */
+
+    }
+
+    public function recordDispatch(Request $request)
+    {
+        $id = $request->input('id');
+
+        $record = DispatchSaleNote::firstOrNew(['id' => $id]);
+        $record->fill($request->all());
+        $record->save();
+        return [
+            'success' => true,
+            'message' => ($id)?'Despacho editado con éxito':'Despacho registrado con éxito'
+        ];
+    }
+
+    public function recordsDispatchNote($dispatch_id)
+    {
+        $records = DispatchSaleNote::where('id',$dispatch_id)->get();
+
+        return new DispatchSaleNoteCollection($records);
+    }
+
+    public function statusUpdate(Request $request){
+        //dd($request->all());
+        $id = $request->input('dispatch_id');
+
+        $records = DispatchSaleNote::find($id);
+
+        $records = $records->update([
+            'status' => $request->input('status_display'),
+        ]);
+
+        return [
+            'success' => true,
+            'message' => 'Se actualizo el estado de despacho con éxito'
+        ];
+
+    }
+
+    public function destroyStatus($id)
+    {
+        $records = DispatchSaleNote::find($id);
+        $records = $records->delete();
+        return [
+            'success' => true,
+            'message' => 'Despacho eliminado con exito'
+        ];
+    }
     /**
      * Elimina la relación con factura (problema antiguo respecto un nuevo campo en notas de venta que se envía de forma incorrecta a la factura siendo esta rechazada)
      * No se previene el error en este metodo

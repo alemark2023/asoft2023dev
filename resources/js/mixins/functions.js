@@ -82,7 +82,7 @@ export const functions = {
                     this.percentage_igv = response.data;
                 });
         },
-        async getPercentageIgvWithParams(establishment_id, date_of_issue) 
+        async getPercentageIgvWithParams(establishment_id, date_of_issue)
         {
             await this.$http.post(`/store/get_igv`, {
                         establishment_id: establishment_id,
@@ -293,7 +293,7 @@ export const setDefaultSeriesByMultipleDocumentTypes = {
                 if(this.authUser.multiple_default_document_types)
                 {
                     const default_document_type_serie = _.find(this.authUser.default_document_types, { document_type_id : document_type_id})
-        
+
                     if(default_document_type_serie)
                     {
                         const exist_serie = _.find(this.series, { id : default_document_type_serie.series_id})
@@ -404,7 +404,7 @@ export const operationsForDiscounts = {
             total_global_discount: 0,
         }
     },
-    computed: 
+    computed:
     {
         isGlobalDiscountBase()
         {
@@ -412,12 +412,12 @@ export const operationsForDiscounts = {
         },
     },
     methods: {
-        deleteDiscountGlobal() 
+        deleteDiscountGlobal()
         {
             let discount = _.find(this.form.discounts, {'discount_type_id': this.config.global_discount_type_id})
             let index = this.form.discounts.indexOf(discount)
 
-            if (index > -1) 
+            if (index > -1)
             {
                 this.form.discounts.splice(index, 1)
                 this.form.total_discount = 0
@@ -478,11 +478,11 @@ export const operationsForDiscounts = {
             }
 
         },
-        changeTypeDiscount() 
+        changeTypeDiscount()
         {
             this.calculateTotal()
         },
-        changeTotalGlobalDiscount() 
+        changeTotalGlobalDiscount()
         {
             this.calculateTotal()
         },
@@ -525,10 +525,10 @@ export const fnRestrictSaleItemsCpe = {
         {
             if (this.configuration) return this.configuration.restrict_sale_items_cpe
 
-            return false 
+            return false
         },
     },
-    methods: 
+    methods:
     {
         fnValidateRestrictSaleItemsCpe(form)
         {
@@ -542,7 +542,7 @@ export const fnRestrictSaleItemsCpe = {
 
                 if(errors_restricted > 0) return this.fnGetObjectResponse(false, 'No puede generar el comprobante, tiene productos restringidos.')
             }
-            
+
             return this.fnGetObjectResponse()
         },
         fnCheckIsInvoice(document_type_id)
@@ -564,3 +564,38 @@ export const fnRestrictSaleItemsCpe = {
 }
 
 
+/**
+ *
+ * Funciones para gestionar las columnas visibles en los listados
+ * Usado en:
+ * modules\Report\Resources\assets\js\views\sale_notes\index.vue
+ *
+ */
+export const fnListVisibleColumns = {
+    data() {
+        return {
+        }
+    },
+    methods: {
+        async generalSetColumnsToShow(updated = false)
+        {
+            await this.$http.post('/validate_columns',{
+                    columns : this.columns,
+                    report : this.name_report_colums, // Nombre del reporte.
+                    updated : updated,
+                })
+                .then((response) => {
+
+                    if(!updated)
+                    {
+                        const current_cols = response.data.columns
+                        if(current_cols !== undefined) this.columns = current_cols
+                    }
+
+                })
+                .catch((error) => {
+                    console.error(error)
+                })
+        },
+    }
+}
