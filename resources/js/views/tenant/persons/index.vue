@@ -294,7 +294,6 @@ export default {
             window.open(`/${this.resource}/export/barcode/print?id=${row.id}`);
         },
         clickReportCustomer(row) {
-            
             const query = `apply_conversion_to_pen=false&brand_id&category_id=&date_end&date_start&document_type_id&item_id&month_end&month_start&period&person_id=${row.id}&type=sale&type_person=customers&user&user_id=&user_type=&web_platform_id&history=true`;
             window.open(window.location.origin + `/reports/general-items/pdf/?${query}`, '_blank');
         }
