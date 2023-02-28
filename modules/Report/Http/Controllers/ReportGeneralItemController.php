@@ -58,7 +58,7 @@ class ReportGeneralItemController extends Controller
     }
 
 
-    public function getRecordsItems($request){
+    public function getRecordsItems($request) {
 
         $data_of_period = $this->getDataOfPeriod($request);
         $data_type = $this->getDataType($request);
@@ -129,11 +129,18 @@ class ReportGeneralItemController extends Controller
             $document_types = $document_type_id ? [$document_type_id] : ['01','03'];
 
             $data = $model::whereHas($relation, function ($query) use ($date_start, $date_end, $document_types, $model,$documents_excluded) {
-                $query
-                    ->whereBetween('date_of_issue', [$date_start, $date_end])
-                    ->whereIn('document_type_id', $document_types)
-                    ->latest()
-                    ->whereTypeUser();
+                if (!$date_start && !$date_end) {
+                    $query
+                        ->whereIn('document_type_id', $document_types)
+                        ->latest()
+                        ->whereTypeUser();
+                } else {
+                    $query
+                        ->whereBetween('date_of_issue', [$date_start, $date_end])
+                        ->whereIn('document_type_id', $document_types)
+                        ->latest()
+                        ->whereTypeUser();
+                }
                 if ($model == 'App\Models\Tenant\DocumentItem') {
                     $query->whereNotIn('state_type_id', $documents_excluded);
                 }
@@ -210,8 +217,9 @@ class ReportGeneralItemController extends Controller
         $type = $request->type;
         $document_type_id = $request['document_type_id'];
         $request_apply_conversion_to_pen = $request['apply_conversion_to_pen'];
+        $history = (isset($request['history'])) ? 'HISTORIAL' : '';
 
-        $pdf = PDF::loadView('report::general_items.report_pdf', compact("records", "type", "document_type_id", "request_apply_conversion_to_pen"))->setPaper('a4', 'landscape');
+        $pdf = PDF::loadView('report::general_items.report_pdf', compact("records", "type", "document_type_id", "request_apply_conversion_to_pen","history"))->setPaper('a4', 'landscape');
 
         $filename = 'Reporte_General_Productos_'.$type_name.Carbon::now();
 

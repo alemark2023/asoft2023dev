@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 Route::get('generate_token', 'Tenant\Api\MobileController@getSeries');
 
 $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);

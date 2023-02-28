@@ -58,7 +58,7 @@
                         <th class="text-center" v-if="showAccumulatedPoints">Puntos acumulados</th>
 
                         <th class="text-right">Acciones</th>
-                    <tr>
+                    </tr>
                     <tr slot-scope="{ index, row }" :class="{ disable_color : !row.enabled}">
                         <td>{{ index }}</td>
                         <td>{{ row.name }}</td>
@@ -115,6 +115,12 @@
                                         @click.prevent="clickPrintBarcode(row)"
                                     >
                                         Etiquetas
+                                    </button>
+                                    <button
+                                        class="dropdown-item"
+                                        @click.prevent="clickReportCustomer(row)"
+                                    >
+                                        Historial
                                     </button>
                                 </div>
                             </div>
@@ -287,6 +293,10 @@ export default {
 
             window.open(`/${this.resource}/export/barcode/print?id=${row.id}`);
         },
+        clickReportCustomer(row) {
+            const query = `apply_conversion_to_pen=false&brand_id&category_id=&date_end&date_start&document_type_id&item_id&month_end&month_start&period&person_id=${row.id}&type=sale&type_person=customers&user&user_id=&user_type=&web_platform_id&history=true`;
+            window.open(window.location.origin + `/reports/general-items/pdf/?${query}`, '_blank');
+        }
     }
 }
 </script>

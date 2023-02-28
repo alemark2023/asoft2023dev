@@ -52,7 +52,7 @@
                                 <th class="">Total compra</th>
                                 <th class="">Ganancia</th>
                             </template>
-                        <tr>
+                        </tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>
                             <td>{{row.date_of_issue}}</td>
@@ -100,7 +100,6 @@
                     </data-table>
                 </div>
         </div>
-
     </div>
 </template>
 
