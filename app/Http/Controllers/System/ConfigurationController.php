@@ -8,6 +8,7 @@ use App\Models\System\Configuration;
 use Illuminate\Support\Facades\DB;
 use App\Models\System\Client;
 use Hyn\Tenancy\Environment;
+use Modules\Finance\Helpers\UploadFileHelper;
 
 
 class ConfigurationController extends Controller
@@ -109,7 +110,7 @@ class ConfigurationController extends Controller
     public function storeBgLogin()
     {
         request()->validate([
-            'image' => 'required|mimes:webp,jpeg,png,jpg,gif,svg|max:2048'
+            'image' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
         $config = Configuration::first();
@@ -118,6 +119,9 @@ class ConfigurationController extends Controller
             $ext = $file->getClientOriginalExtension();
             $name = time() . '.' . $ext;
             $path = 'public/uploads/login';
+
+            UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
+
             $file->storeAs($path, $name);
 
             $loginConfig = $config->login;
@@ -204,4 +208,105 @@ class ConfigurationController extends Controller
 
         });
     }
+
+    
+    /**
+     * 
+     * Actualizar el descuento global a 02 (Afecta la base) en todos los clientes
+     *
+     * @return array
+     */
+    public function updateTenantDiscountTypeBase()
+    {
+
+        DB::connection('system')->transaction(function (){
+
+            $records = Client::get();
+
+            foreach ($records as $row) 
+            {
+                $tenancy = app(Environment::class);
+                $tenancy->tenant($row->hostname->website);
+
+                DB::connection('tenant')->table('configurations')->where('id', 1)->update(['global_discount_type_id' => '02']);
+            }
+
+        });
+
+        return [
+            'success' => true,
+            'message' => 'El proceso se realizó correctamente'
+        ];
+    }
+
+    
+    /**
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function storeOtherConfiguration(Request $request)
+    {
+        $record = Configuration::first();
+        $record->regex_password_client = $request->regex_password_client;
+        $record->tenant_show_ads = $request->tenant_show_ads;
+        $record->save();
+
+        return [
+            'success' => true,
+            'message' => 'Configuración actualizada',
+        ];
+    }
+
+
+    /**
+     *
+     * @return array
+     */
+    public function getOtherConfiguration()
+    {
+        return Configuration::select([
+                                'regex_password_client',
+                                'tenant_show_ads',
+                                'tenant_image_ads'
+                            ])
+                            ->firstOrFail();
+    }
+
+
+    /**
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function uploadTenantAds(Request $request)
+    {
+        if ($request->hasFile('file')) 
+        {
+            $configuration = Configuration::firstOrFail();
+
+            $file = $request->file('file');
+            $ext = $file->getClientOriginalExtension();
+            $name = 'tenant_image_ads_'.date('YmdHis').'.'.$ext;
+
+            request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048']);
+            UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
+            $file->storeAs('public/uploads/system_ads', $name);
+
+            $configuration->tenant_image_ads = $name;
+            $configuration->save();
+
+            return [
+                'success' => true,
+                'message' => __('app.actions.upload.success'),
+                'name' => $name,
+            ];
+        }
+
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
 }

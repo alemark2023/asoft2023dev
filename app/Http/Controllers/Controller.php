@@ -12,6 +12,22 @@
     use Illuminate\Support\Collection;
     use Log;
     use function Config;
+    use Illuminate\Support\Facades\Route;
+    use Modules\Report\Models\ReportConfiguration;
+    use App\Models\Tenant\Configuration;
+    use Carbon\Carbon;
+    use App\Models\Tenant\{
+        Company,
+        Establishment,
+    };
+    use Modules\MobileApp\Http\Controllers\Api\ItemController as ItemControllerMobileApp;
+    use Modules\Inventory\Models\Warehouse;
+    use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
+    use App\Models\Tenant\Catalogs\{
+        DocumentType
+    };
+    use Exception;
+
 
     /**
      * Class Controller
@@ -161,7 +177,7 @@
             //dispatcher
             if ($request->has('searchBy')) {
                 if ($request->searchBy == 'dispatches') {
-                    $identity_document_type_id = ['6', '4', '1'];
+                    $identity_document_type_id = ['6', '4', '1', '0'];
                 }
             }
             $customers = Person::where('number', 'like', "%{$request->input}%")
@@ -213,6 +229,185 @@ $string = var_export($header,true);
 
 
             return $header;
+        }
+
+
+        /**
+         *
+         * Determinar si aplica conversión a soles en reportes registrados en ReportConfiguration
+         *
+         * Usado en:
+         * ReportGeneralItemController
+         *
+         * @param  $request
+         * @return bool
+         */
+        public function applyConversiontoPen($request)
+        {
+            $report_configuration = ReportConfiguration::whereApplyConversion(Route::current()->getName())->first();
+
+            if($report_configuration) return $report_configuration->convert_pen;
+
+            return false;
+        }
+
+
+        /**
+         *
+         * Determinar si aplica busqueda avanzada
+         *
+         * Usado en:
+         * ItemController
+         *
+         * @return bool
+         */
+        public function applyAdvancedRecordsSearch()
+        {
+            return Configuration::isEnabledAdvancedRecordsSearch();
+        }
+
+
+        /**
+         *
+         * Asignar lote a item (regularizar propiedad en json item)
+         *
+         * Usado en:
+         * OrderNoteController
+         *
+         * @param  array $row
+         * @return void
+         */
+        public function generalSetIdLoteSelectedToItem(&$row)
+        {
+            if(isset($row['IdLoteSelected']))
+            {
+                $row['item']['IdLoteSelected'] = $row['IdLoteSelected'];
+            }
+            else
+            {
+                $row['item']['IdLoteSelected'] = isset($row['item']['IdLoteSelected']) ? $row['item']['IdLoteSelected'] : null;
+            }
+        }
+
+
+        /**
+         *
+         * Retornar array para respuestas en peticiones
+         *
+         * @param  bool $success
+         * @param  string $message
+         * @return array
+         */
+        public function generalResponse($success, $message = null)
+        {
+            return [
+                'success' => $success,
+                'message' => $message,
+            ];
+        }
+        
+        
+        /**
+         * 
+         * Obtener datos temporales de imagen cargada
+         *
+         * @param  Request $request
+         * @return array
+         */
+        public function generalUploadTempImage(Request $request)
+        {
+            return app(ItemControllerMobileApp::class)->uploadTempImage($request);
+        }
+
+        
+        /**
+         * 
+         * Nombre para reportes
+         *
+         * @param  string $base_name
+         * @param  string $format
+         * @return string
+         */
+        public function generalFilenameReport($base_name, $format)
+        {
+            return $base_name.'_'.Carbon::now().'.'.$format;
+        }
+
+                
+        /**
+         * 
+         * Datos para cabecera de reportes
+         *
+         * @return array
+         */
+        public function generalDataForHeaderReport()
+        {
+            $company = Company::withOut(['identity_document_type'])->select(['number', 'name'])->first();
+
+            return compact('company');
+        }
+        
+  
+        /**
+         * 
+         * Obtener almacen asociado al usuario en sesion
+         *
+         * @return array
+         */
+        public function generalGetCurrentWarehouse()
+        {
+            return Warehouse::where('establishment_id', auth()->user()->establishment_id)->selectBasicColumns()->firstOrFail();
+        }
+        
+
+        /**
+         * 
+         * @param  string $filename
+         * @return array
+         */
+        public static function generalPdfResponseFileHeaders($filename)
+        {
+            return GeneralPdfHelper::pdfResponseFileHeaders($filename);
+        }
+
+                
+        /**
+         * 
+         * Verificar si es una factura o boleta
+         *
+         * @param  string $document_type_id
+         * @return bool
+         */
+        public function generalIsInvoiceDocument($document_type_id)
+        {
+            return in_array($document_type_id, ['01', '03'], true);
+        }
+
+        
+        /**
+         * 
+         * Descripcion del tipo de documento
+         *
+         * @return string
+         */
+        public function generalGetDocumentTypeDescription($document_type_id)
+        {
+            $document_type = DocumentType::filterOnlyDescription()->find($document_type_id);
+
+            if($document_type) return $document_type->description;
+
+            throw new Exception('El tipo de documento no existe');
+        }
+        
+            
+        /**
+         *
+         * @param  Exception $exception
+         * @return void
+         */
+        public function generalWriteErrorLog($exception, $message = null)
+        {
+            Log::error(($message ?? '')."Line: {$exception->getLine()} - Message: {$exception->getMessage()} - File: {$exception->getFile()}");
         }
 
     }

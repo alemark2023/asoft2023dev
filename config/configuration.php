@@ -6,5 +6,6 @@ return [
     'api_service_url' => env('API_SERVICE_URL'),
     'api_service_token' => env('API_SERVICE_TOKEN', false),
     'sunat_alternate_server' => env('SUNAT_ALTERNATE_SERVER', false),
+    'app_url_base' => env('APP_URL_BASE'),
 
 ];

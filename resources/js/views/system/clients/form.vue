@@ -107,12 +107,24 @@
                              class="form-group">
                             <label class="control-label">
                                 Contraseña
+                                
+                                <el-tooltip class="item" effect="dark" placement="top-start" v-if="regex_password_client">
+                                    <i class="fa fa-info-circle"></i>
+                                    <div slot="content">
+                                        <strong>FORMATO DE CONTRASEÑA</strong><br/><br/>
+                                        La contraseña debe contener al menos una letra minúscula.<br/>
+                                        La contraseña debe contener al menos una letra mayúscula.<br/>
+                                        La contraseña debe contener al menos un dígito.<br/>
+                                        La contraseña debe contener al menos un carácter especial [@.$!%*#?&-].<br/>
+                                    </div>
+                                </el-tooltip>
                             </label>
                             <el-input
                                 v-model="form.password"
                                 :disabled="form.is_update"
                                 dusk="password"
-                                type="password">
+                                type="password"
+                                show-password>
                             </el-input>
                             <small
                                 v-if="errors.password"
@@ -191,6 +203,17 @@
                     <el-collapse-item
                         name="1"
                         title="Módulos">
+                        <div class="row">
+                            <span class="ml-4">Giro de negocio <small>(opcional)</small></span>
+                            <div class="col-12">
+                                <el-radio-group v-model="business" @change="changeModules">
+                                    <el-radio :label="1">Básico</el-radio>
+                                    <el-radio :label="2">Farmacia</el-radio>
+                                    <el-radio :label="3">Hotel</el-radio>
+                                    <el-radio :label="4">Restaurante</el-radio>
+                                </el-radio-group>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <span>
@@ -606,6 +629,8 @@ export default {
             soap_username: null,
             soap_password: null,
             collapse: 1,
+            business: null,
+            regex_password_client: false,
         }
     },
     updated() {
@@ -625,14 +650,21 @@ export default {
                 this.certificate_admin = response.data.certificate_admin
                 this.soap_username = response.data.soap_username
                 this.soap_password = response.data.soap_password
+                this.group_basic = response.data.group_basic
+                this.group_hotel = response.data.group_hotel
+                this.group_pharmacy = response.data.group_pharmacy
+                this.group_restaurant = response.data.group_restaurant
+                this.group_hotel_apps = response.data.group_hotel_apps
+                this.group_pharmacy_apps = response.data.group_pharmacy_apps
+                this.group_restaurant_apps = response.data.group_restaurant_apps
+                this.regex_password_client = response.data.regex_password_client
+                
             })
 
         await this.initForm()
 
         this.form.soap_username = this.soap_username
         this.form.soap_password = this.soap_password
-
-
     },
     methods: {
         FixChildren(currentObj, treeStatus) {
@@ -818,6 +850,7 @@ export default {
             })
             this.form.modules = modules;
             this.form.levels = levels;
+            this.form.regex_password_client = this.regex_password_client
 
             if (modules.length < 1) {
                 return this.$message.error('Debe seleccionar al menos un módulo')
@@ -879,6 +912,39 @@ export default {
         searchNumber(data) {
             this.form.name = data.name;
         },
+        changeModules() {
+            var group = {
+                modules: [],
+                apps: [],
+            };
+            if(this.business == 1){
+                group.modules = this.getIds(this.group_basic);
+            }
+            if(this.business == 2){
+                group.modules = this.getIds(this.group_pharmacy);
+                group.apps = this.getIds(this.group_pharmacy_apps);
+            }
+            if(this.business == 3){
+                group.modules = this.getIds(this.group_hotel);
+                group.apps = this.getIds(this.group_hotel_apps);
+            }
+            if(this.business == 4){
+                group.modules = this.getIds(this.group_restaurant);
+                group.apps = this.getIds(this.group_restaurant_apps);
+            }
+            this.$refs.tree.setCheckedKeys(group.modules);
+            this.$refs.Apptree.setCheckedKeys(group.apps);
+        },
+        getIds(modules) {
+            const preSelecteds = [];
+            modules.map(m => {
+                preSelecteds.push(m.id);
+                m.childrens.map(c => {
+                    preSelecteds.push(c.id);
+                });
+            });
+            return preSelecteds
+        }
     }
 }
 </script>

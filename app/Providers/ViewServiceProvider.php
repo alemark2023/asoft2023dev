@@ -50,6 +50,11 @@ class ViewServiceProvider extends ServiceProvider
 
         view()->composer(
             'tenant.layouts.partials.header',
+            'Modules\Report\Http\ViewComposers\DownloadTryViewComposer'
+        );
+
+        view()->composer(
+            'tenant.layouts.partials.header',
             'App\Http\ViewComposers\Tenant\ModuleViewComposer'
         );
 

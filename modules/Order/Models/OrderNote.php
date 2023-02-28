@@ -23,6 +23,7 @@
     use Illuminate\Database\Eloquent\Relations\MorphMany;
     use Illuminate\Support\Collection;
     use Modules\Inventory\Models\InventoryKardex;
+    use App\Models\Tenant\Item;
     use Modules\Item\Models\ItemLot;
     use Modules\Item\Models\ItemLotsGroup;
 
@@ -116,7 +117,7 @@
             'soap_type',
             'state_type',
             'currency_type',
-            'items'
+            'items',
         ];
 
         protected $fillable = [
@@ -166,6 +167,7 @@
             'quotation_id',
             'observation',
             'total_igv_free',
+            'additional_data',
 
         ];
 
@@ -297,6 +299,16 @@
             $this->attributes['legends'] = (is_null($value)) ? null : json_encode($value);
         }
 
+        public function getAdditionalDataAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+
+        public function setAdditionalDataAttribute($value)
+        {
+            $this->attributes['additional_data'] = (is_null($value)) ? null : json_encode($value);
+        }
+        
         public function getIdentifierAttribute()
         {
             return $this->prefix . '-' . $this->id;
@@ -416,6 +428,14 @@
             return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
         }
 
+        public function scopeSearchByDate(Builder $query, $params)
+        {
+            if ($params['date_start'] !== null && $params['date_end'] !== null) {
+                $query->where([['date_of_issue', '>=', $params['date_start']], ['date_of_due', '<=', $params['date_end']]]);
+            }
+
+            return $query;
+        }
 
         /**
          * Se usa en la relacion con el inventario kardex en modules/Inventory/Traits/InventoryTrait.php.
@@ -585,6 +605,8 @@
                 'user_name' => $this->user->name,
                 'customer_name' => $this->customer->name,
                 'customer_number' => $this->customer->number,
+                'customer_telephone' => optional($this->customer)->telephone,
+                'customer_email' => optional($this->customer)->email,
                 'currency_type_id' => $this->currency_type_id,
                 'total_exportation' => number_format($this->total_exportation, 2),
                 // 'total_free' => number_format($this->total_free,2),
@@ -598,15 +620,24 @@
                 'documents' => $this->documents->transform(function ($row) {
                     /** @var Document $row */
                     return [
+                        'id' => $row->id,
                         'number_full' => $row->number_full,
                         'state_type_id' => $row->state_type_id,
+                        'order_note_id' => $row->order_note_id,
+                        'series' => $row->series,
                     ];
                 }),
-                'sale_notes' => $this->sale_notes->transform(function ($row) {
-                    /** @var SaleNote $row */
+                'sale_notes' => $this->sale_notes,
+                'items_details' => $this->items->transform(function ($row) {
+                    /** @var Document $row */
                     return [
-                        'identifier' => $row->identifier,
-                        'state_type_id' => $row->state_type_id,
+                        'item_details' => Item::where('id',$row->item_id)->get(),
+                        'item' => $row->item,
+                        'discounts' => $row->discounts,
+                        'quantity' => $row->quantity,
+                        'unit_price' => $row->unit_price,
+                        'total_discount' => $row->total_discount,
+
                     ];
                 }),
                 'btn_generate' => $btn_generate,
@@ -615,8 +646,24 @@
                 'created_at' => $this->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
                 'print_a4' => url('') . "/order-notes/print/{$this->external_id}/a4",
+                'filename' => $this->filename,
+                'print_ticket' => $this->getUrlPrintPdf('ticket'),
             ];
         }
+
+        
+        /**
+         * 
+         * Obtener url para impresión
+         *
+         * @param  string $format
+         * @return string
+         */
+        public function getUrlPrintPdf($format = "a4")
+        {
+            return url("order-notes/print/{$this->external_id}/{$format}");
+        }
+        
 
         /**
          * @return Dispatch[]|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|Collection|mixed
@@ -652,4 +699,54 @@
         {
             return $this->hasMany(GuideFile::class);
         }
+
+        
+        /**
+         * @param $query
+         *
+         * @return mixed
+         */
+        public function scopeWhereStateTypeAccepted($query)
+        {
+            return $query->whereIn('state_type_id', self::STATE_TYPES_ACCEPTED);
+        }
+
+
+        /**
+         * 
+         * Obtener total y realizar conversión al tipo de cambio si se requiere
+         *
+         * @return float
+         */
+        public function getTransformTotal()
+        {
+            return ($this->currency_type_id === 'PEN') ? $this->total : ($this->total * $this->exchange_rate_sale);
+        }
+        
+        
+        /**
+         * 
+         * Obtener suma total del pedidos
+         *
+         * @param  Builder $query
+         * @param  string $date_start
+         * @param  string $date_end
+         * @return Builder
+         */
+        public function scopeFilterTotalsReport($query, $establishment_id, $date_start, $date_end)
+        {
+            $query->whereDoesntHave('documents')
+                    ->whereDoesntHave('sale_notes')
+                    ->where('establishment_id', $establishment_id)
+                    ->whereStateTypeAccepted();
+
+            if($date_start && $date_end)
+            {
+                $query->whereBetween('date_of_issue', [$date_start, $date_end]);
+            }
+
+            return $query;
+        }
+
+
     }

@@ -10,18 +10,22 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 container-tabs">
                     <el-tabs v-model="activeName">
                         <el-tab-pane label="Imprimir A4" name="first">
-                            <embed :src="form.print_a4" type="application/pdf" width="100%" height="400px"/>
+                            <iframe :src="form.print_a4" type="application/pdf" width="100%" height="400px"/>
                         </el-tab-pane>
                         <el-tab-pane label="Imprimir Ticket" name="fourth" v-if="ShowTicket80">
-                            <embed :src="form.print_ticket" type="application/pdf" width="100%" height="400px"/>
+                            <iframe :src="form.print_ticket" type="application/pdf" width="100%" height="400px"/>
                         </el-tab-pane>
                         <el-tab-pane label="Imprimir Ticket 58MM" name="third" v-if="ShowTicket58">
-                            <embed :src="form.print_ticket_58" type="application/pdf" width="100%" height="400px"/>
+                            <iframe :src="form.print_ticket_58" type="application/pdf" width="100%" height="400px"/>
+                        </el-tab-pane>
+                        <el-tab-pane label="Imprimir Ticket 50MM" name="fifth" v-if="ShowTicket50">
+                            <iframe :src="form.print_ticket_50" type="application/pdf" width="100%" height="400px"/>
                         </el-tab-pane>
                         <el-tab-pane label="Imprimir A5" name="second">
-                            <embed :src="form.print_a5" type="application/pdf" width="100%" height="400px"/>
+                            <iframe :src="form.print_a5" type="application/pdf" width="100%" height="400px"/>
                         </el-tab-pane>
                     </el-tabs>
+
                 </div>
                 <div class="col-12 container-btns text-center">
                     <br><br>
@@ -39,6 +43,11 @@
                         <i class="far fa-file-pdf"></i>
                         <br>
                         <span>PDF TICKET 58MM</span>
+                    </a>
+                    <a :href="`https://docs.google.com/viewer?url=${form.print_ticket_50}?format=pdf`" class="btn mx-3 btn-primary btn-lg" target="_BLANK">
+                        <i class="far fa-file-pdf"></i>
+                        <br>
+                        <span>PDF TICKET 50MM</span>
                     </a>
                     <a :href="`https://docs.google.com/viewer?url=${form.print_ticket}?format=pdf`" class="btn mx-3 btn-primary btn-lg" target="_BLANK">
                         <i class="far fa-file-pdf"></i>
@@ -119,10 +128,16 @@ export default {
             showDialogOptions: false,
             documentNewId: null,
             activeName: 'first',
+            isSafari: false
         }
     },
     created() {
         this.initForm()
+    },
+    mounted() {
+        if(navigator.userAgent.indexOf("Safari") != -1) {
+            this.isSafari = true
+        }
     },
     computed: {
         ShowTicket58: function () {

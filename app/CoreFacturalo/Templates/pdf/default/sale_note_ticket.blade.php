@@ -63,6 +63,12 @@
         <td width="" class="pt-3"><p class="desc">{{ $document->date_of_issue->format('Y-m-d') }}</p></td>
     </tr>
 
+    @if ($document->due_date)
+        <tr>
+            <td width="" class="pt-3"><p class="desc">F. Vencimiento:</p></td>
+            <td width="" class="pt-3"><p class="desc">{{ $document->getFormatDueDate() }}</p></td>
+        </tr>
+    @endif
 
     <tr>
         <td class="align-top"><p class="desc">Cliente:</p></td>
@@ -85,6 +91,10 @@
             </td>
         </tr>
     @endif
+    <tr>
+        <td>Vendedor:</td>
+        <td> @if($document->seller_id != 0){{$document->seller->name }} @else {{ $document->user->name }} @endif</td>
+    </tr>
     @if ($document->plate_number !== null)
     <tr>
         <td class="align-top"><p class="desc">N° Placa:</p></td>
@@ -111,6 +121,17 @@
                     {{ $document->reference_data }}
                 </p>
             </td>
+        </tr>
+    @endif
+
+    @if ($document->isPointSystem())
+        <tr>
+            <td><p class="desc">P. Acumulados:</p></td>
+            <td><p class="desc">{{ $document->person->accumulated_points }}</p></td>
+        </tr>
+        <tr>
+            <td><p class="desc">Puntos por la compra:</p></td>
+            <td><p class="desc">{{ $document->getPointsBySale() }}</p></td>
         </tr>
     @endif
 
@@ -163,6 +184,12 @@
                      {{$item}}<br>
                  @endforeach
                 @endif
+                
+                @if($row->item->used_points_for_exchange ?? false)
+                    <br>
+                    <small>*** Canjeado por {{$row->item->used_points_for_exchange}}  puntos ***</small>
+                @endif
+                
             </td>
             <td class="text-right desc-9 align-top">{{ number_format($row->unit_price, 2) }}</td>
             <td class="text-right desc-9 align-top">{{ number_format($row->total, 2) }}</td>
@@ -211,10 +238,30 @@
             <td colspan="4" class="text-right font-bold desc">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold desc">{{ number_format($document->total_igv, 2) }}</td>
         </tr>--}}
+        
+        @if($document->total_charge > 0 && $document->charges)
+            <tr>
+                <td colspan="4" class="text-right font-bold desc">CARGOS ({{$document->getTotalFactor()}}%): {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold desc">{{ number_format($document->total_charge, 2) }}</td>
+            </tr>
+        @endif
+        
         <tr>
             <td colspan="4" class="text-right font-bold desc">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold desc">{{ number_format($document->total, 2) }}</td>
         </tr>
+        
+        @php
+            $change_payment = $document->getChangePayment();
+        @endphp
+
+        @if($change_payment < 0)
+            <tr>
+                <td colspan="4" class="text-right font-bold desc">VUELTO: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold desc">{{ number_format(abs($change_payment),2, ".", "") }}</td>
+            </tr>
+        @endif
+
     </tbody>
 </table>
 <table class="full-width">
@@ -269,13 +316,25 @@
         $payment = 0;
     @endphp
     @foreach($payments as $row)
-        <tr><td>- {{ $row->date_of_payment->format('d/m/Y') }} - {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td></tr>
+        <tr><td>- {{ $row->date_of_payment->format('d/m/Y') }} - {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td></tr>
         @php
             $payment += (float) $row->payment;
         @endphp
     @endforeach
-    <tr><td><strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}</td></tr>
+    <tr><td class="pb-10"><strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}</td></tr>
 </table>
 @endif
+@if ($document->terms_condition)
+    <br>
+    <table class="full-width">
+        <tr>
+            <td>
+                <h6 style="font-size: 10px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                {!! $document->terms_condition !!}
+            </td>
+        </tr>
+    </table>
+@endif
+<br>
 </body>
 </html>

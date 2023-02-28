@@ -7,6 +7,7 @@
     use App\Models\Tenant\DocumentPayment;
     use App\Models\Tenant\ModelTenant;
     use App\Models\Tenant\PurchasePayment;
+    use App\Models\Tenant\PurchaseSettlementPayment;
     use App\Models\Tenant\SaleNotePayment;
     use App\Models\Tenant\SoapType;
     use App\Models\Tenant\TransferAccountPayment;
@@ -161,6 +162,12 @@
                 ->wherePaymentType(PurchasePayment::class);
         }
 
+        public function pur_settl_payment()
+        {
+            return $this->belongsTo(PurchaseSettlementPayment::class, 'payment_id')
+                ->wherePaymentType(PurchaseSettlementPayment::class);
+        }
+
         /**
          * @return mixed
          */
@@ -229,7 +236,15 @@
             return $this->belongsTo(TechnicalServicePayment::class, 'payment_id')
                 ->wherePaymentType(TechnicalServicePayment::class);
         }
-
+        
+        
+        /**
+         * 
+         * Esta función genera consultas innecesarias 
+         * @todo Usar en su reemplazo el método getCciBankAcount
+         *
+         * @return string
+         */
         public function getCciAcoount(){
             if ($this->destination_type === Cash::class) {
                 /** @var \App\Models\Tenant\Cash $destination */
@@ -262,8 +277,14 @@
             }
             return '-';
         }
+        
+        
         /**
-         * @return HigherOrderCollectionProxy|mixed|string
+         * 
+         * Esta función genera consultas innecesarias 
+         * @todo Usar en su reemplazo el método getDestinationDescriptionPayment
+         *
+         * @return string
          */
         public function getDestinationDescriptionAttribute()
         {
@@ -331,6 +352,19 @@
         {
             return $this->destination_type === Cash::class ? 'cash' : 'bank_account';
         }
+        
+
+        /**
+         * 
+         * Determina si tiene como destino caja general
+         *
+         * @return bool
+         */
+        public function isCashDestination()
+        {
+            return $this->destination_type === Cash::class;
+        }
+
 
         /**
          * @return string
@@ -341,6 +375,7 @@
                 DocumentPayment::class => 'document',
                 SaleNotePayment::class => 'sale_note',
                 PurchasePayment::class => 'purchase',
+                PurchaseSettlementPayment::class => 'purchase_settlement',
                 ExpensePayment::class => 'expense',
                 QuotationPayment::class => 'quotation',
                 ContractPayment::class => 'contract',
@@ -369,6 +404,9 @@
                     break;
                 case 'purchase':
                     $description = 'COMPRA';
+                    break;
+                case 'purchase_settlement':
+                    $description = 'LIQUIDACION COMPRA';
                     break;
                 case 'expense':
                     $description = 'GASTO';
@@ -417,6 +455,7 @@
                     $type = 'input';
                     break;
                 case 'purchase':
+                case 'purchase_settlement':
                 case 'bank_loan_payment':
                 case 'expense':
                     $type = 'output';
@@ -445,6 +484,7 @@
                     $person['number'] = $record->customer->number;
                     break;
                 case 'purchase':
+                case 'purchase_settlement':
                 case 'expense':
                     $person['name'] = $record->supplier->name;
                     $person['number'] = $record->supplier->number;
@@ -496,8 +536,8 @@
                     $q->where('date_of_payment', '<=', $params->date_end);
                 }
                 // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                $q->whereHas('associated_record_payment', function ($p) {
-                    $p->whereStateTypeAccepted()->whereTypeUser();
+                $q->whereHas('associated_record_payment', function ($p) use ( $params ) {
+                    $p->whereStateTypeAccepted()->whereTypeUser((array)$params);
                 });
             });
             $query->OrWhereHas('exp_payment', function ($q) use ($params) {
@@ -508,8 +548,8 @@
                     $q->where('date_of_payment', '<=', $params->date_end);
                 }
                 // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                $q->whereHas('associated_record_payment', function ($p) {
-                    $p->whereStateTypeAccepted()->whereTypeUser();
+                $q->whereHas('associated_record_payment', function ($p) use ($params) {
+                    $p->whereStateTypeAccepted()->whereTypeUser((array)$params);
                 });
             });
             /*SaleNotePayment*/
@@ -521,8 +561,8 @@
                     $q->where('date_of_payment', '<=', $params->date_end);
                 }
                 // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                $q->whereHas('associated_record_payment', function ($p) {
-                    $p->whereStateTypeAccepted()->whereTypeUser()
+                $q->whereHas('associated_record_payment', function ($p) use ($params) {
+                    $p->whereStateTypeAccepted()->whereTypeUser((array)$params)
                         ->whereNotChanged();
                 });
             });
@@ -535,8 +575,22 @@
                     $q->where('date_of_payment', '<=', $params->date_end);
                 }
                 // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                $q->whereHas('associated_record_payment', function ($p) {
-                    $p->whereStateTypeAccepted()->whereTypeUser();
+                $q->whereHas('associated_record_payment', function ($p) use ($params){
+                    $p->whereStateTypeAccepted()->whereTypeUser((array)$params);
+                });
+
+            });
+            /*PurchasePayment*/
+            $query->OrWhereHas('pur_settl_payment', function ($q) use ($params) {
+                if ($params->date_start) {
+                    $q->where('date_of_payment', '>=', $params->date_start);
+                }
+                if ($params->date_end) {
+                    $q->where('date_of_payment', '<=', $params->date_end);
+                }
+                // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+                $q->whereHas('associated_record_payment', function ($p) use ($params){
+                    $p->whereStateTypeAccepted()->whereTypeUser((array)$params);
                 });
 
             });
@@ -550,8 +604,8 @@
                         $q->where('date_of_payment', '<=', $params->date_end);
                     }
                     // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                    $q->whereHas('associated_record_payment', function ($p) {
-                        $p->whereStateTypeAccepted()->whereTypeUser()
+                    $q->whereHas('associated_record_payment', function ($p) use ($params) {
+                        $p->whereStateTypeAccepted()->whereTypeUser((array)$params)
                             ->whereNotChanged();
                     });
 
@@ -566,8 +620,8 @@
                         $q->where('date_of_payment', '<=', $params->date_end);
                     }
                     // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                    $q->whereHas('associated_record_payment', function ($p) {
-                        $p->whereStateTypeAccepted()->whereTypeUser()
+                    $q->whereHas('associated_record_payment', function ($p) use ($params){
+                        $p->whereStateTypeAccepted()->whereTypeUser((array)$params)
                             ->whereNotChanged();
                     });
 
@@ -582,8 +636,8 @@
                         $q->where('date_of_payment', '<=', $params->date_end);
                     }
                     // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                    $q->whereHas('associated_record_payment', function ($p) {
-                        $p->whereStateTypeAccepted()->whereTypeUser();
+                    $q->whereHas('associated_record_payment', function ($p) use ($params){
+                        $p->whereStateTypeAccepted()->whereTypeUser((array)$params);
                     });
 
                 });
@@ -597,9 +651,9 @@
                         $q->where('date_of_payment', '<=', $params->date_end);
                     }
                     // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                    $q->whereHas('associated_record_payment', function ($p) {
+                    $q->whereHas('associated_record_payment', function ($p) use ($params) {
                           $p->whereStateTypeAccepted()
-                            ->whereTypeUser()
+                            ->whereTypeUser((array)$params)
                         ;
                     });
 
@@ -641,8 +695,8 @@
                         $q->where('date_of_payment', '<=', $params->date_end);
                     }
                     // $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                    $q->whereHas('associated_record_payment', function ($p) {
-                        $p->whereTypeUser();
+                    $q->whereHas('associated_record_payment', function ($p) use ($params) {
+                        $p->whereTypeUser((array)$params);
                     });
 
                 });
@@ -660,6 +714,107 @@
 
             return $query;
         }
+
+
+
+        /**
+         * 
+         * Filtros/Queries para mejorar rendimiento
+         * 
+         * Usado para reporte de pagos
+         * @todo aplicar filtros/consultas para otros reportes
+         * 
+         * @param Builder $query
+         * @return Builder
+         */
+        public function scopeApplyFiltersForPerformance(Builder $query)
+        {
+            return $query->with([
+                'payment' => function ($q){
+                    $q->filterRelationsPayments()
+                        ->with(['associated_record_payment' => function($query){
+                            $query->filterRelationsGlobalPayment();
+                        }]);
+                },
+                'user' => function($q){
+                    $q->select('id', 'name')->whereFilterWithOutRelations();
+                },
+                'destination' => function($q){
+                    $q->withBankIfExist();
+                },
+            ]);
+        }
+
+
+        
+        /**
+         * 
+         * Filtros para reporte de pagos
+         * @todo aplicar filtros de applyFiltersForPerformance para otros reportes (rendimiento)
+         * 
+         * @param Builder $query
+         * @param object $params
+         *
+         * @return Builder
+         */
+        public function scopeWhereFilterReportPayments(Builder $query, $params)
+        {
+            return $query->applyFiltersForPerformance()
+                        ->whereFilterPaymentType($params);
+        }
+
+
+        
+        /**
+         * 
+         * Obtener descripción del destino
+         *
+         * @return string
+         */
+        public function getDestinationDescriptionPayment()
+        {
+
+            if ($this->destination_type === Cash::class) return 'CAJA GENERAL';
+
+            $bank_description = $this->destination->bank->description ?? null;
+            $cci_description = $this->destination->cci ?? null;
+            $full_description = "";
+
+            if($bank_description) $full_description .= $bank_description;
+            
+            if($cci_description) $full_description .=  " {$cci_description}";
+
+            return $full_description;
+
+        }
+
+        
+        /**
+         * 
+         * Obtener cci
+         *
+         * @return string
+         */
+        public function getCciBankAcount()
+        {
+            $destination = $this->destination;
+            $cci_description = '-';
+
+            if($destination)
+            {
+                if ($this->destination_type === Cash::class) 
+                {
+                    $cci_description = $destination->reference_number;
+                }
+                else
+                {
+                    $cci_description = $destination->cci ?? $destination->number;
+                }
+            }
+
+            return $cci_description;
+        }
+
 
         /**
          * @return BelongsTo
@@ -684,6 +839,123 @@
 
             return $query->wherePaymentType($payment_type);
 
+        }
+
+        
+        /**
+         * 
+         * Filtro para reporte de pagos en efectivo asociados a caja
+         * 
+         * @param Builder $query
+         * @return Builder
+         * 
+         */
+        public function scopeFiltersPaymentsAssociatedCash($query)
+        {
+            $query->with([
+                    'payment' => function ($q){
+                        $q->filterRelationsPayments()
+                            ->with(['associated_record_payment' => function($query){
+                                $query->filterRelationsGlobalPayment();
+                            }]);
+                    }
+                ])
+                ->whereHas('doc_payments', function ($q) {
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereStateTypeAccepted();
+                    })
+                    ->filterCashPaymentWithoutDestination();
+                })
+                ->orWhereHas('sln_payments', function ($q) {
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereStateTypeAccepted()
+                            ->whereNotChanged();
+                    })
+                    ->filterCashPaymentWithoutDestination();
+                });
+
+            return $query;
+        }
+
+        
+        /**
+         * 
+         * Filtrar destino caja
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeWhereCashDestination($query)
+        {
+            return $query->where('destination_type', Cash::class);
+        }
+        
+        
+        /**
+         * 
+         * Filtros para reporte general de caja V2, asociado a pagos
+         * 
+         * @param Builder $query
+         * @return Builder
+         * 
+         */
+        public function scopeGeneralCashReportWithPayments($query)
+        {
+            $query->with([
+                    'payment' => function ($q){
+                        $q->filterRelationsPayments()
+                            ->with(['associated_record_payment' => function($query){
+                                $query->filterRelationsGlobalPayment();
+                            }])
+                            ;
+                    }
+                ])
+                // ingresos
+                ->whereHas('doc_payments', function ($q) {
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereStateTypeAccepted();
+                    })
+                    ->whereCashPaymentMethodType();
+                })
+                ->orWhereHas('sln_payments', function ($q) {
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereStateTypeAccepted()
+                            ->whereNotChanged();
+                    })
+                    ->whereCashPaymentMethodType();
+                })
+                ->orWhereHas('quo_payment', function ($q) {
+                    
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereStateTypeAccepted()
+                            ->whereNotHasDocuments();
+                    })
+                    ->whereCashPaymentMethodType();
+                })
+                ->orWhereHas('tec_serv_payment', function ($q) {
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereNotHasDocuments();
+                    })
+                    ->whereCashPaymentMethodType();
+                })
+                // ingresos
+
+                // egresos
+                ->orWhereHas('pur_payment', function ($q) {
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereStateTypeAccepted();
+                    })
+                    ->whereCashPaymentMethodType();
+                })
+                ->orWhereHas('exp_payment', function ($q) {
+                    $q->whereHas('associated_record_payment', function ($p) {
+                        $p->whereStateTypeAccepted();
+                    });
+                })
+                // egresos
+                ->whereCashDestination();
+
+            return $query;
         }
 
     }

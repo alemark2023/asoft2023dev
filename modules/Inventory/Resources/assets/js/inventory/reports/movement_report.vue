@@ -23,23 +23,26 @@
                         </div>
                     </div>
 
-
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
                             <label class="control-label">Almacén</label>
-                            <el-select v-model="form.warehouse_id" filterable>
+                            <el-select v-model="form.warehouse_id" filterable clearable>
                                 <el-option v-for="option in warehouses" :key="option.id" :value="option.id"
                                            :label="option.description"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.warehouse_id"
                                    v-text="errors.warehouse_id[0]"></small>
                         </div>
-                    </div> 
-  
+                    </div>
+
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.movement_type}">
                             <label class="control-label">Tipo</label>
                             <el-select v-model="form.movement_type" @change="changeMovementType">
+                                <el-option
+                                    key="all"
+                                    label="Todos"
+                                    value="all"></el-option>
                                 <el-option
                                     key="input"
                                     label="Ingreso"
@@ -57,7 +60,7 @@
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.inventory_transaction_id}">
                             <label class="control-label">Motivo traslado</label>
-                            <el-select v-model="form.inventory_transaction_id" filterable>
+                            <el-select v-model="form.inventory_transaction_id" filterable clearable>
                                 <el-option v-for="option in inventory_transactions" :key="option.id" :value="option.id"
                                            :label="option.name"></el-option>
                             </el-select>
@@ -66,7 +69,11 @@
                         </div>
                     </div>
 
-                    
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <el-checkbox class="mt-4" v-model="form.order_inventory_transaction_id">Ordenar por motivo de traslado</el-checkbox>
+                        </div>
+                    </div>
                     <div class="col-md-3">
                         <label class="control-label">Fecha inicio</label>
                         <el-date-picker v-model="form.date_start" type="date"
@@ -79,8 +86,6 @@
                                         :picker-options="pickerOptionsDates"
                                         value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="true"></el-date-picker>
                     </div>
-
-
                     <div class="col-md-9" style="margin-top:29px">
                         <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
                         <template v-if="records.length>0">
@@ -99,22 +104,35 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th >#</th>
+                                        <th class="text-right">#</th>
                                         <th >Producto</th>
-                                        <th class="text-center">Fecha y hora transacción</th>
-                                        <th class="text-center">Motivo de traslado</th>
-                                        <th class="text-center">Entrada</th>
-                                        <th class="text-center">Salida</th>
+                                        <th class="text-left">Fecha y hora transacción</th>
+                                        <th class="text-left">Documento</th>
+                                        <th class="text-left">Almacén</th>
+                                        <th class="text-left">Motivo de traslado</th>
+                                        <th class="text-right">Entrada</th>
+                                        <th class="text-right">Salida</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="(row, index) in records" :key="index">
-                                        <td> {{ customIndex(index) }} </td>
-                                        <td> {{ row.item_description }} </td>
-                                        <td class="text-center"> {{ row.date_time }} </td>
-                                        <td class="text-center"> {{ row.description }} </td>
-                                        <td class="text-center"> {{ row.input }} </td>
-                                        <td class="text-center"> {{ row.output }} </td>
+                                        <td class="text-right"> {{ customIndex(index) }} </td>
+                                        <td class="text-left"> {{ row.item_description }} </td>
+                                        <td class="text-left"> {{ row.date_time }} </td>
+                                        <td class="text-left"> {{ row.guide_number }} </td>
+                                        <td class="text-left"> {{ row.warehouse_name }} </td>
+                                        <td class="text-left"> {{ row.description }} </td>
+                                        <td class="text-right"> {{ row.input }} </td>
+                                        <td class="text-right"> {{ row.output }} </td>
+                                        <td class="text-right">
+                                            <button class="btn waves-effect waves-light btn-xs btn-info"
+                                                    type="button"
+                                                    @click.prevent="downloadPdfGuide(row.guide_id)"
+                                                    v-if="row.guide_id">
+                                                <i class="fa fa-file-pdf"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -136,12 +154,12 @@
                 <el-button @click.prevent="close()">Cerrar</el-button>
             </div>
         </form>
- 
+
     </el-dialog>
 
 </template>
 
-<script> 
+<script>
 
 import moment from 'moment'
 import queryString from 'query-string'
@@ -175,7 +193,7 @@ export default {
         this.initForm()
         this.initTables()
     },
-    methods: {  
+    methods: {
         clickDownload(type) {
             let query = queryString.stringify({
                 ...this.form
@@ -194,14 +212,15 @@ export default {
                 id: null,
                 item_id: null,
                 warehouse_id: null,
-                movement_type: 'input',
+                movement_type: 'all',
                 inventory_transaction_id: null,
                 date_start:null,
                 date_end:null,
+                order_inventory_transaction_id: true,
             }
 
             this.changeMovementType()
-        }, 
+        },
         changeDisabledDates() {
             if (this.form.date_end < this.form.date_start) {
                 this.form.date_end = this.form.date_start
@@ -216,7 +235,7 @@ export default {
                 })
 
             await this.searchRemoteItems('')
-            
+
         },
         async create() {
 
@@ -239,7 +258,7 @@ export default {
                 .then(()=>{
                     this.loading_search = false
                 })
-        }, 
+        },
         customIndex(index) {
             return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
         },
@@ -278,6 +297,11 @@ export default {
                 limit: this.limit,
                 ...this.form
             })
+        },
+        downloadPdfGuide(guide_id) {
+            if (guide_id) {
+                window.open(`/reports/kardex/get_pdf_guide/${guide_id}`, "_blank");
+            }
         },
         close() {
             this.$emit('update:showDialog', false)

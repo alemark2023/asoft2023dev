@@ -30,6 +30,11 @@ use Modules\Sale\Models\Contract;
 use Modules\Sale\Models\SaleOpportunity;
 use Modules\Sale\Models\TechnicalService;
 use Modules\Sale\Models\UserCommission;
+use App\Models\Tenant\Configuration;
+use Modules\Restaurant\Models\RestaurantRole;
+use Modules\MobileApp\Models\AppModule;
+use Modules\LevelAccess\Models\SystemActivityLog;
+use Modules\LevelAccess\Models\AuthorizedDiscountUser;
 
 
 /**
@@ -142,6 +147,7 @@ use Modules\Sale\Models\UserCommission;
  * @property int|null $user_commissions_count
  * @property int|null $voideds_count
  * @property int|null $zone_id
+ * @property int|null $restaurant_role_id
 
  */
 class User extends Authenticatable
@@ -173,10 +179,36 @@ class User extends Authenticatable
         'permission_edit_cpe',
         'recreate_documents',
         'zone_id',
+        'restaurant_role_id',
+        
+        'delete_payment',
+        'create_payment',
+
+        'edit_purchase',
+        'annular_purchase',
+        'delete_purchase',
+
+        'last_password_update',
 
         // 'email_verified_at',
         // 'api_token',
         // 'remember_token',
+
+        // informacion personal
+        'names',
+        'last_names',
+        'personal_email',
+        'corporate_email',
+        'personal_cell_phone',
+        'corporate_cell_phone',
+        'date_of_birth',
+        'contract_date',
+        'position',
+        'photo_filename',
+        // informacion personal
+
+        'multiple_default_document_types',
+        'permission_force_send_by_summary',
 
     ];
 
@@ -197,6 +229,15 @@ class User extends Authenticatable
         'establishment_id' => 'int',
         'zone_id' => 'int',
         'locked' => 'bool',
+
+        'delete_payment' => 'bool',
+        'create_payment' => 'bool',
+
+        'edit_purchase'=>'bool',
+        'annular_purchase'=>'bool',
+        'delete_purchase'=>'bool',
+        'multiple_default_document_types'=>'bool',
+        'permission_force_send_by_summary' => 'boolean',
     ];
 
     public function modules()
@@ -207,6 +248,11 @@ class User extends Authenticatable
     public function levels()
     {
         return $this->belongsToMany(ModuleLevel::class);
+    }
+
+    public function default_document_types()
+    {
+        return $this->hasMany(UserDefaultDocumentType::class);
     }
 
     public function authorizeModules($modules)
@@ -315,6 +361,11 @@ class User extends Authenticatable
         return $this->hasMany(SaleNote::class,
 'seller_id',
 'id');
+    }
+
+    public function restaurant_role()
+    {
+        return $this->belongsTo(RestaurantRole::class);
     }
 
     public function scopeWhereTypeUser($query)
@@ -618,6 +669,21 @@ $withEstablishment = true){
     }
 
     /**
+     * @return array
+     */
+    public function getCollectionRestaurantData(){
+        return [
+            'id' => $this->id,
+            'email' => $this->email,
+            'name' => $this->name,
+            'restaurant_role_id' => $this->restaurant_role_id,
+            'restaurant_role_name' => $this->restaurant_role_id ? $this->restaurant_role->name : '',
+            'restaurant_role_code' => $this->restaurant_role_id ? $this->restaurant_role->code : '',
+            'locked' => (bool) $this->locked,
+        ];
+    }
+
+    /**
      * @return HasMany
      */
     public function cashes()
@@ -817,6 +883,20 @@ $withEstablishment = true){
         return $this->hasMany(Voided::class);
     }
 
+    public function app_modules()
+    {
+        return $this->belongsToMany(AppModule::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function authorized_discount_users()
+    {
+        return $this->hasMany(AuthorizedDiscountUser::class);
+    }
+
+
     /**
      * Devuelve las series que puede seleccionar el usuario.
      *
@@ -858,4 +938,284 @@ $withEstablishment = true){
             ->get();
 
     }
+
+        
+    /**
+     * 
+     * Validar si aplica el filtro por vendedor para el usuario en sesión (filtrar clientes por vendedor asignado)
+     *
+     * Usado en:
+     * Person - scopeWhereFilterCustomerBySeller
+     * 
+     * @return bool
+     */
+    public function applyCustomerFilterBySeller()
+    {
+        $configuration = Configuration::select('customer_filter_by_seller')->first();
+
+        return ($this->type === 'seller' && $configuration->customer_filter_by_seller);
+    }
+
+    
+    /**
+     * 
+     * Obtener permisos para pagos de comprobantes
+     *
+     * @return array
+     */
+    public function getPermissionsPayment()
+    {
+        return [
+            'create_payment' => $this->create_payment,
+            'delete_payment' => $this->delete_payment,
+        ];
+    }
+
+    
+    /**
+     * 
+     * Retorna data para los permisos de la app
+     *
+     * @return array
+     */
+    public function getRowAppPermission()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'app_modules' => $this->getDataAppModules()
+        ];
+    }
+    
+    
+    /**
+     * 
+     * Obtener modulos de la app
+     *
+     * @return array
+     */
+    public function getDataAppModules()
+    {
+
+        $app_modules = [];
+        $all_app_modules = AppModule::get();
+
+        $selected_app_modules = $this->app_modules->pluck('id')->toArray();
+
+        foreach ($all_app_modules as $app_module)
+        {
+            $app_modules[] = [
+                'id' => $app_module->id,
+                'description' => $app_module->description,
+                'value' => $app_module->value,
+                'checked' => (bool) in_array($app_module->id, $selected_app_modules)
+            ];
+        }
+
+        return $app_modules;
+    }
+
+
+    /**
+     * 
+     * Obtener permisos del usuario para gestionar modulos en la app
+     *
+     * @return array
+     */
+    public function getAppPermission()
+    {
+        // si es usuario principal y no tiene permisos asignados
+        if($this->id === 1 && $this->type === 'admin')
+        // if($this->id === 1 && $this->type === 'admin' && $this->app_modules->count() === 0)
+        {
+            return $this->getTransformPermissionsApp(AppModule::get());
+        }
+        
+        return $this->getTransformPermissionsApp($this->app_modules);
+
+    }
+    
+
+    /**
+     * 
+     * Obtener modulos/opciones disponibles en pos app
+     *
+     * @return array
+     */
+    public function getPosDocumentTypes()
+    {
+        return [
+            ['document_type_id' => '01', 'module' => 'invoice'],
+            ['document_type_id' => '03', 'module' => 'invoice-ticket'],
+            ['document_type_id' => '80', 'module' => 'sale-note'],
+        ];
+    }
+
+
+    /**
+     * 
+     * Retornar data para api
+     *
+     * @param  array $data
+     * @return array
+     */
+    public function getTransformPermissionsApp($data)
+    {
+        return $data->transform(function($row){
+            return $row->getPermissionsApp();
+        });
+    }
+    
+
+    /**
+     * 
+     * Obtener datos generales del usuario
+     * 
+     * Usado para carga inicial en app
+     *
+     * @return array
+     */
+    public function getGeneralDataApp()
+    {
+        return [
+            'type' => $this->type,
+            'establishment_id' => $this->establishment_id,
+        ];
+    }
+    
+    public function getPermissionsPurchase()
+    {
+        return [
+            'edit_purchase' => $this->edit_purchase,
+            'annular_purchase' => $this->annular_purchase,
+            'delete_purchase' => $this->delete_purchase,
+        ];
+    }
+
+        
+    /**
+     *
+     * @return string
+     */
+    public function getPhotoForView()
+    {
+        return $this->photo_filename ? (new ModelTenant)->getPathPublicUploads('users', $this->photo_filename) : null;
+    }
+
+    
+    /**
+     * 
+     * Filtro para no incluir relaciones en consulta
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */  
+    public function scopeWhereFilterWithOutRelations($query)
+    {
+        return $query->withOut([
+            'establishment',
+        ]);
+    }
+
+        
+    /**
+     * 
+     * Retorna nombre de la conexión
+     *
+     * @return string
+     */
+    public function getDbConnectionName()
+    {
+        return $this->getConnection()->getName();
+    }
+    
+
+    public function system_activity_logs()
+    {
+        return $this->morphMany(SystemActivityLog::class, 'origin');
+    }
+
+    
+    /**
+     * 
+     * Filtro para no incluir relaciones en consulta y obtener el nombre de usuario
+     *
+     * @param Builder $query
+     * @return Builder
+     */  
+    public function scopeFilterOnlyUsername($query)
+    {
+        return $query->whereFilterWithOutRelations()->select('id', 'name');
+    }
+
+
+
+    public function getDataOnlyAuthUser()
+    {
+        return [
+            'name' => $this->name,
+            'email' => $this->email,
+            'password' => $this->password,
+            'establishment_id' => $this->establishment_id,
+            'type' => $this->type,
+            'locked' => $this->locked,
+            'identity_document_type_id' => $this->identity_document_type_id,
+            'number' => $this->number,
+            'address' => $this->address,
+            'telephone' => $this->telephone,
+            'document_id' => $this->document_id,
+            'series_id' => $this->series_id,
+            'permission_edit_cpe' => $this->permission_edit_cpe,
+            'recreate_documents' => $this->recreate_documents,
+            'zone_id' => $this->zone_id,
+            'restaurant_role_id' => $this->restaurant_role_id,
+            'delete_payment' => $this->delete_payment,
+            'create_payment' => $this->create_payment,
+            'edit_purchase' => $this->edit_purchase,
+            'annular_purchase' => $this->annular_purchase,
+            'delete_purchase' => $this->delete_purchase,
+            'names' => $this->names,
+            'last_names' => $this->last_names,
+            'personal_email' => $this->personal_email,
+            'corporate_email' => $this->corporate_email,
+            'personal_cell_phone' => $this->personal_cell_phone,
+            'corporate_cell_phone' => $this->corporate_cell_phone,
+            'date_of_birth' => $this->date_of_birth,
+            'contract_date' => $this->contract_date,
+            'position' => $this->position,
+            'photo_filename' => $this->photo_filename,
+            'multiple_default_document_types' => $this->multiple_default_document_types,
+            'default_document_types' => $this->default_document_types,
+            'permission_force_send_by_summary' => $this->permission_force_send_by_summary,
+        ];
+    }
+
+
+    /**
+     * 
+     * Permisos de los modulos y submodulos por usuario
+     *
+     * @return array
+     */
+    public function getWebPermissionsByUser()
+    {
+        $modules_id = $this->getCurrentModuleByTenant()->pluck('module_id')->toArray();
+        $levels_id = $this->getCurrentModuleLevelByTenant()->pluck('module_level_id')->toArray();
+        $modules = Module::whereIn('id', $modules_id)->get();
+        $show_modules = [];
+
+        foreach ($modules as $module)
+        {
+            $show_modules [] = [
+                'id' => $module->id,
+                'value' => $module->value,
+                'description' => $module->description,
+                'levels' => $module->levels()->whereIn('id', $levels_id)->select(['id', 'value', 'description', 'module_id'])->get(),
+            ];
+        }
+
+        return $show_modules;
+    }
+
 }

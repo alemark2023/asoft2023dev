@@ -238,4 +238,35 @@
             return $warehouse_description;
         }
 
+
+        /**
+         * @param $is_garage
+         *
+         * @return bool
+         */
+        public static  function setBoolIsGarage(&$is_garage)
+        {
+            if(is_string($is_garage))
+            {
+                $is_garage = $is_garage == 'true';
+            }
+        }
+
+
+        /**
+         * 
+         * @param $value
+         *
+         * @return bool
+         */
+        public static function getBoolValue($value)
+        {
+            if(is_string($value))
+            {
+                $value = $value === 'true';
+            }
+
+            return $value;
+        }
+
     }

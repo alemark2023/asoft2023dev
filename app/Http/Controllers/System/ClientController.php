@@ -22,6 +22,8 @@
     use Illuminate\Support\Collection;
     use Illuminate\Support\Facades\DB;
     use Modules\Document\Helpers\DocumentHelper;
+    use Modules\MobileApp\Models\System\AppModule;
+    use App\CoreFacturalo\ClientHelper;
 
 
     class ClientController extends Controller
@@ -58,13 +60,81 @@
                     return $this->prepareModules($module);
                 });
 
+            // luego se podria crear grupos mediante algun modulo, de momento se pasan los id de manera directa
+            $group_basic = Module::with('levels')
+                ->whereIn('id', [7,1,6,17,18,5,14])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_hotel = Module::with('levels')
+                ->whereIn('id', [7,1,6,17,18,5,14,8,4])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_pharmacy = Module::with('levels')
+                ->whereIn('id', [7,1,6,17,18,5,14,8,4])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_restaurant = Module::with('levels')
+                ->whereIn('id', [7,1,6,17,18,5,14,8,4])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_hotel_apps = Module::with('levels')
+                ->whereIn('id', [15])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_pharmacy_apps = Module::with('levels')
+                ->whereIn('id', [19])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+            $group_restaurant_apps = Module::with('levels')
+                ->whereIn('id', [23])
+                ->orderBy('sort')
+                ->get()
+                ->each(function ($module) {
+                    return $this->prepareModules($module);
+                });
+
             $config = Configuration::first();
 
             $certificate_admin = $config->certificate;
             $soap_username = $config->soap_username;
             $soap_password = $config->soap_password;
+            $regex_password_client = $config->regex_password_client;
 
-            return compact('url_base', 'plans', 'types', 'modules', 'apps', 'certificate_admin', 'soap_username', 'soap_password');
+            return compact(
+                'url_base',
+                'plans',
+                'types',
+                'modules',
+                'apps',
+                'certificate_admin',
+                'soap_username',
+                'soap_password',
+                'group_basic',
+                'group_hotel',
+                'group_pharmacy',
+                'group_restaurant',
+                'group_hotel_apps',
+                'group_pharmacy_apps',
+                'regex_password_client',
+                'group_restaurant_apps');
         }
 
         private function prepareModules(Module $module): Module
@@ -103,10 +173,15 @@
                 $row->count_user = DB::connection('tenant')
                     ->table('users')
                     ->count();
+                $row->count_sales_notes = DB::connection('tenant')
+                ->table('configurations')
+                ->first()
+                ->quantity_sales_notes;
                 $quantity_pending_documents = $this->getQuantityPendingDocuments();
                 $row->document_regularize_shipping = $quantity_pending_documents['document_regularize_shipping'];
                 $row->document_not_sent = $quantity_pending_documents['document_not_sent'];
                 $row->document_to_be_canceled = $quantity_pending_documents['document_to_be_canceled'];
+                $row->monthly_sales_total = 0;
 
                 if ($row->start_billing_cycle) {
 
@@ -120,11 +195,43 @@
 
                     $row->count_doc_month = DB::connection('tenant')->table('documents')->whereBetween('date_of_issue', [$init, $end])->count();
 
-                }
+                    $row->count_sales_notes_month = DB::connection('tenant')->table('sale_notes')->whereBetween('date_of_issue', [$init, $end])->count();
 
+                    if ($row->count_sales_notes_month>0) {
+                        if ($row->count_sales_notes!=$row->count_sales_notes_month) {
+                            $row->count_sales_notes = DB::connection('tenant')
+                            ->table('configurations')
+                            ->where('id', 1)
+                            ->update([
+                                'quantity_sales_notes' => $row->count_sales_notes_month
+                            ]);
+                        }
+                    }
+                    $row->count_sales_notes = DB::connection('tenant')
+                    ->table('configurations')
+                    ->first()
+                    ->quantity_sales_notes;
+                    //dd($row->count_sales_notes);
+
+                    $client_helper = new ClientHelper();
+                    $row->monthly_sales_total = $client_helper->getSalesTotal($init->format('Y-m-d'), $end->format('Y-m-d'), $row->plan);
+                }
+                
+                $row->quantity_establishments = $this->getQuantityRecordsFromTable('establishments');
             }
 
             return new ClientCollection($records);
+        }
+
+        
+        /**
+         *
+         * @param  string $table
+         * @return int
+         */
+        private function getQuantityRecordsFromTable($table)
+        {
+            return DB::connection('tenant')->table($table)->count();
         }
 
 
@@ -546,6 +653,7 @@
             ]);
 
             $plan = Plan::findOrFail($request->input('plan_id'));
+            $http = config('tenant.force_https') == true ? 'https://' : 'http://';
 
             DB::connection('tenant')->table('configurations')->insert([
                 'send_auto' => true,
@@ -560,7 +668,7 @@
                 'config_system_env' => $request->config_system_env,
                 'login' => json_encode([
                     'type' => 'image',
-                    'image' => asset('images/login-v2.svg'),
+                    'image' => $http.$fqdn.'/images/fondo-5.svg',
                     'position_form' => 'right',
                     'show_logo_in_form' => false,
                     'position_logo' => 'top-left',
@@ -569,7 +677,19 @@
                     'twitter' => null,
                     'instagram' => null,
                     'linkedin' => null,
-                ])
+                ]),
+                'visual' => json_encode([
+                    'bg' => 'white',
+                    'header' => 'light',
+                    'navbar' => 'fixed',
+                    'sidebars' => 'light',
+                    'sidebar_theme' => 'white'
+                ]),
+                'skin_id' => 2,
+                'top_menu_a_id' => 1,
+                'top_menu_b_id' => 15,
+                'top_menu_c_id' => 76,
+                'quantity_sales_notes' => 0
             ]);
 
 
@@ -604,6 +724,10 @@
                 ['establishment_id' => 1, 'document_type_id' => '40', 'number' => 'P001'],
                 ['establishment_id' => 1, 'document_type_id' => '80', 'number' => 'NV01'],
                 ['establishment_id' => 1, 'document_type_id' => '04', 'number' => 'L001'],
+
+                ['establishment_id' => 1, 'document_type_id' => 'U2', 'number' => 'NIA1'],
+                ['establishment_id' => 1, 'document_type_id' => 'U3', 'number' => 'NSA1'],
+                ['establishment_id' => 1, 'document_type_id' => 'U4', 'number' => 'NTA1'],
             ]);
 
 
@@ -616,6 +740,7 @@
                 'type' => $request->input('type'),
                 'locked' => true,
                 'permission_edit_cpe' => true,
+                'last_password_update' => date('Y-m-d H:i:s'),
             ]);
 
 
@@ -634,6 +759,9 @@
                 }
                 DB::connection('tenant')->table('module_user')->insert($array_modules);
                 DB::connection('tenant')->table('module_level_user')->insert($array_levels);
+
+                $this->insertAppModules($user_id);
+
             } else {
                 DB::connection('tenant')->table('module_user')->insert([
                     ['module_id' => 1, 'user_id' => $user_id],
@@ -659,6 +787,27 @@
 
         }
 
+
+        /**
+         *
+         * Registrar modulos de la app al usuario principal
+         *
+         * @param  int $user_id
+         * @return void
+         */
+        private function insertAppModules($user_id)
+        {
+            $all_app_modules = AppModule::get()->map(function($row) use($user_id){
+                                    return [
+                                        'app_module_id' => $row->id,
+                                        'user_id' => $user_id,
+                                    ];
+                                })->toArray();
+
+            DB::connection('tenant')->table('app_module_user')->insert($all_app_modules);
+        }
+
+
         public function renewPlan(Request $request)
         {
 
@@ -676,6 +825,7 @@
             ]);
 
             DB::connection('tenant')->table('configurations')->where('id', 1)->update(['quantity_documents' => 0]);
+            DB::connection('tenant')->table('configurations')->where('id', 1)->update(['quantity_sales_notes' => 0]);
 
 
             return [
@@ -743,9 +893,42 @@
         }
 
 
-        public function destroy($id)
+        /**
+         *
+         * Validar si el valor de confirmacion ingresado por el usuario es
+         * igual al ruc o nombre de la empresa, para poder eliminar el cliente
+         *
+         * @param  Client $client
+         * @param  string $input_validate
+         * @return array
+         */
+        public function checkInputValidateDelete(Client $client, $input_validate)
+        {
+
+            if($input_validate === $client->name || $input_validate === $client->number)
+            {
+                return $this->generalResponse(true);
+            }
+
+            return $this->generalResponse(false, 'El valor ingresado no coincide con el nombre o número de ruc de la empresa.');
+
+        }
+
+
+        /**
+         *
+         * Eliminar cliente
+         *
+         * @param  int $id
+         * @param  string $input_validate
+         * @return array
+         */
+        public function destroy($id, $input_validate)
         {
             $client = Client::find($id);
+
+            $check_input_validate_delete = $this->checkInputValidateDelete($client, $input_validate);
+            if(!$check_input_validate_delete['success']) return $check_input_validate_delete;
 
             if ($client->locked) {
                 return [
@@ -829,6 +1012,26 @@
                     //'temp_image' => 'data:' . $mime . ';base64,' . base64_encode($data)
                 ]
             ];
+        }
+
+                
+        /**
+         *
+         * @param  Request $request
+         * @return array
+         */
+        public function lockedByColumn(Request $request)
+        {
+            $column = $request->column;
+            $client = Client::findOrFail($request->id);
+            $client->{$column} = $request->{$column};
+            $client->save();
+
+            $tenancy = app(Environment::class);
+            $tenancy->tenant($client->hostname->website);
+            DB::connection('tenant')->table('configurations')->where('id', 1)->update([$column => $client->{$column}]);
+
+            return $this->generalResponse(true, $client->{$column} ? 'Activado correctamente' : 'Desactivado correctamente');
         }
 
 

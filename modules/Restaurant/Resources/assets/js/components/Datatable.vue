@@ -102,6 +102,11 @@ export default {
             required: false
         },
         pharmacy: Boolean,
+        reference: {
+            type: String,
+            default: 'restaurant',
+            required: false
+        }
     },
     data() {
         return {
@@ -165,6 +170,10 @@ export default {
             if (this.productType == 'PRODUCTS') {
                 // Debe listar solo productos
                 this.search.type = this.productType;
+            }
+            if (this.reference != '') {
+                // filtrar por referencia según de que menu es llamado
+                this.search.reference_number = this.reference;
             }
             return queryString.stringify({
                 page: this.pagination.current_page,

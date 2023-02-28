@@ -84,6 +84,7 @@
             'supplier',
             'exchange_rate_sale',
             'total',
+            'filename',
         ];
 
         protected $casts = [
@@ -200,11 +201,17 @@
          *
          * @return Builder|null
          */
-        public function scopeWhereTypeUser(Builder $query)
+        public function scopeWhereTypeUser(Builder $query, $params = [])
         {
-            $user = auth()->user();
-            if (null === $user) {
-                $user = new User();
+            if(isset($params['user_id'])) {
+                $user_id = (int)$params['user_id'];
+                $user = User::find($user_id);
+                if(!$user) {
+                    $user = new User();
+                }
+            }
+            else { 
+                $user = auth()->user();
             }
             return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
         }
@@ -248,4 +255,34 @@
         {
             return $this->hasMany(ExpensePayment::class);
         }
+
+        
+        /**
+         * 
+         * Validar si el registro esta rechazado o anulado
+         * 
+         * @return bool
+         */
+        public function isVoidedOrRejected()
+        {
+            return in_array($this->state_type_id, self::VOIDED_REJECTED_IDS);
+        }
+
+
+        /**
+         * 
+         * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeFilterRelationsGlobalPayment($query)
+        {
+            return $query->with([
+                    'document_type'=> function($q){
+                        $q->select('id', 'description');
+                    }, 
+                ]);
+        }
+
     }

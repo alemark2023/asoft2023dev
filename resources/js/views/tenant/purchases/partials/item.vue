@@ -110,6 +110,7 @@
                                 <el-input v-if="form.item.currency_type_id !== undefined"
                                           v-model="form.unit_price"
                                           class="input-with-select"
+                                          :filterable="false"
                                 >
                                     <el-select slot="prepend"
                                                v-model="form.item.currency_type_id"
@@ -248,6 +249,18 @@
                                        v-text="errors.lot_code[0]"></small>
                             </div>
                         </div>
+                        
+                        <div v-if="config.edit_name_product"
+                            class="col-md-12 col-sm-12 mt-2">
+                            <div class="form-group">
+                                <label class="control-label">Nombre producto en PDF</label>
+                                <vue-ckeditor
+                                    v-model="form.name_product_pdf"
+                                    :editors="editors"
+                                    type="classic"></vue-ckeditor>
+                            </div>
+                        </div>
+
                     </div>
 
                 </el-tab-pane>
@@ -569,14 +582,24 @@ import Keypress from "vue-keypress";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import moment from "moment";
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
+import VueCkeditor from 'vue-ckeditor5'
+
 
 export default {
     props: [
         'showDialog',
         'currencyTypeIdActive',
-        'exchangeRateSale'
+        'exchangeRateSale',
+        'localHasGlobalIgv',
+        'percentageIgv'
     ],
-    components: {itemForm, LotsForm, Keypress},
+    components: {
+        itemForm, 
+        LotsForm, 
+        Keypress,
+        'vue-ckeditor': VueCkeditor.component
+    },
     computed: {
         ...mapState([
             'config',
@@ -666,6 +689,9 @@ export default {
             lot_code: null,
             change_affectation_igv_type_id: false,
             prices: {},
+            editors: {
+                classic: ClassicEditor
+            },
         }
     },
     created() {
@@ -794,7 +820,9 @@ export default {
                 purchase_has_igv: null,
                 update_price: false,
                 update_date_of_due: false,
-                update_purchase_price: true,
+                update_purchase_price: this.config.checked_update_purchase_price,
+                // update_purchase_price: true,
+                name_product_pdf: ''
             }
 
             this.item_unit_type = {};
@@ -879,17 +907,28 @@ export default {
             this.form.purchase_has_igv = this.form.item.purchase_has_igv;
             this.setExtraElements(this.form.item);
             this.setGlobalIgvToItem()
+            this.setGlobalPurchaseCurrencyToItem()
 
             //asignar variables isc
             this.form.has_isc = this.form.item.purchase_has_isc
             this.form.percentage_isc = this.form.item.purchase_percentage_isc
             this.form.system_isc_type_id = this.form.item.purchase_system_isc_type_id
-            
+
+        },
+        setGlobalPurchaseCurrencyToItem(){
+
+            if(this.config.set_global_purchase_currency_items)
+            {
+                this.form.item.currency_type_id = this.currencyTypeIdActive
+            }
+
         },
         setGlobalIgvToItem() {
             if (this.config.enabled_global_igv_to_purchase === true) {
                 // Ajusta el igv, si es global, se lo añade o quita al precio del item directamente
-                this.form.purchase_has_igv = this.hasGlobalIgv
+                // this.form.purchase_has_igv = this.hasGlobalIgv
+                this.form.purchase_has_igv = this.localHasGlobalIgv
+
             }
         },
 
@@ -932,7 +971,7 @@ export default {
 
             if (!affectation_igv_types_exonerated_unaffected.includes(this.form.affectation_igv_type_id)) {
 
-                unit_price = (this.form.purchase_has_igv) ? this.form.unit_price : this.form.unit_price * 1.18;
+                unit_price = (this.form.purchase_has_igv) ? this.form.unit_price : this.form.unit_price * (1 + this.percentageIgv);
 
             }
 
@@ -944,7 +983,7 @@ export default {
             this.form.item.unit_price = unit_price
             this.form.item.presentation = this.item_unit_type;
             this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
-            this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
+            this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv)
             this.row.lot_code = await this.lot_code
             this.row.lots = await this.lots
             this.row.update_price = this.form.update_price
@@ -956,6 +995,7 @@ export default {
 
             this.row.date_of_due = date_of_due
 
+            this.row.item.name_product_pdf = this.row.name_product_pdf || ''
 
             this.initForm()
 

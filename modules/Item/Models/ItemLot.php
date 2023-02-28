@@ -5,6 +5,9 @@ namespace Modules\Item\Models;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\ModelTenant;
 use Modules\Inventory\Models\Warehouse;
+use Modules\Inventory\Models\InventoryTransferItem;
+use Illuminate\Database\Eloquent\Builder;
+
 
 /**
  * Modules\Item\Models\ItemLot
@@ -31,6 +34,10 @@ class ItemLot extends ModelTenant
         'state'
     ];
 
+    protected $casts = [
+        'has_sale' => 'boolean',
+    ];
+
     public function item()
     {
         return $this->belongsTo(Item::class);
@@ -44,6 +51,11 @@ class ItemLot extends ModelTenant
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
+    }
+
+    public function inventory_transfer_item()
+    {
+        return $this->hasMany(InventoryTransferItem::class);
     }
 
     /**
@@ -209,5 +221,20 @@ class ItemLot extends ModelTenant
     //     });
 
     // }
+
+
+    /**
+     *
+     * Filtrar series disponibles
+     *
+     * @param  Builder $query
+     * @param  int $item_id
+     * @return Builder
+     */
+    public function scopeWhereAvailableItemLot($query, $item_id)
+    {
+        $query->where('item_id', $item_id)->where('has_sale', false)->where('warehouse_id', $this->getCurrentWarehouseId());
+    }
+
 
 }

@@ -241,6 +241,16 @@
         </tr>
     </tbody>
     <tfoot style="border-top: 1px solid #333;">
+
+        
+    @if ($document->payment_condition_id === '02' && $document->isCreditNoteAndType13())
+        @foreach($document->fee as $key => $quote)
+            <tr>
+                <td colspan="5" >&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1) : $quote->getStringPaymentMethodType()) }} / Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
+            </tr>
+        @endforeach
+    @endif
+
     <tr>
         <td colspan="5" class="font-lg"  style="padding-top: 2rem;text-transform: uppercase;">Son: <span class="font-bold">{{ $document->number_to_letter }} {{ $document->currency_type->description }}</span></td>
     </tr>

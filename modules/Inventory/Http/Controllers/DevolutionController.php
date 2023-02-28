@@ -20,16 +20,13 @@ use Mpdf\Config\FontVariables;
 use Exception;
 use Modules\Inventory\Models\Devolution;
 use Modules\Inventory\Models\DevolutionReason;
-use Modules\Inventory\Models\DevolutionItem;
 use Modules\Inventory\Http\Resources\DevolutionCollection;
-use Modules\Inventory\Http\Resources\DevolutionResource;
 use Modules\Inventory\Http\Requests\DevolutionRequest;
 use App\Models\Tenant\Configuration;
 
 
 class DevolutionController extends Controller
 {
-
     use StorageDocument;
 
     protected $devolution;
@@ -80,11 +77,11 @@ class DevolutionController extends Controller
         return compact('items');
     }
 
-    public function record($id)
-    {
-        $record = new DevolutionResource(Devolution::findOrFail($id));
-        return $record;
-    }
+//    public function record($id)
+//    {
+//        $record = new DevolutionResource(Devolution::findOrFail($id));
+//        return $record;
+//    }
 
     public function getFullDescription($row){
 
@@ -114,8 +111,8 @@ class DevolutionController extends Controller
                         'internal_id' => $row['item']['internal_id'],
                         'unit_type_id' => $row['item']['unit_type_id'],
                         'lot_selected' => isset($row['item']['lot_selected']) ? $row['item']['lot_selected'] : null,
-                        'lots' => self::lots($row),
-                        'IdLoteSelected' => ( isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null )
+//                        'lots' => self::lots($row),
+                        'IdLoteSelected' =>  isset($row['IdLoteSelected']) ? json_encode($row['IdLoteSelected']) : null
                     ],
                     'quantity' => $row['quantity'],
                 ]);

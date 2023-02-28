@@ -140,6 +140,12 @@
                             <el-input v-model="search.guides" clearable></el-input>
                         </div>
                     </div>
+                    <div class="col-lg-2 col-md-2 col-sm-12 pb-2">
+                        <div class="form-group"  >
+                            <label class="control-label">Placa</label>
+                            <el-input v-model="search.plate_numbers" clearable></el-input>
+                        </div>
+                    </div>
                     <div class="col-lg-2 col-md-2 col-sm-12 mt-4">
                         <div class="form-group"  >
                             <el-checkbox v-model="search.pending_payment" >PEND. DE PAGO</el-checkbox>
@@ -160,6 +166,7 @@
                 <div class="row col-md-12 mt-1 mb-3 " v-if="totals !== undefined && totals!== null && totals.length>0">
                     <div class="col-md-6 col-sm-12 row"
                      v-for="(row, index) in totals" :row="row"
+                     :key="index"
                      >
                     <div class="col-md-6">
                         {{row.name}}

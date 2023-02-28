@@ -6,6 +6,13 @@
                 :key-code="112"
                 @success="handleFn112"
             />
+            
+            <!-- F4 -->
+            <Keypress :key-code="115"
+                key-event="keyup"
+                @success="handleFn115"/>
+            <!-- F4 -->
+
             <div class="col-md-4">
                 <h2>
                     <el-switch
@@ -138,6 +145,9 @@
                         @keyup.native="keyupTabCustomer"
                         ref="ref_search_items"
                         class="m-bottom mt-3"
+
+                        @focus="searchFromBarcode = true"
+                        @blur="searchFromBarcode = false"
                     >
                         <el-button
                             slot="append"
@@ -226,6 +236,7 @@
                                     </p>
                                 </div>
                                 <div class="card-footer pointer text-center bg-primary">
+
                                     <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
                   <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button> -->
                                     <template v-if="!item.edit_unit_price">
@@ -273,6 +284,8 @@
                                             ></el-button>
                                         </el-input>
                                     </template>
+
+
                                 </div>
                                 <div
                                     v-if="configuration.options_pos"
@@ -483,6 +496,30 @@
                                                 </el-popover>
                                             </el-tooltip>
                                         </el-col>
+
+
+                                        <el-col :span="6" v-if="allowedChangeAffectationExoneratedIgv(item.sale_affectation_igv_type_id)">
+                                            <el-tooltip class="item" effect="dark" content="Modificar el tipo de afectación" placement="bottom-end">
+
+                                                <el-popover
+                                                    placement="top"
+                                                    title="Seleccionar tipo de afectación"
+                                                    width="330"
+                                                    trigger="click"
+                                                >
+                                                    <div v-for="(row, index) in getAffectationExoneratedIgv" class="pt-1 mt-1 pb-1">
+                                                        <el-radio v-model="item.sale_affectation_igv_type_id" :label="row.id" @change="changeAffectationExoneratedIgv(row, item)">{{row.description}}</el-radio>
+                                                    </div>
+
+                                                    <button slot="reference" style="width:100%" type="button" class="btn btn-xs btn-primary-pos">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </button>
+
+                                                </el-popover>
+
+                                            </el-tooltip>
+                                        </el-col>
+
                                     </el-row>
                                 </div>
                             </section>
@@ -500,6 +537,8 @@
                     :records="items"
                     :typeUser="typeUser"
                     :visibleTagsCustomer="focusClienteSelect"
+                    :searchFromBarcode="searchFromBarcode"
+                    :originIsGarage="true"
                 ></table-items>
 
                 <div v-if="place == 'prod' || place == 'cat2'" class="row">
@@ -592,10 +631,7 @@
                                             <small>
                                                 {{ nameSets(item.item_id) }}
                                             </small>
-                                          
                                         </td>
-                                       
-
                                         <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
                                             {{ currency_type.symbol }}
                                         </td>
@@ -607,7 +643,7 @@
                                                     @input="calculateQuantity(index)"
                                                     @blur="blurCalculateQuantity(index)"
                                                     :readonly="!item.item.calculate_quantity">
-                                                   
+
                                                 </el-input>
                                             </template>
                                             <template v-else>
@@ -628,18 +664,23 @@
                 </div>
                 <div class="h-50 bg-light" style="overflow-y: auto">
                     <div class="row m-0 p-0 d-flex align-items-center">
-                        <fast-payment
-                            :is_payment.sync="is_payment"
-                            :form="form"
-                            :currency-type-id-active="form.currency_type_id"
-                            :currency-type-active="currency_type"
-                            :exchange-rate-sale="form.exchange_rate_sale"
-                            :customer="customer"
-                            :soapCompany="soapCompany"
-                            :businessTurns="businessTurns"
-                            :is-print="isPrint"
-                            :rows-items="form.items.length"
-                        ></fast-payment>
+
+                        <template v-if="show_fast_payment_garage">
+                            <fast-payment
+                                :is_payment.sync="is_payment"
+                                :form="form"
+                                :currency-type-id-active="form.currency_type_id"
+                                :currency-type-active="currency_type"
+                                :exchange-rate-sale="form.exchange_rate_sale"
+                                :customer="customer"
+                                :soapCompany="soapCompany"
+                                :businessTurns="businessTurns"
+                                :is-print="isPrint"
+                                :rows-items="form.items.length"
+                                ref="componentFastPaymentGarage"
+                            ></fast-payment>
+                        </template>
+
                     </div>
                 </div>
             </div>
@@ -769,9 +810,11 @@ import WarehousesDetail from "../items/partials/warehouses.vue";
 import queryString from "query-string";
 import TableItems from "./partials/table.vue";
 import ItemUnitTypes from "./partials/item_unit_types.vue";
+import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
     props: ["configuration", "soapCompany", "businessTurns", "typeUser", "isPrint"],
+
     components: {
         FastPayment,
         ItemForm,
@@ -822,12 +865,19 @@ export default {
             pagination: {},
             category_selected: "",
             focusClienteSelect: false,
-            itemUnitTypes: []
+            show_fast_payment_garage: false,
+            itemUnitTypes: [],
+            affectations_exonerated_igv: ['10', '20'],
+            searchFromBarcode: false,
         };
     },
     async created() {
+        this.loadConfiguration()
+
+        this.show_fast_payment_garage = false
         await this.initForm();
         await this.getTables();
+        await this.getPercentageIgv();
         this.events();
 
         await this.getFormPosLocalStorage();
@@ -836,10 +886,24 @@ export default {
 
         await this.selectDefaultCustomer();
 
+        this.show_fast_payment_garage = true
+
         this.form.establishment_id = this.establishment.id;
+
+        this.enabledSearchItemByBarcode()
+
     },
 
     computed: {
+        getAffectationExoneratedIgv()
+        {
+            return _.filter(this.affectation_igv_types, (row) =>{
+                return this.isExoneratedIgv(row.id)
+            })
+        },
+        ...mapState([
+            'config',
+        ]),
         classObjectCol() {
             let cols = this.configuration.colums_grid_item;
 
@@ -882,6 +946,52 @@ export default {
         }
     },
     methods: {
+        enabledSearchItemByBarcode()
+        {
+            if (this.configuration.search_item_by_barcode)
+            {
+                this.search_item_by_barcode = true
+            }
+        },
+        isExoneratedIgv(affectation_igv_type_id)
+        {
+            return this.affectations_exonerated_igv.includes(affectation_igv_type_id)
+        },
+        allowedChangeAffectationExoneratedIgv(affectation_igv_type_id)
+        {
+            if(this.configuration)
+            {
+                return (this.configuration.change_affectation_exonerated_igv && this.isExoneratedIgv(affectation_igv_type_id))
+            }
+
+            return false
+        },
+        changeAffectationExoneratedIgv(affectation_igv_type, item)
+        {
+            const exist_item = _.find(this.form.items, { item_id : item.item_id })
+
+            if(exist_item)
+            {
+                if(exist_item.affectation_igv_type_id != affectation_igv_type.id) this.$message.warning('Ya agregó el producto con otro tipo de afectación, para aplicar el cambio debe eliminarlo y agregarlo nuevamente.')
+            }
+
+            item.change_affectation_exonerated_igv = true
+        },
+        setOriginalAffectationToItems()
+        {
+            if(this.configuration !== undefined && this.configuration.change_affectation_exonerated_igv)
+            {
+                this.items.forEach(row => {
+                    
+                    if(row.change_affectation_exonerated_igv !== undefined && row.change_affectation_exonerated_igv && row.sale_affectation_igv_type_id != row.original_affectation_igv_type_id)
+                    {
+                        row.sale_affectation_igv_type_id = row.original_affectation_igv_type_id
+                    }
+
+                })
+            }
+        },
+        ...mapActions(['loadConfiguration']),
         keyupEnterQuantity() {
             this.initFocus();
         },
@@ -890,6 +1000,10 @@ export default {
         },
         handleFn113() {
             this.setView("cat3");
+        },
+        handleFn115()
+        {
+            this.openDialogNewPerson()
         },
         initFocus() {
             this.$refs.ref_search_items.$el
@@ -1077,9 +1191,36 @@ export default {
                 return;
             }
 
-            if (this.input_person.number) {
-                if (!isNaN(parseInt(this.input_person.number))) {
-                    switch (this.input_person.number.length) {
+            this.openDialogNewPerson()
+
+            // if (this.input_person.number) {
+            //     if (!isNaN(parseInt(this.input_person.number))) {
+            //         switch (this.input_person.number.length) {
+            //             case 8:
+            //                 this.input_person.identity_document_type_id = "1";
+            //                 this.showDialogNewPerson = true;
+            //                 break;
+
+            //             case 11:
+            //                 this.input_person.identity_document_type_id = "6";
+            //                 this.showDialogNewPerson = true;
+            //                 break;
+            //             default:
+            //                 this.input_person.identity_document_type_id = "6";
+            //                 this.showDialogNewPerson = true;
+            //                 break;
+            //         }
+            //     }
+            // }
+        },
+        openDialogNewPerson()
+        {
+            if (this.input_person.number) 
+            {
+                if (!isNaN(parseInt(this.input_person.number))) 
+                {
+                    switch (this.input_person.number.length) 
+                    {
                         case 8:
                             this.input_person.identity_document_type_id = "1";
                             this.showDialogNewPerson = true;
@@ -1143,7 +1284,8 @@ export default {
             this.row = calculateRowItem(
                 this.form.items[index],
                 this.form.currency_type_id,
-                1
+                1,
+                this.percentage_igv
             );
 
             // console.log(this.form.items[index])
@@ -1158,7 +1300,8 @@ export default {
             this.row = calculateRowItem(
                 this.form.items[index],
                 this.form.currency_type_id,
-                1
+                1,
+                this.percentage_igv
             );
             this.form.items[index] = this.row;
             this.calculateTotal();
@@ -1171,12 +1314,21 @@ export default {
             });
             this.customer = customer;
 
-            if (this.configuration.default_document_type_03) {
+            if (this.configuration.default_document_type_80)
+            {
+                this.form.document_type_id = "80"
+            }
+            else if (this.configuration.default_document_type_03)
+            {
                 this.form.document_type_id = "03";
             } else {
                 this.form.document_type_id =
                     customer.identity_document_type_id == "6" ? "01" : "03";
             }
+
+            // console.log(this.customer);
+
+            if(this.$refs.componentFastPaymentGarage) this.$refs.componentFastPaymentGarage.filterSeries()
 
             this.setLocalStorageIndex("customer", this.customer);
             this.setFormPosLocalStorage();
@@ -1208,15 +1360,20 @@ export default {
             );
 
             await this.$eventHub.$on("cancelSaleGarage", () => {
+
                 this.is_payment = false;
                 this.initForm();
                 this.changeExchangeRate();
                 this.cancelFormPosLocalStorage();
                 this.selectDefaultCustomer();
+
                 this.$nextTick(() => {
                     this.initFocus();
+                    if(this.$refs.componentFastPaymentGarage && !this.form.series_id) this.$refs.componentFastPaymentGarage.filterSeries()
                 });
-                this.form.establishment_id = this.establishment.id;
+
+                this.form.establishment_id = this.establishment.id
+
             });
 
             // await this.$eventHub.$on("indexInitFocus", () => {
@@ -1237,6 +1394,8 @@ export default {
                 this.initForm();
                 this.getTables();
                 this.setFormPosLocalStorage();
+                this.setOriginalAffectationToItems()
+
             });
 
             await this.$eventHub.$on("enterSelectItemUnitType", (unit_type) => {
@@ -1365,6 +1524,8 @@ export default {
         },
         clickDeleteCustomer() {
             this.form.customer_id = null;
+            this.customer = null;
+            this.setLocalStorageIndex("customer", null);
             this.setFormPosLocalStorage();
         },
         async clickAddItem(item, index, input = false) {
@@ -1428,7 +1589,7 @@ export default {
 
                 let unit_price = exist_item.item.has_igv
                     ? exist_item.item.sale_unit_price
-                    : exist_item.item.sale_unit_price * 1.18;
+                    : exist_item.item.sale_unit_price * (1 + this.percentage_igv);
                 // exist_item.unit_price = unit_price
                 exist_item.item.unit_price = unit_price;
 
@@ -1437,7 +1598,8 @@ export default {
                 this.row = calculateRowItem(
                     exist_item,
                     this.form.currency_type_id,
-                    exchangeRateSale
+                    exchangeRateSale,
+                    this.percentage_igv
                 );
 
 
@@ -1457,7 +1619,9 @@ export default {
                     return this.$message.error(response.message);
                 }
 
-                this.form_item.item = item;
+                // this.form_item.item = item;
+                this.form_item.item = { ...item }
+
                 this.form_item.unit_price_value = this.form_item.item.sale_unit_price;
                 this.form_item.has_igv = this.form_item.item.has_igv;
                 this.form_item.has_plastic_bag_taxes = this.form_item.item.has_plastic_bag_taxes;
@@ -1467,7 +1631,7 @@ export default {
 
                 let unit_price = this.form_item.has_igv
                     ? this.form_item.unit_price_value
-                    : this.form_item.unit_price_value * 1.18;
+                    : this.form_item.unit_price_value * (1 + this.percentage_igv);
 
                 this.form_item.unit_price = unit_price;
                 this.form_item.item.unit_price = unit_price;
@@ -1487,7 +1651,8 @@ export default {
                 this.row = calculateRowItem(
                     this.form_item,
                     this.form.currency_type_id,
-                    exchangeRateSale
+                    exchangeRateSale,
+                    this.percentage_igv
                 );
                 // console.log(this.row)
 
@@ -1522,6 +1687,20 @@ export default {
             this.loading = false;
 
             await this.setFormPosLocalStorage();
+
+            await this.setDefaultDataPriceSelected(item)
+
+        },
+        setDefaultDataPriceSelected(item)
+        {
+            if(item.apply_price_selected_add_product != undefined && item.apply_price_selected_add_product && this.configuration.price_selected_add_product)
+            {
+                item.sale_unit_price = parseFloat(item.aux_sale_unit_price)
+                item.unit_type_id = item.aux_unit_type_id
+                item.presentation = null
+
+                item.apply_price_selected_add_product = false
+            }
         },
         async getStatusStock(item_id, quantity) {
             let data = {};
@@ -1609,6 +1788,12 @@ export default {
             this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
             this.form.subtotal = this.form.total
 
+            this.checkPaymentGarage()
+        },
+        checkPaymentGarage(){
+
+            this.$eventHub.$emit('eventCheckPaymentGarage')
+
         },
         changeDateOfIssue() {
             // this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
@@ -1631,6 +1816,7 @@ export default {
                 this.establishment = response.data.establishment;
                 this.currency_types = response.data.currency_types;
                 this.user = response.data.user;
+                this.form.establishment_id = this.establishment.id;
                 this.form.currency_type_id =
                     this.currency_types.length > 0
                         ? this.currency_types[0].id
@@ -1800,7 +1986,8 @@ export default {
                     calculateRowItem(
                         row,
                         this.form.currency_type_id,
-                        this.form.exchange_rate_sale
+                        this.form.exchange_rate_sale,
+                        this.percentage_igv
                     )
                 );
             });

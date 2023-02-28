@@ -113,10 +113,12 @@
         @if ($add_state_type)
             <td>ESTADO</td>
         @endif
+        <td>OBSERVACION</td>
     </tr>
     @foreach($records as $row)
         <tr>
             <?php
+            $obs='';
             $date_of_issue = $row['date_of_issue'];
             $document_type_id = $row['document_type_id'];
             $state_type_id = $row['state_type_id'];
@@ -129,6 +131,8 @@
             $total = 0;
             $ok = 0;
             $total_isc = 0;
+
+            $obs=$row['observation'][0];
 
             $series = $row['series'];
             $number = $row['number'];
@@ -179,7 +183,8 @@
             <td>{{ $total }}</td>
 
             <td>{{ $exchange_rate_sale }}</td>
-            <td>{{ $currency_type_symbol }}</td>
+            <td>{{ $row['format_currency_type_id'] }}</td>
+            {{-- <td>{{ $currency_type_symbol }}</td> --}}
             @if($row['affected_document'])
                 <td>{{ $row['affected_document']['date_of_issue']}}</td>
                 <td>{{ $row['affected_document']['document_type_id']}}</td>
@@ -195,7 +200,7 @@
             @if ($add_state_type)
                 <td>{{ $row['state_type_description'] }}</td>
             @endif
-
+            <td>{{ $obs }}</td>
         </tr>
     @endforeach
 </table>

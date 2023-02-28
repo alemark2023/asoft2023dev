@@ -129,6 +129,7 @@
 <script>
 import InputLotsForm from '../../../../../../resources/js/views/tenant/items/partials/lots.vue'
 import OutputLotsForm from './partials/lots.vue'
+import {filterWords} from "../../../../../../resources/js/helpers/functions";
 
 export default {
     components: {InputLotsForm, OutputLotsForm},
@@ -147,7 +148,7 @@ export default {
             items: [],
             warehouses: [],
             inventory_transactions: [],
-            precision:2,
+            precision:4,
         }
     },
     // created() {
@@ -210,7 +211,7 @@ export default {
                 /* Para series, debe ser entero*/
                 this.precision = 0;
             }else{
-                this.precision = 2;
+                this.precision = 4;
             }
         },
         async initTables() {
@@ -224,7 +225,7 @@ export default {
         },
         async create() {
             this.loading = true;
-            this.titleDialog = (this.type === 'input') ? 'Ingreso de producto al almacén' : 'Salida de producto del almacén'
+            this.titleDialog = (this.type === 'input') ? 'Ingreso de producto al almacén 3' : 'Salida de producto del almacén'
             await this.initTables();
             this.initForm();
             this.loading = false;
@@ -234,7 +235,11 @@ export default {
             this.items = [];
             await this.$http.post(`/${this.resource}/search_items`, {'search': search})
                 .then(response => {
-                    this.items = response.data.items
+                    let items = response.data.items;
+                    if(items.length > 0) {
+                        this.items = items; //filterWords(search, items);
+                    }
+
                 })
             this.loading_search = false;
         },

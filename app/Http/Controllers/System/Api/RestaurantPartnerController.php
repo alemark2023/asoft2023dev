@@ -26,6 +26,8 @@ class RestaurantPartnerController extends Controller
             'email' => 'required|email|unique:restaurant_partners,email|max:250',
             'gitlab_user' => 'required|alpha_num|unique:restaurant_partners,gitlab_user|max:200',
             'domain' => 'required|url|unique:restaurant_partners,domain|max:250',
+            'department_id' => 'required',
+
         ]);
 
         $partner = new RestaurantPartner();

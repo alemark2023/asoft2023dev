@@ -1029,4 +1029,40 @@
         {
             return $this->name_product_pdf;
         }
+        
+        
+        /**
+         * Obtener lotes vendidos
+         *
+         * @return array
+         */
+        public function getSaleLotGroupCode()
+        {
+
+            // utilizar propiedad si el registro esta regularizado con dicho campo
+            if(isset($this->item->IdLoteSelected))
+            {
+                if(is_array($this->item->IdLoteSelected)) return collect($this->item->IdLoteSelected)->pluck('code')->toArray();
+            }
+
+            if(isset($this->item->lots_group))
+            {
+                if(is_array($this->item->lots_group)) return collect($this->item->lots_group)->where('compromise_quantity', '>', 0)->pluck('code')->toArray();
+            }
+
+            return [];
+        }
+
+
+        /**
+         * Obtener descripción de lotes vendidos
+         * Usado en formato PDF
+         *
+         * @return string
+         */
+        public function getSaleLotGroupCodeDescription()
+        {
+            return implode('/', $this->getSaleLotGroupCode());
+        }
+
     }

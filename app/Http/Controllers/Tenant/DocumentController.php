@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Tenant;
 
 use App\CoreFacturalo\Facturalo;
@@ -12,6 +13,7 @@ use App\Http\Requests\Tenant\DocumentRequest;
 use App\Http\Requests\Tenant\DocumentUpdateRequest;
 use App\Http\Resources\Tenant\DocumentCollection;
 use App\Http\Resources\Tenant\DocumentResource;
+use App\Imports\DocumentImportExcelFormat;
 use App\Imports\DocumentsImport;
 use App\Imports\DocumentsImportTwoFormat;
 use App\Mail\Tenant\DocumentEmail;
@@ -54,8 +56,11 @@ use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Excel;
 use Modules\BusinessTurn\Models\BusinessTurn;
+use Modules\Finance\Helpers\UploadFileHelper;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 use Modules\Item\Http\Requests\BrandRequest;
@@ -63,7 +68,9 @@ use Modules\Item\Http\Requests\CategoryRequest;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
 use Modules\Document\Helpers\DocumentHelper;
-
+use Modules\Inventory\Models\{
+    InventoryConfiguration
+};
 
 class DocumentController extends Controller
 {
@@ -84,6 +91,7 @@ class DocumentController extends Controller
         $is_client = $this->getIsClient();
         $import_documents = config('tenant.import_documents');
         $import_documents_second = config('tenant.import_documents_second_format');
+        $document_import_excel = config('tenant.document_import_excel');
         $configuration = Configuration::getPublicConfig();
 
         // apiperu
@@ -92,8 +100,9 @@ class DocumentController extends Controller
         $view_validator_cpe = config('tenant.validator_cpe');
 
         return view('tenant.documents.index',
-            compact('is_client','import_documents',
+            compact('is_client', 'import_documents',
                 'import_documents_second',
+                'document_import_excel',
                 'configuration',
                 'view_apiperudev_validator_cpe',
                 'view_validator_cpe'));
@@ -131,27 +140,27 @@ class DocumentController extends Controller
         $NC_t = DocumentType::find('07');
         $ND_t = DocumentType::find('08');
 
-        $BV = $this->getRecords($request)->where('document_type_id', $BV_t->id)->where('currency_type_id','PEN')->sum('total');
-        $FT = $this->getRecords($request)->where('document_type_id', $FT_t->id)->where('currency_type_id','PEN')->sum('total');
-        $NC = $this->getRecords($request)->where('document_type_id', $NC_t->id)->where('currency_type_id','PEN')->sum('total');
-        $ND = $this->getRecords($request)->where('document_type_id', $ND_t->id)->where('currency_type_id','PEN')->sum('total');
+        $BV = $this->getRecords($request)->where('document_type_id', $BV_t->id)->where('currency_type_id', 'PEN')->sum('total');
+        $FT = $this->getRecords($request)->where('document_type_id', $FT_t->id)->where('currency_type_id', 'PEN')->sum('total');
+        $NC = $this->getRecords($request)->where('document_type_id', $NC_t->id)->where('currency_type_id', 'PEN')->sum('total');
+        $ND = $this->getRecords($request)->where('document_type_id', $ND_t->id)->where('currency_type_id', 'PEN')->sum('total');
         return [
             [
                 'name' => $FT_t->description,
-                'total' =>"S/. ". ReportHelper::setNumber($FT),
+                'total' => "S/. " . ReportHelper::setNumber($FT),
             ],
             [
                 'name' => $BV_t->description,
-                'total' => "S/. ".ReportHelper::setNumber($BV),
+                'total' => "S/. " . ReportHelper::setNumber($BV),
 
             ],
             [
                 'name' => $NC_t->description,
-                'total' => "S/. ".ReportHelper::setNumber($NC),
+                'total' => "S/. " . ReportHelper::setNumber($NC),
             ],
             [
                 'name' => $ND_t->description,
-                'total' => "S/. ".ReportHelper::setNumber($ND),
+                'total' => "S/. " . ReportHelper::setNumber($ND),
             ],
         ];
     }
@@ -163,26 +172,27 @@ class DocumentController extends Controller
         $identity_document_type_id = $this->getIdentityDocumentTypeId($request->document_type_id, $request->operation_type_id);
 //        $operation_type_id_id = $this->getIdentityDocumentTypeId($request->operation_type_id);
 
-        $customers = Person::where('number','like', "%{$request->input}%")
-                            ->orWhere('name','like', "%{$request->input}%")
-                            ->whereType('customers')->orderBy('name')
-                            ->whereIn('identity_document_type_id',$identity_document_type_id)
-                            ->whereIsEnabled()
-                            ->get()->transform(function($row) {
+        $customers = Person::where('number', 'like', "%{$request->input}%")
+            ->orWhere('name', 'like', "%{$request->input}%")
+            ->whereType('customers')->orderBy('name')
+            ->whereIn('identity_document_type_id', $identity_document_type_id)
+            ->whereIsEnabled()
+            ->whereFilterCustomerBySeller('customers')
+            ->get()->transform(function ($row) {
                 /** @var  Person $row */
                 return $row->getCollectionData();
                 /* Movido al modelo */
                 return [
-                                    'id' => $row->id,
-                                    'description' => $row->number.' - '.$row->name,
-                                    'name' => $row->name,
-                                    'number' => $row->number,
-                                    'identity_document_type_id' => $row->identity_document_type_id,
-                                    'identity_document_type_code' => $row->identity_document_type->code,
-                                    'addresses' => $row->addresses,
-                                    'address' =>  $row->address
-                                ];
-                            });
+                    'id' => $row->id,
+                    'description' => $row->number . ' - ' . $row->name,
+                    'name' => $row->name,
+                    'number' => $row->number,
+                    'identity_document_type_id' => $row->identity_document_type_id,
+                    'identity_document_type_code' => $row->identity_document_type->code,
+                    'addresses' => $row->addresses,
+                    'address' => $row->address
+                ];
+            });
 
         return compact('customers');
     }
@@ -190,7 +200,7 @@ class DocumentController extends Controller
 
     public function create()
     {
-        if(auth()->user()->type == 'integrator')
+        if (auth()->user()->type == 'integrator')
             return redirect('/documents');
 
         $configuration = Configuration::first();
@@ -200,7 +210,7 @@ class DocumentController extends Controller
 
     public function create_tensu()
     {
-        if(auth()->user()->type == 'integrator')
+        if (auth()->user()->type == 'integrator')
             return redirect('/documents');
 
         $is_contingency = 0;
@@ -212,13 +222,13 @@ class DocumentController extends Controller
     {
         $customers = $this->table('customers');
         $user = new User();
-        if(\Auth::user()){
+        if (\Auth::user()) {
             $user = \Auth::user();
         }
-        $document_id =  $user->document_id;
-        $series_id =  $user->series_id;
-        $establishment_id =  $user->establishment_id;
-        $userId =  $user->id;
+        $document_id = $user->document_id;
+        $series_id = $user->series_id;
+        $establishment_id = $user->establishment_id;
+        $userId = $user->id;
         $userType = $user->type;
         $series = $user->getSeries();
         // $prepayment_documents = $this->table('prepayment_documents');
@@ -234,8 +244,8 @@ class DocumentController extends Controller
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
         // $sellers = User::where('establishment_id',$establishment_id)->whereIn('type', ['seller', 'admin'])->orWhere('id', $userId)->get();
-        $sellers = User::getSellersToNvCpe($establishment_id,$userId)
-            ->transform(function(User $row){
+        $sellers = User::getSellersToNvCpe($establishment_id, $userId)
+            ->transform(function (User $row) {
                 return $row->getCollectionData();
             });
         $payment_method_types = $this->table('payment_method_types');
@@ -245,12 +255,12 @@ class DocumentController extends Controller
         $select_first_document_type_03 = config('tenant.select_first_document_type_03');
         $payment_conditions = PaymentCondition::all();
 
-        $document_types_guide = DocumentType::whereIn('id', ['09', '31'])->get()->transform(function($row) {
+        $document_types_guide = DocumentType::whereIn('id', ['09', '31'])->get()->transform(function ($row) {
             return [
                 'id' => $row->id,
-                'active' => (bool) $row->active,
+                'active' => (bool)$row->active,
                 'short' => $row->short,
-                'description' => ucfirst(mb_strtolower(str_replace('REMITENTE ELECTRÓNICA','REMITENTE',$row->description))),
+                'description' => ucfirst(mb_strtolower(str_replace('REMITENTE ELECTRÓNICA', 'REMITENTE', $row->description))),
             ];
         });
         // $cat_payment_method_types = CatPaymentMethodType::whereActive()->get();
@@ -268,6 +278,8 @@ class DocumentController extends Controller
         $payment_destinations = $this->getPaymentDestinations();
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $user = $userType;
+        $global_discount_types = ChargeDiscountType::whereIn('id', ['02', '03'])->whereActive()->get();
+
         return compact(
             'document_id',
             'series_id',
@@ -294,6 +306,7 @@ class DocumentController extends Controller
             'select_first_document_type_03',
             'payment_destinations',
             'payment_conditions',
+            'global_discount_types',
             'affectation_igv_types'
         );
 
@@ -312,30 +325,31 @@ class DocumentController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $is_client = $this->getIsClient();
+        $validate_stock_add_item = InventoryConfiguration::getRecordIndividualColumn('validate_stock_add_item');
 
-        $configuration= Configuration::first();
+        $configuration = Configuration::first();
 
         /** Informacion adicional */
         $colors = collect([]);
-        $CatItemSize=$colors;
-        $CatItemStatus=$colors;
+        $CatItemSize = $colors;
+        $CatItemStatus = $colors;
         $CatItemUnitBusiness = $colors;
         $CatItemMoldCavity = $colors;
-        $CatItemPackageMeasurement =$colors;
+        $CatItemPackageMeasurement = $colors;
         $CatItemUnitsPerPackage = $colors;
         $CatItemMoldProperty = $colors;
-        $CatItemProductFamily= $colors;
-        if($configuration->isShowExtraInfoToItem()){
+        $CatItemProductFamily = $colors;
+        if ($configuration->isShowExtraInfoToItem()) {
 
             $colors = CatColorsItem::all();
-            $CatItemSize= CatItemSize::all();
-            $CatItemStatus= CatItemStatus::all();
+            $CatItemSize = CatItemSize::all();
+            $CatItemStatus = CatItemStatus::all();
             $CatItemUnitBusiness = CatItemUnitBusiness::all();
             $CatItemMoldCavity = CatItemMoldCavity::all();
             $CatItemPackageMeasurement = CatItemPackageMeasurement::all();
             $CatItemUnitsPerPackage = CatItemUnitsPerPackage::all();
             $CatItemMoldProperty = CatItemMoldProperty::all();
-            $CatItemProductFamily= CatItemProductFamily::all();
+            $CatItemProductFamily = CatItemProductFamily::all();
         }
 
 
@@ -360,6 +374,7 @@ class DocumentController extends Controller
             'CatItemStatus',
             'CatItemPackageMeasurement',
             'CatItemProductFamily',
+            'validate_stock_add_item',
             'CatItemUnitsPerPackage');
     }
 
@@ -367,24 +382,25 @@ class DocumentController extends Controller
     {
         if ($table === 'customers') {
             $customers = Person::with('addresses')
-                               ->whereType('customers')
-                               ->whereIsEnabled()
-                               ->orderBy('name')
-                               ->take(20)
-                               ->get()->transform(function ($row) {
+                ->whereType('customers')
+                ->whereIsEnabled()
+                ->whereFilterCustomerBySeller('customers')
+                ->orderBy('name')
+                ->take(20)
+                ->get()->transform(function ($row) {
                     /** @var Person $row */
                     return $row->getCollectionData();
                     /** Se ha movido la salida, al modelo */
                     return [
-                        'id'                          => $row->id,
-                        'description'                 => $row->number.' - '.$row->name,
-                        'name'                        => $row->name,
-                        'number'                      => $row->number,
-                        'identity_document_type_id'   => $row->identity_document_type_id,
+                        'id' => $row->id,
+                        'description' => $row->number . ' - ' . $row->name,
+                        'name' => $row->name,
+                        'number' => $row->number,
+                        'identity_document_type_id' => $row->identity_document_type_id,
                         'identity_document_type_code' => $row->identity_document_type->code,
-                        'addresses'                   => $row->addresses,
-                        'address'                     => $row->address,
-                        'internal_code'               => $row->internal_code,
+                        'addresses' => $row->addresses,
+                        'address' => $row->address,
+                        'internal_code' => $row->internal_code,
                     ];
 
                 });
@@ -392,17 +408,17 @@ class DocumentController extends Controller
         }
 
         if ($table === 'prepayment_documents') {
-            $prepayment_documents = Document::whereHasPrepayment()->get()->transform(function($row) {
+            $prepayment_documents = Document::whereHasPrepayment()->get()->transform(function ($row) {
 
                 $total = round($row->pending_amount_prepayment, 2);
-                $amount = ($row->affectation_type_prepayment == '10') ? round($total/1.18, 2) : $total;
+                $amount = ($row->affectation_type_prepayment == '10') ? round($total / 1.18, 2) : $total;
 
                 return [
                     'id' => $row->id,
-                    'description' => $row->series.'-'.$row->number,
+                    'description' => $row->series . '-' . $row->number,
                     'series' => $row->series,
                     'number' => $row->number,
-                    'document_type_id' => ($row->document_type_id == '01') ? '02':'03',
+                    'document_type_id' => ($row->document_type_id == '01') ? '02' : '03',
                     // 'amount' => $row->total_value,
                     // 'total' => $row->total,
                     'amount' => $amount,
@@ -445,7 +461,7 @@ class DocumentController extends Controller
                 ->get();
             $items = $items_u->merge($items_s);
 
-            return collect($items)->transform(function($row) use($warehouse){
+            return collect($items)->transform(function ($row) use ($warehouse) {
                 /** @var Item $row */
                 return $row->getDataToItemModal($warehouse);
                 $detail = $this->getFullDescription($row, $warehouse);
@@ -466,11 +482,11 @@ class DocumentController extends Controller
                     'unit_type_id' => $row->unit_type_id,
                     'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                     'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                    'calculate_quantity' => (bool) $row->calculate_quantity,
-                    'has_igv' => (bool) $row->has_igv,
-                    'has_plastic_bag_taxes' => (bool) $row->has_plastic_bag_taxes,
+                    'calculate_quantity' => (bool)$row->calculate_quantity,
+                    'has_igv' => (bool)$row->has_igv,
+                    'has_plastic_bag_taxes' => (bool)$row->has_plastic_bag_taxes,
                     'amount_plastic_bag_taxes' => $row->amount_plastic_bag_taxes,
-                    'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
+                    'item_unit_types' => collect($row->item_unit_types)->transform(function ($row) {
                         return [
                             'id' => $row->id,
                             'description' => "{$row->description}",
@@ -483,7 +499,7 @@ class DocumentController extends Controller
                             'price_default' => $row->price_default,
                         ];
                     }),
-                    'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse){
+                    'warehouses' => collect($row->warehouses)->transform(function ($row) use ($warehouse) {
                         return [
                             'warehouse_description' => $row->warehouse->description,
                             'stock' => $row->stock,
@@ -492,18 +508,18 @@ class DocumentController extends Controller
                         ];
                     }),
                     'attributes' => $row->attributes ? $row->attributes : [],
-                    'lots_group' => collect($row->lots_group)->transform(function($row){
+                    'lots_group' => collect($row->lots_group)->transform(function ($row) {
                         return [
-                            'id'  => $row->id,
+                            'id' => $row->id,
                             'code' => $row->code,
                             'quantity' => $row->quantity,
                             'date_of_due' => $row->date_of_due,
-                            'checked'  => false
+                            'checked' => false
                         ];
                     }),
                     'lots' => [],
-                    'lots_enabled' => (bool) $row->lots_enabled,
-                    'series_enabled' => (bool) $row->series_enabled,
+                    'lots_enabled' => (bool)$row->lots_enabled,
+                    'series_enabled' => (bool)$row->series_enabled,
 
                 ];
             });
@@ -512,27 +528,25 @@ class DocumentController extends Controller
         return [];
     }
 
-    public function getFullDescription($row, $warehouse){
+    public function getFullDescription($row, $warehouse)
+    {
 
-        $desc = ($row->internal_id)?$row->internal_id.' - '.$row->description : $row->description;
+        $desc = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
         $category = ($row->category) ? "{$row->category->name}" : "";
         $brand = ($row->brand) ? "{$row->brand->name}" : "";
 
 
-
-        if($row->unit_type_id != 'ZZ')
-        {
-            if(isset($row['stock'])){
-                $warehouse_stock = number_format($row['stock'],2);
+        if ($row->unit_type_id != 'ZZ') {
+            if (isset($row['stock'])) {
+                $warehouse_stock = number_format($row['stock'], 2);
             } else {
                 $warehouse_stock = ($row->warehouses && $warehouse) ?
-                    number_format($row->warehouses->where('warehouse_id', $warehouse->id)->first()->stock,2) :
+                    number_format($row->warehouses->where('warehouse_id', $warehouse->id)->first()->stock, 2) :
                     0;
             }
 
             $stock = ($row->warehouses && $warehouse) ? "{$warehouse_stock}" : "";
-        }
-        else{
+        } else {
             $stock = '';
         }
 
@@ -555,18 +569,34 @@ class DocumentController extends Controller
         return $record;
     }
 
+
+    /**
+     *
+     * Generar cpe
+     *
+     * @param  DocumentRequest $request
+     * @return array
+     */
     public function store(DocumentRequest $request)
     {
+        try
+        {
+            $validate = $this->validateDocument($request);
+            if (!$validate['success']) return $validate;
 
-        $validate = $this->validateDocument($request);
-        if(!$validate['success']) return $validate;
+            $res = $this->storeWithData($request->all());
+            $document_id = $res['data']['id'];
+            $this->associateDispatchesToDocument($request, $document_id);
+            $this->associateSaleNoteToDocument($request, $document_id);
 
-        $res = $this->storeWithData($request->all());
-        $document_id = $res['data']['id'];
-        $this->associateDispatchesToDocument($request, $document_id);
-        $this->associateSaleNoteToDocument($request, $document_id);
+            return $res;
+        }
+        catch(Exception $e)
+        {
+            $this->generalWriteErrorLog($e);
 
-        return $res;
+            return $this->generalResponse(false, 'Ocurrió un error: '.$e->getMessage());
+        }
     }
 
 
@@ -582,9 +612,9 @@ class DocumentController extends Controller
         // validar nombre de producto pdf en xml - items
         foreach ($request->items as $item) {
 
-            if($item['name_product_xml']){
+            if ($item['name_product_xml']) {
                 // validar error 2027 sunat
-                if(mb_strlen($item['name_product_xml']) > 500){
+                if (mb_strlen($item['name_product_xml']) > 500) {
                     return [
                         'success' => false,
                         'message' => "El campo Nombre producto en PDF/XML no puede superar los 500 caracteres - Producto/Servicio: {$item['item']['description']}"
@@ -606,23 +636,24 @@ class DocumentController extends Controller
      *
      * @param $data
      */
-    public static function setChildrenToData(&$data){
+    public static function setChildrenToData(&$data)
+    {
         $request = request();
-        if(
+        if (
             $request != null &&
             $request->has('sale_note_id') &&
             $request->sale_note_id
-        ){
+        ) {
             $saleNote = SaleNote::find($request->sale_note_id);
-            if($saleNote!=null && isset($data['customer'])){
+            if ($saleNote != null && isset($data['customer'])) {
                 $customer = $data['customer'];
-                $customerNote = (array) $saleNote->customer;
-                if(isset($customerNote['children'])){
+                $customerNote = (array)$saleNote->customer;
+                if (isset($customerNote['children'])) {
                     $customer['children'] = (array)$customerNote['children'];
                 }
-                $data['customer']=$customer;
-                $data['grade']=$saleNote->getGrade();
-                $data['section']=$saleNote->getSection();
+                $data['customer'] = $customer;
+                $data['grade'] = $saleNote->getGrade();
+                $data['section'] = $saleNote->getSection();
             }
         }
     }
@@ -653,11 +684,12 @@ class DocumentController extends Controller
         $response = $fact->getResponse();
 
         return [
-          'success' => true,
-          'data' => [
-              'id' => $document->id,
-              'response' =>$response
-          ]
+            'success' => true,
+            'data' => [
+                'id' => $document->id,
+                'number_full' => $document->number_full,
+                'response' => $response
+            ]
         ];
     }
 
@@ -681,7 +713,7 @@ class DocumentController extends Controller
 
                     $sale_note = SaleNote::find($sale_note_id);
 
-                    if(!empty($sale_note)) {
+                    if (!empty($sale_note)) {
                         $sale_note->document_id = $documentId;
                         $sale_note->push();
                     }
@@ -731,7 +763,7 @@ class DocumentController extends Controller
 
     public function edit($documentId)
     {
-        if(auth()->user()->type == 'integrator') {
+        if (auth()->user()->type == 'integrator') {
             return redirect('/documents');
         }
         $configuration = Configuration::first();
@@ -751,7 +783,7 @@ class DocumentController extends Controller
     {
 
         $validate = $this->validateDocument($request);
-        if(!$validate['success']) return $validate;
+        if (!$validate['success']) return $validate;
 
         $fact = DB::connection('tenant')->transaction(function () use ($request, $id) {
             $facturalo = new Facturalo();
@@ -771,8 +803,8 @@ class DocumentController extends Controller
 
         return [
             'success' => true,
-            'data'    => [
-                'id'       => $document->id,
+            'data' => [
+                'id' => $document->id,
                 'response' => $response,
             ],
         ];
@@ -781,6 +813,26 @@ class DocumentController extends Controller
     public function show($documentId)
     {
         $document = Document::findOrFail($documentId);
+        foreach ($document->items as &$item) {
+            $discounts = [];
+            if($item->discounts) {
+                foreach ($item->discounts as $discount) {
+                    $discount_type = ChargeDiscountType::query()->find($discount->discount_type_id);
+                    $discounts[] = [
+                        'amount' => $discount->amount,
+                        'base' => $discount->base,
+                        'description' => $discount->description,
+                        'discount_type_id' => $discount->discount_type_id,
+                        'factor' => $discount->factor,
+                        'percentage' => $discount->factor * 100,
+                        'is_amount' => false,
+                        'discount_type' => $discount_type
+                    ];
+                }
+            }
+            $item->discounts = $discounts;
+        }
+
         return response()->json([
             'data' => $document,
             'success' => true,
@@ -793,10 +845,10 @@ class DocumentController extends Controller
             $document = Document::find($document_id);
 
             $type = 'invoice';
-            if($document->document_type_id === '07') {
+            if ($document->document_type_id === '07') {
                 $type = 'credit';
             }
-            if($document->document_type_id === '08') {
+            if ($document->document_type_id === '08') {
                 $type = 'debit';
             }
 
@@ -828,8 +880,8 @@ class DocumentController extends Controller
         $document = Document::find($request->input('id'));
         $customer_email = $request->input('customer_email');
         $email = $customer_email;
-        $mailable =  new DocumentEmail($company, $document);
-        $id = (int) $request->input('id');
+        $mailable = new DocumentEmail($company, $document);
+        $id = (int)$request->input('id');
         $sendIt = EmailController::SendMail($email, $mailable, $id, 1);
         // Centralizar el envio de correos a Email Controller
         /*
@@ -848,7 +900,8 @@ class DocumentController extends Controller
         ];
     }
 
-    public function send($document_id) {
+    public function send($document_id)
+    {
         $document = Document::find($document_id);
 
         $fact = DB::connection('tenant')->transaction(function () use ($document) {
@@ -885,7 +938,8 @@ class DocumentController extends Controller
         ];
     }
 
-    public function sendServer($document_id, $query = false) {
+    public function sendServer($document_id, $query = false)
+    {
         $document = Document::find($document_id);
         // $bearer = config('tenant.token_server');
         // $api_url = config('tenant.url_server');
@@ -893,10 +947,10 @@ class DocumentController extends Controller
         $api_url = $this->getUrlServer();
         $client = new Client(['base_uri' => $api_url, 'verify' => false]);
 
-       // $zipFly = new ZipFly();
-        if(!$document->data_json) throw new Exception("Campo data_json nulo o inválido - Comprobante: {$document->fullnumber}");
+        // $zipFly = new ZipFly();
+        if (!$document->data_json) throw new Exception("Campo data_json nulo o inválido - Comprobante: {$document->fullnumber}");
 
-        $data_json = (array) $document->data_json;
+        $data_json = (array)$document->data_json;
         $data_json['numero_documento'] = $document->number;
         $data_json['external_id'] = $document->external_id;
         $data_json['hash'] = $document->hash;
@@ -908,7 +962,7 @@ class DocumentController extends Controller
         $res = $client->post('/api/documents_server', [
             'http_errors' => false,
             'headers' => [
-                'Authorization' => 'Bearer '.$bearer,
+                'Authorization' => 'Bearer ' . $bearer,
                 'Accept' => 'application/json',
             ],
             'form_params' => $data_json
@@ -924,16 +978,17 @@ class DocumentController extends Controller
         return $response;
     }
 
-    public function checkServer($document_id) {
+    public function checkServer($document_id)
+    {
         $document = Document::find($document_id);
         $bearer = $this->getTokenServer();
         $api_url = $this->getUrlServer();
 
         $client = new Client(['base_uri' => $api_url, 'verify' => false]);
 
-        $res = $client->get('/api/document_check_server/'.$document->external_id, [
+        $res = $client->get('/api/document_check_server/' . $document->external_id, [
             'headers' => [
-                'Authorization' => 'Bearer '.$bearer,
+                'Authorization' => 'Bearer ' . $bearer,
                 'Accept' => 'application/json',
             ],
         ]);
@@ -957,43 +1012,45 @@ class DocumentController extends Controller
     {
 
         $customers = Person::with('addresses')->whereType('customers')
-                    ->where('id',$id)
-                    ->get()->transform(function($row) {
-                        /** @var  Person $row */
-                        return $row->getCollectionData();
-                        /* Movido al modelo */
-                        return [
-                            'id' => $row->id,
-                            'description' => $row->number.' - '.$row->name,
-                            'name' => $row->name,
-                            'number' => $row->number,
-                            'identity_document_type_id' => $row->identity_document_type_id,
-                            'identity_document_type_code' => $row->identity_document_type->code,
-                            'addresses' => $row->addresses,
-                            'address' =>  $row->address
-                        ];
-                    });
+            ->where('id', $id)
+            ->whereFilterCustomerBySeller('customers')
+            ->get()->transform(function ($row) {
+                /** @var  Person $row */
+                return $row->getCollectionData();
+                /* Movido al modelo */
+                return [
+                    'id' => $row->id,
+                    'description' => $row->number . ' - ' . $row->name,
+                    'name' => $row->name,
+                    'number' => $row->number,
+                    'identity_document_type_id' => $row->identity_document_type_id,
+                    'identity_document_type_code' => $row->identity_document_type->code,
+                    'addresses' => $row->addresses,
+                    'address' => $row->address
+                ];
+            });
 
         return compact('customers');
     }
 
-    public function getIdentityDocumentTypeId($document_type_id, $operation_type_id){
+    public function getIdentityDocumentTypeId($document_type_id, $operation_type_id)
+    {
 
         // if($operation_type_id === '0101' || $operation_type_id === '1001') {
 
-        if(in_array($operation_type_id, ['0101', '1001', '1004'])) {
+        if (in_array($operation_type_id, ['0101', '1001', '1004'])) {
 
-            if($document_type_id == '01'){
+            if ($document_type_id == '01') {
                 $identity_document_type_id = [6];
-            }else{
-                if(config('tenant.document_type_03_filter')){
+            } else {
+                if (config('tenant.document_type_03_filter')) {
                     $identity_document_type_id = [1];
-                }else{
-                    $identity_document_type_id = [1,4,6,7,0];
+                } else {
+                    $identity_document_type_id = [1, 4, 6, 7, 0];
                 }
             }
         } else {
-            $identity_document_type_id = [1,4,6,7,0];
+            $identity_document_type_id = [1, 4, 6, 7, 0];
         }
 
         return $identity_document_type_id;
@@ -1002,7 +1059,7 @@ class DocumentController extends Controller
     public function changeToRegisteredStatus($document_id)
     {
         $document = Document::find($document_id);
-        if($document->state_type_id === '01') {
+        if ($document->state_type_id === '01') {
             $document->state_type_id = '05';
             $document->save();
 
@@ -1022,19 +1079,19 @@ class DocumentController extends Controller
                 $data = $import->getData();
                 return [
                     'success' => true,
-                    'message' =>  __('app.actions.upload.success'),
+                    'message' => __('app.actions.upload.success'),
                     'data' => $data
                 ];
             } catch (Exception $e) {
                 return [
                     'success' => false,
-                    'message' =>  $e->getMessage()
+                    'message' => $e->getMessage()
                 ];
             }
         }
         return [
             'success' => false,
-            'message' =>  __('app.actions.upload.error'),
+            'message' => __('app.actions.upload.error'),
         ];
     }
 
@@ -1047,28 +1104,28 @@ class DocumentController extends Controller
                 $data = $import->getData();
                 return [
                     'success' => true,
-                    'message' =>  __('app.actions.upload.success'),
+                    'message' => __('app.actions.upload.success'),
                     'data' => $data
                 ];
             } catch (Exception $e) {
                 return [
                     'success' => false,
-                    'message' =>  $e->getMessage()
+                    'message' => $e->getMessage()
                 ];
             }
         }
         return [
             'success' => false,
-            'message' =>  __('app.actions.upload.error'),
+            'message' => __('app.actions.upload.error'),
         ];
     }
 
-    public function messageLockedEmission(){
+    public function messageLockedEmission()
+    {
 
         $exceed_limit = DocumentHelper::exceedLimitDocuments();
 
-        if($exceed_limit['success'])
-        {
+        if ($exceed_limit['success']) {
             return [
                 'success' => false,
                 'message' => $exceed_limit['message'],
@@ -1092,7 +1149,8 @@ class DocumentController extends Controller
         ];
     }
 
-    public function getRecords($request){
+    public function getRecords($request)
+    {
 
 
         $d_end = $request->d_end;
@@ -1102,17 +1160,18 @@ class DocumentController extends Controller
         $state_type_id = $request->state_type_id;
         $number = $request->number;
         $series = $request->series;
-        $pending_payment = ($request->pending_payment == "true") ? true:false;
+        $pending_payment = ($request->pending_payment == "true") ? true : false;
         $customer_id = $request->customer_id;
         $item_id = $request->item_id;
         $category_id = $request->category_id;
         $purchase_order = $request->purchase_order;
         $guides = $request->guides;
+        $plate_numbers = $request->plate_numbers;
 
         $records = Document::query();
-		if ($d_start && $d_end) {
-			 $records->whereBetween('date_of_issue', [$d_start, $d_end]);
-		}
+        if ($d_start && $d_end) {
+            $records->whereBetween('date_of_issue', [$d_start, $d_end]);
+        }
         if ($date_of_issue) {
             $records = Document::where('date_of_issue', 'like', '%' . $date_of_issue . '%');
         }
@@ -1158,6 +1217,9 @@ class DocumentController extends Controller
         if (!empty($guides)) {
             $records->where('guides', 'like', DB::raw("%\"number\":\"%") . $guides . DB::raw("%\"%"));
         }
+        if ($plate_numbers) {
+            $records->where('plate_number', 'like', '%' . $plate_numbers . '%');
+        }
         return $records;
     }
 
@@ -1168,21 +1230,22 @@ class DocumentController extends Controller
         $items = $this->getItems();
         $categories = Category::orderBy('name')->get();
         $state_types = StateType::get();
-        $document_types = DocumentType::whereIn('id', ['01', '03','07', '08'])->get();
-        $series = Series::whereIn('document_type_id', ['01', '03','07', '08'])->get();
+        $document_types = DocumentType::whereIn('id', ['01', '03', '07', '08'])->get();
+        $series = Series::whereIn('document_type_id', ['01', '03', '07', '08'])->get();
         $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();// Establishment::all();
 
-        return compact( 'customers', 'document_types','series','establishments', 'state_types', 'items', 'categories');
+        return compact('customers', 'document_types', 'series', 'establishments', 'state_types', 'items', 'categories');
 
     }
 
 
-    public function getItems(){
+    public function getItems()
+    {
 
-        $items = Item::orderBy('description')->take(20)->get()->transform(function($row) {
+        $items = Item::orderBy('description')->take(20)->get()->transform(function ($row) {
             return [
                 'id' => $row->id,
-                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
+                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" : $row->description,
             ];
         });
 
@@ -1191,17 +1254,18 @@ class DocumentController extends Controller
     }
 
 
-    public function getDataTableItem(Request $request) {
+    public function getDataTableItem(Request $request)
+    {
 
-        $items = Item::where('description','like', "%{$request->input}%")
-                        ->orWhere('internal_id','like', "%{$request->input}%")
-                        ->orderBy('description')
-                        ->get()->transform(function($row) {
-                            return [
-                                'id' => $row->id,
-                                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
-                            ];
-                        });
+        $items = Item::where('description', 'like', "%{$request->input}%")
+            ->orWhere('internal_id', 'like', "%{$request->input}%")
+            ->orderBy('description')
+            ->get()->transform(function ($row) {
+                return [
+                    'id' => $row->id,
+                    'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" : $row->description,
+                ];
+            });
 
         return $items;
 
@@ -1210,17 +1274,16 @@ class DocumentController extends Controller
 
     private function updateMaxCountPayments($value)
     {
-        if($value > $this->max_count_payment)
-        {
+        if ($value > $this->max_count_payment) {
             $this->max_count_payment = $value;
         }
-       // $this->max_count_payment = 20 ;//( $value > $this->max_count_payment) ? $value : $this->$max_count_payment;
+        // $this->max_count_payment = 20 ;//( $value > $this->max_count_payment) ? $value : $this->$max_count_payment;
     }
 
     private function transformReportPayment($resource)
     {
 
-        $records = $resource->transform(function($row) {
+        $records = $resource->transform(function ($row) {
 
             $total_paid = collect($row->payments)->sum('payment');
             $total = $row->total;
@@ -1234,12 +1297,12 @@ class DocumentController extends Controller
                 'ruc' => $row->customer->number,
                 // 'date' =>  $row->date_of_issue->format('Y-m-d'),
                 // 'date' =>  $row->date_of_issue,
-                'date' =>  $row->date_of_issue->format('d/m/Y'),
+                'date' => $row->date_of_issue->format('d/m/Y'),
                 'invoice' => $row->number_full,
                 'comercial_name' => $row->customer->trade_name,
                 'business_name' => $row->customer->name,
                 'zone' => $row->customer->department->description,
-                'total' => number_format($row->total, 2, ".",""),
+                'total' => number_format($row->total, 2, ".", ""),
 
                 'payments' => $row->payments,
 
@@ -1249,7 +1312,7 @@ class DocumentController extends Controller
                 'payment4' =>   ( isset($row->payments[3]) ) ?  number_format($row->payments[3]->payment, 2) : '', */
 
                 'balance' => $total_difference,
-                'person_type' => isset($row->person->person_type->description) ? $row->person->person_type->description:'',
+                'person_type' => isset($row->person->person_type->description) ? $row->person->person_type->description : '',
                 'department' => $row->customer->department->description,
                 'district' => $row->customer->district->description,
 
@@ -1267,18 +1330,18 @@ class DocumentController extends Controller
     {
         // $month_format = Carbon::parse($month)->format('m');
 
-        if($request->anulled == 'true') {
-           $records = Document::whereBetween('date_of_issue', [$request->date_start, $request->date_end])->get();
+        if ($request->anulled == 'true') {
+            $records = Document::whereBetween('date_of_issue', [$request->date_start, $request->date_end])->get();
         } else {
             $records = Document::whereBetween('date_of_issue', [$request->date_start, $request->date_end])->where('state_type_id', '!=', '11')->get();
         }
 
-        $source =  $this->transformReportPayment( $records );
+        $source = $this->transformReportPayment($records);
 
         return (new PaymentExport)
-                ->records($source)
-                ->payment_count($this->max_count_payment)
-                ->download('Reporte_Pagos_'.Carbon::now().'.xlsx');
+            ->records($source)
+            ->payment_count($this->max_count_payment)
+            ->download('Reporte_Pagos_' . Carbon::now() . '.xlsx');
 
     }
 
@@ -1301,7 +1364,7 @@ class DocumentController extends Controller
 
         } catch (Exception $e) {
 
-            return ($e->getCode() == '23000') ? ['success' => false,'message' => 'El Documento esta siendo usada por otros registros, no puede eliminar'] : ['success' => false,'message' => 'Error inesperado, no se pudo eliminar el Documento'];
+            return ($e->getCode() == '23000') ? ['success' => false, 'message' => 'El Documento esta siendo usada por otros registros, no puede eliminar'] : ['success' => false, 'message' => 'Error inesperado, no se pudo eliminar el Documento'];
 
         }
 
@@ -1318,14 +1381,15 @@ class DocumentController extends Controller
 
         return [
             'success' => true,
-            'message' => ($id)?'Categoría editada con éxito':'Categoría registrada con éxito',
+            'message' => ($id) ? 'Categoría editada con éxito' : 'Categoría registrada con éxito',
             'data' => $category
 
         ];
     }
 
-    public function storeBrands(BrandRequest $request){
-         $id = $request->input('id');
+    public function storeBrands(BrandRequest $request)
+    {
+        $id = $request->input('id');
         $brand = Brand::firstOrNew(['id' => $id]);
         $brand->fill($request->all());
         $brand->save();
@@ -1333,7 +1397,7 @@ class DocumentController extends Controller
 
         return [
             'success' => true,
-            'message' => ($id)?'Marca editada con éxito':'Marca registrada con éxito',
+            'message' => ($id) ? 'Marca editada con éxito' : 'Marca registrada con éxito',
             'data' => $brand
         ];
     }
@@ -1343,4 +1407,153 @@ class DocumentController extends Controller
         return response()->json(Document::where('external_id', $request->external_id)->first());
     }
 
+    public function importExcelFormat(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            try {
+                $import = new DocumentImportExcelFormat();
+                $import->import($request->file('file'), null, Excel::XLSX);
+                $data = $import->getData();
+
+                return [
+                    'success' => true,
+                    'message' =>  'Se importaron '.$data['registered'].' de '.$data['total_records'].' registros',
+                    'data' => $data
+                ];
+            } catch (Exception $e) {
+                return [
+                    'success' => false,
+                    'message' =>  $e->getMessage()
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
+    public function importExcelTables()
+    {
+        $document_types = DocumentType::query()
+            ->whereIn('id', ['01', '03'])
+            ->get();
+
+        $series = Series::query()
+            ->whereIn('document_type_id', ['01', '03'])
+            ->where('establishment_id', auth()->user()->establishment_id)
+            ->get();
+
+        return [
+            'document_types' => $document_types,
+            'series' => $series,
+        ];
+    }
+
+    public function retention($document_id)
+    {
+        $document = Document::query()
+            ->select('id', 'series', 'number', 'retention')
+            ->where('id', $document_id)->first();
+
+        if ($document->retention) {
+            $retention = $document->retention;
+            $amount = $retention->amount;
+            if ($retention->currency_type_id === 'USD') {
+                $amount = $amount * $retention->exchange_rate;
+            }
+            $amount = round($amount, 0);
+            return [
+                'success' => true,
+                'form' => [
+                    'document_id' => $document_id,
+                    'document_number' => $document->number_full,
+                    'amount' => $amount,
+                    'voucher_date_of_issue' => $retention->voucher_date_of_issue ?: null,
+                    'voucher_number' => $retention->voucher_number ?: null,
+                    'voucher_amount' => $retention->voucher_amount ?: $amount,
+                    'voucher_filename' => $retention->voucher_filename ?: null,
+                ]
+            ];
+        }
+
+        return [
+            'success' => false,
+            'message' => 'No existe retención'
+        ];
+    }
+
+    public function retentionStore(Request $request)
+    {
+        try {
+            $voucher_filename = $request->input('voucher_filename');
+            $temp_path = $request->input('temp_path');
+
+            if($temp_path) {
+                $file_name_old_array = explode('.', $voucher_filename);
+                $file_content = file_get_contents($temp_path);
+                $extension = $file_name_old_array[1];
+                $voucher_filename = Str::slug('r_'.$file_name_old_array[0]).'_'.date('YmdHis').'.'.$extension;
+                Storage::disk('tenant')->put('document_payment'.DIRECTORY_SEPARATOR.$voucher_filename, $file_content);
+            }
+
+            $document_id = $request->input('document_id');
+            $voucher_number = $request->input('voucher_number');
+            $voucher_date_of_issue = $request->input('voucher_date_of_issue');
+            $voucher_amount = $request->input('voucher_amount');
+
+            Document::query()
+                ->where('id', $document_id)->update([
+                    'retention->voucher_date_of_issue' => $voucher_date_of_issue,
+                    'retention->voucher_number' => $voucher_number,
+                    'retention->voucher_amount' => $voucher_amount,
+                    'retention->voucher_filename' => $voucher_filename
+                ]);
+
+            return [
+                'success' => true,
+                'message' => 'Retención actualizada satisfactoriamente',
+            ];
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+
+        }
+    }
+
+    public function retentionUpload(Request $request)
+    {
+        try {
+            $validate_upload = UploadFileHelper::validateUploadFile($request, 'file');
+
+            if (!$validate_upload['success']) {
+                return $validate_upload;
+            }
+
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $temp = tempnam(sys_get_temp_dir(), 'document_retention');
+                file_put_contents($temp, file_get_contents($file));
+
+                return [
+                    'success' => true,
+                    'data' => [
+                        'filename' => $file->getClientOriginalName(),
+                        'temp_path' => $temp,
+                    ]
+                ];
+            }
+            return [
+                'success' => false,
+                'message' => __('app.actions.upload.error'),
+            ];
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+        }
+    }
 }

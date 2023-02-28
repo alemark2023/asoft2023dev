@@ -8,11 +8,9 @@
     use App\Models\Tenant\Catalogs\District;
     use App\Models\Tenant\Catalogs\IdentityDocumentType;
     use App\Models\Tenant\Catalogs\Province;
-    use Eloquent;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
     use Illuminate\Database\Eloquent\Collection;
-    use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Modules\DocumentaryProcedure\Models\DocumentaryFile;
     use Modules\Expense\Models\Expense;
     use Modules\Order\Models\OrderForm;
@@ -22,7 +20,7 @@
     use Modules\Sale\Models\Contract;
     use Modules\Sale\Models\SaleOpportunity;
     use Modules\Sale\Models\TechnicalService;
-
+    use App\Models\Tenant\Configuration;
 
     /**
      * App\Models\Tenant\Person
@@ -102,6 +100,7 @@
         use UsesTenantConnection;
 
         protected $table = 'persons';
+
         protected $with = [
             'identity_document_type',
             'country',
@@ -109,17 +108,7 @@
             'province',
             'district'
         ];
-        protected $casts = [
-            'perception_agent' => 'bool',
-            'person_type_id' => 'int',
-            'percentage_perception' => 'float',
-            'enabled' => 'bool',
-            'status' => 'int',
-            'credit_days' => 'int',
-            'seller_id' => 'int',
-            'zone_id' => 'int',
-            'parent_id' => 'int',
-        ];
+
         protected $fillable = [
             'type',
             'identity_document_type_id',
@@ -128,6 +117,7 @@
             'trade_name',
             'internal_code',
             'country_id',
+            'nationality_id',
             'department_id',
             'province_id',
             'district_id',
@@ -144,6 +134,7 @@
             'percentage_perception',
             'enabled',
             'website',
+            'barcode',
             // 'zone',
             'observation',
             'credit_days',
@@ -151,7 +142,26 @@
             'seller_id',
             'zone_id',
             'status',
-            'parent_id'
+            'parent_id',
+            'accumulated_points',
+            'has_discount',
+            'discount_type',
+            'discount_amount',
+        ];
+
+        protected $casts = [
+            'perception_agent' => 'bool',
+            'person_type_id' => 'int',
+            'percentage_perception' => 'float',
+            'enabled' => 'bool',
+            'status' => 'int',
+            'credit_days' => 'int',
+            'seller_id' => 'int',
+            'zone_id' => 'int',
+            'parent_id' => 'int',
+            'accumulated_points' => 'float',
+            'has_discount' => 'bool',
+            'discount_amount' => 'float',
         ];
 
         // protected static function boot()
@@ -230,6 +240,11 @@
         public function country()
         {
             return $this->belongsTo(Country::class);
+        }
+
+        public function nationality()
+        {
+            return $this->belongsTo(Country::class, 'nationality_id');
         }
 
         /**
@@ -474,9 +489,8 @@
          *
          * @return array
          */
-        public function getCollectionData($withFullAddress = false, $childrens = false)
+        public function getCollectionData($withFullAddress = false, $childrens = false, $servers=false)
         {
-
             $addresses = $this->addresses;
             if ($withFullAddress == true) {
                 $addresses = collect($addresses)->transform(function ($row) {
@@ -509,6 +523,7 @@
                 ];
             }
 
+            $location_id = [];
             /** @var \App\Models\Tenant\Catalogs\Department  $department */
             $department = \App\Models\Tenant\Catalogs\Department::find($this->department_id);
             if(!empty($department)){
@@ -517,6 +532,7 @@
                 "description" => $department->description,
                 "active" => $department->active,
                 ];
+                array_push($location_id, $department['id']);
             }
             $province = \App\Models\Tenant\Catalogs\Province::find($this->province_id);
 
@@ -526,6 +542,7 @@
                     "description" => $province->description,
                     "active" => $province->active,
                 ];
+                array_push($location_id, $province['id']);
             }
             $district = \App\Models\Tenant\Catalogs\District::find($this->district_id);
 
@@ -535,6 +552,7 @@
                     "description" => $district->description,
                     "active" => $district->active,
                 ];
+                array_push($location_id, $district['id']);
             }
             $seller = User::find($this->seller_id);
             if(!empty($seller)){
@@ -551,6 +569,7 @@
                 'identity_document_type_code' => $this->identity_document_type->code,
                 'address' => $this->address,
                 'internal_code' => $this->internal_code,
+                'barcode' => $this->barcode,
                 'observation' => $this->observation,
                 'seller' => $seller,
                 'zone' => $this->getZone(),
@@ -559,11 +578,12 @@
                 'website' => $this->website,
                 'document_type' => $this->identity_document_type->description,
                 'enabled' => (bool)$this->enabled,
-                'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-                'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+                'created_at' => optional($this->created_at)->format('Y-m-d H:i:s'),
+                'updated_at' => optional($this->updated_at)->format('Y-m-d H:i:s'),
                 'type' => $this->type,
                 'trade_name' => $this->trade_name,
                 'country_id' => $this->country_id,
+                'nationality_id' => $this->nationality_id,
                 'department_id' => $department['id']??null,
                 'department' => $department,
 
@@ -588,7 +608,11 @@
                 'optional_email' => $optional_mail,
                 'optional_email_send' => implode(',', $optional_mail_send),
                 'childrens' => [],
-
+                'accumulated_points' => $this->accumulated_points,
+                'has_discount' => $this->has_discount,
+                'discount_type' => $this->discount_type,
+                'discount_amount' => $this->discount_amount,
+                'location_id' => $location_id
             ];
             if ($childrens == true) {
                 $child = $this->children_person->transform(function ($row) {
@@ -601,6 +625,19 @@
                 }
 
                 $data['parent'] = $parent;
+
+            }
+
+            if($servers == true){
+                $serv = FullSuscriptionServerDatum::where('person_id',$this->id)->get();
+                $extra_data = FullSuscriptionUserDatum::where('person_id',$this->id)->first();
+                if(empty($extra_data)){ $extra_data = new FullSuscriptionUserDatum();}
+                 $data['servers'] = $serv;
+                $data['person_id']=$extra_data->getPersonId();
+                $data['discord_user']=$extra_data->getDiscordUser();
+                $data['slack_channel']=$extra_data->getSlackChannel();
+                $data['discord_channel']=$extra_data->getDiscordChannel();
+                $data['gitlab_user']=$extra_data->getGitlabUser();
 
             }
 
@@ -739,5 +776,167 @@
 
             return $query;
 
+        }
+
+
+        /**
+         *
+         * Aplicar filtro por vendedor asignado al cliente
+         *
+         * Usado en:
+         * PersonController - records
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @param string $type
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public function scopeWhereFilterCustomerBySeller($query, $type)
+        {
+            if($type === 'customers')
+            {
+                $user = auth()->user();
+
+                if($user->applyCustomerFilterBySeller())
+                {
+                    return $query->where('seller_id', $user->id);
+                }
+            }
+
+            return $query;
+        }
+
+
+        /**
+         *
+         * Obtener datos para api (app)
+         *
+         * @return array
+         */
+        public function getApiRowResource()
+        {
+            return [
+                'id' => $this->id,
+                'description' => $this->getPersonDescription(),
+                'name' => $this->name,
+                'number' => $this->number,
+                'identity_document_type_id' => $this->identity_document_type_id,
+                'identity_document_type_code' => $this->identity_document_type->code,
+                'address' => $this->address,
+                'telephone' => $this->telephone,
+                'country_id' => $this->country_id,
+                'district_id' => $this->district_id,
+                'email' => $this->email,
+                'enabled' => $this->enabled,
+                'selected' => false,
+                'identity_document_type_description' => $this->identity_document_type->description,
+            ];
+        }
+
+
+        /**
+         *
+         * Descripción para mostrar en campos de búsqueda, etc
+         *
+         * @return string
+         */
+        public function getPersonDescription()
+        {
+            return "{$this->number} - {$this->name}";
+        }
+
+
+        /**
+         *
+         * Filtro para búsqueda de clientes/proveedores
+         *
+         * Usado en:
+         * clientes - app
+         *
+         * @param  Builder $query
+         * @param  string $input
+         * @param  string $type
+         * @return Builder
+         */
+        public function scopeWhereFilterRecordsApi($query, $input, $type)
+        {
+            return $query->where('name', 'like', "%{$input}%" )
+                        ->orWhere('number','like', "%{$input}%")
+                        ->whereType($type)
+                        ->orderBy('name');
+        }
+
+
+        /**
+         *
+         * @return string
+         */
+        public function getTitlePersonDescription()
+        {
+            return $this->type === 'customers' ? 'Cliente' : 'Proveedor';
+        }
+
+
+        /**
+         *
+         * Filtro para no incluir relaciones en consulta
+         *
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         */
+        public function scopeWhereFilterWithOutRelations($query)
+        {
+            return $query->withOut([
+                'identity_document_type',
+                'country',
+                'department',
+                'province',
+                'district'
+            ]);
+        }
+
+
+        /**
+         * Obtener datos iniciales para mostrar lista de clientes - App
+         *
+         * @param  int $take
+         * @return array
+         */
+        public function scopeFilterApiInitialCustomers($query, $take = 10)
+        {
+            return $query->whereType('customers')
+                        ->whereFilterWithOutRelations()
+                        ->with(['identity_document_type'])
+                        ->orderBy('name')
+                        ->take($take);
+        }
+
+        /**
+         *
+         * Filtro para cliente varios por defecto
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public function scopeWhereFilterVariousClients($query)
+        {
+            return $query->where([
+                ['identity_document_type_id', '0'],
+                ['number', '99999999'],
+                ['type', 'customers'],
+            ]);
+        }
+
+
+        /**
+         *
+         * Obtener puntos acumulados
+         *
+         * @param Builder $query
+         * @param int $id
+         * @return float
+         */
+        public function scopeGetOnlyAccumulatedPoints($query, $id)
+        {
+            return $query->whereFilterWithOutRelations()->select('accumulated_points')->findOrFail($id)->accumulated_points;
         }
     }

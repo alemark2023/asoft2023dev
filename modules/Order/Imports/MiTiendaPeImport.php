@@ -163,7 +163,7 @@
                     // si no hay numero de idtenficacion de cliente, se continua
                 }
                 if (!empty($saleDate)) {
-                    $saleDate = Carbon::createFromFormat('d/m/Y', $saleDate)->format('Y-m-d');
+                        $saleDate = Carbon::createFromFormat('d/m/Y', $saleDate)->format('Y-m-d');
                 }
 
 
@@ -173,8 +173,22 @@
                 } elseif ($documentType == 'Boleta') {
                     $documentType = DocumentType::where('short', 'BV')->first();
                 }
+                $names = trim($names);
+                $email = trim($email);
                 $customer = Person::SearchCustomer($identificationNumber, $names, $email)->first();
+                $customer = $this->setCustomer($customer,
+                    $lastnames,
+                    $names,
+                    $identificationNumber,
+                    $street,
+                    $email,
+                    $phone,
+                    $region,
+                    $district
+                );
+
                 // Clientes
+                /*
                 if (empty($customer)) {
                     $address = [
                         'country_id'=>'PE',
@@ -189,20 +203,20 @@
                         'telephone' => $phone,
                     ];
                     if (strlen($identificationNumber) === 8) {
-                        $dataCustomer = self::getPersonData($identificationNumber);
+                        $dataCustomer = self::getPersonData($identificationNumber, $dataCustomer);
 
-                        $address['department_id'] = $dataCustomerT['department_id']??0;
-                        $address['province_id'] = $dataCustomerT['province_id']??0;
-                        $address['district_id'] = $dataCustomerT['district_id']??0;
+                        $address['department_id'] = $dataCustomer['department_id']??0;
+                        $address['province_id'] = $dataCustomer['province_id']??0;
+                        $address['district_id'] = $dataCustomer['district_id']??0;
 
                     } elseif (strlen($identificationNumber) === 11) {
-                        $dataCustomerT = self::getPersonData($identificationNumber);
-                        $dataCustomer['name']= $dataCustomerT['name']??$dataCustomer['name'];
-                        $dataCustomer['address']= $dataCustomerT['address']??$dataCustomer['address'];
-                        $dataCustomer['trade_name']= $dataCustomerT['trade_name']??null;
-                        $address['department_id'] = $dataCustomerT['department_id']??0;
-                        $address['province_id'] = $dataCustomerT['province_id']??0;
-                        $address['district_id'] = $dataCustomerT['district_id']??0;
+                        $dataCustomer = self::getPersonData($identificationNumber, $dataCustomer);
+                        $dataCustomer['name']= $dataCustomer['name']??$dataCustomer['name'];
+                        $dataCustomer['address']= $dataCustomer['address']??$dataCustomer['address'];
+                        $dataCustomer['trade_name']= $dataCustomer['trade_name']??null;
+                        $address['department_id'] = $dataCustomer['department_id']??0;
+                        $address['province_id'] = $dataCustomer['province_id']??0;
+                        $address['district_id'] = $dataCustomer['district_id']??0;
 
                     }
                     $address['address'] = $dataCustomer['address']??null;
@@ -237,6 +251,7 @@
                     $addressPerson->push();
 
                 }
+                */
 
 
                 $customerData = $customer->getCollectionData();
@@ -297,7 +312,7 @@
                     "total_value" => $totalImport,
                 ];
                 $observation = null;
-                if($customer->name != "$lastnames, $names"){
+                if ($customer->name != "$lastnames, $names") {
                     $observation = "$lastnames, $names";
                 }
 
@@ -417,7 +432,9 @@
                     $order_total_igv[$miTiendaPeOrder] += $itemTo['total_igv'];
                     $order_unit_price[$miTiendaPeOrder] += $itemTo['unit_price'];
                     $order_total_value[$miTiendaPeOrder] += $itemTo['total_value'];
-                    if(!isset($ds)){ $ds = [];}
+                    if (!isset($ds)) {
+                        $ds = [];
+                    }
                     $order_discounts[$miTiendaPeOrder][] = $ds;
                     $orders[$miTiendaPeOrder]['items'][] = $itemTo;
 
@@ -496,21 +513,148 @@
 
         }
 
-        public static function getPersonData($number = null)
+        protected function setCustomer(
+            $customer,
+            $lastnames,
+            $names,
+            $identificationNumber,
+            $street,
+            $email,
+            $phone,
+            $region,
+            $district
+
+        )
+        {
+            $cus = Person::where([
+                'number'=>$identificationNumber,
+                'type'=>'customers',
+
+            ])->first();
+            /** @var Person $customer */
+            if (empty($customer) && !empty($cus) ) {
+                $customer = $cus;
+            }
+
+            if (empty($customer) ) {
+                $address = [
+                    'country_id' => 'PE',
+                ];
+                $dataCustomer = [
+                    'type' => 'customers',
+                    'name' => "$lastnames, $names",
+                    'number' => $identificationNumber,
+                    'country_id' => 'PE',
+                    'address' => $street,
+                    'email' => $email,
+                    'telephone' => $phone,
+                ];
+                $dataCustomerTemp = $dataCustomer;
+                if (strlen($identificationNumber) === 8) {
+                    $dataCustomer = self::getPersonData($identificationNumber, $dataCustomer);
+
+                    $address['department_id'] = $dataCustomer['department_id'] ?? 0;
+                    $address['province_id'] = $dataCustomer['province_id'] ?? 0;
+                    $address['district_id'] = $dataCustomer['district_id'] ?? 0;
+
+                } elseif (strlen($identificationNumber) === 11) {
+                    $dataCustomer = self::getPersonData($identificationNumber, $dataCustomer);
+                    $dataCustomer['name'] = $dataCustomer['name'] ?? $dataCustomerTemp['name'];
+                    $dataCustomer['address'] = $dataCustomer['address'] ?? $dataCustomerTemp['address'];
+                    $dataCustomer['trade_name'] = $dataCustomer['trade_name'] ?? null;
+                    $address['department_id'] = $dataCustomer['department_id'] ?? 0;
+                    $address['province_id'] = $dataCustomer['province_id'] ?? 0;
+                    $address['district_id'] = $dataCustomer['district_id'] ?? 0;
+
+                }
+                $address['address'] = $dataCustomer['address'] ?? null;
+
+                // Crear nuevo cliente
+                $customer = new Person($dataCustomer);
+                $customer->identity_document_type_id = IdentityDocumentType::where('description', 'Doc.trib.no.dom.sin.ruc')->first()->id;
+                if (strlen($identificationNumber) == 11) {
+                    $customer->identity_document_type_id = IdentityDocumentType::where('description', 'RUC')->first()->id;
+                } elseif (strlen($identificationNumber) == 8) {
+                    $customer->identity_document_type_id = IdentityDocumentType::where('description', 'DNI')->first()->id;
+                }
+                $province = Department::where('description', $region)->first();
+                if (!empty($province)) {
+                    $customer->department_id = $province->id;
+                }
+                $district = District::where('description', $district)->first();
+                if (!empty($district)) {
+                    $customer->district_id = $district->id;
+                    $customer->province_id = $district->province_id;
+                }
+                $contactArray =[
+                    "full_name" => $customer->name,
+                    "phone" => $customer->telephone,
+                    ];
+                $customer->contact = json_decode(json_encode($contactArray));
+                $customerTemp = Person::where($dataCustomer)->first();
+                if (empty($customerTemp)) {
+                    $customer->push();
+                } else {
+                    $customer = $customerTemp;
+                }
+
+                $address['person_id'] = $customer->id;
+                $address['department_id'] = !empty($address['department_id']) ? $address['department_id'] : $customer->department_id;
+                $address['province_id'] = !empty($address['province_id']) ? $address['province_id'] : $customer->province_id;
+                $address['district_id'] = !empty($address['district_id']) ? $address['district_id'] : $customer->district_id;
+
+
+                $addressPerson = PersonAddress::where($address)->first();
+                if (empty($addressPerson)) {
+                    // no hay direccion por lo que se crea una
+                    $addressPerson = new PersonAddress($address);
+                    $addressPerson->push();
+                }
+
+            }
+            return $customer;
+        }
+
+        public static function getPersonData($number = null, $data = [])
         {
             $service = new ServiceData();
-            $data = [];
             if (!empty($number)) {
+                $ruc = ['success' => false];
                 if (strlen($number) == 8) {
                     $ruc = $service->service('dni', $number);
-                    if ($ruc['success'] == true) {
-                        $data = $ruc['data'];
-                    }
                 } else if (strlen($number) == 11) {
                     $ruc = $service->service('ruc', $number);
-                    if ($ruc['success'] == true) {
-                        $data = $ruc['data'];
+                }
+                if ($ruc['success'] == true) {
+                    $temp = $ruc['data'];
+                    if (isset($data["name"])) {
+                        $data["name"] = !empty($temp["name"] && isset($temp["name"])) ? $temp["name"] : $data["name"];
                     }
+                    if (isset($data["trade_name"])) {
+                        $data["trade_name"] = !empty($temp["trade_name"] && isset($temp["trade_name"])) ? $temp["trade_name"] : $data["trade_name"];
+                    }
+                    if (isset($data["location_id"])) {
+                        $data["location_id"] = !empty($temp["location_id"] && isset($temp["location_id"])) ? $temp["location_id"] : $data["location_id"];
+                    }
+                    if (isset($data["address"])) {
+                        $data["address"] = !empty($temp["address"] && isset($temp["address"])) ? $temp["address"] : $data["address"];
+                    }
+                    if (isset($data["department_id"])) {
+                        $data["department_id"] = !empty($temp["department_id"] && isset($temp["department_id"])) ? $temp["department_id"] : $data["department_id"];
+                    }
+                    if (isset($data["province_id"])) {
+                        $data["province_id"] = !empty($temp["province_id"] && isset($temp["province_id"])) ? $temp["province_id"] : $data["province_id"];
+                    }
+                    if (isset($data["district_id"])) {
+                        $data["district_id"] = !empty($temp["district_id"] && isset($temp["district_id"])) ? $temp["district_id"] : $data["district_id"];
+                    }
+                    if (isset($data["condition"])) {
+                        $data["condition"] = !empty($temp["condition"] && isset($temp["condition"])) ? $temp["condition"] : $data["condition"];
+                    }
+                    if (isset($data["state"])) {
+                        $data["state"] = !empty($temp["state"] && isset($temp["state"])) ? $temp["state"] : $data["state"];
+                    }
+
                 }
             }
 

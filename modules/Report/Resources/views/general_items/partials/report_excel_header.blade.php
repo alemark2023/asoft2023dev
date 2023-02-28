@@ -26,9 +26,10 @@
 <th> DENOMINACIÓN ENTIDAD</th>
 @if($type == 'sale')
     <th> VENDEDOR</th>
+    <th> OBSERVACIÓN </th>
 @endif
 <th> MONEDA</th>
-<th> TIPO DE CAMBIO</th>
+{{-- <th> TIPO DE CAMBIO</th> --}}
 <th> UNIDAD DE MEDIDA</th>
 <th> CÓDIGO INTERNO</th>
 @if($type == 'sale')
@@ -41,6 +42,11 @@
     <th> MÉTODO DE PAGO </th>
 @endif
 <th> SERIES</th>
+
+@if($type == 'sale')
+    <th>LOTES</th>
+@endif
+
 @if($type == 'sale')
     <th> MODELO</th>
 @endif

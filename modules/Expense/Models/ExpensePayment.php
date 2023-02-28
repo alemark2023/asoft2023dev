@@ -14,6 +14,8 @@
     use Illuminate\Database\Eloquent\Relations\MorphOne;
     use Modules\Finance\Models\GlobalPayment;
     use Modules\Finance\Models\PaymentFile;
+    use App\Models\Tenant\Cash;
+
 
     /**
      * Class Modules\Expense\Models\ExpensePayment
@@ -119,4 +121,118 @@
         {
             return $this->hasMany(CashDocument::class);
         }
+
+            
+        /**
+         * 
+         * Obtener gastos en efectivo
+         * 
+         * Los unicos gastos que se registran en caja chica pos, son los que tiene como Método de gasto CAJA GENERAL (se asume en efectivo)
+         *
+         * @return Collection
+         */
+        public function getCashPayments()
+        {
+
+            $expense_payments = collect();
+
+            return $expense_payments->push([
+
+                'type' => 'expense_payment',
+                'type_transaction' => 'egress',
+                'type_transaction_description' => 'Gasto',
+                'date_of_issue' => $this->associated_record_payment->date_of_issue->format('Y-m-d'),
+                'number_full' => $this->associated_record_payment->number_full,
+                'acquirer_name' => $this->associated_record_payment->supplier->name,
+                'acquirer_number' => $this->associated_record_payment->supplier->number,
+                'currency_type_id' => $this->associated_record_payment->currency_type_id,
+                'document_type_description' => $this->associated_record_payment->expense_type->description,
+                'expense_method_type_id' => $this->expense_method_type_id,
+                'payment' => $this->associated_record_payment->isVoidedOrRejected() ? 0 : $this->payment,
+
+            ]);
+
+        }
+        
+
+        /**
+         * 
+         * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeFilterRelationsPayments($query)
+        {
+            return $query->with([
+                'expense_method_type' => function($q){
+                    $q->select('id', 'description');
+                }, 
+            ]);
+        }
+
+            
+        /**
+         * 
+         * Tipo de transaccion para caja
+         *
+         * @return string
+         */
+        public function getTransactionTypeCash()
+        {
+            return 'egress';
+        }
+
+
+        /**
+         * 
+         * Tipo de documento para caja
+         *
+         * @return string
+         */
+        public function getDocumentTypeCash()
+        {
+            return $this->getTable();
+        }
+
+        
+        /**
+         * 
+         * Datos para resumen diario de operaciones
+         *
+         * @return array
+         */
+        public function applySummaryDailyOperations()
+        {
+            return [
+                'transaction_type' => $this->getTransactionTypeCash(),
+                'document_type' => $this->getDocumentTypeCash(),
+                'apply' => false,
+            ];
+        }
+
+            
+        /**
+         * 
+         * Obtener informacion del pago y registro origen relacionado
+         *
+         * @return array
+         */
+        public function getRowResourceCashPayment()
+        {
+            return [
+                'type' => 'expense_payment',
+                'type_transaction' => 'egress',
+                'type_transaction_description' => 'Gasto',
+                'date_of_issue' => $this->associated_record_payment->date_of_issue->format('Y-m-d'),
+                'number_full' => $this->associated_record_payment->number_full,
+                'acquirer_name' => $this->associated_record_payment->supplier->name,
+                'acquirer_number' => $this->associated_record_payment->supplier->number,
+                'currency_type_id' => $this->associated_record_payment->currency_type_id,
+                'document_type_description' => $this->associated_record_payment->expense_type->description,
+                'payment_method_type_id' => $this->expense_method_type_id,
+                'payment' => $this->associated_record_payment->isVoidedOrRejected() ? 0 : $this->payment,
+            ];
+        }
+
     }

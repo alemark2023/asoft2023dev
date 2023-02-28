@@ -386,7 +386,8 @@ export default {
     props: [
         'showDialog',
         'currencyTypeIdActive',
-        'exchangeRateSale'
+        'exchangeRateSale',
+        'percentageIgv'
     ],
     components: {itemForm, LotsForm, 'vue-ckeditor': VueCkeditor.component},
 
@@ -653,8 +654,8 @@ export default {
         },
         changeItem() {
             this.form.item = _.find(this.items, {'id': this.form.item_id})
-            console.error(this.form.item)
-            console.log(this.form.item.purchase_unit_price +' <<< ')
+            // console.error(this.form.item)
+            // console.log(this.form.item.purchase_unit_price +' <<< ')
             this.form.unit_price = this.form.item.purchase_unit_price
             this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
 
@@ -672,14 +673,14 @@ export default {
 
             if (!affectation_igv_types_exonerated_unaffected.includes(this.form.affectation_igv_type_id)) {
 
-                unit_price = (this.form.purchase_has_igv) ? this.form.unit_price : this.form.unit_price * 1.18;
+                unit_price = (this.form.purchase_has_igv) ? this.form.unit_price : this.form.unit_price * (1 + this.percentageIgv);
 
             }
 
             this.form.item.unit_price = unit_price
             this.form.item.presentation = this.item_unit_type;
             this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
-            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
+            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv)
             this.row = this.changeWarehouse(this.row)
 
             this.initForm()

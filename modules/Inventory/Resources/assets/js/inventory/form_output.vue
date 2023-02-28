@@ -1,5 +1,11 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
+    <el-dialog :title="titleDialog"
+               :visible="showDialog"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false"
+               append-to-body
+               @close="close"
+               @open="create">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
@@ -41,12 +47,11 @@
                                    v-text="errors.warehouse_id[0]"></small>
                         </div>
                     </div>
-                    <div style="padding-top: 3%;" class="col-md-2 col-sm-2"
-                         v-if="form.item_id && form.lots_enabled && form.lots_group.length > 0">
+                    <div style="padding-top: 3%;" class="col-md-2 col-sm-2" v-if="form.item_id && form.lots_enabled && form.warehouse_id">
                         <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickLotGroup">[&#10004;
                             Seleccionar lote]</a>
                     </div>
-                    <div style="padding-top: 3%;" class="col-md-3 col-sm-3" v-if="form.item_id && form.series_enabled">
+                    <div style="padding-top: 3%;" class="col-md-3 col-sm-3" v-if="form.item_id && form.series_enabled && form.warehouse_id">
                         <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
                         <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickSelectLots">[&#10004;
                             Seleccionar series]</a>
@@ -79,16 +84,18 @@
                 </div>
                 <div class="row">
                     <div class="col-md-3">
-                            <label class="control-label">Fecha registro</label>
-                            <el-date-picker v-model="form.created_at" type="datetime"
-                                            value-format="yyyy-MM-dd HH:mm:ss" format="dd/MM/yyyy HH:mm:ss" :clearable="true"></el-date-picker>
+                        <label class="control-label">Fecha registro</label>
+                        <el-date-picker v-model="form.created_at" type="datetime"
+                                        value-format="yyyy-MM-dd HH:mm:ss" format="dd/MM/yyyy HH:mm:ss"
+                                        :clearable="true"></el-date-picker>
                     </div>
                     <div class="col-md-8">
                         <div class="form-group" :class="{'has-danger': errors.comments}">
                             <label class="control-label">Comentarios
                             </label>
-                            <el-input  type="textarea" :rows="3" :maxlength="250" v-model="form.comments"></el-input>
-                            <small class="form-control-feedback" v-if="errors.comments" v-text="errors.comments[0]"></small>
+                            <el-input type="textarea" :rows="3" :maxlength="250" v-model="form.comments"></el-input>
+                            <small class="form-control-feedback" v-if="errors.comments"
+                                   v-text="errors.comments[0]"></small>
                         </div>
                     </div>
                 </div>
@@ -99,17 +106,21 @@
             </div>
         </form>
 
-
         <lots-group
             :quantity="form.quantity"
             :showDialog.sync="showDialogLots"
+            :lots-group-all="lotsGroupAll"
             :lots_group="form.lots_group"
             @addRowLotGroup="addRowLotGroup">
         </lots-group>
 
         <select-lots-form
             :showDialog.sync="showDialogSelectLots"
+            :lots-all="lotsAll"
+            :itemId="form.item_id"
             :lots="form.lots"
+            :quantity="form.quantity"
+            :warehouseId="form.warehouse_id"
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
 
@@ -120,8 +131,11 @@
 <script>
 //  import InputLotsForm from '../../../../../../resources/js/views/tenant/items/partials/lots.vue'
 // import OutputLotsForm from './partials/lots.vue'
-import LotsGroup from './lots_group.vue'
-import SelectLotsForm from './lots.vue'
+//import LotsGroup from './lots_group.vue'
+import LotsGroup from '../../../../../../resources/js/views/tenant/documents/partials/lots_group.vue'
+import SelectLotsForm from '../../../../../../resources/js/views/tenant/documents/partials/lots.vue'
+//import SelectLotsForm from './lots.vue'
+import {filterWords} from "../../../../../../resources/js/helpers/functions";
 
 
 export default {
@@ -142,29 +156,33 @@ export default {
             items: [],
             warehouses: [],
             inventory_transactions: [],
+            lotsAll: [],
+            lotsGroupAll: []
         }
     },
-    // created() {
-    //     this.initForm()
-    // },
+    created() {
+        this.initForm()
+    },
     methods: {
         async changeItem() {
             this.form.lots = []
             let item = await _.find(this.items, {'id': this.form.item_id})
             this.form.lots_enabled = item.lots_enabled
-            let lots = await _.filter(item.lots, {'warehouse_id': this.form.warehouse_id})
+            this.lotsAll = await _.filter(item.lots, {'warehouse_id': this.form.warehouse_id})
             // console.log(item)
-            this.form.lots = lots
+            // this.form.lots = lots
             this.form.lots_enabled = item.lots_enabled
             this.form.series_enabled = item.series_enabled
-            this.form.lots_group = item.lots_group
+            this.form.lots_group = [];
+
+            this.lotsGroupAll = item.lots_group;
         },
-        addRowOutputLot(lots) {
-            this.form.lots = lots
-        },
-        addRowLot(lots) {
-            this.form.lots = lots
-        },
+        // addRowOutputLot(lots) {
+        //     this.form.lots = lots
+        // },
+        // addRowLot(lots) {
+        //     this.form.lots = lots
+        // },
         clickLotcode() {
             this.showDialogLots = true
         },
@@ -202,7 +220,7 @@ export default {
         },
         async create() {
             this.loading = true;
-            this.titleDialog = 'Salida de producto del almacén'
+            this.titleDialog = 'Salida de producto del almacén 3'
             await this.initTables();
             this.initForm();
             this.loading = false;
@@ -222,14 +240,17 @@ export default {
             this.items = [];
             await this.$http.post(`/${this.resource}/search_items`, {'search': search})
                 .then(response => {
-                    this.items = response.data.items
+                    let items = response.data.items;
+                    if (items.length > 0) {
+                        this.items = items; //filterWords(search, items);
+                    }
                 })
             this.loading_search = false;
         },
         async submit() {
             if (this.form.lots.length > 0 && this.form.series_enabled) {
-                let select_lots = await _.filter(this.form.lots, {'has_sale': true})
-                if (select_lots.length !== this.form.quantity) {
+                //let select_lots = await _.filter(this.form.lots, {'has_sale': true})
+                if (this.form.lots.length !== parseInt(this.form.quantity)) {
                     return this.$message.error('La cantidad ingresada es diferente a las series seleccionadas');
                 }
             }
@@ -237,6 +258,18 @@ export default {
                 if (!this.form.IdLoteSelected)
                     return this.$message.error('Debe seleccionar un lote.');
             }
+
+            // let _lots_group = [];
+            // _.forEach(this.form.lots_group, row => {
+            //     _lots_group.push({
+            //         'checked': row.checked,
+            //         'code': row.code,
+            //         'date_of_due': row.date_of_due,
+            //         'id': row.id,
+            //         'quantity': row.quantity,
+            //     })
+            // })
+            //this.form.lots_group = _.head(this.form.lots_group);
             this.loading_submit = true
             this.form.type = this.type
             // console.log(this.form)
@@ -270,12 +303,14 @@ export default {
             this.showDialogLots = true
         },
         addRowLotGroup(id) {
+            console.log(id);
             this.form.IdLoteSelected = id
         },
         async clickSelectLots() {
             this.showDialogSelectLots = true
         },
         addRowSelectLot(lots) {
+            console.log(lots);
             this.form.lots = lots
         },
     }

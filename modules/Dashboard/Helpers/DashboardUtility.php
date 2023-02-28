@@ -8,6 +8,8 @@ use App\Models\Tenant\PurchaseItem;
 use App\Models\Tenant\SaleNoteItem;
 use Carbon\Carbon;
 use Modules\Expense\Models\Expense;
+use App\Models\Tenant\SaleNote;
+
 
 class DashboardUtility
 {
@@ -116,9 +118,10 @@ class DashboardUtility
         $getTotalSaleNoteItems = $this->getTotalSaleNoteItems($sale_note_items);
         $getTotalExpenses = $this->getTotalExpenses($expenses);
 
-        // dd($getTotalDocumentItems, $getTotalSaleNoteItems, $getTotalExpenses);
+        // $total_global_discount_sale_note = $this->getTotalGlobalDiscountSaleNote($establishment_id, $d_start, $d_end, $item_id);
 
         $total_income = $getTotalDocumentItems['document_sale_total'] + $getTotalSaleNoteItems['sale_note_sale_total'];
+
         $total_egress = $getTotalDocumentItems['document_purchase_total'] + $getTotalSaleNoteItems['sale_note_purchase_total'] + $getTotalExpenses;
         $utility = $total_income - $total_egress;
 
@@ -186,7 +189,44 @@ class DashboardUtility
         return $purchase_unit_price;
     }
 
-    private function getTotalSaleNoteItems($sale_note_items){
+
+    /**
+     * 
+     * Obtener total de descuentos globales de nota de venta
+     * @TODO revisar total descuento cuando afecta a la BI
+     * 
+     * @param $establishment_id
+     * @param $d_start
+     * @param $d_end
+     * @param $item_id
+     * @return float
+     */
+    // private function getTotalGlobalDiscountSaleNote($establishment_id, $d_start, $d_end, $item_id)
+    // {
+    //     return SaleNote::whereFilterDashboardUtility($establishment_id, $d_start, $d_end, $item_id)->sum('total_discount');
+    // }
+
+
+    
+    /**
+     * 
+     * Obtener totales de nota de venta basado en los items filtrados
+     *
+     * @param  $sale_note_items
+     * @return float
+     */
+    private function getTotalSaleNotesByItems($sale_note_items)
+    {
+        return SaleNote::whereRecordsByItems($sale_note_items->pluck('sale_note_id')->toArray())
+                                ->get()
+                                ->sum(function($sale_note){
+                                    return $sale_note->getTransformTotal();
+                                });
+    }
+    
+
+    private function getTotalSaleNoteItems($sale_note_items)
+    {
 
         $purchase_unit_price = 0;
 
@@ -200,46 +240,41 @@ class DashboardUtility
         $sale_note_purchase_total_usd = 0;
         $sale_note_utility_total_usd = 0;
 
-        foreach ($sale_note_items as $sln) {
+        //obtener total globales de nv
+        $total_global_sale_notes = $this->getTotalSaleNotesByItems($sale_note_items);
+
+        foreach ($sale_note_items as $sln) 
+        {
 
             $purchase_unit_price = $this->getPurchaseUnitPrice($sln);
 
-            $sln_total_purchase = $purchase_unit_price * $sln->quantity;
+            $presentation_quantity = $this->getQuantityUnitPresentation($sln);
+
+            $sln_total_purchase = $purchase_unit_price * ($sln->quantity * $presentation_quantity);
+            // $sln_total_purchase = $purchase_unit_price * $sln->quantity;
 
             if($sln->sale_note->currency_type_id === 'PEN'){
 
-                    $sale_note_purchase_total_pen += $sln_total_purchase;
-                    $sale_note_sale_total_pen += $sln->total;
+                $sale_note_purchase_total_pen += $sln_total_purchase;
+                // $sale_note_sale_total_pen += $sln->total;
 
             }else{
 
                 $sale_note_purchase_total_usd += $sln_total_purchase;
-                $sale_note_sale_total_usd += $sln->total * $sln->sale_note->exchange_rate_sale;
+                // $sale_note_sale_total_usd += $sln->total * $sln->sale_note->exchange_rate_sale;
 
             }
 
         }
 
-        $sale_note_utility_total_pen = $sale_note_sale_total_pen - $sale_note_purchase_total_pen;
-        $sale_note_utility_total_usd = $sale_note_sale_total_usd - $sale_note_purchase_total_usd;
-
-
         return [
-
-            // 'sale_note_sale_total_pen' => round($sale_note_sale_total_pen, 2),
-            // 'sale_note_purchase_total_pen' => round($sale_note_purchase_total_pen, 2),
-
-            // 'sale_note_purchase_total_usd' => round($sale_note_purchase_total_usd, 2),
-            // 'sale_note_sale_total_usd' => round($sale_note_sale_total_usd, 2),
-
-            // 'sale_note_utility_total_pen' => round($sale_note_utility_total_pen, 2),
-            // 'sale_note_utility_total_usd' => round($sale_note_utility_total_usd, 2),
-
-            'sale_note_sale_total' => $sale_note_sale_total_usd + $sale_note_sale_total_pen,
+            'sale_note_sale_total' => $total_global_sale_notes,
+            // 'sale_note_sale_total' => $sale_note_sale_total_usd + $sale_note_sale_total_pen,
             'sale_note_purchase_total' => $sale_note_purchase_total_usd + $sale_note_purchase_total_pen,
-
         ];
+
     }
+
 
     private function getTotalDocumentItems($document_items) {
         $purchase_unit_price = 0;
@@ -281,11 +316,15 @@ class DashboardUtility
             }
         }
 
-        foreach ($document_items as $doc_it) {
+        foreach ($document_items as $doc_it) 
+        {
             $purchase_unit_price = $this->getPurchaseUnitPrice($doc_it);
 
+            $presentation_quantity = $this->getQuantityUnitPresentation($doc_it);
 
-            $doc_total_purchase = $purchase_unit_price * $doc_it->quantity;
+            $doc_total_purchase = $purchase_unit_price * ($doc_it->quantity * $presentation_quantity);
+            
+            // $doc_total_purchase = $purchase_unit_price * $doc_it->quantity;
 
             if($doc_it->document->currency_type_id === 'PEN'){
                 if(in_array($doc_it->document->document_type_id,['01','03','08'])){
@@ -327,5 +366,17 @@ class DashboardUtility
         ];
     }
 
+
+    /**
+     *
+     * Obtener factor de presentación
+     *
+     * @param  Document|SaleNote $model_item
+     * @return float
+     */
+    public function getQuantityUnitPresentation($model_item)
+    {
+        return isset($model_item->item->presentation->quantity_unit) ? (float) $model_item->item->presentation->quantity_unit : 1;
+    }
 
 }

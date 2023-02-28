@@ -8,6 +8,7 @@ use App\Models\Tenant\Catalogs\DocumentType;
 use Carbon\Carbon;
 use Modules\Purchase\Models\PurchaseOrder;
 use stdClass;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Class Purchase
@@ -370,10 +371,19 @@ class Purchase extends ModelTenant
      *
      * @return \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder|null
      */
-    public function scopeWhereTypeUser( $query)
+    public function scopeWhereTypeUser( $query, $params= [])
     {
         /** @var \App\Models\Tenant\User $user */
-        $user = auth()->user();
+        if(isset($params['user_id'])) {
+            $user_id = (int)$params['user_id'];
+            $user = User::find($user_id);
+            if(!$user) {
+                $user = new User();
+            }
+        }
+        else { 
+            $user = auth()->user();
+        }
         return ($user->type === 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
@@ -522,6 +532,8 @@ class Purchase extends ModelTenant
             'number'                         => $this->number_full,
             'supplier_name'                  => $this->supplier->name,
             'supplier_number'                => $this->supplier->number,
+            'supplier_telephone'             => optional($this->supplier)->telephone,
+            'supplier_email'                 => optional($this->supplier)->email,
             'currency_type_id'               => $this->currency_type_id,
             'total_exportation'              => $this->total_exportation,
             'total_free'                     => self::NumberFormat($this->total_free),
@@ -552,10 +564,12 @@ class Purchase extends ModelTenant
                     'key'         => $key + 1,
                     'id'          => $row->id,
                     'description' => $row->item->description,
+                    'name_product_pdf' => $row->name_product_pdf,
                     'quantity'    => round($row->quantity, 2)
                 ];
             }),
             'print_a4'                       => url('')."/purchases/print/{$this->external_id}/a4",
+            'filename'                         => $this->filename,
         ];
     }
 
@@ -609,4 +623,265 @@ class Purchase extends ModelTenant
     {
         return $this->hasMany(GuideFile::class);
     }
+    
+    /**
+     * Validar si es compra en dolares
+     *
+     * @return bool
+     */
+    public function isCurrencyTypeUsd()
+    {
+        return $this->currency_type_id === 'USD';
+    }
+
+    public function convertValueToPen($value)
+    {
+        return self::NumberFormat($this->generalConvertValueToPen($value, $this->exchange_rate_sale));
+    }
+
+    /**
+     * 
+     * Obtener total y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalToPen()
+    {
+        return $this->convertValueToPen($this->total);
+    }
+
+    /**
+     * 
+     * Obtener total isc y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalIscToPen()
+    {
+        return $this->convertValueToPen($this->total_isc);
+    }
+    
+    /**
+     * 
+     * Obtener total igv y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalIgvToPen()
+    {
+        return $this->convertValueToPen($this->total_igv);
+    }
+    /**
+     * 
+     * Obtener total base y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalTaxedToPen()
+    {
+        return $this->convertValueToPen($this->total_taxed);
+    }
+    
+    /**
+     * 
+     * Obtener total exonerado y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalExoneratedToPen()
+    {
+        return $this->convertValueToPen($this->total_exonerated);
+    }
+
+    /**
+     * 
+     * Obtener total inafecto y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalUnaffectedToPen()
+    {
+        return $this->convertValueToPen($this->total_unaffected);
+    }
+
+    /**
+     * 
+     * Obtener total gratuito y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalFreeToPen()
+    {
+        return $this->convertValueToPen($this->total_free);
+    }
+    
+    /**
+     * 
+     * Obtener total exportacion y realizar conversión a soles de acuerdo al tipo de cambio
+     *
+     * @return float
+     */
+    public function getConvertTotalExportationToPen()
+    {
+        return $this->convertValueToPen($this->total_exportation);
+    }
+
+
+    /**
+     * 
+     * Obtener pagos en efectivo
+     *
+     * @return Collection
+     */
+    public function getCashPayments()
+    {
+        return $this->payments()->whereFilterCashPayment()->get()->transform(function($row){{
+            return $row->getRowResourceCashPayment();
+        }});
+    }
+
+    
+    /**
+     * 
+     * Validar si el registro esta rechazado o anulado
+     * 
+     * @return bool
+     */
+    public function isVoidedOrRejected()
+    {
+        return in_array($this->state_type_id, self::VOIDED_REJECTED_IDS);
+    }
+
+        
+    /**
+     * 
+     * Obtener url para impresión
+     *
+     * @param  string $format
+     * @return string
+     */
+    public function getUrlPrintPdf($format = "a4")
+    {
+        return url("purchases/print/{$this->external_id}/{$format}");
+    }
+        
+
+    /**
+     * 
+     * Filtro para no incluir relaciones en consulta
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */  
+    public function scopeWhereFilterWithOutRelations($query)
+    {
+        return $query->withOut(['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments']);
+    }
+
+
+    /**
+     * 
+     * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterRelationsGlobalPayment($query)
+    {
+        return $query->whereFilterWithOutRelations()
+                    ->with([
+                        'document_type'=> function($q){
+                            $q->select('id', 'description');
+                        }, 
+                    ]);
+    }
+    
+
+    /**
+     * 
+     * Tipo de transaccion para caja
+     *
+     * @return string
+     */
+    public function getTransactionTypeCash()
+    {
+        return 'egress';
+    }
+
+
+    /**
+     * 
+     * Tipo de documento para caja
+     *
+     * @return string
+     */
+    public function getDocumentTypeCash()
+    {
+        return $this->getTable();
+    }
+
+    
+    /**
+     * 
+     * Datos para resumen diario de operaciones
+     *
+     * @return array
+     */
+    public function applySummaryDailyOperations()
+    {
+        return [
+            'transaction_type' => $this->getTransactionTypeCash(),
+            'document_type' => $this->getDocumentTypeCash(),
+            'apply' => $this->hasAcceptedState(),
+        ];
+    }
+
+
+    /**
+     *
+     * Obtener total de pagos en efectivo sin considerar destino
+     *
+     * @return float
+     */
+    public function totalCashPaymentsWithoutDestination()
+    {
+        return $this->payments()->filterCashPaymentWithoutDestination()->sum('payment');
+    }
+
+    
+    /**
+     *
+     * Obtener total de pagos en transferencia
+     *
+     * @return float
+     */
+    public function totalTransferPayments()
+    {
+        return $this->payments()->filterTransferPayment()->sum('payment');
+    }
+
+
+    /**
+     * 
+     * Validar si tiene estado permitido para calculos/etc
+     *
+     * @return bool
+     */
+    public function hasAcceptedState()
+    {
+        return in_array($this->state_type_id, self::STATE_TYPES_ACCEPTED, true);
+    }
+
+        
+    /**
+     * 
+     * Es compra por pagar
+     *
+     * @return bool
+     */
+    public function isToPay()
+    {
+        return $this->payments()->sum('payment') != $this->total;
+    }
+
 }

@@ -12,7 +12,8 @@
   </div>-->
 
     <tenant-pos-index
-     	:configuration="{{ $configuration}}"
+        :configuration2="{{\App\Models\Tenant\Configuration::getPublicConfig()}}"
+        :configuration="{{ $configuration}}"
      	:soap-company="{{ json_encode($soap_company) }}"
       :business-turns="{{ $business_turns }}"
       :type-user="{{json_encode(Auth::user()->type)}}"

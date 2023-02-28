@@ -48,7 +48,7 @@ class HotelRentController extends Controller
 			$now = now();
 			$request->merge(['input_date' => $now->format('Y-m-d')]);
 			$request->merge(['input_time' => $now->format('H:i:s')]);
-			$rent = HotelRent::create($request->only('customer_id', 'customer', 'notes', 'towels', 'hotel_room_id', 'duration', 'quantity_persons', 'payment_status', 'output_date', 'output_time', 'input_date', 'input_time'));
+			$rent = HotelRent::create($request->only('customer_id', 'customer', 'notes', 'towels', 'hotel_room_id', 'hotel_rate_id', 'duration', 'quantity_persons', 'payment_status', 'output_date', 'output_time', 'input_date', 'input_time'));
 
 			$room->status = 'OCUPADO';
 			$room->save();
@@ -91,13 +91,14 @@ class HotelRentController extends Controller
 		$rent = HotelRent::with('room')
 			->findOrFail($rentId);
 
+		$establishment = Establishment::query()->find(auth()->user()->establishment_id);
 		$configuration = Configuration::first();
 
 		$products = HotelRentItem::where('hotel_rent_id', $rentId)
 			->where('type', 'PRO')
 			->get();
 
-		return view('hotel::rooms.add-product-to-room', compact('rent', 'configuration', 'products'));
+		return view('hotel::rooms.add-product-to-room', compact('rent', 'configuration', 'products', 'establishment'));
 	}
 
 	public function addProductsToRoom(HotelRentItemRequest $request, $rentId)
@@ -146,6 +147,7 @@ class HotelRentController extends Controller
         $payment_destinations = $this->getPaymentDestinations();
         $series = Series::where('establishment_id',  auth()->user()->establishment_id)->get();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
+		$affectation_igv_types = AffectationIgvType::whereActive()->get();
 
 		return view('hotel::rooms.checkout', compact(
             'rent', 'room',
@@ -153,17 +155,25 @@ class HotelRentController extends Controller
             'payment_method_types',
             'payment_destinations',
             'series',
-            'document_types_invoice'
+            'document_types_invoice',
+			'affectation_igv_types'
         ));
 	}
 
 	public function finalizeRent($rentId)
 	{
 		$rent = HotelRent::findOrFail($rentId);
+		$items = HotelRentItem::where('hotel_rent_id', $rentId)->get();
 		$rent->update([
 			'arrears' => request('arrears'),
+			'payment_status' => 'PAID',
 			'status'  => 'FINALIZADO'
 		]);
+		foreach ($items as $item) {
+			$item->update([
+				'payment_status' => 'PAID',
+			]);
+		}
 		HotelRoom::where('id', $rent->hotel_room_id)
 			->update([
 				'status' => 'LIMPIEZA'
@@ -181,14 +191,18 @@ class HotelRentController extends Controller
 		$customers = Person::with('addresses')
 			->whereType('customers')
 			->whereIsEnabled()
-			->whereIn('identity_document_type_id', [1, 6])
+			->whereIn('identity_document_type_id', [1, 4, 6])
 			->orderBy('name');
 
 		$query = request('input');
-		if ($query) {
+		$search_by_barcode = (bool)request('search_by_barcode');
+		if ($query && $search_by_barcode) {
+
+			$customers = $customers->where('barcode', 'like', "%{$query}%");
+		}else{
 			if (is_numeric($query)) {
 				$customers = $customers->where('number', 'like', "%{$query}%");
-			} else {
+			}else {
 				$customers = $customers->where('name', 'like', "%{$query}%");
 			}
 		}
@@ -205,7 +219,8 @@ class HotelRentController extends Controller
 					'identity_document_type_code' => $row->identity_document_type->code,
 					'addresses'                   => $row->addresses,
 					'address'                     => $row->address,
-					'internal_code'               => $row->internal_code
+					'internal_code'               => $row->internal_code,
+					'barcode'					  => $row->barcode
 				];
 			});
 

@@ -7,7 +7,8 @@
             use App\Models\Tenant\Configuration;
             use App\Models\Tenant\User;
             use Modules\Inventory\Models\Inventory;
-            use Modules\Inventory\Models\InventoryTransfer;use Modules\Inventory\Models\Warehouse;
+            use Modules\Inventory\Models\InventoryTransfer;
+            use Modules\Inventory\Models\Warehouse;
             use Illuminate\Support\Carbon;
             use Illuminate\Database\Eloquent\Collection;
 
@@ -54,6 +55,12 @@
                 $itemCollection['description'] = substr($itemCollection['description'], 0, 49);
                 $itemCollection['internal_id'] = substr($itemCollection['internal_id'], 0, 10);
                 $itemCollection['unit_type_text'] = substr($itemCollection['unit_type_text'], 0, 10);
+
+                $item_transfers = !empty($data['item_transfers']) ? $data['item_transfers'] : null;
+                $lots = $item_transfers->filter(function($value) use ($item) {
+                    return $value['item_id'] == $item->id;
+                });
+
                 $qty = $inventory->quantity;
                 $lot_code = $inventory->lot_code;
                 /*
@@ -66,7 +73,14 @@
                     <td class="celda text-left">{{$itemCollection['description']}}</td>
                     <td class="celda">{{$itemCollection['unit_type_text']}}</td>
                     <td class="celda">{{$qty}}</td>
-                    <td class="celda">{{$lot_code}}</td>
+                    <td class="celda">
+                        @foreach($lots as $lot)
+                            {{ $lot['code'] }}
+                            @if(!$loop->last)
+                                <br>
+                            @endif
+                        @endforeach
+                    </td>
                     <!--            <td>SERIE</td>-->
                 </tr>
             @endforeach

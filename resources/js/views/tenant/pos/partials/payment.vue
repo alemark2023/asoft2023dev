@@ -14,6 +14,23 @@
                     <div class="col-12 px-0">
                         <h4 class="font-weight-semibold m-0 text-secondary">{{ customer.description }}</h4>
                     </div>
+                    
+                    <!-- sistema por puntos -->
+                    <div v-if="enabledPointSystem" class="mt-3">
+                        <p class="fs-point-system">
+                            <label class="font-weight-bold">Puntos acumulados:</label> 
+                            <b>{{customer_accumulated_points}}</b> 
+
+                            <template v-if="total_exchange_points > 0">
+                            - <b style="color:red">{{ total_exchange_points }}</b> = <b>{{ calculate_customer_accumulated_points }}</b>
+                            </template>
+                        </p>
+                        <p class="fs-point-system">
+                            <label class="font-weight-bold text-danger">Puntos por la compra:</label> 
+                            <b>{{total_points_by_sale}}</b> 
+                        </p>
+                    </div>
+                    <!-- sistema por puntos -->
                 </div>
 
                 <template v-for="(item,index) in form.items">
@@ -33,6 +50,26 @@
                             <h5 class="font-weight-semibold m-0 text-right text-secondary">
                                 {{ currencyTypeActive.symbol }} {{ item.total }}</h5>
                         </div>
+
+                        <!-- sistema por puntos -->
+                        <template v-if="isAvailablePointSystem(item)">
+                            <div class="col-2">
+                            </div>
+                            <div class="col-10 px-0">
+                                <el-checkbox class="mt-2 mb-2" v-model="item.item.exchanged_for_points" @change="changeRowExchangePoints(item, index)"><b>{{ getExchangePointDescription(item) }}</b></el-checkbox>
+                            </div>
+                        </template>
+                        <!-- sistema por puntos -->
+
+                        
+                        <!-- restriccion venta productos -->
+                        <template v-if="isRestrictedForSale(item.item)">
+                            <div class="col-2"></div>
+                            <div class="col-10 px-0">
+                                <span class="text-danger mt-1 mb-2 d-block">Restringido para venta en CPE</span>
+                            </div>
+                        </template>
+
                     </div>
                 </template>
 
@@ -128,7 +165,7 @@
                 </div>
                 <div class="row m-0 p-0 h-25 d-flex align-items-center bg-white">
                     <div class="col-lg-6">
-                        <button :disabled="button_payment"
+                        <button :disabled="button_payment && payment_method_type_id != '09'"
                                 class="btn btn-block btn-primary"
                                 @click="clickPayment">PAGAR
                         </button>
@@ -174,7 +211,7 @@
                 </div>
 
 
-                <div class="col-lg-8">
+                <div class="col-lg-8 mt-2">
                     <div class="card card-default">
 
                         <div class="card-body text-center">
@@ -243,11 +280,31 @@
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label class="control-label">Monto descuento</label>
+                                        <label class="control-label">
+
+                                            <el-checkbox v-model="is_discount_amount"
+                                                            class="ml-1 mr-1"
+                                                            @change="changeTypeDiscount"></el-checkbox>
+
+                                            <template>{{ (is_discount_amount) ? 'Monto' : 'Porcentaje'}} descuento</template>
+
+                                            <el-tooltip class="item"
+                                                        v-if="global_discount_type && global_discount_type.description"
+                                                        :content="global_discount_type.description"
+                                                        effect="dark"
+                                                        placement="top">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+
+                                        </label>
                                         <el-input v-model="discount_amount"
                                                   :disabled="!enabled_discount"
-                                                  @input="inputDiscountAmount()">
-                                            <template slot="prepend">{{ currencyTypeActive.symbol }}</template>
+                                                  @change="inputDiscountAmount()"
+                                                  >
+
+                                            <template slot="prepend" v-if="is_discount_amount">{{ currencyTypeActive.symbol }}</template>
+                                            <template slot="append" v-else>%</template>
+
                                         </el-input>
                                     </div>
                                 </div>
@@ -268,6 +325,47 @@
                         </div>
                     </div>
                 </div>
+
+
+                <!-- propinas -->
+                <div class="col-lg-8" v-if="enabledTipsPos">
+
+                    <div class="card card-default">
+                        <div class="card-body">
+
+                            <div class="row col-lg-12 mb-2 mt-1">
+
+                                <div class="col-lg-12">
+                                    <h5><strong>Registrar propina</strong>
+                                        <el-tooltip class="item"
+                                                    content="Para registrar la propina debe ingresar los datos del empleado y el monto debe ser mayor a 0"
+                                                    effect="dark"
+                                                    placement="top">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </h5>
+                                </div>
+
+                                <div class="col-lg-8">
+                                    <div class="form-group">
+                                        <label class="control-label">Empleado</label>
+                                        <el-input v-model="form.worker_full_name_tips"></el-input>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Monto</label>
+                                        <el-input-number v-model="form.total_tips" :min="0" controls-position="right"></el-input-number>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- propinas -->
+
                 <div class="col-lg-8">
                     <div class="card card-default">
                         <div class="card-body">
@@ -375,8 +473,13 @@
                 </div>
                 <div class="col-lg-8">
                     <div class="card card-default">
-                        <div class="card-body text-center">
+                        <div class="card-body">
                             <div class="row col-lg-12">
+                                
+                                <div class="col-md-12 col-lg-12 mb-1" v-if="configuration.enabled_sales_agents">
+                                    <search-agent @changeAgent="changeAgent"></search-agent>
+                                </div>
+
                                 <div class="col-md-12 col-lg-12">
                                     <div class="form-group">
                                         <label class="control-label">Datos de referencia</label>
@@ -384,10 +487,12 @@
                                                   type="textarea"></el-input>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
+                
             </div>
         </div>
         <options-form
@@ -395,6 +500,7 @@
             :resource="resource_options"
             :showDialog.sync="showDialogOptions"
             :statusDocument="statusDocument"
+            :fromPos="true"
         ></options-form>
 
         <multiple-payment-form
@@ -402,6 +508,8 @@
             :showDialog.sync="showDialogMultiplePayment"
             :total="form.total"
             @add="addRow"
+            @setPaymentMethod="setPaymentMethod"
+
         ></multiple-payment-form>
 
         <!-- <sale-notes-options :showDialog.sync="showDialogSaleNote"
@@ -411,6 +519,12 @@
         <card-brands-form :external="true"
                           :recordId="null"
                           :showDialog.sync="showDialogNewCardBrand"></card-brands-form>
+                          
+        <discount-permission-form 
+                    :showDialog.sync="showDialogDiscountPermission"
+                    :totalDiscountPercentage ="totalDiscountPercentage"
+                    :sellers-discount-limit="configuration.sellers_discount_limit"
+                    @tokenValidated="tokenValidated"></discount-permission-form>
     </div>
 </template>
 <style>
@@ -444,11 +558,35 @@ import CardBrandsForm from '../../card_brands/form.vue'
 import SaleNotesOptions from '../../sale_notes/partials/options.vue'
 import OptionsForm from './options.vue'
 import MultiplePaymentForm from './multiple_payment.vue'
+import {pointSystemFunctions} from '@mixins/functions'
+import {calculateRowItem} from "@helpers/functions"
+import DiscountPermissionForm from './discount_permission.vue'
+import SearchAgent from '@components/SearchAgent.vue'
+
 
 export default {
-    components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress},
+    components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress, DiscountPermissionForm, SearchAgent},
+    mixins: [pointSystemFunctions],
 
-    props: ['form', 'customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany', 'businessTurns', 'isPrint'],
+    props: [
+        'form',
+        'customer',
+        'currencyTypeActive',
+        'exchangeRateSale',
+        'is_payment',
+        'soapCompany',
+        'businessTurns',
+        'isPrint',
+        'globalDiscountTypeId',
+        'enabledTipsPos',
+        'hidePdfViewDocuments',
+        'enabledPointSystem',
+        'affectationIgvTypes',
+        'percentageIgv',
+        'configuration',
+        'typeUser',
+    ],
+    
     data() {
         return {
             enabled_discount: false,
@@ -479,7 +617,14 @@ export default {
             statusDocument: {},
             payment_method_types: [],
             payments: [],
-            locked_submit: false
+            locked_submit: false,
+            global_discount_types: [],
+            global_discount_type: {},
+            error_global_discount: false,
+            is_discount_amount: false,
+            payment_method_type_id: null,
+            showDialogDiscountPermission: false,
+            totalDiscountPercentage: 0,
         }
     },
     async created() {
@@ -506,11 +651,72 @@ export default {
         if (!qz.websocket.isActive() && this.isPrint) {
             startConnection();
         }
+
+        if(this.enabledPointSystem)
+        {
+            await this.setCustomerAccumulatedPoints(this.form.customer_id, true)
+            this.setTotalExchangePoints()
+            this.checkUsedPointsByItem()
+        }
+
+        this.setTotalPointsBySale(this.configuration)
+
     },
     mounted() {
         // console.log(this.currencyTypeActive)
     },
-    methods: {
+    computed: {
+        isGlobalDiscountBase: function () {
+            return (this.globalDiscountTypeId === '02')
+        },
+        isInvoiceDocument()
+        {
+            return ['01', '03'].includes(this.form.document_type_id)
+        },
+        applyRestrictSaleItemsCpe()
+        {
+            if (this.configuration) return this.configuration.restrict_sale_items_cpe
+
+            return false 
+        },
+    },
+    methods: 
+    {
+        isRestrictedForSale(item)
+        {
+            return this.applyRestrictSaleItemsCpe && this.isInvoiceDocument && (item != undefined && item.restrict_sale_cpe)
+        },
+        changeAgent(agent_id)
+        {
+            this.form.agent_id = agent_id
+        },
+        checkUsedPointsByItem()
+        {
+            this.form.items.forEach(row => {
+                this.recalculateUsedPointsForExchange(row)
+            })
+        },
+        isAvailablePointSystem(row)
+        {
+            return (this.enabledPointSystem && this.customer_accumulated_points > 0 && row.item.exchange_points)
+        },
+        changeRowExchangePoints(row, index)
+        {
+            row.item.used_points_for_exchange = row.item.exchanged_for_points ? this.getUsedPoints(row) : null
+            this.setTotalExchangePoints()
+            this.changeRowFreeAffectationIgv(row, index)
+        },
+        async changeRowFreeAffectationIgv(row, index) 
+        {
+            this.form.items[index].affectation_igv_type_id = (row.item.exchanged_for_points) ? '15' : this.form.items[index].item.original_affectation_igv_type_id
+            this.form.items[index].affectation_igv_type = await _.find(this.affectationIgvTypes, {id: this.form.items[index].affectation_igv_type_id})
+            
+            let new_row = await calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentageIgv)
+            new_row['unit_type_id'] = row.unit_type_id
+
+            this.form.items[index] = new_row
+            await this.reCalculateTotal()
+        },
         handleFn113() {
             const code = this.form.document_type_id
             if (code == '01') {
@@ -553,14 +759,20 @@ export default {
             }
 
         },
+        changeTypeDiscount() {
+            this.inputDiscountAmount()
+        },
         inputDiscountAmount() {
 
             if (this.enabled_discount) {
 
                 if (this.discount_amount && !isNaN(this.discount_amount) && parseFloat(this.discount_amount) > 0) {
 
-                    if (this.discount_amount >= this.form.total)
-                        return this.$message.error("El monto de descuento debe ser menor al total de venta")
+                    if(this.is_discount_amount)
+                    {
+                        if (this.discount_amount >= this.form.total)
+                            return this.$message.error("El monto de descuento debe ser menor al total de venta")
+                    }
 
                     this.deleteDiscountGlobal()
                     this.reCalculateTotal()
@@ -584,35 +796,82 @@ export default {
 
             return (not_exonerated) ? false : true
         },
+        setConfigGlobalDiscountType()
+        {
+            this.global_discount_type = _.find(this.global_discount_types, { id : this.globalDiscountTypeId})
+        },
+        setGlobalDiscount(factor, amount, base)
+        {
+            let discount_text = '';
+            if(this.global_discount_type && this.global_discount_type.description){
+                discount_text = this.global_discount_type.description
+            }
+            this.form.discounts.push({
+                discount_type_id: this.global_discount_type.id,
+                description: discount_text,
+                factor: factor,
+                amount: _.round(amount, 2),
+                base: base
+            })
+        },
         async discountGlobal() {
 
-            // let is_exonerated = this.isExonerated()
-            // let is_exonerated = false
+            // let percentage_igv = 18
+            // let amount = parseFloat(this.discount_amount)
+            const input_global_discount = parseFloat(this.discount_amount) //input se usa para monto y porcentaje
+            // let base = (this.globalDiscountTypeId === '02') ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
+            // let factor = _.round(amount / base, 5)
 
-            let global_discount = parseFloat(this.discount_amount)
+            let discount = _.find(this.form.discounts, {'discount_type_id': this.globalDiscountTypeId})
 
-            let base = parseFloat(this.form.total)
-            let amount = parseFloat(global_discount)
-            let factor = _.round(amount / base, 5)
+            if (input_global_discount > 0 && !discount)
+            {
+                const percentage_igv = this.percentageIgv * 100
+                let base = (this.isGlobalDiscountBase) ? parseFloat(this.form.total_taxed) : parseFloat(this.form.total)
+                let amount = 0
+                let factor = 0
 
-            let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
-
-            if (global_discount > 0 && !discount) {
+                if (this.is_discount_amount)
+                {
+                    amount = input_global_discount
+                    factor = _.round(amount / base, 5)
+                }
+                else
+                {
+                    factor = _.round(input_global_discount / 100, 5)
+                    amount = factor * base
+                }
 
                 this.form.total_discount = _.round(amount, 2)
-                this.form.total = _.round(this.form.total - amount, 2)
 
-                this.form.discounts.push({
-                    discount_type_id: '03',
-                    description: 'Descuentos globales que no afectan la base imponible del IGV/IVAP',
-                    factor: factor,
-                    amount: amount,
-                    base: base
-                })
+                // descuentos que afectan la bi
+                if(this.isGlobalDiscountBase)
+                {
+                    this.form.total_taxed = _.round(base - this.form.total_discount, 2)
+                    this.form.total_value = this.form.total_taxed
+                    this.form.total_igv = _.round(this.form.total_taxed * (percentage_igv / 100), 2)
 
+                    //impuestos (isc + igv + icbper)
+                    this.form.total_taxes = _.round(this.form.total_igv + this.form.total_isc + this.form.total_plastic_bag_taxes, 2);
+                    this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
+                    this.form.subtotal = this.form.total
+
+                    if (this.form.total <= 0) this.$message.error("El total debe ser mayor a 0, verifique el tipo de descuento asignado (Configuración/Avanzado/Contable)")
+
+                }
+                // descuentos que no afectan la bi
+                else
+                {
+                    // this.form.total_discount = _.round(amount, 2)
+                    this.form.total = _.round(this.form.total - amount, 2)
+                }
+
+                this.setGlobalDiscount(factor, amount, base)
             }
 
-            this.difference = this.enter_amount - this.form.total
+
+            this.difference = _.round(this.enter_amount - this.form.total, 2)
+
             // this.difference = this.enter_amount - this.form.total_payable_amount
             // console.log(this.form.discounts)
         },
@@ -639,26 +898,39 @@ export default {
                 total_charge += parseFloat(row.total_charge)
 
                 if (row.affectation_igv_type_id === '10') {
-                    total_taxed += parseFloat(row.total_value)
+                    total_taxed += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
+
                 if (row.affectation_igv_type_id === '20') {
-                    total_exonerated += parseFloat(row.total_value)
+                    total_exonerated += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
                 }
+
                 if (row.affectation_igv_type_id === '30') {
                     total_unaffected += parseFloat(row.total_value)
                 }
+
                 if (row.affectation_igv_type_id === '40') {
                     total_exportation += parseFloat(row.total_value)
                 }
+
                 if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
                     total_free += parseFloat(row.total_value)
                 }
-                if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
-                    total_igv += parseFloat(row.total_igv)
-                    total += parseFloat(row.total)
+
+                // if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
+                if (['10', '20', '30', '40', '21'].indexOf(row.affectation_igv_type_id) > -1) 
+                {
+                    total_igv += (row.total_igv_without_rounding) ? parseFloat(row.total_igv_without_rounding) : parseFloat(row.total_igv)
+                    total += (row.total_without_rounding) ? parseFloat(row.total_without_rounding) : parseFloat(row.total)
                 }
-                total_value += parseFloat(row.total_value)
+
+                if(!['21', '37'].includes(row.affectation_igv_type_id)) 
+                {
+                    total_value += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
+                }
+
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
+
 
                 if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
 
@@ -701,28 +973,32 @@ export default {
             // this.form.total_taxes = _.round(total_igv + total_isc, 2);
 
             this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
-            
+
             this.form.total = _.round(total, 2)
             this.form.subtotal = this.form.total
-            
+
             // this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
             // this.form.subtotal = _.round(total + this.form.total_plastic_bag_taxes, 2)
 
             this.discountGlobal()
 
+            this.setTotalPointsBySale(this.configuration)
 
         },
         deleteDiscountGlobal() {
 
-            let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
-            let index = this.form.discounts.indexOf(discount)
-            // let is_exonerated = this.isExonerated()
+            this.form.discounts = []
+            this.form.total_discount = 0
 
-            if (index > -1) {
-                this.form.discounts.splice(index, 1)
-                this.form.total_discount = 0
-                // this.setDiscountByItem(0, is_exonerated)
-            }
+            // let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
+            // let index = this.form.discounts.indexOf(discount)
+            // // let is_exonerated = this.isExonerated()
+
+            // if (index > -1) {
+            //     this.form.discounts.splice(index, 1)
+            //     this.form.total_discount = 0
+            //     // this.setDiscountByItem(0, is_exonerated)
+            // }
 
         },
         back() {
@@ -776,6 +1052,9 @@ export default {
             this.setAmount(acum_payment)
 
             // console.log(this.form.payments)
+        },
+        setPaymentMethod(id){
+            this.payment_method_type_id = id;
         },
         setAmount(amount) {
             // this.amount = parseFloat(this.amount) + parseFloat(amount)
@@ -854,8 +1133,10 @@ export default {
         inputAmount() {
 
             this.difference = this.amount - this.form.total
-
-            if (isNaN(this.difference)) {
+            if(this.payment_method_type_id == '09') {
+                this.button_payment = false
+            }
+            else if (isNaN(this.difference)) {
                 this.button_payment = true
                 this.difference = "-"
             } else if (this.difference >= 0) {
@@ -898,6 +1179,8 @@ export default {
                 document_id: null,
                 sale_note_id: null
             }
+
+            this.is_discount_amount = true
 
         },
 
@@ -948,8 +1231,86 @@ export default {
                 });
             }
         },
-        async clickPayment() {
-            // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
+        getDiscountPercentages()
+        {
+            if(this.form.discounts)
+            {
+                return _.sumBy(this.form.discounts, (discount)=>{
+                    return discount.factor * 100
+                })
+            }
+
+            return 0
+        },
+        tokenValidated()
+        {
+            this.form.token_validated_for_discount = true
+        },
+        validateRestrictSellerDiscount()
+        {
+            if(this.configuration.restrict_seller_discount && this.typeUser !== 'admin')
+            {
+                const all_percentages = this.getDiscountPercentages()
+
+                if(all_percentages > parseFloat(this.configuration.sellers_discount_limit) && !this.form.token_validated_for_discount)
+                {
+                    this.totalDiscountPercentage = _.round(all_percentages, 2)
+                    this.showDialogDiscountPermission = true
+
+                    return {
+                        success: false,
+                    }
+                }
+            }
+
+            return {
+                success: true
+            }
+        },
+        validateRestrictSaleItemsCpe()
+        {
+            if(this.applyRestrictSaleItemsCpe)
+            {
+                let errors_restricted = 0
+
+                this.form.items.forEach(row => {
+                    if(this.isRestrictedForSale(row.item)) errors_restricted++
+                })
+
+                if(errors_restricted > 0) return this.getObjectResponse(false, 'No puede generar el comprobante, tiene productos restringidos.')
+            }
+            
+
+            return this.getObjectResponse()
+        },
+        getObjectResponse(success = true, message = null)
+        {
+            return {
+                success: success,
+                message: message,
+            }
+        },
+        async clickPayment() 
+        {
+            // validacion restriccion de productos
+            const validate_restrict_sale_items_cpe = this.validateRestrictSaleItemsCpe()
+            if(!validate_restrict_sale_items_cpe.success) return this.$message.error(validate_restrict_sale_items_cpe.message)
+
+            // validacion restriccion de descuento
+            const validate_restrict_seller_discount = this.validateRestrictSellerDiscount()
+            if(!validate_restrict_seller_discount.success) return
+
+            // validacion sistema por puntos
+            if(this.enabledPointSystem)
+            {
+                const validate_exchange_points = this.validateExchangePoints()
+                if(!validate_exchange_points.success) return this.$message.error(validate_exchange_points.message)
+            }
+            else
+            {
+                if(this.form.total <= 0) return this.$message.error('El total debe ser mayor a 0')
+            }
+
 
             if (!moment(moment().format("YYYY-MM-DD")).isSame(this.form.date_of_issue)) {
                 return this.$message.error('La fecha de emisión no coincide con la del día actual');
@@ -993,7 +1354,9 @@ export default {
                     }
 
                     this.documentNewId = response.data.data.id;
-                    this.showDialogOptions = true;
+
+                    // this.showDialogOptions = true;
+                    this.showOptionsDialog(response)
 
                     // this.savePaymentMethod();
                     this.saveCashDocument();
@@ -1018,6 +1381,38 @@ export default {
                 this.locked_submit = false
             });
         },
+
+        showOptionsDialog(response){
+
+            if(this.hidePdfViewDocuments)
+            {
+                const response_data = response.data.data
+
+                if(this.form.document_type_id === '80')
+                {
+                    this.$message.success(`Nota de venta registrada: ${response_data.number_full}`)
+                }
+                else
+                {
+                    if(response_data.response.sent)
+                    {
+                        this.$message.success(response_data.response.description)
+                    }
+                    else
+                    {
+                        this.$message.success(`Comprobante registrado: ${response_data.number_full}`)
+                    }
+                }
+
+                this.clickCancel()
+            }
+            else
+            {
+                this.showDialogOptions = true
+            }
+
+        },
+
         gethtml(){
             this.form.datahtml="";
             var doc='salenote';
@@ -1053,7 +1448,19 @@ export default {
                     options: opts
                 }
             ];
-            qz.print(configg, printData).catch(displayError);
+            // qz.print(configg, printData).catch(displayError);
+
+            qz.print(configg, printData)
+                .then(()=>{
+
+                    this.$notify({
+                        title: '',
+                        message: 'Impresión en proceso...',
+                        type: 'success'
+                    })
+
+                })
+                .catch(displayError)
         },
         saveCashDocument() {
             this.$http.post(`/cash/cash_document`, this.form_cash_document)
@@ -1091,7 +1498,9 @@ export default {
                     this.all_series = response.data.series
                     this.payment_method_types = response.data.payment_method_types
                     this.cards_brand = response.data.cards_brand
+                    this.global_discount_types = response.data.global_discount_types
                     this.filterSeries()
+                    this.setConfigGlobalDiscountType()
                 })
 
         },
