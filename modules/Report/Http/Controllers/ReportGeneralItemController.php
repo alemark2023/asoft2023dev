@@ -130,6 +130,7 @@ class ReportGeneralItemController extends Controller
 
             $data = $model::whereHas($relation, function ($query) use ($date_start, $date_end, $document_types, $model,$documents_excluded) {
                 if (!$date_start && !$date_end) {
+                    
                     $query
                         ->whereIn('document_type_id', $document_types)
                         ->latest()

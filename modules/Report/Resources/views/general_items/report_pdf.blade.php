@@ -50,7 +50,7 @@ function getLocationData($value, $type = 'sale')
     <meta http-equiv="Content-Type"
           content="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>REPORTE PRODUCTOS {{ $history }}</title>
+    <title>REPORTE PRODUCTOS {{ $history }} </title>
     <style>
         html {
             font-family: sans-serif;
