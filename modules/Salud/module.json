@@ -1,0 +1,14 @@
+{
+    "name": "Salud",
+    "alias": "salud",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\Salud\\Providers\\SaludServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
