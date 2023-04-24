@@ -3,14 +3,13 @@
 namespace App\CoreFacturalo;
 
 use App\Http\Controllers\Tenant\EmailController;
+use App\Models\Tenant\DispatchItem;
 use Exception;
 use Mpdf\Mpdf;
 use Mpdf\HTMLParserMode;
 use App\Traits\KardexTrait;
 use App\Models\Tenant\Voided;
 use App\Models\Tenant\Company;
-use App\Models\Tenant\DocumentItem;
-use App\Models\Tenant\Invoice;
 use App\Models\Tenant\Summary;
 use App\Models\Tenant\Establishment;
 use Mpdf\Config\FontVariables;
@@ -21,7 +20,6 @@ use Mpdf\Config\ConfigVariables;
 use App\Models\Tenant\Perception;
 use App\Mail\Tenant\DocumentEmail;
 use App\Models\Tenant\Configuration;
-use Illuminate\Support\Facades\Mail;
 use Modules\Finance\Traits\FinanceTrait;
 use App\CoreFacturalo\WS\Client\WsClient;
 use App\CoreFacturalo\Helpers\Xml\XmlHash;
@@ -39,6 +37,7 @@ use Modules\Inventory\Models\Warehouse;
 use App\CoreFacturalo\Requests\Inputs\Functions;
 use App\Models\Tenant\PurchaseSettlement;
 use App\CoreFacturalo\Services\Helpers\SendDocumentPse;
+use Modules\Finance\Traits\FilePaymentTrait;
 
 
 /**
@@ -48,7 +47,7 @@ use App\CoreFacturalo\Services\Helpers\SendDocumentPse;
  */
 class Facturalo
 {
-    use StorageDocument, FinanceTrait, KardexTrait;
+    use StorageDocument, FinanceTrait, KardexTrait, FilePaymentTrait;
 
     const REGISTERED = '01';
     const SENT = '03';
@@ -99,6 +98,16 @@ class Facturalo
         return $this->document;
     }
 
+    public function setXmlUnsigned($xmlUnsigned)
+    {
+        $this->xmlUnsigned = $xmlUnsigned;
+    }
+
+    public function getXmlSigned()
+    {
+        return $this->xmlSigned;
+    }
+
     public function setType($type)
     {
         $this->type = $type;
@@ -118,10 +127,10 @@ class Facturalo
             case 'debit':
             case 'credit':
                 $document = Document::create($inputs);
+                $document->note()->create($inputs['note']);
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
                 }
-                $document->note()->create($inputs['note']);
                 if($this->type === 'credit') $this->saveFee($document, $inputs['fee']);
                 $this->document = Document::find($document->id);
                 break;
@@ -130,6 +139,8 @@ class Facturalo
                 $this->savePayments($document, $inputs['payments']);
                 $this->saveFee($document, $inputs['fee']);
                 foreach ($inputs['items'] as $row) {
+//                    $purchase_unit_price = $row['purchase_unit_price'];
+//                    $row['item']['purchase_unit_price'] = $purchase_unit_price;
                     $document->items()->create($row);
                     // $row['document_id']=  $document->id;
                     // $item = new DocumentItem($row);
@@ -177,7 +188,10 @@ class Facturalo
                 $this->document = PurchaseSettlement::find($document->id);
                 break;
             default:
-                $document = Dispatch::create($inputs);
+                DispatchItem::query()->where('dispatch_id', $inputs['id'])->delete();
+                $document = Dispatch::query()->updateOrCreate([
+                    'id' => $inputs['id']
+                ], $inputs);
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
                 }
@@ -259,9 +273,11 @@ class Facturalo
 
     public function updateQr()
     {
-        $this->document->update([
-            'qr' => $this->getQr(),
-        ]);
+        if(config('tenant.save_qrcode')) {
+            $this->document->update([
+                'qr' => $this->getQr(),
+            ]);
+        }
     }
 
     public function updateState($state_type_id)
@@ -334,7 +350,13 @@ class Facturalo
         $format_pdf = ($format != null) ? $format : $format_pdf;
         $this->type = ($type != null) ? $type : $this->type;
 
-        // dd($this->document);
+        if(in_array($this->document->document_type_id, ['09', '31'])) {
+            if($this->document->qr_url) {
+                $qrCode = new QrCodeGenerate();
+                $this->document->qr = $qrCode->displayPNGBase64($this->document->qr_url);
+            }
+        }
+
         $base_pdf_template = Establishment::find($this->document->establishment_id)->template_pdf;
         if (($format_pdf === 'ticket') OR
             ($format_pdf === 'ticket_58') OR
@@ -360,6 +382,12 @@ class Facturalo
             $pdf_margin_bottom = 15;
             $pdf_margin_left = 14;
         }
+        if (substr($base_pdf_template, 0, 7) === 'facnova') {
+            $pdf_margin_top = 10;
+            $pdf_margin_right = 4;
+            $pdf_margin_bottom = 5;
+            $pdf_margin_left = 15;
+        }
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $this->document, $format_pdf);
 
@@ -377,9 +405,14 @@ class Facturalo
             $company_name      = (strlen($this->company->name) / 20) * 10;
             $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
             $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
-            $customer_name     = strlen($this->document->customer->name) > '25' ? '10' : '0';
-            $customer_address  = (strlen($this->document->customer->address) / 200) * 10;
-            $customer_department_id  = ($this->document->customer->department_id == 16) ? 20:0;
+            $customer_name = 0;
+            $customer_address = 0;
+            $customer_department_id = 0;
+            if($this->document->customer) {
+                $customer_name     = strlen($this->document->customer->name) > '25' ? '10' : '0';
+                $customer_address  = (strlen($this->document->customer->address) / 200) * 10;
+                $customer_department_id  = ($this->document->customer->department_id == 16) ? 20:0;
+            }
             $p_order           = $this->document->purchase_order != '' ? '10' : '0';
 
             $total_prepayment = $this->document->total_prepayment != '' ? '10' : '0';
@@ -397,7 +430,7 @@ class Facturalo
 
             $total_plastic_bag_taxes       = $this->document->total_plastic_bag_taxes != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items) + $was_deducted_prepayment;
-            $document_payments     = count($this->document->payments);
+            $document_payments     = count($this->document->payments ?? []);
             $document_transport     = ($this->document->transport) ? 30 : 0;
             $document_retention     = ($this->document->retention) ? 10 : 0;
 
@@ -421,21 +454,37 @@ class Facturalo
 
             //ajustes para footer amazonia
 
-            if($this->configuration->legend_footer AND $format_pdf === 'ticket') {
+            if($this->configuration->legend_footer
+                AND $format_pdf === 'ticket'
+                AND !in_array($base_pdf_template, ['ticket_c']))
+            {
                 $height_legend = 15;
-            } elseif($this->configuration->legend_footer AND $format_pdf === 'ticket_58') {
+            } elseif($this->configuration->legend_footer
+                AND $format_pdf === 'ticket_58'
+                AND !in_array($base_pdf_template, ['ticket_c']))
+            {
                 $height_legend = 30;
-            } elseif($this->configuration->legend_footer AND $format_pdf === 'ticket_50') {
-                $height_legend = 50;
+            } elseif($this->configuration->legend_footer
+                AND $format_pdf === 'ticket_50')
+            {
+                $height_legend = 10;
             } else {
                 $height_legend = 10;
+            }
+
+            $append_height = 0;
+
+            if($this->type === 'dispatch')
+            {
+                $append_height = 15;
+                $this->appendHeightFromDispatch($append_height, $format, $this->document);
             }
 
             $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
-                    130 +
+                    80 +
                     (($quantity_rows * 8) + $extra_by_item_description) +
                     ($document_payments * 8) +
                     ($discount_global * 8) +
@@ -462,6 +511,7 @@ class Facturalo
                     $extra_by_item_additional_information+
                     $height_legend+
                     $document_transport+
+                    $append_height+
                     $document_retention
                 ],
                 'margin_top' => 0,
@@ -590,22 +640,24 @@ class Facturalo
 
         // if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
             // dd($base_pdf_template);// = config(['tenant.pdf_template'=> $configuration]);
-            if(config('tenant.pdf_template_footer')) {
-                $html_footer = '';
-                if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
-                    $html_footer = $template->pdfFooter($base_pdf_template, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
-                    $html_footer_legend = "";
-                }
-                // dd($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03']));
-                // se quiere visuzalizar ahora la legenda amazona en todos los formatos
-                $html_footer_legend = '';
-                if($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03'])){
-                    $html_footer_legend = $template->pdfFooterLegend($base_pdf_template, $document);
-                }
-
-                $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
-
+        if(config('tenant.pdf_template_footer')) {
+            $html_footer = '';
+            if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
+                $html_footer = $template->pdfFooter($base_pdf_template, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
+                $html_footer_legend = "";
             }
+            // dd($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03']));
+            // se quiere visuzalizar ahora la legenda amazona en todos los formatos
+            $html_footer_legend = '';
+            if($this->configuration->legend_footer
+                && in_array($this->document->document_type_id, ['01', '03'])
+                && !in_array($base_pdf_template, ['ticket_c'])
+            ){
+                $html_footer_legend = $template->pdfFooterLegend($base_pdf_template, $document);
+            }
+
+            $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
+        }
 //            $html_footer = $template->pdfFooter();
 //            $pdf->SetHTMLFooter($html_footer);
         // }
@@ -662,12 +714,74 @@ class Facturalo
         else {
             $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
             $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+            $helper_facturalo = new HelperFacturalo();
+
+            if($helper_facturalo->isAllowedAddDispatchTicket($format_pdf, $this->type, $this->document))
+            {
+                $helper_facturalo->addDocumentDispatchTicket($pdf, $this->company, $this->document, [
+                    $template,
+                    $base_pdf_template,
+                    $width,
+                    ($quantity_rows * 8) + $extra_by_item_description
+                ]);
+            }
         }
 
         // echo $html_header.$html.$html_footer; exit();
         $this->uploadFile($pdf->output('', 'S'), 'pdf');
         return $this;
     }
+
+
+
+    /**
+     *
+     * Agregar altura para ticket de guia
+     *
+     * @param  float $append_height
+     * @param  $document
+     * @return void
+     */
+    private function appendHeightFromDispatch(&$append_height, $format, $document)
+    {
+        $base_height = 0;
+        $observations = 0;
+        $data_affected_document = 0;
+        $transfer_reason_type = 0;
+        $transport_mode_type = 0;
+        $driver = 0;
+        $license_plate = 0;
+        $secondary_license_plates = 0;
+
+        if($format == 'ticket_58')
+        {
+            $base_height = 80;
+            if($document->data_affected_document) $data_affected_document = 25;
+        }
+        else
+        {
+            $base_height = 50;
+            if($document->data_affected_document) $data_affected_document = 20;
+        }
+
+        if($document->observations) $observations = 30;
+        if($document->transfer_reason_type) $transfer_reason_type = 6;
+        if($document->transport_mode_type) $transport_mode_type = 6;
+        if($document->license_plate) $license_plate = 5;
+        if($document->secondary_license_plates) $secondary_license_plates = 5;
+
+        if($document->driver)
+        {
+            if($document->driver->number)  $driver += 5;
+            if($document->driver->license)  $driver += 5;
+        }
+
+        $append_height += $base_height + $observations + $data_affected_document + $transfer_reason_type + $transport_mode_type + $driver
+                            + $license_plate + $secondary_license_plates;
+
+    }
+
 
     public function loadXmlSigned()
     {
@@ -712,27 +826,14 @@ class Facturalo
 
         if($this->company->send_document_to_pse)
         {
-            if($this->type === 'invoice')
+            if(in_array($this->type, ['invoice', 'dispatch', 'credit', 'debit']))
             {
                 $send_to_pse = true;
             }
-            elseif($this->type === 'voided')
+            elseif(in_array($this->type, ['voided', 'summary']))
             {
-                // validar si los documentos informados en la RA son facturas y fueron enviados a pse
-                $filter_quantity_documents = $this->document->documents->where('document.document_type_id', '01')
-                                                                        ->where('document.send_to_pse', true)
-                                                                        ->count();
-
-                if($this->document->documents->count() === $filter_quantity_documents)
-                {
-                    $send_to_pse = true;
-                }
-                else
-                {
-                    $this->sendDocumentPse->throwException('Documento a anular no es factura o no fue enviado al PSE.');
-                }
+                $send_to_pse = $this->document->getSendToPse($this->sendDocumentPse);
             }
-
         }
 
         return $send_to_pse;
@@ -798,7 +899,7 @@ class Facturalo
             $this->updateRegularizeShipping($code, $message);
             return;
         }
-
+        //dd($message);
         // if($code === 'ERROR_CDR') {
         //     return;
         // }
@@ -917,11 +1018,18 @@ class Facturalo
                 if($extService->getCustomStatusCode() === 0){
 
                     // if($this->document->summary_status_type_id === '1') {
-                    if(in_array($this->document->summary_status_type_id, ['1', '2'])) {
+                    if(in_array($this->document->summary_status_type_id, ['1', '2']))
+                    {
                         $this->updateStateDocuments(self::ACCEPTED);
-                    } else {
+                    }
+                    else
+                    {
                         $this->updateStateDocuments(self::VOIDED);
                     }
+
+                    //enviar cdr a pse
+                    $this->sendCdrToPse($res->getCdrZip(), $this->document);
+                    //enviar cdr a pse
 
                 }else if($extService->getCustomStatusCode() === 99){
 
@@ -930,7 +1038,7 @@ class Facturalo
                 }
 
             } else {
-                
+
                 //enviar cdr a pse
                 $this->sendCdrToPse($res->getCdrZip(), $this->document);
                 //enviar cdr a pse
@@ -1110,8 +1218,8 @@ class Facturalo
 
     }
 
-    private function savePayments($document, $payments){
-
+    private function savePayments($document, $payments)
+    {
         $total = $document->total;
         $balance = $total - collect($payments)->sum('payment');
 
@@ -1141,7 +1249,8 @@ class Facturalo
                     "reference" => $row['reference'],
                     "payment_destination_id" => isset($row['payment_destination_id']) ? $row['payment_destination_id'] : null,
                     "change" => $change,
-                    "payment" => $payment
+                    "payment" => $payment,
+                    "payment_received" => isset($row['payment_received']) ? $row['payment_received'] : null,
                 ];
 
             });
@@ -1155,6 +1264,9 @@ class Facturalo
             }
 
             $record = $document->payments()->create($row);
+
+            // para carga de voucher
+            $this->saveFilesFromPayments($row, $record, 'documents');
 
             //considerar la creacion de una caja chica cuando recien se crea el cliente
             if(isset($row['payment_destination_id'])){

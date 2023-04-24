@@ -26,8 +26,23 @@ if($current_hostname) {
                 Route::get('report-ticket/{cash}/{format?}', 'CashController@reportTicket');
                 Route::get('report-excel/{cash}', 'CashController@reportExcel');
                 Route::post('email', 'CashController@email');
+                Route::get('simple/report-a4/{cash}', 'CashController@reportSimpleA4');
+
+                Route::get('report-cash-income-egress/{cash}', 'CashController@reportCashIncomeEgress');
 
             });
+
+
+            Route::prefix('cash-reports')->group(function() {
+                
+                Route::get('summary-daily-operations/{cash_id}', 'CashReportController@reportSummaryDailyOperations');
+                Route::get('payments-associated-cash/{cash_id}', 'CashReportController@reportPaymentsAssociatedCash');
+
+                Route::get('general-with-payments/{cash_id}', 'CashReportController@generalCashReportWithPayments');
+
+            });
+
+
         });
     });
 }

@@ -12,7 +12,7 @@
         />
 
         <form autocomplete="off"
-              @submit.prevent="clickAddItem">
+              @submit.prevent="clickAddItem" v-loading="loading_dialog">
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-7 col-lg-7 col-xl-7 col-sm-7">
@@ -76,6 +76,19 @@
                                             <i class="fa fa-search"></i>
                                         </el-button>
                                     </el-tooltip>
+                                    <el-tooltip
+                                        slot="append"
+                                        :disabled="recordItem != null"
+                                        class="item"
+                                        content="Historial de ventas"
+                                        effect="dark"
+                                        placement="bottom">
+                                        <el-button
+                                            :disabled="isEditItemNote"
+                                            @click.prevent="clickHistorySales()">
+                                            <i class="fa fa-list"></i>
+                                        </el-button>
+                                    </el-tooltip>
                                 </el-input>
                             </template>
                             <template v-else>
@@ -117,17 +130,26 @@
                                 </el-input>
                             </template>
 
+                            <template v-if="hasSelectedItem">
+                                <span v-if="isRestrictedForSale" class="text-danger mt-1 mb-2 d-block">Restringido para venta</span>
+                            </template>
+
                             <template v-if="!is_client">
                                 <el-checkbox v-model="search_item_by_barcode"
                                              :disabled="recordItem != null">Buscar por
-                                                                            código de
-                                                                            barras
+                                    código de
+                                    barras
                                 </el-checkbox>
                                 <br>
+                                <template v-if="search_item_by_barcode">
+                                    <el-checkbox v-model="search_item_by_barcode_presentation">Por presentación
+                                    </el-checkbox>
+                                    <br>
+                                </template>
                             </template>
                             <el-checkbox v-model="form.has_plastic_bag_taxes"
                                          :disabled="isEditItemNote">Impuesto a la
-                                                                    Bolsa Plástica
+                                Bolsa Plástica
                             </el-checkbox>
                             <small v-if="errors.item_id"
                                    class="form-control-feedback"
@@ -191,23 +213,51 @@
                         <div :class="{'has-danger': errors.unit_price_value}"
                              class="form-group">
                             <label class="control-label">
-                                Precio Unitario 
+                                Precio Unitario
 
                                 <el-tooltip v-if="itemLastPrice" class="item" :content="itemLastPrice"
-                                                effect="dark"
-                                                placement="top-start">
-                                        <i class="fa fa-info-circle"></i>
+                                            effect="dark"
+                                            placement="top-start">
+                                    <i class="fa fa-info-circle"></i>
                                 </el-tooltip>
                             </label>
-                            <el-input v-model="form.unit_price_value"
-                                      :tabindex="'3'"
-                                      :readonly="!edit_unit_price"
-                                      @input="calculateQuantity">
-                                <template v-if="form.item.currency_type_symbol"
-                                          slot="prepend">
-                                    {{ form.item.currency_type_symbol }}
+
+                            <template v-if="applyChangeCurrencyItem && isFromInvoice">
+
+                                <template v-if="form.item">
+                                    <el-input v-model="form.unit_price_value"
+                                              :tabindex="'3'"
+                                              :readonly="!edit_unit_price"
+                                              @input="calculateQuantity">
+
+                                        <template v-if="form.item.currency_type_symbol">
+                                            <el-select slot="prepend" v-model="form.item.currency_type_id"
+                                                       class="el-select-currency">
+
+                                                <el-option v-for="option in currencyTypes"
+                                                           :key="option.id"
+                                                           :label="option.symbol"
+                                                           :value="option.id"></el-option>
+                                            </el-select>
+                                        </template>
+                                    </el-input>
                                 </template>
-                            </el-input>
+
+                            </template>
+                            <template v-else>
+
+                                <el-input v-model="form.unit_price_value"
+                                          :tabindex="'3'"
+                                          :readonly="!edit_unit_price"
+                                          @input="calculateQuantity">
+                                    <template v-if="form.item.currency_type_symbol"
+                                              slot="prepend">
+                                        {{ form.item.currency_type_symbol }}
+                                    </template>
+                                </el-input>
+
+                            </template>
+
                             <small v-if="errors.unit_price_value"
                                    class="form-control-feedback"
                                    v-text="errors.unit_price[0]"></small>
@@ -229,8 +279,8 @@
                         <a class="text-center font-weight-bold text-info"
                            href="#"
                            @click.prevent="clickLotGroup">[&#10004;
-                                                          Seleccionar
-                                                          lote]</a>
+                            Seleccionar
+                            lote]</a>
                     </div>
 
                     <div v-if="showSeries"
@@ -239,8 +289,8 @@
                         <a class="text-center font-weight-bold text-info"
                            href="#"
                            @click.prevent="clickSelectLots">[&#10004;
-                                                            Seleccionar
-                                                            series]</a>
+                            Seleccionar
+                            series]</a>
                     </div>
                     <div v-show="form.item.calculate_quantity"
                          class="col-md-3 col-sm-6">
@@ -294,7 +344,7 @@
                                     </el-tooltip>
                                 </h5>
                                 <table class="table">
-                                    <thead>
+                                    <thead class="bg-light">
                                     <tr>
                                         <th class="text-center">Unidad</th>
                                         <th class="text-center">Descripción</th>
@@ -333,10 +383,15 @@
                         <div v-if="showDiscounts"
                              class="col-md-12 mt-2">
                             <el-collapse v-model="activePanel">
-                                <el-collapse-item
-                                    v-if="!(recordItem != null)"
-                                                  name="1"
-                                                  title="+ Agregar Descuentos/Cargos/Atributos especiales">
+
+                                <!--                                <el-collapse-item-->
+                                <!--                                    v-if="!(recordItem != null)"-->
+                                <!--                                    name="1"-->
+                                <!--                                    title="+ Agregar Descuentos/Cargos/Atributos especiales">-->
+
+                                <el-collapse-item name="1"
+                                                  title="+ Agregar Descuentos/Cargos/Atributos especiales"
+                                                  v-if="showSpecialData">
                                     <div v-if="discount_types.length > 0">
                                         <label class="control-label">
                                             Descuentos
@@ -368,10 +423,17 @@
                                                     <el-input v-model="row.description"></el-input>
                                                 </td>
                                                 <td>
-                                                    <el-checkbox v-model="row.is_amount">Ingresar monto fijo
+                                                    <el-checkbox v-model="row.is_amount"
+                                                                 @change="changeIsDiscountAmount(index)">Ingresar monto
+                                                        fijo
                                                     </el-checkbox>
                                                     <br>
-                                                    <el-input v-model="row.percentage"></el-input>
+                                                    <template v-if="row.is_amount">
+                                                        <el-input v-model="row.amount"></el-input>
+                                                    </template>
+                                                    <template v-else>
+                                                        <el-input v-model="row.percentage"></el-input>
+                                                    </template>
                                                 </td>
                                                 <td>
                                                     <button class="btn btn-danger"
@@ -478,13 +540,7 @@
             <!-- Mostrar en cel -->
 
             <div class="row hidden-md-up form-actions text-center">
-                <div class="col-12">
-                    &nbsp;
-                </div>
-
-
-
-
+                <div class="col-12"></div>
                 <div class="col-6">
                     <el-popover
                         placement="top-start"
@@ -526,26 +582,40 @@
         </form>
         <item-form :external="true"
                    :showDialog.sync="showDialogNewItem"></item-form>
-
-
         <warehouses-detail
             :isUpdateWarehouseId="isUpdateWarehouseId"
             :showDialog.sync="showWarehousesDetail"
             :warehouses="warehousesDetail">
         </warehouses-detail>
-
+        <history-sales-form
+            :showDialog.sync="showDialogHistorySales"
+            :item_id="history_item_id"
+            :customer_id="this.customerId"
+            :type="true"
+        ></history-sales-form>
         <lots-group
-            :lots_group="form.lots_group"
+            :lots-group="form.lots_group"
+            :itemId="form.item_id"
             :quantity="form.quantity"
             :showDialog.sync="showDialogLots"
             @addRowLotGroup="addRowLotGroup">
         </lots-group>
 
+<!--        <lots-group-->
+<!--            :showDialog.sync="showDialogLots"-->
+<!--            :itemId="form.item_id"-->
+<!--            :lots-group-all="lotsGroupAll"-->
+<!--            :lots_group="form.lots_group"-->
+<!--            :quantity="form.quantity"-->
+<!--            @addRowLotGroup="addRowLotGroup"-->
+<!--            :compromise-all-quantity="true">-->
+<!--        </lots-group>-->
+
         <select-lots-form
+            :showDialog.sync="showDialogSelectLots"
             :documentItemId="documentItem"
             :itemId="form.item_id"
             :lots="lots"
-            :showDialog.sync="showDialogSelectLots"
             :quantity="form.quantity"
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
@@ -558,6 +628,11 @@
     margin-right: 5% !important;
     max-width: 80% !important;
 }
+
+.el-select-currency {
+    width: 59px;
+}
+
 </style>
 
 <script>
@@ -574,8 +649,10 @@ import VueCkeditor from 'vue-ckeditor5'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 import Keypress from "vue-keypress";
+import HistorySalesForm from "../../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
 
 export default {
+    name: 'DocumentPartialItem',
     props: [
         'recordItem',
         'showDialog',
@@ -588,7 +665,12 @@ export default {
         'documentTypeId',
         'noteCreditOrDebitTypeId',
         'displayDiscount',
-        'customerId'
+        'customerId',
+        'currencyTypes',
+        'isFromInvoice',
+        'percentageIgv',
+        'isCreditNoteAndType03',
+        'isUpdateDocument',
     ],
     components: {
         ItemForm,
@@ -596,6 +678,7 @@ export default {
         Keypress,
         LotsGroup,
         SelectLotsForm,
+        HistorySalesForm,
         'vue-ckeditor': VueCkeditor.component
     },
     data() {
@@ -641,7 +724,12 @@ export default {
             },
             value1: 'hello',
             readonly_total: 0,
-            itemLastPrice: null
+            itemLastPrice: null,
+            search_item_by_barcode_presentation: false,
+            showDialogHistorySales: false,
+            history_item_id: null,
+            loading_dialog: false,
+            validate_stock_add_item: false,
             //item_unit_type: {}
         }
     },
@@ -738,7 +826,44 @@ export default {
                 return this.config.allow_edit_unit_price_to_seller;
             }
             return false;
-        }
+        },
+        applyChangeCurrencyItem() {
+
+            if (this.configuration) return this.configuration.change_currency_item
+
+            return false
+
+        },
+        enabledSearchFactoryCodeItems() {
+            if (this.configuration) return this.configuration.search_factory_code_items ? 1 : 0
+            return 0
+        },
+        isNoteErrorDescription() {
+            if (this.isCreditNoteAndType03 !== undefined) return this.isCreditNoteAndType03
+            return false
+        },
+        isOpenFromInvoice() {
+            if (this.isFromInvoice !== undefined && this.isFromInvoice) return this.isFromInvoice
+
+            return false
+        },
+        showSpecialData() {
+            return (this.recordItem == null || this.recordItem == undefined) || (!_.isEmpty(this.recordItem) && this.isOpenFromInvoice)
+        },
+        applyRestrictSaleItemsCpe()
+        {
+            if (this.configuration) return this.configuration.restrict_sale_items_cpe
+
+            return false
+        },
+        isRestrictedForSale()
+        {
+            return this.applyRestrictSaleItemsCpe && this.isOpenFromInvoice && (this.form.item != undefined && this.form.item.restrict_sale_cpe)
+        },
+        hasSelectedItem()
+        {
+            return this.form.item_id && !_.isEmpty(this.form.item)
+        },
     },
     methods: {
         ...mapActions([
@@ -774,6 +899,7 @@ export default {
                 this.charge_types = data.charge_types
                 this.attribute_types = data.attribute_types
                 this.is_client = data.is_client;
+                this.validate_stock_add_item = data.validate_stock_add_item
 
                 if (this.canShowExtraData) {
                     this.$store.commit('setColors', data.colors);
@@ -843,21 +969,24 @@ export default {
 
         },
         clickIncrease() {
-            this.form.quantity = parseInt(this.form.quantity + 1)
+            this.form.quantity = parseInt(this.form.quantity) + 1
             this.calculateTotal()
         },
         async searchRemoteItems(input) {
+
             if (input.length > 2) {
                 this.loading_search = true
                 const params = {
                     'input': input,
-                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0
+                    'search_by_barcode': this.search_item_by_barcode ? 1 : 0,
+                    'search_item_by_barcode_presentation': this.search_item_by_barcode_presentation ? 1 : 0,
+                    'search_factory_code_items': this.enabledSearchFactoryCodeItems
                 }
                 await this.$http.get(`/${this.resource}/search-items/`, {params})
                     .then(response => {
                         this.items = response.data.items
                         this.loading_search = false
-                        this.enabledSearchItemsBarcode()
+                        this.enabledSearchItemsBarcode(input)
                         this.enabledSearchItemBySeries()
                         if (this.items.length == 0) {
                             this.filterItems()
@@ -871,14 +1000,33 @@ export default {
         filterItems() {
             this.items = this.all_items
         },
-        enabledSearchItemsBarcode() {
+        enabledSearchItemsBarcode(input) {
             if (this.search_item_by_barcode) {
+
                 this.$refs.selectBarcode.$data.selectedLabel = '';
-                if (this.items.length == 1) {
-                    this.form.item_id = this.items[0].id;
-                    this.$refs.selectBarcode.blur();
-                    this.changeItem();
+
+                //busqueda por presentacion
+                if (this.search_item_by_barcode_presentation) {
+                    if (this.items.length == 1) {
+                        const item_unit_type = _.find(this.items[0].item_unit_types, {barcode: input})
+
+                        if (!_.isEmpty(item_unit_type)) {
+                            this.form.item_id = this.items[0].id;
+                            this.$refs.selectBarcode.blur();
+                            this.changeItem()
+                            this.selectedPrice(item_unit_type)
+                        }
+                    }
                 }
+                //busqueda comun
+                else {
+                    if (this.items.length == 1) {
+                        this.form.item_id = this.items[0].id;
+                        this.$refs.selectBarcode.blur();
+                        this.changeItem();
+                    }
+                }
+
             }
         },
         async enabledSearchItemBySeries() {
@@ -972,6 +1120,7 @@ export default {
         //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
         // },
         async create() {
+
             this.extra_temp = undefined;
 
             this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
@@ -994,6 +1143,11 @@ export default {
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
 
+                if (this.isOpenFromInvoice) {
+                    this.form.attributes = this.recordItem.attributes
+                    this.form.discounts = this.recordItem.discounts
+                    this.form.charges = this.recordItem.charges
+                }
 
                 if (this.isEditItemNote) {
                     this.form.item.currency_type_id = this.currencyTypeIdActive
@@ -1033,10 +1187,14 @@ export default {
                     }
                 }
                 this.calculateQuantity()
+
+                if (this.recordItem.item.exchanged_for_points) this.form.item.exchanged_for_points = this.recordItem.item.exchanged_for_points
+
             } else {
                 this.isUpdateWarehouseId = null
             }
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
+
 
         },
         setPresentationEditItem() {
@@ -1085,7 +1243,8 @@ export default {
                 factor: 0,
                 amount: 0,
                 base: 0,
-                is_amount: false
+                is_amount: false,
+                use_input_amount: true,
             })
         },
         clickRemoveDiscount(index) {
@@ -1094,6 +1253,10 @@ export default {
         changeDiscountType(index) {
             let discount_type_id = this.form.discounts[index].discount_type_id
             this.form.discounts[index].discount_type = _.find(this.discount_types, {id: discount_type_id})
+        },
+        changeIsDiscountAmount(index) {
+            this.form.discounts[index].amount = 0
+            this.form.discounts[index].percentage = 0
         },
         clickAddCharge() {
             this.form.charges.push({
@@ -1196,7 +1359,7 @@ export default {
 
             //this.item_unit_types = this.form.item.item_unit_types;
             //(this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
-            if(this.form.item.name_product_pdf && this.config.item_name_pdf_description){
+            if (this.form.item.name_product_pdf && this.config.item_name_pdf_description) {
                 this.form.name_product_pdf = this.form.item.name_product_pdf;
             }
 
@@ -1221,7 +1384,40 @@ export default {
         cleanTotalItem() {
             this.total_item = null
         },
-        async clickAddItem() {
+        async validateCurrentStock() {
+            this.loading_dialog = true
+
+            const data = {
+                item_id: this.form.item_id,
+                quantity: this.form.quantity,
+                warehouse_id: this.form.warehouse_id,
+                presentation: this.item_unit_type,
+            }
+
+            const response = await this.$http.post(`/validate-current-item-stock`, data)
+
+            this.loading_dialog = false
+
+            return response.data
+        },
+        applyValidateStock() {
+            return (this.validate_stock_add_item && (this.isFromInvoice !== undefined && this.isFromInvoice) && (this.isUpdateDocument !== undefined && !this.isUpdateDocument))
+        },
+        async clickAddItem()
+        {
+            if(this.isRestrictedForSale) return this.$message.error('No puede agregar el producto, está restringido para venta.')
+
+            if (this.applyValidateStock()) {
+                const validate_current_stock = await this.validateCurrentStock()
+                if (!validate_current_stock.success) return this.$message.error(validate_current_stock.message)
+            }
+
+
+            if (this.isNoteErrorDescription) {
+                if (parseFloat(this.form.unit_price_value) < 0) return this.$message.error('El Precio Unitario debe ser mayor o igual 0');
+            } else {
+                if (parseFloat(this.form.unit_price_value) <= 0) return this.$message.error('El Precio Unitario debe ser mayor a 0');
+            }
 
             // if(this.form.quantity < this.getMinQuantity()){
             //     return this.$message.error(`La cantidad no puede ser inferior a ${this.getMinQuantity()}`);
@@ -1248,10 +1444,23 @@ export default {
                     // do nothing
                     // exonerado de igv
                 } else {
-                    unit_price = this.form.unit_price_value * 1.18;
+                    unit_price = this.form.unit_price_value * (1 + this.percentageIgv);
 
                 }
             }
+
+
+            //validar precio compra y venta
+            if (this.configuration) {
+                if (this.configuration.validate_purchase_sale_unit_price) {
+                    let val_purchase_unit_price = parseFloat(this.form.item.purchase_unit_price)
+
+                    if (val_purchase_unit_price > parseFloat(unit_price)) {
+                        return this.$message.error(`El precio de compra no puede ser superior al precio de venta (P. Compra: ${val_purchase_unit_price})`)
+                    }
+                }
+            }
+
 
             this.form.input_unit_price_value = this.form.unit_price_value;
 
@@ -1262,7 +1471,7 @@ export default {
 
             let IdLoteSelected = this.form.IdLoteSelected
             let document_item_id = this.form.document_item_id
-            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
+            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv);
 
             this.row.item.name_product_pdf = this.row.name_product_pdf || '';
             if (this.recordItem) {
@@ -1289,6 +1498,8 @@ export default {
             this.row.IdLoteSelected = IdLoteSelected
             this.row.document_item_id = document_item_id
 
+            this.showMessageDetraction()
+
             this.$emit('add', this.row);
 
             if (this.search_item_by_barcode) {
@@ -1300,6 +1511,14 @@ export default {
             } else {
                 this.setFocusSelectItem();
             }
+        },
+        showMessageDetraction() {
+
+            let total = (this.currencyTypeIdActive === 'PEN') ? this.row.total : (this.row.total * this.exchangeRateSale)
+            let total_restriction = 700
+
+            if (total >= total_restriction && this.row.item.subject_to_detraction) this.$message.warning('El producto/servicio vendido está sujeto a detracción')
+
         },
         cleanItems() {
             this.items = []
@@ -1545,31 +1764,43 @@ export default {
                 }
             }
         },
-        checkKey(e){
+        checkKey(e) {
             let code = e.event.code;
-            if(code === 'Escape'){
+            if (code === 'Escape') {
                 this.close()
             }
         },
         async getLastPriceItem() {
-            this.itemLastPrice =null
-            if(this.configuration.show_last_price_sale) {
-                if(this.customerId && this.form.item_id) {
+            this.itemLastPrice = null
+            let show_last_price_sale = _.has(this.configuration, 'show_last_price_sale') ? this.configuration.show_last_price_sale : false;
+            if (show_last_price_sale) {
+                if (this.customerId && this.form.item_id) {
                     const params = {
                         'type_document': 'CPE',
                         'customer_id': this.customerId,
                         'item_id': this.form.item_id
                     }
                     await this.$http.get(`/items/last-sale`, {params}).then((response) => {
-                        if(response.data.unit_price) {
+                        if (response.data.unit_price) {
                             this.itemLastPrice = `Último precio de venta: ${response.data.unit_price}`
                         }
-                        
+
                     })
                 }
             }
-           
+
         }
+        ,
+        clickHistorySales() {
+            if (!this.form.item_id) {
+                return this.$message.error('Seleccione un item');
+            }
+
+            let item = _.find(this.items, {'id': this.form.item_id});
+            this.history_item_id = item.id;
+            this.showDialogHistorySales = true;
+            // console.log(item)
+        },
     }
 }
 

@@ -1,7 +1,19 @@
-<img src="icon_pro3.jpg" width="120">
+<img src="icon_pro5.png" width="120">
 
-# **Facturador PRO 4**
+# **Facturador PRO 5**
 
+
+## Términos y condiciones del uso de este repositorio
+
+1.- Este repositorio es de código abierto pero de acceso privado, se permite la distribución y/o modificaciones si se hace referencio a la casa matriz del desarrollo de este es software es [https://facturaloperu.com](https://facturaloperu.com)
+
+2.- Esta sección de términos y condiciones no puede ser removida al compartir o distribuir el repositorio de alguna forma, de hacerlo, [https://facturaloperu.com](https://facturaloperu.com) se reserva el derecho de remover el acceso y limitar el uso a quien lo distribuya de esa forma o a quien se atribuya el desarrollo del mismo.
+
+3.- Si desea distribuir el código fuente como propio, debe tener al menos un 30% de modificaciones en todo el código, y previamente debe validarse dicho % por [https://facturaloperu.com](https://facturaloperu.com)
+
+4.- El uso del software a nivel funcional es marca blanca, sin embargo a nivel de distribución del código fuente, debe contener esta sección de términos y condiciones.
+
+5.- [https://facturaloperu.com](https://facturaloperu.com) no se hace responsable por los daños o perjuicios del uso del código de este software cuando no ha sido distribuido directamente por [https://facturaloperu.com](https://facturaloperu.com)
 
 ## Manuales de Instalación
 
@@ -19,8 +31,8 @@
 ### Scripts de instalación con Docker
 
 Linux - Ubuntu 18 - Docker - SSL opcional<br>
-[Guia](https://gitlab.com/b.mendoza/facturadorpro3/snippets/1971490 "Clic")<br>
-[Script](https://gitlab.com/b.mendoza/facturadorpro3/snippets/1971490/raw "Clic")<br>
+[Guia](https://gitlab.com/-/snippets/2079063 "Clic")<br>
+[Script](https://gitlab.com/-/snippets/2079063/raw/master/install.sh "Clic")<br>
 
 
 ### Manuales de actualización
@@ -30,17 +42,14 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 [Con Docker](https://docs.google.com/document/d/1ekGySBjGHspbPEE3OLkMGlWwjLvudmyLKo9Et-Cxejk/edit "Clic")
 <br>
 
-* Docker - Script automático
-
-[Pasos para la ejecución](https://gitlab.com/b.mendoza/facturadorpro3/-/wikis/Script-Update-Docker)<br>
-[Script](blob/master/script-update.sh)<br>
-
 
 ### Manuales de actualización de SSL gratuito
 
 * Docker
 
-[SSL](https://docs.google.com/document/d/1kcgtIDrOWnGKQbWO3sW2KEkUoNdadIB5YHBgaSb87uA/edit "Clic")
+[SSL](https://docs.google.com/document/d/1kcgtIDrOWnGKQbWO3sW2KEkUoNdadIB5YHBgaSb87uA/edit "Clic") <br>
+[Script](https://gitlab.com/b.mendoza/facturadorpro3/-/snippets/1955372/raw/master/updateSSL.sh "Clic") <br>
+[Video](https://www.loom.com/share/577a32e168a44cc7afc6e2919589de56 "Clic")
 
 
 ### Manuales de Usuario
@@ -52,7 +61,7 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 
 ## API
 
-[Descargar colección para Postman](https://drive.google.com/file/d/1gLmnTnJzixrQKeuqUO9d5g4TUIH3dzco/view?usp=sharing "Clic")<br>
+[Descargar colección para Postman](https://drive.google.com/file/d/1-SAGfGuUQx0sm43kNRPZeoP1kx2JisxJ/view?usp=sharing "Clic")<br>
 [Documentación - Ver json con respuestas](https://docs.google.com/document/d/1QO3H2nhV6dubGFc-IOrXY1X1hobmKkSmutfrtKbelTw/edit "Clic")<br>
 [Documentación - Ver ejemplos para Lenguajes](https://documenter.getpostman.com/view/1431398/U16onhgw "Clic")<br>
 

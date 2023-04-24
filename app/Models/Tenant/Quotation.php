@@ -248,9 +248,18 @@ class Quotation extends ModelTenant
         return $legend->value;
     }
 
-    public function scopeWhereTypeUser($query)
+    public function scopeWhereTypeUser($query, $params= [])
     {
-        $user = auth()->user();
+        if(isset($params['user_id'])) {
+            $user_id = (int)$params['user_id'];
+            $user = User::find($user_id);
+            if(!$user) {
+                $user = new User();
+            }
+        }
+        else {
+            $user = auth()->user();
+        }
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
@@ -291,6 +300,19 @@ class Quotation extends ModelTenant
         ]);
     }
 
+    
+    /**
+     * 
+     * Verificar si tiene documentos válidos
+     *
+     * @return bool
+     */
+    public function hasAcceptedDocuments()
+    {
+        return $this->documents()->whereStateTypeAccepted()->count() > 0;
+    }
+
+
     /**
      * Devuelve datos standar para cotizacion.
      * Si $with_items es verdadero, devuelve los item de la cotizacion.
@@ -310,7 +332,9 @@ class Quotation extends ModelTenant
         }
 
         $row = $this;
-        $btn_generate = (count($row->documents) > 0 || count($row->sale_notes) > 0)?false:true;
+        // $btn_generate = (count($row->documents) > 0 || count($row->sale_notes) > 0)?false:true;
+        $btn_generate = ($this->hasAcceptedDocuments() || count($row->sale_notes) > 0)?false:true;
+
         $btn_generate_cnt = $row->contract ?false:true;
         $external_id_contract = $row->contract ? $row->contract->external_id : null;
 
@@ -335,6 +359,11 @@ class Quotation extends ModelTenant
             $orderNote = [];
         }
 
+        $seller = User::find($this->seller_id);
+        if(empty($seller)){
+            $seller = new User();
+        }
+
         return [
             'id' => $row->id,
             'items' => $items,
@@ -342,14 +371,19 @@ class Quotation extends ModelTenant
             'payment_method_type_id' => $row->payment_method_type_id,
             'soap_type_id' => $row->soap_type_id,
             'external_id' => $row->external_id,
+            'number_full' => $row->number_full,
             'date_of_issue' => $row->date_of_issue->format('Y-m-d'),
             // 'delivery_date' => ($row->delivery_date) ? $row->delivery_date->format('Y-m-d') : null,
             'delivery_date' => $row->delivery_date,
             'identifier' => $row->identifier,
             'user_name' => $row->user->name,
+            'seller_name' => $seller->name,
             'customer_id' => $row->customer_id,
             'customer_name' => $row->customer->name,
             'customer_number' => $row->customer->number,
+            'customer_telephone' => $row->customer->telephone,
+            'customer_email' => optional($row->customer)->email,
+            'exchange_rate_sale' => $row->exchange_rate_sale,
             'currency_type_id' => $row->currency_type_id,
             'total_exportation' => number_format($row->total_exportation,2),
             'total_free' => number_format($row->total_free,2),
@@ -363,6 +397,8 @@ class Quotation extends ModelTenant
             'documents' => $row->documents->transform(function($row) {
                 return [
                     'number_full' => $row->number_full,
+                    'is_voided_or_rejected' => $row->isVoidedOrRejected(),
+                    'state_type_description' => $row->state_type->description,
                 ];
             }),
             'sale_notes' => $row->sale_notes->transform(function($row) {
@@ -381,6 +417,8 @@ class Quotation extends ModelTenant
             'referential_information' => $row->referential_information,
             'created_at' => $row->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
+            'print_ticket' => $row->getUrlPrintPdf('ticket'),
+            'filename' => $row->filename,
         ];
     }
 
@@ -409,6 +447,224 @@ class Quotation extends ModelTenant
         }
 
         return $this->delivery_date->format('Y-m-d');
+    }
+
+
+    /**
+     *
+     * Obtener total y realizar conversión al tipo de cambio si se requiere
+     *
+     * @return float
+     */
+    public function getTransformTotal()
+    {
+        return ($this->currency_type_id === 'PEN') ? $this->total : ($this->total * $this->exchange_rate_sale);
+    }
+
+
+    /**
+     *
+     * Validar si tiene estado registrado/aceptado
+     *
+     * @return bool
+     */
+    public function hasStateTypeAccepted()
+    {
+        return in_array($this->state_type_id, ['01','05']);
+    }
+
+
+    /**
+     *
+     * Validar si la cotizacion tiene pagos
+     *
+     * @return bool
+     */
+    public function hasPayments()
+    {
+        return $this->payments->count() > 0;
+    }
+
+
+    /**
+     *
+     * Validar si cumple las condiciones para sumar a los ingresos de caja o mostrar en reporte (pos)
+     *
+     * @return bool
+     */
+    public function applyQuotationToCash()
+    {
+        return ($this->hasStateTypeAccepted() && $this->hasPayments() && !$this->changed);
+    }
+
+
+    /**
+     *
+     * Filtro para no incluir relaciones en consulta
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWhereFilterWithOutRelations($query)
+    {
+        return $query->withOut(['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments']);
+    }
+
+
+    /**
+     *
+     * Obtener descripción del tipo de documento
+     *
+     * @return string
+     */
+    public function getDocumentTypeDescription()
+    {
+        return 'COTIZACIÓN';
+    }
+
+
+    /**
+     *
+     * Obtener pagos en efectivo
+     *
+     * @return Collection
+     */
+    public function getCashPayments()
+    {
+        return $this->payments()->whereFilterCashPayment()->get()->transform(function($row){{
+            return $row->getRowResourceCashPayment();
+        }});
+    }
+
+
+    /**
+     *
+     * Validar si el registro esta rechazado o anulado
+     *
+     * @return bool
+     */
+    public function isVoidedOrRejected()
+    {
+        return in_array($this->state_type_id, self::VOIDED_REJECTED_IDS);
+    }
+
+
+    /**
+     *
+     * Obtener url para impresión
+     *
+     * @param  string $format
+     * @return string
+     */
+    public function getUrlPrintPdf($format = "a4")
+    {
+        return url("quotations/print/{$this->external_id}/{$format}");
+    }
+
+
+    /**
+     *
+     * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterRelationsGlobalPayment($query)
+    {
+        return $query->whereFilterWithOutRelations();
+    }
+
+    
+    /**
+     * 
+     * Tipo de transaccion para caja
+     *
+     * @return string
+     */
+    public function getTransactionTypeCash()
+    {
+        return 'income';
+    }
+
+
+    /**
+     * 
+     * Tipo de documento para caja
+     *
+     * @return string
+     */
+    public function getDocumentTypeCash()
+    {
+        return $this->getTable();
+    }
+
+    
+    /**
+     * 
+     * Datos para resumen diario de operaciones
+     *
+     * @return array
+     */
+    public function applySummaryDailyOperations()
+    {
+        return [
+            'transaction_type' => $this->getTransactionTypeCash(),
+            'document_type' => $this->getDocumentTypeCash(),
+            'apply' => $this->hasAcceptedState(),
+        ];
+    }
+
+
+    /**
+     *
+     * Obtener total de pagos en efectivo sin considerar destino
+     *
+     * @return float
+     */
+    public function totalCashPaymentsWithoutDestination()
+    {
+        if($this->applyQuotationToCash()) return $this->payments()->filterCashPaymentWithoutDestination()->sum('payment');
+
+        return 0;
+    }
+
+    
+    /**
+     *
+     * Obtener total de pagos en transferencia
+     *
+     * @return float
+     */
+    public function totalTransferPayments()
+    {
+        if($this->applyQuotationToCash()) return $this->payments()->filterTransferPayment()->sum('payment');
+
+        return 0;
+    }
+
+    
+    /**
+     * 
+     * Validar si tiene estado permitido para calculos/etc
+     *
+     * @return bool
+     */
+    public function hasAcceptedState()
+    {
+        return in_array($this->state_type_id, self::STATE_TYPES_ACCEPTED, true);
+    }
+    
+
+    /**
+     * 
+     * Validar que no tenga comprobantes asociados
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeWhereNotHasDocuments($query)
+    {
+        return $query->whereDoesntHave('documents');
     }
 
 }

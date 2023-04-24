@@ -55,10 +55,14 @@
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
-                        <td v-if="columns.date_of_due.visible" class="text-center">{{ row.date_of_due }}</td>
+                        <td v-if="columns.date_of_due.visible"
+                            class="text-center"
+                            :class="{'text-danger': (row.state_type_payment_description != 'Pagado' && isDateWarning(row.date_of_due))}">
+                            {{ row.date_of_due }}
+                        </td>
                         <td>{{ row.supplier_name }}<br/><small v-text="row.supplier_number"></small></td>
                         <td>{{row.state_type_description}}</td>
-                        <td>{{row.state_type_payment_description}}</td>
+                        <td :class="row.state_type_payment_description == 'Pagado' ? 'text-success': 'text-warning'">{{row.state_type_payment_description}}</td>
                         <td>{{ row.number }}<br/>
                             <small v-text="row.document_type_description"></small><br/>
                         </td>
@@ -70,7 +74,19 @@
                                 trigger="click">
                                 <el-table :data="row.items">
                                     <el-table-column width="80" property="key" label="#"></el-table-column>
-                                    <el-table-column width="220" property="description" label="Nombre"></el-table-column>
+                                    <!-- <el-table-column width="220" property="description" label="Nombre"></el-table-column> -->
+
+                                    <el-table-column width="220" label="Nombre">
+                                        <template slot-scope="scope">
+                                            <template v-if="scope.row.name_product_pdf">
+                                                <span v-html="scope.row.name_product_pdf"></span>
+                                            </template>
+                                            <template v-else>
+                                                {{scope.row.description}}
+                                            </template>
+                                        </template>
+                                    </el-table-column>
+
                                     <el-table-column width="90" property="quantity" label="Cantidad"></el-table-column>
                                 </el-table>
                                 <el-button slot="reference"> <i class="fa fa-eye"></i></el-button>
@@ -112,10 +128,16 @@
                         <td v-if="columns.total_perception.visible" class="text-right">{{ row.total_perception ? row.total_perception : 0 }}</td>
                         <td class="text-right">{{ row.total   }}</td>
                         <td class="text-right">
+                            <template v-if="permissions.edit_purchase">
+                                <a v-if="row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
+                            </template>
+                            <template v-if="permissions.annular_purchase">
+                                <button v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
+                            </template>
+                            <template v-if="permissions.delete_purchase&&row.state_type_id=='11'">
+                                <button v-if="row.state_type_id == '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
+                            </template>
 
-                            <a v-if="row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
-                            <button v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
-                            <button v-if="row.state_type_id == '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
                             <button  type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickOptions(row.id)">Opciones</button>
                             <button
                                 type="button"
@@ -243,7 +265,8 @@ import {mapActions, mapState} from 'vuex'
                         visible: false
                     },
 
-                }
+                },
+                permissions: {},
             }
         },
         computed: {
@@ -252,12 +275,20 @@ import {mapActions, mapState} from 'vuex'
                 'warehouses',
             ]),
         },
-        created() {
+        async created() {
             this.$store.commit('setConfiguration',this.configuration)
             this.$store.commit('setTypeUser',this.typeUser)
+            await this.$http.get(`/${this.resource}/tables`)
+                .then(response => {
+                    this.permissions = response.data.permissions
+                })
             this.getDocumentTypes()
         },
         methods: {
+            getItemDescription(scope)
+            {
+                return scope.row.name_product_pdf ? scope.row.name_product_pdf :scope.row.description
+            },
             ...mapActions(['loadConfiguration']),
             clickPurchasePayment(recordId) {
                 this.recordId = recordId;
@@ -302,7 +333,11 @@ import {mapActions, mapState} from 'vuex'
                     }).then(()=>{
                         this.disableGuideBtn = !this.disableGuideBtn;
                 })
-            }
+            },
+            isDateWarning(date_due) {
+                let today = Date.now()
+                return moment(date_due).isBefore(today)
+            },
         }
     }
 </script>

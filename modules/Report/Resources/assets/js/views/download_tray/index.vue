@@ -10,9 +10,11 @@
                             <th class="">#</th>
                             <th class="">Formato</th>
                             <th class="">Fecha generación</th>
-                            <th class="">Fecha proceso completdo</th>
+                            <th class="">Fecha proceso completado</th>
                             <th>Estado</th>
-                            <th class="">Descarga</th>
+                            <th>Usuario</th>
+                            <th>Tipo</th>
+                            <th class="text-center">Descarga</th>
                         </tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td> 
@@ -20,9 +22,14 @@
                             <td>{{row.date_init}}</td>
                             <td>{{row.date_end}}</td>
                             <td>{{row.status}}</td>
-                            <td>  <el-button v-if="row.file_name"
-                                       @click="clickDownload(row.id)"><i class="fa fa-file-pdf"></i> Descargar File
-                            </el-button></td>
+                            <td>{{row.user}}</td>
+                            <td>{{row.type}}</td>
+                            <td class="text-center">  
+                                <el-button v-if="row.file_name" @click="clickDownload(row.id)">
+                                    <i :class="row.format == 'pdf' ? 'fa fa-file-pdf' : 'fa fa-file-excel'"></i> 
+                                    <span class="ml-1">Descargar archivo</span>
+                                </el-button>
+                            </td>
                         </tr>
                         
                     </data-table>

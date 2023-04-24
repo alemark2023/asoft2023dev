@@ -73,10 +73,33 @@
             $input = self::setInputByRequest($request);
             $item = self::getAllItemBase($request, false, $id);
 
-            if ($search_by_barcode === false && $input != null) {
-                self::SetWarehouseToUser($item);
-            }
+            // el filtro por almacén no debe depender de la búsqueda por código de barras o coincidencias
+            // if ($search_by_barcode === false && $input != null) {
+            //     self::SetWarehouseToUser($item);
+            // }
 
+            self::SetWarehouseToUser($item);
+
+            return $item->orderBy('description')->get();
+        }
+
+
+        /**
+         *
+         * No aplica filtro por almacén
+         *
+         * @param Request|null $request
+         * @param int          $id
+         *
+         * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+         */
+        public static function getNotServiceItemWithOutWarehouse(Request $request = null, $id = 0)
+        {
+
+            self::validateRequest($request);
+            // $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
+            // $input = self::setInputByRequest($request);
+            $item = self::getAllItemBase($request, false, $id);
 
             return $item->orderBy('description')->get();
         }
@@ -115,6 +138,7 @@
             $id = (int)$id;
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
             $input = self::setInputByRequest($request);
+            $search_item_by_barcode_presentation = $request->has('search_item_by_barcode_presentation') && (bool)$request->search_item_by_barcode_presentation;
 
             // $item = Item:: whereIsActive();
             $item = Item::query();
@@ -171,6 +195,8 @@
                     }
                 }
             }
+
+
             if ($bySerie === null) {
                 if ($items_id != null) {
                     $item->whereIn('id', $items_id);
@@ -178,9 +204,18 @@
                     $item->where('id', $id);
                 } else {
                     if ($search_by_barcode === true) {
-                        $item
-                            ->where('barcode', $input)
-                            ->limit(1);
+
+                        if($search_item_by_barcode_presentation)
+                        {
+                            $item->filterItemUnitTypeBarcode($input)->limit(1);
+                        }
+                        else
+                        {
+                            $item
+                                ->where('barcode', $input)
+                                ->limit(1);
+                        }
+
                     } else {
                         self::setFilter($item, $request);
                     }
@@ -217,11 +252,16 @@
 
             $input = self::setInputByRequest($request);
 
+            $search_factory_code_items = $request->has('search_factory_code_items') && (bool) $request->search_factory_code_items;
+
             if (!empty($input)) {
+
                 $whereItem[] = ['description', 'like', '%' . str_replace(' ','%',$input) . '%'];
                 $whereItem[] = ['internal_id', 'like', '%' . $input . '%'];
                 $whereItem[] = ['barcode', '=', $input];
                 $whereExtra[] = ['name', 'like', '%' .  str_replace(' ','%',$input) . '%'];
+
+                if($search_factory_code_items) $whereItem[] = ['factory_code', 'like', '%' . $input . '%'];
 
                 foreach ($whereItem as $index => $wItem) {
                     if ($index < 1) {
@@ -240,6 +280,7 @@
                             $query->where($whereExtra);
                         });
                 }
+
                 $item->OrWhereJsonContains('attributes', ['value' => $input]);
                 //  Limita los resultados de busqueda, inicial 250, puede modificarse en el .env con NUMBER_SEARCH_ITEMS
                 $item->take(\Config('extra.number_items_in_search'));
@@ -669,7 +710,7 @@
             $items_services = self::getServiceItem($request, $id);
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
-
+// aqui
             return self::TransformModalToOrderNote($items_not_services->merge($items_services), $warehouse);
         }
 
@@ -698,6 +739,7 @@
                     'category' => $detail['category'],
                     'stock' => $detail['stock'],
                     'description' => $row->description,
+                    'calculate_quantity' => (bool)$row->calculate_quantity,
                     'currency_type_id' => $row->currency_type_id,
                     'currency_type_symbol' => $row->currency_type->symbol,
                     'sale_unit_price' => round($row->sale_unit_price, 2),
@@ -730,6 +772,8 @@
                         ];
                     }),
                     'lot_code' => $row->lot_code,
+                    'item_attributes' => $row->getItemAttributes(),
+                    'restrict_sale_cpe' => $row->restrict_sale_cpe,
                     'date_of_due' => $row->date_of_due
                 ];
             });
@@ -830,6 +874,7 @@
                         ];
                     }),
                     'series_enabled' => (bool)$row->series_enabled,
+                    'lots_enabled' => (bool)$row->lots_enabled,
                 ];
             });
         }
@@ -946,7 +991,8 @@
          */
         public static function getItemToPurchase(Request $request = null, $id = 0)
         {
-            $items_not_services = self::getNotServiceItem($request, $id);
+            $items_not_services = self::getNotServiceItemWithOutWarehouse($request, $id);
+            // $items_not_services = self::getNotServiceItem($request, $id);
             $items_services = self::getServiceItem($request, $id);
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
@@ -967,6 +1013,9 @@
             return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
                 /** @var Item $row */
                 $temp = array_merge($row->getCollectionData(), $row->getDataToItemModal());
+
+                if(isset($temp['name_product_pdf'])) $temp['name_product_pdf'] = null;
+
                 $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
                 $data = [
                     'id' => $row->id,
@@ -1000,7 +1049,7 @@
                         return $row;
                     }),
                     'series_enabled' => (bool)$row->series_enabled,
-                    
+
                     'purchase_has_isc' => $row->purchase_has_isc,
                     'purchase_system_isc_type_id' => $row->purchase_system_isc_type_id,
                     'purchase_percentage_isc' => $row->purchase_percentage_isc,
@@ -1135,24 +1184,83 @@
             }
 
             if(!empty($whereItem)) {
-                foreach ($whereItem as $index => $wItem) {
-                    if ($index < 1) {
-                        $data->Where([$wItem]);
-                    } else {
-                        $data->orWhere([$wItem]);
-                    }
-                }
+                $data = func_filter_items($data, $input);
+//                $data
+//                    ->selectRaw(
+//                            'match(text_filter) against(? in natural language mode) as score',
+//                            [$params['input']]
+//                        )
+//                        ->whereRaw(
+//                            'match(text_filter) against(? in natural language mode) > 0.0000001',
+//                            [$params['input']]
+//                        );
+//                        ->orderBy('score', 'desc');
+//                });
 
-                if ( !empty($whereExtra)) {
-                    $data
-                        ->orWhereHas('brand', function ($query) use ($whereExtra) {
-                            $query->where($whereExtra);
-                        })
-                        ->orWhereHas('category', function ($query) use ($whereExtra) {
-                            $query->where($whereExtra);
-                        });
-                }
-                $data->OrWhereJsonContains('attributes', ['value' => $input]);
+//                $data->when($params['input'], function ($query, $search) {
+//                    $query->select('id', 'description', 'text_filter')
+//                        ->selectRaw(
+//                            'match(text_filter) against(? in natural language mode) as score',
+//                            [$search]
+//                        )
+//                        ->whereRaw(
+//                            'match(text_filter) against(? in natural language mode) > 0.0000001',
+//                            [$search]
+//                        )
+//                        ->orderBy('score', 'desc');
+//                });
+
+//                $items = Item::query()->when($params['input'], function ($query, $search) {
+//                    return $query->select('id', 'text_filter')
+//                        ->selectRaw('match(text_filter) against(? in natural language mode) as score', [$search])
+//                        ->whereRaw('match(text_filter) against(? in natural language mode) > 0.0000001', [$search]);
+//                })->get();
+//
+//                dd($items);
+
+//                $data->whereRaw('match(text_filter) against(? in natural language mode) > 0.0000001', [$input]);
+//                });
+//                $items = Item::query()
+//                    ->select('id', 'text_filter')
+//                    ->selectRaw('match(text_filter) against(? in natural language mode) as score')
+//                    ->having('score', '>', 0)
+//
+//                    ->setBindings([$input])
+//                    ->orderBy('score', 'desc')
+//                ->get();
+
+//                $items = Item::query()
+//                    ->select('id', 'text_filter')
+//                    ->whereRaw('MATCH(text_filter) AGAINST(? IN BOOLEAN MODE)', ['radio%2080'])
+////                    ->having('score', '>', 0)
+////
+////                    ->setBindings([$input])
+////                    ->orderBy('score', 'desc')
+//                    ->get();
+//
+//                dd($items);
+//                $data->whereRaw('match(text_filter)
+//                    against(? in natural language mode) > 0.0000001
+//                ', [$input]);
+
+//                foreach ($whereItem as $index => $wItem) {
+//                    if ($index < 1) {
+//                        $data->Where([$wItem]);
+//                    } else {
+//                        $data->orWhere([$wItem]);
+//                    }
+//                }
+//
+//                if ( !empty($whereExtra)) {
+//                    $data
+//                        ->orWhereHas('brand', function ($query) use ($whereExtra) {
+//                            $query->where($whereExtra);
+//                        })
+//                        ->orWhereHas('category', function ($query) use ($whereExtra) {
+//                            $query->where($whereExtra);
+//                        });
+//                }
+//                $data->OrWhereJsonContains('attributes', ['value' => $input]);
                 // Limita la cantidad de productos en la busqueda a 250, puede modificarse en el .env con NUMBER_SEARCH_ITEMS
                 $data->take(\Config('extra.number_items_in_search'));
             }else{
@@ -1161,6 +1269,7 @@
 
             }
 
+            $data->whereIsActive();
 
             return self::getItemToTrasferModal($data,$warehouse_id);
         }
@@ -1172,7 +1281,8 @@
          */
         public static function getItemToTrasferWithoutSearch( $warehouse_id = 0): \Illuminate\Database\Eloquent\Collection
         {
-            $data = self::getItemToTrasferCollection($warehouse_id);
+            $data = self::getItemToTrasferCollection($warehouse_id)->whereIsActive();
+
             // Inicia con 20 productos, puede añadirse en el env la variable NUMBER_ITEMS
             $data->take(\Config('extra.number_items_at_start'));
             return  self::getItemToTrasferModal($data,$warehouse_id);

@@ -37,7 +37,8 @@
                                         placeholder="Escriba el nombre o número de documento del cliente"
                                         :remote-method="searchRemoteCustomers"
                                         :loading="loading_search"
-                                        @change="changeCustomer">
+                                        @change="changeCustomer"
+                                        @keyup.enter.native="keyupCustomer">
 
                                         <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
 
@@ -133,6 +134,7 @@
                             </div>
 
                             <div class="col-lg-8 mt-2" >
+                                <label>Pagos</label>
                                 <table>
                                     <thead>
                                         <tr width="100%">
@@ -244,16 +246,17 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
-                                                <th class="font-weight-bold">Descripción</th>
-                                                <th class="text-center font-weight-bold">Unidad</th>
-                                                <th class="text-right font-weight-bold">Cantidad</th>
-                                                <th class="text-right font-weight-bold">Valor Unitario</th>
-                                                <th class="text-right font-weight-bold">Precio Unitario</th>
-                                                <th class="text-right font-weight-bold">Subtotal</th>
+                                                <th width="5%">#</th>
+                                                <th class="font-weight-bold"
+                                                    width="30%">Descripción</th>
+                                                <th width="8%" class="text-center font-weight-bold">Unidad</th>
+                                                <th width="8%" class="text-center font-weight-bold">Cantidad</th>
+                                                <th class="text-center font-weight-bold">Valor Unitario</th>
+                                                <th class="text-center font-weight-bold">Precio Unitario</th>
+                                                <th class="text-center font-weight-bold">Subtotal</th>
                                                 <!--<th class="text-right font-weight-bold">Cargo</th>-->
-                                                <th class="text-right font-weight-bold">Total</th>
-                                                <th></th>
+                                                <th class="text-center font-weight-bold">Total</th>
+                                                <th width="8%"></th>
                                             </tr>
                                         </thead>
                                         <tbody v-if="form.items.length > 0">
@@ -262,15 +265,15 @@
                                                 <td>
                                                     {{ setDescriptionOfItem (row.item) }} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
-                                                <td class="text-right">{{row.quantity}}</td>
+                                                <td class="text-center">{{row.quantity}}</td>
                                                 <!-- <td class="text-right">{{currency_type.symbol}} {{row.unit_price}}</td> -->
-                                                <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
-                                                <td class="text-right">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
+                                                <td class="text-center">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
+                                                <td class="text-center">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
 
-                                                <td class="text-right">{{currency_type.symbol}} {{row.total_value}}</td>
+                                                <td class="text-center">{{currency_type.symbol}} {{row.total_value}}</td>
                                                 <!--<td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>-->
-                                                <td class="text-right">{{currency_type.symbol}} {{row.total}}</td>
-                                                <td class="text-right">
+                                                <td class="text-center">{{currency_type.symbol}} {{row.total}}</td>
+                                                <td class="text-center">
                                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click="ediItem(row, index)" ><span style='font-size:10px;'>&#9998;</span> </button>
                                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
                                                 </td>
@@ -314,17 +317,21 @@
         </div>
 
         <quotation-form-item :showDialog.sync="showDialogAddItem"
-                           :currency-type-id-active="form.currency_type_id"
-                           :exchange-rate-sale="form.exchange_rate_sale"
-                             :typeUser="typeUser"
-                             :recordItem="recordItem"
-                             :configuration="config"
-                             :customer-id="form.customer_id"
-                           @add="addRow"></quotation-form-item>
+            :configuration="config"
+            :currency-type-id-active="form.currency_type_id"
+            :exchange-rate-sale="form.exchange_rate_sale"
+            :typeUser="typeUser"
+            :recordItem="recordItem"
+            :customer-id="form.customer_id"
+            :percentage-igv="percentage_igv"
+            :currency-types="currency_types"
+            :show-option-change-currency="true"
+            @add="addRow"></quotation-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
                        type="customers"
                        :external="true"
+                       :input_person="input_person"
                        :document_type_id = form.document_type_id></person-form>
 
         <quotation-options :showDialog.sync="showDialogOptions"
@@ -360,6 +367,7 @@
         data() {
             return {
                 sellers: [],
+                input_person: {},
                 resource: 'quotations',
                 showDialogTermsCondition: false,
                 showDialogAddItem: false,
@@ -408,6 +416,7 @@
                     this.payment_destinations = data.payment_destinations
                     // this.configuration = data.configuration
                     this.sellers = data.sellers;
+                    this.form.seller_id = (this.sellers.length > 0)?this.sellers[0].id:null
 
                     this.changeEstablishment()
                     this.changeDateOfIssue()
@@ -415,10 +424,14 @@
                     this.allCustomers()
                     this.selectDestinationSale()
                 })
+            await this.getPercentageIgv();
             this.loading_form = true
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
                 this.reloadDataCustomers(customer_id)
             })
+            this.$eventHub.$on('initInputPerson', () => {
+                this.initInputPerson()
+            });
 
             await this.createQuotationFromSO()
         },
@@ -471,7 +484,8 @@
             },
             selectDestinationSale() {
 
-                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                // if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0 && this.form.payments.length > 0) {
                     let cash = _.find(this.payment_destinations, {id : 'cash'})
                     this.form.payments[0].payment_destination_id = (cash) ? cash.id : this.payment_destinations[0].id
                 }
@@ -577,10 +591,12 @@
                             .then(response => {
                                 this.customers = response.data.customers
                                 this.loading_search = false
-                                if(this.customers.length == 0){this.allCustomers()}
+                                /* if(this.customers.length == 0){this.allCustomers()} */
+                                this.input_person.number=(this.customers.length==0)? input : null
                             })
                 } else {
                     this.allCustomers()
+                    this.input_person.number= null
                 }
 
             },
@@ -639,8 +655,9 @@
                 }
 
                 this.total_discount_no_base = 0
-
-                this.clickAddPayment()
+                this.initInputPerson()
+                // no se agrega pago por defecto para controlar flujo caja pos
+                // this.clickAddPayment()
 
             },
             resetForm() {
@@ -662,10 +679,12 @@
             cleanCustomer(){
                 this.form.customer_id = null;
             },
-            changeDateOfIssue() {
-                this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+            async changeDateOfIssue() {
+                await this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
                 })
+                await this.getPercentageIgv();
+                this.changeCurrencyType();
             },
             allCustomers() {
                 this.customers = this.all_customers
@@ -688,7 +707,7 @@
                 this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
                 let items = []
                 this.form.items.forEach((row) => {
-                    items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+                    items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv))
                 });
                 this.form.items = items
                 this.calculateTotal()
@@ -733,7 +752,7 @@
                     }
                     total_value += parseFloat(row.total_value)
 
-                    
+
                     if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
 
                         let unit_value = row.total_value / row.quantity
@@ -748,7 +767,7 @@
 
                     //sum discount no base
                     this.total_discount_no_base += sumAmountDiscountsNoBaseByItem(row)
-                    
+
                 });
 
                 this.form.total_igv_free = _.round(total_igv_free, 2)
@@ -817,10 +836,13 @@
                 }
 
                 this.loading_submit = true
+
                 await this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
+
                         this.resetForm();
                         this.quotationNewId = response.data.data.id;
+                        this.saveCashDocument(this.quotationNewId)
 
                         if(this.saleOpportunityId){
                             this.$message.success(`La cotización ${response.data.data.number_full} fue generada`)
@@ -828,6 +850,7 @@
                         }else{
                             this.showDialogOptions = true;
                         }
+
                     }
                     else {
                         this.$message.error(response.data.message);
@@ -854,7 +877,51 @@
             },
             setDescriptionOfItem(item){
                 return showNamePdfOfDescription(item,this.config.show_pdf_name)
-            }
+            },
+            async saveCashDocument(id){
+                await this.$http.post(`/cash/cash_document`, {
+                        quotation_id: id,
+                    })
+                    .then(response => {
+                        if (response.data.success) {
+                        } else {
+                            this.$message.error(response.data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+            },
+            keyupCustomer() {
+
+                if (this.input_person.number) {
+
+                    if (!isNaN(parseInt(this.input_person.number))) {
+
+                        switch (this.input_person.number.length) {
+                            case 8:
+                                this.input_person.identity_document_type_id = '1'
+                                this.showDialogNewPerson = true
+                                break;
+
+                            case 11:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                            default:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                        }
+                    }
+                }
+            },
+            initInputPerson() {
+                this.input_person = {
+                    number: null,
+                    identity_document_type_id: null
+                }
+            },
         }
     }
 </script>

@@ -211,7 +211,7 @@
                 await this.$http.get(`/${this.resource}/document/${this.recordId}`)
                     .then(response => {
                         this.document = response.data;
-                        this.title = 'Pagos del comprobante: '+this.document.number_full;
+                        this.title = 'Pagos a cuenta del comprobante: '+this.document.number_full;
                     });
                 await this.$http.get(`/${this.resource}/records/${this.recordId}`)
                     .then(response => {
@@ -275,6 +275,7 @@
                             this.records[index].errors = error.response.data;
                         } else {
                             console.log(error);
+                            this.$message.error(error.response.data.message)
                         }
                     })
             },

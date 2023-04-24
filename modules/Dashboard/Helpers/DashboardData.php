@@ -159,13 +159,31 @@ class DashboardData
         ];
     }
 
-    private function sale_note_totals_global()
+
+    /**
+     * 
+     * Obtener totales de cpe
+     * 
+     * Usado en:
+     * App\Traits\LockedEmissionTrait - Control de limite de ventas mensual
+     *
+     * @param  string $start_date
+     * @param  string $end_date
+     * @return float
+     */
+    public function sale_note_totals_global($start_date = null, $end_date = null)
     {
-        $sale_notes = SaleNote::without(['user', 'soap_type', 'state_type', 'currency_type', 'items'])
+        $sale_notes_query = SaleNote::without(['user', 'soap_type', 'state_type', 'currency_type', 'items'])
             ->where('changed', false)
             ->whereStateTypeAccepted()
-            ->select('id', 'currency_type_id', 'total', 'exchange_rate_sale')
-            ->get();
+            ->select('id', 'currency_type_id', 'total', 'exchange_rate_sale');
+
+        if($start_date && $end_date)
+        {
+            $sale_notes_query->whereBetween('date_of_issue', [$start_date, $end_date]);
+        }
+
+        $sale_notes = $sale_notes_query->get();
 
         //PEN
         $sale_note_total_pen = 0;
@@ -300,13 +318,32 @@ class DashboardData
             ]
         ];
     }
-
-    private function document_totals_globals()
+    
+    
+    /**
+     * 
+     * Obtener totales de cpe
+     * 
+     * Usado en:
+     * App\Traits\LockedEmissionTrait - Control de limite de ventas mensual
+     *
+     * @param  string $start_date
+     * @param  string $end_date
+     * @return float
+     */
+    public function document_totals_globals($start_date = null, $end_date = null)
     {
-        $documents = Document::without(['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'invoice', 'note'])
-            ->select('id', 'state_type_id', 'document_type_id', 'currency_type_id', 'total', 'exchange_rate_sale')
-            ->get();
+        $documents_query = Document::without(['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'invoice', 'note'])
+                                    ->select('id', 'state_type_id', 'document_type_id', 'currency_type_id', 'total', 'exchange_rate_sale');
 
+
+        if($start_date && $end_date)
+        {
+            $documents_query->whereBetween('date_of_issue', [$start_date, $end_date]);
+        }
+
+        $documents = $documents_query->get();
+        
         //PEN
         $document_total_pen = 0;
         $document_total_payment_pen = 0;
@@ -893,5 +930,35 @@ class DashboardData
             'general' => $this->totals($establishment_id, $d_start, $d_end, $period, $month_start, $month_end),
         ];
     }
+    
+
+    /**
+     * 
+     * Método para acceder a los totales (método privado)
+     * El gráfico no incluye pedidos
+     * 
+     * Usado en:
+     * ReportController - App
+     *
+     * @param  int $establishment_id
+     * @param  string $d_start
+     * @param  string $d_end
+     * @param  string $period
+     * @param  string $month_start
+     * @param  string $month_end
+     * @return array
+     */
+    public function getGeneralTotals($establishment_id, $d_start, $d_end, $period, $month_start, $month_end)
+    {
+        $data = $this->totals($establishment_id, $d_start, $d_end, $period, $month_start, $month_end);
+
+        $total_order_notes = $this->getTotalsOrderNote($establishment_id, $d_start, $d_end);
+        
+        $data['totals']['total_order_notes'] = $this->roundNumber($total_order_notes);
+        $data['totals']['total'] = $this->roundNumber($total_order_notes + (float) $data['totals']['total']);
+
+        return $data;
+    }
+
 
 }

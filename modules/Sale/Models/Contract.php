@@ -235,9 +235,18 @@ class Contract extends ModelTenant
         return $legend->value;
     }
 
-    public function scopeWhereTypeUser($query)
+    public function scopeWhereTypeUser($query, $params= [])
     {
-        $user = auth()->user();
+        if(isset($params['user_id'])) {
+            $user_id = (int)$params['user_id'];
+            $user = User::find($user_id);
+            if(!$user) {
+                $user = new User();
+            }
+        }
+        else { 
+            $user = auth()->user();
+        }
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
@@ -272,4 +281,32 @@ class Contract extends ModelTenant
             'name' => ''
         ]);
     }
+    
+
+    /**
+     * 
+     * Filtro para no incluir relaciones en consulta
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */  
+    public function scopeWhereFilterWithOutRelations($query)
+    {
+        return $query->withOut(['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments']);
+    }
+
+
+    /**
+     * 
+     * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterRelationsGlobalPayment($query)
+    {
+        return $query->whereFilterWithOutRelations();
+    }
+    
+
 }

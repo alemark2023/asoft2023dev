@@ -24,9 +24,9 @@
                 </div>
                 <div class="col-3">
                     <el-switch v-model="enabled_discount"
-                                        active-text="Descuento"
-                                        class="control-label mb-0 font-weight-semibold m-0 text-center m-b-0"
-                                        @change="changeEnabledDiscount"></el-switch>
+                               active-text="Descuento"
+                               class="control-label mb-0 font-weight-semibold m-0 text-center m-b-0"
+                               @change="changeEnabledDiscount"></el-switch>
                 </div>
             </div>
             <div class="row d-flex align-items-end mb-1">
@@ -34,18 +34,18 @@
                     <div class="form-group">
                         <label class="control-label mb-0">Ingrese monto</label>
                         <el-input ref="enter_amount"
-                                    v-model="enter_amount"
-                                    @input="enterAmount()"
-                                    @keyup.enter.native="keyupEnterAmount()">
+                                  v-model="enter_amount"
+                                  @input="enterAmount()"
+                                  @keyup.enter.native="keyupEnterAmount()">
                             <template slot="prepend" style="px-1">{{ currencyTypeActive.symbol }}</template>
                         </el-input>
                     </div>
                 </div>
                 <div class="col-3">
                     <div :class="{'has-danger': difference < 0}"
-                            class="form-group">
+                         class="form-group">
                         <label class="control-label mb-0"
-                                v-text="(difference <0) ? 'Faltante' :'Vuelto'"></label>
+                               v-text="(difference <0) ? 'Faltante' :'Vuelto'"></label>
                         <!-- <el-input v-model="difference" :disabled="true">
                             <template slot="prepend">{{currencyTypeActive.symbol}}</template>
                         </el-input> -->
@@ -62,28 +62,32 @@
             <div class="row">
                 <template v-for="(pay,index) in form.payments">
                     <div :key="pay.id"
-                            class="col-lg-1">
+                         class="col-lg-1">
                         <label>{{ index + 1 }}.-</label>
                     </div>
                     <div :key="pay.id"
-                            class="col-lg-6">
+                         class="col-lg-6">
                         <label>{{ getDescriptionPaymentMethodType(pay.payment_method_type_id) }}</label>
                     </div>
                     <div :key="pay.id"
-                            class="col-lg-5">
+                         class="col-lg-5">
                         <label><strong>{{ currencyTypeActive.symbol }}
-                                        {{ pay.payment }}</strong> </label>
+                            {{ pay.payment }}</strong> </label>
                     </div>
                 </template>
             </div>
             <div class="row" v-if="enabled_discount">
                 <div class="col-12">
                     <div class="form-group">
-                        <label class="control-label mb-0">Monto descuento</label>
+                        <label class="control-label mb-0">Descuento
+                            ({{ (discount_type === '01') ? 'Monto' : 'Porcentaje' }})</label>
                         <el-input v-model="discount_amount"
-                                    :disabled="!enabled_discount"
-                                    @input="inputDiscountAmount()">
-                            <template slot="prepend">{{ currencyTypeActive.symbol }}</template>
+                                  :disabled="!enabled_discount"
+                                  @input="inputDiscountAmount()">
+                            <template slot="prepend">{{
+                                    (discount_type === '01') ? currencyTypeActive.symbol : '%'
+                                }}
+                            </template>
                         </el-input>
                     </div>
                 </div>
@@ -140,7 +144,7 @@
                             </div>
                             <div class="col-sm-6 py-1 text-right">
                                 <p class="font-weight-semibold mb-0">
-                                    {{ currencyTypeActive.symbol }} {{form.total_taxed}}
+                                    {{ currencyTypeActive.symbol }} {{ form.total_taxed }}
                                 </p>
                             </div>
                         </div>
@@ -160,20 +164,38 @@
                             <p class="font-weight-semibold mb-0">TOTAL</p>
                         </div>
                         <div class="col-sm-6 py-2 text-right">
-                            <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }} {{form.total}}</p>
+                            <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }} {{ form.total }}</p>
                         </div>
                     </div>
                     <div class="row m-0 p-0 h-25 d-flex align-items-center">
                         <div class="col-lg-6">
-                            <button :disabled="button_payment"
+                            <!-- <button :disabled="button_payment"
                                     class="btn btn-block btn-primary"
                                     @click="clickPayment">PAGAR
-                            </button>
+                            </button> -->
+
+                            <el-button
+                                :disabled="button_payment"
+                                :loading="loading_submit"
+                                class="submit btn btn-block btn-primary"
+                                @click="clickPayment"
+                            >
+                                PAGAR
+                            </el-button>
+
                         </div>
                         <div class="col-lg-6">
-                            <button class="btn btn-block btn-danger"
+                            <!-- <button class="btn btn-block btn-danger"
                                     @click="clickCancel">CANCELAR
-                            </button>
+                            </button> -->
+
+                            <el-button
+                                :loading="loading_submit_cancel"
+                                class="submit btn btn-block btn-danger"
+                                @click="clickCancel"
+                            >
+                                CANCELAR
+                            </el-button>
                         </div>
                     </div>
                 </div>
@@ -191,6 +213,7 @@
             :showDialog.sync="showDialogMultiplePayment"
             :total="form.total"
             @add="addRow"
+            ref="componentMultiplePaymentGarage"
         ></multiple-payment-form>
 
         <!-- <sale-notes-options :showDialog.sync="showDialogSaleNote"
@@ -260,6 +283,7 @@ export default {
         return {
             enabled_discount: false,
             discount_amount: 0,
+            discount_type: '01',
             loading_submit: false,
             showDialogOptions: false,
             showDialogMultiplePayment: false,
@@ -286,8 +310,28 @@ export default {
             statusDocument: {},
             payment_method_types: [],
             payments: [],
-            locked_submit: false
+            locked_submit: false,
+            loading_submit_cancel: false,
         }
+    },
+    watch: {
+        customer: {
+            handler(valueNew, valueOld) {
+                if (!_.isNull(valueNew)) {
+                    this.enabled_discount = valueNew.has_discount;
+                    this.discount_type = valueNew.discount_type;
+                    this.discount_amount = valueNew.discount_amount;
+                } else {
+                    this.enabled_discount = false;
+                    this.discount_type = '01';
+                    this.discount_amount = 0;
+                }
+                this.inputDiscountAmount();
+                // if (this.enabled_discount) {
+                //     this.inputDiscountAmount();
+                // }
+            }
+        },
     },
     async created() {
 
@@ -316,6 +360,7 @@ export default {
     },
     mounted() {
         // console.log(this.currencyTypeActive)
+        this.checkPaymentGarage()
     },
     methods: {
         handleFn113() {
@@ -350,38 +395,22 @@ export default {
             // console.log(this.$refs.enter_amount.$el.getElementsByTagName('input')[0])
         },
         changeEnabledDiscount() {
-
             if (!this.enabled_discount) {
-
                 this.discount_amount = 0
                 this.deleteDiscountGlobal()
                 this.reCalculateTotal()
-
             }
-
         },
         inputDiscountAmount() {
-
             if (this.enabled_discount) {
-
                 if (this.discount_amount && !isNaN(this.discount_amount) && parseFloat(this.discount_amount) > 0) {
-
-                    if (this.discount_amount >= this.form.total)
+                    if (this.discount_amount >= this.form.total) {
                         return this.$message.error("El monto de descuento debe ser menor al total de venta")
-
-                    this.deleteDiscountGlobal()
-                    this.reCalculateTotal()
-
-                } else {
-
-                    // this.discount_amount = 0
-                    this.deleteDiscountGlobal()
-                    this.reCalculateTotal()
-
+                    }
                 }
-
-                // console.log(this.discount_amount)
             }
+            this.deleteDiscountGlobal()
+            this.reCalculateTotal()
         },
         isExonerated() {
 
@@ -393,13 +422,19 @@ export default {
         },
         async discountGlobal() {
 
+            // console.log('discountGlobal');
             // let is_exonerated = this.isExonerated()
             // let is_exonerated = false
-
-            let global_discount = parseFloat(this.discount_amount)
+            // console.log(this.discount_type);
 
             let base = parseFloat(this.form.total)
-            let amount = parseFloat(global_discount)
+            let global_discount = parseFloat(this.discount_amount)
+
+            if (this.discount_type === '02') {
+                global_discount = _.round(base * global_discount / 100, 2);
+            }
+
+            let amount = global_discount
             let factor = _.round(amount / base, 5)
 
             let discount = _.find(this.form.discounts, {'discount_type_id': '03'})
@@ -652,7 +687,7 @@ export default {
             this.difference = _.round(this.difference, 2)
             // this.form_payment.payment = this.amount
 
-            this.$eventHub.$emit('eventSetFormPosLocalStorage', this.form)
+            this.$eventHub.$emit('eventSetFormPosLocalStorageGarage', this.form)
             this.lStoPayment()
 
         },
@@ -679,13 +714,23 @@ export default {
                 payment: this.form.total,
             }
 
+            /*
             this.form_cash_document = {
                 document_id: null,
                 sale_note_id: null
             }
+            */
+
+            this.initFormCashDocument()
 
         },
-
+        initFormCashDocument()
+        {
+            this.form_cash_document = {
+                document_id: null,
+                sale_note_id: null
+            }
+        },
         filterSeries() {
             this.form.series_id = null
             this.series = _.filter(this.all_series, {'document_type_id': this.form.document_type_id});
@@ -697,37 +742,18 @@ export default {
         },
         async clickCancel() {
 
-            this.loading_submit = true
-            await this.sleep(800);
-            this.loading_submit = false
+            this.loading_submit_cancel = true
+            await this.sleep(400);
+            this.loading_submit_cancel = false
             this.cleanLocalStoragePayment()
-            this.$eventHub.$emit('cancelSaleGarage')
+            // this.$eventHub.$emit('cancelSaleGarage')
             //console.info('cli cancel fas_payment')
 
         },
         async events() {
-            await this.$eventHub.$on("cancelSaleGarage", () => {
-                console.info('aquiss');
-                this.initLStoPayment()
-                this.getTables()
-                this.initFormPayment()
-                this.inputAmount()
-                this.form.payments = []
-                this.$eventHub.$on('reloadDataCardBrands', (card_brand_id) => {
-                    this.reloadDataCardBrands(card_brand_id)
-                })
-
-                this.$eventHub.$on('localSPaymentsGarage', (payments) => {
-                    this.payments = payments
-                });
-
-                this.setInitialAmount()
-
-                this.getFormPosLocalStorage()
-
-                this.payments = []
-                this.amount = 0
-            });
+            await this.$eventHub.$on("eventCheckPaymentGarage", () => {
+                this.checkPaymentGarage()
+            })
         },
         cleanLocalStoragePayment() {
 
@@ -758,16 +784,23 @@ export default {
                 });
             }
         },
+        cleanPayments() {
+            this.payments = []
+        },
+        initDataComponent() {
+            this.cleanPayments()
+            // this.filterSeries()
+        },
         async clickPayment() {
             // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
 
-            if(this.businessTurns.active) {
-                if(this.form.document_type_id == '01' && !this.form.plate_number) {
+            if (this.businessTurns.active) {
+                if (this.form.document_type_id == '01' && !this.form.plate_number) {
                     return this.$message.warning('Debe ingresar placa');
                 }
             }
 
-            if(this.rowsItems < 1) {
+            if (this.rowsItems < 1) {
                 return this.$message.warning('Debe agregar productos');
             }
 
@@ -820,10 +853,13 @@ export default {
 
                     // this.initFormPayment() ;
                     this.cleanLocalStoragePayment()
-                    if(this.isPrint){
+                    if (this.isPrint) {
                         this.gethtml();
                     }
                     this.$eventHub.$emit('saleSuccess');
+
+                    this.initDataComponent()
+
                 } else {
                     this.$message.error(response.data.message);
                 }
@@ -838,29 +874,29 @@ export default {
                 this.locked_submit = false
             });
         },
-        gethtml(){
-            this.form.datahtml="";
-            var doc='salenote';
+        gethtml() {
+            this.form.datahtml = "";
+            var doc = 'salenote';
             var route = `/printticket/document/${this.documentNewId}/ticket`;
-            if(this.resource_documents!=='documents'){
+            if (this.resource_documents !== 'documents') {
                 route = `/sale-notes/ticket/${this.documentNewId}/ticket`;
             }
 
             // console.log(route);
 
             this.$http.get(route)
-            .then(response => {
-                if (response.data.length>0) {
-                    this.form.datahtml=response.data;
-                    this.printticket();
-                }
+                .then(response => {
+                    if (response.data.length > 0) {
+                        this.form.datahtml = response.data;
+                        this.printticket();
+                    }
 
-            })
-            .catch(error => {
-                console.log(error);
-            })
+                })
+                .catch(error => {
+                    console.log(error);
+                })
         },
-        async printticket(){
+        async printticket() {
             //getUpdatedConfig();
             await this.sleep(400);
             var configg = getUpdatedConfig();
@@ -887,6 +923,9 @@ export default {
                 .catch(error => {
                     console.log(error);
                 })
+                .finally(() => {
+                    this.initFormCashDocument()
+                })
         },
         savePaymentMethod() {
             this.$http.post(`/${this.resource_payments}`, this.form_payment)
@@ -905,14 +944,34 @@ export default {
                     }
                 })
         },
-        getTables() {
-            this.$http.get(`/${this.resource}/payment_tables`)
+        async getTables() {
+            await this.$http.get(`/${this.resource}/payment_tables`)
                 .then(response => {
                     this.all_series = response.data.series
                     this.payment_method_types = response.data.payment_method_types
                     this.cards_brand = response.data.cards_brand
                     this.filterSeries()
                 })
+
+        },
+        checkPaymentGarage() {
+            this.inputDiscountAmount()
+            if (this.form.payments.length == 0) {
+                this.$refs.componentMultiplePaymentGarage.clickAddPayment(this.form.total)
+                this.setAmount(this.form.total)
+            } else if (this.form.payments.length == 1) {
+
+                this.form.payments[0].payment = this.form.total
+
+                if (this.payments.length == 0) {
+                    this.payments = this.form.payments
+                }
+
+                this.setAmount(this.form.total)
+
+            } else {
+                // multiples pagos no controlados
+            }
 
         },
     }

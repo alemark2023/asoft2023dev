@@ -19,7 +19,7 @@
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item v-for="(column, index) in columns" :key="index">
-                            <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                            <el-checkbox @change="getColumnsToShow(1)" v-model="column.visible">{{ column.title }}</el-checkbox>
                         </el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -31,9 +31,11 @@
                         <th class="text-right"  v-if="columns.seller_name.visible" >Vendedor</th>
 
                         <th class="text-center">Fecha Emisión</th>
+                        <th class="text-center" v-if="columns.date_payment.visible">Fecha de pago</th>
                         <th>Cliente</th>
                         <th>Nota de Venta</th>
                         <th>Estado</th>
+                        <th class="text-right" v-if="columns.exchange_rate_sale.visible">T.C.</th>
                         <th class="text-center">Moneda</th>
                         <th class="text-right" v-if="columns.due_date.visible">F. Vencimiento</th>
                         <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación</th>
@@ -53,9 +55,15 @@
 
                         <th class="text-center">Pagos</th>
                         <th class="text-center">Descarga</th>
-                        <th class="text-center">
+                        <th class="text-center" v-if="columns.recurrence.visible">
                             Recurrencia
                         </th>
+                        <td class="text-right" v-if="columns.region.visible">
+                            Region
+                        </td>
+                        <td class="text-right" v-if="columns.dispatch_status.visible">
+                            Estado de despacho
+                        </td>
                          <th class="text-center" v-if="columns.type_period.visible" >
                             Tipo Periodo
                         </th>
@@ -74,12 +82,13 @@
                         <td>{{ index }}</td>
                     <td class="text-right"  v-if="columns.seller_name.visible" >{{ row.seller_name }}</td>
 
-
                         <td class="text-center">{{ row.date_of_issue }}</td>
+                        <td class="text-center" v-if="columns.date_payment.visible" >{{ row.date_of_payment }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                         <td>{{ row.full_number }}
                         </td>
                         <td>{{ row.state_type_description }}</td>
+                        <td class="text-center" v-if="columns.exchange_rate_sale.visible" >{{ row.exchange_rate_sale }}</td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
 
                         <td class="text-right"  v-if="columns.due_date.visible" >{{ row.due_date }}</td>
@@ -104,7 +113,14 @@
                             </template>
                         </td>
                         <td class="text-center">
-                            <span class="badge text-white" :class="{'bg-success': (row.total_canceled), 'bg-warning': (!row.total_canceled)}">{{row.total_canceled ? 'Pagado':'Pendiente'}}</span>
+
+                            <template v-if="row.state_type_id === '11'">
+                                <span class="badge text-white bg-danger">{{row.state_type_description}}</span>
+                            </template>
+                            <template v-else>
+                                <span class="badge text-white" :class="{'bg-success': (row.total_canceled), 'bg-warning': (!row.total_canceled)}">{{row.total_canceled ? 'Pagado':'Pendiente'}}</span>
+                            </template>
+
                         </td>
 
                         <td>{{ row.purchase_order }}</td>
@@ -118,10 +134,32 @@
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickDownload(row.external_id)"><i class="fas fa-file-pdf"></i></button>
                         </td>
-                        <td class="text-right">
+                        <td class="text-right" v-if="columns.recurrence.visible">
                             <template v-if="row.type_period && row.quantity_period>0">
                                 <el-switch :disabled="row.apply_concurrency" v-model="row.enabled_concurrency" active-text="Si" inactive-text="No" @change="changeConcurrency(row)"></el-switch>
                             </template>
+                        </td>
+
+                        <td class="text-right" v-if="columns.region.visible">
+                            {{ row.customer_region }}
+                        </td>
+
+                        <td class="text-right" v-if="columns.dispatch_status.visible">
+                            <template v-if="row.status_dispatch==='ENTREGADO'">
+                                <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-success"
+                                    @click.prevent="clickDispatchStatus(row.id,false)" >{{row.status_dispatch}}</button>
+                            </template>
+                            
+                            <template v-if="row.status_dispatch==='PENDIENTE'">
+                                <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-danger"
+                                    @click.prevent="clickDispatchStatus(row.id,true)" >{{row.status_dispatch}}</button>
+                            </template>
+
+                            <template v-if="row.status_dispatch==='PARCIAL'">
+                                <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-warning"
+                                    @click.prevent="clickDispatchStatus(row.id,true)" >{{row.status_dispatch}}</button>
+                            </template>
+                            
                         </td>
 
                         <td class="text-right" v-if="columns.type_period.visible">
@@ -147,95 +185,105 @@
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
+                                    <button
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="Anular"
+                                        v-if="row.state_type_id != '11'"
+                                        type="button"
+                                        class="dropdown-item"
+                                    @click.prevent="clickVoided(row.id)">
+        <!--                                <i class="fas fa-trash"></i>-->
+                                        Anular
+                                    </button>
 
-                            <button
-                                data-toggle="tooltip"
-                                data-placement="top"
-                                title="Anular"
-                                v-if="row.state_type_id != '11'"
-                                type="button"
-                                class="dropdown-item"
-                             @click.prevent="clickVoided(row.id)">
-<!--                                <i class="fas fa-trash"></i>-->
-                                Anular
-                            </button>
+                                    <button data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="Editar"
+                                            type="button"
+                                            class="dropdown-item"
+                                            @click.prevent="clickCreate(row.id)"
+                                            v-if="row.btn_generate && row.state_type_id != '11' && typeUser != 'seller'">
+        <!--                                        <i class="dropdown-item fas fa-file-signature"></i>-->
+                                        Editar
+                                    </button>
 
-                            <button data-toggle="tooltip"
-                                    data-placement="top"
-                                    title="Editar"
-                                    type="button"
-                                    class="dropdown-item"
-                                    @click.prevent="clickCreate(row.id)"
-                                    v-if="row.btn_generate && row.state_type_id != '11' && typeUser != 'seller'">
-<!--                                        <i class="dropdown-item fas fa-file-signature"></i>-->
-                                Editar
-                            </button>
+                                    <button data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="Generar comprobante"
+                                            type="button"
+                                            class="dropdown-item"
+                                            @click.prevent="clickGenerate(row.id)"
+                                            v-if="!row.changed && row.state_type_id != '11' && soapCompany != '03'">
+        <!--                                <i class="dropdown-item fas fa-file-excel"></i>-->
+                                        Generar comprobante
+                                    </button>
 
-                            <button data-toggle="tooltip"
-                                    data-placement="top"
-                                    title="Generar comprobante"
-                                    type="button"
-                                    class="dropdown-item"
-                                    @click.prevent="clickGenerate(row.id)"
-                                    v-if="!row.changed && row.state_type_id != '11' && soapCompany != '03'">
-<!--                                <i class="dropdown-item fas fa-file-excel"></i>-->
-                                Generar comprobante
-                            </button>
+                                    <el-tooltip class="item" effect="dark" content="Generar guía desde CPE" placement="top-start">
+                                        <template v-for="(document,i) in row.documents" >
+                                            <a :href="`/dispatches/create/${document.id}`"
+                                            class="dropdown-item"
+                                                v-if="row.changed" :key="i">
+        <!--                                        <i class="dropdown-item fas fa-file-alt"></i>-->
+                                                Generar guía desde
 
-                            <el-tooltip class="item" effect="dark" content="Generar guía desde CPE" placement="top-start">
-                                <template v-for="(document,i) in row.documents" >
-                                    <a :href="`/dispatches/create/${document.id}`"
-                                       class="dropdown-item"
-                                        v-if="row.changed" :key="i">
-<!--                                        <i class="dropdown-item fas fa-file-alt"></i>-->
-                                        Generar guía desde
+                                            </a>
+                                        </template>
+                                    </el-tooltip>
 
-                                    </a>
-                                </template>
-                            </el-tooltip>
+                                    <el-tooltip
+                                        class="item"
+                                        effect="dark"
+                                        content="Generar guía desde Nota Venta"
+                                        placement="left">
+                                        <a :href="`/dispatches/create_new/sale_note/${row.id}`"
+                                        class="dropdown-item"
+                                        >
+                                            Generar guía
+                                        </a>
+                                    </el-tooltip>
 
-                            <el-tooltip
-                                class="item"
-                                effect="dark"
-                                content="Generar guía desde Nota Venta"
-                                placement="left">
-                                <a :href="`/dispatches/generate/${row.id}`"
-                                   class="dropdown-item"
-                                >
-                                    Generar guía
-                                </a>
-                            </el-tooltip>
+                                    <button
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="Imprimir"
+                                        v-if="row.state_type_id != '11'"
+                                        type="button"
+                                        class="dropdown-item"
+                                            @click.prevent="clickOptions(row.id)">
+                                            <!--                                <i class="dropdown-item fas fa-print"></i>-->
+                                            Imprimir
+                                    </button>
+                                    <button @click="duplicate(row.id)"
+                                            title="Duplica la nota de venta"
+                                            type="button"
+                                            class="dropdown-item"
+                                            >
+        <!--                                <i class="dropdown-item fas fa-copy"></i>-->
+                                        Duplica la nota de venta
+                                    </button>
+                                    <button
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="Enviar a otro servidor"
+                                        v-if="row.state_type_id != '11' && row.send_other_server=== true"
+                                        type="button"
+                                        class="dropdown-item"
+                                        @click.prevent="sendToServer(row.id)">
+        <!--                                <i class="dropdown-item fas fa-wifi"></i>-->
+                                        Enviar a otro servidor
+                                    </button>
 
-                            <button
-                                data-toggle="tooltip"
-                                data-placement="top"
-                                title="Imprimir"
-                                v-if="row.state_type_id != '11'"
-                                type="button"
-                                class="dropdown-item"
-                                    @click.prevent="clickOptions(row.id)">
-                                    <!--                                <i class="dropdown-item fas fa-print"></i>-->
-                                    Imprimir
-                            </button>
-                            <button @click="duplicate(row.id)"
-                                    title="Duplica la nota de venta"
-                                    type="button"
-                                    class="dropdown-item"
-                                    >
-<!--                                <i class="dropdown-item fas fa-copy"></i>-->
-                                Duplica la nota de venta
-                            </button>
-                            <button
-                                data-toggle="tooltip"
-                                data-placement="top"
-                                title="Enviar a otro servidor"
-                                v-if="row.state_type_id != '11' && row.send_other_server=== true"
-                                type="button"
-                                class="dropdown-item"
-                                @click.prevent="sendToServer(row.id)">
-<!--                                <i class="dropdown-item fas fa-wifi"></i>-->
-                                Enviar a otro servidor
-                            </button>
+                                    <button
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="Elimina unicamente la relación entre la nota y factura"
+                                        v-if="configuration.delete_relation_note_to_invoice && row.documents.length > 0"
+                                        type="button"
+                                        class="dropdown-item"
+                                        @click="sendDeleteRelationInvoice(row.id)">
+                                        Eliminar factura relacionada
+                                    </button>
 
                                 </div>
                             </div>
@@ -247,6 +295,26 @@
                 </data-table>
             </div>
         </div>
+        <!-- <el-dialog
+            title="Eliminar Documento Relacionado"
+            :visible="showDialogDeleteRelationInvoice"
+            >
+            <table>
+                <tr v-for="(document, index) in dataDeleteRelation.documents" :key="index">
+                    <td>
+                        <el-button
+                            type="button"
+                            class="btn waves-effect waves-light btn-xs btn-danger"
+                            @click.prevent="deleteRelationInvoice(row.id)">
+                            <i class="fas fa-trash"></i>
+                        </el-button>
+                    </td>
+                    <td>
+                        {{document.number_full}}
+                    </td>
+                </tr>
+            </table>
+        </el-dialog> -->
 
         <sale-note-payments :showDialog.sync="showDialogPayments"
                             :documentId="recordId"></sale-note-payments>
@@ -265,6 +333,12 @@
             :configuration="config"
             :showMigrate.sync="showMigrateNv"
         ></UploadToOtherServer>
+
+        <sale-note-dispatch-status :showDialog.sync="showDialogDispatch"
+                            :documentId="recordId"
+                            :statusDispatch="statusDispatch"
+                            :typeUser="typeUser"></sale-note-dispatch-status>
+
     </div>
 </template>
 
@@ -277,6 +351,7 @@
     import {deletable} from '../../../mixins/deletable'
     import ModalGenerateCPE from './ModalGenerateCPE'
     import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+    import SaleNoteDispatchStatus from './partials/dispatch_status.vue'
 
     export default {
         props: [
@@ -291,7 +366,8 @@
             SaleNotesOptions,
             SaleNoteGenerate,
             ModalGenerateCPE,
-            UploadToOtherServer
+            UploadToOtherServer,
+            SaleNoteDispatchStatus
         },
         computed:{
             ...mapState([
@@ -306,11 +382,17 @@
                 showDialogPayments: false,
                 showDialogOptions: false,
                 showDialogGenerate: false,
+                showDialogDispatch: false,
                 saleNotesNewId: null,
                 recordId: null,
+                statusDispatch:null,
                 columns: {
                     due_date: {
                         title: 'Fecha de Vencimiento',
+                        visible: false
+                    },
+                    exchange_rate_sale: {
+                        title: 'Tipo de cambio',
                         visible: false
                     },
                     total_free: {
@@ -364,14 +446,36 @@
                     seller_name:{
                         title: 'Vendedor',
                         visible: false
+                    },
+                    recurrence: {
+                        title: 'Recurrencia',
+                        visible: false
+                    },
+                    region: {
+                        title: 'Region',
+                        visible: false
+                    },
+                    date_payment: {
+                        title: 'Fecha de pago',
+                        visible: false
+                    },
+                    dispatch_status: {
+                        title: 'Estado de despacho',
+                        visible: false
                     }
 
-                }
+                },
+                // showDialogDeleteRelationInvoice: false,
+                // dataDeleteRelation: {
+                //     documents: {},
+                //     id: ''
+                // }
             }
         },
         created() {
             this.loadConfiguration()
             this.$store.commit('setConfiguration', this.configuration)
+            this.getColumnsToShow();
         },
         filters:{
             period(name)
@@ -397,6 +501,25 @@
             ...mapActions([
                 'loadConfiguration',
             ]),
+            getColumnsToShow(updated){
+
+                this.$http.post('/validate_columns',{
+                    columns : this.columns,
+                    report : 'sale_notes_index', // Nombre del reporte.
+                    updated : (updated !== undefined),
+                })
+                    .then((response)=>{
+                        if(updated === undefined){
+                            let currentCols = response.data.columns;
+                            if(currentCols !== undefined) {
+                                this.columns = currentCols
+                            }
+                        }
+                    })
+                    .catch((error)=>{
+                        console.error(error)
+                    })
+            },
             duplicate(id){
                 this.$http.post(`${this.resource}/duplicate`, {id})
                     .then(response => {
@@ -458,7 +581,6 @@
             clickCreate(id = '') {
                 location.href = `/${this.resource}/create/${id}`
             },
-
             changeConcurrency(row) {
                 this.$http.post(`/${this.resource}/enabled-concurrency`, row).then(response => {
                     if (response.data.success) {
@@ -483,7 +605,32 @@
                     this.$eventHub.$emit('reloadData')
                 )
             },
+            clickDispatchStatus(recordId,status) {
+                this.recordId = recordId;
+                this.showDialogDispatch = true;
+                this.statusDispatch = status;
+            },
 
+            // deleteRelationInvoice(saleNote) {
+            //     this.dataDeleteRelation.documents = saleNote.documents
+            //     this.dataDeleteRelation.id = saleNote.id
+            //     this.showDialogDeleteRelationInvoice = true
+            // },
+            sendDeleteRelationInvoice(id) {
+                this.$http.post(`${this.resource}/delete-relation-invoice`, {id})
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success('Se ha eliminado el comprobante relacionado correctamente.')
+                            this.$eventHub.$emit('reloadData')
+                        } else {
+                            this.$message.error('No se guardaron los cambios')
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+                this.$eventHub.$emit('reloadData')
+            },
         }
     }
 </script>

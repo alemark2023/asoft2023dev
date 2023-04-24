@@ -25,17 +25,73 @@
         <div class="form-body el-dialog__body_custom">
             <div class="row">
                 <div class="col-md-12 m-bottom">
-                    <el-tabs v-model="activeName"  >
-                        <el-tab-pane label="Imprimir Ticket" name="first">
-                            <embed id="nemo" :src="form.print_ticket" type="application/pdf" width="100%" height="450px"/>
+                    <el-tabs v-model="activeName">
+                        <el-tab-pane label="Imprimir Ticket" name="first" v-if="config !== null  && config.show_ticket_80">
+                            <embed v-if="config !== null  && config.show_ticket_80" id="nemo" :src="form.print_ticket" type="application/pdf" width="100%" height="450px"/>
                         </el-tab-pane>
-                        <el-tab-pane label="Imprimir A4" name="second">
+                        <el-tab-pane label="Imprimir Ticket 58" name="second" v-if="config.show_ticket_58">
+                            <embed v-if="config.show_ticket_58" :src="form.print_ticket_58" type="application/pdf" width="100%" height="450px"/>
+                        </el-tab-pane>
+                        <el-tab-pane label="Imprimir Ticket 50" name="third" v-if="config.show_ticket_50">
+                            <embed v-if="config.show_ticket_50" :src="form.print_ticket_50" type="application/pdf" width="100%" height="450px"/>
+                        </el-tab-pane>
+                        <el-tab-pane label="Imprimir A4" name="quarter">
                             <embed :src="form.print_a4" type="application/pdf" width="100%" height="450px"/>
                         </el-tab-pane>
-                        <el-tab-pane label="Imprimir A5" name="third">
+                        <el-tab-pane label="Imprimir A5" name="fifth">
                             <embed :src="form.print_a5" type="application/pdf" width="100%" height="450px"/>
                         </el-tab-pane>
                     </el-tabs>
+                </div>
+                <div class="col-md-12 d-sm-block d-md-block d-lg-none">
+                    <div class="row">
+                        <div class="col text-center font-weight-bold mt-3">
+                            <button class="btn btn-lg btn-info waves-effect waves-light"
+                                        type="button"
+                                        @click="clickPrint(form.print_a4)">
+                                    <i class="fa fa-file-alt"></i>
+                            </button>
+                            <p>A4</p>
+                        </div>
+                        <div
+                            v-if="config !== null  && config.show_ticket_80"
+                            class="col text-center font-weight-bold mt-3">
+                            <button class="btn btn-lg btn-info waves-effect waves-light"
+                                    type="button"
+                                    @click="clickPrint(form.print_ticket)">
+                                <i class="fa fa-receipt"></i>
+                            </button>
+                            <p>Ticket</p>
+                        </div>
+                        <div
+                            v-if="config.show_ticket_58"
+                            class="col text-center font-weight-bold mt-3">
+                            <button class="btn btn-lg btn-info waves-effect waves-light"
+                                    type="button"
+                                    @click="clickPrint(form.print_ticket_58)">
+                                <i class="fa fa-receipt"></i>
+                            </button>
+                            <p>Ticket 58</p>
+                        </div>
+                        <div
+                            v-if="config.show_ticket_50"
+                            class="col text-center font-weight-bold mt-3">
+                            <button class="btn btn-lg btn-info waves-effect waves-light"
+                                    type="button"
+                                    @click="clickPrint(form.print_ticket_50)">
+                                <i class="fa fa-receipt"></i>
+                            </button>
+                            <p>Ticket 50</p>
+                        </div>
+                        <div class="col text-center font-weight-bold mt-3">
+                            <button class="btn btn-lg btn-info waves-effect waves-light"
+                                    type="button"
+                                    @click="clickPrint(form.print_a5)">
+                                <i class="fa fa-file-alt"></i>
+                            </button>
+                            <p>A5</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="row col-md-12">
                     <div class="col-md-6">
@@ -60,21 +116,39 @@
                     <div class="col-md-6 mt-4">
                     </div>
                     <div class="col-md-6 mt-4">
+
                         <el-button  type="primary"  class="float-right" @click="clickNewSale">Nueva venta</el-button>
+
+                        <template v-if="showButtonConvertCpePos && isFromPos">
+                            <el-button  type="success"  class="float-right ml-3 mr-3" @click="clickConvertCpe">Convertir a CPE</el-button>
+                        </template>
+
                     </div>
                 </div>
 
             </div>
         </div>
+        
+        <sale-note-generate :show.sync="showDialogGenerate"
+                           :recordId="recordId"
+                           :showGenerate="true"
+                           :showClose="false"
+                           @hasGeneratedDocument="hasGeneratedDocument"></sale-note-generate>
     </el-dialog>
 </template>
 
 <script>
+
+    import {mapState, mapActions} from "vuex/dist/vuex.mjs";
     import Keypress from 'vue-keypress'
+    import SaleNoteGenerate from '@views/sale_notes/partials/option_documents.vue'
+
+
     export default {
-        props: ['showDialog', 'recordId', 'statusDocument','resource'],
+        props: ['showDialog', 'recordId', 'statusDocument','resource', 'fromPos'],
         components: {
-           Keypress
+           Keypress,
+           SaleNoteGenerate
         },
         data() {
             return {
@@ -85,15 +159,50 @@
                 company: {},
                 configuration: {},
                 activeName: 'first',
-
+                showDialogGenerate: false,
+                button_convert_cpe_pos: true,
             }
         },
-        async created() {
+        created() {
             this.initForm()
+            this.loadConfiguration();
+            /*
+            this.$http.get(`/pos/status_configuration`).then(response => {
+                this.$store.commit('setConfiguration', response.data)
+            });
+            */
         },
         mounted(){
         },
+        computed: {
+            ...mapState([
+                'config',
+            ]),
+            applyConvertCpePos()
+            {
+                if(this.configuration && this.configuration.show_convert_cpe_pos) return this.configuration.show_convert_cpe_pos
+
+                return false
+            },
+            showButtonConvertCpePos()
+            {
+                return this.applyConvertCpePos && this.resource === 'sale-notes' && this.button_convert_cpe_pos
+            },
+            isFromPos()
+            {
+                return this.fromPos != undefined && this.fromPos
+            }
+        },
         methods: {
+            hasGeneratedDocument()
+            {
+                this.button_convert_cpe_pos = false
+            },
+            clickConvertCpe()
+            {
+                this.showDialogGenerate = true
+            },
+            ...mapActions(['loadConfiguration']),
             clickSendWhatsapp() {
 
                 if(!this.form.customer_telephone){
@@ -117,12 +226,18 @@
                 switch(this.activeName)
                 {
                     case 'first':
-                       format = 'ticket'
+                        format = 'ticket'
                         break;
                     case 'second':
-                       format = 'a4'
+                        format = 'ticket_58'
                         break;
                     case 'third':
+                        format = 'ticket_50'
+                        break;
+                    case 'quarter':
+                        format = 'a4'
+                        break;
+                    case 'fifth':
                         format= 'a5'
                         break;
                 }
@@ -134,7 +249,11 @@
                 }
                 else if(this.resource == 'documents')
                 {
-                    window.open(`/downloads/Document/${type}/${external_id}/pdf`, '_blank');
+                    if(format=='ticket'){
+                        window.open(`/downloads/Document/${type}/${external_id}/pdf`, '_blank');
+                    }else{
+                        window.open(`downloads/documents/${type}/${external_id}/${format}`, '_blank');
+                    }
                 }
 
             },
@@ -164,12 +283,18 @@
                     print_a4: null,
                     print_a5: null,
                     print_ticket: null,
+                    print_ticket_50: null,
+                    print_ticket_58: null,
                     external_id: null,
                     number: null,
                     customer_telephone:null,
                     message_text:null,
                     id: null
                 }
+
+                this.changeActiveName();
+
+                this.button_convert_cpe_pos = true
             },
             create() {
                 this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
@@ -212,6 +337,19 @@
                         this.loading = false
                     })
             },
+            clickPrint(url) {
+                window.open(`${url}`, '_blank');
+            },
+            changeActiveName() {
+                this.loadConfiguration();
+                this.activeName =( this.config!== null && this.config.show_ticket_80) ? 'first' : 'quarter';
+                if((!this.config.show_ticket_80&&this.config.show_ticket_50)||(!this.config.show_ticket_80&&!this.config.show_ticket_50)){
+                    this.activeName = ( this.config!== null &&this.config.show_ticket_58) ? 'second' : 'third';
+                }
+                if(!this.config.show_ticket_58&&!this.config.show_ticket_80){
+                    this.activeName = ( this.config!== null &&this.config.show_ticket_50) ? 'third' : 'quarter';
+                }
+            }
             // clickConsultCdr(document_id) {
             //     this.$http.get(`/${this.resource}/consult_cdr/${document_id}`)
             //         .then(response => {

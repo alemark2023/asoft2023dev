@@ -37,7 +37,8 @@
                                         placeholder="Escriba el nombre o número de documento del cliente"
                                         :remote-method="searchRemoteCustomers"
                                         :loading="loading_search"
-                                        @change="changeCustomer">
+                                        @change="changeCustomer"
+                                        @keyup.enter.native="keyupCustomer">
 
                                         <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
 
@@ -68,7 +69,7 @@
                                     <small class="form-control-feedback" v-if="errors.delivery_date" v-text="errors.delivery_date[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label class="control-label">Dirección de envío
@@ -87,16 +88,6 @@
                                     <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                                 </div>
                             </div> -->
-                            
-                            <div class="col-lg-6">
-                                <div class="form-group" :class="{'has-danger': errors.observation}">
-                                    <label class="control-label">Observación
-                                    </label>
-                                    <el-input type="textarea" :rows="3" v-model="form.observation"></el-input>
-                                    <small class="form-control-feedback" v-if="errors.observation"
-                                           v-text="errors.observation[0]"></small>
-                                </div>
-                            </div>
 
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.payment_method_type_id}">
@@ -129,6 +120,71 @@
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group" :class="{'has-danger': errors.observation}">
+                                    <label class="control-label">Observación
+                                    </label>
+                                    <el-input type="textarea" :rows="3" v-model="form.observation"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.observation"
+                                           v-text="errors.observation[0]"></small>
+                                </div>
+                            </div>
+
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="control-label">Datos adicionales</label>
+                                </div>
+                                
+                                <table class="table table-responsive table-bordered">
+                                    <thead>
+                                        <tr width="100%">
+                                            <template v-if="form.additional_data.length > 0">
+                                                <th class="pb-2" width="40%">Título</th>
+                                                <th class="pb-2" width="40%">Descripción</th>
+                                            </template>
+                                            <th :width="form.additional_data.length > 0 ? '20%':'5%'"><a href="#" @click.prevent="clickAddAdditionalData" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(row, index) in form.additional_data" :key="index" width="100%">
+                                            <td>
+                                                <div class="form-group mb-2 mr-2">
+
+                                                    <el-input v-model="row.title"></el-input>
+                                                    
+                                                    <template v-if="errors[`additional_data.${index}.title`]">
+                                                        <div class="form-group" :class="{'has-danger': errors[`additional_data.${index}.title`]}">
+                                                            <small class="form-control-feedback" v-text="errors[`additional_data.${index}.title`][0]"></small>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group mb-2 mr-2">
+                                                    
+                                                    <el-input v-model="row.description"></el-input>
+                                                    
+                                                    <template v-if="errors[`additional_data.${index}.description`]">
+                                                        <div class="form-group" :class="{'has-danger': errors[`additional_data.${index}.description`]}">
+                                                            <small class="form-control-feedback" v-text="errors[`additional_data.${index}.description`][0]"></small>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </td>
+                                            <td class="series-table-actions text-center">
+                                                <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteAdditionalData(index)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </td>
+                                            <br>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            
                         </div>
 
                         <div class="row mt-2">
@@ -137,15 +193,16 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
-                                                <th class="font-weight-bold">Descripción</th>
-                                                <th class="text-center font-weight-bold">Unidad</th>
-                                                <th class="text-right font-weight-bold">Cantidad</th>
-                                                <th class="text-right font-weight-bold">Precio Unitario</th>
-                                                <th class="text-right font-weight-bold">Subtotal</th>
+                                                <th width="5%">#</th>
+                                                <th class="font-weight-bold"
+                                                    width="30%">Descripción</th>
+                                                <th width="8%" class="text-center font-weight-bold">Unidad</th>
+                                                <th width="8%" class="text-center font-weight-bold">Cantidad</th>
+                                                <th class="text-center font-weight-bold">Precio Unitario</th>
+                                                <th class="text-center font-weight-bold">Subtotal</th>
                                                 <!--<th class="text-right font-weight-bold">Cargo</th>-->
-                                                <th class="text-right font-weight-bold">Total</th>
-                                                <th></th>
+                                                <th class="text-center font-weight-bold">Total</th>
+                                                <th width="8%"></th>
                                             </tr>
                                         </thead>
                                         <tbody v-if="form.items.length > 0">
@@ -158,17 +215,20 @@
                                                     </template>
                                                 </td>
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
-                                                <td class="text-right">{{row.quantity}}</td>
+                                                <td class="text-center">{{row.quantity}}</td>
                                                 <!-- <td class="text-right">{{currency_type.symbol}} {{row.unit_price}}</td> -->
-                                                <td class="text-right">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
+                                                <td class="text-center">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
 
-                                                <td class="text-right">{{currency_type.symbol}} {{row.total_value}}</td>
+                                                <td class="text-center">{{currency_type.symbol}} {{row.total_value}}</td>
                                                 <!--<td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>-->
-                                                <td class="text-right">{{currency_type.symbol}} {{row.total}}</td>
-                                                <td class="text-right">
+                                                <td class="text-center">{{currency_type.symbol}} {{row.total}}</td>
+                                                <td class="text-center">
 
                                                     <template v-if="row.id">
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteONItem(row.id, index)">x</button>
+                                                    </template>
+                                                    <template v-else-if="row.record_id">
+                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteONItem(row.record_id, index)">x</button>
                                                     </template>
                                                     <template v-else>
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
@@ -219,11 +279,13 @@
             :exchange-rate-sale="form.exchange_rate_sale"
             :showDialog.sync="showDialogAddItem"
             :typeUser="typeUser"
+            :percentage-igv="percentage_igv"
             @add="addRow"></order-note-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
                        type="customers"
                        :external="true"
+                       :input_person="input_person"
                        :document_type_id = form.document_type_id></person-form>
 
         <order-note-options :type="type" :showDialog.sync="showDialogOptions"
@@ -259,6 +321,7 @@
         data() {
             return {
                 type:  'edit',
+                input_person: {},
                 resource: 'order-notes',
                 showDialogAddItem: false,
                 showDialogNewPerson: false,
@@ -307,14 +370,29 @@
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
                 this.reloadDataCustomers(customer_id)
             })
+            this.$eventHub.$on('initInputPerson', () => {
+                this.initInputPerson()
+            });
 
         },
-        methods: {
+        methods: 
+        {
+            clickAddAdditionalData()
+            {
+                this.form.additional_data.push({
+                    title: null,
+                    description: null,
+                })
+            },
+            clickDeleteAdditionalData(index)
+            {
+                this.form.additional_data.splice(index, 1)
+            },
             changeCustomer(){
                 this.setAddressByCustomer()
             },
             setAddressByCustomer(){
-                
+
                 let customer = _.find(this.customers, {id : this.form.customer_id})
 
                 if(customer){
@@ -400,13 +478,12 @@
                     // }
                 }
             },
-            initRecord()
-            {
-                this.$http.get(`/${this.resource}/record/${this.resourceId}` )
+            async initRecord() {
+                await this.$http.get(`/${this.resource}/record/${this.resourceId}` )
                     .then(response => {
-
                         let data = response.data.data.order_note
                         this.form.id = data.id
+                        this.form.establishment_id = data.establishment_id
                         this.form.customer_id = data.customer_id
                         this.form.currency_type_id = data.currency_type_id
                         this.form.payment_method_type_id = data.payment_method_type_id
@@ -418,13 +495,16 @@
                         this.form.shipping_address = data.shipping_address
                         this.form.items = data.items
                         this.form.observation = data.observation
+                        this.form.additional_data = this.prepareAdditionalData(data)
                         this.calculateTotal()
                         this.reloadDataCustomers(this.form.customer_id)
-
                     })
-
+                await this.getPercentageIgv();
             },
-
+            prepareAdditionalData(data)
+            {
+                return data.additional_data ? Object.values(data.additional_data) : []
+            },
             searchRemoteCustomers(input) {
 
                 if (input.length > 0) {
@@ -435,10 +515,12 @@
                             .then(response => {
                                 this.customers = response.data.customers
                                 this.loading_search = false
-                                if(this.customers.length == 0){this.allCustomers()}
+                                /* if(this.customers.length == 0){this.allCustomers()} */
+                                this.input_person.number=(this.customers.length==0)? input : null
                             })
                 } else {
                     this.allCustomers()
+                    this.input_person.number= null
                 }
 
             },
@@ -486,8 +568,10 @@
                     observation: null,
                     actions: {
                         format_pdf:'a4',
-                    }
+                    },
+                    additional_data: [],
                 }
+                this.initInputPerson()
             },
             resetForm() {
                 this.activePanel = 0
@@ -506,11 +590,13 @@
             cleanCustomer(){
                 this.form.customer_id = null;
             },
-            changeDateOfIssue() {
+            async changeDateOfIssue() {
                 this.form.date_of_due = this.form.date_of_issue
-                this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+                await this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
                 })
+                await this.getPercentageIgv();
+                this.changeCurrencyType();
             },
             allCustomers() {
                 this.customers = this.all_customers
@@ -528,13 +614,13 @@
                 this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
                 let items = []
                 this.form.items.forEach((row) => {
-                    items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+                    items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv))
                 });
                 this.form.items = items
                 this.calculateTotal()
             },
             calculateTotal() {
-                
+
                 let total_discount = 0
                 let total_charge = 0
                 let total_exportation = 0
@@ -571,7 +657,7 @@
                         total += parseFloat(row.total)
                     }
                     // total_value += parseFloat(row.total_value)
-                    
+
                     if (!['21', '37'].includes(row.affectation_igv_type_id)) {
                         total_value += parseFloat(row.total_value)
                     }
@@ -587,7 +673,7 @@
                         total_igv_free += row.total_igv
 
                     }
-                    
+
                 });
 
                 this.form.total_igv_free = _.round(total_igv_free, 2)
@@ -641,6 +727,36 @@
                     this.form.customer_id = customer_id
                     this.setAddressByCustomer()
                 })
+            },
+            keyupCustomer() {
+
+                if (this.input_person.number) {
+
+                    if (!isNaN(parseInt(this.input_person.number))) {
+
+                        switch (this.input_person.number.length) {
+                            case 8:
+                                this.input_person.identity_document_type_id = '1'
+                                this.showDialogNewPerson = true
+                                break;
+
+                            case 11:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                            default:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                        }
+                    }
+                }
+            },
+            initInputPerson() {
+                this.input_person = {
+                    number: null,
+                    identity_document_type_id: null
+                }
             },
         }
     }

@@ -24,7 +24,9 @@ use Modules\Finance\Traits\FinanceTrait;
 use App\Models\Tenant\Company;
 use Modules\BusinessTurn\Models\BusinessTurn;
 use App\Http\Resources\Tenant\PosCollection;
-
+use App\Models\Tenant\Catalogs\{
+    ChargeDiscountType
+};
 
 class PosController extends Controller
 {
@@ -58,8 +60,9 @@ class PosController extends Controller
     public function search_items(Request $request)
     {
         $configuration =  Configuration::first();
+        $search_item_by_barcode_presentation = $request->search_item_by_barcode_presentation == 'true';
 
-        $items = Item::where('description','like', "%{$request->input_item}%")
+        $items_query = Item::where('description','like', "%{$request->input_item}%")
                             // ->orWhere('internal_id','like', "%{$request->input_item}%")
                             ->orWhere(function ($query) use ($request) {
                                 $query->where('internal_id','like', "%{$request->input_item}%")
@@ -71,53 +74,67 @@ class PosController extends Controller
                             ->orWhereHas('brand', function($query) use($request) {
                                 $query->where('name', 'like', '%' . $request->input_item . '%');
                             })
-                            ->whereWarehouse()
-                            ->whereIsActive()
-                            ->get()->transform(function($row) use($configuration){
-                                $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
-                                return [
-                                    'id' => $row->id,
-                                    'item_id' => $row->id,
-                                    'full_description' => $full_description,
-                                    'description' => ($row->brand->name) ? $row->description.' - '.$row->brand->name : $row->description,
-                                    'currency_type_id' => $row->currency_type_id,
-                                    'internal_id' => $row->internal_id,
-                                    'currency_type_symbol' => $row->currency_type->symbol,
-                                    'sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
-                                    'purchase_unit_price' => $row->purchase_unit_price,
-                                    'unit_type_id' => $row->unit_type_id,
-                                    'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
-                                    'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                                    'calculate_quantity' => (bool) $row->calculate_quantity,
-                                    'is_set' => (bool) $row->is_set,
-                                    'edit_unit_price' => false,
-                                    'has_igv' => (bool) $row->has_igv,
-                                    'aux_quantity' => 1,
-                                    'aux_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
-                                    'edit_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
-                                    'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
-                                    'sets' => collect($row->sets)->transform(function($r){
-                                        return [
-                                            $r->individual_item->description
-                                        ];
-                                    }),
-                                    'warehouses' => collect($row->warehouses)->transform(function ($row) {
-                                        return [
-                                            'warehouse_description' => $row->warehouse->description,
-                                            'stock' => $row->stock,
-                                        ];
-                                    }),
-                                    'unit_type' => $row->item_unit_types,
-                                    'category' => ($row->category) ? $row->category->name : null,
-                                    'brand' => ($row->brand) ? $row->brand->name : null,
-                                    'has_plastic_bag_taxes' => (bool) $row->has_plastic_bag_taxes,
-                                    'amount_plastic_bag_taxes' => $row->amount_plastic_bag_taxes,
+                            ->whereWarehouse();
 
-                                    'has_isc' => (bool)$row->has_isc,
-                                    'system_isc_type_id' => $row->system_isc_type_id,
-                                    'percentage_isc' => $row->percentage_isc,
-                                ];
-                            });
+        if($search_item_by_barcode_presentation) $items_query->orFilterItemUnitTypeBarcode($request->input_item);
+
+        $items =  $items_query->whereIsActive()->get()->transform(function($row) use($configuration, $search_item_by_barcode_presentation, $request){
+
+                    $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
+
+                    return [
+                        'id' => $row->id,
+                        'item_id' => $row->id,
+                        'full_description' => $full_description,
+                        'description' => ($row->brand->name) ? $row->description.' - '.$row->brand->name : $row->description,
+                        'currency_type_id' => $row->currency_type_id,
+                        'internal_id' => $row->internal_id,
+                        'currency_type_symbol' => $row->currency_type->symbol,
+                        'sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
+                        'purchase_unit_price' => $row->purchase_unit_price,
+                        'unit_type_id' => $row->unit_type_id,
+                        'aux_unit_type_id' => $row->unit_type_id,
+                        'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                        'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                        'calculate_quantity' => (bool) $row->calculate_quantity,
+                        'is_set' => (bool) $row->is_set,
+                        'edit_unit_price' => false,
+                        'has_igv' => (bool) $row->has_igv,
+                        'aux_quantity' => 1,
+                        'aux_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
+                        'edit_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
+                        'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
+                        'sets' => collect($row->sets)->transform(function($r){
+                            return [
+                                $r->individual_item->description
+                            ];
+                        }),
+                        'warehouses' => collect($row->warehouses)->transform(function ($row) {
+                            return [
+                                'warehouse_description' => $row->warehouse->description,
+                                'stock' => $row->stock,
+                            ];
+                        }),
+                        'unit_type' => $row->getItemUnitTypesBarcode($search_item_by_barcode_presentation, $request->input_item),
+                        // 'unit_type' => $row->item_unit_types,
+                        'category' => ($row->category) ? $row->category->name : null,
+                        'brand' => ($row->brand) ? $row->brand->name : null,
+                        'has_plastic_bag_taxes' => (bool) $row->has_plastic_bag_taxes,
+                        'amount_plastic_bag_taxes' => $row->amount_plastic_bag_taxes,
+
+                        'has_isc' => (bool)$row->has_isc,
+                        'system_isc_type_id' => $row->system_isc_type_id,
+                        'percentage_isc' => $row->percentage_isc,
+                        'search_item_by_barcode_presentation' => $search_item_by_barcode_presentation,
+
+                        'exchange_points' => $row->exchange_points,
+                        'quantity_of_points' => $row->quantity_of_points,
+                        'exchanged_for_points' => false, //para determinar si desea canjear el producto
+                        'used_points_for_exchange' => null, //total de puntos
+                        'original_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                        'restrict_sale_cpe' => $row->restrict_sale_cpe,
+                    ];
+                });
 
         return compact('items');
 
@@ -158,9 +175,10 @@ class PosController extends Controller
         $payment_method_types = PaymentMethodType::all();
         $cards_brand = CardBrand::all();
         $payment_destinations = $this->getPaymentDestinations();
+        $global_discount_types = ChargeDiscountType::whereIn('id', ['02', '03'])->whereActive()->get();
 
 
-        return compact('series','payment_method_types','cards_brand', 'payment_destinations');
+        return compact('series','payment_method_types','cards_brand', 'payment_destinations', 'global_discount_types');
 
     }
 
@@ -174,7 +192,10 @@ class PosController extends Controller
                     'name' => $row->name,
                     'number' => $row->number,
                     'identity_document_type_id' => $row->identity_document_type_id,
-                    'identity_document_type_code' => $row->identity_document_type->code
+                    'identity_document_type_code' => $row->identity_document_type->code,
+                    'has_discount' => $row->has_discount,
+                    'discount_type' => $row->discount_type,
+                    'discount_amount' => $row->discount_amount,
                 ];
             });
             return $customers;
@@ -206,6 +227,7 @@ class PosController extends Controller
                         'sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".", ""),
                         'purchase_unit_price' => $row->purchase_unit_price,
                         'unit_type_id' => $row->unit_type_id,
+                        'aux_unit_type_id' => $row->unit_type_id,
                         'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
                         'calculate_quantity' => (bool)$row->calculate_quantity,
@@ -237,6 +259,13 @@ class PosController extends Controller
                         'has_isc' => (bool)$row->has_isc,
                         'system_isc_type_id' => $row->system_isc_type_id,
                         'percentage_isc' => $row->percentage_isc,
+
+                        'exchange_points' => $row->exchange_points,
+                        'quantity_of_points' => $row->quantity_of_points,
+                        'exchanged_for_points' => false, //para determinar si desea canjear el producto
+                        'used_points_for_exchange' => null, //total de puntos
+                        'original_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                        'restrict_sale_cpe' => $row->restrict_sale_cpe,
                     ];
                 });
             return $items;
@@ -308,8 +337,14 @@ class PosController extends Controller
 
         }else{
 
+            if($item->unit_type_id == 'ZZ') {
+                return [
+                    'success' => true,
+                    'message' => ''
+                ];
+            }
 
-            if(!$item_warehouse)
+            if(!$item_warehouse && $item->unit_type_id !== 'ZZ')
                 return [
                     'success' => false,
                     'message' => "El producto seleccionado no está disponible en su almacén!"
@@ -329,13 +364,10 @@ class PosController extends Controller
 
         }
 
-
-
         return [
             'success' => true,
             'message' => ''
         ];
-
 
     }
 

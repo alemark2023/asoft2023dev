@@ -162,7 +162,7 @@ class ContractController extends Controller
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $payment_method_types = PaymentMethodType::orderBy('id','desc')->get();
         $payment_destinations = $this->getPaymentDestinations();
-        $configuration = Configuration::select('destination_sale')->first();
+        $configuration = Configuration::select('destination_sale', 'show_pdf_name')->first();
         $sellers = User::without(['establishment'])
             ->whereIn('type', ['seller'])
             ->orWhere('id', auth()->user()->id)
@@ -426,7 +426,14 @@ class ContractController extends Controller
 
         file_put_contents($temp, $this->getStorage($contract->filename, 'contract'));
 
-        return response()->file($temp);
+        /*
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$contract->filename.'"'
+        ];
+        */
+
+        return response()->file($temp, $this->generalPdfResponseFileHeaders($contract->filename));
     }
 
 

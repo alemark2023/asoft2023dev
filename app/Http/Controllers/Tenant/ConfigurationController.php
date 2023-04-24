@@ -7,11 +7,15 @@ use App\Http\Resources\Tenant\ConfigurationResource;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Item;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Tenant\Catalogs\AffectationIgvType;
-use GuzzleHttp\Client;
+use App\Models\Tenant\Catalogs\{
+    AffectationIgvType,
+    ChargeDiscountType
+};
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use Mpdf\Config\ConfigVariables;
@@ -20,6 +24,10 @@ use App\CoreFacturalo\Template;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\FormatTemplate;
+use Modules\LevelAccess\Models\ModuleLevel;
+use App\Models\Tenant\Skin;
+use Modules\Finance\Helpers\UploadFileHelper;
+
 
 class ConfigurationController extends Controller
 {
@@ -97,7 +105,12 @@ class ConfigurationController extends Controller
 
     public function show($template)
     {
-        return response()->file(storage_path('app' . DIRECTORY_SEPARATOR . 'preprintedpdf' . DIRECTORY_SEPARATOR . $template . '.pdf'));
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="file.pdf"'
+        ];
+
+        return response()->file(storage_path('app' . DIRECTORY_SEPARATOR . 'preprintedpdf' . DIRECTORY_SEPARATOR . $template . '.pdf'), $headers);
     }
 
     // public function dispatch(Request $request) {
@@ -306,11 +319,41 @@ class ConfigurationController extends Controller
 
     public function store(ConfigurationRequest $request)
     {
+        $cp = Company::query()
+            ->select('id', 'number')
+            ->first();
+
         $id = $request->input('id');
         $configuration = Configuration::find($id);
         $configuration->fill($request->all());
         $configuration->save();
 
+        Cache::forget("{$cp->number}_token_sunat");
+
+        return [
+            'success' => true,
+            'configuration' => $configuration->getCollectionData(),
+            'message' => 'Configuración actualizada',
+        ];
+    }
+
+    /**
+     * Solo guarda lo sdatos de token para el cliente
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function storeApiRuc( Request  $request)
+    {
+        $configuration = Configuration::first();
+        if(empty($configuration)){
+            $configuration = new Configuration();
+        }
+        $configuration->token_apiruc = $request->token_apiruc;
+        $configuration->url_apiruc = $request->url_apiruc;
+
+        $configuration->save();
 
         return [
             'success' => true,
@@ -344,8 +387,9 @@ class ConfigurationController extends Controller
     public function tables()
     {
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
+        $global_discount_types = ChargeDiscountType::whereIn('id', ['02', '03'])->whereActive()->get();
 
-        return compact('affectation_igv_types');
+        return compact('affectation_igv_types', 'global_discount_types');
     }
 
     public function visualDefaults()
@@ -422,6 +466,8 @@ class ConfigurationController extends Controller
 
             request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
 
+            UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
+
             $file->storeAs('public/uploads/header_images', $name);
 
             $configuration->header_image = $name;
@@ -452,4 +498,175 @@ class ConfigurationController extends Controller
 
         return redirect()->back();
     }
+
+
+    public function apiruc()
+    {
+        $configuration = Configuration::first();
+        return [
+            'url_apiruc' => $configuration->url_apiruc,
+            'token_apiruc' => $configuration->token_apiruc,
+            'token_false' => !$configuration->UseCustomApiPeruToken(),
+        ];
+    }
+
+    private function getMenu() {
+        $configuration = Configuration::first();
+        return $menus = [
+            'top_menu_a' => $configuration->top_menu_a_id ? $configuration->top_menu_a : '',
+            'top_menu_b' => $configuration->top_menu_b_id ? $configuration->top_menu_b : '',
+            'top_menu_c' => $configuration->top_menu_c_id ? $configuration->top_menu_c : '',
+            'top_menu_d' => $configuration->top_menu_d_id ? $configuration->top_menu_d : '',
+        ];
+    }
+
+    public function visualGetMenu()
+    {
+        $modules = ModuleLevel::where([['route_name', '!=', null],['label_menu', '!=', null]])->get();
+
+        return [
+            'modules' => $modules,
+            'menu' => $this->getMenu()
+        ];
+    }
+
+    public function visualSetMenu(Request $request)
+    {
+        $configuration = Configuration::first();
+        $configuration->top_menu_a_id = $request->menu_a;
+        $configuration->top_menu_b_id = $request->menu_b;
+        $configuration->top_menu_c_id = $request->menu_c;
+        $configuration->top_menu_d_id = $request->menu_d;
+        $configuration->save();
+
+        return [
+            'success' => true,
+            'menu' => $this->getMenu(),
+            'message' => 'Configuración actualizada',
+        ];
+    }
+
+    public function visualUploadSkin(Request $request)
+    {
+        if ($request->file->getClientMimeType() != 'text/css') {
+            return [
+                'success' => false,
+                'message' =>  'Tipo de archivo no permitido',
+            ];
+        }
+        if (Storage::disk('public')->exists('skins'.DIRECTORY_SEPARATOR.$request->file->getClientOriginalName())) {
+            return [
+                'success' => false,
+                'message' =>  'Archivo ya existe',
+            ];
+        }
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+
+            $file_content = file_get_contents($file->getRealPath());
+            $filename = $file->getClientOriginalName();
+            $name = pathinfo($file->getClientOriginalName());
+
+            UploadFileHelper::checkIfValidCssFile($filename, $file->getPathName(), 'css', ['text/css', 'text/plain']);
+
+            Storage::disk('public')->put('skins'.DIRECTORY_SEPARATOR.$filename, $file_content);
+
+            $skin = new Skin;
+            $skin->filename = $filename;
+            $skin->name = $name['filename'];
+            $skin->save();
+
+            $skins = Skin::all();
+            return [
+                'success' => true,
+                'message' =>  'Archivo cargado exitosamente',
+                'skins' => $skins
+            ];
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
+    public function visualDeleteSkin(Request $request)
+    {
+        $config = Configuration::first();
+        if($config->skin_id == $request->id) {
+            return [
+                'success' => false,
+                'message' => 'No se puede eliminar el Tema actual'
+            ];
+        }
+
+
+        $skin = Skin::find($request->id);
+        Storage::disk('public')->delete('skins'.DIRECTORY_SEPARATOR.$skin->filename);
+        $skin->delete();
+
+        $skins = Skin::all();
+
+        return [
+            'success' => true,
+            'message' =>  'Tema eliminado correctamente',
+            'skins' => $skins
+        ];
+    }
+
+
+    /**
+     *
+     * Consulta de imagenes footer
+     *
+     * @return array
+     */
+    public function getPdfFooterImages()
+    {
+        return Configuration::first()->getDataPdfFooterImages();
+    }
+
+
+    /**
+     *
+     * Cargar imagenes para pdf footer
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function pdfFooterImages(Request $request)
+    {
+        $images = $request->images;
+        $data = [];
+        $configuration = Configuration::first();
+        $folder = 'pdf_footer_images';
+
+        foreach ($images as $index => $image)
+        {
+            $temp_path = $image['temp_path'] ?? null;
+
+            if($temp_path)
+            {
+                $old_filename = $image['filename'];
+                UploadFileHelper::checkIfValidFile($old_filename, $temp_path, true);
+                $first_old_filename = explode('.', $old_filename)[0];
+                $filename = UploadFileHelper:: uploadImageFromTempFile($folder, $old_filename, $temp_path, "{$first_old_filename}_{$index}_", true);
+            }
+            else
+            {
+                $filename = $image['name'];
+            }
+
+            $data [] = [
+                'filename' => $filename,
+            ];
+
+        }
+
+        $configuration->pdf_footer_images = $data;
+        $configuration->update();
+
+        return $this->generalResponse(true, 'Proceso realizado correctamente.');
+    }
+
 }

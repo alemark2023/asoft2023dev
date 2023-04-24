@@ -80,6 +80,14 @@ if($hostname) {
 
             });
 
+            Route::post('items/import/items-update-prices', 'ItemController@importItemUpdatePrices');
+
+            
+            Route::prefix('item-lots-group')->group(function () {
+
+                Route::get('available-data/{item_id}', 'ItemLotsGroupController@getAvailableItemLotsGroup');
+
+            });
 
         });
     });

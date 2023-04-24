@@ -193,13 +193,33 @@
                                 </el-tooltip>
 
                             </label>
-                            <el-input v-model="form.unit_price"
-                                      @input="calculateQuantity">
-                                <template v-if="form.item.currency_type_symbol"
-                                          slot="prepend">
-                                    {{ form.item.currency_type_symbol }}
-                                </template>
-                            </el-input>
+
+                            <template v-if="applyChangeCurrencyItem && changeCurrencyFromParent">
+
+                                <el-input v-model="form.unit_price"
+                                        @input="calculateQuantity">
+
+                                        <el-select slot="prepend" v-model="form.item.currency_type_id" class="custom-change-select-currency">
+                                            <el-option v-for="option in currencyTypes"
+                                                        :key="option.id"
+                                                        :label="option.symbol"
+                                                        :value="option.id"></el-option>
+                                        </el-select>
+                                </el-input>
+
+                            </template>
+                            <template v-else>
+
+                                <el-input v-model="form.unit_price"
+                                        @input="calculateQuantity">
+                                    <template v-if="form.item.currency_type_symbol"
+                                            slot="prepend">
+                                        {{ form.item.currency_type_symbol }}
+                                    </template>
+                                </el-input>
+
+                            </template>
+
                             <small v-if="errors.unit_price"
                                    class="form-control-feedback"
                                    v-text="errors.unit_price[0]"></small>
@@ -214,7 +234,6 @@
                                       @input="calculateTotal"></el-input>
                         </div>
                     </div>
-                    <!--
                     <div v-if="showLots" class="col-md-3 col-sm-3" style="padding-top: 1%;">
                         <a class="text-center font-weight-bold text-info" href="#" @click.prevent="clickLotGroup">[&#10004;
                             Seleccionar
@@ -226,7 +245,6 @@
                             Seleccionar
                             series]</a>
                     </div>
-                    -->
                     <div v-show="form.item.calculate_quantity"
                          class="col-md-3 col-sm-6">
                         <div :class="{'has-danger': errors.total_item}"
@@ -365,10 +383,20 @@
                                                     <el-input v-model="row.description"></el-input>
                                                 </td>
                                                 <td>
+                                                    <el-checkbox v-model="row.is_amount" @change="changeIsDiscountAmount(index)">Ingresar monto fijo</el-checkbox>
+                                                    <br>
+                                                    <template v-if="row.is_amount">
+                                                        <el-input v-model="row.amount"></el-input>
+                                                    </template>
+                                                    <template v-else>
+                                                        <el-input v-model="row.percentage"></el-input>
+                                                    </template>
+                                                    <!--
                                                     <el-checkbox v-model="row.is_amount">Ingresar monto fijo
                                                     </el-checkbox>
                                                     <br>
                                                     <el-input v-model="row.percentage"></el-input>
+                                                    -->
                                                 </td>
                                                 <td>
                                                     <button class="btn btn-danger"
@@ -510,6 +538,12 @@
         <item-form :external="true"
                    :showDialog.sync="showDialogNewItem"></item-form>
 
+        <lots-group
+            :lotsGroup="form.lots_group"
+            :quantity="form.quantity"
+            :showDialog.sync="showDialogLots"
+            @addRowLotGroup="addRowLotGroup">
+        </lots-group>
 
         <warehouses-detail
             :isUpdateWarehouseId="isUpdateWarehouseId"
@@ -528,6 +562,7 @@
 <script>
 
 import itemForm from '../../items/form.vue'
+import LotsGroup from '../../documents/partials/lots_group'
 
 import {calculateRowItem} from '../../../../helpers/functions'
 import WarehousesDetail from './warehouses.vue'
@@ -546,12 +581,16 @@ export default {
         'typeUser',
         'configuration',
         'displayDiscount',
-        'customerId'
+        'customerId',
+        'percentageIgv',
+        'currencyTypes',
+        'showOptionChangeCurrency',
     ],
     components: {
         itemForm,
         WarehousesDetail,
-        'vue-ckeditor': VueCkeditor.component
+        'vue-ckeditor': VueCkeditor.component,
+        LotsGroup
     },
     data() {
         return {
@@ -673,7 +712,15 @@ export default {
             }
             return false;
         },
-
+        applyChangeCurrencyItem()
+        {
+            if(this.configuration) return this.configuration.change_currency_item
+            return false
+        },
+        changeCurrencyFromParent()
+        {
+            return (this.showOptionChangeCurrency !== undefined && this.showOptionChangeCurrency && this.currencyTypes !== undefined && Array.isArray(this.currencyTypes))
+        },
     },
     methods: {
         ...mapActions([
@@ -801,7 +848,6 @@ export default {
             } else {
                 this.filterItems()
             }
-
         },
         filterItems() {
             this.items = this.all_items
@@ -926,9 +972,11 @@ export default {
                 this.form.unit_price = this.recordItem.unit_price
                 this.form.unit_price_value = this.recordItem.input_unit_price_value
                 // this.form.unit_price_value = this.recordItem.input_unit_price_value
-                if (this.recordItem.item.has_igv == false) {
-                    this.form.unit_price = this.recordItem.total_base_igv
-                }
+                // if (this.recordItem.item.has_igv == false) {
+                //     this.form.unit_price = this.recordItem.total_base_igv
+                // }
+
+                this.setHasIgvUpdate()
                 this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 if (this.recordItem.item.name_product_pdf) {
@@ -947,6 +995,16 @@ export default {
                 this.calculateQuantity()
             } else {
                 this.isUpdateWarehouseId = null
+            }
+
+        },
+        setHasIgvUpdate(){
+
+            if(this.recordItem.item)
+            {
+                this.form.has_igv = this.recordItem.item.has_igv
+
+                if(this.form.item) this.form.item.has_igv = this.recordItem.item.has_igv
             }
 
         },
@@ -988,7 +1046,8 @@ export default {
                 factor: 0,
                 amount: 0,
                 base: 0,
-                is_amount: false
+                is_amount: false,
+                use_input_amount: true,
             })
         },
         clickRemoveDiscount(index) {
@@ -997,6 +1056,11 @@ export default {
         changeDiscountType(index) {
             let discount_type_id = this.form.discounts[index].discount_type_id
             this.form.discounts[index].discount_type = _.find(this.discount_types, {id: discount_type_id})
+        },
+        changeIsDiscountAmount(index)
+        {
+            this.form.discounts[index].amount = 0
+            this.form.discounts[index].percentage = 0
         },
         clickAddCharge() {
             this.form.charges.push({
@@ -1077,7 +1141,7 @@ export default {
                     })
                 })
             }
-            // this.form.lots_group = this.form.item.lots_group
+            this.form.lots_group = this.form.item.lots_group
             if(this.form.item.name_product_pdf && this.config.item_name_pdf_description){
                 this.form.name_product_pdf = this.form.item.name_product_pdf;
             }
@@ -1127,7 +1191,7 @@ export default {
                     // do nothing
                     // exonerado de igv
                 } else {
-                    unit_price = this.form.unit_price * 1.18;
+                    unit_price = this.form.unit_price * (1 + this.percentageIgv);
 
                 }
             }
@@ -1149,7 +1213,7 @@ export default {
 
             // let IdLoteSelected = this.form.IdLoteSelected
             // let document_item_id = this.form.document_item_id
-            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
+            this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv);
 
             this.row.item.name_product_pdf = this.row.name_product_pdf || '';
             if (this.recordItem) {
@@ -1279,6 +1343,7 @@ export default {
             this.form.IdLoteSelected = id
         },
         clickLotGroup() {
+            console.log(this.form.lots_group)
             this.showDialogLots = true
         },
         async clickSelectLots() {
@@ -1297,7 +1362,7 @@ export default {
         },
         async getLastPriceItem() {
             this.itemLastPrice =null
-            if(this.configuration.show_last_price_sale) {
+            if(this.config.show_last_price_sale) {
                 if(this.customerId && this.form.item_id) {
                     const params = {
                         'type_document': 'QUOTATION',
@@ -1308,11 +1373,11 @@ export default {
                         if(response.data.unit_price) {
                             this.itemLastPrice = `Último precio de venta: ${response.data.unit_price}`
                         }
-                        
+
                     })
                 }
             }
-           
+
         }
     },
 }

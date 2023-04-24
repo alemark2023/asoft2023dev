@@ -19,12 +19,12 @@ class ReportMovementRequest extends FormRequest
             // 'item_id' => [
             //     'required',
             // ],
-            'warehouse_id' => [
-                'required',
-            ],
-            'inventory_transaction_id' => [
-                'required',
-            ],
+//            'warehouse_id' => [
+//                'required',
+//            ],
+            // 'inventory_transaction_id' => [
+            //     'required',
+            // ],
             'movement_type' => [
                 'required',
             ],

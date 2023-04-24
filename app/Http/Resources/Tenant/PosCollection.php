@@ -34,6 +34,7 @@ class PosCollection extends ResourceCollection
                 'sale_unit_price' => $sale_unit_price,
                 'purchase_unit_price' => $row->purchase_unit_price,
                 'unit_type_id' => $row->unit_type_id,
+                'aux_unit_type_id' => $row->unit_type_id,
                 'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                 'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
                 'calculate_quantity' => (bool) $row->calculate_quantity,
@@ -68,6 +69,13 @@ class PosCollection extends ResourceCollection
                 'has_isc' => (bool)$row->has_isc,
                 'system_isc_type_id' => $row->system_isc_type_id,
                 'percentage_isc' => $row->percentage_isc,
+                
+                'exchange_points' => $row->exchange_points,
+                'quantity_of_points' => $row->quantity_of_points,
+                'exchanged_for_points' => false, //para determinar si desea canjear el producto
+                'used_points_for_exchange' => null, //total de puntos
+                'original_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                'restrict_sale_cpe' => $row->restrict_sale_cpe,
             ];
         });
     }

@@ -24,7 +24,7 @@
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
     //calculate items
-    $allowed_items = 80;
+    $allowed_items = 65;
     $quantity_items = $document->items()->count();
     $cycle_items = $allowed_items - ($quantity_items * 3);
     $total_weight = 0;
@@ -231,6 +231,16 @@
                         {{ $item->document_type_description }}:  {{ $item->number }}<br>
                         @endforeach
                     </td>
+                    @elseif($document->dispatch)
+
+                        <td class="font-sm" width="100px">
+                            <strong>Guía de Remisión</strong>
+                        </td>
+                        <td class="font-sm" width="8px">:</td>
+                        <td class="font-sm" colspan="4">
+                            {{ $document->dispatch->number_full }}
+                        </td>
+
                     @endif
 
                     @if ($document->reference_guides)
@@ -274,7 +284,7 @@
                     @endif
                 </tr>
 
-                <tr>
+                {{-- <tr>
                     @if ($document->retention)
                     <td class="font-sm" colspan="6">
                         <strong>Información de la retención</strong>
@@ -308,7 +318,7 @@
                             {{ $document->currency_type->symbol}} {{ $document->retention->amount }}
                         </td>
                     </tr>
-                @endif
+                @endif --}}
             </table>
         </td>
         {{-- <td width="5%" class="p-0 m-0">
@@ -477,6 +487,16 @@
                 @endif
                 <br>
 
+                {{-- retencion --}}
+                @if ($document->retention)
+                    <strong>Información de la retención</strong><br>
+                    <span>Base imponible: </span>{{ $document->currency_type->symbol}} {{ $document->retention->base }}<br>
+                    <span>Porcentaje: </span>{{ $document->retention->percentage * 100 }}%<br>
+                    <span>Monto: </span>{{ $document->currency_type->symbol}} {{ $document->retention->amount }}<br><br>
+                @endif
+                {{-- retencion --}}
+
+
                 @if(($document->retention || $document->detraction) && $document->total_pending_payment > 0)
                     <strong>M. PENDIENTE: </strong>{{ $document->currency_type->symbol }} {{ number_format($document->total_pending_payment, 2) }}
                     <br>
@@ -560,15 +580,15 @@
 
 @if(count($accounts) > 0)
 <table class="full-width border-box my-2">
+    <tr>
+        <th class="p-1" width="33%">Banco</th>
+        <th class="p-1">Moneda</th>
+        <th class="p-1">Código de Cuenta Interbancaria</th>
+        <th class="p-1">Código de Cuenta</th>
+    </tr>
     @foreach($accounts as $account)
         <tr>
-            <th class="p-1">Banco</th>
-            <th class="p-1">Moneda</th>
-            <th class="p-1">Código de Cuenta Interbancaria</th>
-            <th class="p-1">Código de Cuenta</th>
-        </tr>
-        <tr>
-            <td class="text-center">{{$account->bank->description}}</td>
+            <td class="text-left">{{$account->bank->description}}</td>
             <td class="text-center text-upp">{{$account->currency_type->description}}</td>
             <td class="text-center">
                 @if($account->cci)
@@ -580,6 +600,16 @@
     @endforeach
 </table>
 @endif
-
+@if ($document->terms_condition)
+        <br>
+        <table class="full-width">
+            <tr>
+                <td>
+                    <h6 style="font-size: 12px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                    {!! $document->terms_condition !!}
+                </td>
+            </tr>
+        </table>
+    @endif
 </body>
 </html>

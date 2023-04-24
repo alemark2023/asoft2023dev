@@ -1,8 +1,8 @@
 <template>
     <div class="row card-table-report">
         <div class="col-md-12">
-            <div v-loading="loading"
-                 class="card card-primary">
+            <div
+                 class="card card-primary" v-loading="loading">
                 <div class="card-header">
                     <h4 class="card-title">Consulta de inventarios</h4>
                     <div class="data-table-visible-columns"
@@ -155,7 +155,8 @@
                                     <thead class="">
                                     <tr>
                                         <th>#</th>
-                                        <th>Descripción</th>
+                                        <th>Nombre</th>
+                                        <th v-if="filters.description.visible">Descripción</th>
                                         <th v-if="filters.model.visible">Modelo</th>
                                         <th>Categoria</th>
                                         <th class="text-right">Stock mínimo</th>
@@ -185,6 +186,7 @@
                                         <th>Marca</th>
                                         <th class="text-center">F. vencimiento</th>
                                         <th>Almacén</th>
+                                        <th>Cód. Barras</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -192,6 +194,7 @@
                                         :key="index">
                                         <td>{{ index + 1 }}</td>
                                         <td>{{ row.name }}</td>
+                                        <td v-if="filters.description.visible">{{ row.description }}</td>
                                         <td v-if="filters.model.visible">{{ row.model }}</td>
                                         <td>{{ row.item_category_name }}</td>
                                         <td class="text-right">{{ row.stock_min }}</td>
@@ -203,6 +206,7 @@
                                         <td>{{ row.brand_name }}</td>
                                         <td class="text-center">{{ row.date_of_due }}</td>
                                         <td>{{ row.warehouse_name }}</td>
+                                        <td>{{ row.barcode }}</td>
                                     </tr>
                                     </tbody>
                                     <tfoot>
@@ -287,6 +291,10 @@ export default {
         this.initTables();
         this.initForm();
         this.filters = {
+            description: {
+                title: 'Descripción',
+                visible: false
+            },
             categories: {
                 title: 'Categorias',
                 visible: false
@@ -378,10 +386,14 @@ export default {
             });
         },
         async getRecords() {
+
             if (_.isNull(this.form.warehouse_id)) {
                 this.$message.error('Seleccionar un almacén ');
                 return false;
             }
+
+            this.loading = true
+
             this.records = [];
             this.total_profit = 0;
             this.total_all_profit = 0;
@@ -420,6 +432,8 @@ export default {
                     'format': format,
                     'filter': this.form.filter,
                     'warehouse_id': this.form.warehouse_id,
+                    brand_id: this.form.brand_id,
+                    category_id: this.form.category_id,
                 },
             })
                 .then(response => {

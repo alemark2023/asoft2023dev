@@ -17,6 +17,8 @@ class RestaurantPartner extends Model
         'gitlab_user',
         'domain',
         'status',
+        'department_id',
+        'zone'
     ];
 
     /**
@@ -33,6 +35,8 @@ class RestaurantPartner extends Model
             'gitlab_user' => $this->gitlab_user,
             'domain' => $this->domain,
             'status' => $this->status,
+            'department_id' => $this->department_id,
+            'zone' => $this->zone,
         ];
     }
 

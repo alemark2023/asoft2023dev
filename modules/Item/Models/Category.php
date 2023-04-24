@@ -17,5 +17,30 @@ class Category extends ModelTenant
         return $this->hasMany(Item::class);
     }
  
+    public function scopeFilterForTables($query)
+    {
+        return $query->select('id', 'name')->orderBy('name');
+    }
+
+    public function getRowResourceApi()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'selected' => false,
+        ];
+    }
+
+    
+    /**
+     * 
+     * Data para filtros - select
+     *
+     * @return array
+     */
+    public static function getDataForFilters()
+    {
+        return self::select(['id', 'name'])->orderBy('name')->get();
+    }
 
 }

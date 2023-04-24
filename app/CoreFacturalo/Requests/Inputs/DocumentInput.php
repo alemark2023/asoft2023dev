@@ -16,10 +16,11 @@ use Illuminate\Support\Str;
 use Modules\Offline\Models\OfflineConfiguration;
 use Html2Text\Html2Text;
 use App\Models\Tenant\Configuration;
+use Modules\Finance\Helpers\UploadFileHelper;
+
 
 class DocumentInput
 {
-
     public static function set($inputs)
     {
         $document_type_id = $inputs['document_type_id'];
@@ -31,6 +32,7 @@ class DocumentInput
 
         $offline_configuration = OfflineConfiguration::firstOrFail();
         // $number = Functions::newNumber($soap_type_id, $document_type_id, $series, $number, Document::class);
+        $configuration = Configuration::getColumnsForDocuments();
 
         if ($number !== '#') {
             Functions::validateUniqueDocument($soap_type_id, $document_type_id, $series, $number, Document::class);
@@ -62,7 +64,14 @@ class DocumentInput
             $data_json = Functions::valueKeyInArray($inputs, 'data_json');
         }
 
-        $items = self::items($inputs);
+        $items = self::items($inputs, $configuration);
+
+        //configuracion para envio individual de boleta
+        $ticket_single_shipment = self::getTicketSingleShipment($inputs);
+        $inputs['ticket_single_shipment'] = $ticket_single_shipment;
+
+        // se registran datos para identificar si el documento fue utilizado para sistema por puntos
+        $point_system_data = self::getPointSystemData($inputs, $configuration);
 
         return [
             'type' => $inputs['type'],
@@ -85,6 +94,7 @@ class DocumentInput
             'customer' => $customer,
             'currency_type_id' => $inputs['currency_type_id'],
             'purchase_order' => Functions::valueKeyInArray($inputs, 'purchase_order'),
+            'folio' => Functions::valueKeyInArray($inputs, 'folio'),
             'quotation_id' => Functions::valueKeyInArray($inputs, 'quotation_id'),
             'sale_note_id' => Functions::valueKeyInArray($inputs, 'sale_note_id'),
             'order_note_id' => Functions::valueKeyInArray($inputs, 'order_note_id'),
@@ -128,6 +138,7 @@ class DocumentInput
             'hotel' => self::hotel($inputs),
             'transport' => self::transport($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'additional_information'),
+            'additional_data' => Functions::valueKeyInArray($inputs, 'additional_data'),
             'plate_number' => Functions::valueKeyInArray($inputs, 'plate_number'),
             'legends' => LegendInput::set($inputs),
             'actions' => ActionInput::set($inputs),
@@ -144,16 +155,39 @@ class DocumentInput
             'is_editable' => true,
             'total_pending_payment' => Functions::valueKeyInArray($inputs, 'total_pending_payment', 0),
             // 'pending_amount_detraction' => Functions::valueKeyInArray($inputs, 'pending_amount_detraction', 0),
+            'tip' => self::tip($inputs, $soap_type_id),
+            'ticket_single_shipment' => $ticket_single_shipment,
+            'point_system' => $point_system_data['point_system'],
+            'point_system_data' => $point_system_data['point_system_data'],
+            'agent_id' => Functions::valueKeyInArray($inputs, 'agent_id'),
+            'dispatch_ticket_pdf' => Functions::valueKeyInArray($inputs, 'dispatch_ticket_pdf', false),
         ];
     }
 
-    public static function items($inputs)
+
+    public static function items($inputs, $configuration = null)
     {
+        $register_series_invoice_xml = $configuration->register_series_invoice_xml ?? false;
+
         if (array_key_exists('items', $inputs)) {
             $items = [];
             foreach ($inputs['items'] as $row) {
                 $item = Item::query()->find($row['item_id']);
                 /** @var Item $item */
+
+                if(key_exists('name_product_xml', $row)) {
+                    $name_product_xml = Functions::valueKeyInArray($row, 'name_product_xml');
+                } else {
+                    $name_product_xml = Functions::valueKeyInArray($row, 'name_product_pdf') ? self::getNameProductXml($row, $inputs) : null;
+                }
+
+                $items_attributes = self::attributes($row);
+
+                if($register_series_invoice_xml && in_array($inputs['document_type_id'], ['01', '03']))
+                {
+                    self::registerSeriesInvoiceXml($items_attributes, $row);
+                } 
+
                 $arayItem = [
                     'item_id' => $item->id,
                     'item' => [
@@ -174,7 +208,9 @@ class DocumentInput
                         'date_of_due' => (!empty($item->date_of_due)) ? $item->date_of_due->format('Y-m-d') : null,
                         'has_igv' => $row['item']['has_igv'] ?? true,
                         'unit_price' => $row['unit_price'] ?? 0,
-                        'purchase_unit_price' => $row['item']['purchase_unit_price'] ?? 0,  
+                        'purchase_unit_price' => $row['item']['purchase_unit_price'] ?? 0,
+                        'exchanged_for_points' => $row['item']['exchanged_for_points'] ?? false,
+                        'used_points_for_exchange' => $row['item']['used_points_for_exchange'] ?? null,
                     ],
                     'quantity' => $row['quantity'],
                     'unit_value' => $row['unit_value'],
@@ -197,15 +233,19 @@ class DocumentInput
                     'total_charge' => Functions::valueKeyInArray($row, 'total_charge', 0),
                     'total_discount' => Functions::valueKeyInArray($row, 'total_discount', 0),
                     'total' => $row['total'],
-                    'attributes' => self::attributes($row),
+                    'attributes' => $items_attributes,
+                    // 'attributes' => self::attributes($row),
                     'discounts' => self::discounts($row),
                     'charges' => self::charges($row),
                     'warehouse_id' => Functions::valueKeyInArray($row, 'warehouse_id'),
                     'additional_information' => Functions::valueKeyInArray($row, 'additional_information'),
                     'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf'),
-                    'name_product_xml' => Functions::valueKeyInArray($row, 'name_product_pdf') ? self::getNameProductXml($row, $inputs) : null,
+                    'name_product_xml' => $name_product_xml,
                     'update_description' => Functions::valueKeyInArray($row, 'update_description', false),
+                    'additional_data' => Functions::valueKeyInArray($row, 'additional_data'),
+//                    'additional_data' => key_exists('additional_data', $row)?$row['additional_data']:null,
                 ];
+//                dd($arayItem);
                 Item::SaveExtraDataToRequest($arayItem,$row);
                 $items[] = $arayItem;
             }
@@ -213,7 +253,7 @@ class DocumentInput
         }
         return null;
     }
-    
+
     /**
      * Devuelve el nombre producto pdf en texto plano para ser usado en el xml
      *
@@ -227,10 +267,14 @@ class DocumentInput
 
             // validar configuracion
             $configuration = Configuration::select('name_product_pdf_to_xml')->firstOrFail();
-    
+
             if($configuration->name_product_pdf_to_xml)
             {
-                return trim((new Html2Text($row['name_product_pdf']))->getText());
+                $text = trim((new Html2Text($row['name_product_pdf']))->getText());
+
+                return preg_replace('~\R{1,2}~', ' ', $text);
+
+                // return trim((new Html2Text($row['name_product_pdf']))->getText());
             }
 
         }
@@ -277,6 +321,64 @@ class DocumentInput
         return null;
     }
 
+    
+    /**
+     * 
+     * Registrar series como atributos (5019) para vehiculos
+     *
+     * @param  array $items_attributes
+     * @param  array $row
+     * @return void
+     */
+    public static function registerSeriesInvoiceXml(&$items_attributes, $row)
+    {
+        $series = self::lots($row);
+        
+        if(!empty($series))
+        {
+            $series_to_attributes = self::getVehicleSeriesToAttributes($series);
+
+            if(is_null($items_attributes)) 
+            {
+                $items_attributes = $series_to_attributes;
+            }
+            else if(is_array($items_attributes))
+            {
+                $items_attributes = array_merge($items_attributes, $series_to_attributes);
+            } 
+        }
+    }
+
+    
+    /**
+     * 
+     * Generar arreglo de atributos en base a las series - Vehiculos
+     *
+     * @param  array $series
+     * @return array
+     */
+    private static function getVehicleSeriesToAttributes($series)
+    {
+        $attributes = [];
+        $attribute_type_id = '5019';
+        $description = 'Serie/Chasis';
+
+        foreach ($series as $serie) 
+        {
+            $attributes [] = [
+                'attribute_type_id' => $attribute_type_id,
+                'description' => $description,
+                'value' => $serie['series'],
+                'start_date' =>  null,
+                'end_date' => null,
+                'duration' =>  null,
+            ];
+        }
+
+        return $attributes;
+    }
+
+
     private static function charges($inputs)
     {
         if (array_key_exists('charges', $inputs)) {
@@ -314,6 +416,7 @@ class DocumentInput
                     $factor = $row['factor'];
                     $amount = $row['amount'];
                     $base = $row['base'];
+                    $is_amount = $row['is_amount'] ?? null; //registra si el descuento fue por monto o porcentaje
 
                     $discounts[] = [
                         'discount_type_id' => $discount_type_id,
@@ -321,6 +424,7 @@ class DocumentInput
                         'factor' => $factor,
                         'amount' => $amount,
                         'base' => $base,
+                        'is_amount' => $is_amount,
                     ];
                 }
                 return $discounts;
@@ -415,7 +519,7 @@ class DocumentInput
         }
         return null;
     }
-    
+
     private static function retention($inputs)
     {
 
@@ -428,12 +532,24 @@ class DocumentInput
                 $percentage = $retention['percentage'];
                 $amount = $retention['amount'];
                 $base = $retention['base'];
+                $currency_type_id = $retention['currency_type_id'];
+                $exchange_rate = $retention['exchange_rate'];
+                $amount_pen = $retention['amount_pen'];
+                $amount_usd = $retention['amount_usd'];
 
                 return [
                     'code' => $code,
                     'percentage' => $percentage,
                     'amount' => $amount,
                     'base' => $base,
+                    'currency_type_id' => $currency_type_id,
+                    'exchange_rate' => $exchange_rate,
+                    'amount_pen' => $amount_pen,
+                    'amount_usd' => $amount_usd,
+                    'voucher_date_of_issue' => null,
+                    'voucher_number' => null,
+                    'voucher_amount' => null,
+                    'voucher_filename' => null,
                 ];
             }
         }
@@ -492,6 +608,9 @@ class DocumentInput
                     $file_content = file_get_contents($image_pay_constancy['temp_path']);
                     $datenow = date('YmdHis');
                     $file_name = $detraction_type_id . '-' . $bank_account . '-' . $datenow . '.' . $file_name_old_array[1];
+
+                    UploadFileHelper::checkIfValidFile($file_name, $image_pay_constancy['temp_path'], true);
+
                     Storage::put($directory . $file_name, $file_content);
                     $set_image_pay_constancy = $file_name;
 
@@ -589,5 +708,97 @@ class DocumentInput
                 'data_affected_document' => $data_affected_document
             ]
         ];
+    }
+
+
+    /**
+     *
+     * Retorna datos para registro de propina
+     *
+     * Usado en:
+     * DocumentInput
+     * TipTrait
+     *
+     * @param  array $inputs
+     * @param  string $soap_type_id
+     * @return array
+     */
+    public static function tip($inputs, $soap_type_id)
+    {
+        $worker_full_name_tips = Functions::valueKeyInArray($inputs, 'worker_full_name_tips');
+        $total_tips = Functions::valueKeyInArray($inputs, 'total_tips', 0);
+
+        if ($worker_full_name_tips && $total_tips > 0)
+        {
+            return [
+                'date' => date('Y-m-d'),
+                'worker_full_name' => $worker_full_name_tips,
+                'total' => $total_tips,
+                'soap_type_id' => $soap_type_id,
+                'origin_date_of_issue' => $inputs['date_of_issue'],
+            ];
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * Retornar configuracion para envio individual de boletas
+     *
+     * @param  array $inputs
+     * @return bool
+     */
+    public static function getTicketSingleShipment($inputs)
+    {
+        if($inputs['document_type_id'] === Document::DOCUMENT_TYPE_TICKET)
+        {
+            return Configuration::getRecordIndividualColumn('ticket_single_shipment');
+        }
+
+        return false;
+    }
+
+
+    /**
+     *
+     * Configuración de sistema por puntos
+     *
+     * @param  array $inputs
+     * @param  Configuration $configuration
+     * @return array
+     */
+    public static function getPointSystemData($inputs, $configuration)
+    {
+        $data = [
+            'point_system' => false,
+            'point_system_data' => null
+        ];
+
+        if(self::isDocumentInvoice($inputs['document_type_id']) && $configuration->enabled_point_system)
+        {
+            $data = [
+                'point_system' => $configuration->enabled_point_system,
+                'point_system_data' => [
+                    'point_system_sale_amount' => $configuration->point_system_sale_amount,
+                    'quantity_of_points' => $configuration->quantity_of_points,
+                    'round_points_of_sale' => $configuration->round_points_of_sale,
+                ]
+            ];
+        }
+
+        return $data;
+    }
+
+
+    /**
+     * Determina si es factura o boleta
+     *
+     * @param  string $document_type_id
+     * @return bool
+     */
+    public static function isDocumentInvoice($document_type_id)
+    {
+        return in_array($document_type_id, ['01', '03'], true);
     }
 }

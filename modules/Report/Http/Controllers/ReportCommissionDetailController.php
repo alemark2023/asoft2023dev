@@ -137,14 +137,16 @@ class ReportCommissionDetailController extends Controller
                 $data = $model::whereHas('sale_note',function($query) use($date_start, $date_end, $establishment_id){
                     $query->whereBetween('date_of_issue', [$date_start, $date_end])
                         ->where('establishment_id', $establishment_id)
-                        ->whereStateTypeAccepted();
+                        ->whereStateTypeAccepted()
+                        ->whereNotChanged();
                     });
     
             }else{
     
                     $data = $model::whereHas('sale_note',function($query) use($date_start, $date_end){
                                 $query->whereBetween('date_of_issue', [$date_start, $date_end])
-                                    ->whereStateTypeAccepted();
+                                    ->whereStateTypeAccepted()
+                                    ->whereNotChanged();
                                 });
                         
             }
@@ -170,7 +172,7 @@ class ReportCommissionDetailController extends Controller
         $records = ($sales_notes->get())->merge($documents->get());
 
 
-        $pdf = PDF::loadView('report::commissions_detail.report_pdf', compact("records", "company", "establishment"));
+        $pdf = PDF::loadView('report::commissions_detail.report_pdf', compact("records", "company", "establishment"))->setPaper('a4', 'landscape');
 
         $filename = 'Reporte_Utilidades_Detallado'.date('YmdHis');
 

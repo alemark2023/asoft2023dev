@@ -54,6 +54,7 @@ if($hostname) {
                     Route::get('/unpaidall', 'UnpaidController@unpaidall')->name('unpaidall');
                     Route::get('/report-payment-method-days', 'UnpaidController@reportPaymentMethodDays');
                     Route::get('/pdf', 'UnpaidController@pdf');
+                    Route::get('/print/{document_id}/{type}/{format}', 'UnpaidController@toPrint');
                 });
                 Route::post('payment-file/upload', 'PaymentFileController@uploadAttached');
                 Route::get('payment-file/download-file/{filename}/{type}', 'PaymentFileController@download');
@@ -91,6 +92,9 @@ if($hostname) {
                     Route::get('record/{record}', 'IncomeController@record');
                     Route::get('voided/{record}', 'IncomeController@voided');
 
+                    Route::get('print/{external_id}/{format?}', 'IncomeController@toPrint');
+
+
                 });
 
                 /**
@@ -105,8 +109,8 @@ if($hostname) {
                     Route::get('pdf', 'MovementController@pdf');
                     Route::post('pdf', 'MovementController@postPdf');
                     Route::get('excel', 'MovementController@excel');
-                    Route::post('excel', 'MovementController@excel');
-                    Route::post('excel', 'MovementController@postExcel');
+                    //Route::post('excel', 'MovementController@excel');
+                    //Route::post('excel', 'MovementController@excel');
                     Route::get('records', 'MovementController@records');
                 });
                 /**

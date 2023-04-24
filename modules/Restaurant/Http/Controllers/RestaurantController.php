@@ -19,6 +19,9 @@ use stdClass;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Tenant\EmailController;
 use App\Mail\Tenant\CulqiEmail;
+use Modules\Restaurant\Models\RestaurantConfiguration;
+use Modules\Restaurant\Models\RestaurantNote;
+
 
 
 
@@ -92,7 +95,7 @@ class RestaurantController extends Controller
         return view('restaurant::items.partial', compact('record'));
     }
 
-    
+
     public function item($id, $promotion_id = null)
     {
         $row = Item::find($id);
@@ -128,7 +131,7 @@ class RestaurantController extends Controller
         return view('restaurant::items.record', compact('record'));
     }
 
-    
+
     private function getExchangeRateSale(){
         $exchange_rate = app(ServiceController::class)->exchangeRateTest(date('Y-m-d'));
         return (array_key_exists('sale', $exchange_rate)) ? $exchange_rate['sale'] : 1;
@@ -223,4 +226,14 @@ class RestaurantController extends Controller
         }
     }
 
+    public function savePrice(Request $request) {
+        $item = Item::find($request->id);
+        $item->sale_unit_price = $request->sale_unit_price;
+        $item->save();
+
+        return [
+            'success' => true,
+            'message' => 'Precio editado correctamente.'
+        ];
+    }
 }

@@ -32,7 +32,7 @@ class PromotionController extends Controller
 
     public function tables()
     {
-       
+
         $items = Item::where('apply_restaurant', 1)->get();
         return compact('items');
     }
@@ -41,7 +41,7 @@ class PromotionController extends Controller
     public function records(Request $request)
     {
         $records = Promotion::where('apply_restaurant', 1)->orderBy('description');
-        
+
         return new PromotionCollection($records->paginate(config('tenant.items_per_page')));
     }
 
@@ -80,6 +80,8 @@ class PromotionController extends Controller
 
         $temp_path = $request->input('temp_path');
         if($temp_path) {
+            
+            UploadFileHelper::checkIfValidFile($request->input('image'), $temp_path, true);
 
             $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'promotions'.DIRECTORY_SEPARATOR. 'restaurant'.DIRECTORY_SEPARATOR;
             $file_name_old = $request->input('image');
@@ -102,7 +104,7 @@ class PromotionController extends Controller
             'id' => $item->id
         ];
     }
-    
+
     public function destroy($id)
     {
         //return 'sd';
@@ -119,9 +121,9 @@ class PromotionController extends Controller
 
     public function upload(Request $request)
     {
-        
+
         $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,gif,svg');
-        
+
         if(!$validate_upload['success']){
             return $validate_upload;
         }
@@ -162,10 +164,10 @@ class PromotionController extends Controller
     }
 
 
-  
 
 
- 
+
+
 
 
 

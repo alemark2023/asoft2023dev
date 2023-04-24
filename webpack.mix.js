@@ -34,6 +34,13 @@ mix.webpackConfig({
             '@viewsModuleItem': path.resolve(__dirname, 'modules/Item/Resources/assets/js/views'),
             '@viewsModuleHotel': path.resolve(__dirname, 'modules/Hotel/Resources/assets/js/views'),
             '@viewsModuleDocumentary': path.resolve(__dirname, 'modules/DocumentaryProcedure/Resources/assets/js/views'),
+            '@viewsModulePayment': path.resolve(__dirname, 'modules/Payment/Resources/assets/js/views'),
+            '@viewsModuleMercadoPago': path.resolve(__dirname, 'modules/MercadoPago/Resources/assets/js/views'),
+            '@viewsModuleSuscription': path.resolve(__dirname, 'modules/Suscription/Resources/assets/js/views'),
+            '@viewsModuleMobileApp': path.resolve(__dirname, 'modules/MobileApp/Resources/assets/js/views'),
+            '@viewsModuleLevelAccess': path.resolve(__dirname, 'modules/LevelAccess/Resources/assets/js/views'),
+            '@viewsModuleReport': path.resolve(__dirname, 'modules/Report/Resources/assets/js/views'),
+            '@viewsModuleInventory': path.resolve(__dirname, 'modules/Inventory/Resources/assets/js'),
         }
     }
 }).sourceMaps()

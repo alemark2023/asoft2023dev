@@ -3,6 +3,7 @@
 namespace App\Mail\Tenant;
 
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\CoreFacturalo\WS\Services\BaseSunat;
 use App\Models\Tenant\Document;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -35,16 +36,31 @@ class DocumentEmail extends Mailable
         $pdf = $this->getStorage($this->document->filename, 'pdf');
         $xml = $this->getStorage($this->document->filename, 'signed');
         $cdr = null;
+
         if($this->document->document_type_id !== '03') {
-            $cdr = $this->getStorage($this->document->filename, 'cdr');
+
+            if($this->existFileInStorage($this->document->filename, 'cdr'))
+            {
+                $cdr = $this->getStorage($this->document->filename, 'cdr');
+            }
+
         }
 
 
         $image_detraction = ($this->document->detraction) ? (($this->document->detraction->image_pay_constancy) ? storage_path('app'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'image_detractions'.DIRECTORY_SEPARATOR.$this->document->detraction->image_pay_constancy):false):false;
 
-        $email = $this->subject('Envio de Comprobante de Pago Electrónico')
+        $template_document_mail = config('tenant.template_document_mail');
+        if($template_document_mail === 'default') {
+            $template_document_mail_view = 'tenant.templates.email.document';
+            $subject = 'Envio de Comprobante de Pago Electrónico';
+        } else {
+            $template_document_mail_view = 'tenant.templates.email.'.$template_document_mail;
+            $subject = 'Folio '.$this->document->folio;
+        }
+
+        $email = $this->subject($subject)
                     ->from(config('mail.username'), 'Comprobante electrónico')
-                    ->view('tenant.templates.email.document')
+                    ->view($template_document_mail_view)
                     ->attachData($pdf, $this->document->filename.'.pdf')
                     ->attachData($xml, $this->document->filename.'.xml');
 
@@ -52,7 +68,9 @@ class DocumentEmail extends Mailable
         // $file = $this->getCdr($this->document);
 
         if(!empty($cdr) ){
-            $email->attachData($cdr, $this->document->filename.'.zip');
+            $xml_cdr = (new BaseSunat())->getXmlResponse($cdr);
+//            $email->attachData($cdr, $this->document->filename.'.zip');
+            $email->attachData($xml_cdr, 'R-'.$this->document->filename.'.xml');
         }
 
         if($image_detraction){

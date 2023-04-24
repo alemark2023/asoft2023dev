@@ -1,10 +1,19 @@
 <?php
 
+    use App\Services\ItemLotsGroupService;
     use App\Models\Tenant\Document;
     use App\Models\Tenant\ItemSet;
     use App\CoreFacturalo\Helpers\Template\TemplateHelper;
     use App\Models\Tenant\SaleNote;
 
+    $data = \Modules\Report\Http\Resources\GeneralItemCollection::getDocument($value);
+    if ($document_type_id == '80') {
+        $observation = $data['observation']?$data['observation']:'';
+    } else {
+        $observation = $data['additional_information']?$data['additional_information'][0]:'';
+    }
+    
+    
     $purchseOrder = $document->purchase_order;
 $stablihsment = $stablihsment ?? [
         'district' => '',
@@ -16,7 +25,7 @@ $unit_price = '';
 $unit_value = '';
 $total = '';
 $total_value = '';
-$total_item_purchase = number_format($total_item_purchase, 2);
+$total_item_purchase = round($total_item_purchase, 2);
 $utility_item = number_format($utility_item, 2);
 $relation_item = $value->relation_item;
 $web_platform = '';
@@ -27,6 +36,9 @@ $total_isc = '';
 $total_plastic_bag_taxes = '';
 $pack_prefix = '';
 $pack_price_prefix = '';
+$apply_conversion_to_pen = $request_apply_conversion_to_pen == 'true';
+$description_apply_conversion_to_pen = null;
+
 if (!isset($qty)) {
     /** Item normal */
     $discount = $value->total_discount;
@@ -43,6 +55,23 @@ if (!isset($qty)) {
     $total_plastic_bag_taxes = $value->total_plastic_bag_taxes;
     $category = $relation_item->category->name;
     $brand = $relation_item->brand->name;
+
+    
+    // aplicar conversión si es que esta habilitada la configuracion
+    if($apply_conversion_to_pen && $value->isCurrencyTypeUsd())
+    {
+        $total = round($value->getConvertTotalToPen(), 2);
+        $utility_item = round($total - $total_item_purchase, 2);
+        $unit_price = round($value->getConvertUnitPriceToPen(), 6);
+        $unit_value = round($value->getConvertUnitValueToPen(), 6);
+        $total_value = round($value->getConvertTotalValueToPen(), 2);
+        $igv = round($value->getConvertTotalIgvToPen(), 2);
+        $total_isc = round($value->getConvertTotalIscToPen(), 2);
+        $description_apply_conversion_to_pen = '(Se aplicó conversión a soles)';
+    }
+    // aplicar conversión si es que esta habilitada la configuracion
+
+
 } else {
     /** Item desde un pack */
     $item = \App\Models\Tenant\Item::find($item->id);
@@ -88,12 +117,24 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
     }
 
     $warehouse_description = \App\CoreFacturalo\Helpers\Template\ReportHelper::getWarehouseDescription($value, $document);
+    
+
+    $item_lots_group_service = new ItemLotsGroupService();
+
+    $id_lote_selected = $value->item->IdLoteSelected ?? [];
+    $item_lots_groups_description = $item_lots_group_service->getItemLotGroupLineBreak($id_lote_selected);
 
 ?>
 <tr>
     <td class="celda">{{ $loop->iteration }}</td>
     <td class="celda">{{ $document->date_of_issue->format('Y-m-d') }}</td>
-    <td class="celda">{{ $user}}</td>
+    <td class="celda">{{-- {{ $user}} --}}
+        @if($type==='sale')
+            {{ $document->seller_id == null ? $document->user->name : $document->seller->name }}
+        @else
+            {{$user}}
+        @endif
+    </td>
     @if($isSaleNote)
         <td class="celda">{{ $stablihsment['district'] }}</td>
         <td class="celda">{{ $stablihsment['department'] }}</td>
@@ -128,8 +169,9 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
             {{$document->user->name}}
         @endif
     </td>
-    <td class="celda">{{ $document->currency_type_id }}</td>
-    <td class="celda">{{ $document->exchange_rate_sale }}</td>
+    <td class="celda">{{ $observation }} </td>
+    <td class="celda">{{ $document->currency_type_id }} {{ $description_apply_conversion_to_pen ?? ''}}</td>
+    {{-- <td class="celda">{{ $document->exchange_rate_sale }}</td> --}}
     <td class="celda">
         @if($isSaleNote)
             {{ $item->unit_type_id }}
@@ -164,6 +206,11 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
         @endforeach
     </td>
     <td class="celda">{{ $series }}</td>
+
+    <td class="celda">
+        {!! $item_lots_groups_description !!}
+    </td>
+
     <td class="celda">{{ $model }}</td>
     <td class="celda">{{(!empty($purchase_unit_price)?$pack_price_prefix:'')}}{{ $purchase_unit_price }}</td>
     <td class="celda">{{ $unit_value }}</td>

@@ -23,6 +23,7 @@
                 <div class="card-body">
                     <data-table
                         :defaultType = "defaultType"
+                        :applyConversionToPen="applyConversionToPen"
                         :resource="resource">
                         <tr slot="heading">
                             <th class="">#</th>
@@ -34,6 +35,7 @@
 
                             <th class="">N° Documento</th>
                             <th class="">Cliente</th>
+
                             <th class="">Cod. Interno</th>
                             <th>Marca</th>
                             <th class="">Descripción</th>
@@ -50,7 +52,7 @@
                                 <th class="">Total compra</th>
                                 <th class="">Ganancia</th>
                             </template>
-                        <tr>
+                        </tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>
                             <td>{{row.date_of_issue}}</td>
@@ -61,6 +63,7 @@
                         <td  v-if="columns.purchase_order.visible">{{row.purchase_order}}</td>
                         <td>{{row.customer_number}}</td>
                             <td>{{row.customer_name}}</td>
+                            
                             <td>{{row.internal_id}}</td>
                             <td>{{ row.brand }}</td>
                             <td>{{row.description}}</td>
@@ -74,7 +77,18 @@
                                 {{ row.lot_has_sale | filterLots }}
                             </td>
                             <td>{{row.web_platform_name}}</td>
-                            <td>{{row.currency_type_id}}</td>
+                            <td>
+                                {{row.currency_type_id}}
+
+                                <template v-if="row.description_apply_conversion_to_pen">
+                                    <el-tooltip class="item"
+                                                :content="row.description_apply_conversion_to_pen"
+                                                effect="dark"
+                                                placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </template>
+                            </td>
                             <td>{{row.unit_value}}</td>
                             <td>{{row.total}}</td>
                             <template v-if="type == 'sale'">
@@ -86,7 +100,6 @@
                     </data-table>
                 </div>
         </div>
-
     </div>
 </template>
 
@@ -102,6 +115,7 @@
             'typeresource',
             'typereport',
             'configuration',
+            'applyConversionToPen',
         ],
         computed:{
             PurchaseOrderDisable:function(){

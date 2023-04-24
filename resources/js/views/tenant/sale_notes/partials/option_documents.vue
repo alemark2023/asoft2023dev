@@ -131,6 +131,7 @@
                                     <el-date-picker v-model="row.date" type="date"
                                                     value-format="yyyy-MM-dd"
                                                     format="dd/MM/yyyy"
+                                                    @change="changeDatePaymentCondition(index)"
                                                     :clearable="false"></el-date-picker>
                                 </div>
                             </td>
@@ -224,6 +225,18 @@
                         </tbody>
                     </table>
                 </div>
+
+                <template v-if="fnApplyRestrictSaleItemsCpe">
+                    <list-restrict-items
+                        v-if="load_list_document_items"
+                        :form="document"
+                        :configuration="configuration"
+                        :globalDiscountTypes="global_discount_types"
+                        class="mt-3"
+                        >
+                    </list-restrict-items>
+                </template>
+
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="clickClose">Cerrar</el-button>
@@ -251,10 +264,14 @@
 
     import DocumentOptions from '../../documents/partials/options.vue'
     import moment from "moment";
+    import ListRestrictItems from '@components/secondary/ListRestrictItems.vue'
+    import {fnRestrictSaleItemsCpe} from '@mixins/functions'
 
     export default {
-        components: {DocumentOptions},
-
+        components: {DocumentOptions, ListRestrictItems},
+        mixins: [
+            fnRestrictSaleItemsCpe
+        ],
         props: [
             'show',
             'recordId',
@@ -287,6 +304,9 @@
                 payment_method_types: [],
                 payment_condition_id: '01',
                 fee: [],
+                configuration: {},
+                global_discount_types: [],
+                load_list_document_items: false,
             }
         },
         created() {
@@ -296,6 +316,13 @@
            // console.log(moment().format('YYYY-MM-DD'))
         },
         methods: {
+            changeDatePaymentCondition(index)
+            {
+                const max_date = _.maxBy(this.document.fee, 'date')
+
+                if(max_date) this.document.date_of_due = max_date.date
+
+            },
             changePaymentCondition() {
                 this.document.fee = [];
                 this.document.payments = [];
@@ -398,6 +425,7 @@
                     total_taxes: 0,
                     total_value: 0,
                     subtotal: 0,
+                    total_igv_free: 0,
                     total: 0,
                     operation_type_id: null,
                     date_of_due: null,
@@ -418,12 +446,15 @@
                     hotel: {},
                 }
             },
-            resetDocument(){
+            resetDocument()
+            {
                 this.generate = (this.showGenerate) ? true:false
                 this.flag_generate = true
                 this.initDocument()
                 this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 this.changeDocumentType()
+
+                this.load_list_document_items = false
             },
             validatePaymentDestination(){
 
@@ -447,14 +478,13 @@
 
                 let error_by_item = 0
                 let message = ""
-
                 this.document.fee.forEach((item)=>{
-                    console.error(item)
+                    // console.error(item)
                     var date_issue = moment(this.document.date_of_issue).format('YYYY-MM-DD')
                     var date_payment = moment(item.date).format('YYYY-MM-DD')
-                    if(date_issue > date_payment){
+                    if(date_issue >= date_payment){
                         error_by_item++;
-                        message = "Verificar fechas de pago, no pueden ser anteriores a la fecha de emisión";
+                        message = "Verificar fechas de pago, no pueden ser anteriores o igual a la fecha de emisión";
                     }
                 })
 
@@ -463,7 +493,13 @@
                     message: message
                 }
             },
-            async submit() {
+            async submit() 
+            {
+                // validacion restriccion de productos
+                const validate_restrict_sale_items_cpe = this.fnValidateRestrictSaleItemsCpe(this.document)
+                if(!validate_restrict_sale_items_cpe.success) return this.$message.error(validate_restrict_sale_items_cpe.message)
+
+                if(this.document.items.length === 0) return this.$message.error('No tiene productos agregados.')
 
                 if(this.generate_dispatch){
                     if(!this.dispatch_id){
@@ -477,7 +513,8 @@
                     return this.$message.error(validate_payment_destination.message);
                 }
 
-                let validate_payment_date = await this.validatePaymentDate()
+                let validate_payment_date = this.validatePaymentDate()
+                // console.log(validate_payment_date)
 
                 if(validate_payment_date.error_by_item > 0) {
                     return this.$message.error(validate_payment_date.message);
@@ -496,6 +533,8 @@
                                 // this.flag_generate = false
                             });
                             this.resetDocument()
+
+                            this.$emit('hasGeneratedDocument')
 
                             this.$emit('update:show', false)
                         } else {
@@ -524,6 +563,31 @@
 
                 return valid
             },
+            getPaymentsData(q)
+            {
+                let sale_note_payments = q.payments
+
+                if(this.form.payments !== undefined && Array.isArray(this.form.payments))
+                {
+                    let new_payments = []
+
+                    this.form.payments.forEach((row)=>{
+                        
+                        const payment = { ...row }
+
+                        if(!_.some(this.payment_destinations, { id : row.payment_destination_id }))
+                        {
+                            payment.payment_destination_id = null
+                        }
+
+                        new_payments.push(payment)
+                    })
+
+                    sale_note_payments = new_payments
+                }
+
+                return sale_note_payments
+            },
             assignDocument(){
                 let q = this.form.sale_note;
                 // console.log(q);
@@ -545,6 +609,7 @@
                 this.document.total_unaffected = q.total_unaffected
                 this.document.total_exonerated = q.total_exonerated
                 this.document.total_igv = q.total_igv
+                this.document.total_igv_free = q.total_igv_free
                 this.document.total_base_isc = q.total_base_isc
                 this.document.total_isc = q.total_isc
                 this.document.total_base_other_taxes = q.total_base_other_taxes
@@ -566,7 +631,8 @@
                     format_pdf : 'a4'
                 };
                 this.document.sale_note_id = this.form.id;
-                this.document.payments = q.payments;
+                // this.document.payments = q.payments;
+                this.document.payments = this.getPaymentsData(q)
                 this.document.seller_id = q.seller_id;
                 this.document.user_id = q.user_id;
                 this.document.fee = [];
@@ -613,6 +679,9 @@
                     this.payment_destinations = response.data.payment_destinations;
                     this.payment_method_types = response.data.payment_method_types;
                     this.sellers = response.data.sellers
+                    this.configuration = response.data.configuration
+                    this.global_discount_types = response.data.global_discount_types
+                    
                     // this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
                     // this.changeDocumentType();
                 });
@@ -623,6 +692,7 @@
                         this.validateIdentityDocumentType()
 
                         this.assignDocument();
+                        this.load_list_document_items = true
                         this.titleDialog = 'Nota de venta registrada: '+this.form.number_full
                     })
 

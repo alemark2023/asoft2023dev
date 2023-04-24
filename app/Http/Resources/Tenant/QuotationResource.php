@@ -23,7 +23,6 @@ class QuotationResource extends JsonResource
         $quotation->payments = self::getTransformPayments($quotation->payments);
         $quotation->items = self::getTransformItems($quotation->items);
 
-
         return [
             'id' => $this->id,
             'external_id' => $this->external_id,
@@ -32,7 +31,11 @@ class QuotationResource extends JsonResource
             'quotation' => $quotation,
             'message_text' => "Su cotización {$this->number_full} ha sido generado correctamente, " .
                 "puede revisarlo en el siguiente enlace: " . url('') . "/print/quotation/{$this->external_id}/a4" . "",
-            ];
+            'number_full' => $this->number_full,
+            'customer_email' => $this->customer->email ?? null,
+            'customer_telephone' => $this->customer->telephone ?? null,
+            'customer_id' => $this->customer_id,
+        ];
     }
 
     public static function getTransformPayments($payments){
